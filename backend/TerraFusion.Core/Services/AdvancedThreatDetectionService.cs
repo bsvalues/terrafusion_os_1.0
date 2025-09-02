@@ -39,14 +39,14 @@ namespace TerraFusion.Core.Services
 
     public class ThreatAlert
     {
-        public string Id { get; set; }
+        public required string Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public ThreatLevel Severity { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string Source { get; set; }
-        public string UserId { get; set; }
-        public string IpAddress { get; set; }
+        public required string Title { get; set; }
+        public required string Description { get; set; }
+        public required string Source { get; set; }
+        public required string UserId { get; set; }
+        public required string IpAddress { get; set; }
         public AlertStatus Status { get; set; }
         public List<string> AffectedSystems { get; set; } = new List<string>();
         public Dictionary<string, object> Evidence { get; set; } = new Dictionary<string, object>();
@@ -54,7 +54,7 @@ namespace TerraFusion.Core.Services
 
     public class ThreatComplianceReport
     {
-        public string Id { get; set; }
+        public required string Id { get; set; }
         public DateTime GeneratedAt { get; set; }
         public DateTime PeriodStart { get; set; }
         public DateTime PeriodEnd { get; set; }
@@ -67,14 +67,14 @@ namespace TerraFusion.Core.Services
 
     public class SecurityComplianceViolation
     {
-        public string Id { get; set; }
+        public required string Id { get; set; }
         public DateTime DetectedAt { get; set; }
-        public string ControlId { get; set; }
-        public string Description { get; set; }
+        public required string ControlId { get; set; }
+        public required string Description { get; set; }
         public ViolationSeverity Severity { get; set; }
-        public string AffectedSystem { get; set; }
-        public string UserId { get; set; }
-        public string RemediationSteps { get; set; }
+        public required string AffectedSystem { get; set; }
+        public required string UserId { get; set; }
+        public required string RemediationSteps { get; set; }
         public DateTime? ResolvedAt { get; set; }
     }
 
@@ -83,17 +83,17 @@ namespace TerraFusion.Core.Services
         public double Score { get; set; }
         public RiskLevel Level { get; set; }
         public List<RiskFactor> Factors { get; set; } = new List<RiskFactor>();
-        public string Justification { get; set; }
+        public required string Justification { get; set; }
         public List<string> MitigationSteps { get; set; } = new List<string>();
     }
 
     public class SecurityRecommendation
     {
-        public string Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public required string Id { get; set; }
+        public required string Title { get; set; }
+        public required string Description { get; set; }
         public RecommendationPriority Priority { get; set; }
-        public string Category { get; set; }
+        public required string Category { get; set; }
         public List<string> ImplementationSteps { get; set; } = new List<string>();
         public TimeSpan EstimatedEffort { get; set; }
         public double ImpactScore { get; set; }
@@ -107,28 +107,28 @@ namespace TerraFusion.Core.Services
 
     public class RiskFactor
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public double Weight { get; set; }
-        public string Description { get; set; }
+        public required string Description { get; set; }
     }
 
     public class SecurityComplianceMetric
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public double Value { get; set; }
         public double Target { get; set; }
-        public string Unit { get; set; }
+        public required string Unit { get; set; }
         public bool IsCompliant => Value >= Target;
     }
 
     public class SecurityEvent
     {
-        public string Id { get; set; }
+        public required string Id { get; set; }
         public DateTime Timestamp { get; set; }
-        public string EventType { get; set; }
-        public string UserId { get; set; }
-        public string IpAddress { get; set; }
-        public string UserAgent { get; set; }
+        public required string EventType { get; set; }
+        public required string UserId { get; set; }
+        public required string IpAddress { get; set; }
+        public required string UserAgent { get; set; }
         public Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
     }
 
@@ -181,9 +181,9 @@ namespace TerraFusion.Core.Services
                 "anomalous_network_traffic"
             };
             
-            _mlThreatDetectionEndpoint = configuration["Security:MLThreatDetection:Endpoint"];
-            _behaviorAnalysisEndpoint = configuration["Security:BehaviorAnalysis:Endpoint"];
-            _complianceValidationEndpoint = configuration["Security:ComplianceValidation:Endpoint"];
+            _mlThreatDetectionEndpoint = configuration["Security:MLThreatDetection:Endpoint"] ?? "";
+            _behaviorAnalysisEndpoint = configuration["Security:BehaviorAnalysis:Endpoint"] ?? "";
+            _complianceValidationEndpoint = configuration["Security:ComplianceValidation:Endpoint"] ?? "";
         }
 
         public async Task<ThreatAssessment> AnalyzeThreatAsync(SecurityEvent securityEvent)

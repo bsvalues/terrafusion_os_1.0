@@ -168,7 +168,8 @@
       "Bash(./PACKAGE_ULTIMATE_IDE.sh:*)",
       "Bash(dotnet format:*)",
       "Bash(cargo check:*)",
-      "Bash(gh workflow:*)"
+      "Bash(gh workflow:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": [],

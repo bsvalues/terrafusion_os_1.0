@@ -29,23 +29,23 @@ namespace TerraFusion.Core.Services
     {
         public int? Width { get; set; }
         public int? Height { get; set; }
-        public string Format { get; set; } // webp, jpeg, png, avif
+        public required string Format { get; set; } // webp, jpeg, png, avif
         public int? Quality { get; set; } // 1-100
         public bool AutoOptimize { get; set; } = true;
         public bool EnableWebP { get; set; } = true;
         public bool EnableAVIF { get; set; } = true;
-        public string Crop { get; set; } // center, smart, entropy
+        public required string Crop { get; set; } // center, smart, entropy
         public Dictionary<string, string> CustomTransformations { get; set; } = new Dictionary<string, string>();
     }
 
     public class CachingRule
     {
         public TimeSpan TTL { get; set; }
-        public string[] FileExtensions { get; set; }
-        public string[] MimeTypes { get; set; }
+        public required string[] FileExtensions { get; set; }
+        public required string[] MimeTypes { get; set; }
         public bool EnableGzip { get; set; } = true;
         public bool EnableBrotli { get; set; } = true;
-        public string CacheControl { get; set; }
+        public required string CacheControl { get; set; }
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
     }
 
@@ -65,10 +65,10 @@ namespace TerraFusion.Core.Services
 
     public class CDNEdgeLocation
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Country { get; set; }
-        public string Region { get; set; }
+        public required string Id { get; set; }
+        public required string Name { get; set; }
+        public required string Country { get; set; }
+        public required string Region { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public bool IsActive { get; set; }
@@ -77,7 +77,7 @@ namespace TerraFusion.Core.Services
 
     public class CDNPerformanceMetrics
     {
-        public string Path { get; set; }
+        public required string Path { get; set; }
         public long TotalRequests { get; set; }
         public double AverageResponseTime { get; set; }
         public double P95ResponseTime { get; set; }
@@ -116,7 +116,7 @@ namespace TerraFusion.Core.Services
             _apiKey = configuration["CDN:ApiKey"] ?? throw new ArgumentException("CDN API key not configured");
             _secretKey = configuration["CDN:SecretKey"] ?? throw new ArgumentException("CDN secret key not configured");
             _bucketName = configuration["CDN:BucketName"] ?? "terrafusion-assets";
-            _distributionId = configuration["CDN:DistributionId"];
+            _distributionId = configuration["CDN:DistributionId"] ?? "";
             _enableImageOptimization = configuration.GetValue<bool>("CDN:EnableImageOptimization", true);
             _enableCompression = configuration.GetValue<bool>("CDN:EnableCompression", true);
 
