@@ -320,15 +320,15 @@ namespace TerraFusion.API.Controllers
     // Request/Response DTOs
     public class CacheStatisticsResponse
     {
-        public CacheStatistics Redis { get; set; }
-        public CacheMetrics APICache { get; set; }
-        public CDNStatistics CDN { get; set; }
+        public required CacheStatistics Redis { get; set; }
+        public required CacheMetrics APICache { get; set; }
+        public required CDNStatistics CDN { get; set; }
         public DateTime Timestamp { get; set; }
     }
 
     public class InvalidatePatternRequest
     {
-        public string Pattern { get; set; }
+        public required string Pattern { get; set; }
     }
 
     public class CacheWarmupRequest
@@ -338,34 +338,34 @@ namespace TerraFusion.API.Controllers
 
     public class SetCachingRulesRequest
     {
-        public string Path { get; set; }
+        public required string Path { get; set; }
         public int TTLSeconds { get; set; }
-        public string[] FileExtensions { get; set; }
-        public string[] MimeTypes { get; set; }
+        public required string[] FileExtensions { get; set; }
+        public required string[] MimeTypes { get; set; }
         public bool EnableGzip { get; set; } = true;
         public bool EnableBrotli { get; set; } = true;
-        public string CacheControl { get; set; }
+        public required string CacheControl { get; set; }
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
     }
 
     public class OptimizeUrlRequest
     {
-        public string AssetPath { get; set; }
+        public required string AssetPath { get; set; }
         public int? Width { get; set; }
         public int? Height { get; set; }
-        public string Format { get; set; }
+        public required string Format { get; set; }
         public int? Quality { get; set; }
         public bool AutoOptimize { get; set; } = true;
         public bool EnableWebP { get; set; } = true;
         public bool EnableAVIF { get; set; } = true;
-        public string Crop { get; set; }
+        public required string Crop { get; set; }
         public Dictionary<string, string> CustomTransformations { get; set; } = new Dictionary<string, string>();
     }
 
     public class OptimizedUrlResponse
     {
-        public string OriginalUrl { get; set; }
-        public string OptimizedUrl { get; set; }
-        public CDNOptimizationOptions Transformations { get; set; }
+        public required string OriginalUrl { get; set; }
+        public required string OptimizedUrl { get; set; }
+        public required CDNOptimizationOptions Transformations { get; set; }
     }
 }

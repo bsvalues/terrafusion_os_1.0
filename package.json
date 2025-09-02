@@ -17,7 +17,7 @@
     "electron": "npm run build:frontend && cd frontend/electron && npm run electron",
     "electron:dev": "concurrently \"npm run dev:backend\" \"cd frontend/electron && npm run electron:dev\"",
     "build": "npm run backend:build && npm run frontend:build",
-    "backend:build": "cd backend && dotnet publish -c Release -o ../dist/backend",
+    "backend:build": "cd backend && dotnet publish TerraFusion.sln -c Release -o ../dist/backend",
     "frontend:build": "cd frontend && npm run build",
     "format": "node scripts/format-code.mjs",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",

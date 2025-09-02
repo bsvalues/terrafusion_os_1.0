@@ -94,10 +94,10 @@ namespace TerraFusion.Core.Services
             _activeSessions = new Dictionary<string, MfaSession>();
             _userBackupCodes = new Dictionary<string, List<string>>();
 
-            _loginGovEndpoint = configuration["Authentication:LoginGov:Endpoint"];
-            _maxGovEndpoint = configuration["Authentication:MaxGov:Endpoint"];
-            _fismaClientId = configuration["Authentication:FISMA:ClientId"];
-            _fismaClientSecret = configuration["Authentication:FISMA:ClientSecret"];
+            _loginGovEndpoint = configuration["Authentication:LoginGov:Endpoint"] ?? string.Empty;
+            _maxGovEndpoint = configuration["Authentication:MaxGov:Endpoint"] ?? string.Empty;
+            _fismaClientId = configuration["Authentication:FISMA:ClientId"] ?? string.Empty;
+            _fismaClientSecret = configuration["Authentication:FISMA:ClientSecret"] ?? string.Empty;
         }
 
         public async Task<MfaSetupResult> SetupMfaAsync(string userId, MfaMethod method)

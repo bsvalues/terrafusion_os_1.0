@@ -15,7 +15,7 @@ let mainWindow;
 let tray;
 let osBridge;
 let backendProcess;
-let backendPort = 5000;
+const backendPort = 5000;
 
 // Expose OS connection state to renderer
 // Expose backend API URL to renderer

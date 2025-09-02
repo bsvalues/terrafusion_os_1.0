@@ -41,7 +41,7 @@ namespace TerraFusion.Core.Security
             byte[] message, 
             byte[] signature, 
             string publicKeyPem,
-            string agentId = null)
+            string? agentId = null)
         {
             var verificationId = Guid.NewGuid().ToString();
             var startTime = DateTime.UtcNow;
@@ -357,34 +357,34 @@ namespace TerraFusion.Core.Security
 
     public class VerificationResult
     {
-        public string VerificationId { get; set; }
+        public required string VerificationId { get; set; }
         public bool IsValid { get; set; }
-        public string AgentId { get; set; }
+        public required string AgentId { get; set; }
         public int ProvidersUsed { get; set; }
         public int SuccessfulVerifications { get; set; }
         public double ConsensusThreshold { get; set; }
         public TimeSpan ExecutionTime { get; set; }
         public DateTime Timestamp { get; set; }
-        public List<ProviderVerificationResult> ProviderResults { get; set; }
+        public required List<ProviderVerificationResult> ProviderResults { get; set; }
     }
 
     public class ProviderVerificationResult
     {
-        public string Provider { get; set; }
+        public required string Provider { get; set; }
         public bool IsValid { get; set; }
         public TimeSpan ExecutionTime { get; set; }
         public bool Success { get; set; }
-        public string Error { get; set; }
+        public required string Error { get; set; }
     }
 
     public class SecurityAlert
     {
-        public string AlertId { get; set; }
-        public string AlertType { get; set; }
-        public string Severity { get; set; }
+        public required string AlertId { get; set; }
+        public required string AlertType { get; set; }
+        public required string Severity { get; set; }
         public DateTime Timestamp { get; set; }
-        public string Data { get; set; }
-        public string Source { get; set; }
+        public required string Data { get; set; }
+        public required string Source { get; set; }
     }
 
     public class VerificationMetrics
@@ -440,16 +440,16 @@ namespace TerraFusion.Core.Security
         public bool IsHealthy { get; set; }
         public int HealthyProviders { get; set; }
         public int TotalProviders { get; set; }
-        public List<ProviderHealthResult> ProviderResults { get; set; }
+        public required List<ProviderHealthResult> ProviderResults { get; set; }
         public DateTime Timestamp { get; set; }
     }
 
     public class ProviderHealthResult
     {
-        public string Provider { get; set; }
+        public required string Provider { get; set; }
         public bool IsHealthy { get; set; }
         public DateTime LastChecked { get; set; }
-        public string Error { get; set; }
+        public required string Error { get; set; }
     }
 
     // Placeholder providers for Node.js and OpenSSL integration

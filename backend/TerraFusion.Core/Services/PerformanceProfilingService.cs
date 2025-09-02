@@ -24,7 +24,7 @@ namespace TerraFusion.Core.Services
 
     public class ProfileResult
     {
-        public string OperationName { get; set; }
+        public required string OperationName { get; set; }
         public TimeSpan Duration { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
@@ -35,13 +35,13 @@ namespace TerraFusion.Core.Services
         public Dictionary<string, object> Context { get; set; } = new Dictionary<string, object>();
         public Dictionary<string, double> CustomMetrics { get; set; } = new Dictionary<string, double>();
         public bool IsSuccess { get; set; } = true;
-        public string ErrorMessage { get; set; }
-        public Exception Exception { get; set; }
+        public required string ErrorMessage { get; set; }
+        public required Exception Exception { get; set; }
     }
 
     public class PerformanceMetric
     {
-        public string OperationName { get; set; }
+        public required string OperationName { get; set; }
         public DateTime Timestamp { get; set; }
         public TimeSpan Duration { get; set; }
         public long MemoryUsage { get; set; }
@@ -59,13 +59,13 @@ namespace TerraFusion.Core.Services
         public int TotalOperations { get; set; }
         public Dictionary<string, OperationStats> OperationStatistics { get; set; } = new Dictionary<string, OperationStats>();
         public List<PerformanceAnomaly> Anomalies { get; set; } = new List<PerformanceAnomaly>();
-        public SystemResourceStats SystemStats { get; set; }
+        public required SystemResourceStats SystemStats { get; set; }
         public List<string> Recommendations { get; set; } = new List<string>();
     }
 
     public class OperationStats
     {
-        public string OperationName { get; set; }
+        public required string OperationName { get; set; }
         public int Count { get; set; }
         public TimeSpan TotalDuration { get; set; }
         public TimeSpan AverageDuration { get; set; }
@@ -81,7 +81,7 @@ namespace TerraFusion.Core.Services
 
     public class PerformanceBaseline
     {
-        public string OperationName { get; set; }
+        public required string OperationName { get; set; }
         public TimeSpan ExpectedDuration { get; set; }
         public TimeSpan MaxAcceptableDuration { get; set; }
         public long ExpectedMemoryUsage { get; set; }
@@ -92,12 +92,12 @@ namespace TerraFusion.Core.Services
 
     public class PerformanceAnomaly
     {
-        public string Id { get; set; }
-        public string OperationName { get; set; }
+        public required string Id { get; set; }
+        public required string OperationName { get; set; }
         public DateTime DetectedAt { get; set; }
-        public string AnomalyType { get; set; }
-        public string Severity { get; set; }
-        public string Description { get; set; }
+        public required string AnomalyType { get; set; }
+        public required string Severity { get; set; }
+        public required string Description { get; set; }
         public Dictionary<string, object> Details { get; set; } = new Dictionary<string, object>();
         public double DeviationScore { get; set; }
     }
@@ -168,7 +168,12 @@ namespace TerraFusion.Core.Services
             if (!_enableProfiling)
             {
                 await operation();
-                return new ProfileResult { OperationName = operationName, IsSuccess = true };
+                return new ProfileResult { 
+                    OperationName = operationName, 
+                    IsSuccess = true,
+                    ErrorMessage = null,
+                    Exception = null
+                };
             }
 
             var result = new ProfileResult
@@ -176,7 +181,9 @@ namespace TerraFusion.Core.Services
                 OperationName = operationName,
                 StartTime = DateTime.UtcNow,
                 ThreadId = Environment.CurrentManagedThreadId,
-                Context = context ?? new Dictionary<string, object>()
+                Context = context ?? new Dictionary<string, object>(),
+                ErrorMessage = null,
+                Exception = null
             };
 
             var stopwatch = Stopwatch.StartNew();
@@ -230,7 +237,8 @@ namespace TerraFusion.Core.Services
                 GeneratedAt = DateTime.UtcNow,
                 StartTime = start,
                 EndTime = end,
-                TotalOperations = relevantMetrics.Count
+                TotalOperations = relevantMetrics.Count,
+                SystemStats = new SystemResourceStats()
             };
 
             // Generate operation statistics
@@ -531,7 +539,9 @@ namespace TerraFusion.Core.Services
                     StartTime = DateTime.UtcNow,
                     ThreadId = Environment.CurrentManagedThreadId,
                     Context = context ?? new Dictionary<string, object>(),
-                    MemoryBefore = GC.GetTotalMemory(false)
+                    MemoryBefore = GC.GetTotalMemory(false),
+                    ErrorMessage = null,
+                    Exception = null
                 };
                 _stopwatch = Stopwatch.StartNew();
             }

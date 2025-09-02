@@ -20,7 +20,9 @@ export function useOSConnection() {
           const current = await window.electronAPI.getOSConnectionState();
           if (mounted) setState(current);
         }
-      } catch (_) {}
+      } catch (_) {
+        // Failed to get OS connection state
+      }
     }
 
     init();
@@ -36,7 +38,9 @@ export function useOSConnection() {
       mounted = false;
       try {
         if (typeof unsubscribe === 'function') unsubscribe();
-      } catch (_) {}
+      } catch (_) {
+        // Failed to unsubscribe
+      }
     };
   }, []);
 

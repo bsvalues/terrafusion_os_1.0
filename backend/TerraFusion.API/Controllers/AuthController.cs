@@ -138,28 +138,28 @@ namespace TerraFusion.API.Controllers
     public class LoginRequest
     {
         [Required]
-        public string Username { get; set; }
+        public required string Username { get; set; }
 
         [Required]
-        public string Password { get; set; }
+        public required string Password { get; set; }
     }
 
     public class RefreshTokenRequest
     {
         [Required]
-        public string Token { get; set; }
+        public required string Token { get; set; }
 
         [Required]
-        public string RefreshToken { get; set; }
+        public required string RefreshToken { get; set; }
     }
 
     public class LoginResponse
     {
-        public string Token { get; set; }
-        public string RefreshToken { get; set; }
+        public required string Token { get; set; }
+        public required string RefreshToken { get; set; }
         public int ExpiresIn { get; set; }
-        public string UserId { get; set; }
-        public string Email { get; set; }
-        public List<string> Roles { get; set; }
+        public required string UserId { get; set; }
+        public required string Email { get; set; }
+        public required List<string> Roles { get; set; }
     }
 }

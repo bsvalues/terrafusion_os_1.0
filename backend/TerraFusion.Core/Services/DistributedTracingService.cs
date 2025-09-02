@@ -23,25 +23,25 @@ namespace TerraFusion.Core.Services
 
     public class TraceSpan
     {
-        public string SpanId { get; set; }
-        public string TraceId { get; set; }
-        public string ParentSpanId { get; set; }
-        public string OperationName { get; set; }
+        public required string SpanId { get; set; }
+        public required string TraceId { get; set; }
+        public required string ParentSpanId { get; set; }
+        public required string OperationName { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public TimeSpan? Duration => EndTime?.Subtract(StartTime);
         public Dictionary<string, object> Tags { get; set; } = new Dictionary<string, object>();
         public List<TraceEvent> Events { get; set; } = new List<TraceEvent>();
         public string Status { get; set; } = "active";
-        public string ServiceName { get; set; }
-        public string UserId { get; set; }
-        public string RequestId { get; set; }
+        public required string ServiceName { get; set; }
+        public required string UserId { get; set; }
+        public required string RequestId { get; set; }
     }
 
     public class TraceEvent
     {
-        public string EventId { get; set; }
-        public string Name { get; set; }
+        public required string EventId { get; set; }
+        public required string Name { get; set; }
         public DateTime Timestamp { get; set; }
         public Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
         public string Level { get; set; } = "info";
@@ -49,7 +49,7 @@ namespace TerraFusion.Core.Services
 
     public class TraceMetrics
     {
-        public string TraceId { get; set; }
+        public required string TraceId { get; set; }
         public TimeSpan TotalDuration { get; set; }
         public int SpanCount { get; set; }
         public int ErrorCount { get; set; }
@@ -99,12 +99,15 @@ namespace TerraFusion.Core.Services
 
             var span = new TraceSpan
             {
-                SpanId = spanId,
                 TraceId = traceId,
+                SpanId = spanId,
+                ParentSpanId = "root",
                 OperationName = operationName,
                 StartTime = DateTime.UtcNow,
                 ServiceName = _serviceName,
-                Tags = tags ?? new Dictionary<string, object>()
+                Tags = tags ?? new Dictionary<string, object>(),
+                UserId = "system",
+                RequestId = Guid.NewGuid().ToString()
             };
 
             // Add default tags
@@ -136,11 +139,13 @@ namespace TerraFusion.Core.Services
             {
                 SpanId = spanId,
                 TraceId = traceId,
-                ParentSpanId = parentSpanId,
+                ParentSpanId = parentSpanId ?? "root",
                 OperationName = operationName,
                 StartTime = DateTime.UtcNow,
                 ServiceName = _serviceName,
-                Tags = tags ?? new Dictionary<string, object>()
+                Tags = tags ?? new Dictionary<string, object>(),
+                UserId = "system",
+                RequestId = Guid.NewGuid().ToString()
             };
 
             // Add default tags

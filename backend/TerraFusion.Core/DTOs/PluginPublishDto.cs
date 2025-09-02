@@ -9,15 +9,15 @@ namespace TerraFusion.Core.DTOs
         public Guid PluginId { get; set; }
 
         [Required]
-        public string Version { get; set; }
+        public required string Version { get; set; }
 
         [Required]
-        public string PackageB64 { get; set; }
+        public required string PackageB64 { get; set; }
 
         [Required]
-        public string Signature { get; set; }
+        public required string Signature { get; set; }
 
         [Required]
-        public string PublicKeyPem { get; set; }
+        public required string PublicKeyPem { get; set; }
     }
 }

@@ -145,10 +145,15 @@ namespace TerraFusion.Core.Services
                 {
                     AuditId = Guid.NewGuid().ToString(),
                     ParcelId = parcelId,
-                    Action = "VIEW",
-                    UserId = "CAMA_USER1",
-                    Timestamp = DateTime.UtcNow.AddDays(-3),
-                    Changes = new Dictionary<string, object> { ["Action"] = "Property viewed via CAMA Plus" }
+                    Action = "harris_pac_integration",
+                    UserId = "system",
+                    Timestamp = DateTime.UtcNow,
+                    Changes = new Dictionary<string, object>
+                    {
+                        ["migration_type"] = "CamaPlus",
+                        ["system_version"] = "1.0"
+                    },
+                    Notes = "Legacy migration from CamaPlus system"
                 }
             };
         }

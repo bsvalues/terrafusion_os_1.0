@@ -60,7 +60,9 @@ const PluginsHost: React.FC = () => {
       try {
         const s = await window.electronAPI.getOSConnectionState();
         setState(s);
-      } catch {}
+      } catch {
+        // Failed to get OS connection state
+      }
     })();
     try {
       unsubscribe = window.electronAPI.onOSConnectionState((s: any) => {
@@ -70,11 +72,15 @@ const PluginsHost: React.FC = () => {
         }
         setState(s);
       });
-    } catch {}
+    } catch {
+      // Failed to subscribe to OS connection state
+    }
     return () => {
       try {
         unsubscribe?.();
-      } catch {}
+      } catch {
+        // Failed to unsubscribe
+      }
     };
   }, []);
 
@@ -122,7 +128,9 @@ const PluginsHost: React.FC = () => {
         const el = mountedRefs.current.get(name);
         try {
           if (plugin.unmount && el) plugin.unmount(el);
-        } catch {}
+        } catch {
+          // Failed to unmount plugin
+        }
       }
       loadedPlugins.current.clear();
       mountedRefs.current.clear();

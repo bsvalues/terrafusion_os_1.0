@@ -10,8 +10,8 @@ namespace TerraFusion.Core.Services
 {
     public interface IComplianceAutomationService
     {
-        Task<AuditTrail> CreateAuditTrailAsync(string action, string userId, object data, string entityType = null);
-        Task<List<AuditTrail>> GetAuditTrailAsync(DateTime? startDate = null, DateTime? endDate = null, string userId = null);
+        Task<AuditTrail> CreateAuditTrailAsync(string action, string userId, object data, string? entityType = null);
+        Task<List<AuditTrail>> GetAuditTrailAsync(DateTime? startDate = null, DateTime? endDate = null, string? userId = null);
         Task<ComplianceReport> GenerateComplianceReportAsync(ComplianceFramework framework, DateTime startDate, DateTime endDate);
         Task<ComplianceStatus> ValidateComplianceAsync(ComplianceFramework framework);
         Task<List<ComplianceViolation>> GetComplianceViolationsAsync(ComplianceFramework framework = ComplianceFramework.All);
@@ -145,11 +145,11 @@ namespace TerraFusion.Core.Services
 
     public class ComplianceReportSchedule
     {
-        public string Id { get; set; }
+        public required string Id { get; set; }
         public ComplianceFramework Framework { get; set; }
-        public string Frequency { get; set; }
-        public List<string> Recipients { get; set; }
-        public string Format { get; set; }
+        public required string Frequency { get; set; }
+        public required List<string> Recipients { get; set; }
+        public required string Format { get; set; }
         public bool IsActive { get; set; }
     }
 

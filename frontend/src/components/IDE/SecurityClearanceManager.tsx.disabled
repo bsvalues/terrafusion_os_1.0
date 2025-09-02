@@ -1,0 +1,754 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Chip,
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Avatar,
+  Badge,
+  LinearProgress,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineOppositeContent,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Switch,
+  FormControlLabel
+} from '@mui/material';
+import {
+  Security,
+  VpnKey,
+  AdminPanelSettings,
+  Shield,
+  VerifiedUser,
+  Warning,
+  CheckCircle,
+  Error,
+  Info,
+  ExpandMore,
+  Refresh,
+  GetApp,
+  Upload,
+  Person,
+  Group,
+  Assignment,
+  Schedule,
+  Fingerprint,
+  Lock,
+  Visibility,
+  VisibilityOff,
+  Business,
+  LocationOn,
+  Phone,
+  Email,
+  Badge as BadgeIcon,
+  AccountBalance,
+  Gavel
+} from '@mui/icons-material';
+
+interface SecurityClearance {
+  id: string;
+  userId: string;
+  userName: string;
+  level: 'PUBLIC' | 'CONFIDENTIAL' | 'SECRET' | 'TOP_SECRET';
+  compartments: string[];
+  caveats: string[];
+  grantedDate: string;
+  expirationDate: string;
+  issuingAuthority: string;
+  investigationType: string;
+  polygraphRequired: boolean;
+  polygraphDate?: string;
+  status: 'ACTIVE' | 'SUSPENDED' | 'REVOKED' | 'EXPIRED' | 'PENDING';
+  renewalDue: boolean;
+  accessHistory: AccessRecord[];
+  restrictions: SecurityRestriction[];
+}
+
+interface AccessRecord {
+  timestamp: string;
+  resource: string;
+  classification: string;
+  action: string;
+  location: string;
+  ipAddress: string;
+  userAgent: string;
+  status: 'GRANTED' | 'DENIED';
+  reason?: string;
+}
+
+interface SecurityRestriction {
+  type: 'TIME' | 'LOCATION' | 'RESOURCE' | 'NETWORK';
+  description: string;
+  parameters: { [key: string]: string };
+  active: boolean;
+}
+
+interface ClassificationLevel {
+  level: string;
+  color: string;
+  description: string;
+  requirements: string[];
+  accessibleResources: string[];
+}
+
+const SecurityClearanceManager: React.FC = () => {
+  const [currentUser, setCurrentUser] = useState<SecurityClearance | null>(null);
+  const [allUsers, setAllUsers] = useState<SecurityClearance[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>('');
+  const [showAccessHistory, setShowAccessHistory] = useState(false);
+  const [showClearanceDetails, setShowClearanceDetails] = useState(false);
+  const [accessHistoryFilter, setAccessHistoryFilter] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
+
+  const classificationLevels: ClassificationLevel[] = [
+    {
+      level: 'PUBLIC',
+      color: '#4caf50',
+      description: 'Information that can be disclosed to the public',
+      requirements: ['Background check'],
+      accessibleResources: ['Public documentation', 'General system information']
+    },
+    {
+      level: 'CONFIDENTIAL',
+      color: '#ff9800',
+      description: 'Information that could damage national security if disclosed',
+      requirements: ['Background investigation', 'Confidentiality agreement'],
+      accessibleResources: ['Basic operational data', 'Internal documentation', 'User management']
+    },
+    {
+      level: 'SECRET',
+      color: '#f44336',
+      description: 'Information that could cause serious damage to national security',
+      requirements: ['Single Scope Background Investigation (SSBI)', 'Polygraph examination'],
+      accessibleResources: ['Operational systems', 'Compliance reports', 'Security configurations', 'Audit logs']
+    },
+    {
+      level: 'TOP_SECRET',
+      color: '#9c27b0',
+      description: 'Information that could cause exceptionally grave damage to national security',
+      requirements: ['SSBI with Periodic Reinvestigation (SSBI-PR)', 'Lifestyle polygraph', 'Continuous monitoring'],
+      accessibleResources: ['All classified systems', 'Intelligence data', 'Strategic planning', 'Critical infrastructure controls']
+    }
+  ];
+
+  useEffect(() => {
+    initializeSecurityData();
+  }, []);
+
+  const initializeSecurityData = () => {
+    // Simulate current user clearance
+    const currentUserClearance: SecurityClearance = {
+      id: 'user-001',
+      userId: 'current-user',
+      userName: 'John Doe',
+      level: 'SECRET',
+      compartments: ['SCI', 'SAP'],
+      caveats: ['NOFORN', 'ORCON'],
+      grantedDate: '2023-01-15',
+      expirationDate: '2028-01-15',
+      issuingAuthority: 'Defense Security Service (DSS)',
+      investigationType: 'SSBI',
+      polygraphRequired: true,
+      polygraphDate: '2023-01-10',
+      status: 'ACTIVE',
+      renewalDue: false,
+      accessHistory: generateAccessHistory(),
+      restrictions: [
+        {
+          type: 'TIME',
+          description: 'Access restricted to business hours',
+          parameters: { startTime: '06:00', endTime: '18:00', timezone: 'UTC' },
+          active: false
+        },
+        {
+          type: 'LOCATION',
+          description: 'Access from approved facilities only',
+          parameters: { approvedFacilities: 'Facility-A,Facility-B' },
+          active: true
+        }
+      ]
+    };
+
+    // Simulate additional users
+    const additionalUsers: SecurityClearance[] = [
+      {
+        id: 'user-002',
+        userId: 'admin-user',
+        userName: 'Jane Smith',
+        level: 'TOP_SECRET',
+        compartments: ['SCI', 'SAP', 'TK', 'G', 'HCS'],
+        caveats: ['NOFORN', 'ORCON', 'PROPIN'],
+        grantedDate: '2022-05-20',
+        expirationDate: '2027-05-20',
+        issuingAuthority: 'Central Intelligence Agency (CIA)',
+        investigationType: 'SSBI-PR',
+        polygraphRequired: true,
+        polygraphDate: '2022-05-15',
+        status: 'ACTIVE',
+        renewalDue: false,
+        accessHistory: [],
+        restrictions: []
+      },
+      {
+        id: 'user-003',
+        userId: 'ops-user',
+        userName: 'Mike Johnson',
+        level: 'CONFIDENTIAL',
+        compartments: [],
+        caveats: ['NOFORN'],
+        grantedDate: '2023-03-10',
+        expirationDate: '2033-03-10',
+        issuingAuthority: 'Department of Defense (DoD)',
+        investigationType: 'NACLC',
+        polygraphRequired: false,
+        status: 'ACTIVE',
+        renewalDue: true,
+        accessHistory: [],
+        restrictions: [
+          {
+            type: 'RESOURCE',
+            description: 'Limited to operational data only',
+            parameters: { allowedResources: 'operations,monitoring' },
+            active: true
+          }
+        ]
+      }
+    ];
+
+    setCurrentUser(currentUserClearance);
+    setAllUsers([currentUserClearance, ...additionalUsers]);
+    setSelectedUser(currentUserClearance.id);
+    setLoading(false);
+  };
+
+  const generateAccessHistory = (): AccessRecord[] => {
+    const records: AccessRecord[] = [];
+    const resources = ['Compliance Dashboard', 'Audit Reports', 'Security Logs', 'System Configuration', 'User Management'];
+    const classifications = ['CONFIDENTIAL', 'SECRET', 'SECRET//NOFORN'];
+    const actions = ['VIEW', 'EDIT', 'DOWNLOAD', 'UPLOAD'];
+    
+    for (let i = 0; i < 50; i++) {
+      const timestamp = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+      records.push({
+        timestamp: timestamp.toISOString(),
+        resource: resources[Math.floor(Math.random() * resources.length)],
+        classification: classifications[Math.floor(Math.random() * classifications.length)],
+        action: actions[Math.floor(Math.random() * actions.length)],
+        location: 'Facility-A',
+        ipAddress: `192.168.1.${Math.floor(Math.random() * 255)}`,
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        status: Math.random() > 0.05 ? 'GRANTED' : 'DENIED',
+        reason: Math.random() > 0.95 ? 'Insufficient clearance level' : undefined
+      });
+    }
+    
+    return records.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  };
+
+  const getClearanceColor = (level: string) => {
+    const levelInfo = classificationLevels.find(l => l.level === level);
+    return levelInfo?.color || '#757575';
+  };
+
+  const getClearanceDescription = (level: string) => {
+    const levelInfo = classificationLevels.find(l => l.level === level);
+    return levelInfo?.description || 'Unknown classification level';
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'ACTIVE': return 'success';
+      case 'PENDING': return 'warning';
+      case 'SUSPENDED': return 'error';
+      case 'REVOKED': return 'error';
+      case 'EXPIRED': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const selectedUserData = allUsers.find(u => u.id === selectedUser);
+  const filteredAccessHistory = selectedUserData?.accessHistory.filter(record => 
+    accessHistoryFilter === 'all' || record.status.toLowerCase() === accessHistoryFilter
+  ) || [];
+
+  if (loading) {
+    return <LinearProgress />;
+  }
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" component="h1" gutterBottom color="primary">
+        <Shield sx={{ mr: 1 }} />
+        Security Clearance Management
+      </Typography>
+
+      {/* Current User Security Status */}
+      {currentUser && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          <Box display="flex" alignItems="center" gap={2}>
+            <VpnKey />
+            <Box>
+              <Typography variant="subtitle1">
+                <strong>Current Clearance:</strong> {currentUser.level} | 
+                <strong> Status:</strong> {currentUser.status} |
+                <strong> Expires:</strong> {new Date(currentUser.expirationDate).toLocaleDateString()}
+              </Typography>
+              {currentUser.compartments.length > 0 && (
+                <Typography variant="body2" color="textSecondary">
+                  <strong>Compartments:</strong> {currentUser.compartments.join(', ')} | 
+                  <strong>Caveats:</strong> {currentUser.caveats.join(', ')}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+        </Alert>
+      )}
+
+      {/* User Selection and Overview */}
+      <Grid container spacing={3}>
+        {/* User Selection */}
+        <Grid item xs={12} md={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                <Person sx={{ mr: 1 }} />
+                User Selection
+              </Typography>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Select User</InputLabel>
+                <Select
+                  value={selectedUser}
+                  onChange={(e) => setSelectedUser(e.target.value)}
+                  label="Select User"
+                >
+                  {allUsers.map(user => (
+                    <MenuItem key={user.id} value={user.id}>
+                      <Box display="flex" alignItems="center" gap={1} width="100%">
+                        <Avatar sx={{ width: 24, height: 24, bgcolor: getClearanceColor(user.level) }}>
+                          {user.level.charAt(0)}
+                        </Avatar>
+                        <Box flexGrow={1}>
+                          <Typography variant="body2">{user.userName}</Typography>
+                          <Typography variant="caption" color="textSecondary">
+                            {user.level}
+                          </Typography>
+                        </Box>
+                        <Chip 
+                          label={user.status}
+                          color={getStatusColor(user.status) as any}
+                          size="small"
+                        />
+                      </Box>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              {selectedUserData && (
+                <Box>
+                  <Box display="flex" gap={1} mb={2}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => setShowClearanceDetails(true)}
+                      startIcon={<VerifiedUser />}
+                    >
+                      Details
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => setShowAccessHistory(true)}
+                      startIcon={<Assignment />}
+                    >
+                      History
+                    </Button>
+                  </Box>
+                  
+                  <Box>
+                    <Typography variant="caption" display="block" color="textSecondary">
+                      Last Access: {selectedUserData.accessHistory[0]?.timestamp ? 
+                        new Date(selectedUserData.accessHistory[0].timestamp).toLocaleString() : 'Never'}
+                    </Typography>
+                    <Typography variant="caption" display="block" color="textSecondary">
+                      Access Attempts (24h): {selectedUserData.accessHistory.filter(a => 
+                        new Date(a.timestamp).getTime() > Date.now() - 24 * 60 * 60 * 1000
+                      ).length}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Clearance Overview */}
+        <Grid item xs={12} md={8}>
+          {selectedUserData && (
+            <Card>
+              <CardContent>
+                <Box display="flex" justifyContent="between" alignItems="center" mb={3}>
+                  <Typography variant="h6">
+                    <Badge badgeContent={selectedUserData.compartments.length} color="primary">
+                      <AdminPanelSettings sx={{ mr: 1 }} />
+                    </Badge>
+                    Security Clearance Profile
+                  </Typography>
+                  <Chip 
+                    label={selectedUserData.level}
+                    sx={{ 
+                      backgroundColor: getClearanceColor(selectedUserData.level),
+                      color: 'white',
+                      fontWeight: 'bold'
+                    }}
+                  />
+                </Box>
+
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="subtitle2" color="textSecondary">Personal Information</Typography>
+                    <List dense>
+                      <ListItem>
+                        <ListItemIcon><Person /></ListItemIcon>
+                        <ListItemText primary={selectedUserData.userName} secondary="Full Name" />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemIcon><BadgeIcon /></ListItemIcon>
+                        <ListItemText primary={selectedUserData.userId} secondary="User ID" />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemIcon><AccountBalance /></ListItemIcon>
+                        <ListItemText primary={selectedUserData.issuingAuthority} secondary="Issuing Authority" />
+                      </ListItem>
+                    </List>
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="subtitle2" color="textSecondary">Clearance Details</Typography>
+                    <List dense>
+                      <ListItem>
+                        <ListItemIcon><Schedule /></ListItemIcon>
+                        <ListItemText 
+                          primary={`${new Date(selectedUserData.grantedDate).toLocaleDateString()} - ${new Date(selectedUserData.expirationDate).toLocaleDateString()}`}
+                          secondary="Valid Period" 
+                        />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemIcon><Fingerprint /></ListItemIcon>
+                        <ListItemText 
+                          primary={selectedUserData.investigationType}
+                          secondary="Investigation Type" 
+                        />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemIcon><Gavel /></ListItemIcon>
+                        <ListItemText 
+                          primary={selectedUserData.polygraphRequired ? 'Required' : 'Not Required'}
+                          secondary="Polygraph" 
+                        />
+                      </ListItem>
+                    </List>
+                  </Grid>
+
+                  {/* Compartments and Caveats */}
+                  {(selectedUserData.compartments.length > 0 || selectedUserData.caveats.length > 0) && (
+                    <Grid item xs={12}>
+                      <Divider sx={{ my: 2 }} />
+                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                        Special Access Programs & Handling Caveats
+                      </Typography>
+                      <Box display="flex" gap={1} flexWrap="wrap">
+                        {selectedUserData.compartments.map(compartment => (
+                          <Chip
+                            key={compartment}
+                            label={compartment}
+                            variant="outlined"
+                            color="primary"
+                            size="small"
+                            icon={<Lock />}
+                          />
+                        ))}
+                        {selectedUserData.caveats.map(caveat => (
+                          <Chip
+                            key={caveat}
+                            label={caveat}
+                            variant="outlined"
+                            color="warning"
+                            size="small"
+                            icon={<Warning />}
+                          />
+                        ))}
+                      </Box>
+                    </Grid>
+                  )}
+
+                  {/* Security Restrictions */}
+                  {selectedUserData.restrictions.length > 0 && (
+                    <Grid item xs={12}>
+                      <Divider sx={{ my: 2 }} />
+                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                        Active Security Restrictions
+                      </Typography>
+                      {selectedUserData.restrictions.map((restriction, index) => (
+                        <Alert 
+                          key={index}
+                          severity={restriction.active ? "warning" : "info"}
+                          sx={{ mb: 1 }}
+                        >
+                          <Typography variant="body2">
+                            <strong>{restriction.type}:</strong> {restriction.description}
+                          </Typography>
+                        </Alert>
+                      ))}
+                    </Grid>
+                  )}
+                </Grid>
+              </CardContent>
+            </Card>
+          )}
+        </Grid>
+
+        {/* Classification Levels Reference */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                <Security sx={{ mr: 1 }} />
+                Government Classification Levels
+              </Typography>
+              <Grid container spacing={2}>
+                {classificationLevels.map(level => (
+                  <Grid item xs={12} md={3} key={level.level}>
+                    <Paper 
+                      sx={{ 
+                        p: 2, 
+                        borderLeft: `4px solid ${level.color}`,
+                        height: '100%'
+                      }}
+                    >
+                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <Avatar sx={{ width: 24, height: 24, bgcolor: level.color }}>
+                          {level.level.charAt(0)}
+                        </Avatar>
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {level.level.replace('_', ' ')}
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="textSecondary" paragraph>
+                        {level.description}
+                      </Typography>
+                      <Typography variant="caption" display="block" fontWeight="medium" mb={1}>
+                        Requirements:
+                      </Typography>
+                      <List dense>
+                        {level.requirements.map((req, index) => (
+                          <ListItem key={index} sx={{ py: 0 }}>
+                            <ListItemText 
+                              primary={req}
+                              primaryTypographyProps={{ variant: 'caption' }}
+                            />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Clearance Details Dialog */}
+      <Dialog open={showClearanceDetails} onClose={() => setShowClearanceDetails(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          <VerifiedUser sx={{ mr: 1 }} />
+          Detailed Security Clearance Information
+        </DialogTitle>
+        <DialogContent>
+          {selectedUserData && (
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {selectedUserData.userName} - {selectedUserData.level} Clearance
+              </Typography>
+              
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography>Background Investigation</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">
+                        <strong>Investigation Type:</strong> {selectedUserData.investigationType}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">
+                        <strong>Granted Date:</strong> {new Date(selectedUserData.grantedDate).toLocaleDateString()}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">
+                        <strong>Issuing Authority:</strong> {selectedUserData.issuingAuthority}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">
+                        <strong>Expiration:</strong> {new Date(selectedUserData.expirationDate).toLocaleDateString()}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography>Polygraph Information</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography variant="body2">
+                    <strong>Required:</strong> {selectedUserData.polygraphRequired ? 'Yes' : 'No'}
+                  </Typography>
+                  {selectedUserData.polygraphDate && (
+                    <Typography variant="body2">
+                      <strong>Last Polygraph:</strong> {new Date(selectedUserData.polygraphDate).toLocaleDateString()}
+                    </Typography>
+                  )}
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography>Accessible Resources</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <List>
+                    {classificationLevels.find(l => l.level === selectedUserData.level)?.accessibleResources.map((resource, index) => (
+                      <ListItem key={index}>
+                        <ListItemIcon><CheckCircle color="success" /></ListItemIcon>
+                        <ListItemText primary={resource} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowClearanceDetails(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Access History Dialog */}
+      <Dialog open={showAccessHistory} onClose={() => setShowAccessHistory(false)} maxWidth="lg" fullWidth>
+        <DialogTitle>
+          <Assignment sx={{ mr: 1 }} />
+          Access History - {selectedUserData?.userName}
+        </DialogTitle>
+        <DialogContent>
+          <Box mb={2}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>Filter</InputLabel>
+              <Select
+                value={accessHistoryFilter}
+                onChange={(e) => setAccessHistoryFilter(e.target.value)}
+                label="Filter"
+              >
+                <MenuItem value="all">All</MenuItem>
+                <MenuItem value="granted">Granted</MenuItem>
+                <MenuItem value="denied">Denied</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Timestamp</TableCell>
+                  <TableCell>Resource</TableCell>
+                  <TableCell>Classification</TableCell>
+                  <TableCell>Action</TableCell>
+                  <TableCell>Location</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredAccessHistory.map((record, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {new Date(record.timestamp).toLocaleString()}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{record.resource}</TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={record.classification}
+                        size="small"
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>{record.action}</TableCell>
+                    <TableCell>{record.location}</TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={record.status}
+                        color={record.status === 'GRANTED' ? 'success' : 'error'}
+                        size="small"
+                        icon={record.status === 'GRANTED' ? <CheckCircle /> : <Error />}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowAccessHistory(false)}>Close</Button>
+          <Button variant="contained" startIcon={<GetApp />}>
+            Export Log
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default SecurityClearanceManager;

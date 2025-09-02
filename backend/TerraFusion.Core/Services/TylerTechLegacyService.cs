@@ -145,10 +145,15 @@ namespace TerraFusion.Core.Services
                 {
                     AuditId = Guid.NewGuid().ToString(),
                     ParcelId = parcelId,
-                    Action = "UPDATE",
-                    UserId = "TYLER_USER1",
-                    Timestamp = DateTime.UtcNow.AddDays(-5),
-                    Changes = new Dictionary<string, object> { ["AssessedValue"] = "Updated via Tyler Tech" }
+                    Action = "harris_pac_integration",
+                    UserId = "system",
+                    Timestamp = DateTime.UtcNow,
+                    Changes = new Dictionary<string, object>
+                    {
+                        ["migration_type"] = "TylerTech",
+                        ["system_version"] = "1.0"
+                    },
+                    Notes = "Legacy migration from TylerTech system"
                 }
             };
         }
