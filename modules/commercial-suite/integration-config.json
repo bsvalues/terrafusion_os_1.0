@@ -1,0 +1,49 @@
+{
+  "name": "Terrafusion Commercial Core",
+  "version": "2.0.0",
+  "migratedFrom": "F: Drive",
+  "migrationDate": "2025-01-10",
+  "components": {
+    "backend": {
+      "language": "Rust",
+      "framework": "Axum",
+      "port": 3002,
+      "path": "./backend"
+    },
+    "frontend": {
+      "language": "TypeScript",
+      "framework": "React",
+      "port": 3000,
+      "path": "./frontend"
+    },
+    "database": {
+      "type": "PostgreSQL",
+      "port": 5432,
+      "schemas": ["commercial", "appraisal", "market"]
+    },
+    "services": {
+      "redis": { "port": 6379 },
+      "prometheus": { "port": 9090 },
+      "grafana": { "port": 3001 }
+    }
+  },
+  "features": {
+    "appraisalEngine": true,
+    "uspapCompliance": true,
+    "comparableAI": true,
+    "marketAnalysis": true,
+    "enterpriseAuth": true,
+    "multiTenant": true,
+    "subscriptionBilling": true
+  },
+  "revenue": {
+    "model": "SaaS",
+    "tiers": [
+      { "name": "Individual", "price": 99, "users": 1 },
+      { "name": "Small Firm", "price": 399, "users": 5 },
+      { "name": "Enterprise", "price": 1999, "users": 50 }
+    ],
+    "tam": 300000000,
+    "currentMRR": 0
+  }
+}

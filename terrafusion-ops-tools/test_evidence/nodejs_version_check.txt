@@ -1,0 +1,7 @@
+Test: nodejs_version_check
+Command: node --version | grep -E 'v[0-9]+\.[0-9]+\.[0-9]+'
+Expected: 0
+Actual: 0
+Output:
+v24.4.0
+Timestamp: Thu, Jul 24, 2025  5:26:21 PM

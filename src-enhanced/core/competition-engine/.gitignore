@@ -1,0 +1,85 @@
+# AI Memory (should not be committed)
+.ai/
+!.ai/.gitkeep
+
+# Build outputs
+target/
+dist/
+build/
+*.exe
+*.msi
+*.dmg
+*.AppImage
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Database
+*.db-journal
+*.db-shm
+*.db-wal
+data/*.db
+!data/sample.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Temporary
+tmp/
+temp/
+.tmp/
+*.tmp
+
+# OS Files
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# Rust
+Cargo.lock
+!src-tauri/Cargo.lock
+
+# Backups
+*.backup
+*.bak
+*.old
+
+# Secrets (NEVER commit these)
+*.key
+*.pem
+*.p12
+*.pfx
+certificates/
+secrets/
+node_modules

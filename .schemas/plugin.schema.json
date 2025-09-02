@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Plugin Manifest",
+  "description": "Schema for the TerraFusion OS plugin.json manifest file.",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "description",
+    "author",
+    "license",
+    "entrypoint",
+    "type",
+    "permissions",
+    "capabilities",
+    "security",
+    "marketplace"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name of the plugin.",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of the plugin.",
+      "pattern": "^(\\d+)\\.(\\d+)\\.(\\d+)(?:-([\\da-z-]+(?:\\.[\\da-z-]+)*))?(?:\\+([\\da-z-]+(?:\\.[\\da-z-]+)*))?$"
+    },
+    "description": {
+      "type": "string",
+      "description": "A brief description of what the plugin does."
+    },
+    "author": {
+      "type": "string",
+      "description": "The author or team responsible for the plugin."
+    },
+    "license": {
+      "type": "string",
+      "description": "The license under which the plugin is distributed."
+    },
+    "entrypoint": {
+      "type": "string",
+      "description": "The primary HTML file to load for the plugin's UI."
+    },
+    "type": {
+      "type": "string",
+      "description": "The type of the plugin.",
+      "enum": ["pwa", "module", "service"]
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "rbac": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Roles required to access this plugin."
+        },
+        "apis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "TerraFusion OS APIs this plugin requires access to."
+        }
+      },
+      "required": ["rbac", "apis"]
+    },
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "offline": {
+          "type": "boolean"
+        },
+        "backgroundSync": {
+          "type": "boolean"
+        },
+        "installable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "signature": {
+          "type": "string",
+          "description": "The algorithm used for the signature (e.g., HMAC-SHA256)."
+        },
+        "signature_value": {
+            "type": ["string", "null"],
+            "description": "The signature hash of the manifest content."
+        },
+        "signed_by": {
+          "type": "string",
+          "description": "The key or entity used for signing."
+        },
+        "audit_logging": {
+          "type": "boolean"
+        }
+      },
+      "required": ["signature", "signed_by"]
+    },
+    "marketplace": {
+      "type": "object",
+      "properties": {
+        "tier": {
+          "type": "string",
+          "description": "The commercial tier of the plugin."
+        },
+        "pricing": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string",
+              "enum": ["free", "subscription", "one-time"]
+            },
+            "amount": {
+              "type": "number"
+            },
+            "currency": {
+              "type": "string"
+            },
+            "interval": {
+              "type": "string",
+              "enum": ["monthly", "yearly"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

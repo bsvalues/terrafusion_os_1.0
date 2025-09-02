@@ -1,0 +1,12 @@
+{
+  "id": "leafscope",
+  "name": "LeafScope Viewer",
+  "entryPoint": "/apps/leafscope/frontend/LeafScopeViewer.tsx",
+  "api": "/apps/leafscope/backend/main.py",
+  "tags": ["map", "leaflet", "viewer"],
+  "k8s": "/apps/leafscope/k8s",
+  "enabled": true,
+  "categories": ["map", "ai"],
+  "codespacesUrl": "https://github.com/codespaces/new?repo=<your-repo>&devcontainer_path=apps/leafscope/devcontainer.json",
+  "electronUrl": "electron://launch/leafscope"
+}

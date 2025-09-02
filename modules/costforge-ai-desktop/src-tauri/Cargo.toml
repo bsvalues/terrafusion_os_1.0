@@ -1,0 +1,29 @@
+[package]
+name = "costforge-ai"
+version = "1.0.0"
+description = "CostForge AI - Advanced Construction Cost Management with AI"
+authors = ["TerraFusion Team"]
+license = "MIT"
+repository = ""
+default-run = "costforge-ai"
+edition = "2021"
+rust-version = "1.60"
+
+[build-dependencies]
+tauri-build = { workspace = true }
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+tauri = { workspace = true, features = ["fs-read-file", "fs-write-file", "fs-read-dir", "fs-create-dir", "fs-exists", "path-all", "http-request", "dialog-open", "dialog-save", "dialog-message", "dialog-ask", "dialog-confirm", "notification-all", "window-close", "window-hide", "window-maximize", "window-minimize", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize", "system-tray"] }
+tokio = { workspace = true }
+sqlx = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+reqwest = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

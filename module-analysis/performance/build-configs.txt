@@ -1,0 +1,5 @@
+./archive/legacy-modules/08-costforge-ai/vite.config.ts
+./deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/01-terra-agent/vite.config.ts
+./deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/02-terra-flow/vite.config.ts
+./deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/03-web-audit-tracker/vite.config.ts
+./deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/04-terra-levy/vite.config.ts

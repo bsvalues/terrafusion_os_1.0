@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion - DARK MODE ACTIVE</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #001529;
+            color: #00e5ff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #00e5ff, #00b8d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+        .status {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        .links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        a {
+            background: linear-gradient(135deg, #00e5ff, #00b8d4);
+            color: #001529;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
+        }
+        .message {
+            color: #00e5ff;
+            font-size: 1.25rem;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TerraFusion Dark Mode</h1>
+        
+        <div class="status">
+            <div class="message">✓ NO WHITE BACKGROUNDS</div>
+            <div class="message">✓ DARK THEME ACTIVE</div>
+            <div class="message">✓ PROFESSIONAL UI</div>
+            <div class="message">✓ NO EMOJI PLACEHOLDERS</div>
+        </div>
+
+        <p style="color: #94a3b8; margin-bottom: 2rem;">
+            The real TerraFusion UI is now fully dark themed with cyan accents
+        </p>
+
+        <div class="links">
+            <a href="http://localhost:5173" target="_blank">
+                View on Port 5173
+            </a>
+            <a href="http://localhost:1420" target="_blank">
+                View on Port 1420
+            </a>
+        </div>
+
+        <p style="color: #666; margin-top: 3rem; font-size: 0.875rem;">
+            Refresh browser with Ctrl+F5 to see changes
+        </p>
+    </div>
+</body>
+</html>

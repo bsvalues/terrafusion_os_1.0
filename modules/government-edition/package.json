@@ -1,0 +1,50 @@
+{
+  "name": "@terrafusion/government-edition",
+  "version": "1.0.0",
+  "description": "Core government edition of Terrafusion OS for property assessment and public administration",
+  "main": "index.js",
+  "scripts": {
+    "start": "dotnet run || npm run serve",
+    "serve": "node server.js",
+    "dev": "dotnet watch run",
+    "build": "dotnet build",
+    "build:release": "dotnet publish -c Release",
+    "test": "dotnet test && npm run test:js",
+    "test:js": "jest --coverage",
+    "test:dotnet": "dotnet test",
+    "publish": "dotnet publish -c Release",
+    "clean": "dotnet clean",
+    "restore": "dotnet restore"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "express": "^4.18.0",
+    "@microsoft/signalr": "^7.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "@types/react": "^18.0.0",
+    "@types/node": "^20.0.0",
+    "webpack": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": ["government", "core", "property-assessment", "dotnet", "react", "terrafusion"],
+  "author": "Terrafusion OS Team",
+  "license": "Government",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/terrafusion-os"
+  },
+  "terrafusion": {
+    "module": true,
+    "category": "government-core",
+    "government-compliant": true,
+    "dotnet-enabled": true,
+    "core-module": true
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "dotnet": ">=8.0.0"
+  }
+}

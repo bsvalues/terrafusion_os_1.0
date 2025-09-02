@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 TERRAFUSION QUALITY GATE: Pre-push validation"
+echo "Field General Brady: Full system check before deployment!"
+
+# Run all tests
+npm run test:full
+
+# Run security audit
+npm run audit:security
+
+# Run performance tests
+npm run test:performance
+
+echo "✅ All systems go - ready for push"

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Activate Dev Mode</title>
+  <script>
+    // Force activate dev mode
+    const devUser = {
+      id: 'dev-user-001',
+      email: 'dev@terrafusion.gov',
+      name: 'Dev User',
+      type: 'government',
+      address: '123 Dev Street, Kennewick, WA',
+      phone: '(509) 555-0100',
+      verified: true,
+      permissions: ['admin', 'approve', 'review', 'dev'],
+      savedSearches: [],
+      applications: [],
+      notifications: [
+        { id: '1', message: 'Dev mode active - All features unlocked', unread: true }
+      ]
+    };
+    
+    // Clear old data
+    localStorage.removeItem('tfpr_dev_disabled');
+    
+    // Set dev user
+    localStorage.setItem('tfpr_user', JSON.stringify(devUser));
+    localStorage.setItem('tfpr_session', Date.now().toString());
+    
+    console.log('✅ Dev mode activated!');
+    document.write('<h1>✅ Dev Mode Activated!</h1>');
+    document.write('<p>Redirecting to main app...</p>');
+    
+    setTimeout(() => {
+      window.location.href = 'http://localhost:3500';
+    }, 1000);
+  </script>
+</head>
+<body>
+</body>
+</html>

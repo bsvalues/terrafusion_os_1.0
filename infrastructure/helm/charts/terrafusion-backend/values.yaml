@@ -1,0 +1,295 @@
+# TerraFusion Backend Service - Default Values
+# Government-grade configuration for production deployment
+
+# Global configuration
+global:
+  imageRegistry: "ghcr.io"
+  imagePullSecrets: []
+  storageClass: "gp3"
+
+# Application configuration
+replicaCount: 3
+
+image:
+  registry: ghcr.io
+  repository: bsvalues/terrafusion-backend
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/health"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "alb"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+    alb.ingress.kubernetes.io/healthcheck-path: "/health"
+    alb.ingress.kubernetes.io/success-codes: "200,404"
+    external-dns.alpha.kubernetes.io/hostname: api.terrafusion.gov
+  hosts:
+    - host: api.terrafusion.gov
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-tls
+      hosts:
+        - api.terrafusion.gov
+
+# Resource limits and requests
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "2Gi"
+    cpu: "1000m"
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# Node selector and affinity
+nodeSelector:
+  kubernetes.io/os: linux
+  environment: production
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - terrafusion-backend
+          topologyKey: kubernetes.io/hostname
+
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "terrafusion-backend"
+    effect: "NoSchedule"
+
+# Security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+
+# Environment variables
+env:
+  - name: ASPNETCORE_ENVIRONMENT
+    value: "Production"
+  - name: ASPNETCORE_URLS
+    value: "http://+:8000"
+  - name: ConnectionStrings__DefaultConnection
+    valueFrom:
+      secretKeyRef:
+        name: terrafusion-backend-secrets
+        key: database-connection-string
+  - name: ConnectionStrings__Redis
+    valueFrom:
+      secretKeyRef:
+        name: terrafusion-backend-secrets
+        key: redis-connection-string
+  - name: JWT__Secret
+    valueFrom:
+      secretKeyRef:
+        name: terrafusion-backend-secrets
+        key: jwt-secret
+  - name: JWT__Issuer
+    value: "TerraFusion"
+  - name: JWT__Audience
+    value: "TerraFusion-API"
+  - name: Logging__LogLevel__Default
+    value: "Information"
+  - name: Logging__LogLevel__Microsoft
+    value: "Warning"
+  - name: Logging__LogLevel__Microsoft.Hosting.Lifetime
+    value: "Information"
+
+# ConfigMap for application configuration
+configMap:
+  enabled: true
+  data:
+    appsettings.json: |
+      {
+        "Logging": {
+          "LogLevel": {
+            "Default": "Information",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information"
+          }
+        },
+        "AllowedHosts": "*",
+        "Kestrel": {
+          "Endpoints": {
+            "Http": {
+              "Url": "http://+:8000"
+            }
+          }
+        },
+        "TerraFusion": {
+          "MaxConcurrentRequests": 100,
+          "RequestTimeoutSeconds": 30,
+          "EnableSwagger": false,
+          "EnableHealthChecks": true,
+          "HealthCheckPath": "/health"
+        }
+      }
+
+# Secrets (referenced but not defined here for security)
+secrets:
+  enabled: true
+  # Secrets should be created separately via external-secrets or manually
+
+# PostgreSQL dependency
+postgresql:
+  enabled: false  # Use external RDS instance
+  # Configuration for embedded PostgreSQL (if enabled)
+  auth:
+    postgresPassword: "changeme"
+    username: "terrafusion"
+    password: "changeme"
+    database: "terrafusion"
+  architecture: standalone
+  primary:
+    persistence:
+      enabled: true
+      size: 100Gi
+      storageClass: gp3
+
+# Redis dependency
+redis:
+  enabled: false  # Use external ElastiCache
+  # Configuration for embedded Redis (if enabled)
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 20Gi
+      storageClass: gp3
+
+# Network policies
+networkPolicy:
+  enabled: true
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: terrafusion-frontend
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: terrafusion-ai-swarm
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8000
+
+# Service account
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::123456789012:role/terrafusion-backend-service-account"
+  name: terrafusion-backend
+
+# Pod annotations
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8000"
+  prometheus.io/path: "/metrics"
+
+# Additional volumes
+extraVolumes:
+  - name: tmp-volume
+    emptyDir: {}
+
+extraVolumeMounts:
+  - name: tmp-volume
+    mountPath: /tmp
+
+# Init containers
+initContainers: []
+
+# Sidecar containers
+sidecarContainers: []
+
+# Lifecycle hooks
+lifecycle:
+  preStop:
+    exec:
+      command: ["/bin/sh", "-c", "sleep 15"]
+
+# Readiness and liveness probes
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: 8000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: 8000
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Startup probe
+startupProbe:
+  httpGet:
+    path: /health/startup
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30

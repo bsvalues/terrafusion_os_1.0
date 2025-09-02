@@ -1,0 +1,169 @@
+# Default values for terrafusion-ai-swarm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Number of replicas
+replicaCount: 5
+
+image:
+  repository: terrafusion/ai-swarm
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Security context for pods
+podSecurityContext:
+  fsGroup: 1000
+
+# Security context for containers
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+  annotations: {}
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: ai-swarm.terrafusion.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-ai-swarm-tls
+      hosts:
+        - ai-swarm.terrafusion.local
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+    nvidia.com/gpu: 1
+  requests:
+    cpu: 500m
+    memory: 1Gi
+    nvidia.com/gpu: 1
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector:
+  accelerator: nvidia-tesla-k80
+
+tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: accelerator
+          operator: In
+          values:
+          - nvidia-tesla-k80
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# Network policy
+networkPolicy:
+  enabled: true
+
+# Monitoring
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+    scrapeTimeout: 10s
+
+# Security
+security:
+  enabled: true
+
+# AI Swarm specific configuration
+aiSwarm:
+  modelPath: "/app/models"
+  dataPath: "/app/data"
+  logLevel: "INFO"
+  maxWorkers: 10
+  batchSize: 32
+  learningRate: 0.001
+  epochs: 100
+
+# External dependencies
+redis:
+  enabled: true
+  auth:
+    enabled: true
+  architecture: standalone
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "changeme"
+    username: "terrafusion"
+    password: "changeme"
+    database: "terrafusion_ai"
+  architecture: standalone
+
+# Configuration
+configMap:
+  AI_SWARM_MODEL_PATH: "/app/models"
+  AI_SWARM_DATA_PATH: "/app/data"
+  AI_SWARM_LOG_LEVEL: "INFO"
+  AI_SWARM_MAX_WORKERS: "10"
+  AI_SWARM_BATCH_SIZE: "32"
+  AI_SWARM_LEARNING_RATE: "0.001"
+  AI_SWARM_EPOCHS: "100"
+  DATABASE_URL: "postgresql://terrafusion:changeme@terrafusion-postgresql:5432/terrafusion_ai"
+  REDIS_URL: "redis://terrafusion-redis:6379"
+
+# Secrets (base64 encoded)
+secret:
+  AI_SWARM_API_KEY: ""
+  DATABASE_PASSWORD: ""
+  REDIS_PASSWORD: ""
+  OPENAI_API_KEY: ""
+  AZURE_AI_KEY: ""

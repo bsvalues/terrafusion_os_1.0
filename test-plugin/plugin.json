@@ -1,0 +1,11 @@
+{
+  "id": "com.terrafusion.test-plugin",
+  "version": "1.0.0",
+  "name": "Test Plugin",
+  "description": "A simple plugin for end-to-end testing.",
+  "author": "Terrafusion Test Suite",
+  "permissions": [
+    "api:read",
+    "filesystem:read:self"
+  ]
+}

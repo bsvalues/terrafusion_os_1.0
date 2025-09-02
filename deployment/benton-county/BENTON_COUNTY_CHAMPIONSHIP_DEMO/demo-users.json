@@ -1,0 +1,38 @@
+[
+  {
+    "username": "demo-admin",
+    "role": "admin",
+    "permissions": [
+      "full_access"
+    ],
+    "description": "Demo administrator with full system access"
+  },
+  {
+    "username": "demo-assessor",
+    "role": "assessor",
+    "permissions": [
+      "property_assessment",
+      "property_search",
+      "reports"
+    ],
+    "description": "Demo assessor for property assessment workflows"
+  },
+  {
+    "username": "demo-tax",
+    "role": "tax_administrator",
+    "permissions": [
+      "tax_calculation",
+      "levy_management",
+      "reports"
+    ],
+    "description": "Demo tax administrator for tax calculation workflows"
+  },
+  {
+    "username": "demo-viewer",
+    "role": "viewer",
+    "permissions": [
+      "read_only"
+    ],
+    "description": "Demo viewer with read-only access"
+  }
+]

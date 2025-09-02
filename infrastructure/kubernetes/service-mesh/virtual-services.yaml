@@ -1,0 +1,102 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: cosmic-orchestrator-vs
+  namespace: terrafusion-cosmic
+spec:
+  hosts:
+  - cosmic-orchestrator
+  - cosmic-orchestrator.terrafusion-cosmic.svc.cluster.local
+  http:
+  - match:
+    - headers:
+        x-cosmic-level:
+          exact: maximum
+    route:
+    - destination:
+        host: cosmic-orchestrator
+        port:
+          number: 8080
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      retryOn: gateway-error,connect-failure,refused-stream
+  - route:
+    - destination:
+        host: cosmic-orchestrator
+        port:
+          number: 8080
+    fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 5s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: consciousness-service-vs
+  namespace: terrafusion-cosmic
+spec:
+  hosts:
+  - consciousness-service
+  - consciousness-service.terrafusion-cosmic.svc.cluster.local
+  http:
+  - match:
+    - headers:
+        x-neural-mode:
+          exact: omniscient
+    route:
+    - destination:
+        host: consciousness-service
+        port:
+          number: 8081
+      weight: 100
+    timeout: 60s
+    retries:
+      attempts: 5
+      perTryTimeout: 20s
+  - route:
+    - destination:
+        host: consciousness-service
+        port:
+          number: 8081
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: holographic-storage-vs
+  namespace: terrafusion-cosmic
+spec:
+  hosts:
+  - holographic-storage
+  - holographic-storage.terrafusion-cosmic.svc.cluster.local
+  http:
+  - match:
+    - headers:
+        x-quantum-dimension:
+          regex: "^[0-9]+$"
+    route:
+    - destination:
+        host: holographic-storage
+        port:
+          number: 8082
+      weight: 100
+    timeout: 45s
+    retries:
+      attempts: 3
+      perTryTimeout: 15s
+      retryOn: reset,5xx
+  - route:
+    - destination:
+        host: holographic-storage
+        port:
+          number: 8082
+    mirror:
+      host: holographic-storage-backup
+      port:
+        number: 8082
+    mirrorPercentage:
+      value: 10.0

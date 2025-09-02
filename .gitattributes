@@ -1,0 +1,29 @@
+# Auto text normalization
+* text=auto
+
+# Windows shells keep CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Unix scripts keep LF
+*.sh text eol=lf
+
+# Treat common binaries as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+
+# Text-based assets
+*.svg text
+
+# Linguist hints
+/docs/** linguist-documentation
+/artifacts/** linguist-generated
+/testing/artifacts/** linguist-generated
+
+# Preserve .gitattributes itself
+.gitattributes text eol=lf

@@ -1,0 +1,5 @@
+backend/api-unified/Terrafusion.API.csproj
+backend/Terrafusion.AI/Terrafusion.AI.csproj
+backend/Terrafusion.API/Terrafusion.API.csproj
+backend/Terrafusion.API.Tests/Terrafusion.API.Tests.csproj
+backend/Terrafusion.Core/Terrafusion.Core.csproj

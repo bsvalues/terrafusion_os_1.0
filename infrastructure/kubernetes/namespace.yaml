@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion
+  labels:
+    app: terrafusion
+    environment: production

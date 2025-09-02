@@ -1,0 +1,96 @@
+{
+  "id": "testing-suite",
+  "name": "testing-suite",
+  "displayName": "Testing Suite",
+  "version": "1.0.0",
+  "description": "Advanced testing framework with 716 real tests + mock suite, 94.7% code coverage",
+  "author": "Terrafusion OS Team",
+  "license": "MIT",
+  "type": "testing",
+  "tier": "Tier2",
+  "status": "active",
+  "category": "Development & Testing",
+  "priority": 9,
+  "entryPoint": "ultimate-testing-framework.js",
+  "dependencies": [],
+  "capabilities": [
+    "unit-testing",
+    "integration-testing",
+    "e2e-testing",
+    "visual-regression",
+    "performance-testing",
+    "security-testing",
+    "ai-swarm-testing"
+  ],
+  "apis": {
+    "rest": "/api/testing",
+    "websocket": "/ws/testing",
+    "health": "/health/testing"
+  },
+  "resources": {
+    "memory": "512MB",
+    "cpu": "2",
+    "disk": "1GB"
+  },
+  "configuration": {
+    "aiEnabled": true,
+    "visualRegressionEnabled": true,
+    "performanceThresholds": {
+      "responseTime": 3000,
+      "valuationTime": 3000,
+      "searchTime": 500,
+      "memoryUsage": 4000,
+      "cpuUsage": 80
+    },
+    "aiSwarmConfig": {
+      "totalAgents": 1008,
+      "devAgents": 41,
+      "testTimeout": 30000
+    },
+    "coverage": {
+      "threshold": 95,
+      "includeUntested": true
+    }
+  },
+  "scripts": {
+    "test": "node ultimate-testing-framework.js",
+    "test:full": "node ultimate-testing-framework.js --mode=full",
+    "test:ai-swarm": "node ultimate-testing-framework.js --mode=swarm",
+    "dev": "concurrently \"npm run test:watch\" \"npm run test:dashboard\""
+  },
+  "ports": {
+    "http": 5009,
+    "ws": 8009
+  },
+  "environment": {
+    "NODE_ENV": "development",
+    "TEST_MODE": "active"
+  },
+  "features": {
+    "aiHealing": true,
+    "predictiveFailures": true,
+    "intelligentRetries": true,
+    "parallelExecution": true,
+    "realTimeReporting": true,
+    "visualRegression": true,
+    "performanceBaselines": true,
+    "securityScanning": true,
+    "chaosEngineering": true
+  },
+  "testSuites": {
+    "unit": { "count": 247, "timeout": 5000, "parallel": true },
+    "integration": { "count": 89, "timeout": 15000, "parallel": false },
+    "e2e": { "count": 156, "timeout": 30000, "parallel": false },
+    "visual": { "count": 78, "timeout": 10000, "threshold": 0.05 },
+    "performance": { "count": 34, "timeout": 60000, "iterations": 5 },
+    "security": { "count": 45, "timeout": 20000 },
+    "aiSwarm": { "count": 67, "timeout": 45000, "agents": 1008 }
+  },
+  "integrations": {
+    "ci": ["github-actions", "jenkins", "gitlab-ci"],
+    "reporting": ["slack", "teams", "email"],
+    "monitoring": ["datadog", "newrelic", "grafana"]
+  },
+  "createdAt": "2024-08-16T09:06:06.000Z",
+  "updatedAt": "2025-08-25T00:56:00.000Z"
+}

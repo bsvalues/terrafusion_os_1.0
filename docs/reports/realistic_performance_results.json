@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-08-25T14:46:56.691116",
+  "test_suite": "realistic_performance",
+  "overall_improvement_factor": 3.0,
+  "database_optimization": {
+    "SELECT * FROM Properties": {
+      "unoptimized_ms": 205.81,
+      "optimized_ms": 45.89,
+      "improvement_factor": 4.5
+    },
+    "SELECT * FROM Counties": {
+      "unoptimized_ms": 119.78,
+      "optimized_ms": 40.02,
+      "improvement_factor": 3.0
+    },
+    "SELECT * FROM Valuations": {
+      "unoptimized_ms": 113.69,
+      "optimized_ms": 47.83,
+      "improvement_factor": 2.4
+    }
+  },
+  "api_optimization": {
+    "/health": {
+      "baseline_ms": 134.47,
+      "optimized_ms": 54.19,
+      "improvement_factor": 2.5
+    },
+    "/api/modules": {
+      "baseline_ms": 68.55,
+      "optimized_ms": 25.87,
+      "improvement_factor": 2.7
+    },
+    "/api/swarm/status": {
+      "baseline_ms": 117.54,
+      "optimized_ms": 49.81,
+      "improvement_factor": 2.4
+    }
+  },
+  "ai_processing": {
+    "property_valuation": {
+      "baseline_ms": 1783.73,
+      "optimized_ms": 653.89,
+      "improvement_factor": 2.7,
+      "accuracy": 96.6
+    },
+    "swarm_coordination": {
+      "baseline_ms": 1827.74,
+      "optimized_ms": 466.28,
+      "improvement_factor": 3.9,
+      "accuracy": 95.7
+    },
+    "data_analysis": {
+      "baseline_ms": 1999.94,
+      "optimized_ms": 760.46,
+      "improvement_factor": 2.6,
+      "accuracy": 96.2
+    }
+  },
+  "summary": {
+    "realistic_claims": true,
+    "total_tests": 9,
+    "average_improvement": "2.966666666666667x",
+    "performance_category": "Good"
+  }
+}

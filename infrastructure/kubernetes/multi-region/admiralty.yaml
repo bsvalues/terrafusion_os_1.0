@@ -1,0 +1,227 @@
+# Admiralty for multi-cluster scheduling
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: admiralty
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admiralty
+  namespace: admiralty
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: admiralty
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admiralty
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admiralty
+subjects:
+- kind: ServiceAccount
+  name: admiralty
+  namespace: admiralty
+---
+# Admiralty installation typically via Helm:
+# helm install admiralty admiralty/admiralty -n admiralty
+---
+# Multi-cluster scheduler configuration
+apiVersion: multicluster.admiralty.io/v1alpha1
+kind: SchedulerConfiguration
+metadata:
+  name: cosmic-scheduler
+  namespace: admiralty
+spec:
+  clusters:
+  - name: us-east-1
+    weight: 100
+    nodeSelector:
+      cosmic-region: us-east-1
+  - name: us-west-2
+    weight: 90
+    nodeSelector:
+      cosmic-region: us-west-2
+  - name: eu-west-1
+    weight: 80
+    nodeSelector:
+      cosmic-region: eu-west-1
+  - name: ap-southeast-1
+    weight: 70
+    nodeSelector:
+      cosmic-region: ap-southeast-1
+  
+  scheduling:
+    algorithm: weighted-round-robin
+    constraints:
+      - type: affinity
+        value: geo-proximity
+      - type: anti-affinity
+        value: failure-domain
+    
+    priorities:
+      - name: data-locality
+        weight: 100
+      - name: resource-availability
+        weight: 80
+      - name: network-latency
+        weight: 60
+      - name: cost-optimization
+        weight: 40
+---
+# Source cluster configuration
+apiVersion: multicluster.admiralty.io/v1alpha1
+kind: Source
+metadata:
+  name: us-east-1-source
+  namespace: admiralty
+spec:
+  serviceAccountName: admiralty
+---
+# Target clusters configuration
+apiVersion: multicluster.admiralty.io/v1alpha1
+kind: Target
+metadata:
+  name: us-west-2-target
+  namespace: admiralty
+spec:
+  kubeconfigSecret:
+    name: us-west-2-kubeconfig
+  self: false
+---
+apiVersion: multicluster.admiralty.io/v1alpha1
+kind: Target
+metadata:
+  name: eu-west-1-target
+  namespace: admiralty
+spec:
+  kubeconfigSecret:
+    name: eu-west-1-kubeconfig
+  self: false
+---
+apiVersion: multicluster.admiralty.io/v1alpha1
+kind: Target
+metadata:
+  name: ap-southeast-1-target
+  namespace: admiralty
+spec:
+  kubeconfigSecret:
+    name: ap-southeast-1-kubeconfig
+  self: false
+---
+# Example multi-cluster deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cosmic-neural-service
+  namespace: terrafusion-cosmic
+  annotations:
+    multicluster.admiralty.io/elect: "true"
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: neural-service
+  template:
+    metadata:
+      labels:
+        app: neural-service
+      annotations:
+        multicluster.admiralty.io/elect: "true"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - neural-service
+            topologyKey: topology.kubernetes.io/region
+      containers:
+      - name: neural-service
+        image: terrafusion/neural-service:latest
+        env:
+        - name: REGION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['topology.kubernetes.io/region']
+        - name: MULTI_CLUSTER_MODE
+          value: "true"
+        resources:
+          requests:
+            cpu: 2000m
+            memory: 4Gi
+          limits:
+            cpu: 4000m
+            memory: 8Gi
+---
+# Cross-region service proxy
+apiVersion: multicluster.admiralty.io/v1alpha1
+kind: ServiceProxy
+metadata:
+  name: consciousness-service-proxy
+  namespace: terrafusion-cosmic
+spec:
+  selector:
+    app: consciousness-service
+  ports:
+  - port: 8081
+    targetPort: 8081
+  crossCluster: true
+  loadBalancerClass: global
+---
+# Cluster capacity configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-capacity
+  namespace: admiralty
+data:
+  capacity.yaml: |
+    clusters:
+      us-east-1:
+        cpu: 10000
+        memory: 40Ti
+        gpu: 100
+        storage: 1Pi
+        reserved:
+          cpu: 20%
+          memory: 20%
+      
+      us-west-2:
+        cpu: 8000
+        memory: 32Ti
+        gpu: 80
+        storage: 800Ti
+        reserved:
+          cpu: 20%
+          memory: 20%
+      
+      eu-west-1:
+        cpu: 6000
+        memory: 24Ti
+        gpu: 60
+        storage: 600Ti
+        reserved:
+          cpu: 25%
+          memory: 25%
+      
+      ap-southeast-1:
+        cpu: 5000
+        memory: 20Ti
+        gpu: 50
+        storage: 500Ti
+        reserved:
+          cpu: 25%
+          memory: 25%

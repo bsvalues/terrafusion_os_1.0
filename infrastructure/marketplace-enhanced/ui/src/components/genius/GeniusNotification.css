@@ -1,0 +1,422 @@
+/**
+ * TerraFusion Genius Notification Styles
+ * Delightful, actionable user feedback system
+ */
+
+.genius-notification {
+  position: fixed;
+  z-index: 9999;
+  max-width: 400px;
+  min-width: 320px;
+  background: var(--tf-surface);
+  border: 1px solid var(--tf-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Position variants */
+.genius-notification--top-right {
+  top: 1rem;
+  right: 1rem;
+}
+
+.genius-notification--top-left {
+  top: 1rem;
+  left: 1rem;
+  transform: translateX(-100%);
+}
+
+.genius-notification--bottom-right {
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.genius-notification--bottom-left {
+  bottom: 1rem;
+  left: 1rem;
+  transform: translateX(-100%);
+}
+
+.genius-notification--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+/* Visible state */
+.genius-notification--visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.genius-notification--visible.genius-notification--center {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.genius-notification--visible.genius-notification--top-left,
+.genius-notification--visible.genius-notification--bottom-left {
+  transform: translateX(0);
+}
+
+/* Exit animation */
+.genius-notification--exiting {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.genius-notification--exiting.genius-notification--top-left,
+.genius-notification--exiting.genius-notification--bottom-left {
+  transform: translateX(-100%);
+}
+
+.genius-notification--exiting.genius-notification--center {
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+/* Type variants */
+.genius-notification--success {
+  border-left: 4px solid var(--tf-success);
+}
+
+.genius-notification--celebration {
+  border-left: 4px solid var(--tf-primary);
+  background: linear-gradient(135deg, 
+    rgba(0, 229, 255, 0.05) 0%, 
+    rgba(0, 184, 212, 0.05) 100%);
+}
+
+.genius-notification--info {
+  border-left: 4px solid var(--tf-primary);
+}
+
+.genius-notification--warning {
+  border-left: 4px solid var(--tf-warning);
+}
+
+.genius-notification--error {
+  border-left: 4px solid var(--tf-error);
+}
+
+/* Progress indicator */
+.genius-notification__progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.genius-notification__progress-bar {
+  height: 100%;
+  background: var(--tf-primary);
+  transition: width 0.05s linear;
+}
+
+.genius-notification--success .genius-notification__progress-bar {
+  background: var(--tf-success);
+}
+
+.genius-notification--warning .genius-notification__progress-bar {
+  background: var(--tf-warning);
+}
+
+.genius-notification--error .genius-notification__progress-bar {
+  background: var(--tf-error);
+}
+
+/* Main content */
+.genius-notification__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  position: relative;
+}
+
+/* Icon */
+.genius-notification__icon {
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 0.125rem;
+}
+
+.genius-notification--success .genius-notification__icon {
+  color: var(--tf-success);
+}
+
+.genius-notification--celebration .genius-notification__icon {
+  color: var(--tf-primary);
+  animation: genius-bounce 0.6s ease-out;
+}
+
+.genius-notification--info .genius-notification__icon {
+  color: var(--tf-primary);
+}
+
+.genius-notification--warning .genius-notification__icon {
+  color: var(--tf-warning);
+}
+
+.genius-notification--error .genius-notification__icon {
+  color: var(--tf-error);
+}
+
+/* Text content */
+.genius-notification__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.genius-notification__title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--tf-text-primary);
+  line-height: 1.4;
+}
+
+.genius-notification__message {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--tf-text-secondary);
+  line-height: 1.5;
+}
+
+/* Actions */
+.genius-notification__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.genius-notification__action {
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.genius-notification__action--primary {
+  background: var(--tf-primary);
+  color: white;
+}
+
+.genius-notification__action--primary:hover {
+  background: var(--tf-secondary);
+  transform: translateY(-1px);
+}
+
+.genius-notification__action--secondary {
+  background: transparent;
+  color: var(--tf-primary);
+  border: 1px solid var(--tf-primary);
+}
+
+.genius-notification__action--secondary:hover {
+  background: var(--tf-primary);
+  color: white;
+}
+
+/* Dismiss button */
+.genius-notification__dismiss {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: transparent;
+  color: var(--tf-text-secondary);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.genius-notification__dismiss:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--tf-text-primary);
+}
+
+.genius-notification__dismiss:focus-visible {
+  outline: 2px solid var(--tf-primary);
+  outline-offset: 1px;
+}
+
+/* Celebration particles */
+.genius-notification__particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.genius-notification__particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--tf-primary);
+  border-radius: 50%;
+  animation: genius-particle 1.2s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+  transform: rotate(var(--angle, 0deg)) translateX(0);
+}
+
+/* Animations */
+@keyframes genius-bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
+}
+
+@keyframes genius-particle {
+  0% {
+    transform: rotate(var(--angle, 0deg)) translateX(0) scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(var(--angle, 0deg)) translateX(40px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--angle, 0deg)) translateX(60px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Celebration animation */
+.genius-notification--celebration {
+  animation: genius-celebration-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes genius-celebration-glow {
+  0% {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+  100% {
+    box-shadow: 0 8px 32px rgba(0, 229, 255, 0.3);
+  }
+}
+
+/* Focus states */
+.genius-notification:focus-visible {
+  outline: 2px solid var(--tf-primary);
+  outline-offset: 2px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .genius-notification {
+    max-width: calc(100vw - 2rem);
+    min-width: calc(100vw - 2rem);
+  }
+  
+  .genius-notification--top-right,
+  .genius-notification--top-left {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    transform: translateY(-100%);
+  }
+  
+  .genius-notification--bottom-right,
+  .genius-notification--bottom-left {
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    transform: translateY(100%);
+  }
+  
+  .genius-notification--visible.genius-notification--top-right,
+  .genius-notification--visible.genius-notification--top-left,
+  .genius-notification--visible.genius-notification--bottom-right,
+  .genius-notification--visible.genius-notification--bottom-left {
+    transform: translateY(0);
+  }
+  
+  .genius-notification--exiting.genius-notification--top-right,
+  .genius-notification--exiting.genius-notification--top-left {
+    transform: translateY(-100%);
+  }
+  
+  .genius-notification--exiting.genius-notification--bottom-right,
+  .genius-notification--exiting.genius-notification--bottom-left {
+    transform: translateY(100%);
+  }
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .genius-notification {
+    background: rgba(26, 35, 50, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  .genius-notification__dismiss:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .genius-notification {
+    border: 2px solid currentColor;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  .genius-notification__progress-bar {
+    background: currentColor;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .genius-notification,
+  .genius-notification__icon,
+  .genius-notification__action,
+  .genius-notification__dismiss {
+    animation: none;
+    transition: none;
+  }
+  
+  .genius-notification__particle {
+    display: none;
+  }
+  
+  .genius-notification--visible {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  .genius-notification--visible.genius-notification--center {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Print styles */
+@media print {
+  .genius-notification {
+    display: none;
+  }
+}

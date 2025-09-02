@@ -1,0 +1,13 @@
+modules/testing-suite
+modules/testing-suite/ai-test-generator.py
+modules/testing-suite/ai_generated_tests_20250816_090606.json
+modules/testing-suite/generated_tests
+modules/testing-suite/generated_tests/costforgeai.test.ts
+modules/testing-suite/simplified-test-runner.js
+modules/testing-suite/test-reports
+modules/testing-suite/test-reports/test-results-2025-08-18T20-00-03-401Z.json
+modules/testing-suite/test-reports/test-results-2025-08-18T21-38-16-596Z.json
+modules/testing-suite/test-reports/test-results-2025-08-19T00-05-59-422Z.json
+modules/testing-suite/test-reports/test-results-2025-08-23T05-12-23-832Z.json
+modules/testing-suite/ultimate-testing-framework.js
+modules/testing-suite/visual-test-dashboard.html

@@ -1,0 +1,85 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Primary Gradient -->
+    <linearGradient id="tf-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1f4e79;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00a86b;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Premium Gradient -->
+    <linearGradient id="tf-gradient-premium" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1f4e79;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2d608c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00a86b;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow Filter -->
+    <filter id="tf-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#1f4e79" flood-opacity="0.1"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Icon Group -->
+  <g id="tf-icon" filter="url(#tf-shadow)">
+    <!-- Mountain/Data Peaks representing Terra (Earth) -->
+    <path d="M15 35 L25 20 L35 35 Z" fill="url(#tf-gradient)" opacity="0.9"/>
+    <path d="M5 35 L15 25 L25 35 Z" fill="#1f4e79" opacity="0.8"/>
+    <path d="M25 35 L35 25 L45 35 Z" fill="#00a86b" opacity="0.8"/>
+    
+    <!-- Fusion Point - Central Connection -->
+    <circle cx="25" cy="30" r="4" fill="#FFD700" opacity="0.9"/>
+    <circle cx="25" cy="30" r="2" fill="#FFFFFF"/>
+    
+    <!-- Network Lines representing Fusion -->
+    <path d="M25 30 L15 35 M25 30 L25 20 M25 30 L35 35" 
+          stroke="#FFD700" 
+          stroke-width="1" 
+          opacity="0.6"/>
+  </g>
+  
+  <!-- Wordmark -->
+  <g id="tf-wordmark">
+    <!-- Terra -->
+    <text x="55" y="32" 
+          font-family="Poppins, sans-serif" 
+          font-size="26" 
+          font-weight="600" 
+          fill="#1f4e79">
+      Terra
+    </text>
+    
+    <!-- Fusion -->
+    <text x="108" y="32" 
+          font-family="Poppins, sans-serif" 
+          font-size="26" 
+          font-weight="600" 
+          fill="#00a86b">
+      Fusion
+    </text>
+  </g>
+  
+  <!-- Tagline -->
+  <text x="55" y="46" 
+        font-family="Inter, sans-serif" 
+        font-size="9" 
+        font-weight="400"
+        fill="#6C757D"
+        opacity="0.8">
+    Intelligent Government Solutions
+  </text>
+  
+  <!-- Decorative Element -->
+  <rect x="55" y="50" 
+        width="120" 
+        height="2" 
+        rx="1" 
+        fill="url(#tf-gradient-premium)" 
+        opacity="0.3"/>
+</svg>

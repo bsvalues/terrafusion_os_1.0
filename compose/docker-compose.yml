@@ -1,0 +1,230 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: terrafusion-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+    volumes:
+      - ./database:/app/database
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    depends_on:
+      - db
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: terrafusion-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  # Database
+  db:
+    image: sqlite:latest
+    container_name: terrafusion-db
+    volumes:
+      - ./database:/var/lib/sqlite
+      - ./database:/app/database
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  # AI Services
+  ai-command-brain:
+    build:
+      context: ./compose/ai-services
+      dockerfile: Dockerfile
+    container_name: terrafusion-ai-command-brain
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  ai-swarm:
+    build:
+      context: ./compose/ai-services
+      dockerfile: Dockerfile
+    container_name: terrafusion-ai-swarm
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  ai-advanced:
+    build:
+      context: ./compose/ai-services
+      dockerfile: Dockerfile
+    container_name: terrafusion-ai-advanced
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  consciousness-layer:
+    build:
+      context: ./compose/ai-services
+      dockerfile: Dockerfile
+    container_name: terrafusion-consciousness-layer
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=production
+      - PORT=3004
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: terrafusion-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    depends_on:
+      - frontend
+      - backend
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: terrafusion-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: terrafusion-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.console.libraries=/etc/alertmanager/console_libraries'
+      - '--web.console.templates=/etc/alertmanager/consoles'
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: terrafusion-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=terrafusion2025
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: terrafusion-node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: terrafusion-nginx-exporter
+    ports:
+      - "9113:9113"
+    command:
+      - '-nginx.scrape-uri=http://nginx/nginx_status'
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    depends_on:
+      - nginx
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: terrafusion-cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+volumes:
+  prometheus_data:
+  alertmanager_data:
+  grafana_data:
+
+networks:
+  terrafusion-network:
+    driver: bridge

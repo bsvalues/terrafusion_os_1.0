@@ -1,0 +1,52 @@
+# TerraFusion OS HAProxy Load Balancer - Government-Grade Configuration
+FROM haproxy:2.8-alpine
+
+# Install additional packages for government compliance
+RUN apk add --no-cache \
+    ca-certificates \
+    openssl \
+    curl \
+    bash \
+    && update-ca-certificates
+
+# Create necessary directories
+RUN mkdir -p \
+    /etc/haproxy/errors \
+    /etc/ssl/certs/terrafusion \
+    /var/lib/haproxy \
+    /run/haproxy \
+    && chown -R haproxy:haproxy /var/lib/haproxy /run/haproxy
+
+# Copy HAProxy configuration
+COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+
+# Copy custom error pages
+COPY errors/ /etc/haproxy/errors/
+
+# Copy SSL certificates (will be mounted in production)
+# COPY certs/ /etc/ssl/certs/terrafusion/
+
+# Health check script
+COPY health-check.sh /usr/local/bin/health-check.sh
+RUN chmod +x /usr/local/bin/health-check.sh
+
+# Set up proper permissions
+RUN chown -R haproxy:haproxy /usr/local/etc/haproxy/ \
+    && chmod 644 /usr/local/etc/haproxy/haproxy.cfg
+
+# Create logs directory
+RUN mkdir -p /var/log/haproxy \
+    && chown haproxy:haproxy /var/log/haproxy
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /usr/local/bin/health-check.sh
+
+# Expose ports
+EXPOSE 80 443 8404
+
+# Use haproxy user for security
+USER haproxy
+
+# Start HAProxy
+CMD ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]

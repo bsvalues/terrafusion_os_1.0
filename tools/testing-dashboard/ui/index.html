@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TerraFusion Test UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: #0b0f17; color: #e6edf3 }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px }
+    h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 800 }
+    .subtitle { color: #9fb3c8; margin-bottom: 20px }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px }
+    .card { background: #0f1624; border: 1px solid #202b3b; border-radius: 10px; padding: 16px }
+    .span6 { grid-column: span 6 }
+    .span12 { grid-column: span 12 }
+    .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap }
+    button { background: #1f6feb; color: white; font-weight: 600; border: 0; padding: 10px 16px; border-radius: 8px; cursor: pointer }
+    button.secondary { background: #30363d }
+    .log { background: #0b111b; border: 1px solid #1f2937; border-radius: 8px; padding: 8px; height: 220px; overflow: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px }
+    .pill { display: inline-block; background: #172036; border: 1px solid #26334a; border-radius: 999px; padding: 4px 10px; font-size: 12px; margin-right: 8px }
+    .muted { color: #9fb3c8 }
+    .ok { color: #2ecc71 }
+    .warn { color: #f39c12 }
+    .err { color: #e74c3c }
+    .kpi { font-size: 28px; font-weight: 800 }
+    .kpi-sub { color: #9fb3c8 }
+    a { color: #58a6ff; text-decoration: none }
+  </style>
+  <script>
+    async function fetchStatus() {
+      const r = await fetch('/api/status');
+      return await r.json();
+    }
+    async function fetchSummary() {
+      const r = await fetch('/api/summary');
+      return await r.json();
+    }
+    function sse(url, onEvent) {
+      const es = new EventSource(url);
+      es.addEventListener('log', e => onEvent('log', JSON.parse(e.data)));
+      es.addEventListener('error', e => onEvent('error', { message: 'stream error' }));
+      es.addEventListener('done', e => onEvent('done', JSON.parse(e.data)));
+      return es;
+    }
+    function appendLog(el, line) {
+      el.textContent += line + "\n";
+      el.scrollTop = el.scrollHeight;
+    }
+    function setKpi(id, value) { document.getElementById(id).textContent = value }
+    async function init() {
+      const status = await fetchStatus();
+      document.getElementById('latestDir').textContent = status.latest || 'None';
+      const sum = await fetchSummary();
+      setKpi('kpiTotal', sum.summary?.total ?? '—');
+      document.getElementById('aiInsights').innerHTML = (sum.ai.insights||[]).map(x=>`<span class="pill">${x}</span>`).join('');
+      document.getElementById('aiRisks').innerHTML = (sum.ai.risks||[]).map(x=>`<div class="warn">• ${x}</div>`).join('');
+      document.getElementById('aiRecs').innerHTML = (sum.ai.recommendations||[]).map(x=>`<div>• ${x}</div>`).join('');
+      document.getElementById('categories').innerHTML = (sum.summary?.categories||[]).map(c=>`<div class="pill">${c.name}: ${c.count}</div>`).join('');
+
+      const log = document.getElementById('log');
+      document.getElementById('btnDiscover').onclick = () => {
+        log.textContent = '';
+        const es = sse('/api/discover/stream', (type, data) => {
+          if (type === 'log') appendLog(log, data.message.trimEnd());
+          if (type === 'done') {
+            appendLog(log, `\nDONE code=${data.code} latest=${data.latest} total=${data.total}`);
+            init();
+          }
+          if (type === 'error') appendLog(log, 'ERROR: stream broken');
+        });
+        window._es = es;
+        // GET EventSource starts stream automatically
+      };
+      document.getElementById('btnExecute').onclick = () => {
+        log.textContent = '';
+        const es = sse('/api/execute/stream', (type, data) => {
+          if (type === 'log') appendLog(log, data.message.trimEnd());
+          if (type === 'done') appendLog(log, `\nDONE code=${data.code}`);
+          if (type === 'error') appendLog(log, 'ERROR: stream broken');
+        });
+        window._es = es;
+        // GET EventSource starts stream automatically
+      };
+      document.getElementById('btnModules').onclick = async () => {
+        log.textContent = '';
+        const r = await fetch('/api/modules/run');
+        const t = await r.text();
+        log.textContent = t;
+      };
+    }
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <h1>TerraFusion Test Command Center</h1>
+    <div class="subtitle">AI-powered dashboard for discovery, execution, and insights</div>
+
+    <div class="grid">
+      <div class="card span6">
+        <div class="kpi" id="kpiTotal">—</div>
+        <div class="kpi-sub">Total Tests Discovered</div>
+        <div class="muted" style="margin-top:8px">Latest: <span id="latestDir" class="pill">None</span></div>
+        <div id="categories" style="margin-top:8px"></div>
+      </div>
+      <div class="card span6">
+        <div style="font-weight: 700; margin-bottom: 8px">AI Insights</div>
+        <div id="aiInsights" style="margin-bottom: 6px"></div>
+        <div id="aiRisks" style="margin-bottom: 6px"></div>
+        <div id="aiRecs"></div>
+      </div>
+      <div class="card span12">
+        <div class="row" style="margin-bottom: 10px">
+          <button id="btnDiscover">Run Discovery</button>
+          <button id="btnExecute" class="secondary">Execute All Tests</button>
+          <button id="btnModules" class="secondary">Run Modules Test</button>
+          <a href="/AI_NAVIGATION.md" target="_blank">Open AI_NAVIGATION.md</a>
+          <a href="/TEST_REGISTRY.md" target="_blank">Open TEST_REGISTRY.md</a>
+        </div>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
+
+

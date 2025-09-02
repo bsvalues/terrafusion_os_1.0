@@ -1,0 +1,158 @@
+version: '1.0'
+workspace:
+  root: .
+  include:
+    - frontend/src/**/*
+    - frontend/components-enhanced/**/*
+    - modules/*/src/**/*
+    - deployment/advanced/packages/**/src/**/*
+    - backend/**/src/**/*
+    - backend/**/*.cs
+    - tests/**/*
+    - playwright.config.ts
+    - "**/*.spec.ts"
+    - "**/*.test.ts"
+    - "**/*.e2e.ts"
+  exclude:
+    - node_modules
+    - .git
+    - coverage
+    - "**/*.log"
+    - "**/bin/**"
+    - "**/obj/**"
+
+mcp:
+  servers:
+    - id: terrafusion-enhanced
+      path: ./mcp-terrafusion-extension.js
+      autoStart: true
+      capabilities:
+        - browser_automation
+        - test_generation
+        - visual_regression
+        - performance_profiling
+        - government_compliance
+        - ai_swarm_testing
+        - quantum_benchmarking
+    - id: playwright-server
+      path: npx @modelcontextprotocol/server-playwright
+      autoStart: true
+      capabilities:
+        - browser_automation
+        - e2e_testing
+        - visual_testing
+    - id: filesystem
+      path: npx @modelcontextprotocol/server-filesystem
+      args: ["--allowed-directories", "./frontend/src", "./modules", "./tests", "./deployment/advanced/packages"]
+      autoStart: true
+    
+tools:
+  playwright:
+    defaultBrowser: chromium
+    testRunner: '@playwright/test'
+    config:
+      timeout: 30000
+      retries: 2
+      workers: 4
+      reporter: [['html'], ['json', {outputFile: 'test-results.json'}]]
+      projects:
+        - name: 'desktop-chrome'
+          use:
+            browserName: 'chromium'
+            viewport: { width: 1920, height: 1080 }
+        - name: 'desktop-firefox'
+          use:
+            browserName: 'firefox'
+            viewport: { width: 1920, height: 1080 }
+        - name: 'government-compliance'
+          use:
+            browserName: 'chromium'
+            viewport: { width: 1920, height: 1080 }
+            permissions: []
+            ignoreHTTPSErrors: false
+    
+  frontend:
+    framework: react
+    buildTool: vite
+    styleProcessor: tailwind
+    governmentCompliance: true
+    
+  backend:
+    framework: dotnet
+    version: '8.0'
+    testing: xunit
+    
+  terrafusion:
+    aiAgents: 1008
+    modules: 32
+    quantumOptimization: true
+    governmentStandards:
+      - FISMA
+      - NIST-800-53
+      - Section508
+      - WCAG2.1
+      - SOC2
+
+automation:
+  testOnSave: true
+  lintOnCommit: true
+  generateCoverage: true
+  governmentCompliance: true
+  aiSwarmMonitoring: true
+  quantumPerformanceTracking: true
+  
+context:
+  enhancedMode: true
+  includeTestContext: true
+  analyzeDependencies: true
+  governmentContext: true
+  aiSwarmContext: true
+  moduleContext: true
+
+security:
+  encryptedStorage: true
+  governmentGrade: true
+  auditLogging: true
+  complianceMonitoring: true
+  
+performance:
+  quantumOptimization: true
+  aiSwarmCoordination: true
+  targetImprovement: "379000000%"
+  realTimeMonitoring: true
+
+workflows:
+  government_module_development:
+    description: "Enhanced workflow for government module development with compliance"
+    steps:
+      - name: "compliance_check"
+        tool: "terrafusion-enhanced"
+        action: "validate_government_compliance"
+      - name: "generate_tests"
+        tool: "terrafusion-enhanced" 
+        action: "generate_government_module_test"
+      - name: "run_e2e_tests"
+        tool: "terrafusion-enhanced"
+        action: "run_terrafusion_e2e_test"
+      - name: "quantum_benchmark"
+        tool: "terrafusion-enhanced"
+        action: "quantum_performance_benchmark"
+      - name: "ai_swarm_test"
+        tool: "terrafusion-enhanced"
+        action: "run_ai_swarm_performance_test"
+  
+  ai_swarm_optimization:
+    description: "AI swarm performance optimization workflow"
+    steps:
+      - name: "swarm_health_check"
+        tool: "terrafusion-enhanced"
+        action: "run_ai_swarm_performance_test"
+        config:
+          agentCount: 1008
+          loadProfile: "quantum"
+      - name: "quantum_benchmark"
+        tool: "terrafusion-enhanced"
+        action: "quantum_performance_benchmark"
+      - name: "compliance_validation"
+        tool: "terrafusion-enhanced"
+        action: "validate_government_compliance"

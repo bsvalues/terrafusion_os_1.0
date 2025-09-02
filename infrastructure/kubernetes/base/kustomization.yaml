@@ -1,0 +1,41 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: terrafusion-cosmic
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secrets.yaml
+  - cosmic-orchestrator.yaml
+  - consciousness-service.yaml
+  - holographic-storage.yaml
+  - ingress.yaml
+  - horizontal-pod-autoscaler.yaml
+
+commonLabels:
+  app.kubernetes.io/name: terrafusion-cosmic
+  app.kubernetes.io/instance: production
+  app.kubernetes.io/version: "1.0.0"
+  app.kubernetes.io/managed-by: kustomize
+  cosmic.terrafusion.io/platform: omniscient
+
+images:
+  - name: terrafusion/cosmic-orchestrator
+    newTag: latest
+  - name: terrafusion/consciousness-service
+    newTag: latest
+  - name: terrafusion/holographic-storage
+    newTag: latest
+  - name: terrafusion/neural-initializer
+    newTag: latest
+  - name: terrafusion/quantum-init
+    newTag: latest
+
+replicas:
+  - name: cosmic-orchestrator
+    count: 3
+  - name: consciousness-service
+    count: 3
+  - name: holographic-storage
+    count: 5

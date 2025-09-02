@@ -1,0 +1,232 @@
+# TerraFusion AI Swarm Namespace Configuration
+# Production-ready namespace setup with security policies
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-swarm
+  labels:
+    name: ai-swarm
+    component: ai-orchestration
+    security-level: high
+    monitoring: enabled
+    network-policy: enabled
+  annotations:
+    prometheus.io/scrape: "true"
+    kubernetes.io/managed-by: "terrafusion"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-api
+  labels:
+    name: terrafusion-api
+    component: backend-services
+    security-level: high
+    monitoring: enabled
+    network-policy: enabled
+  annotations:
+    prometheus.io/scrape: "true"
+    kubernetes.io/managed-by: "terrafusion"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-frontend
+  labels:
+    name: terrafusion-frontend
+    component: frontend-services
+    security-level: medium
+    monitoring: enabled
+    network-policy: enabled
+  annotations:
+    prometheus.io/scrape: "true"
+    kubernetes.io/managed-by: "terrafusion"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
+    component: observability
+    security-level: high
+    monitoring: self-monitored
+  annotations:
+    prometheus.io/scrape: "true"
+    kubernetes.io/managed-by: "terrafusion"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: database
+  labels:
+    name: database
+    component: data-storage
+    security-level: critical
+    monitoring: enabled
+    network-policy: strict
+  annotations:
+    prometheus.io/scrape: "true"
+    kubernetes.io/managed-by: "terrafusion"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cache
+  labels:
+    name: cache
+    component: data-caching
+    security-level: high
+    monitoring: enabled
+    network-policy: enabled
+  annotations:
+    prometheus.io/scrape: "true"
+    kubernetes.io/managed-by: "terrafusion"
+
+---
+# Resource Quotas for AI Swarm
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ai-swarm-quota
+  namespace: ai-swarm
+spec:
+  hard:
+    requests.cpu: "50"
+    requests.memory: 100Gi
+    limits.cpu: "200"
+    limits.memory: 400Gi
+    persistentvolumeclaims: "10"
+    pods: "100"
+    services: "20"
+    secrets: "20"
+    configmaps: "20"
+
+---
+# Resource Quotas for API
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: terrafusion-api-quota
+  namespace: terrafusion-api
+spec:
+  hard:
+    requests.cpu: "20"
+    requests.memory: 40Gi
+    limits.cpu: "100"
+    limits.memory: 200Gi
+    persistentvolumeclaims: "5"
+    pods: "50"
+    services: "10"
+    secrets: "15"
+    configmaps: "15"
+
+---
+# Resource Quotas for Frontend
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: terrafusion-frontend-quota
+  namespace: terrafusion-frontend
+spec:
+  hard:
+    requests.cpu: "10"
+    requests.memory: 20Gi
+    limits.cpu: "50"
+    limits.memory: 100Gi
+    persistentvolumeclaims: "2"
+    pods: "20"
+    services: "5"
+    secrets: "10"
+    configmaps: "10"
+
+---
+# Limit Ranges for AI Swarm
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: ai-swarm-limits
+  namespace: ai-swarm
+spec:
+  limits:
+  - type: Container
+    default:
+      cpu: 500m
+      memory: 1Gi
+    defaultRequest:
+      cpu: 100m
+      memory: 256Mi
+    max:
+      cpu: 8000m
+      memory: 16Gi
+    min:
+      cpu: 50m
+      memory: 128Mi
+  - type: Pod
+    max:
+      cpu: 16000m
+      memory: 32Gi
+  - type: PersistentVolumeClaim
+    max:
+      storage: 100Gi
+    min:
+      storage: 1Gi
+
+---
+# Network Policy for AI Swarm
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ai-swarm-default-deny
+  namespace: ai-swarm
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+
+---
+# Security Context Constraints for AI Swarm
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ai-swarm-default
+  namespace: ai-swarm
+  labels:
+    component: ai-swarm
+automountServiceAccountToken: false
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ai-swarm-pod-reader
+  namespace: ai-swarm
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ai-swarm-pod-reader
+  namespace: ai-swarm
+subjects:
+- kind: ServiceAccount
+  name: ai-swarm-default
+  namespace: ai-swarm
+roleRef:
+  kind: Role
+  name: ai-swarm-pod-reader
+  apiGroup: rbac.authorization.k8s.io

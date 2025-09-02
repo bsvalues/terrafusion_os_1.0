@@ -1,0 +1,326 @@
+# TerraFusion API Helm Chart Values
+# Production-ready configuration for government deployment
+
+# Application configuration
+app:
+  name: terrafusion-api
+  version: 1.0.0
+  environment: production
+  
+# Image configuration
+image:
+  repository: terrafusion/api
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+  
+imagePullSecrets: []
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 3000
+  fsGroup: 2000
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+# Deployment configuration
+replicaCount: 3
+maxSurge: 1
+maxUnavailable: 0
+
+# Resource management
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Health checks
+healthCheck:
+  enabled: true
+  livenessProbe:
+    httpGet:
+      path: /health/live
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /health/ready
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+    successThreshold: 1
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5000
+  annotations: {}
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: api.terrafusion.gov
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-api-tls
+      hosts:
+        - api.terrafusion.gov
+
+# Environment variables
+env:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  ASPNETCORE_URLS: "http://+:5000"
+  ConnectionStrings__DefaultConnection: "Server=postgresql;Database=terrafusion;Username=terrafusion;Password=${POSTGRES_PASSWORD}"
+  ConnectionStrings__Redis: "redis:6379"
+  Logging__LogLevel__Default: "Information"
+  Logging__LogLevel__Microsoft: "Warning"
+  AI__SwarmSize: "1008"
+  AI__ModuleCount: "39"
+  Features__EnableAISwarm: "true"
+  Features__EnableQuantumOptimization: "true"
+  Compliance__FISMAMode: "true"
+  Monitoring__PrometheusEnabled: "true"
+
+# Secrets (mounted from AWS Secrets Manager or K8s secrets)
+secrets:
+  enabled: true
+  secretName: "terrafusion-secrets"
+  items:
+    - key: database-password
+      path: database_password
+    - key: jwt-secret
+      path: jwt_secret
+    - key: encryption-key
+      path: encryption_key
+
+# Configuration maps
+configMaps:
+  enabled: true
+  data:
+    appsettings.json: |
+      {
+        "Logging": {
+          "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+          }
+        },
+        "AllowedHosts": "*",
+        "AI": {
+          "SwarmSize": 1008,
+          "ModuleCount": 39,
+          "QuantumOptimization": true
+        },
+        "Compliance": {
+          "FISMAMode": true,
+          "AuditLogging": true,
+          "SecurityHeaders": true
+        }
+      }
+
+# Volume mounts
+volumes:
+  - name: config
+    configMap:
+      name: "{{ include \"terrafusion-api.fullname\" . }}-config"
+  - name: secrets
+    secret:
+      secretName: "{{ .Values.secrets.secretName }}"
+  - name: temp
+    emptyDir: {}
+  - name: logs
+    emptyDir: {}
+
+volumeMounts:
+  - name: config
+    mountPath: /app/appsettings.Production.json
+    subPath: appsettings.json
+    readOnly: true
+  - name: secrets
+    mountPath: /app/secrets
+    readOnly: true
+  - name: temp
+    mountPath: /tmp
+  - name: logs
+    mountPath: /app/logs
+
+# Node affinity
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      preference:
+        matchExpressions:
+        - key: node-type
+          operator: In
+          values:
+          - government-workloads
+
+# Pod anti-affinity for high availability
+podAntiAffinity:
+  preferredDuringSchedulingIgnoredDuringExecution:
+  - weight: 100
+    podAffinityTerm:
+      labelSelector:
+        matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+          - terrafusion-api
+      topologyKey: kubernetes.io/hostname
+
+# Tolerations
+tolerations: []
+
+# Database configuration (PostgreSQL subchart)
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "terrafusion-postgres-password"
+    database: "terrafusion"
+    username: "terrafusion"
+    password: "terrafusion-user-password"
+  primary:
+    persistence:
+      enabled: true
+      size: 100Gi
+      storageClass: "gp3"
+    resources:
+      limits:
+        memory: 4Gi
+        cpu: 2000m
+      requests:
+        memory: 2Gi
+        cpu: 500m
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+# Redis configuration (Redis subchart)
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "terrafusion-redis-password"
+  master:
+    persistence:
+      enabled: true
+      size: 50Gi
+      storageClass: "gp3"
+    resources:
+      limits:
+        memory: 2Gi
+        cpu: 1000m
+      requests:
+        memory: 1Gi
+        cpu: 250m
+  replica:
+    replicaCount: 2
+    persistence:
+      enabled: true
+      size: 50Gi
+      storageClass: "gp3"
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      app: terrafusion-api
+    endpoints:
+    - port: http
+      interval: 30s
+      path: /metrics
+
+# Network policies
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 5000
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: database
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: cache
+      ports:
+        - protocol: TCP
+          port: 6379
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# Service mesh integration
+serviceMesh:
+  enabled: false
+  istio:
+    enabled: false
+
+# Backup configuration
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retention: "7d"

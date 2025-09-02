@@ -1,0 +1,55 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: cosmic-mesh-mtls
+  namespace: terrafusion-cosmic
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: cosmic-orchestrator-mtls
+  namespace: terrafusion-cosmic
+spec:
+  selector:
+    matchLabels:
+      app: cosmic-orchestrator
+  mtls:
+    mode: STRICT
+  portLevelMtls:
+    9090:
+      mode: PERMISSIVE  # Allow Prometheus scraping
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: consciousness-service-mtls
+  namespace: terrafusion-cosmic
+spec:
+  selector:
+    matchLabels:
+      app: consciousness-service
+  mtls:
+    mode: STRICT
+  portLevelMtls:
+    9091:
+      mode: PERMISSIVE  # Allow metrics collection
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: holographic-storage-mtls
+  namespace: terrafusion-cosmic
+spec:
+  selector:
+    matchLabels:
+      app: holographic-storage
+  mtls:
+    mode: STRICT
+  portLevelMtls:
+    9092:
+      mode: PERMISSIVE  # Allow metrics collection
+    7000:
+      mode: STRICT  # Quantum sync requires strict mTLS

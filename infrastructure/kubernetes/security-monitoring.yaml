@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-security-monitoring
+  namespace: terrafusion-security
+data:
+  monitoring-config.yaml: |
+    # TerraFusion OS 1.0 Security Monitoring Configuration
+    global:
+      environment: "production"
+      cluster_name: "terrafusion-gov-cluster"
+    
+    plugin_marketplace_security:
+      submission_monitoring:
+        max_submissions_per_author_per_hour: 10
+        max_submissions_global_per_hour: 100
+        alert_on_rate_limit: true
+      
+      signature_verification:
+        success_rate_threshold: 99.5
+        window: "10m"
+        critical_failure_threshold: 5
+        alert_on_failure: true
+        
+    crypto_health_checks:
+      signature_verification:
+        threshold: 99.9
+        window: "5m"
+        alert_on_breach: true
+        
+    security_monitoring:
+      threat_detection:
+        brute_force_attempts: 5
+        anomalous_behavior_score: 0.8
+      incident_response:
+        alert_escalation_time: "5m"
+        critical_response_time: "15m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-monitoring
+  namespace: terrafusion-security
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: security-monitoring
+  template:
+    metadata:
+      labels:
+        app: security-monitoring
+    spec:
+      containers:
+      - name: monitoring-agent
+        image: prom/prometheus:latest
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/prometheus/
+      volumes:
+      - name: config-volume
+        configMap:
+          name: terrafusion-security-monitoring

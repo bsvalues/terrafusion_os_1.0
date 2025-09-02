@@ -1,0 +1,562 @@
+# TerraFusion OS 1.0 - Prometheus Monitoring Configuration
+# Production Monitoring for AI Swarm Supreme Commander and Complete System
+# Comprehensive Metrics Collection for 50,000-Agent Ecosystem
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-terrafusion-config
+  namespace: monitoring
+  labels:
+    app: prometheus
+    component: terrafusion-monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'terrafusion-production'
+        environment: 'production'
+        system: 'terrafusion-os-1.0'
+    
+    rule_files:
+      - "terrafusion_alerts.yml"
+      - "ai_swarm_alerts.yml"
+      - "government_compliance_alerts.yml"
+      - "quantum_performance_alerts.yml"
+    
+    scrape_configs:
+    
+    # ===== AI SWARM SUPREME COMMANDER MONITORING =====
+    - job_name: 'ai-swarm-supreme-commander'
+      static_configs:
+        - targets: ['ai-swarm-supreme-commander-service.terrafusion-production.svc.cluster.local:9090']
+      scrape_interval: 5s  # High frequency for Supreme Commander
+      metrics_path: '/metrics'
+      scrape_timeout: 10s
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: 'ai-swarm-supreme-commander-service.terrafusion-production.svc.cluster.local:9090'
+      metric_relabel_configs:
+        - source_labels: [__name__]
+          regex: 'terrafusion_(.*)'
+          target_label: 'terrafusion_metric'
+          replacement: '${1}'
+    
+    # AI Council Members (20 agents)
+    - job_name: 'ai-council-members'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          action: keep
+          regex: ai-council-member
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port]
+          action: replace
+          target_label: __address__
+          regex: (.+)
+          replacement: ${1}
+    
+    # Quantum Commanders (200 agents)
+    - job_name: 'quantum-commanders'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          action: keep
+          regex: quantum-commander
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+    
+    # Domain Generals (1,000 agents)
+    - job_name: 'domain-generals'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          action: keep
+          regex: domain-general
+      scrape_interval: 30s  # Lower frequency for numerous agents
+    
+    # Process Coordinators (3,000 agents)
+    - job_name: 'process-coordinators'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          action: keep
+          regex: process-coordinator
+      scrape_interval: 60s
+    
+    # Expert Specialists (10,000 agents)
+    - job_name: 'expert-specialists'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          action: keep
+          regex: expert-specialist
+      scrape_interval: 120s  # Even lower frequency for large numbers
+    
+    # Adaptive Executors (20,000 agents)
+    - job_name: 'adaptive-executors'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          action: keep
+          regex: adaptive-executor
+      scrape_interval: 300s  # 5 minutes for massive scale
+    
+    # Micro Optimizers (15,780 agents)
+    - job_name: 'micro-optimizers'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          action: keep
+          regex: micro-optimizer
+      scrape_interval: 600s  # 10 minutes for micro-level agents
+      sample_limit: 100000  # Limit samples for scalability
+    
+    # ===== CORE TERRAFUSION SERVICES MONITORING =====
+    
+    # TerraFusion API Backend (.NET 8.0)
+    - job_name: 'terrafusion-api'
+      static_configs:
+        - targets: ['terrafusion-api-service.terrafusion-production.svc.cluster.local:5000']
+      scrape_interval: 15s
+      metrics_path: '/metrics'
+      scrape_timeout: 10s
+      metric_relabel_configs:
+        - source_labels: [__name__]
+          regex: 'aspnetcore_(.*)|dotnet_(.*)|http_request_(.*)'
+          target_label: 'api_metric'
+          replacement: '${1}${2}${3}'
+    
+    # TerraFusion Frontend PWA
+    - job_name: 'terrafusion-frontend'
+      static_configs:
+        - targets: ['terrafusion-frontend-service.terrafusion-production.svc.cluster.local:3000']
+      scrape_interval: 30s
+      metrics_path: '/metrics'
+    
+    # Database Metrics (PostgreSQL)
+    - job_name: 'postgresql'
+      static_configs:
+        - targets: ['postgresql-exporter.database.svc.cluster.local:9187']
+      scrape_interval: 30s
+      metrics_path: '/metrics'
+    
+    # Redis Cache Metrics
+    - job_name: 'redis'
+      static_configs:
+        - targets: ['redis-exporter.database.svc.cluster.local:9121']
+      scrape_interval: 30s
+    
+    # ===== QUANTUM ENGINE MONITORING =====
+    - job_name: 'quantum-gauge-theory-engine'
+      static_configs:
+        - targets: ['quantum-engine-service.terrafusion-production.svc.cluster.local:8444']
+      scrape_interval: 10s
+      metrics_path: '/quantum/metrics'
+      metric_relabel_configs:
+        - source_labels: [__name__]
+          regex: 'quantum_(.*)'
+          target_label: 'quantum_metric'
+          replacement: '${1}'
+    
+    # ===== CONSCIOUSNESS LAYER MONITORING =====
+    - job_name: 'consciousness-service-layer'
+      static_configs:
+        - targets: ['consciousness-service.terrafusion-production.svc.cluster.local:9444']
+      scrape_interval: 15s
+      metrics_path: '/consciousness/metrics'
+    
+    # ===== MULTI-COUNTY COORDINATION MONITORING =====
+    
+    # Benton County (Production)
+    - job_name: 'county-benton'
+      static_configs:
+        - targets: ['county-benton-service.terrafusion-production.svc.cluster.local:8080']
+      scrape_interval: 15s
+      metrics_path: '/county/metrics'
+      relabel_configs:
+        - target_label: county
+          replacement: 'benton'
+        - target_label: county_status
+          replacement: 'production'
+    
+    # Yakima County (Flagship)
+    - job_name: 'county-yakima'
+      static_configs:
+        - targets: ['county-yakima-service.terrafusion-production.svc.cluster.local:8080']
+      scrape_interval: 15s
+      relabel_configs:
+        - target_label: county
+          replacement: 'yakima'
+        - target_label: county_status
+          replacement: 'flagship'
+    
+    # Cowlitz County (Customized)
+    - job_name: 'county-cowlitz'
+      static_configs:
+        - targets: ['county-cowlitz-service.terrafusion-production.svc.cluster.local:8080']
+      scrape_interval: 15s
+      relabel_configs:
+        - target_label: county
+          replacement: 'cowlitz'
+        - target_label: county_status
+          replacement: 'customized'
+    
+    # ===== MODULE ECOSYSTEM MONITORING =====
+    
+    # Core Government Modules (Tier 1)
+    - job_name: 'government-modules-tier1'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_module_tier]
+          action: keep
+          regex: tier1
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+      scrape_interval: 20s
+    
+    # Essential Operations Modules (Tier 2)
+    - job_name: 'operations-modules-tier2'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_module_tier]
+          action: keep
+          regex: tier2
+      scrape_interval: 30s
+    
+    # Extended Features Modules (Tier 3)
+    - job_name: 'features-modules-tier3'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - terrafusion-production
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_module_tier]
+          action: keep
+          regex: tier3
+      scrape_interval: 60s
+    
+    # ===== INFRASTRUCTURE MONITORING =====
+    
+    # Kubernetes Cluster Metrics
+    - job_name: 'kubernetes-nodes'
+      kubernetes_sd_configs:
+        - role: node
+      relabel_configs:
+        - source_labels: [__address__]
+          regex: '(.*):10250'
+          target_label: __address__
+          replacement: '${1}:9100'  # Node Exporter port
+    
+    # Kubernetes Pods
+    - job_name: 'kubernetes-pods'
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+    
+    # Istio Service Mesh
+    - job_name: 'istio-mesh'
+      kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names:
+              - istio-system
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+          action: keep
+          regex: istio-proxy;http-monitoring
+    
+    # ===== GOVERNMENT COMPLIANCE MONITORING =====
+    
+    # FISMA Compliance Metrics
+    - job_name: 'fisma-compliance'
+      static_configs:
+        - targets: ['fisma-compliance-service.compliance.svc.cluster.local:8080']
+      scrape_interval: 60s
+      metrics_path: '/compliance/fisma/metrics'
+    
+    # Section 508 Accessibility Metrics
+    - job_name: 'section508-compliance'
+      static_configs:
+        - targets: ['section508-compliance-service.compliance.svc.cluster.local:8080']
+      scrape_interval: 300s  # 5 minutes for accessibility metrics
+    
+    # Audit Trail Metrics
+    - job_name: 'audit-trail'
+      static_configs:
+        - targets: ['audit-service.compliance.svc.cluster.local:8080']
+      scrape_interval: 30s
+      metrics_path: '/audit/metrics'
+    
+    # ===== PERFORMANCE MONITORING =====
+    
+    # Load Balancer Metrics (HAProxy)
+    - job_name: 'haproxy'
+      static_configs:
+        - targets: ['haproxy-exporter.infrastructure.svc.cluster.local:8404']
+      scrape_interval: 15s
+    
+    # Certificate Monitoring
+    - job_name: 'certificate-monitoring'
+      static_configs:
+        - targets: ['cert-manager-metrics.cert-manager.svc.cluster.local:9402']
+      scrape_interval: 300s
+    
+    # Storage Metrics
+    - job_name: 'storage-monitoring'
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          action: keep
+          regex: csi-.*-plugin
+    
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager.monitoring.svc.cluster.local:9093
+    
+    remote_write:
+      - url: "https://prometheus-remote-storage.terrafusion.gov/api/v1/write"
+        basic_auth:
+          username: "terrafusion-prometheus"
+          password_file: "/etc/prometheus/secrets/remote-write-password"
+        write_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'terrafusion_.*|quantum_.*|consciousness_.*|ai_swarm_.*'
+            action: keep
+        queue_config:
+          max_shards: 200
+          max_samples_per_send: 10000
+          batch_send_deadline: 10s
+
+  terrafusion_alerts.yml: |
+    groups:
+    - name: terrafusion_system_alerts
+      rules:
+      - alert: TerraFusionAPIHighResponseTime
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m])) by (le)) > 0.006
+        for: 2m
+        labels:
+          severity: warning
+          component: api
+          government_impact: high
+        annotations:
+          summary: "TerraFusion API response time is above 6ms target"
+          description: "95th percentile response time is {{ $value }}s, which exceeds the 6ms government performance target."
+      
+      - alert: AISwarmSupremeCommanderDown
+        expr: up{job="ai-swarm-supreme-commander"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: ai-swarm
+          government_impact: critical
+        annotations:
+          summary: "AI Swarm Supreme Commander is down"
+          description: "The Supreme Commander controlling 50,000 AI agents is not responding."
+      
+      - alert: QuantumEnginePerformanceDegradation
+        expr: quantum_optimization_efficiency < 99.7
+        for: 5m
+        labels:
+          severity: warning
+          component: quantum-engine
+        annotations:
+          summary: "Quantum Engine performance below target"
+          description: "Quantum optimization efficiency is {{ $value }}%, below the 99.7% target."
+      
+      - alert: MultiCountyCoordinationFailure
+        expr: sum(county_coordination_failures_total) > 0
+        for: 1m
+        labels:
+          severity: critical
+          component: multi-county
+          government_impact: critical
+        annotations:
+          summary: "Multi-County coordination failure detected"
+          description: "{{ $value }} county coordination failures detected in the last minute."
+      
+      - alert: FISMAComplianceViolation
+        expr: fisma_compliance_violations_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          component: compliance
+          government_impact: critical
+        annotations:
+          summary: "FISMA compliance violation detected"
+          description: "{{ $value }} FISMA compliance violations detected. Immediate action required."
+      
+      - alert: DatabaseConnectionFailure
+        expr: postgresql_up == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: database
+          government_impact: high
+        annotations:
+          summary: "PostgreSQL database is down"
+          description: "Primary government database is not responding."
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-terrafusion
+  namespace: monitoring
+  labels:
+    app: prometheus
+    component: terrafusion-monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v2.47.0
+        args:
+          - '--config.file=/etc/prometheus/prometheus.yml'
+          - '--storage.tsdb.path=/prometheus/'
+          - '--storage.tsdb.retention.time=90d'
+          - '--web.console.libraries=/etc/prometheus/console_libraries'
+          - '--web.console.templates=/etc/prometheus/consoles'
+          - '--web.enable-lifecycle'
+          - '--web.enable-admin-api'
+          - '--storage.tsdb.max-block-duration=2h'
+          - '--storage.tsdb.min-block-duration=2h'
+        ports:
+        - name: web
+          containerPort: 9090
+          protocol: TCP
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "2000m"
+          limits:
+            memory: "16Gi"
+            cpu: "4000m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/prometheus
+        - name: storage-volume
+          mountPath: /prometheus
+        - name: secrets-volume
+          mountPath: /etc/prometheus/secrets
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: web
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: web
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+      volumes:
+      - name: config-volume
+        configMap:
+          name: prometheus-terrafusion-config
+      - name: storage-volume
+        persistentVolumeClaim:
+          claimName: prometheus-storage-pvc
+      - name: secrets-volume
+        secret:
+          secretName: prometheus-secrets
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: monitoring
+  labels:
+    app: prometheus
+spec:
+  type: ClusterIP
+  ports:
+  - name: web
+    port: 9090
+    targetPort: web
+    protocol: TCP
+  selector:
+    app: prometheus
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-storage-pvc
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: fast-ssd

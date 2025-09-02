@@ -1,0 +1,33 @@
+{
+  "cookies": [
+    {
+      "name": "auth_token",
+      "value": "viewer_test_token_789",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 9999999999,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "user",
+          "value": "{\"id\":\"u-viewer\",\"name\":\"Public Viewer\",\"role\":\"viewer\",\"permissions\":[\"read\"],\"email\":\"viewer@example.com\"}"
+        },
+        {
+          "name": "auth_expires",
+          "value": "9999999999999"
+        },
+        {
+          "name": "role",
+          "value": "viewer"
+        }
+      ]
+    }
+  ]
+}

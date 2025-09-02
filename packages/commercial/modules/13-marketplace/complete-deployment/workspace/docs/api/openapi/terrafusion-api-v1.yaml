@@ -1,0 +1,636 @@
+openapi: 3.0.3
+info:
+  title: TerraFusion Platform API
+  description: |
+    TerraFusion Platform API provides comprehensive access to government operations,
+    AI-driven workflows, and quantum governance capabilities across three evolutionary phases.
+    
+    ## New Features in v3.0.0
+    - Enhanced notification management with real-time updates
+    - Advanced authentication with JWT and OAuth2 support
+    - Comprehensive monitoring and health check endpoints
+    - Bulk operations for improved performance
+    - WebSocket support for real-time features
+    
+  version: 3.0.0
+  contact:
+    name: TerraFusion Support
+    email: support@terrafusion.gov
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.terrafusion.gov/v1
+    description: Production server
+  - url: https://staging-api.terrafusion.gov/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - OAuth2: ["read", "write", "admin"]
+
+tags:
+  - name: Authentication
+    description: Authentication and authorization operations
+  - name: Multi-Tenant
+    description: Multi-tenant management operations
+  - name: Analytics
+    description: Business intelligence and analytics
+  - name: Monitoring
+    description: System monitoring and health checks
+  - name: AI Workflow
+    description: AI-driven workflow automation
+  - name: Quantum
+    description: Quantum computing operations
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /tenants:
+    get:
+      tags:
+        - Multi-Tenant
+      summary: List all tenants
+      operationId: listTenants
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+      responses:
+        "200":
+          description: List of tenants
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantList"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    post:
+      tags:
+        - Multi-Tenant
+      summary: Create new tenant
+      operationId: createTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenantRequest"
+      responses:
+        "201":
+          description: Tenant created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /tenants/{tenantId}:
+    get:
+      tags:
+        - Multi-Tenant
+      summary: Get tenant details
+      operationId: getTenant
+      parameters:
+        - $ref: "#/components/parameters/TenantIdParam"
+      responses:
+        "200":
+          description: Tenant details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /analytics/reports:
+    get:
+      tags:
+        - Analytics
+      summary: List available reports
+      operationId: listReports
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: ["financial", "operational", "compliance", "performance"]
+      responses:
+        "200":
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportList"
+
+  /analytics/reports/{reportId}/execute:
+    post:
+      tags:
+        - Analytics
+      summary: Execute analytics report
+      operationId: executeReport
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportParameters"
+      responses:
+        "200":
+          description: Report execution results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportResults"
+
+  /health:
+    get:
+      tags:
+        - Monitoring
+      summary: Health check endpoint
+      operationId: healthCheck
+      security: []
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /metrics:
+    get:
+      tags:
+        - Monitoring
+      summary: Get system metrics
+      operationId: getMetrics
+      responses:
+        "200":
+          description: System metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemMetrics"
+
+  /ai/workflows:
+    post:
+      tags:
+        - AI Workflow
+      summary: Create AI workflow
+      operationId: createWorkflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWorkflowRequest"
+      responses:
+        "201":
+          description: Workflow created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+
+  /ai/workflows/{workflowId}/execute:
+    post:
+      tags:
+        - AI Workflow
+      summary: Execute AI workflow
+      operationId: executeWorkflow
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowInput"
+      responses:
+        "202":
+          description: Workflow execution started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowExecution"
+
+  /quantum/compute:
+    post:
+      tags:
+        - Quantum
+      summary: Submit quantum computation
+      operationId: submitQuantumComputation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuantumComputationRequest"
+      responses:
+        "202":
+          description: Computation submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuantumJob"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            read: Read access
+            write: Write access
+            admin: Admin access
+
+  parameters:
+    TenantIdParam:
+      name: tenantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+        tokenType:
+          type: string
+          default: Bearer
+
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        domain:
+          type: string
+        status:
+          type: string
+          enum: ["active", "suspended", "archived"]
+        createdAt:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          additionalProperties: true
+
+    CreateTenantRequest:
+      type: object
+      required:
+        - name
+        - domain
+      properties:
+        name:
+          type: string
+        domain:
+          type: string
+        adminEmail:
+          type: string
+          format: email
+        metadata:
+          type: object
+          additionalProperties: true
+
+    TenantList:
+      type: object
+      properties:
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tenant"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    ReportList:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              category:
+                type: string
+              description:
+                type: string
+
+    ReportParameters:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        filters:
+          type: object
+          additionalProperties: true
+
+    ReportResults:
+      type: object
+      properties:
+        reportId:
+          type: string
+        executionTime:
+          type: string
+          format: date-time
+        data:
+          type: array
+          items:
+            type: object
+        summary:
+          type: object
+          additionalProperties: true
+
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ["healthy", "degraded", "unhealthy"]
+        timestamp:
+          type: string
+          format: date-time
+        services:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+              latency:
+                type: number
+
+    SystemMetrics:
+      type: object
+      properties:
+        cpu:
+          type: object
+          properties:
+            usage:
+              type: number
+            cores:
+              type: integer
+        memory:
+          type: object
+          properties:
+            used:
+              type: integer
+            total:
+              type: integer
+            percentage:
+              type: number
+        disk:
+          type: object
+          properties:
+            used:
+              type: integer
+            total:
+              type: integer
+            percentage:
+              type: number
+
+    CreateWorkflowRequest:
+      type: object
+      required:
+        - name
+        - steps
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              config:
+                type: object
+
+    Workflow:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: ["draft", "active", "archived"]
+        createdAt:
+          type: string
+          format: date-time
+
+    WorkflowInput:
+      type: object
+      additionalProperties: true
+
+    WorkflowExecution:
+      type: object
+      properties:
+        executionId:
+          type: string
+        workflowId:
+          type: string
+        status:
+          type: string
+          enum: ["pending", "running", "completed", "failed"]
+        startedAt:
+          type: string
+          format: date-time
+
+    QuantumComputationRequest:
+      type: object
+      required:
+        - algorithm
+        - parameters
+      properties:
+        algorithm:
+          type: string
+        parameters:
+          type: object
+        qubits:
+          type: integer
+          minimum: 1
+          maximum: 100
+
+    QuantumJob:
+      type: object
+      properties:
+        jobId:
+          type: string
+        status:
+          type: string
+          enum: ["queued", "running", "completed", "failed"]
+        submittedAt:
+          type: string
+          format: date-time
+        estimatedCompletionTime:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

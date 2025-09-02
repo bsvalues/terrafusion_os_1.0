@@ -1,0 +1,38 @@
+{
+  "id": "pwa-core-module-v1",
+  "name": "pwa-core",
+  "version": "1.0.0",
+  "description": "Terrafusion Progressive Web App module. Mobile-first, offline-ready parcel and valuation interface.",
+  "author": "Terrafusion Labs",
+  "license": "Enterprise",
+  "category": "Core Services",
+  "entry": "dist/index.html",
+  "type": "pwa",
+  "permissions": [
+      "os.invoke",
+      "os.emit",
+      "property.valuation.read",
+      "parcel.search",
+      "gis.map.view",
+      "read:properties"
+  ],
+  "capabilities": {
+    "offline": true,
+    "backgroundSync": true,
+    "installable": true
+  },
+  "security": {
+    "signature": "HMAC-SHA256",
+    "signed_by": "county_key",
+    "audit_logging": true
+  },
+  "marketplace": {
+    "tier": "Advanced Solutions",
+    "pricing": {
+      "model": "subscription",
+      "amount": 499,
+      "currency": "USD",
+      "interval": "monthly"
+    }
+  }
+}

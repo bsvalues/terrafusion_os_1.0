@@ -1,0 +1,13 @@
+{
+  "county_staff": 50,
+  "avg_salary": 65000,
+  "total_salary_cost": 3250000,
+  "classical_assessment_time": 0.25,
+  "quantum_assessment_time": 0.014838,
+  "time_savings_factor": 16.84863189109044,
+  "productivity_gain_percentage": 1584.8631891090442,
+  "annual_cost_savings": 3057106.0,
+  "quantum_investment": 500000,
+  "roi_percentage": 611.4212,
+  "payback_period_months": 1.962640484170323
+}

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔒 TERRAFUSION QUALITY GATE: Pre-commit validation"
+echo "Supreme Commander Belichick: Zero tolerance for subpar code!"
+
+# Run lint-staged
+npx lint-staged
+
+# Run type check
+npm run type-check
+
+# Run critical tests
+npm run test:critical
+
+echo "✅ Quality gate passed - code approved for commit"

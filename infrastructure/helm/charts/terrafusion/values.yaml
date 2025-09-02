@@ -1,0 +1,164 @@
+# Default values for terrafusion.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global configuration
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: "fast-ssd"
+
+# Service enablement
+backend:
+  enabled: true
+
+frontend:
+  enabled: true
+
+aiSwarm:
+  enabled: true
+
+# External dependencies
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "changeme"
+    username: "terrafusion"
+    password: "changeme"
+    database: "terrafusion"
+  architecture: standalone
+  primary:
+    persistence:
+      enabled: true
+      size: 50Gi
+      storageClass: "fast-ssd"
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "changeme"
+  architecture: standalone
+  master:
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: "fast-ssd"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+# Ingress controller
+ingress:
+  enabled: true
+  controller:
+    kind: DaemonSet
+    service:
+      type: LoadBalancer
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+# Monitoring stack
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+    server:
+      persistentVolume:
+        enabled: true
+        size: 20Gi
+  grafana:
+    enabled: true
+    adminPassword: "admin"
+    persistence:
+      enabled: true
+      size: 10Gi
+
+# Logging stack
+logging:
+  enabled: true
+  elasticsearch:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 50Gi
+  kibana:
+    enabled: true
+
+# Security
+security:
+  enabled: true
+  certManager:
+    enabled: true
+  vault:
+    enabled: true
+
+# Backup and recovery
+backup:
+  enabled: true
+  velero:
+    enabled: true
+
+# Service mesh
+serviceMesh:
+  enabled: true
+  istio:
+    enabled: true
+
+# CI/CD
+cicd:
+  enabled: true
+  argoCD:
+    enabled: true
+  argoWorkflows:
+    enabled: true
+
+# Global resource limits
+resources:
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+
+# Node selectors and tolerations
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Environment configuration
+environment: production
+domain: terrafusion.local
+
+# SSL/TLS configuration
+tls:
+  enabled: true
+  issuer: letsencrypt-prod
+
+# High availability configuration
+highAvailability:
+  enabled: true
+  replicas: 3
+
+# Disaster recovery
+disasterRecovery:
+  enabled: true
+  backupSchedule: "0 2 * * *"
+  retentionDays: 30

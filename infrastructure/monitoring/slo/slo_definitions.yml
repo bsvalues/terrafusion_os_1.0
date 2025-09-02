@@ -1,0 +1,288 @@
+# TerraFusion Service Level Objectives (SLOs) and Service Level Indicators (SLIs)
+
+slos:
+  availability:
+    description: "System uptime and availability"
+    objective: "99.9% uptime over 30 days"
+    error_budget: "43.2 minutes per month"
+    slis:
+      - name: "service_uptime"
+        description: "Percentage of time services are responding successfully"
+        query: "avg_over_time(up[30d]) * 100"
+        target: 99.9
+        unit: "percent"
+
+      - name: "health_check_success"
+        description: "Health check endpoint success rate"
+        query: "sum(rate(health_check_success_total[5m])) / sum(rate(health_check_total[5m])) * 100"
+        target: 99.9
+        unit: "percent"
+
+  latency:
+    description: "Request response time performance"
+    objective: "95% of requests complete within 300ms"
+    error_budget: "5% of requests can exceed 300ms"
+    slis:
+      - name: "request_latency_p95"
+        description: "95th percentile request latency"
+        query: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
+        target: 0.3
+        unit: "seconds"
+
+      - name: "api_response_time"
+        description: "Average API response time"
+        query: "avg(rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m]))"
+        target: 0.15
+        unit: "seconds"
+
+      - name: "database_query_time"
+        description: "Average database query execution time"
+        query: "avg(database_query_duration_seconds)"
+        target: 0.05
+        unit: "seconds"
+
+  quality:
+    description: "Request success and error rates"
+    objective: "99% of requests succeed (non-5xx responses)"
+    error_budget: "1% error rate"
+    slis:
+      - name: "success_rate"
+        description: "Percentage of successful requests (non-5xx)"
+        query: 'sum(rate(http_requests_total{status!~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100'
+        target: 99
+        unit: "percent"
+
+      - name: "error_rate"
+        description: "Rate of 5xx errors"
+        query: 'sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100'
+        target: 1
+        unit: "percent"
+        comparison: "less_than"
+
+  quantum_performance:
+    description: "Quantum system performance and fidelity"
+    objective: "Maintain quantum fidelity above 99% and coherence times above baseline"
+    error_budget: "1% degradation in quantum metrics"
+    slis:
+      - name: "average_gate_fidelity"
+        description: "Average fidelity across all quantum gates"
+        query: "avg(quantum_gate_fidelity)"
+        target: 0.99
+        unit: "ratio"
+
+      - name: "single_qubit_fidelity"
+        description: "Single-qubit gate fidelity"
+        query: 'avg(quantum_gate_fidelity{gate_type="single_qubit"})'
+        target: 0.999
+        unit: "ratio"
+
+      - name: "two_qubit_fidelity"
+        description: "Two-qubit gate fidelity"
+        query: 'avg(quantum_gate_fidelity{gate_type="two_qubit"})'
+        target: 0.99
+        unit: "ratio"
+
+      - name: "coherence_time_t1"
+        description: "Average T1 coherence time"
+        query: "avg(quantum_coherence_t1)"
+        target: 100e-6
+        unit: "seconds"
+
+      - name: "coherence_time_t2"
+        description: "Average T2 coherence time"
+        query: "avg(quantum_coherence_t2)"
+        target: 80e-6
+        unit: "seconds"
+
+      - name: "entanglement_fidelity"
+        description: "Bell state entanglement fidelity"
+        query: 'avg(quantum_entanglement_fidelity{state="bell"})'
+        target: 0.95
+        unit: "ratio"
+
+      - name: "quantum_volume"
+        description: "Quantum volume metric"
+        query: "avg(quantum_volume)"
+        target: 64
+        unit: "dimensionless"
+
+  security:
+    description: "Security posture and threat response"
+    objective: "Zero critical security incidents and rapid threat response"
+    error_budget: "Maximum 1 critical incident per month"
+    slis:
+      - name: "critical_threats"
+        description: "Number of active critical security threats"
+        query: 'sum(security_threats_total{severity="critical"})'
+        target: 0
+        unit: "count"
+        comparison: "equals"
+
+      - name: "threat_detection_time"
+        description: "Average time to detect security threats"
+        query: "avg(threat_detection_duration_seconds)"
+        target: 300
+        unit: "seconds"
+        comparison: "less_than"
+
+      - name: "incident_response_time"
+        description: "Average incident response time"
+        query: "avg(incident_response_duration_seconds)"
+        target: 900
+        unit: "seconds"
+        comparison: "less_than"
+
+      - name: "vulnerability_patching_time"
+        description: "Average time to patch critical vulnerabilities"
+        query: 'avg(vulnerability_patch_duration_seconds{severity="critical"})'
+        target: 86400
+        unit: "seconds"
+        comparison: "less_than"
+
+      - name: "failed_login_rate"
+        description: "Rate of failed login attempts"
+        query: "sum(rate(failed_login_attempts_total[5m]))"
+        target: 5
+        unit: "per_minute"
+        comparison: "less_than"
+
+  compliance:
+    description: "Regulatory compliance and audit readiness"
+    objective: "Maintain compliance scores above 95% for all frameworks"
+    error_budget: "5% deviation from compliance targets"
+    slis:
+      - name: "soc2_compliance"
+        description: "SOC2 compliance score"
+        query: 'compliance_score{framework="SOC2"}'
+        target: 95
+        unit: "percent"
+
+      - name: "gdpr_compliance"
+        description: "GDPR compliance score"
+        query: 'compliance_score{framework="GDPR"}'
+        target: 95
+        unit: "percent"
+
+      - name: "iso27001_compliance"
+        description: "ISO27001 compliance score"
+        query: 'compliance_score{framework="ISO27001"}'
+        target: 95
+        unit: "percent"
+
+      - name: "audit_log_completeness"
+        description: "Percentage of events successfully logged"
+        query: "sum(rate(audit_events_logged_total[5m])) / sum(rate(audit_events_total[5m])) * 100"
+        target: 99.9
+        unit: "percent"
+
+      - name: "data_retention_compliance"
+        description: "Compliance with data retention policies"
+        query: "data_retention_compliance_score"
+        target: 100
+        unit: "percent"
+
+  user_experience:
+    description: "End-user experience and satisfaction"
+    objective: "Maintain high user satisfaction and low friction"
+    error_budget: "10% degradation in user experience metrics"
+    slis:
+      - name: "apdex_score"
+        description: "Application Performance Index score"
+        query: "apdex_score"
+        target: 0.9
+        unit: "ratio"
+
+      - name: "page_load_time"
+        description: "Average page load time"
+        query: "avg(page_load_duration_seconds)"
+        target: 2
+        unit: "seconds"
+        comparison: "less_than"
+
+      - name: "user_journey_completion"
+        description: "Critical user journey completion rate"
+        query: 'avg(user_journey_completion_rate{journey="critical"})'
+        target: 90
+        unit: "percent"
+
+      - name: "customer_satisfaction"
+        description: "Customer satisfaction score (CSAT)"
+        query: "avg(customer_satisfaction_score)"
+        target: 4.5
+        unit: "scale_1_to_5"
+
+      - name: "time_to_value"
+        description: "Average time for users to achieve first value"
+        query: "avg(time_to_value_seconds)"
+        target: 300
+        unit: "seconds"
+        comparison: "less_than"
+
+# Error Budget Policies
+error_budget_policies:
+  burn_rate_alerts:
+    fast_burn:
+      threshold: 14.4 # 2% of monthly budget in 1 hour
+      window: "1h"
+      severity: "critical"
+
+    medium_burn:
+      threshold: 6 # 25% of monthly budget in 6 hours
+      window: "6h"
+      severity: "warning"
+
+    slow_burn:
+      threshold: 1 # 100% of monthly budget in 30 days
+      window: "30d"
+      severity: "info"
+
+  budget_exhaustion_responses:
+    - threshold: 50 # 50% budget consumed
+      actions:
+        - "increase_monitoring_frequency"
+        - "notify_engineering_team"
+
+    - threshold: 75 # 75% budget consumed
+      actions:
+        - "freeze_risky_deployments"
+        - "activate_incident_response"
+        - "notify_management"
+
+    - threshold: 90 # 90% budget consumed
+      actions:
+        - "implement_traffic_restrictions"
+        - "defer_non_critical_changes"
+        - "emergency_response_mode"
+
+    - threshold: 100 # Budget exhausted
+      actions:
+        - "stop_all_deployments"
+        - "focus_on_reliability"
+        - "executive_notification"
+
+# SLI Recording Rules for Prometheus
+recording_rules:
+  - name: "sli_availability"
+    expr: "avg_over_time(up[5m]) * 100"
+    labels:
+      sli: "availability"
+
+  - name: "sli_latency_p95"
+    expr: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
+    labels:
+      sli: "latency_p95"
+
+  - name: "sli_error_rate"
+    expr: 'sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100'
+    labels:
+      sli: "error_rate"
+
+  - name: "sli_quantum_fidelity"
+    expr: "avg(quantum_gate_fidelity)"
+    labels:
+      sli: "quantum_fidelity"
+
+  - name: "sli_security_posture"
+    expr: "security_posture_score"
+    labels:
+      sli: "security_posture"

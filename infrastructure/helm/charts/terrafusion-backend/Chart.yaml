@@ -1,0 +1,27 @@
+apiVersion: v2
+name: terrafusion-backend
+description: TerraFusion Backend Service - Government AI Operating System
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+keywords:
+  - government
+  - ai
+  - property-assessment
+  - microservices
+  - kubernetes
+
+maintainers:
+  - name: TerraFusion DevOps Team
+    email: devops@terrafusion.gov
+
+dependencies:
+  - name: postgresql
+    version: "12.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "17.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled

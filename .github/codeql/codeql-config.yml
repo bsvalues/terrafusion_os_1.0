@@ -1,0 +1,88 @@
+name: "TerraFusion OS Government CodeQL Configuration"
+# Government-grade static analysis configuration for FISMA compliance
+
+disable-default-queries: false
+
+queries:
+  - name: security-extended
+    uses: security-extended
+  - name: security-and-quality
+    uses: security-and-quality
+  - name: government-compliance
+    uses: ./.github/codeql/government-queries
+
+# Government-specific security patterns
+paths:
+  - backend/
+  - frontend/src/
+  - modules/
+  - backend/ai-models/
+
+paths-ignore:
+  - node_modules/
+  - "**/*.min.js"
+  - "**/*.bundle.js"
+  - backend/bin/
+  - backend/obj/
+  - "**/*.test.js"
+  - "**/*.test.ts"
+  - "**/*.spec.js" 
+  - "**/*.spec.ts"
+
+# Custom configuration for government compliance
+query-filters:
+  - exclude:
+      id: js/unused-local-variable
+  - include:
+      kind: problem
+      severity: error
+  - include:
+      kind: problem
+      severity: warning
+      tags:
+        - security
+        - government
+        - fisma-compliance
+        - data-protection
+
+# Database and external system configuration
+external-repository-token-stdin: true
+
+# Performance and resource limits
+database:
+  cluster-threads: 4
+  ram: 4096
+
+# Government security focus areas
+security-severity: "high"
+
+# Language-specific configurations
+languages:
+  javascript:
+    # Frontend JavaScript/TypeScript security
+    framework: "react"
+    security-patterns:
+      - "injection-attacks"
+      - "xss-prevention" 
+      - "authentication-bypass"
+      - "sensitive-data-exposure"
+  
+  csharp:
+    # Backend .NET security
+    framework: "aspnetcore"
+    security-patterns:
+      - "sql-injection"
+      - "command-injection"
+      - "authentication-bypass"
+      - "authorization-bypass"
+      - "data-exposure"
+      - "government-compliance"
+  
+  python:
+    # AI models security
+    framework: "ml-security"
+    security-patterns:
+      - "model-poisoning"
+      - "data-leakage"
+      - "injection-attacks"
+      - "unauthorized-access"

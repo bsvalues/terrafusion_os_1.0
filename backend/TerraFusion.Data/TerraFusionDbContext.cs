@@ -1,0 +1,362 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using TerraFusion.Core.Entities;
+using TerraFusion.Core.Models;
+using TerraFusion.Core.Interfaces;
+using TerraFusion.Data.Configurations;
+
+namespace TerraFusion.Data;
+
+public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
+{
+    private readonly IConfiguration _configuration;
+
+    public TerraFusionDbContext(DbContextOptions<TerraFusionDbContext> options, IConfiguration configuration) 
+        : base(options)
+    {
+        _configuration = configuration;
+    }
+
+    // Core Government Entities
+    public DbSet<Property> Properties { get; set; }
+    public DbSet<County> Counties { get; set; }
+    public DbSet<CountyDeployment> CountyDeployments { get; set; }
+    public DbSet<PropertyAssessment> PropertyAssessments { get; set; }
+    public DbSet<TaxLevy> TaxLevies { get; set; }
+    public DbSet<GovernmentUser> GovernmentUsers { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
+    
+    // AI System Entities
+    public DbSet<AIAgent> AIAgents { get; set; }
+    public DbSet<AIModel> AIModels { get; set; }
+    public DbSet<PerformanceMetric> PerformanceMetrics { get; set; }
+
+    // Module System Entities
+    public DbSet<Module> Modules { get; set; }
+    public DbSet<Valuation> Valuations { get; set; }
+
+    // Marketplace Entities
+    public DbSet<Plugin> Plugins { get; set; }
+    public DbSet<PluginSubmission> PluginSubmissions { get; set; }
+    public DbSet<PluginInstallation> PluginInstallations { get; set; }
+    public DbSet<PluginRevenue> PluginRevenue { get; set; }
+    public DbSet<PluginAnalytics> PluginAnalytics { get; set; }
+    
+    // Security Entities
+    public DbSet<SecurityEvent> SecurityEvents { get; set; }
+    public DbSet<UserSession> UserSessions { get; set; }
+    
+    // Collaboration Entities
+    public DbSet<CollaborationUser> CollaborationUsers { get; set; }
+    public DbSet<Team> Teams { get; set; }
+    public DbSet<TeamMember> TeamMembers { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<ProjectParticipant> ProjectParticipants { get; set; }
+    public DbSet<ProjectDocument> ProjectDocuments { get; set; }
+    public DbSet<TerraFusion.Core.Entities.Task> Tasks { get; set; }
+    public DbSet<TaskComment> TaskComments { get; set; }
+    public DbSet<Milestone> Milestones { get; set; }
+    public DbSet<DocumentPermission> DocumentPermissions { get; set; }
+    public DbSet<CollaborationNotification> CollaborationNotifications { get; set; }
+    public DbSet<AuditEvent> AuditEvents { get; set; }
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<UserPermission> UserPermissions { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            
+            if (connectionString?.Contains("Host=") == true)
+            {
+                // PostgreSQL for production
+                optionsBuilder.UseNpgsql(connectionString, options =>
+                {
+                    options.EnableRetryOnFailure(
+                        maxRetryCount: 3,
+                        maxRetryDelay: TimeSpan.FromSeconds(5),
+                        errorCodesToAdd: null);
+                    options.CommandTimeout(30);
+                });
+            }
+            else
+            {
+                // SQLite for development fallback
+                optionsBuilder.UseSqlite(connectionString ?? "Data Source=terrafusion.db");
+            }
+
+            // Enable sensitive data logging only in development
+            if (_configuration.GetValue<bool>("Logging:EnableSensitiveDataLogging", false))
+            {
+                optionsBuilder.EnableSensitiveDataLogging();
+            }
+
+            optionsBuilder.EnableDetailedErrors();
+        }
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Configure Module entity
+        modelBuilder.Entity<Module>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.HasIndex(e => e.Name).IsUnique(); // Prevent duplicate module names
+        });
+
+        // Configure Property entity
+        modelBuilder.Entity<Property>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Address).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.AssessedValue).HasPrecision(18, 2);
+            entity.HasIndex(e => e.ParcelId).IsUnique();
+            entity.HasIndex(e => e.CountyId);
+        });
+
+        // Configure County entity
+        modelBuilder.Entity<County>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.State).IsRequired().HasMaxLength(2);
+            entity.Property(e => e.FipsCode).IsRequired().HasMaxLength(5);
+            entity.HasIndex(e => e.FipsCode).IsUnique();
+        });
+
+        // Configure PropertyAssessment entity
+        modelBuilder.Entity<PropertyAssessment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.AssessedValue).HasPrecision(18, 2);
+            entity.Property(e => e.MarketValue).HasPrecision(18, 2);
+            entity.HasOne<Property>().WithMany().HasForeignKey(e => e.PropertyId);
+            entity.HasIndex(e => new { e.PropertyId, e.AssessmentYear });
+        });
+
+        // Configure TaxLevy entity
+        modelBuilder.Entity<TaxLevy>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TaxRate).HasPrecision(8, 6);
+            entity.Property(e => e.LevyAmount).HasPrecision(18, 2);
+            entity.HasOne<County>().WithMany().HasForeignKey(e => e.CountyId);
+        });
+
+        // Configure GovernmentUser entity
+        modelBuilder.Entity<GovernmentUser>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Department).HasMaxLength(100);
+            entity.Property(e => e.Role).IsRequired().HasMaxLength(50);
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        // Configure AuditLog entity
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Type).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Data).HasColumnType("TEXT");
+            entity.Property(e => e.Timestamp).IsRequired();
+            entity.Property(e => e.UserId).HasMaxLength(450);
+            entity.Property(e => e.UserEmail).HasMaxLength(256);
+            entity.Property(e => e.IpAddress).HasMaxLength(45);
+            entity.Property(e => e.UserAgent).HasMaxLength(500);
+            entity.Property(e => e.RequestPath).HasMaxLength(500);
+            entity.Property(e => e.RequestMethod).HasMaxLength(10);
+            entity.Property(e => e.CorrelationId).HasMaxLength(100);
+            entity.Property(e => e.Severity).HasMaxLength(20);
+            entity.Property(e => e.Source).HasMaxLength(100);
+            entity.HasIndex(e => e.Timestamp);
+            entity.HasIndex(e => e.Type);
+            entity.HasIndex(e => e.UserId);
+        });
+
+        // Configure AIAgent entity
+        modelBuilder.Entity<AIAgent>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Type).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.Configuration).HasColumnType("jsonb");
+            entity.HasIndex(e => e.Status);
+        });
+
+        // Configure SecurityEvent entity
+        modelBuilder.Entity<SecurityEvent>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.EventType).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Description).IsRequired().HasMaxLength(1000);
+            entity.Property(e => e.Metadata).HasColumnType("jsonb");
+            entity.HasIndex(e => e.Timestamp);
+            entity.HasIndex(e => e.EventType);
+        });
+
+        modelBuilder.Entity<Plugin>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Version).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.Description).IsRequired();
+            entity.Property(e => e.Category).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.AuthorId).IsRequired();
+            entity.Property(e => e.Status).IsRequired();
+            entity.Property(e => e.SubmittedAt).IsRequired();
+
+            entity.HasIndex(e => e.Name);
+            entity.HasIndex(e => e.Category);
+            entity.HasIndex(e => e.Status);
+        });
+
+        // Apply explicit EF Core configurations to resolve navigation ambiguity
+        modelBuilder.ApplyConfiguration(new CollaborationUserConfiguration());
+        modelBuilder.ApplyConfiguration(new TaskConfiguration());
+
+        modelBuilder.Entity<CollaborationNotification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasMaxLength(450);
+            entity.Property(e => e.RecipientId).IsRequired().HasMaxLength(450);
+            entity.Property(e => e.SenderId).HasMaxLength(450);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Message).IsRequired().HasMaxLength(1000);
+            
+            entity.HasOne(e => e.Recipient)
+                .WithMany(u => u.ReceivedNotifications)
+                .HasForeignKey(e => e.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+                
+            entity.HasOne(e => e.Sender)
+                .WithMany(u => u.SentNotifications)
+                .HasForeignKey(e => e.SenderId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure encryption for sensitive fields
+        ConfigureEncryption(modelBuilder);
+    }
+
+    private void ConfigureEncryption(ModelBuilder modelBuilder)
+    {
+        // Configure field-level encryption for sensitive data
+        modelBuilder.Entity<GovernmentUser>()
+            .Property(e => e.SocialSecurityNumber)
+            .HasConversion(
+                v => EncryptSensitiveData(v),
+                v => DecryptSensitiveData(v));
+
+        modelBuilder.Entity<Property>()
+            .Property(e => e.OwnerSSN)
+            .HasConversion(
+                v => EncryptSensitiveData(v),
+                v => DecryptSensitiveData(v));
+    }
+
+    private string EncryptSensitiveData(string? data)
+    {
+        if (string.IsNullOrEmpty(data))
+            return string.Empty;
+
+        // In production, use proper encryption service
+        // This is a simplified example
+        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(data));
+    }
+
+    private string? DecryptSensitiveData(string? encryptedData)
+    {
+        if (string.IsNullOrEmpty(encryptedData))
+            return null;
+
+        try
+        {
+            return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encryptedData));
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public override async System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Add audit logging for all changes
+        var auditEntries = CreateAuditEntries();
+        
+        var result = await base.SaveChangesAsync(cancellationToken);
+        
+        // Save audit logs after successful save
+        await SaveAuditLogs(auditEntries);
+        
+        return result;
+    }
+
+    private List<AuditLog> CreateAuditEntries()
+    {
+        var auditEntries = new List<AuditLog>();
+        
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry.Entity is AuditLog || entry.State == EntityState.Unchanged)
+                continue;
+
+            var auditLog = new AuditLog
+            {
+                Id = Guid.NewGuid(),
+                Type = $"{entry.Entity.GetType().Name}_{entry.State}",
+                Data = System.Text.Json.JsonSerializer.Serialize(GetChanges(entry)),
+                Timestamp = DateTime.UtcNow,
+                UserId = GetCurrentUserId(),
+                Source = "EntityFramework"
+            };
+            
+            auditEntries.Add(auditLog);
+        }
+        
+        return auditEntries;
+    }
+
+    private async System.Threading.Tasks.Task SaveAuditLogs(List<AuditLog> auditEntries)
+    {
+        if (auditEntries.Any())
+        {
+            AuditLogs.AddRange(auditEntries);
+            await base.SaveChangesAsync();
+        }
+    }
+
+    private string GetCurrentUserId()
+    {
+        // Get current user from HTTP context or authentication context
+        return "System"; // Placeholder
+    }
+
+    private object GetChanges(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry)
+    {
+        var changes = new Dictionary<string, object>();
+        
+        foreach (var property in entry.Properties)
+        {
+            if (property.IsModified)
+            {
+                changes[property.Metadata.Name] = new
+                {
+                    OldValue = property.OriginalValue,
+                    NewValue = property.CurrentValue
+                };
+            }
+        }
+        
+        return changes;
+    }
+}

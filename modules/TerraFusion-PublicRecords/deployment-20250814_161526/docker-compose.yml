@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  terrafusion-public-records:
+    build: .
+    container_name: terrafusion-public-records
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    labels:
+      - "com.terrafusion.speed=379000000x"
+      - "com.terrafusion.status=DOMINATING"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

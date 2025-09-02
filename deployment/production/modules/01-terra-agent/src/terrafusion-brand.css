@@ -1,0 +1,104 @@
+/**
+ * TERRAFUSION REAL BRAND CSS
+ * Infrastructure Intelligence, Infinite Scale
+ * Supreme Commander Belichick Approved
+ */
+
+:root {
+  /* REAL TERRAFUSION BRAND COLORS */
+  --tf-cosmic-blue: #0891b2;
+  --tf-quantum-teal: #00d2ff;
+  --tf-neural-purple: #667eea;
+  --tf-stellar-white: #ffffff;
+  --tf-deep-space: #0a0f1c;
+  
+  /* Gradients */
+  --tf-gradient-primary: linear-gradient(135deg, #00d2ff, #0891b2);
+  --tf-gradient-secondary: linear-gradient(135deg, #0891b2, #667eea);
+  
+  /* Typography */
+  --tf-font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Global TerraFusion Styling */
+body {
+  background: linear-gradient(135deg, var(--tf-deep-space), var(--tf-cosmic-blue));
+  color: var(--tf-stellar-white);
+  font-family: var(--tf-font-primary);
+  margin: 0;
+  padding: 0;
+}
+
+.tf-brand-header {
+  background: var(--tf-gradient-primary);
+  color: var(--tf-stellar-white);
+  text-align: center;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 210, 255, 0.3);
+}
+
+.tf-brand-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  letter-spacing: -1px;
+}
+
+.tf-brand-tagline {
+  font-size: 1.2rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.tf-brand-subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+.tf-brand-speed {
+  background: var(--tf-gradient-secondary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+/* Button Styling */
+.tf-btn-primary {
+  background: var(--tf-gradient-primary);
+  color: var(--tf-stellar-white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.tf-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4);
+}
+
+/* Card Component */
+.tf-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem;
+  transition: all 0.3s ease;
+}
+
+.tf-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--tf-quantum-teal);
+  box-shadow: 0 8px 32px rgba(0, 210, 255, 0.3);
+}

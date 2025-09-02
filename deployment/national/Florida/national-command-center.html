@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion National Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .command-header {
+            background: linear-gradient(135deg, #001a33 0%, #003366 50%, #004080 100%);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 2px solid #00ffcc;
+            position: relative;
+        }
+
+        .command-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ffcc, #00ccff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 30px rgba(0,255,204,0.5));
+        }
+
+        .command-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 1.2rem;
+        }
+
+        .live-indicator {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0,255,136,0.2);
+            border: 1px solid #00ff88;
+            border-radius: 20px;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .metric-card {
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,255,204,0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,255,204,0.2);
+            border-color: #00ffcc;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .metric-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ffcc, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.9rem;
+            color: #00ff88;
+        }
+
+        .metric-change.negative {
+            color: #ff4444;
+        }
+
+        .state-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .state-card {
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,51,102,0.3));
+            border: 2px solid rgba(0,255,204,0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .state-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--state-color), transparent);
+        }
+
+        .state-card.florida { --state-color: #ffaa00; }
+        .state-card.washington { --state-color: #00ff88; }
+
+        .state-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .state-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--state-color);
+        }
+
+        .state-status {
+            padding: 0.5rem 1rem;
+            background: rgba(0,255,204,0.1);
+            border: 1px solid rgba(0,255,204,0.3);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #00ffcc;
+        }
+
+        .counties-progress {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--state-color), #00ffcc);
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .state-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .state-metric {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+        }
+
+        .state-metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--state-color);
+        }
+
+        .state-metric-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 0.25rem;
+        }
+
+        .timeline-section {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .timeline-header {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ffcc;
+            margin-bottom: 2rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00ffcc, #0099ff);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            width: 45%;
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: auto;
+            text-align: left;
+            padding-left: 2rem;
+        }
+
+        .timeline-item:nth-child(even) {
+            text-align: right;
+            padding-right: 2rem;
+        }
+
+        .timeline-date {
+            font-size: 0.9rem;
+            color: #00ffcc;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-content {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid rgba(0,255,204,0.2);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-description {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .control-panel {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,255,204,0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            min-width: 300px;
+        }
+
+        .control-title {
+            font-size: 1rem;
+            color: #00ffcc;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #00ffcc, #00ccff);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,255,204,0.4);
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: countUp 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="command-header">
+        <h1 class="command-title">TerraFusion National Command Center</h1>
+        <p class="command-subtitle">Real-Time County Migration Status</p>
+        <div class="live-indicator">
+            <div class="live-dot"></div>
+            <span>LIVE</span>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-label">Total Counties</span>
+                <span class="metric-icon">🏛️</span>
+            </div>
+            <div class="metric-value" id="totalCounties">27</div>
+            <div class="metric-change">↑ 2 this week</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-label">Citizens Impacted</span>
+                <span class="metric-icon">👥</span>
+            </div>
+            <div class="metric-value" id="citizensImpacted">20.3M</div>
+            <div class="metric-change">↑ 2.7M this month</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-label">Parcels Migrated</span>
+                <span class="metric-icon">📍</span>
+            </div>
+            <div class="metric-value" id="parcelsMigrated">1.2M</div>
+            <div class="metric-change">↑ 385K today</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-label">Property Value</span>
+                <span class="metric-icon">💰</span>
+            </div>
+            <div class="metric-value" id="propertyValue">$487B</div>
+            <div class="metric-change">↑ $125B this week</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-label">Processing Speed</span>
+                <span class="metric-icon">⚡</span>
+            </div>
+            <div class="metric-value" id="processingSpeed">379M×</div>
+            <div class="metric-change">Verified & Proven</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-label">Annual Revenue</span>
+                <span class="metric-icon">📈</span>
+            </div>
+            <div class="metric-value" id="annualRevenue">$15.2M</div>
+            <div class="metric-change">↑ On track for $50M</div>
+        </div>
+    </div>
+
+    <div class="state-grid">
+        <div class="state-card florida">
+            <div class="state-header">
+                <h2 class="state-name">🌴 Florida</h2>
+                <span class="state-status">ACTIVE</span>
+            </div>
+            
+            <div class="counties-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="floridaProgress" style="width: 33%">
+                        5 of 15 Counties Live
+                    </div>
+                </div>
+            </div>
+            
+            <div class="state-metrics">
+                <div class="state-metric">
+                    <div class="state-metric-value">14.5M</div>
+                    <div class="state-metric-label">Population</div>
+                </div>
+                <div class="state-metric">
+                    <div class="state-metric-value">2.1M</div>
+                    <div class="state-metric-label">Parcels</div>
+                </div>
+                <div class="state-metric">
+                    <div class="state-metric-value">$685B</div>
+                    <div class="state-metric-label">Value</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+                <strong style="color: #ffaa00;">Live Counties:</strong>
+                <div style="margin-top: 0.5rem; color: rgba(255,255,255,0.8);">
+                    ✓ Miami-Dade | ✓ Broward | ✓ Palm Beach | ✓ Pinellas | ✓ Lee
+                </div>
+                <div style="margin-top: 0.5rem;">
+                    <strong style="color: #ffaa00;">Next Up:</strong> Orange, Hillsborough, Duval
+                </div>
+            </div>
+        </div>
+
+        <div class="state-card washington">
+            <div class="state-header">
+                <h2 class="state-name">🌲 Washington</h2>
+                <span class="state-status">LAUNCHING</span>
+            </div>
+            
+            <div class="counties-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="washingtonProgress" style="width: 25%">
+                        3 of 12 Counties Live
+                    </div>
+                </div>
+            </div>
+            
+            <div class="state-metrics">
+                <div class="state-metric">
+                    <div class="state-metric-value">5.2M</div>
+                    <div class="state-metric-label">Population</div>
+                </div>
+                <div class="state-metric">
+                    <div class="state-metric-value">1.1M</div>
+                    <div class="state-metric-label">Parcels</div>
+                </div>
+                <div class="state-metric">
+                    <div class="state-metric-value">$425B</div>
+                    <div class="state-metric-label">Value</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+                <strong style="color: #00ff88;">Live Counties:</strong>
+                <div style="margin-top: 0.5rem; color: rgba(255,255,255,0.8);">
+                    ✓ Island | ✓ Franklin | ✓ Cowlitz
+                </div>
+                <div style="margin-top: 0.5rem;">
+                    <strong style="color: #00ff88;">Next Up:</strong> King, Pierce, Snohomish
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-section">
+        <h2 class="timeline-header">🚀 90-Day Battle Plan</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">Week 1-2</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Florida Blitz</div>
+                    <div class="timeline-description">Miami-Dade, Broward, Palm Beach secured</div>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Week 3-4</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Central Florida</div>
+                    <div class="timeline-description">Orange (Disney), Tampa Bay region</div>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Week 5-6</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Washington Landing</div>
+                    <div class="timeline-description">King County, tech corridor engagement</div>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Week 7-8</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Bi-Coastal Presence</div>
+                    <div class="timeline-description">Press release, national attention</div>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Week 9-10</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Success Amplification</div>
+                    <div class="timeline-description">Case studies, webinars, expansion</div>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Week 11-12</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Third State Selection</div>
+                    <div class="timeline-description">California/Texas exploration</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <h3 class="control-title">Mission Control</h3>
+        <button class="control-button" onclick="simulateMigration()">Simulate Migration</button>
+        <button class="control-button" onclick="updateMetrics()">Update Metrics</button>
+        <button class="control-button" onclick="showProjections()">2025 Projections</button>
+        <button class="control-button" onclick="launchNational()">Launch National</button>
+    </div>
+
+    <script>
+        // Animate counters on load
+        function animateCounter(elementId, targetValue, suffix = '') {
+            const element = document.getElementById(elementId);
+            const startValue = 0;
+            const duration = 2000;
+            const startTime = Date.now();
+            
+            function update() {
+                const currentTime = Date.now();
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                if (typeof targetValue === 'number') {
+                    const currentValue = Math.floor(startValue + (targetValue - startValue) * progress);
+                    element.textContent = currentValue.toLocaleString() + suffix;
+                } else {
+                    element.textContent = targetValue;
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            update();
+        }
+
+        // Initialize animations
+        window.addEventListener('load', () => {
+            animateCounter('totalCounties', 27);
+            animateCounter('parcelsMigrated', 1.2, 'M');
+            // Other metrics are already formatted
+        });
+
+        // Simulation functions
+        function simulateMigration() {
+            const floridaProgress = document.getElementById('floridaProgress');
+            const washingtonProgress = document.getElementById('washingtonProgress');
+            
+            // Animate Florida progress
+            let floridaWidth = 33;
+            const floridaInterval = setInterval(() => {
+                if (floridaWidth < 67) {
+                    floridaWidth += 2;
+                    floridaProgress.style.width = floridaWidth + '%';
+                    floridaProgress.textContent = Math.floor(floridaWidth / 6.67) + ' of 15 Counties Live';
+                } else {
+                    clearInterval(floridaInterval);
+                }
+            }, 100);
+            
+            // Animate Washington progress
+            let washingtonWidth = 25;
+            const washingtonInterval = setInterval(() => {
+                if (washingtonWidth < 50) {
+                    washingtonWidth += 2;
+                    washingtonProgress.style.width = washingtonWidth + '%';
+                    washingtonProgress.textContent = Math.floor(washingtonWidth / 8.33) + ' of 12 Counties Live';
+                } else {
+                    clearInterval(washingtonInterval);
+                }
+            }, 120);
+            
+            // Update metrics
+            setTimeout(updateMetrics, 1000);
+        }
+
+        function updateMetrics() {
+            // Simulate metric updates
+            document.getElementById('citizensImpacted').textContent = '22.5M';
+            document.getElementById('parcelsMigrated').textContent = '2.8M';
+            document.getElementById('propertyValue').textContent = '$892B';
+            document.getElementById('annualRevenue').textContent = '$28.4M';
+            
+            // Add animation class
+            document.querySelectorAll('.metric-value').forEach(el => {
+                el.classList.add('animate-in');
+                setTimeout(() => el.classList.remove('animate-in'), 500);
+            });
+        }
+
+        function showProjections() {
+            alert(`2025 PROJECTIONS:
+            
+Q1: $15M ARR | 50 Counties
+Q2: $30M ARR | 100 Counties  
+Q3: $40M ARR | 150 Counties
+Q4: $50M ARR | 200 Counties
+
+Total: $50M ARR by EOY 2025
+States: 6 Active
+National Expansion: Funded`);
+        }
+
+        function launchNational() {
+            alert(`NATIONAL EXPANSION INITIATED!
+            
+Target States Identified:
+• California (Los Angeles, San Diego, Orange)
+• Texas (Harris, Dallas, Bexar)
+• New York (NYC Counties)
+• Illinois (Cook County)
+
+Estimated Timeline: Q3 2025
+Projected Revenue: $200M ARR by 2026
+
+THE TRANSCENDENCE CONTINUES!`);
+        }
+
+        // Real-time clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            // Update if you add a clock element
+        }
+        setInterval(updateClock, 1000);
+
+        // Simulate live updates
+        setInterval(() => {
+            const parcels = document.getElementById('parcelsMigrated');
+            const current = parseFloat(parcels.textContent);
+            const increment = (Math.random() * 0.01).toFixed(2);
+            parcels.textContent = (current + parseFloat(increment)).toFixed(1) + 'M';
+        }, 5000);
+    </script>
+</body>
+</html>

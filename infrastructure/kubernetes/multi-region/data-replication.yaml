@@ -1,0 +1,509 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: data-replication
+  labels:
+    cosmic-platform: terrafusion
+    component: data-replication
+---
+# CockroachDB for globally distributed SQL
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cockroachdb
+  namespace: data-replication
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cockroachdb
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
+- apiGroups: ["certificates.k8s.io"]
+  resources: ["certificatesigningrequests"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cockroachdb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cockroachdb
+subjects:
+- kind: ServiceAccount
+  name: cockroachdb
+  namespace: data-replication
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cockroachdb-config
+  namespace: data-replication
+data:
+  join-list: |
+    cockroachdb-0.cockroachdb.us-east-1.svc.cluster.local
+    cockroachdb-0.cockroachdb.us-west-2.svc.cluster.local
+    cockroachdb-0.cockroachdb.eu-west-1.svc.cluster.local
+    cockroachdb-0.cockroachdb.ap-southeast-1.svc.cluster.local
+  
+  localities: |
+    --locality=region=us-east-1,zone=us-east-1a,cosmic-dimension=1-3
+    --locality=region=us-west-2,zone=us-west-2a,cosmic-dimension=4-6
+    --locality=region=eu-west-1,zone=eu-west-1a,cosmic-dimension=7-9
+    --locality=region=ap-southeast-1,zone=ap-southeast-1a,cosmic-dimension=10-11
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cockroachdb
+  namespace: data-replication
+spec:
+  serviceName: cockroachdb
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cockroachdb
+  template:
+    metadata:
+      labels:
+        app: cockroachdb
+    spec:
+      serviceAccountName: cockroachdb
+      containers:
+      - name: cockroachdb
+        image: cockroachdb/cockroach:v23.1.0
+        command:
+        - /bin/bash
+        - -ecx
+        - |
+          exec /cockroach/cockroach start \
+            --insecure \
+            --advertise-addr=$(hostname -f) \
+            --http-addr=0.0.0.0 \
+            --join=$(cat /config/join-list | tr '\n' ',') \
+            --locality=$(grep $REGION /config/localities | head -1) \
+            --cache=2GiB \
+            --max-sql-memory=2GiB \
+            --logtostderr=INFO
+        env:
+        - name: REGION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['cosmic.terrafusion.io/region']
+        ports:
+        - containerPort: 26257
+          name: grpc
+        - containerPort: 8080
+          name: http
+        volumeMounts:
+        - name: datadir
+          mountPath: /cockroach/cockroach-data
+        - name: config
+          mountPath: /config
+        resources:
+          requests:
+            cpu: 2000m
+            memory: 8Gi
+          limits:
+            cpu: 4000m
+            memory: 16Gi
+      volumes:
+      - name: config
+        configMap:
+          name: cockroachdb-config
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd
+      resources:
+        requests:
+          storage: 100Gi
+---
+# Vitess for MySQL sharding
+apiVersion: planetscale.com/v2
+kind: VitessCluster
+metadata:
+  name: cosmic-vitess
+  namespace: data-replication
+spec:
+  images:
+    vtctld: vitess/lite:v15.0.0
+    vtgate: vitess/lite:v15.0.0
+    vttablet: vitess/lite:v15.0.0
+    vtbackup: vitess/lite:v15.0.0
+    mysqld:
+      mysql80Compatible: vitess/lite:v15.0.0
+  
+  cells:
+  - name: us-east-1
+    gateway:
+      authentication:
+        static:
+          secret:
+            name: cosmic-vitess-auth
+      replicas: 3
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          cpu: 2000m
+          memory: 4Gi
+  
+  - name: us-west-2
+    gateway:
+      authentication:
+        static:
+          secret:
+            name: cosmic-vitess-auth
+      replicas: 2
+  
+  - name: eu-west-1
+    gateway:
+      authentication:
+        static:
+          secret:
+            name: cosmic-vitess-auth
+      replicas: 2
+  
+  - name: ap-southeast-1
+    gateway:
+      authentication:
+        static:
+          secret:
+            name: cosmic-vitess-auth
+      replicas: 2
+  
+  keyspaces:
+  - name: cosmic_platform
+    turndownPolicy: Immediate
+    partitionings:
+    - equal:
+        parts: 4
+        shardTemplate:
+          databaseInitScriptSecret:
+            name: cosmic-schema
+          replication:
+            enforceSemiSync: true
+          tabletPools:
+          - cell: us-east-1
+            type: replica
+            replicas: 2
+            vttablet:
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 2Gi
+                limits:
+                  cpu: 2000m
+                  memory: 8Gi
+            mysqld:
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 2Gi
+                limits:
+                  cpu: 2000m
+                  memory: 8Gi
+            dataVolumeClaimTemplate:
+              accessModes: ["ReadWriteOnce"]
+              storageClassName: fast-ssd
+              resources:
+                requests:
+                  storage: 50Gi
+---
+# Rook Ceph for distributed storage
+apiVersion: ceph.rook.io/v1
+kind: CephCluster
+metadata:
+  name: cosmic-storage
+  namespace: data-replication
+spec:
+  dataDirHostPath: /var/lib/rook
+  mon:
+    count: 3
+    allowMultiplePerNode: false
+    volumeClaimTemplate:
+      spec:
+        storageClassName: fast-ssd
+        resources:
+          requests:
+            storage: 10Gi
+  
+  cephVersion:
+    image: quay.io/ceph/ceph:v17.2.6
+    allowUnsupported: false
+  
+  dashboard:
+    enabled: true
+    ssl: true
+  
+  network:
+    hostNetwork: false
+    connections:
+      encryption:
+        enabled: true
+      compression:
+        enabled: true
+  
+  crashCollector:
+    disable: false
+  
+  cleanupPolicy:
+    confirmation: ""
+    sanitizeDisks:
+      method: quick
+      dataSource: zero
+      iteration: 1
+  
+  storage:
+    useAllNodes: false
+    useAllDevices: false
+    nodes:
+    - name: "worker-1"
+      devices:
+      - name: "nvme0n1"
+      - name: "nvme1n1"
+    - name: "worker-2"
+      devices:
+      - name: "nvme0n1"
+      - name: "nvme1n1"
+    - name: "worker-3"
+      devices:
+      - name: "nvme0n1"
+      - name: "nvme1n1"
+    
+    config:
+      osdsPerDevice: "1"
+      
+  resources:
+    mgr:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+    mon:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+    osd:
+      requests:
+        cpu: 1000m
+        memory: 4Gi
+      limits:
+        cpu: 4000m
+        memory: 16Gi
+---
+# Multi-region CephBlockPool
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  name: cosmic-replicated-pool
+  namespace: data-replication
+spec:
+  failureDomain: region
+  replicated:
+    size: 3
+    requireSafeReplicaSize: true
+    replicasPerFailureDomain: 1
+  deviceClass: nvme
+  parameters:
+    compression_mode: aggressive
+    compression_algorithm: zstd
+  mirroring:
+    enabled: true
+    mode: image
+    snapshotSchedules:
+    - interval: 1h
+      startTime: 00:00:00-00:00
+    peers:
+      secretNames:
+      - us-west-2-peer
+      - eu-west-1-peer
+      - ap-southeast-1-peer
+---
+# Kafka for event streaming
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: cosmic-kafka
+  namespace: data-replication
+spec:
+  kafka:
+    version: 3.5.0
+    replicas: 9  # 3 per region for main regions
+    listeners:
+    - name: plain
+      port: 9092
+      type: internal
+      tls: false
+    - name: tls
+      port: 9093
+      type: internal
+      tls: true
+    - name: external
+      port: 9094
+      type: loadbalancer
+      tls: true
+    config:
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      inter.broker.protocol.version: "3.5"
+      # Multi-region configuration
+      broker.rack: ${STRIMZI_BROKER_RACK}
+      replica.selector.class: org.apache.kafka.common.replica.RackAwareReplicaSelector
+      # Quantum compression
+      compression.type: zstd
+      
+    storage:
+      type: jbod
+      volumes:
+      - id: 0
+        type: persistent-claim
+        size: 100Gi
+        class: fast-ssd
+      - id: 1
+        type: persistent-claim
+        size: 100Gi
+        class: fast-ssd
+    
+    rack:
+      topologyKey: topology.kubernetes.io/region
+    
+    resources:
+      requests:
+        cpu: 2000m
+        memory: 8Gi
+      limits:
+        cpu: 4000m
+        memory: 16Gi
+  
+  zookeeper:
+    replicas: 5
+    storage:
+      type: persistent-claim
+      size: 20Gi
+      class: fast-ssd
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        cpu: 1000m
+        memory: 4Gi
+  
+  entityOperator:
+    topicOperator:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+    userOperator:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+  
+  kafkaExporter:
+    topicRegex: ".*"
+    groupRegex: ".*"
+---
+# MirrorMaker2 for cross-region replication
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaMirrorMaker2
+metadata:
+  name: cosmic-mirror-maker
+  namespace: data-replication
+spec:
+  version: 3.5.0
+  replicas: 3
+  connectCluster: "us-east-1"
+  
+  clusters:
+  - alias: "us-east-1"
+    bootstrapServers: cosmic-kafka-kafka-bootstrap.us-east-1:9093
+    tls:
+      trustedCertificates:
+      - secretName: cosmic-kafka-cluster-ca-cert
+        certificate: ca.crt
+  
+  - alias: "us-west-2"
+    bootstrapServers: cosmic-kafka-kafka-bootstrap.us-west-2:9093
+    tls:
+      trustedCertificates:
+      - secretName: cosmic-kafka-cluster-ca-cert
+        certificate: ca.crt
+  
+  - alias: "eu-west-1"
+    bootstrapServers: cosmic-kafka-kafka-bootstrap.eu-west-1:9093
+    tls:
+      trustedCertificates:
+      - secretName: cosmic-kafka-cluster-ca-cert
+        certificate: ca.crt
+  
+  - alias: "ap-southeast-1"
+    bootstrapServers: cosmic-kafka-kafka-bootstrap.ap-southeast-1:9093
+    tls:
+      trustedCertificates:
+      - secretName: cosmic-kafka-cluster-ca-cert
+        certificate: ca.crt
+  
+  mirrors:
+  - sourceCluster: "us-east-1"
+    targetCluster: "us-west-2"
+    sourceConnector:
+      config:
+        replication.factor: 3
+        offset.storage.replication.factor: 3
+        status.storage.replication.factor: 3
+        offset.flush.interval.ms: 60000
+        replication.policy.class: "io.strimzi.kafka.connect.mirror.IdentityReplicationPolicy"
+    heartbeatConnector:
+      config:
+        heartbeats.topic.replication.factor: 3
+    checkpointConnector:
+      config:
+        checkpoints.topic.replication.factor: 3
+    topicsPattern: "cosmic.*"
+  
+  - sourceCluster: "us-east-1"
+    targetCluster: "eu-west-1"
+    sourceConnector:
+      config:
+        replication.factor: 3
+    topicsPattern: "cosmic.*"
+  
+  - sourceCluster: "us-east-1"
+    targetCluster: "ap-southeast-1"
+    sourceConnector:
+      config:
+        replication.factor: 3
+    topicsPattern: "cosmic.*"
+  
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi

@@ -1,0 +1,278 @@
+# TerraFusion Alerting Rules
+# Phase 6: The Dynasty Continues - No Surprises
+# "Preparation prevents poor performance" - Bill Belichick
+
+groups:
+  - name: terrafusion_core_services
+    rules:
+      # Service availability alerts
+      - alert: ServiceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+          team: terrafusion
+        annotations:
+          summary: "TerraFusion service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 30 seconds."
+          runbook: "Check service logs and restart if necessary"
+
+      - alert: ServiceDegraded
+        expr: up == 1 and rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          team: terrafusion
+        annotations:
+          summary: "TerraFusion service {{ $labels.job }} is experiencing errors"
+          description: "Service {{ $labels.job }} has an error rate above 10% for more than 2 minutes."
+
+      # Response time alerts
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: terrafusion
+        annotations:
+          summary: "High response time for {{ $labels.job }}"
+          description: "95th percentile response time for {{ $labels.job }} is above 2 seconds."
+
+      - alert: CriticalResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 5
+        for: 2m
+        labels:
+          severity: critical
+          team: terrafusion
+        annotations:
+          summary: "Critical response time for {{ $labels.job }}"
+          description: "95th percentile response time for {{ $labels.job }} is above 5 seconds."
+
+  - name: terrafusion_infrastructure
+    rules:
+      # System resource alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 5 minutes."
+
+      - alert: CriticalCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "Critical CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 95% for more than 2 minutes."
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 85% for more than 5 minutes."
+
+      - alert: CriticalMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "Critical memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 95% for more than 2 minutes."
+
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_avail_bytes) / node_filesystem_size_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "High disk usage on {{ $labels.instance }}"
+          description: "Disk usage on {{ $labels.mountpoint }} is above 85%."
+
+      - alert: CriticalDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_avail_bytes) / node_filesystem_size_bytes * 100 > 95
+        for: 1m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "Critical disk usage on {{ $labels.instance }}"
+          description: "Disk usage on {{ $labels.mountpoint }} is above 95%."
+
+  - name: terrafusion_database
+    rules:
+      # PostgreSQL alerts
+      - alert: PostgreSQLDown
+        expr: pg_up == 0
+        for: 30s
+        labels:
+          severity: critical
+          team: database
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database is not responding."
+
+      - alert: PostgreSQLTooManyConnections
+        expr: pg_stat_database_numbackends / pg_settings_max_connections * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "PostgreSQL has too many connections"
+          description: "PostgreSQL connection usage is above 80%."
+
+      - alert: PostgreSQLHighQueryTime
+        expr: pg_stat_activity_max_tx_duration > 300
+        for: 2m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "PostgreSQL slow query detected"
+          description: "A query has been running for more than 5 minutes."
+
+      # Redis alerts
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 30s
+        labels:
+          severity: critical
+          team: database
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance is not responding."
+
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "Redis memory usage is high"
+          description: "Redis memory usage is above 80%."
+
+  - name: terrafusion_containers
+    rules:
+      # Container resource alerts
+      - alert: ContainerHighCPU
+        expr: rate(container_cpu_usage_seconds_total[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Container {{ $labels.name }} high CPU usage"
+          description: "Container CPU usage is above 80%."
+
+      - alert: ContainerHighMemory
+        expr: container_memory_usage_bytes / container_spec_memory_limit_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Container {{ $labels.name }} high memory usage"
+          description: "Container memory usage is above 80% of limit."
+
+      - alert: ContainerRestarting
+        expr: rate(container_restart_count[15m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Container {{ $labels.name }} is restarting"
+          description: "Container has restarted recently."
+
+  - name: terrafusion_business_metrics
+    rules:
+      # Business logic alerts
+      - alert: LowPropertyValuationRate
+        expr: rate(property_valuations_total[10m]) < 1
+        for: 10m
+        labels:
+          severity: warning
+          team: business
+        annotations:
+          summary: "Low property valuation rate"
+          description: "Property valuations are below expected rate."
+
+      - alert: HighAPIErrorRate
+        expr: rate(api_errors_total[5m]) / rate(api_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: api
+        annotations:
+          summary: "High API error rate"
+          description: "API error rate is above 5%."
+
+      - alert: AuthenticationFailures
+        expr: rate(authentication_failures_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Too many authentication failures detected."
+
+  - name: terrafusion_health_checks
+    rules:
+      # Health check alerts
+      - alert: HealthCheckFailed
+        expr: terrafusion_health_check_success == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: operations
+        annotations:
+          summary: "TerraFusion health check failed for {{ $labels.service }}"
+          description: "Health check for service {{ $labels.service }} has been failing."
+
+      - alert: HealthCheckTimeout
+        expr: terrafusion_health_check_duration_seconds > 10
+        for: 2m
+        labels:
+          severity: warning
+          team: operations
+        annotations:
+          summary: "TerraFusion health check timeout for {{ $labels.service }}"
+          description: "Health check for service {{ $labels.service }} is taking too long."
+
+  - name: terrafusion_ssl_certificates
+    rules:
+      # SSL certificate expiry alerts
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+        for: 1m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.instance }} expires in less than 7 days."
+
+      - alert: SSLCertificateExpired
+        expr: probe_ssl_earliest_cert_expiry - time() < 0
+        for: 1m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "SSL certificate expired"
+          description: "SSL certificate for {{ $labels.instance }} has expired."

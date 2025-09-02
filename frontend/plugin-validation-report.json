@@ -1,0 +1,564 @@
+{
+  "totalPlugins": 6,
+  "passedTests": 96,
+  "failedTests": 0,
+  "pluginStatus": {
+    "cama-core": {
+      "tests": [
+        {
+          "test": "File: index.tsx",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: manifest.json",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: index.module.css",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "Manifest Field: name",
+          "status": "PASS",
+          "message": "Value: \"cama-core\""
+        },
+        {
+          "test": "Manifest Field: version",
+          "status": "PASS",
+          "message": "Value: \"1.0.0\""
+        },
+        {
+          "test": "Manifest Field: description",
+          "status": "PASS",
+          "message": "Value: \"Computer Assisted Mass Appraisal core functionality\""
+        },
+        {
+          "test": "Manifest Field: permissions",
+          "status": "PASS",
+          "message": "Value: [\"load:cama-core\"]"
+        },
+        {
+          "test": "Manifest Field: entryPoint",
+          "status": "PASS",
+          "message": "Value: \"index.tsx\""
+        },
+        {
+          "test": "Name Consistency",
+          "status": "PASS",
+          "message": "Name matches directory"
+        },
+        {
+          "test": "Syntax: React Import",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Export Default",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Mount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Unmount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: createRoot Usage",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Security Scan",
+          "status": "PASS",
+          "message": "No security issues detected"
+        },
+        {
+          "test": "Plugin Size",
+          "status": "PASS",
+          "message": "4.16 KB (Optimal)"
+        }
+      ],
+      "status": "PASS"
+    },
+    "gis-core": {
+      "tests": [
+        {
+          "test": "File: index.tsx",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: manifest.json",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: index.module.css",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "Manifest Field: name",
+          "status": "PASS",
+          "message": "Value: \"gis-core\""
+        },
+        {
+          "test": "Manifest Field: version",
+          "status": "PASS",
+          "message": "Value: \"1.0.0\""
+        },
+        {
+          "test": "Manifest Field: description",
+          "status": "PASS",
+          "message": "Value: \"Interactive parcel viewer and GIS mapping for property assessment\""
+        },
+        {
+          "test": "Manifest Field: permissions",
+          "status": "PASS",
+          "message": "Value: [\"load:gis-core\"]"
+        },
+        {
+          "test": "Manifest Field: entryPoint",
+          "status": "PASS",
+          "message": "Value: \"index.tsx\""
+        },
+        {
+          "test": "Name Consistency",
+          "status": "PASS",
+          "message": "Name matches directory"
+        },
+        {
+          "test": "Syntax: React Import",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Export Default",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Mount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Unmount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: createRoot Usage",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Security Scan",
+          "status": "PASS",
+          "message": "No security issues detected"
+        },
+        {
+          "test": "Plugin Size",
+          "status": "PASS",
+          "message": "9.41 KB (Optimal)"
+        }
+      ],
+      "status": "PASS"
+    },
+    "harris-pacs": {
+      "tests": [
+        {
+          "test": "File: index.tsx",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: manifest.json",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: index.module.css",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "Manifest Field: name",
+          "status": "PASS",
+          "message": "Value: \"harris-pacs\""
+        },
+        {
+          "test": "Manifest Field: version",
+          "status": "PASS",
+          "message": "Value: \"1.0.0\""
+        },
+        {
+          "test": "Manifest Field: description",
+          "status": "PASS",
+          "message": "Value: \"Harris PACS 9.0 legacy system migration and data import tools for Benton County\""
+        },
+        {
+          "test": "Manifest Field: permissions",
+          "status": "PASS",
+          "message": "Value: [\"harris.importStatus\",\"harris.startImport\",\"harris.validateData\",\"harris.exportReport\"]"
+        },
+        {
+          "test": "Manifest Field: entryPoint",
+          "status": "PASS",
+          "message": "Value: \"index.tsx\""
+        },
+        {
+          "test": "Name Consistency",
+          "status": "PASS",
+          "message": "Name matches directory"
+        },
+        {
+          "test": "Syntax: React Import",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Export Default",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Mount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Unmount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: createRoot Usage",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Security Scan",
+          "status": "PASS",
+          "message": "No security issues detected"
+        },
+        {
+          "test": "Plugin Size",
+          "status": "PASS",
+          "message": "19.66 KB (Optimal)"
+        }
+      ],
+      "status": "PASS"
+    },
+    "levy-core": {
+      "tests": [
+        {
+          "test": "File: index.tsx",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: manifest.json",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: index.module.css",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "Manifest Field: name",
+          "status": "PASS",
+          "message": "Value: \"levy-core\""
+        },
+        {
+          "test": "Manifest Field: version",
+          "status": "PASS",
+          "message": "Value: \"1.0.0\""
+        },
+        {
+          "test": "Manifest Field: description",
+          "status": "PASS",
+          "message": "Value: \"Tax levy calculation and roll generation for property assessment\""
+        },
+        {
+          "test": "Manifest Field: permissions",
+          "status": "PASS",
+          "message": "Value: [\"load:levy-core\"]"
+        },
+        {
+          "test": "Manifest Field: entryPoint",
+          "status": "PASS",
+          "message": "Value: \"index.tsx\""
+        },
+        {
+          "test": "Name Consistency",
+          "status": "PASS",
+          "message": "Name matches directory"
+        },
+        {
+          "test": "Syntax: React Import",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Export Default",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Mount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Unmount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: createRoot Usage",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Security Scan",
+          "status": "PASS",
+          "message": "No security issues detected"
+        },
+        {
+          "test": "Plugin Size",
+          "status": "PASS",
+          "message": "7.42 KB (Optimal)"
+        }
+      ],
+      "status": "PASS"
+    },
+    "valuation-tools": {
+      "tests": [
+        {
+          "test": "File: index.tsx",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: manifest.json",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: index.module.css",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "Manifest Field: name",
+          "status": "PASS",
+          "message": "Value: \"valuation-tools\""
+        },
+        {
+          "test": "Manifest Field: version",
+          "status": "PASS",
+          "message": "Value: \"1.0.0\""
+        },
+        {
+          "test": "Manifest Field: description",
+          "status": "PASS",
+          "message": "Value: \"AI-powered property valuation and MRA integration for assessment workflows\""
+        },
+        {
+          "test": "Manifest Field: permissions",
+          "status": "PASS",
+          "message": "Value: [\"load:valuation-tools\"]"
+        },
+        {
+          "test": "Manifest Field: entryPoint",
+          "status": "PASS",
+          "message": "Value: \"index.tsx\""
+        },
+        {
+          "test": "Name Consistency",
+          "status": "PASS",
+          "message": "Name matches directory"
+        },
+        {
+          "test": "Syntax: React Import",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Export Default",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Mount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Unmount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: createRoot Usage",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Security Scan",
+          "status": "PASS",
+          "message": "No security issues detected"
+        },
+        {
+          "test": "Plugin Size",
+          "status": "PASS",
+          "message": "10.81 KB (Optimal)"
+        }
+      ],
+      "status": "PASS"
+    },
+    "costforge-ai": {
+      "tests": [
+        {
+          "test": "File: index.tsx",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: manifest.json",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "File: index.module.css",
+          "status": "PASS",
+          "message": "File exists"
+        },
+        {
+          "test": "Manifest Field: name",
+          "status": "PASS",
+          "message": "Value: \"costforge-ai\""
+        },
+        {
+          "test": "Manifest Field: version",
+          "status": "PASS",
+          "message": "Value: \"1.0.0\""
+        },
+        {
+          "test": "Manifest Field: description",
+          "status": "PASS",
+          "message": "Value: \"AI-powered construction cost analysis and forecasting\""
+        },
+        {
+          "test": "Manifest Field: permissions",
+          "status": "PASS",
+          "message": "Value: [\"load:costforge-ai\",\"data:cost-analysis\",\"ml:inference\"]"
+        },
+        {
+          "test": "Manifest Field: entryPoint",
+          "status": "PASS",
+          "message": "Value: \"index.tsx\""
+        },
+        {
+          "test": "Name Consistency",
+          "status": "PASS",
+          "message": "Name matches directory"
+        },
+        {
+          "test": "Syntax: React Import",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Export Default",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Mount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: Unmount Function",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Syntax: createRoot Usage",
+          "status": "PASS",
+          "message": "Pattern found"
+        },
+        {
+          "test": "Security Scan",
+          "status": "PASS",
+          "message": "No security issues detected"
+        },
+        {
+          "test": "Plugin Size",
+          "status": "PASS",
+          "message": "10.65 KB (Optimal)"
+        }
+      ],
+      "status": "PASS"
+    }
+  },
+  "performanceMetrics": {
+    "cama-core": {
+      "sizeKB": 4.16
+    },
+    "gis-core": {
+      "sizeKB": 9.41
+    },
+    "harris-pacs": {
+      "sizeKB": 19.66
+    },
+    "levy-core": {
+      "sizeKB": 7.42
+    },
+    "valuation-tools": {
+      "sizeKB": 10.81
+    },
+    "costforge-ai": {
+      "sizeKB": 10.65
+    }
+  },
+  "securityChecks": {
+    "cama-core": {
+      "status": "SECURE",
+      "issues": []
+    },
+    "gis-core": {
+      "status": "SECURE",
+      "issues": []
+    },
+    "harris-pacs": {
+      "status": "SECURE",
+      "issues": []
+    },
+    "levy-core": {
+      "status": "SECURE",
+      "issues": []
+    },
+    "valuation-tools": {
+      "status": "SECURE",
+      "issues": []
+    },
+    "costforge-ai": {
+      "status": "SECURE",
+      "issues": []
+    }
+  },
+  "recommendations": []
+}

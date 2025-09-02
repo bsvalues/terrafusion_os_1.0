@@ -1,0 +1,111 @@
+# TerraFusion OS AI Swarm Monitoring Rules
+# Comprehensive alerting for 1,008 AI agents and swarm intelligence
+
+groups:
+  - name: ai-swarm.rules
+    rules:
+      # AI Agent Health
+      - alert: AIAgentDown
+        expr: up{job="ai-swarm"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: ai-swarm
+        annotations:
+          summary: "AI Swarm service is down"
+          description: "AI Swarm service has been down for more than 1 minute"
+
+      - alert: AIAgentHighLatency
+        expr: histogram_quantile(0.95, rate(ai_agent_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: ai-swarm
+        annotations:
+          summary: "AI Agent high latency detected"
+          description: "95th percentile of AI agent request duration is above 2 seconds"
+
+      # AI Agent Count Monitoring
+      - alert: AIAgentCountLow
+        expr: ai_agent_total_count < 1000
+        for: 2m
+        labels:
+          severity: warning
+          component: ai-swarm
+        annotations:
+          summary: "AI Agent count is below threshold"
+          description: "AI Agent count has dropped below 1000 agents"
+
+      - alert: AIAgentCountCritical
+        expr: ai_agent_total_count < 500
+        for: 1m
+        labels:
+          severity: critical
+          component: ai-swarm
+        annotations:
+          summary: "AI Agent count critically low"
+          description: "AI Agent count has dropped below 500 agents"
+
+      # AI Agent Performance
+      - alert: AIAgentHighErrorRate
+        expr: rate(ai_agent_errors_total[5m]) / rate(ai_agent_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: ai-swarm
+        annotations:
+          summary: "AI Agent high error rate"
+          description: "AI Agent error rate is above 5%"
+
+      - alert: AIAgentHighMemoryUsage
+        expr: ai_agent_memory_usage_bytes / ai_agent_memory_limit_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: ai-swarm
+        annotations:
+          summary: "AI Agent high memory usage"
+          description: "AI Agent memory usage is above 85%"
+
+      # AI Swarm Orchestration
+      - alert: AISwarmOrchestratorDown
+        expr: up{job="ai-command-brain"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: ai-orchestrator
+        annotations:
+          summary: "AI Swarm Orchestrator is down"
+          description: "AI Command Brain service has been down for more than 1 minute"
+
+      - alert: AISwarmHighQueueDepth
+        expr: ai_swarm_queue_depth > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: ai-swarm
+        annotations:
+          summary: "AI Swarm queue depth is high"
+          description: "AI Swarm queue depth is above 100 pending tasks"
+
+      # AI Agent Specialization
+      - alert: AISpecializationUnbalanced
+        expr: stddev(ai_agent_specialization_count) / avg(ai_agent_specialization_count) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: ai-swarm
+        annotations:
+          summary: "AI Agent specialization distribution is unbalanced"
+          description: "AI Agent specialization distribution has high standard deviation"
+
+      # AI Swarm Communication
+      - alert: AISwarmCommunicationFailure
+        expr: rate(ai_swarm_communication_errors_total[5m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+          component: ai-swarm
+        annotations:
+          summary: "AI Swarm communication failures detected"
+          description: "AI Swarm is experiencing communication errors between agents"

@@ -1,0 +1,24 @@
+Test: cosmic_orchestrator_instantiation
+Command: timeout 10 node -e 'import TerraFusionCosmicOrchestrator from "./scripts/terrafusion_cosmic_orchestrator.js"; const o = new TerraFusionCosmicOrchestrator(); console.log("Instantiation successful");'
+Expected: 0
+Actual: 1
+Output:
+node:internal/modules/package_json_reader:149
+  const result = modulesBinding.getPackageScopeConfig(`${resolved}`);
+                                ^
+
+Error: Invalid package config C:\Users\bsval\package.json.
+    at getPackageScopeConfig (node:internal/modules/package_json_reader:149:33)
+    at Object.getFileProtocolModuleFormat [as file:] (node:internal/modules/esm/get_format:116:72)
+    at defaultGetFormatWithoutErrors (node:internal/modules/esm/get_format:196:36)
+    at defaultResolve (node:internal/modules/esm/resolve:1007:13)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)
+    at #link (node:internal/modules/esm/module_job:208:49) {
+  code: 'ERR_INVALID_PACKAGE_CONFIG'
+}
+
+Node.js v24.4.0
+Timestamp: Thu, Jul 24, 2025  5:26:25 PM

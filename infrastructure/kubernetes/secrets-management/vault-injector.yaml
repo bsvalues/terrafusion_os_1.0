@@ -1,0 +1,197 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-agent-injector
+  namespace: vault
+  labels:
+    app: vault-agent-injector
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vault-agent-injector
+  template:
+    metadata:
+      labels:
+        app: vault-agent-injector
+    spec:
+      serviceAccountName: vault-agent-injector
+      containers:
+      - name: injector
+        image: hashicorp/vault-k8s:1.2.1
+        env:
+        - name: AGENT_INJECT_LISTEN
+          value: ":8080"
+        - name: AGENT_INJECT_LOG_LEVEL
+          value: info
+        - name: AGENT_INJECT_VAULT_ADDR
+          value: "https://vault.vault.svc.cluster.local:8200"
+        - name: AGENT_INJECT_VAULT_AUTH_PATH
+          value: auth/kubernetes
+        - name: AGENT_INJECT_VAULT_IMAGE
+          value: "vault:1.14.1"
+        - name: AGENT_INJECT_TLS_AUTO
+          value: "vault-agent-injector"
+        - name: AGENT_INJECT_TLS_AUTO_HOSTS
+          value: "vault-agent-injector,vault-agent-injector.vault,vault-agent-injector.vault.svc"
+        - name: AGENT_INJECT_DEFAULT_TEMPLATE
+          value: "json"
+        - name: AGENT_INJECT_LOG_FORMAT
+          value: "json"
+        # Cosmic Platform specific settings
+        - name: AGENT_INJECT_COSMIC_MODE
+          value: "enabled"
+        - name: AGENT_INJECT_NEURAL_ENCRYPTION
+          value: "true"
+        - name: AGENT_INJECT_QUANTUM_KEYS
+          value: "true"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        args:
+        - agent-inject
+        - 2>&1
+        ports:
+        - containerPort: 8080
+          name: webhook
+        livenessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8080
+            scheme: HTTPS
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8080
+            scheme: HTTPS
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-agent-injector
+  namespace: vault
+  labels:
+    app: vault-agent-injector
+spec:
+  ports:
+  - name: webhook
+    port: 443
+    targetPort: 8080
+  selector:
+    app: vault-agent-injector
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: vault-agent-injector
+  labels:
+    app: vault-agent-injector
+webhooks:
+- name: vault.hashicorp.com
+  admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: vault-agent-injector
+      namespace: vault
+      path: "/mutate"
+      port: 443
+    caBundle: ""  # Will be populated by the injector
+  rules:
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+  namespaceSelector:
+    matchLabels:
+      vault-injection: enabled
+  failurePolicy: Ignore
+  sideEffects: None
+  timeoutSeconds: 30
+---
+# Example annotations for pods to enable injection
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-injection-examples
+  namespace: vault
+data:
+  annotations.yaml: |
+    # Basic injection
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "cosmic-app"
+        vault.hashicorp.com/agent-inject-secret-database: "cosmic/data/database/config"
+    
+    # With custom template
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "cosmic-app"
+        vault.hashicorp.com/agent-inject-secret-app-config: "cosmic/data/app/config"
+        vault.hashicorp.com/agent-inject-template-app-config: |
+          {{- with secret "cosmic/data/app/config" -}}
+          export API_KEY="{{ .Data.data.api_key }}"
+          export SECRET_KEY="{{ .Data.data.secret_key }}"
+          export NEURAL_TOKEN="{{ .Data.data.neural_token }}"
+          {{- end }}
+    
+    # Quantum secrets injection
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "quantum-service"
+        vault.hashicorp.com/agent-inject-secret-quantum: "quantum/data/keys"
+        vault.hashicorp.com/agent-inject-template-quantum: |
+          {{- with secret "quantum/data/keys" -}}
+          {
+            "entanglement_key": "{{ .Data.data.entanglement_key }}",
+            "dimension_keys": {{ .Data.data.dimension_keys | toJson }},
+            "coherence_matrix": {{ .Data.data.coherence_matrix | toJson }}
+          }
+          {{- end }}
+    
+    # Neural network credentials
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "neural-network"
+        vault.hashicorp.com/agent-inject-secret-neural: "neural/data/models"
+        vault.hashicorp.com/agent-inject-command-neural: "sh -c 'cat /vault/secrets/neural | neural-decrypt'"
+    
+    # Init container mode
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-init-first: "true"
+        vault.hashicorp.com/role: "cosmic-app"
+        vault.hashicorp.com/agent-inject-secret-init: "cosmic/data/init"
+    
+    # Sidecar with auto-renewal
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-inject-token: "true"
+        vault.hashicorp.com/role: "cosmic-app"
+        vault.hashicorp.com/agent-inject-secret-dynamic: "cosmic/data/dynamic"
+        vault.hashicorp.com/agent-cache-enable: "true"

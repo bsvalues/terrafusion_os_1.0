@@ -1,0 +1,232 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opa-policies
+  namespace: kong
+data:
+  cosmic-authz.rego: |
+    package cosmic.authz
+    
+    import future.keywords.contains
+    import future.keywords.if
+    import future.keywords.in
+    
+    default allow := false
+    
+    # Allow health checks
+    allow if {
+        input.request.path == "/health"
+    }
+    
+    # Allow metrics endpoint for Prometheus
+    allow if {
+        input.request.path == "/metrics"
+        input.request.headers["User-Agent"][_] == "Prometheus"
+    }
+    
+    # Check if user has valid JWT token
+    allow if {
+        token := input.request.headers.authorization[_]
+        startswith(token, "Bearer ")
+        jwt_token := substring(token, 7, -1)
+        claims := io.jwt.decode_verify(jwt_token, {"secret": data.jwt_secret})
+        claims[1] == true
+        
+        # Check cosmic clearance level
+        cosmic_clearance := claims[0].cosmic_clearance
+        required_clearance := required_cosmic_clearance[input.request.path]
+        cosmic_clearance >= required_clearance
+    }
+    
+    # Admin bypass for emergency cosmic situations
+    allow if {
+        input.request.headers["X-Cosmic-Emergency-Override"][_] == data.emergency_override_key
+        input.request.headers["X-Admin-Token"][_] == data.admin_token
+    }
+    
+    # Neural network special access
+    allow if {
+        input.request.headers["X-Neural-Network-ID"][_] in data.authorized_neural_networks
+        neural_score := to_number(input.request.headers["X-Cosmic-Neural-Score"][_])
+        neural_score > 0.9
+    }
+    
+    # Quantum entanglement authentication
+    allow if {
+        quantum_state := input.request.headers["X-Quantum-State"][_]
+        quantum_state == "entangled"
+        quantum_pair_id := input.request.headers["X-Quantum-Pair-ID"][_]
+        quantum_pair_id in data.active_quantum_pairs
+    }
+    
+    # Service-to-service communication
+    allow if {
+        service_account := input.request.headers["X-Service-Account"][_]
+        service_account in data.authorized_services
+        
+        # Check if the service is allowed to access the requested path
+        allowed_paths := data.service_permissions[service_account]
+        input.request.path in allowed_paths
+    }
+    
+    # Rate limit check
+    rate_limit_exceeded if {
+        client_id := input.request.headers["X-Client-ID"][_]
+        requests := data.request_counts[client_id]
+        requests > data.rate_limits[client_id]
+    }
+    
+    # Deny if rate limit exceeded
+    deny if {
+        rate_limit_exceeded
+    }
+    
+    # Required cosmic clearance levels for different paths
+    required_cosmic_clearance := {
+        "/api/cosmic/admin": 5,
+        "/api/cosmic/operations": 4,
+        "/api/consciousness/modify": 4,
+        "/api/consciousness/read": 3,
+        "/api/quantum/write": 3,
+        "/api/quantum/read": 2,
+        "/api/public": 1
+    }
+    
+    # Response enrichment
+    response := {
+        "allowed": allow,
+        "reason": reason,
+        "cosmic_level": cosmic_level,
+        "headers": additional_headers
+    }
+    
+    reason := "Access denied" if not allow
+    reason := "Access granted" if allow
+    
+    cosmic_level := input.request.headers["X-Cosmic-Neural-Score"][_]
+    
+    additional_headers := {
+        "X-OPA-Decision-ID": uuid.rfc4122(),
+        "X-Cosmic-Auth-Result": reason,
+        "X-Rate-Limit-Remaining": remaining_requests
+    }
+    
+    remaining_requests := data.rate_limits[client_id] - data.request_counts[client_id]
+    client_id := input.request.headers["X-Client-ID"][_]
+  
+  data.json: |
+    {
+      "jwt_secret": "${JWT_SECRET}",
+      "emergency_override_key": "${EMERGENCY_OVERRIDE_KEY}",
+      "admin_token": "${ADMIN_TOKEN}",
+      "authorized_neural_networks": [
+        "neural-net-alpha",
+        "neural-net-beta",
+        "neural-net-gamma"
+      ],
+      "active_quantum_pairs": [
+        "quantum-pair-001",
+        "quantum-pair-002",
+        "quantum-pair-003"
+      ],
+      "authorized_services": [
+        "cosmic-orchestrator",
+        "consciousness-service",
+        "holographic-storage",
+        "monitoring-service"
+      ],
+      "service_permissions": {
+        "cosmic-orchestrator": ["/api/cosmic", "/api/consciousness", "/api/quantum"],
+        "consciousness-service": ["/api/consciousness", "/api/quantum/read"],
+        "holographic-storage": ["/api/quantum"],
+        "monitoring-service": ["/api/cosmic/metrics", "/api/consciousness/metrics", "/api/quantum/metrics"]
+      },
+      "rate_limits": {
+        "free-tier": 100,
+        "basic-tier": 1000,
+        "premium-tier": 10000,
+        "cosmic-tier": 100000
+      },
+      "request_counts": {}
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opa
+  namespace: kong
+  labels:
+    app: opa
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8181"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: opa
+        image: openpolicyagent/opa:0.55.0-envoy
+        ports:
+        - containerPort: 8181
+          name: http
+        args:
+          - "run"
+          - "--server"
+          - "--addr=0.0.0.0:8181"
+          - "--diagnostic-addr=0.0.0.0:8282"
+          - "--set=plugins.envoy_ext_authz_grpc.addr=:9191"
+          - "--set=plugins.envoy_ext_authz_grpc.query=data.cosmic.authz.allow"
+          - "--set=decision_logs.console=true"
+          - "/policies"
+        volumeMounts:
+        - name: opa-policies
+          mountPath: /policies
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8181
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health?bundle=true
+            port: 8181
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: opa-policies
+        configMap:
+          name: opa-policies
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opa
+  namespace: kong
+  labels:
+    app: opa
+spec:
+  selector:
+    app: opa
+  ports:
+  - name: http
+    port: 8181
+    targetPort: 8181
+  - name: grpc
+    port: 9191
+    targetPort: 9191

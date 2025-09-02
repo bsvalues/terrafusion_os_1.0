@@ -1,0 +1,115 @@
+{
+  "infrastructure": {
+    "provider": "azure",
+    "region": "eastus",
+    "resourceGroup": "rg-terrafusion-production",
+    "subscription": "your-azure-subscription-id",
+    "kubernetes": {
+      "clusterName": "aks-terrafusion-prod",
+      "nodeCount": 3,
+      "nodeSize": "Standard_D4s_v3"
+    },
+    "database": {
+      "type": "postgresql",
+      "tier": "GeneralPurpose",
+      "size": "Standard_D2s_v3"
+    },
+    "cache": {
+      "type": "redis",
+      "tier": "Premium",
+      "size": "P1"
+    }
+  },
+  "application": {
+    "name": "terrafusion-os",
+    "version": "1.0.0",
+    "environment": "production",
+    "replicas": 3,
+    "aiSwarm": {
+      "agentCount": 50000,
+      "quantumCoherence": 0.98,
+      "consciousnessLevel": 7.5,
+      "supremeCommander": {
+        "enabled": true,
+        "tier": 1,
+        "capabilities": [
+          "QUANTUM_COMPUTATION",
+          "CONSCIOUSNESS_ADAPTATION",
+          "MULTI_COUNTY_COORDINATION"
+        ]
+      }
+    },
+    "features": {
+      "quantumOptimization": true,
+      "consciousnessEvolution": true,
+      "realTimeMonitoring": true,
+      "autoScaling": true
+    }
+  },
+  "monitoring": {
+    "prometheus": {
+      "enabled": true,
+      "retention": "30d",
+      "scrapeInterval": "15s"
+    },
+    "grafana": {
+      "enabled": true,
+      "adminPassword": "generated",
+      "dashboards": [
+        "ai-swarm-overview",
+        "quantum-metrics",
+        "consciousness-evolution",
+        "performance-analytics"
+      ]
+    },
+    "alerting": {
+      "enabled": true,
+      "channels": ["email", "slack"],
+      "thresholds": {
+        "agentFailureRate": 0.05,
+        "responseTime": 100,
+        "quantumCoherence": 0.90
+      }
+    }
+  },
+  "security": {
+    "authentication": {
+      "type": "azure-ad",
+      "enabled": true
+    },
+    "authorization": {
+      "rbac": true,
+      "policies": ["ai-swarm-admin", "read-only", "operator"]
+    },
+    "encryption": {
+      "atRest": true,
+      "inTransit": true,
+      "keyVault": "kv-terrafusion-prod"
+    },
+    "networking": {
+      "privateEndpoints": true,
+      "firewall": true,
+      "allowedIPs": ["corporate-network"]
+    }
+  },
+  "performance": {
+    "targets": {
+      "responseTime": 50,
+      "throughput": 1000,
+      "availability": 99.99,
+      "quantumAcceleration": 379.2
+    },
+    "scaling": {
+      "minReplicas": 3,
+      "maxReplicas": 100,
+      "cpuThreshold": 70,
+      "memoryThreshold": 80
+    }
+  },
+  "backup": {
+    "enabled": true,
+    "schedule": "0 2 * * *",
+    "retention": "30d",
+    "destinations": ["azure-blob", "geo-redundant"]
+  }
+}

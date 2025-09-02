@@ -1,0 +1,91 @@
+groups:
+  - name: terrafusion_performance
+    rules:
+      - alert: APIResponseTimeTooHigh
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.010
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "API response time exceeded target of 10ms"
+          description: "95th percentile response time is {{ $value }}ms, target is 10ms"
+          
+      - alert: APIResponseTimeCritical
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.050
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "API response time critically high"
+          description: "95th percentile response time is {{ $value }}ms, critical threshold is 50ms"
+          
+  - name: ai_swarm_health
+    rules:
+      - alert: AISwarmAgentsLow
+        expr: sum(ai_agents_active) < 1000
+        for: 60s
+        labels:
+          severity: warning
+        annotations:
+          summary: "AI Swarm has fewer than 1000 active agents"
+          description: "Current active agents: {{ $value }}, target: 1008"
+          
+      - alert: QuantumCoherenceLow
+        expr: quantum_coherence_ratio < 0.90
+        for: 120s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Quantum coherence below optimal threshold"
+          description: "Current coherence: {{ $value }}, target: >0.90"
+          
+  - name: database_performance
+    rules:
+      - alert: DatabaseQuerySlow
+        expr: rate(database_query_duration_seconds_sum[5m]) / rate(database_query_duration_seconds_count[5m]) > 0.005
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database queries slower than target"
+          description: "Average query time: {{ $value }}ms, target: <5ms"
+          
+  - name: government_compliance
+    rules:
+      - alert: ComplianceCheckFailure
+        expr: compliance_check_status == 0
+        for: 0s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Government compliance check failed"
+          description: "Compliance check {{ $labels.check_name }} has failed"
+          
+      - alert: AuditLogFailure
+        expr: increase(audit_log_errors_total[5m]) > 0
+        for: 0s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Audit logging system failure"
+          description: "{{ $value }} audit log errors in the last 5 minutes"
+          
+  - name: system_resources
+    rules:
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes / 1024 / 1024 > 2048
+        for: 300s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage: {{ $value }}MB, threshold: 2048MB"
+          
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 300s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage: {{ $value }}%, threshold: 80%"

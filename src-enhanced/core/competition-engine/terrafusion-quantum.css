@@ -1,0 +1,337 @@
+
+.tf-quantum-trust {
+    --quantum-probability: 0.332929;
+    --quantum-phase: 0rad;
+    --quantum-color: #0099ff;
+    opacity: 0.332929;
+    filter: blur(6.67071px);
+    transform: rotate(calc(var(--quantum-phase) * 57.2958deg));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tf-quantum-trust:hover {
+    --quantum-probability: 1;
+    opacity: 1;
+    filter: blur(0);
+}
+            
+
+.tf-quantum-transcendence {
+    --quantum-probability: 0.332929;
+    --quantum-phase: 1.0471975511965976rad;
+    --quantum-color: #00ffee;
+    opacity: 0.332929;
+    filter: blur(6.67071px);
+    transform: rotate(calc(var(--quantum-phase) * 57.2958deg));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tf-quantum-transcendence:hover {
+    --quantum-probability: 1;
+    opacity: 1;
+    filter: blur(0);
+}
+            
+
+.tf-quantum-success {
+    --quantum-probability: 0.332929;
+    --quantum-phase: 2.0943951023931953rad;
+    --quantum-color: #00ffaa;
+    opacity: 0.332929;
+    filter: blur(6.67071px);
+    transform: rotate(calc(var(--quantum-phase) * 57.2958deg));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tf-quantum-success:hover {
+    --quantum-probability: 1;
+    opacity: 1;
+    filter: blur(0);
+}
+            
+
+@keyframes quantum-fluctuation {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        filter: hue-rotate(0deg);
+    }
+    25% {
+        transform: scale(1.02) rotate(1deg);
+        filter: hue-rotate(10deg);
+    }
+    50% {
+        transform: scale(0.98) rotate(-1deg);
+        filter: hue-rotate(-10deg);
+    }
+    75% {
+        transform: scale(1.01) rotate(0.5deg);
+        filter: hue-rotate(5deg);
+    }
+}
+
+.tf-quantum-element {
+    animation: quantum-fluctuation 4s ease-in-out infinite;
+    will-change: transform, filter;
+}
+
+/* GAUGE THEORY ENHANCEMENTS */
+/* Counties as gauge field configurations */
+.tf-gauge-field {
+    --gauge-coupling: 0.379;
+    --field-strength: calc(var(--gauge-coupling) * var(--quantum-probability));
+    --instanton-density: 1.618;
+    position: relative;
+    background: radial-gradient(
+        ellipse at center,
+        hsla(var(--gauge-hue, 220), 70%, 50%, calc(var(--field-strength) * 0.3)),
+        hsla(var(--gauge-hue, 220), 90%, 30%, calc(var(--field-strength) * 0.1)),
+        transparent 70%
+    );
+}
+
+/* Yang-Mills field strength tensor visualization */
+@keyframes yang-mills-evolution {
+    0% { 
+        --field-strength: 0.1;
+        transform: matrix3d(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+    }
+    33% { 
+        --field-strength: 0.6;
+        transform: matrix3d(0.8660,0.5,0,0, -0.5,0.8660,0,0, 0,0,1,0, 0,0,0,1);
+    }
+    66% { 
+        --field-strength: 0.9;
+        transform: matrix3d(0.8660,-0.5,0,0, 0.5,0.8660,0,0, 0,0,1,0, 0,0,0,1);
+    }
+    100% { 
+        --field-strength: 0.1;
+        transform: matrix3d(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+    }
+}
+
+.tf-gauge-county {
+    --gauge-hue: var(--county-hue, 220);
+    animation: yang-mills-evolution 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+.tf-gauge-county::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        conic-gradient(
+            from calc(var(--gauge-coupling) * 360deg),
+            transparent 0deg,
+            hsla(var(--gauge-hue), 80%, 60%, 0.1) 120deg,
+            hsla(calc(var(--gauge-hue) + 120), 80%, 60%, 0.1) 240deg,
+            hsla(calc(var(--gauge-hue) + 240), 80%, 60%, 0.1) 360deg
+        );
+    animation: gauge-field-rotation 12s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes gauge-field-rotation {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Instanton visualization - quantum tunneling effects */
+@keyframes instanton-emergence {
+    0% { 
+        opacity: 0;
+        transform: scale(0.1) rotate(0deg);
+        filter: blur(20px) hue-rotate(0deg);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: scale(1.2) rotate(180deg);
+        filter: blur(2px) hue-rotate(180deg);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(0.1) rotate(360deg);
+        filter: blur(20px) hue-rotate(360deg);
+    }
+}
+
+.tf-instanton {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        hsla(280, 100%, 80%, 0.9) 0%,
+        hsla(300, 100%, 60%, 0.6) 30%,
+        hsla(320, 100%, 40%, 0.3) 60%,
+        transparent 100%
+    );
+    animation: instanton-emergence 3s ease-in-out infinite;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+/* Force carrier particles (plugin modules) */
+.tf-force-carrier {
+    --carrier-mass: 0;
+    --carrier-coupling: 0.215;
+    --interaction-range: calc(1 / (var(--carrier-mass) + 0.001));
+    position: relative;
+}
+
+.tf-force-carrier::after {
+    content: '';
+    position: absolute;
+    width: calc(var(--interaction-range) * 20px);
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        hsla(var(--carrier-hue, 180), 90%, 70%, 0.8),
+        hsla(var(--carrier-hue, 180), 90%, 70%, 0.4),
+        transparent
+    );
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    animation: force-propagation 2s ease-out infinite;
+}
+
+@keyframes force-propagation {
+    0% { 
+        width: 0;
+        opacity: 1;
+    }
+    100% { 
+        width: calc(var(--interaction-range) * 20px);
+        opacity: 0;
+    }
+}
+
+/* Topological quantum numbers visualization */
+.tf-topological {
+    --chern-number: 1;
+    --winding-number: 1;
+    --euler-characteristic: 2;
+    background: 
+        repeating-conic-gradient(
+            from 0deg,
+            hsla(40, 80%, 60%, 0.1) 0deg,
+            hsla(40, 80%, 60%, 0.3) calc(360deg / var(--chern-number)),
+            hsla(40, 80%, 60%, 0.1) calc(720deg / var(--chern-number))
+        );
+    position: relative;
+}
+
+/* Holonomy path visualization */
+@keyframes wilson-loop {
+    0% { 
+        transform: translateX(0) translateY(0);
+        filter: hue-rotate(0deg);
+    }
+    25% { 
+        transform: translateX(20px) translateY(0);
+        filter: hue-rotate(90deg);
+    }
+    50% { 
+        transform: translateX(20px) translateY(20px);
+        filter: hue-rotate(180deg);
+    }
+    75% { 
+        transform: translateX(0) translateY(20px);
+        filter: hue-rotate(270deg);
+    }
+    100% { 
+        transform: translateX(0) translateY(0);
+        filter: hue-rotate(360deg);
+    }
+}
+
+.tf-holonomy::before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: hsla(60, 100%, 70%, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 10px hsla(60, 100%, 70%, 0.6);
+    animation: wilson-loop 6s linear infinite;
+    top: 10px;
+    left: 10px;
+}
+
+/* Benton County - highest efficiency gauge field */
+.tf-gauge-benton {
+    --county-hue: 120; /* Green for optimal efficiency */
+    --gauge-coupling: 0.379;
+    --field-strength: 0.94;
+}
+
+/* Clark County - optimization target */
+.tf-gauge-clark {
+    --county-hue: 30; /* Orange for optimization needed */
+    --gauge-coupling: 0.379;
+    --field-strength: 0.23;
+}
+
+/* Yakima County - flagship development */
+.tf-gauge-yakima {
+    --county-hue: 280; /* Purple for flagship status */
+    --gauge-coupling: 0.379;
+    --field-strength: 0.31;
+}
+
+/* Cowlitz County - moderate optimization */
+.tf-gauge-cowlitz {
+    --county-hue: 200; /* Blue for steady progress */
+    --gauge-coupling: 0.379;
+    --field-strength: 0.42;
+}
+
+/* CostForge AI - massless force carrier */
+.tf-force-costforge {
+    --carrier-hue: 300; /* Magenta for AI */
+    --carrier-mass: 0;
+    --carrier-coupling: 0.379;
+}
+
+/* TerraFlow - workflow force carrier */
+.tf-force-terraflow {
+    --carrier-hue: 180; /* Cyan for workflow */
+    --carrier-mass: 0.1;
+    --carrier-coupling: 0.215;
+}
+
+/* GIS Pro - spatial force carrier */
+.tf-force-gispro {
+    --carrier-hue: 90; /* Yellow-green for spatial */
+    --carrier-mass: 0.05;
+    --carrier-coupling: 0.156;
+}
+
+/* Terra Levy - financial force carrier */
+.tf-force-terralevy {
+    --carrier-hue: 60; /* Yellow for financial */
+    --carrier-mass: 0.02;
+    --carrier-coupling: 0.298;
+}
+
+/* Quantum coherence states */
+.tf-quantum-coherent {
+    filter: 
+        drop-shadow(0 0 10px hsla(var(--gauge-hue, 220), 90%, 70%, 0.6))
+        drop-shadow(0 0 20px hsla(var(--gauge-hue, 220), 90%, 70%, 0.3))
+        drop-shadow(0 0 40px hsla(var(--gauge-hue, 220), 90%, 70%, 0.1));
+}
+
+.tf-quantum-decoherent {
+    filter: 
+        blur(calc(5px * (1 - var(--field-strength))))
+        grayscale(calc(0.5 * (1 - var(--field-strength))));
+    opacity: calc(0.3 + 0.7 * var(--field-strength));
+}
+        

@@ -1,0 +1,171 @@
+groups:
+  - name: system.rules
+    rules:
+      # Core Service Health
+      - alert: BackendAPIDown
+        expr: up{job="terrafusion-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "TerraFusion Backend API is down"
+          description: "Backend API service has been down for more than 1 minute"
+
+      - alert: FrontendDown
+        expr: up{job="terrafusion-frontend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: frontend
+        annotations:
+          summary: "TerraFusion Frontend is down"
+          description: "Frontend service has been down for more than 1 minute"
+
+      - alert: DatabaseDown
+        expr: up{job="sqlite-database"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database service is down"
+          description: "Database service has been down for more than 1 minute"
+
+      # Performance Monitoring
+      - alert: BackendHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-backend"}[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "Backend API high latency detected"
+          description: "95th percentile of backend API response time is above 1 second"
+
+      - alert: FrontendHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-frontend"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: frontend
+        annotations:
+          summary: "Frontend high latency detected"
+          description: "95th percentile of frontend response time is above 2 seconds"
+
+      # Error Rate Monitoring
+      - alert: BackendHighErrorRate
+        expr: rate(http_requests_total{job="terrafusion-backend", status=~"5.."}[5m]) / rate(http_requests_total{job="terrafusion-backend"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "Backend API high error rate"
+          description: "Backend API error rate is above 5%"
+
+      - alert: FrontendHighErrorRate
+        expr: rate(http_requests_total{job="terrafusion-frontend", status=~"5.."}[5m]) / rate(http_requests_total{job="terrafusion-frontend"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: frontend
+        annotations:
+          summary: "Frontend high error rate"
+          description: "Frontend error rate is above 5%"
+
+      # Resource Monitoring
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80%"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 85%"
+
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High disk usage detected"
+          description: "Disk usage is above 85%"
+
+      # Network Monitoring
+      - alert: HighNetworkLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-backend"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: network
+        annotations:
+          summary: "High network latency detected"
+          description: "Network latency is above 2 seconds"
+
+      # Module System Monitoring
+      - alert: ModuleLoadFailure
+        expr: terrafusion_modules_load_failures_total > 0
+        for: 1m
+        labels:
+          severity: warning
+          component: modules
+        annotations:
+          summary: "Module load failures detected"
+          description: "Some modules failed to load properly"
+
+      - alert: ModuleCountLow
+        expr: terrafusion_modules_active_count < 30
+        for: 2m
+        labels:
+          severity: warning
+          component: modules
+        annotations:
+          summary: "Low module count detected"
+          description: "Active module count has dropped below 30"
+
+      # Authentication Monitoring
+      - alert: AuthFailureRate
+        expr: rate(terrafusion_auth_failures_total[5m]) / rate(terrafusion_auth_attempts_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: authentication
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Authentication failure rate is above 10%"
+
+      # Audit Logging Monitoring
+      - alert: AuditLoggingFailure
+        expr: rate(terrafusion_audit_log_failures_total[5m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+          component: audit
+        annotations:
+          summary: "Audit logging failures detected"
+          description: "Audit logging system is experiencing failures"
+
+      # Health Check Monitoring
+      - alert: HealthCheckFailure
+        expr: up{job=~"terrafusion-backend|terrafusion-frontend|ai-command-brain|ai-swarm|ai-advanced"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: health
+        annotations:
+          summary: "Health check failure detected"
+          description: "One or more services are failing health checks"

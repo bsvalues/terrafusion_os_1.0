@@ -1,0 +1,287 @@
+# Benton County Production Configuration
+# TerraFusion Enterprise Deployment
+
+county:
+  name: "Benton County"
+  state: "Washington"
+  fips_code: "53005"
+  timezone: "America/Los_Angeles"
+  fiscal_year_start: "January 1"
+
+deployment:
+  environment: "production"
+  domain: "co.benton.wa.us"
+  ssl_enabled: true
+  high_availability: true
+
+# Infrastructure Configuration
+infrastructure:
+  kubernetes:
+    namespace: "benton-county-prod"
+    nodes:
+      masters: 3
+      workers: 5
+      auto_scaling:
+        min: 5
+        max: 10
+        target_cpu: 70
+        target_memory: 80
+    
+  load_balancer:
+    type: "nginx"
+    ssl_termination: true
+    endpoints:
+      - name: "main"
+        domain: "terrafusion.co.benton.wa.us"
+        port: 443
+      - name: "public"
+        domain: "assess.co.benton.wa.us"
+        port: 443
+      - name: "internal"
+        domain: "internal.co.benton.wa.us"
+        port: 443
+      - name: "api"
+        domain: "api.co.benton.wa.us"
+        port: 443
+
+# Database Configuration
+database:
+  postgresql:
+    version: "15"
+    nodes: 3
+    replication: "synchronous"
+    backup:
+      enabled: true
+      schedule: "0 2 * * *"  # 2 AM daily
+      retention_days: 30
+      s3_bucket: "benton-county-backups"
+    
+  redis:
+    version: "7"
+    nodes: 3
+    persistence: true
+    maxmemory: "8gb"
+
+# Application Configurations
+applications:
+  costforge_ai:
+    enabled: true
+    replicas: 3
+    features:
+      mass_appraisal: true
+      comparable_analysis: true
+      market_trending: true
+      ai_confidence_threshold: 0.85
+    models:
+      residential: "benton_res_2024_v2"
+      commercial: "benton_com_2024_v1"
+      agricultural: "benton_ag_2024_v1"
+      
+  terrafusion_sync:
+    enabled: true
+    sync_interval: 300  # 5 minutes
+    pacs_integration:
+      system: "legacy_assessor_system"
+      connection: "jdbc:sqlserver://legacydb:1433"
+      sync_mode: "bidirectional"
+      
+  gispro:
+    enabled: true
+    esri_integration:
+      server: "https://gis.co.benton.wa.us/arcgis"
+      services:
+        - "Parcels"
+        - "Zoning"
+        - "Aerials"
+        - "Utilities"
+    crs: "EPSG:2927"  # Washington State Plane South
+    
+  property_workbench:
+    enabled: true
+    public_portal: true
+    features:
+      online_payments: true
+      document_upload: true
+      appeal_filing: true
+      tax_estimation: true
+
+# Benton County Specific Settings
+benton_specific:
+  parcels:
+    total_count: 99347
+    jurisdictions:
+      - name: "Kennewick"
+        code: "KEN"
+        parcels: 35421
+      - name: "Richland"
+        code: "RCH"
+        parcels: 28734
+      - name: "West Richland"
+        code: "WR"
+        parcels: 8932
+      - name: "Prosser"
+        code: "PRO"
+        parcels: 6821
+      - name: "Benton City"
+        code: "BC"
+        parcels: 1243
+      - name: "Unincorporated"
+        code: "UNINC"
+        parcels: 18196
+        
+  special_districts:
+    - name: "Port of Kennewick"
+      code: "PORT1"
+    - name: "Port of Benton"
+      code: "PORT2"
+    - name: "Benton REA"
+      code: "REA"
+    - name: "Various Fire Districts"
+      count: 4
+    - name: "Various Water Districts"
+      count: 12
+      
+  wine_country_module:
+    enabled: true
+    ava_districts:
+      - "Red Mountain"
+      - "Horse Heaven Hills"
+      - "Yakima Valley"
+    vineyard_assessment: true
+    wine_production_tracking: true
+    
+  hanford_reach:
+    enabled: true
+    federal_land_codes:
+      - "DOE"
+      - "USFWS"
+    special_handling: true
+
+# Integration Settings
+integrations:
+  washington_dor:
+    enabled: true
+    api_endpoint: "https://dor.wa.gov/api/v2"
+    reporting_schedule: "monthly"
+    credentials_vault_path: "/vault/wa-dor"
+    
+  usps_address_validation:
+    enabled: true
+    api_key_vault_path: "/vault/usps"
+    
+  payment_gateway:
+    provider: "stripe"
+    public_key_vault_path: "/vault/stripe-public"
+    secret_key_vault_path: "/vault/stripe-secret"
+    accepted_methods:
+      - "credit_card"
+      - "ach"
+      - "e_check"
+
+# Security Configuration
+security:
+  authentication:
+    provider: "active_directory"
+    domain: "BENTON.LOCAL"
+    mfa_required: true
+    session_timeout: 3600  # 1 hour
+    
+  rbac:
+    roles:
+      - name: "assessor"
+        permissions: ["*"]
+      - name: "chief_deputy"
+        permissions: ["*"]
+      - name: "appraiser"
+        permissions: ["read", "write", "appraise"]
+      - name: "support_staff"
+        permissions: ["read", "customer_service"]
+      - name: "public"
+        permissions: ["read_public"]
+        
+  audit:
+    enabled: true
+    retention_days: 2555  # 7 years
+    compliance:
+      - "SOC2"
+      - "StateAudit"
+      - "PublicRecords"
+
+# Performance Settings
+performance:
+  caching:
+    enabled: true
+    ttl: 3600
+    strategies:
+      - "parcel_lookup"
+      - "owner_search"
+      - "sales_history"
+      - "tax_calculations"
+      
+  cdn:
+    enabled: true
+    provider: "cloudflare"
+    zones:
+      - "assess.co.benton.wa.us"
+      
+  api_rate_limits:
+    public: 100  # per minute
+    authenticated: 1000  # per minute
+    internal: 10000  # per minute
+
+# Monitoring Configuration
+monitoring:
+  prometheus:
+    enabled: true
+    retention: "90d"
+    
+  grafana:
+    enabled: true
+    dashboards:
+      - "executive_overview"
+      - "system_health"
+      - "user_activity"
+      - "revenue_tracking"
+      - "performance_metrics"
+      
+  alerts:
+    channels:
+      - type: "email"
+        recipients: ["it@co.benton.wa.us"]
+      - type: "slack"
+        webhook: "https://hooks.slack.com/..."
+      - type: "pagerduty"
+        api_key_vault_path: "/vault/pagerduty"
+
+# Success Metrics
+metrics:
+  targets:
+    system_uptime: 99.9
+    response_time_ms: 200
+    user_satisfaction: 90
+    efficiency_gain: 50
+    accuracy_rate: 99.9
+    
+  tracking:
+    - "daily_transactions"
+    - "api_calls"
+    - "user_sessions"
+    - "document_uploads"
+    - "payment_processing"
+
+# Support Configuration
+support:
+  tier: "championship"
+  sla: "immediate"
+  channels:
+    hotline: "1-800-CHAMPION"
+    email: "benton@terrafusion.io"
+    slack: "#benton-county-vip"
+    on_site: true
+    
+# Feature Flags
+features:
+  beta_features: true
+  ai_experimental: true
+  blockchain_pilot: true
+  quantum_valuation: false  # Coming Q2 2025

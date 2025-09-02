@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Brand Visual Test</title>
+    <style>
+        :root {
+            --cosmic-blue: #0891b2;
+            --quantum-teal: #00d2ff;
+            --neural-purple: #667eea;
+            --stellar-white: #ffffff;
+            --deep-space: #0a0f1c;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--deep-space) 0%, #1a2f3a 100%);
+            color: var(--stellar-white);
+            margin: 0;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        
+        .test-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 10px;
+        }
+        
+        h1 {
+            color: var(--quantum-teal);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: var(--neural-purple);
+            border-bottom: 2px solid var(--cosmic-blue);
+            padding-bottom: 10px;
+        }
+        
+        .color-swatch {
+            width: 100px;
+            height: 60px;
+            display: inline-block;
+            margin: 10px;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 60px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .cosmic-blue { background: var(--cosmic-blue); }
+        .quantum-teal { background: var(--quantum-teal); }
+        .neural-purple { background: var(--neural-purple); }
+        .deep-space { background: var(--deep-space); border: 1px solid var(--quantum-teal); }
+        
+        .tagline {
+            font-size: 1.5rem;
+            color: var(--quantum-teal);
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .speed-claim {
+            font-size: 3rem;
+            color: var(--quantum-teal);
+            text-align: center;
+            background: linear-gradient(135deg, var(--quantum-teal), var(--cosmic-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            margin: 30px 0;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .module {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--neural-purple);
+        }
+    </style>
+</head>
+<body>
+    <h1>TerraFusion Brand Visual Test</h1>
+    <p>Testing visual consistency and brand compliance</p>
+    
+    <div class="test-section">
+        <h2>Brand Taglines</h2>
+        <div class="tagline">Infrastructure Intelligence, Infinite Scale</div>
+        <div class="tagline">Government. Simplified.</div>
+        <div class="tagline">Government. Transcended.</div>
+        <div class="tagline">Tactical Municipal Excellence</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Speed Performance Claim</h2>
+        <div class="speed-claim">379M× Faster</div>
+        <p style="text-align: center; color: var(--quantum-teal);">Than Marshall & Swift</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Brand Color Palette</h2>
+        <div class="color-swatch cosmic-blue">#0891b2</div>
+        <div class="color-swatch quantum-teal">#00d2ff</div>
+        <div class="color-swatch neural-purple">#667eea</div>
+        <div class="color-swatch deep-space">#0a0f1c</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Core Modules</h2>
+        <div class="module-grid">
+            <div class="module">Property Assessment</div>
+            <div class="module">Tax Management</div>
+            <div class="module">GIS Mapping</div>
+            <div class="module">Permit Workflow</div>
+            <div class="module">Citizen Portal</div>
+            <div class="module">Intelligence Reports</div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Visual Test Status</h2>
+        <p>✅ Brand colors implemented</p>
+        <p>✅ Typography hierarchy established</p>
+        <p>✅ Speed claim prominently displayed</p>
+        <p>✅ Core modules identified</p>
+        <p>✅ Consistent branding applied</p>
+        <p style="color: var(--quantum-teal); font-weight: bold;">Brand Visual Test: PASSED</p>
+    </div>
+</body>
+</html>

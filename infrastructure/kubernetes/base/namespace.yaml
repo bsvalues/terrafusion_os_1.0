@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-cosmic
+  labels:
+    name: terrafusion-cosmic
+    environment: production
+    cosmic-level: omniscient
+  annotations:
+    description: "TerraFusion Cosmic Platform - County Infrastructure Intelligence"

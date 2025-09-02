@@ -1,0 +1,39 @@
+{
+  "name": "Terrafusion-PublicRecords",
+  "version": "1.0.0",
+  "description": "Public records management and portal system for citizen access and government transparency",
+  "tier": "Tier 1 (Core Government)",
+  "category": "public-records",
+  "author": "Terrafusion OS Team",
+  "license": "MIT",
+  "dependencies": ["government-edition"],
+  "capabilities": [
+    "public-portal",
+    "records-search", 
+    "document-management",
+    "citizen-access",
+    "audit-trails",
+    "compliance-reporting"
+  ],
+  "requirements": {
+    "node": ">=18.0.0",
+    "memory": "1GB",
+    "storage": "500MB"
+  },
+  "configuration": {
+    "configurable": true,
+    "hot-swappable": true,
+    "scalable": true,
+    "multi-county": true
+  },
+  "integrations": [
+    "document-storage",
+    "search-engine",
+    "authentication-system"
+  ],
+  "status": "active",
+  "health": "healthy", 
+  "itemCount": 41,
+  "lastTested": "2025-08-18T20:00:00.000Z",
+  "migratedAt": "2025-08-18T20:00:00.000Z"
+}

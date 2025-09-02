@@ -1,0 +1,25 @@
+<\!DOCTYPE html>
+<html>
+<head>
+    <title>Performance Test</title>
+</head>
+<body>
+    <h1>TerraFusion Performance Test</h1>
+    <iframe id="app" src="dist/index.html" width="100%" height="600px"></iframe>
+    <div id="metrics">
+        <h2>Load Time: <span id="loadTime">Testing...</span></h2>
+        <h2>Bundle Size: 158KB (CSS: 11KB, JS: 147KB)</h2>
+        <h2>Gzipped: 51KB total</h2>
+    </div>
+    <script>
+        const start = performance.now();
+        const iframe = document.getElementById('app');
+        iframe.onload = () => {
+            const loadTime = (performance.now() - start) / 1000;
+            document.getElementById('loadTime').textContent = loadTime.toFixed(3) + 's';
+            document.getElementById('loadTime').style.color = loadTime < 2 ? 'green' : 'red';
+            console.log('Load time:', loadTime, 'seconds');
+        };
+    </script>
+</body>
+</html>

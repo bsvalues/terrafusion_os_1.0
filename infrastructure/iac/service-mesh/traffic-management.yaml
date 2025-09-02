@@ -1,0 +1,171 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: terrafusion-gateway
+  namespace: terrafusion
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: terrafusion-tls
+    hosts:
+    - "*"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: terrafusion-routes
+  namespace: terrafusion
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - terrafusion-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/"
+    route:
+    - destination:
+        host: terrafusion-backend
+        port:
+          number: 8080
+    fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 5s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      retryOn: gateway-error,connect-failure,refused-stream
+    timeout: 30s
+  - match:
+    - uri:
+        prefix: "/costforge"
+    route:
+    - destination:
+        host: terrafusion-costforge
+        port:
+          number: 3001
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+  - match:
+    - uri:
+        prefix: "/propertyworkbench"
+    route:
+    - destination:
+        host: terrafusion-propertyworkbench
+        port:
+          number: 3002
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+  - match:
+    - uri:
+        prefix: "/terrainsight"
+    route:
+    - destination:
+        host: terrafusion-terrainsight
+        port:
+          number: 3003
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+  - match:
+    - uri:
+        prefix: "/grafana"
+    route:
+    - destination:
+        host: terrafusion-grafana
+        port:
+          number: 3000
+  - route:
+    - destination:
+        host: terrafusion-frontend
+        port:
+          number: 3000
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: terrafusion-backend-dr
+  namespace: terrafusion
+spec:
+  host: terrafusion-backend
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        consecutiveGatewayErrors: 5
+        interval: 30s
+        baseEjectionTime: 30s
+        maxEjectionPercent: 50
+    circuitBreaker:
+      consecutiveGatewayErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 50
+    outlierDetection:
+      consecutiveGatewayErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 50
+  portLevelSettings:
+  - port:
+      number: 8080
+    loadBalancer:
+      simple: LEAST_CONN
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: terrafusion-apps-dr
+  namespace: terrafusion
+spec:
+  host: "*.terrafusion.svc.cluster.local"
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 25
+        http2MaxRequests: 50
+        maxRequestsPerConnection: 5
+        maxRetries: 2
+    circuitBreaker:
+      consecutiveGatewayErrors: 3
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 30
+    outlierDetection:
+      consecutiveGatewayErrors: 3
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 30

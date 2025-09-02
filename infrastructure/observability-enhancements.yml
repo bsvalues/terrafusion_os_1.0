@@ -1,0 +1,253 @@
+# TerraFusion OS - Observability & Operational Enhancements
+# CTO Review: Critical Observability Gaps & Solutions
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: observability-enhancements
+data:
+  observability_plan: |
+    OBSERVABILITY GAPS IDENTIFIED:
+    
+    1. DISTRIBUTED TRACING
+    Current: Missing end-to-end request tracing
+    Required: Jaeger/Zipkin integration
+    Impact: Cannot debug performance issues across services
+    Priority: HIGH
+    
+    2. SLA/SLO MONITORING
+    Current: No defined SLAs or alerting
+    Required: Error budgets, burn rate alerts
+    Impact: Cannot meet government uptime requirements
+    Priority: CRITICAL
+    
+    3. BUSINESS METRICS
+    Current: Only technical metrics collected
+    Required: Property processing rates, user satisfaction
+    Impact: No business value measurement
+    Priority: MEDIUM
+    
+    4. DISASTER RECOVERY
+    Current: No backup/restore automation
+    Required: Automated DB backups, point-in-time recovery
+    Impact: Data loss risk in failures
+    Priority: CRITICAL
+    
+    5. DEPLOYMENT OBSERVABILITY
+    Current: No deployment tracking/rollback
+    Required: Canary deployment monitoring
+    Impact: Risky production deployments
+    Priority: HIGH
+
+---
+# Service Level Objectives (SLO) Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slo-definitions
+data:
+  slos.yaml: |
+    slos:
+    - name: api_availability
+      description: "TerraFusion API availability"
+      sli:
+        query: 'rate(up{job="terrafusion-api"}[5m])'
+        threshold: 0.999  # 99.9% availability
+      alerting:
+        burn_rate_1h: 14.4   # 1 hour burn rate
+        burn_rate_6h: 6.0    # 6 hour burn rate
+        error_budget: 0.001  # 0.1% error budget
+    
+    - name: api_latency
+      description: "API response time under 50ms"
+      sli:
+        query: 'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m]))'
+        threshold: 0.050  # 50ms p95 latency
+      alerting:
+        burn_rate_1h: 2.0
+        burn_rate_6h: 1.0
+        error_budget: 0.05  # 5% latency budget
+    
+    - name: ai_agent_success_rate
+      description: "AI agent success rate"
+      sli:
+        query: 'rate(ai_agent_success_total[5m]) / rate(ai_agent_requests_total[5m])'
+        threshold: 0.995  # 99.5% success rate
+      alerting:
+        burn_rate_1h: 2.0
+        burn_rate_6h: 1.0
+        error_budget: 0.005  # 0.5% error budget
+    
+    - name: data_consistency
+      description: "Database transaction success rate"
+      sli:
+        query: 'rate(postgres_transactions_committed_total[5m]) / rate(postgres_transactions_total[5m])'
+        threshold: 0.9999  # 99.99% transaction success
+      alerting:
+        burn_rate_1h: 14.4
+        burn_rate_6h: 6.0
+        error_budget: 0.0001  # 0.01% error budget
+
+---
+# Business Metrics Collection
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: terrafusion-business-metrics
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics/business
+
+---
+# Disaster Recovery Backup Job
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: postgres-backup
+            image: postgres:15-alpine
+            command:
+            - /bin/bash
+            - -c
+            - |
+              export PGPASSWORD=$POSTGRES_PASSWORD
+              BACKUP_FILE="/backups/terrafusion-$(date +%Y%m%d_%H%M%S).sql"
+              pg_dump -h postgres -U $POSTGRES_USER -d terrafusion_production > $BACKUP_FILE
+              
+              # Upload to S3 or other cloud storage
+              if [ ! -z "$AWS_S3_BUCKET" ]; then
+                aws s3 cp $BACKUP_FILE s3://$AWS_S3_BUCKET/backups/
+              fi
+              
+              # Keep only last 7 days of local backups
+              find /backups -name "terrafusion-*.sql" -mtime +7 -delete
+              
+              echo "Backup completed: $BACKUP_FILE"
+            env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: AWS_S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: backup-config
+                  key: s3-bucket
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backups
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: backup-pvc
+
+---
+# Distributed Tracing with Jaeger
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-collector
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jaeger-collector
+  template:
+    metadata:
+      labels:
+        app: jaeger-collector
+    spec:
+      containers:
+      - name: jaeger-collector
+        image: jaegertracing/jaeger-collector:1.50
+        env:
+        - name: SPAN_STORAGE_TYPE
+          value: "elasticsearch"
+        - name: ES_SERVER_URLS
+          value: "http://elasticsearch:9200"
+        - name: COLLECTOR_ZIPKIN_HOST_PORT
+          value: ":9411"
+        ports:
+        - containerPort: 14267
+        - containerPort: 14268
+        - containerPort: 9411
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+
+---
+# Canary Deployment Configuration
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: terrafusion-api-rollout
+spec:
+  replicas: 5
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause: {duration: 10m}
+      - setWeight: 40
+      - pause: {duration: 10m}
+      - setWeight: 60
+      - pause: {duration: 10m}
+      - setWeight: 80
+      - pause: {duration: 10m}
+      analysis:
+        templates:
+        - templateName: success-rate
+        args:
+        - name: service-name
+          value: terrafusion-api
+        - name: prometheus-server
+          value: prometheus.monitoring.svc.cluster.local:9090
+      canaryService: terrafusion-api-canary
+      stableService: terrafusion-api
+      trafficRouting:
+        nginx:
+          stableIngress: terrafusion-api
+          annotationPrefix: nginx.ingress.kubernetes.io
+          additionalIngressAnnotations:
+            canary-by-header: X-Canary
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  template:
+    metadata:
+      labels:
+        app: terrafusion-api
+    spec:
+      containers:
+      - name: api
+        image: terrafusion/api:latest
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"

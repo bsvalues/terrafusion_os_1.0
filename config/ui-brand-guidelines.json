@@ -1,0 +1,225 @@
+{
+  "terrafusion_ui_guidelines": {
+    "brand_vision": "Government. Transcended.",
+    "design_philosophy": {
+      "core_principle": "Elegant simplicity that embodies infinite complexity",
+      "visual_metaphor": "Glass morphism representing transparency through transcendence",
+      "interaction_paradigm": "Effortless as iPhone UX, dependable as Autopilot",
+      "emotional_resonance": "Users should feel empowered, valued, and connected to the future of governance"
+    },
+    "visual_identity": {
+      "color_system": {
+        "primary_palette": {
+          "tf_trust_blue": "#0099ff",
+          "tf_transcend_cyan": "#00ffee", 
+          "tf_success_green": "#00ffaa",
+          "tf_deep_space": "#0b1020",
+          "tf_midnight": "#1a1f3a"
+        },
+        "semantic_colors": {
+          "operational": "#00ff88",
+          "warning": "#ffaa00", 
+          "critical": "#ff4444",
+          "neutral": "#8892b0"
+        },
+        "gradient_system": {
+          "clarity": "linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%)",
+          "transcend": "linear-gradient(135deg, #00ffee 0%, #00ffaa 100%)",
+          "success": "linear-gradient(135deg, #00ffaa 0%, #00ff88 100%)",
+          "depth": "linear-gradient(180deg, #0b1020 0%, #0a0f1c 100%)"
+        }
+      },
+      "typography": {
+        "hierarchy": {
+          "display": "72px, weight: 900, gradient text, 'Government. Transcended.' emphasis",
+          "heading_1": "48px, weight: 700, key section headers",
+          "heading_2": "36px, weight: 600, subsection headers", 
+          "heading_3": "28px, weight: 600, component headers",
+          "body": "16px, weight: 400, readable content",
+          "caption": "14px, weight: 500, metadata and status",
+          "code": "Cascadia Code, monospace for technical displays"
+        },
+        "text_treatments": {
+          "gradient_emphasis": "Use tf-gradient-clarity for key messages",
+          "glowing_text": "Subtle cyan glow for active states",
+          "transcendent_badge": "Gold gradient for premium/transcendent features"
+        }
+      },
+      "iconography": {
+        "style": "Minimal, geometric, futuristic",
+        "system_icons": {
+          "operational": "⚡ Lightning for performance",
+          "ai_agents": "🤖 Robot for AI systems", 
+          "government": "🏛️ Building for government functions",
+          "analytics": "📊 Chart for data visualization",
+          "security": "🛡️ Shield for protection",
+          "transcendence": "✨ Sparkle for elevated features"
+        },
+        "custom_icon_requirements": [
+          "2px stroke weight minimum",
+          "Rounded corners for approachability", 
+          "Scalable vector format",
+          "Consistent optical alignment",
+          "Subtle glow effects for interactive states"
+        ]
+      }
+    },
+    "component_guidelines": {
+      "cards": {
+        "tf_card_standard": {
+          "background": "Glass morphism with subtle blur",
+          "border": "1px solid cyan with 15% opacity",
+          "border_radius": "24px for premium feel",
+          "padding": "24px standard spacing",
+          "hover_state": "Lift 4px, cyan glow shadow, border brightens",
+          "scan_line_animation": "Subtle top border animation on hover"
+        },
+        "tf_card_executive": {
+          "background": "Heavy glass morphism for authority",
+          "accent": "Gold gradient top border for leadership",
+          "typography": "Larger headings, premium font weights"
+        },
+        "tf_card_operational": {
+          "accent": "Green gradient for active systems",
+          "status_indicators": "Real-time operational status",
+          "animation": "Subtle pulse for active monitoring"
+        }
+      },
+      "buttons": {
+        "tf_btn_primary": {
+          "background": "Clarity gradient (blue->cyan->green)",
+          "text": "White, uppercase, 600 weight",
+          "padding": "14px 32px",
+          "border_radius": "Full (50px)",
+          "hover": "Lift 2px, enhanced shadow, ripple effect",
+          "active": "Return to baseline with confidence"
+        },
+        "tf_btn_secondary": {
+          "background": "Transparent",
+          "border": "2px solid transcend cyan",
+          "text": "Transcend cyan color",
+          "hover": "Fill with cyan, text becomes dark"
+        },
+        "tf_btn_transcendent": {
+          "background": "Gold gradient for premium actions",
+          "text": "Dark space for contrast",
+          "glow": "Gold shadow animation",
+          "usage": "Reserved for highest-value actions"
+        }
+      },
+      "navigation": {
+        "main_navigation": {
+          "style": "Horizontal glass bar with blur",
+          "active_state": "Cyan accent with glow",
+          "hierarchy": "Clear visual hierarchy for sections",
+          "responsiveness": "Collapse to hamburger on mobile"
+        },
+        "breadcrumbs": {
+          "style": "Minimal with cyan separators",
+          "hover": "Individual item hover with glow"
+        }
+      },
+      "data_visualization": {
+        "charts": {
+          "color_palette": "Use brand gradients for data series",
+          "animation": "Smooth transitions with spring easing",
+          "interaction": "Hover states with detailed tooltips",
+          "accessibility": "High contrast mode available"
+        },
+        "metrics": {
+          "large_numbers": "Display typography with gradient",
+          "trend_indicators": "Green up, red down, with subtle animations",
+          "real_time_updates": "Smooth number transitions"
+        }
+      },
+      "forms": {
+        "input_fields": {
+          "background": "Subtle glass with dark background",
+          "border": "1px solid with cyan on focus",
+          "placeholder": "Helpful, encouraging text",
+          "validation": "Real-time with gentle error states"
+        },
+        "form_layout": {
+          "spacing": "Generous white space for clarity",
+          "grouping": "Clear visual sections",
+          "progress": "Step indicators for complex forms"
+        }
+      },
+      "modals_dialogs": {
+        "backdrop": "Dark overlay with heavy blur",
+        "modal": "Large glass card with prominent actions",
+        "animation": "Smooth scale-in from center",
+        "focus_management": "Proper keyboard navigation"
+      }
+    },
+    "interaction_patterns": {
+      "micro_interactions": {
+        "loading_states": "Spinning cyan border with smooth animation",
+        "success_feedback": "Green checkmark with gentle bounce",
+        "error_feedback": "Red accent with shake animation",
+        "hover_effects": "Consistent 4px lift with shadow"
+      },
+      "animations": {
+        "page_transitions": "Smooth fade with subtle slide",
+        "component_entry": "Staggered fade-in for multiple items",
+        "data_updates": "Number counting animations",
+        "status_changes": "Color transitions with easing"
+      },
+      "responsive_behavior": {
+        "mobile_first": "Design for mobile, enhance for desktop",
+        "touch_targets": "Minimum 44px for accessibility",
+        "gesture_support": "Swipe for navigation where appropriate"
+      }
+    },
+    "accessibility_requirements": {
+      "contrast_ratios": "WCAG 2.1 AA compliance minimum",
+      "focus_indicators": "Clear cyan focus rings",
+      "screen_reader": "Proper ARIA labels and descriptions",
+      "keyboard_navigation": "Full keyboard accessibility",
+      "reduced_motion": "Respect prefers-reduced-motion"
+    },
+    "implementation_standards": {
+      "css_architecture": {
+        "methodology": "CSS custom properties for theming",
+        "naming": "tf- prefix for all Terrafusion components",
+        "organization": "Component-based structure",
+        "documentation": "Storybook for component library"
+      },
+      "component_library": {
+        "framework": "React components with TypeScript",
+        "styling": "CSS modules or styled-components",
+        "testing": "Jest + React Testing Library",
+        "documentation": "Comprehensive prop documentation"
+      }
+    },
+    "brand_application": {
+      "login_screen": {
+        "hero_message": "Welcome to Government. Transcended.",
+        "tagline": "Infrastructure Intelligence, Infinite Scale",
+        "visual_treatment": "Central logo with subtle animation"
+      },
+      "dashboard": {
+        "header": "Emphasize real-time operational status",
+        "metrics": "Large, prominent display of key performance indicators",
+        "navigation": "Clear hierarchy of government functions"
+      },
+      "error_states": {
+        "messaging": "Reassuring tone focusing on autonomous recovery",
+        "visual": "Subtle red accent without harsh alarm",
+        "action": "Clear next steps for resolution"
+      }
+    }
+  },
+  "implementation_checklist": [
+    "Import Terrafusion CSS theme variables",
+    "Apply consistent spacing using CSS custom properties", 
+    "Use glass morphism patterns for all cards",
+    "Implement hover states with 4px lift standard",
+    "Add scan-line animations for interactive elements",
+    "Ensure all text follows typography hierarchy",
+    "Apply gradient treatments to emphasize key content",
+    "Test accessibility with screen readers and keyboard navigation",
+    "Validate brand consistency with design tokens",
+    "Document component variations in Storybook"
+  ]
+}

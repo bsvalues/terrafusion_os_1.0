@@ -1,0 +1,469 @@
+# TerraFusion OS Enhanced CI/CD Pipeline
+# Government-grade security, performance testing, and deployment automation
+# Optimized for Benton County deployment with Harris PACS integration
+
+name: TerraFusion OS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, benton-county/* ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '18.x'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: terrafusion/terrafusion-os
+  BENTON_COUNTY_MODE: true
+  AI_SWARM_SIZE: 1008
+
+jobs:
+  # Security and vulnerability scanning
+  security-scan:
+    name: Security & Vulnerability Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: SAST with CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp, javascript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  # Backend testing and analysis
+  backend-tests:
+    name: Backend Tests & Analysis
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: terrafusion_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: Build backend
+        run: dotnet build backend/TerraFusion.sln --no-restore --configuration Release
+
+      - name: Run unit tests
+        run: |
+          dotnet test backend/TerraFusion.sln \
+            --no-build \
+            --configuration Release \
+            --logger trx \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./test-results
+
+      - name: Run integration tests
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Database=terrafusion_test;Username=postgres;Password=test_password"
+          ConnectionStrings__Redis: "localhost:6379"
+        run: |
+          dotnet test backend/TerraFusion.API.Tests/ \
+            --configuration Release \
+            --logger trx \
+            --results-directory ./integration-results
+
+      - name: Harris PACS Integration Tests
+        env:
+          Harris_PACS_TestMode: true
+          Benton_County_TestData: true
+        run: |
+          dotnet test backend/TerraFusion.Core.Tests/ \
+            --filter "Category=HarrisPACS" \
+            --configuration Release \
+            --logger trx
+
+      - name: AI Swarm Performance Tests
+        run: |
+          dotnet test backend/TerraFusion.AI.Tests/ \
+            --filter "Category=Performance" \
+            --configuration Release \
+            --logger trx
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: |
+            ./test-results/**/*.trx
+            ./integration-results/**/*.trx
+
+      - name: Code coverage report
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./test-results
+          flags: backend
+          name: backend-coverage
+
+  # Frontend testing and analysis
+  frontend-tests:
+    name: Frontend Tests & Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Lint code
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Type check
+        working-directory: ./frontend
+        run: npm run type-check
+
+      - name: Run unit tests
+        working-directory: ./frontend
+        run: npm run test:coverage
+
+      - name: Run E2E tests
+        working-directory: ./frontend
+        run: |
+          npm run build
+          npm run test:e2e
+
+      - name: Accessibility tests
+        working-directory: ./frontend
+        run: npm run test:a11y
+
+      - name: Performance audit
+        working-directory: ./frontend
+        run: npm run audit:performance
+
+      - name: Upload frontend coverage
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./frontend/coverage
+          flags: frontend
+          name: frontend-coverage
+
+  # Build and push container images
+  build-images:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    needs: [security-scan, backend-tests, frontend-tests]
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      api-image: ${{ steps.meta-api.outputs.tags }}
+      frontend-image: ${{ steps.meta-frontend.outputs.tags }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract API metadata
+        id: meta-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.api
+          push: true
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BENTON_COUNTY_MODE=true
+            AI_SWARM_SIZE=1008
+            QUANTUM_PERFORMANCE_ENABLED=true
+
+      - name: Extract Frontend metadata
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.frontend
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan images for vulnerabilities
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy image --exit-code 1 --severity HIGH,CRITICAL \
+            ${{ steps.meta-api.outputs.tags }}
+
+  # Performance and load testing
+  performance-tests:
+    name: Performance & Load Tests
+    runs-on: ubuntu-latest
+    needs: [build-images]
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup performance test environment
+        run: |
+          docker-compose -f docker-compose.performance.yml up -d
+          sleep 60  # Wait for services to be ready
+
+      - name: Run load tests
+        run: |
+          docker run --rm --network host \
+            -v ${{ github.workspace }}/performance:/performance \
+            grafana/k6:latest run /performance/load-test.js
+
+      - name: Harris PACS performance test
+        run: |
+          docker run --rm --network host \
+            -v ${{ github.workspace }}/performance:/performance \
+            grafana/k6:latest run /performance/harris-pacs-test.js
+
+      - name: AI Swarm stress test
+        run: |
+          docker run --rm --network host \
+            -v ${{ github.workspace }}/performance:/performance \
+            grafana/k6:latest run /performance/ai-swarm-test.js
+
+      - name: Cleanup performance environment
+        if: always()
+        run: docker-compose -f docker-compose.performance.yml down -v
+
+  # Benton County staging deployment
+  deploy-staging:
+    name: Deploy to Benton County Staging
+    runs-on: ubuntu-latest
+    needs: [build-images, performance-tests]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: benton-county-staging
+      url: https://staging.terrafusion.benton.wa.gov
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Deploy to EKS staging
+        run: |
+          aws eks update-kubeconfig --region us-west-2 --name benton-county-staging
+          
+          # Update deployment with new images
+          kubectl set image deployment/terrafusion-api \
+            api=${{ needs.build-images.outputs.api-image }} \
+            -n terrafusion-staging
+          
+          kubectl set image deployment/terrafusion-frontend \
+            frontend=${{ needs.build-images.outputs.frontend-image }} \
+            -n terrafusion-staging
+          
+          # Wait for rollout
+          kubectl rollout status deployment/terrafusion-api -n terrafusion-staging --timeout=600s
+          kubectl rollout status deployment/terrafusion-frontend -n terrafusion-staging --timeout=600s
+
+      - name: Run staging smoke tests
+        run: |
+          # Wait for services to be ready
+          sleep 30
+          
+          # Basic health checks
+          curl -f https://staging-api.terrafusion.benton.wa.gov/health
+          curl -f https://staging.terrafusion.benton.wa.gov/health
+          
+          # Harris PACS connectivity test
+          curl -f https://staging-api.terrafusion.benton.wa.gov/api/harris-pacs/health
+
+      - name: Notify deployment success
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#benton-county-deployments'
+          text: 'TerraFusion OS successfully deployed to Benton County staging'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Production deployment (manual approval required)
+  deploy-production:
+    name: Deploy to Benton County Production
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.event_name == 'release'
+    environment:
+      name: benton-county-production
+      url: https://terrafusion.benton.wa.gov
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Deploy to EKS production
+        run: |
+          aws eks update-kubeconfig --region us-west-2 --name benton-county-production
+          
+          # Blue-green deployment strategy
+          kubectl apply -f k8s/production/
+          
+          # Update deployment with new images
+          kubectl set image deployment/terrafusion-api \
+            api=${{ needs.build-images.outputs.api-image }} \
+            -n terrafusion-production
+          
+          kubectl set image deployment/terrafusion-frontend \
+            frontend=${{ needs.build-images.outputs.frontend-image }} \
+            -n terrafusion-production
+          
+          # Wait for rollout
+          kubectl rollout status deployment/terrafusion-api -n terrafusion-production --timeout=900s
+          kubectl rollout status deployment/terrafusion-frontend -n terrafusion-production --timeout=900s
+
+      - name: Run production health checks
+        run: |
+          sleep 60
+          
+          # Comprehensive health checks
+          curl -f https://api.terrafusion.benton.wa.gov/health
+          curl -f https://terrafusion.benton.wa.gov/health
+          
+          # Harris PACS production connectivity
+          curl -f https://api.terrafusion.benton.wa.gov/api/harris-pacs/health
+          
+          # AI Swarm status check
+          curl -f https://api.terrafusion.benton.wa.gov/api/ai-swarm/status
+
+      - name: Notify production deployment
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#benton-county-production'
+          text: 'TerraFusion OS successfully deployed to Benton County PRODUCTION 🚀'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Cleanup old images
+  cleanup:
+    name: Cleanup Old Images
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: always()
+    steps:
+      - name: Delete old container images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: ${{ env.IMAGE_NAME }}-api
+          package-type: container
+          min-versions-to-keep: 5
+          delete-only-untagged-versions: true

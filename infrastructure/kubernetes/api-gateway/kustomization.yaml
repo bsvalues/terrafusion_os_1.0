@@ -1,0 +1,159 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kong
+
+resources:
+  - postgres.yaml
+  - redis.yaml
+  - opa-policies.yaml
+  - kong.yaml
+  - kong-plugins.yaml
+  - kong-routes.yaml
+
+configMapGenerator:
+  - name: kong-config
+    files:
+      - kong.conf
+    options:
+      disableNameSuffixHash: true
+
+secretGenerator:
+  - name: kong-secrets
+    literals:
+      - kong-pg-password=changeme
+      - redis-password=changeme
+      - jwt-secret=changeme
+      - emergency-override-key=changeme
+      - admin-token=changeme
+      - cosmic-admin-jwt-secret=changeme
+      - neural-network-jwt-secret=changeme
+    options:
+      disableNameSuffixHash: true
+
+patches:
+  # Increase resources for production
+  - target:
+      kind: Deployment
+      name: kong-proxy
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 5
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: 1000m
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: 1Gi
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: 4000m
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 4Gi
+  
+  # Add PodDisruptionBudget
+  - target:
+      kind: Deployment
+      name: kong-proxy
+    patch: |-
+      apiVersion: policy/v1
+      kind: PodDisruptionBudget
+      metadata:
+        name: kong-proxy-pdb
+      spec:
+        minAvailable: 3
+        selector:
+          matchLabels:
+            app: kong-proxy
+
+  # Add HorizontalPodAutoscaler
+  - target:
+      kind: Deployment
+      name: kong-proxy
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: kong-proxy-hpa
+      spec:
+        scaleTargetRef:
+          apiVersion: apps/v1
+          kind: Deployment
+          name: kong-proxy
+        minReplicas: 3
+        maxReplicas: 10
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 70
+        - type: Resource
+          resource:
+            name: memory
+            target:
+              type: Utilization
+              averageUtilization: 80
+        behavior:
+          scaleDown:
+            stabilizationWindowSeconds: 300
+            policies:
+            - type: Percent
+              value: 10
+              periodSeconds: 60
+          scaleUp:
+            stabilizationWindowSeconds: 60
+            policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 60
+            - type: Pods
+              value: 2
+              periodSeconds: 60
+
+patchesStrategicMerge:
+  - |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: kong-proxy
+      namespace: kong
+    spec:
+      sessionAffinity: ClientIP
+      sessionAffinityConfig:
+        clientIP:
+          timeoutSeconds: 10800
+
+commonLabels:
+  cosmic-platform: "terrafusion"
+  cosmic-component: "api-gateway"
+  cosmic-tier: "edge"
+
+commonAnnotations:
+  terrafusion.io/version: "1.0.0"
+  terrafusion.io/managed-by: "cosmic-orchestrator"
+
+replicas:
+  - name: kong-proxy
+    count: 5
+  - name: kong-ingress-controller
+    count: 2
+  - name: opa
+    count: 3
+  - name: redis-sentinel
+    count: 3
+
+images:
+  - name: kong
+    newTag: "3.4-alpine"
+  - name: kong/kubernetes-ingress-controller
+    newTag: "2.11"
+  - name: openpolicyagent/opa
+    newTag: "0.55.0-envoy"
+  - name: postgres
+    newTag: "15-alpine"
+  - name: redis
+    newTag: "7-alpine"

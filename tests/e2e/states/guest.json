@@ -1,0 +1,1 @@
+{ "cookies": [], "origins": [{ "origin": "http://localhost:3000", "localStorage": [{ "name": "role", "value": "guest" }] }] }

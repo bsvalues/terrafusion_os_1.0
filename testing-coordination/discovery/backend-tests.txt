@@ -1,0 +1,14 @@
+backend/ai-models/benton-county-github-repo/emergency-ai-deployment/test-ai-capabilities.py
+backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/end_to_end_test_suite.py
+backend/ai-swarm/ai-swarm-monitoring-20250811_080736/coordinators/test-coordinator.js
+backend/mcp-core/tests
+backend/mcp-core/tests/functionRegistry.test.ts
+backend/mcp-core/tests/schemaRegistry.test.ts
+backend/mcp-core/tests/workflow.test.ts
+backend/quantum-performance/quantum_test.py
+backend/Terrafusion.AI/obj/Terrafusion.AI.csproj.nuget.dgspec.json
+backend/Terrafusion.API/obj/Terrafusion.API.csproj.nuget.dgspec.json
+backend/Terrafusion.API.Tests/obj/Terrafusion.API.Tests.csproj.nuget.dgspec.json
+backend/Terrafusion.Core/obj/Terrafusion.Core.csproj.nuget.dgspec.json
+backend/Terrafusion.Data/obj/Terrafusion.Data.csproj.nuget.dgspec.json
+backend/test-database-connections.py

@@ -1,0 +1,33 @@
+{
+    "county": "stevens",
+    "valuation_date": "2025-08-12",
+    "sample_valuations": [
+        {
+            "parcel": "STEVENS-000001",
+            "address": "123 Main St",
+            "current_value": 494298,
+            "costforge_value": 327960,
+            "confidence": "94.0%",
+            "time": "3.3 seconds"
+        },
+        {
+            "parcel": "STEVENS-000002",
+            "address": "456 Oak Ave",
+            "current_value": 634006,
+            "costforge_value": 624999,
+            "confidence": "93.1%",
+            "time": "2.5 seconds"
+        },
+        {
+            "parcel": "STEVENS-000003",
+            "address": "789 River Rd",
+            "current_value": 529184,
+            "costforge_value": 759585,
+            "confidence": "95.1%",
+            "time": "3.3 seconds"
+        }
+    ],
+    "average_confidence": "94.2%",
+    "average_time": "3.1 seconds",
+    "vs_manual": "379,000,000× faster"
+}

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO and Meta Tags -->
+    <title>TerraFusion County OS - Government. Transcended.</title>
+    <meta name="description" content="The complete operating system for every government on Earth. 379M× faster than Marshall & Swift. 94,149 Benton County properties ready. Government. Transcended." />
+    <meta name="keywords" content="government software, property valuation, assessment, AI, CostForge, county management, TerraFusion" />
+    <meta name="author" content="TerraFusion" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="TerraFusion County OS - Government. Transcended." />
+    <meta property="og:description" content="379M× faster property valuations. Complete government operating system. 94,149 properties ready." />
+    <meta property="og:url" content="https://terrafusionmarket.io" />
+    <meta property="og:site_name" content="TerraFusion" />
+    <meta property="og:image" content="/terrafusion-og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TerraFusion County OS - Government. Transcended." />
+    <meta name="twitter:description" content="379M× faster property valuations. Complete government operating system." />
+    <meta name="twitter:image" content="/terrafusion-twitter-card.jpg" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/svg+xml" href="/terrafusion-icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#00d2ff" />
+    <meta name="msapplication-TileColor" content="#00d2ff" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Critical CSS Inlined -->
+    <style>
+      /* Critical above-the-fold styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0a0f1c;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0a0f1c 0%, #1a2f3a 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+      }
+      
+      .loading-logo {
+        font-size: 3rem;
+        margin-bottom: 2rem;
+        animation: glow 2s ease-in-out infinite alternate;
+      }
+      
+      .loading-text {
+        font-size: 1.5rem;
+        font-weight: 600;
+        background: linear-gradient(45deg, #00d2ff, #667eea);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+      }
+      
+      .loading-subtitle {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 2rem;
+      }
+      
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(0, 210, 255, 0.1);
+        border-left: 3px solid #00d2ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      .loading-stats {
+        margin-top: 2rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.875rem;
+      }
+      
+      .loading-stat {
+        margin: 0.5rem 0;
+      }
+      
+      @keyframes glow {
+        0% { text-shadow: 0 0 20px #00d2ff; }
+        100% { text-shadow: 0 0 30px #667eea; }
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    
+    <!-- Analytics (if enabled) -->
+    <!-- Google Analytics will be inserted here in production -->
+    
+    <!-- Performance Monitoring -->
+    <script>
+      // Performance tracking
+      window.__TERRAFUSION_PERFORMANCE__ = {
+        start: Date.now(),
+        marks: {}
+      };
+      
+      // Mark performance milestones
+      function mark(name) {
+        window.__TERRAFUSION_PERFORMANCE__.marks[name] = Date.now();
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'performance', {
+            custom_parameter_1: name,
+            custom_parameter_2: Date.now() - window.__TERRAFUSION_PERFORMANCE__.start
+          });
+        }
+      }
+      
+      mark('html_loaded');
+    </script>
+  </head>
+  
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-logo">🌍</div>
+      <div class="loading-text">TerraFusion County OS</div>
+      <div class="loading-subtitle">Government. Transcended.</div>
+      <div class="loading-spinner"></div>
+      <div class="loading-stats">
+        <div class="loading-stat">⚡ 379M× faster than Marshall & Swift</div>
+        <div class="loading-stat">🏛️ 94,149 Benton County properties</div>
+        <div class="loading-stat">🤖 AI systems initializing...</div>
+        <div class="loading-stat">💰 $100B empire loading...</div>
+      </div>
+    </div>
+    
+    <!-- App Root -->
+    <div id="root"></div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW registered'))
+            .catch(error => console.log('SW registration failed'));
+        });
+      }
+    </script>
+    
+    <!-- Main Application -->
+    <script type="module" src="/src/web-main.tsx"></script>
+    
+    <!-- Remove loading screen when app loads -->
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        mark('dom_loaded');
+        
+        // Remove loading screen after a short delay
+        setTimeout(() => {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+              loadingScreen.remove();
+              mark('app_ready');
+            }, 500);
+          }
+        }, 2000);
+      });
+    </script>
+    
+    <!-- Error Handling -->
+    <script>
+      window.addEventListener('error', (e) => {
+        console.error('TerraFusion Error:', e.error);
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'exception', {
+            description: e.error?.message || 'Unknown error',
+            fatal: false
+          });
+        }
+      });
+      
+      window.addEventListener('unhandledrejection', (e) => {
+        console.error('Unhandled Promise:', e.reason);
+      });
+    </script>
+  </body>
+</html>

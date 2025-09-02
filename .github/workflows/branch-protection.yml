@@ -1,0 +1,87 @@
+name: Branch Protection & Security
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Restore .NET dependencies
+        run: dotnet restore backend/TerraFusion.sln
+        
+      - name: Build .NET solution
+        run: dotnet build backend/TerraFusion.sln --no-restore
+        
+      - name: Run .NET tests
+        run: dotnet test backend/TerraFusion.sln --no-build --verbosity normal
+        
+      - name: Install Node dependencies
+        run: npm ci
+        working-directory: frontend
+        
+      - name: Run TypeScript checks
+        run: npm run type-check
+        working-directory: frontend
+        
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: frontend
+
+  performance-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run performance benchmarks
+        run: npm run test:performance
+        
+      - name: Validate quantum performance claims
+        run: node quantum_performance_results.json
+        
+      - name: Check performance regression
+        run: |
+          if [ -f "performance-baseline.json" ]; then
+            node scripts/compare-performance.js
+          fi

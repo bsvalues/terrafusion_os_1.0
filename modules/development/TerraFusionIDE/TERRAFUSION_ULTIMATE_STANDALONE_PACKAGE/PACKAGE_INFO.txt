@@ -1,0 +1,4 @@
+- Full .NET 8 Backend 
+- Entity Framework Core 
+- PostgreSQL/SQLite Support 
+- Complete Documentation 

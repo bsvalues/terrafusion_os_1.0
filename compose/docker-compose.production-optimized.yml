@@ -1,0 +1,599 @@
+version: '3.8'
+
+services:
+  # ====================================================================
+  # PHASE 1: LOAD BALANCER WITH NEGATIVE CACHING INTEGRATION
+  # ====================================================================
+
+  # HAProxy Load Balancer with Negative Caching Support
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: terrafusion-haproxy-primary
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8404:8404"  # Statistics interface
+    volumes:
+      - ./config/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./config/haproxy/lua:/etc/haproxy/lua:ro
+      - ./config/ssl:/etc/ssl/certs:ro
+      - ./config/haproxy/errors:/etc/haproxy/errors:ro
+      - haproxy-logs:/var/log/haproxy
+    environment:
+      - HAPROXY_USER=haproxy
+      - HAPROXY_GROUP=haproxy
+    networks:
+      - terrafusion-network
+    depends_on:
+      - terrafusion-api-1
+      - terrafusion-api-2
+      - terrafusion-api-3
+      - redis-master
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8404/stats"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: '1G'
+        reservations:
+          cpus: '0.5'
+          memory: '512M'
+    labels:
+      - "traefik.enable=false"
+      - "monitoring.prometheus.scrape=true"
+      - "monitoring.prometheus.port=8404"
+      - "component=load-balancer"
+      - "tier=infrastructure"
+
+  # ====================================================================
+  # ENHANCED API LAYER (3 INSTANCES FOR HIGH AVAILABILITY)
+  # ====================================================================
+
+  # Primary API Instance with Negative Caching
+  terrafusion-api-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_CONFIGURATION: Release
+        NEGATIVE_CACHE_ENABLED: "true"
+    container_name: terrafusion-api-primary
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - Redis__ConnectionString=redis-master:6379,redis-replica-1:6379
+      - Redis__Configuration__AbortOnConnectFail=false
+      - Redis__Configuration__ConnectRetry=3
+      - JwtSettings__SecretKey=c8a9f7b1e2d3c4a5b6f7e8d9c0a1b2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9
+      - NegativeCache__Enabled=true
+      - NegativeCache__MissSentinelTTL=30
+      - NegativeCache__PositiveCacheTTL=300
+      - NegativeCache__AntiStampedeTTL=5
+      - OpenTelemetry__Endpoint=http://jaeger:14268/api/traces
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Microsoft=Warning
+      - Logging__LogLevel__Microsoft.Hosting.Lifetime=Information
+    volumes:
+      - /var/terrafusion/logs:/app/logs
+      - /var/terrafusion/data:/app/data:ro
+    networks:
+      - terrafusion-network
+    depends_on:
+      - postgres-primary
+      - redis-master
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health/negative-cache-status"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: '2G'
+        reservations:
+          cpus: '0.75'
+          memory: '1G'
+    labels:
+      - "component=api"
+      - "instance=primary"
+      - "negative-cache=enabled"
+
+  # Secondary API Instance
+  terrafusion-api-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_CONFIGURATION: Release
+        NEGATIVE_CACHE_ENABLED: "true"
+    container_name: terrafusion-api-secondary
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - Redis__ConnectionString=redis-master:6379,redis-replica-1:6379
+      - Redis__Configuration__AbortOnConnectFail=false
+      - Redis__Configuration__ConnectRetry=3
+      - JwtSettings__SecretKey=c8a9f7b1e2d3c4a5b6f7e8d9c0a1b2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9
+      - NegativeCache__Enabled=true
+      - NegativeCache__MissSentinelTTL=30
+      - NegativeCache__PositiveCacheTTL=300
+      - NegativeCache__AntiStampedeTTL=5
+      - OpenTelemetry__Endpoint=http://jaeger:14268/api/traces
+    volumes:
+      - /var/terrafusion/logs:/app/logs
+      - /var/terrafusion/data:/app/data:ro
+    networks:
+      - terrafusion-network
+    depends_on:
+      - postgres-primary
+      - redis-master
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health/negative-cache-status"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: '2G'
+        reservations:
+          cpus: '0.75'
+          memory: '1G'
+    labels:
+      - "component=api"
+      - "instance=secondary"
+      - "negative-cache=enabled"
+
+  # Tertiary API Instance
+  terrafusion-api-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_CONFIGURATION: Release
+        NEGATIVE_CACHE_ENABLED: "true"
+    container_name: terrafusion-api-tertiary
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - Redis__ConnectionString=redis-master:6379,redis-replica-1:6379
+      - Redis__Configuration__AbortOnConnectFail=false
+      - Redis__Configuration__ConnectRetry=3
+      - JwtSettings__SecretKey=c8a9f7b1e2d3c4a5b6f7e8d9c0a1b2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9
+      - NegativeCache__Enabled=true
+      - NegativeCache__MissSentinelTTL=30
+      - NegativeCache__PositiveCacheTTL=300
+      - NegativeCache__AntiStampedeTTL=5
+      - OpenTelemetry__Endpoint=http://jaeger:14268/api/traces
+    volumes:
+      - /var/terrafusion/logs:/app/logs
+      - /var/terrafusion/data:/app/data:ro
+    networks:
+      - terrafusion-network
+    depends_on:
+      - postgres-primary
+      - redis-master
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health/negative-cache-status"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: '2G'
+        reservations:
+          cpus: '0.75'
+          memory: '1G'
+    labels:
+      - "component=api"
+      - "instance=tertiary"
+      - "negative-cache=enabled"
+
+  # ====================================================================
+  # PHASE 2: DATABASE CLUSTER WITH READ REPLICAS
+  # ====================================================================
+
+  # PostgreSQL Primary Database
+  postgres-primary:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres-primary
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=terrafusion
+      - POSTGRES_USER=terrafusion
+      - POSTGRES_PASSWORD=tf_prod_p@ssw0rd_2025!
+      - POSTGRES_REPLICATION_USER=replicator
+      - POSTGRES_REPLICATION_PASSWORD=repl_p@ssw0rd_2025!
+      - POSTGRES_INITDB_ARGS=--auth-host=md5 --auth-local=trust
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+      - ./config/postgres/postgresql-primary.conf:/etc/postgresql/postgresql.conf
+      - ./config/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./scripts/postgres/setup-replication.sql:/docker-entrypoint-initdb.d/setup-replication.sql
+      - ./scripts/postgres/init-terrafusion-db.sql:/docker-entrypoint-initdb.d/init-terrafusion-db.sql
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrafusion -d terrafusion"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: '4G'
+        reservations:
+          cpus: '1.0'
+          memory: '2G'
+    labels:
+      - "component=database"
+      - "role=primary"
+      - "backup.enable=true"
+
+  # PostgreSQL Read Replica 1
+  postgres-replica-1:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres-replica-1
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      - PGUSER=postgres
+      - POSTGRES_PASSWORD=tf_prod_p@ssw0rd_2025!
+      - POSTGRES_MASTER_SERVICE=postgres-primary
+      - POSTGRES_REPLICATION_USER=replicator
+      - POSTGRES_REPLICATION_PASSWORD=repl_p@ssw0rd_2025!
+    volumes:
+      - postgres-replica-1-data:/var/lib/postgresql/data
+      - ./scripts/postgres/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrafusion"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: '3G'
+        reservations:
+          cpus: '0.75'
+          memory: '1.5G'
+    labels:
+      - "component=database"
+      - "role=replica"
+      - "replica-id=1"
+
+  # PostgreSQL Read Replica 2
+  postgres-replica-2:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres-replica-2
+    restart: always
+    ports:
+      - "5434:5432"
+    environment:
+      - PGUSER=postgres
+      - POSTGRES_PASSWORD=tf_prod_p@ssw0rd_2025!
+      - POSTGRES_MASTER_SERVICE=postgres-primary
+      - POSTGRES_REPLICATION_USER=replicator
+      - POSTGRES_REPLICATION_PASSWORD=repl_p@ssw0rd_2025!
+    volumes:
+      - postgres-replica-2-data:/var/lib/postgresql/data
+      - ./scripts/postgres/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrafusion"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: '3G'
+        reservations:
+          cpus: '0.75'
+          memory: '1.5G'
+    labels:
+      - "component=database"
+      - "role=replica"
+      - "replica-id=2"
+
+  # ====================================================================
+  # PHASE 3: ADVANCED REDIS CLUSTER WITH NEGATIVE CACHING
+  # ====================================================================
+
+  # Redis Master with Negative Caching Optimization
+  redis-master:
+    image: redis:7-alpine
+    container_name: terrafusion-redis-master
+    restart: always
+    command: redis-server /etc/redis/redis.conf --appendonly yes --save 900 1 --save 300 10 --save 60 10000
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_MAXMEMORY=4gb
+      - REDIS_MAXMEMORY_POLICY=allkeys-lru
+      - REDIS_APPENDONLY=yes
+    volumes:
+      - redis-master-data:/data
+      - ./config/redis/redis-master.conf:/etc/redis/redis.conf
+      - ./config/redis/negative-cache-optimization.conf:/etc/redis/negative-cache.conf
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: '4G'
+        reservations:
+          cpus: '1.0'
+          memory: '2G'
+    labels:
+      - "component=cache"
+      - "role=master"
+      - "negative-cache=optimized"
+
+  # Redis Replica for Read Distribution
+  redis-replica-1:
+    image: redis:7-alpine
+    container_name: terrafusion-redis-replica-1
+    restart: always
+    command: redis-server /etc/redis/redis-replica.conf --replicaof redis-master 6379
+    ports:
+      - "6380:6379"
+    environment:
+      - REDIS_MAXMEMORY=2gb
+      - REDIS_MAXMEMORY_POLICY=allkeys-lru
+    volumes:
+      - redis-replica-1-data:/data
+      - ./config/redis/redis-replica.conf:/etc/redis/redis-replica.conf
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: '2G'
+        reservations:
+          cpus: '0.5'
+          memory: '1G'
+    labels:
+      - "component=cache"
+      - "role=replica"
+
+  # Redis Sentinel for High Availability
+  redis-sentinel-1:
+    image: redis:7-alpine
+    container_name: terrafusion-redis-sentinel-1
+    restart: always
+    command: redis-sentinel /etc/redis/sentinel.conf
+    ports:
+      - "26379:26379"
+    volumes:
+      - ./config/redis/sentinel.conf:/etc/redis/sentinel.conf
+    depends_on:
+      - redis-master
+    networks:
+      - terrafusion-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '512M'
+        reservations:
+          cpus: '0.25'
+          memory: '256M'
+    labels:
+      - "component=cache"
+      - "role=sentinel"
+
+  # ====================================================================
+  # ENHANCED MONITORING STACK WITH APM
+  # ====================================================================
+
+  # Prometheus with Custom Negative Cache Metrics
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: terrafusion-prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/prometheus/negative-cache-rules.yml:/etc/prometheus/negative-cache-rules.yml
+      - ./config/prometheus/terrafusion-alerts.yml:/etc/prometheus/terrafusion-alerts.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=10GB'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - terrafusion-network
+    depends_on:
+      - haproxy
+      - terrafusion-api-1
+      - redis-master
+    labels:
+      - "component=monitoring"
+      - "service=metrics"
+
+  # Grafana with TerraFusion Dashboards
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: terrafusion-grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=TerraFusion_Grafana_2025!
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=redis-datasource,haproxy-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - terrafusion-network
+    depends_on:
+      - prometheus
+    labels:
+      - "component=monitoring"
+      - "service=visualization"
+
+  # Jaeger for Distributed Tracing (APM)
+  jaeger:
+    image: jaegertracing/all-in-one:1.48
+    container_name: terrafusion-jaeger
+    restart: always
+    ports:
+      - "16686:16686"  # UI
+      - "14268:14268"  # HTTP traces
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=badger
+      - BADGER_EPHEMERAL=false
+      - BADGER_DIRECTORY_VALUE=/badger/data
+      - BADGER_DIRECTORY_KEY=/badger/key
+    volumes:
+      - jaeger-data:/badger
+    networks:
+      - terrafusion-network
+    labels:
+      - "component=monitoring"
+      - "service=tracing"
+
+volumes:
+  # Database volumes
+  postgres-primary-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/postgres/primary
+  postgres-replica-1-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/postgres/replica-1
+  postgres-replica-2-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/postgres/replica-2
+  
+  # Cache volumes
+  redis-master-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/redis/master
+  redis-replica-1-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/redis/replica-1
+  
+  # Monitoring volumes
+  prometheus-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/prometheus
+  grafana-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/grafana
+  jaeger-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/jaeger
+  
+  # Log volumes
+  haproxy-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/terrafusion/logs/haproxy
+
+networks:
+  terrafusion-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+    labels:
+      - "environment=production"
+      - "optimization=negative-cache-enabled"

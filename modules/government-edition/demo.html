@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Government Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+            border-bottom: 1px solid #2a2a2a;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #3b82f6, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .security-dot {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 24px;
+            padding: 24px;
+            height: calc(100vh - 80px);
+        }
+
+        .nav-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .nav-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .nav-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #3b82f6;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .main-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3b82f6;
+            margin-bottom: 4px;
+        }
+
+        .card-change {
+            font-size: 12px;
+            color: #10b981;
+        }
+
+        .property-table {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 12px 16px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 16px;
+            font-weight: 600;
+            color: #3b82f6;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table-row {
+            padding: 12px 16px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 16px;
+            border-bottom: 1px solid #333;
+            transition: all 0.3s;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .status-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .status-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .alert-item {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #ef4444;
+            margin-bottom: 4px;
+        }
+
+        .alert-text {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .system-status {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .status-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            color: #ccc;
+        }
+
+        .status-value {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .activity-log {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .log-time {
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .log-text {
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🏛️</div>
+            <div class="title">TerraFusion Government Edition</div>
+        </div>
+        <div class="security-badge">
+            <div class="security-dot"></div>
+            <span>Secure Government Access</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="nav-panel">
+            <div class="nav-title">Navigation</div>
+            <div class="nav-item active">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item">
+                <span>🏠</span>
+                <span>Properties</span>
+            </div>
+            <div class="nav-item">
+                <span>💰</span>
+                <span>Assessments</span>
+            </div>
+            <div class="nav-item">
+                <span>📋</span>
+                <span>Permits</span>
+            </div>
+            <div class="nav-item">
+                <span>🗺️</span>
+                <span>GIS Mapping</span>
+            </div>
+            <div class="nav-item">
+                <span>📈</span>
+                <span>Analytics</span>
+            </div>
+            <div class="nav-item">
+                <span>⚙️</span>
+                <span>Administration</span>
+            </div>
+        </div>
+
+        <div class="main-panel">
+            <div class="panel-title">Government Dashboard</div>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-title">Total Properties</div>
+                    <div class="card-value">94,149</div>
+                    <div class="card-change">+247 this month</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-title">Total Assessment Value</div>
+                    <div class="card-value">$2.4B</div>
+                    <div class="card-change">+3.2% this quarter</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-title">Pending Reviews</div>
+                    <div class="card-value">1,247</div>
+                    <div class="card-change">-12% from last week</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-title">Active Permits</div>
+                    <div class="card-value">892</div>
+                    <div class="card-change">+45 this week</div>
+                </div>
+            </div>
+
+            <div class="property-table">
+                <div class="table-header">
+                    <div>Property Address</div>
+                    <div>Assessment Value</div>
+                    <div>Status</div>
+                    <div>Last Updated</div>
+                </div>
+                <div class="table-row">
+                    <div>1247 Commerce Street</div>
+                    <div>$1,247,000</div>
+                    <div style="color: #10b981;">Approved</div>
+                    <div>Aug 15, 2025</div>
+                </div>
+                <div class="table-row">
+                    <div>892 Residential Ave</div>
+                    <div>$485,000</div>
+                    <div style="color: #f59e0b;">Under Review</div>
+                    <div>Aug 14, 2025</div>
+                </div>
+                <div class="table-row">
+                    <div>3456 Industrial Blvd</div>
+                    <div>$3,200,000</div>
+                    <div style="color: #10b981;">Approved</div>
+                    <div>Aug 13, 2025</div>
+                </div>
+                <div class="table-row">
+                    <div>789 Main Street</div>
+                    <div>$920,000</div>
+                    <div style="color: #ef4444;">Requires Action</div>
+                    <div>Aug 12, 2025</div>
+                </div>
+                <div class="table-row">
+                    <div>2341 Oak Ridge Drive</div>
+                    <div>$675,000</div>
+                    <div style="color: #10b981;">Approved</div>
+                    <div>Aug 11, 2025</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-panel">
+            <div class="status-title">System Status</div>
+            
+            <div class="system-status">
+                <div class="status-row">
+                    <span class="status-label">Database</span>
+                    <span class="status-value">Online</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">API Services</span>
+                    <span class="status-value">Operational</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Security</span>
+                    <span class="status-value">Secure</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Backup</span>
+                    <span class="status-value">Current</span>
+                </div>
+            </div>
+
+            <div class="status-title">Alerts</div>
+            <div class="alert-item">
+                <div class="alert-title">High Priority</div>
+                <div class="alert-text">47 properties require immediate reassessment</div>
+            </div>
+
+            <div class="status-title">Recent Activity</div>
+            <div class="activity-log">
+                <div class="log-item">
+                    <div class="log-time">10:15 AM</div>
+                    <div class="log-text">Property assessment completed: 1247 Commerce St</div>
+                </div>
+                <div class="log-item">
+                    <div class="log-time">10:08 AM</div>
+                    <div class="log-text">New permit application submitted</div>
+                </div>
+                <div class="log-item">
+                    <div class="log-time">09:45 AM</div>
+                    <div class="log-text">System backup completed successfully</div>
+                </div>
+                <div class="log-item">
+                    <div class="log-time">09:32 AM</div>
+                    <div class="log-text">User login: assessor@bentoncounty.gov</div>
+                </div>
+                <div class="log-item">
+                    <div class="log-time">09:15 AM</div>
+                    <div class="log-text">Batch property update initiated</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate real-time updates
+        setInterval(() => {
+            const propertyCount = document.querySelector('.dashboard-card .card-value');
+            const currentCount = parseInt(propertyCount.textContent.replace(',', ''));
+            propertyCount.textContent = (currentCount + Math.floor(Math.random() * 3)).toLocaleString();
+        }, 10000);
+
+        // Add navigation interactivity
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Add table row click handlers
+        document.querySelectorAll('.table-row').forEach(row => {
+            row.addEventListener('click', () => {
+                row.style.background = 'rgba(59, 130, 246, 0.1)';
+                setTimeout(() => {
+                    row.style.background = 'rgba(255, 255, 255, 0.05)';
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>

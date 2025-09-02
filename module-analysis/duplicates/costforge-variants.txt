@@ -1,0 +1,6 @@
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/13-marketplace/championship-deployment/applications/08-costforge-ai
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/13-marketplace/complete-deployment/applications/08-costforge-ai
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/Core_Modules/08-costforge-ai
+deployment/production/modules/08-costforge-ai
+deployment/production/modules/13-marketplace/championship-deployment/applications/08-costforge-ai
+deployment/production/modules/13-marketplace/complete-deployment/applications/08-costforge-ai

@@ -1,0 +1,46 @@
+.tf-modal-overlay {
+  position: fixed; z-index: 1000; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(20,40,60,0.6); display: flex; align-items: center; justify-content: center;
+}
+.tf-modal {
+  background: #f8fafc; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,32,64,0.18);
+  min-width: 420px; max-width: 600px; width: 90vw; padding: 0; overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+.tf-modal-header {
+  background: #0e3a5e; color: #fff; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
+}
+.tf-modal-close {
+  background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer;
+}
+.tf-modal-tabs {
+  display: flex; border-bottom: 1px solid #e0e8ef; background: #f0f4f8;
+}
+.tf-modal-tabs button {
+  flex: 1; padding: 12px 0; background: none; border: none; color: #0e3a5e;
+  font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: border 0.2s;
+}
+.tf-modal-tabs button.active {
+  border-bottom: 2px solid #19b394; color: #19b394;
+}
+.tf-modal-content {
+  padding: 24px;
+}
+.tf-modal-footer {
+  display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px; background: #f0f4f8;
+}
+.tf-btn {
+  background: #19b394; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-weight: 600; cursor: pointer; transition: background 0.18s;
+}
+.tf-btn:hover, .tf-btn:focus {
+  background: #148e74;
+}
+.tf-btn-admin {
+  background: #0e3a5e;
+}
+.tf-btn-admin:hover, .tf-btn-admin:focus {
+  background: #195a8c;
+}
+.tf-badge-version {
+  background: #19b394; color: #fff; border-radius: 4px; padding: 2px 8px; font-size: 0.85em; margin-left: 8px;
+}

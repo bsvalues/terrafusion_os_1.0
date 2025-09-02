@@ -1,0 +1,46 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # TerraFusion Demo Application
+  - job_name: 'terrafusion-demo'
+    static_configs:
+      - targets: ['benton-county-demo:3000']
+    metrics_path: '/api/monitoring/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Node.js Application Metrics
+  - job_name: 'node-app'
+    static_configs:
+      - targets: ['benton-county-demo:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # PostgreSQL Metrics  
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+
+  # Redis Metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  # Container Metrics
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['host.docker.internal:9323']
+    scrape_interval: 30s
+
+  # System Metrics
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

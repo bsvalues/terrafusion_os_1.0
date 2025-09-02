@@ -1,0 +1,244 @@
+/* TerraAgent Desktop Application Styles */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: 100vh;
+}
+
+.container h1 {
+  font-size: 2.5rem;
+  background: var(--tf-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.container p {
+  color: var(--muted-foreground);
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 32px;
+}
+
+/* Agent Status Section */
+.agent-list {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.agent-card {
+  background: linear-gradient(145deg, var(--tf-dark-bg), var(--tf-darker-bg));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: var(--tf-transition);
+  box-shadow: var(--tf-shadow-card);
+}
+
+.agent-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--tf-shadow-float);
+}
+
+.agent-card h3 {
+  color: var(--primary);
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.agent-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.agent-status.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.agent-card p {
+  color: var(--muted-foreground);
+  margin: 12px 0 8px 0;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.agent-card small {
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+}
+
+/* Chat Interface */
+.chat-container {
+  background: linear-gradient(145deg, var(--tf-dark-bg), var(--tf-darker-bg));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--tf-shadow-card);
+}
+
+.chat-messages {
+  height: 400px;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: var(--tf-gradient-primary);
+  color: var(--tf-dark-bg);
+}
+
+.message.assistant {
+  align-self: flex-start;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  color: var(--foreground);
+}
+
+.message div:first-child {
+  margin-bottom: 4px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.message small {
+  opacity: 0.7;
+  font-size: 0.75rem;
+  align-self: flex-end;
+}
+
+.loading {
+  color: var(--primary) !important;
+  font-weight: 500;
+  position: relative;
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  border: 2px solid var(--primary);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Input Section */
+.input-container {
+  padding: 20px;
+  background: var(--tf-darker-bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.input-container input {
+  flex: 1;
+  background: var(--input);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: var(--tf-transition-fast);
+}
+
+.input-container input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+}
+
+.input-container input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input-container button {
+  background: var(--tf-gradient-primary);
+  color: var(--primary-foreground);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--tf-transition);
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.3);
+  font-size: 0.95rem;
+}
+
+.input-container button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(0, 229, 255, 0.5);
+}
+
+.input-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .agent-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .chat-messages {
+    height: 300px;
+  }
+  
+  .message {
+    max-width: 90%;
+  }
+  
+  .input-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .input-container input,
+  .input-container button {
+    width: 100%;
+  }
+}
