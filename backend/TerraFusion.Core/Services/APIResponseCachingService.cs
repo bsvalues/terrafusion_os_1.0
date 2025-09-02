@@ -28,21 +28,21 @@ namespace TerraFusion.Core.Services
 
     public class CacheWarmupItem
     {
-        public string Endpoint { get; set; }
-        public Dictionary<string, object> Parameters { get; set; }
+        public required string Endpoint { get; set; }
+        public required Dictionary<string, object> Parameters { get; set; }
         public TimeSpan? TTL { get; set; }
-        public string[] Tags { get; set; }
+        public required string[] Tags { get; set; }
     }
 
     public class CachedItem
     {
-        public string Key { get; set; }
+        public required string Key { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ExpiresAt { get; set; }
         public long SizeBytes { get; set; }
         public int HitCount { get; set; }
-        public string[] Tags { get; set; }
-        public string ContentType { get; set; }
+        public required string[] Tags { get; set; }
+        public required string ContentType { get; set; }
     }
 
     public class CacheMetrics

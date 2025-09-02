@@ -44,19 +44,41 @@ namespace TerraFusion.Core.Services
 
     public class AuditTrail
     {
-        public string Id { get; set; }
+        public required string Id { get; set; }
         public DateTime Timestamp { get; set; }
-        public string Action { get; set; }
-        public string UserId { get; set; }
-        public string UserName { get; set; }
-        public string EntityType { get; set; }
-        public string EntityId { get; set; }
-        public string Data { get; set; }
-        public string IPAddress { get; set; }
-        public string UserAgent { get; set; }
-        public string SessionId { get; set; }
-        public ComplianceFramework[] ApplicableFrameworks { get; set; }
+        public required string Action { get; set; }
+        public required string UserId { get; set; }
+        public required string UserName { get; set; }
+        public required string EntityType { get; set; }
+        public required string EntityId { get; set; }
+        public required string Data { get; set; }
+        public required string IPAddress { get; set; }
+        public required string UserAgent { get; set; }
+        public required string SessionId { get; set; }
+        public required ComplianceFramework[] ApplicableFrameworks { get; set; }
     }
+
+    public class ComplianceReport
+    {
+        public required string Id { get; set; }
+        public ComplianceFramework Framework { get; set; }
+        public DateTime GeneratedAt { get; set; }
+        public DateTime PeriodStart { get; set; }
+        public DateTime PeriodEnd { get; set; }
+        public required ComplianceStatus OverallStatus { get; set; }
+        public required List<ComplianceControl> Controls { get; set; }
+        public required List<ComplianceViolation> Violations { get; set; }
+        public required ComplianceMetrics Metrics { get; set; }
+        public required List<ComplianceRecommendation> Recommendations { get; set; }
+    }
+
+    public class ComplianceStatus
+    {
+        public ComplianceFramework Framework { get; set; }
+        public double ComplianceScore { get; set; }
+        public int TotalControls { get; set; }
+        public int ImplementedControls { get; set; }
+        public required string Status { get; set; }
 
     public class ComplianceReport
     {
@@ -85,29 +107,29 @@ namespace TerraFusion.Core.Services
 
     public class ComplianceViolation
     {
-        public string Id { get; set; }
+        public required string Id { get; set; }
         public ComplianceFramework Framework { get; set; }
-        public string ControlId { get; set; }
-        public string ControlName { get; set; }
-        public string Description { get; set; }
-        public string Severity { get; set; }
+        public required string ControlId { get; set; }
+        public required string ControlName { get; set; }
+        public required string Description { get; set; }
+        public required string Severity { get; set; }
         public DateTime DetectedAt { get; set; }
-        public string Status { get; set; }
-        public string RemediationAction { get; set; }
+        public required string Status { get; set; }
+        public required string RemediationAction { get; set; }
         public DateTime? RemediatedAt { get; set; }
-        public string RemediatedBy { get; set; }
+        public required string RemediatedBy { get; set; }
     }
 
     public class ComplianceControl
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public required string Id { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
         public ComplianceFramework Framework { get; set; }
         public ComplianceControlStatus Status { get; set; }
-        public string Evidence { get; set; }
+        public required string Evidence { get; set; }
         public DateTime LastUpdated { get; set; }
-        public string ResponsibleParty { get; set; }
+        public required string ResponsibleParty { get; set; }
         public DateTime? NextReview { get; set; }
     }
 
@@ -120,27 +142,27 @@ namespace TerraFusion.Core.Services
         public int PrivilegedAccessEvents { get; set; }
         public int FailedLoginAttempts { get; set; }
         public int ConfigurationChanges { get; set; }
-        public Dictionary<string, int> ViolationsByType { get; set; }
+        public Dictionary<string, int> ViolationsByType { get; set; } = new Dictionary<string, int>();
     }
 
     public class ComplianceRecommendation
     {
-        public string Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string Priority { get; set; }
-        public string Category { get; set; }
-        public List<string> ActionItems { get; set; }
+        public required string Id { get; set; }
+        public required string Title { get; set; }
+        public required string Description { get; set; }
+        public required string Priority { get; set; }
+        public required string Category { get; set; }
+        public required List<string> ActionItems { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 
     public class ComplianceDashboardData
     {
-        public Dictionary<ComplianceFramework, ComplianceStatus> FrameworkStatus { get; set; }
-        public List<ComplianceViolation> RecentViolations { get; set; }
-        public ComplianceMetrics OverallMetrics { get; set; }
-        public List<ComplianceRecommendation> TopRecommendations { get; set; }
-        public Dictionary<string, object> TrendData { get; set; }
+        public required Dictionary<ComplianceFramework, ComplianceStatus> FrameworkStatus { get; set; }
+        public required List<ComplianceViolation> RecentViolations { get; set; }
+        public required ComplianceMetrics OverallMetrics { get; set; }
+        public required List<ComplianceRecommendation> TopRecommendations { get; set; }
+        public required Dictionary<string, object> TrendData { get; set; }
     }
 
     public class ComplianceReportSchedule
@@ -508,14 +530,79 @@ namespace TerraFusion.Core.Services
             {
                 [ComplianceFramework.FISMA] = new List<ComplianceControl>
                 {
-                    new ComplianceControl { Id = "AC-1", Name = "Access Control Policy", Framework = ComplianceFramework.FISMA, Status = ComplianceControlStatus.Implemented },
-                    new ComplianceControl { Id = "AU-1", Name = "Audit and Accountability Policy", Framework = ComplianceFramework.FISMA, Status = ComplianceControlStatus.Implemented },
-                    new ComplianceControl { Id = "SC-1", Name = "System and Communications Protection Policy", Framework = ComplianceFramework.FISMA, Status = ComplianceControlStatus.Implemented }
+                    new ComplianceControl { 
+                        Id = "AC-1", 
+                        Name = "Access Control Policy", 
+                        Description = "Access Control Policy", 
+                        Framework = ComplianceFramework.FISMA, 
+                        Status = ComplianceControlStatus.Implemented, 
+                        Evidence = "Policy documented", 
+                        ResponsibleParty = "IT Security",
+                        ControlId = "AC-1",
+                        ControlName = "Access Control Policy",
+                        Severity = "High",
+                        RemediationAction = "Maintain policy",
+                        RemediatedBy = ""
+                    },
+                    new ComplianceControl { 
+                        Id = "AU-1", 
+                        Name = "Audit and Accountability Policy", 
+                        Description = "Audit and Accountability Policy", 
+                        Framework = ComplianceFramework.FISMA, 
+                        Status = ComplianceControlStatus.Implemented, 
+                        Evidence = "Policy documented", 
+                        ResponsibleParty = "Compliance Team",
+                        ControlId = "AU-1",
+                        ControlName = "Audit and Accountability Policy",
+                        Severity = "High",
+                        RemediationAction = "Maintain policy",
+                        RemediatedBy = ""
+                    },
+                    new ComplianceControl { 
+                        Id = "SC-1", 
+                        Name = "System and Communications Protection Policy", 
+                        Description = "System and Communications Protection Policy", 
+                        Framework = ComplianceFramework.FISMA, 
+                        Status = ComplianceControlStatus.Implemented, 
+                        Evidence = "Policy documented", 
+                        ResponsibleParty = "IT Security",
+                        ControlId = "SC-1",
+                        ControlName = "System and Communications Protection Policy",
+                        Severity = "High",
+                        RemediationAction = "Maintain policy",
+                        RemediatedBy = ""
+                    }
                 },
                 [ComplianceFramework.NIST] = new List<ComplianceControl>
                 {
-                    new ComplianceControl { Id = "ID.AM-1", Name = "Physical devices and systems are inventoried", Framework = ComplianceFramework.NIST, Status = ComplianceControlStatus.Implemented },
-                    new ComplianceControl { Id = "PR.AC-1", Name = "Identities and credentials are issued", Framework = ComplianceFramework.NIST, Status = ComplianceControlStatus.Implemented }
+                    new ComplianceControl { 
+                        Id = "ID.AM-1", 
+                        Name = "Physical devices and systems are inventoried", 
+                        Description = "Asset management", 
+                        Framework = ComplianceFramework.NIST, 
+                        Status = ComplianceControlStatus.Implemented, 
+                        Evidence = "Asset inventory maintained", 
+                        ResponsibleParty = "IT Operations",
+                        ControlId = "ID.AM-1",
+                        ControlName = "Physical devices and systems are inventoried",
+                        Severity = "Medium",
+                        RemediationAction = "Maintain inventory",
+                        RemediatedBy = ""
+                    },
+                    new ComplianceControl { 
+                        Id = "PR.AC-1", 
+                        Name = "Identities and credentials are issued", 
+                        Description = "Identity management", 
+                        Framework = ComplianceFramework.NIST, 
+                        Status = ComplianceControlStatus.Implemented, 
+                        Evidence = "Identity system in place", 
+                        ResponsibleParty = "IT Security",
+                        ControlId = "PR.AC-1",
+                        ControlName = "Identities and credentials are issued",
+                        Severity = "High",
+                        RemediationAction = "Maintain identity system",
+                        RemediatedBy = ""
+                    }
                 }
             };
         }
