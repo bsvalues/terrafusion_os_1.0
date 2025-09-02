@@ -16,7 +16,7 @@ namespace TerraFusion.Core.Services
         Task<ThreatAssessment> AnalyzeThreatAsync(SecurityEvent securityEvent);
         Task<List<ThreatAlert>> GetActiveAlertsAsync();
         Task<ThreatComplianceReport> GenerateComplianceReportAsync(DateTime startDate, DateTime endDate);
-        Task<bool> ApplyDataLossPreventionAsync(string dataType, string content, string userId);
+        Task<bool> ApplyDataLossPreventionAsync(string dataType, string content, string userId, string? ipAddress = null);
         Task<RiskScore> CalculateRiskScoreAsync(string userId, string action, Dictionary<string, object> context);
         Task<List<SecurityRecommendation>> GetSecurityRecommendationsAsync();
         Task StartContinuousMonitoringAsync();
@@ -195,6 +195,7 @@ namespace TerraFusion.Core.Services
                     Id = Guid.NewGuid().ToString(),
                     Timestamp = DateTime.UtcNow,
                     ThreatType = securityEvent.EventType,
+                    Description = $"Threat assessment for {securityEvent.EventType}",
                     Metadata = securityEvent.Data
                 };
 
@@ -283,7 +284,8 @@ namespace TerraFusion.Core.Services
                     Description = "Vulnerability remediation below target threshold",
                     Severity = ViolationSeverity.Medium,
                     AffectedSystem = "TerraFusion.API",
-                    RemediationSteps = "Update security patches and conduct vulnerability scan"
+                    RemediationSteps = "Update security patches and conduct vulnerability scan",
+                    UserId = "System"
                 });
             }
 
@@ -296,7 +298,7 @@ namespace TerraFusion.Core.Services
             return report;
         }
 
-        public async Task<bool> ApplyDataLossPreventionAsync(string dataType, string content, string userId)
+        public async Task<bool> ApplyDataLossPreventionAsync(string dataType, string content, string userId, string? ipAddress = null)
         {
             try
             {
@@ -318,7 +320,7 @@ namespace TerraFusion.Core.Services
                             _logger.LogWarning("DLP violation detected: {DataType} found in content for user {UserId}", 
                                 pattern.Key, userId);
                             
-                            await CreateDlpViolationAlert(pattern.Key, userId);
+                            await CreateDlpViolationAlert(pattern.Key, userId, ipAddress ?? "Unknown");
                             return false; // Block the operation
                         }
                     }
@@ -651,7 +653,7 @@ namespace TerraFusion.Core.Services
             _activeAlerts.Enqueue(alert);
         }
 
-        private async Task CreateDlpViolationAlert(string dataType, string userId)
+        private async Task CreateDlpViolationAlert(string dataType, string userId, string ipAddress)
         {
             var alert = new ThreatAlert
             {
@@ -662,6 +664,7 @@ namespace TerraFusion.Core.Services
                 Description = $"Sensitive data type {dataType} detected in user content",
                 Source = "DataLossPreventionEngine",
                 UserId = userId,
+                IpAddress = ipAddress,
                 Status = AlertStatus.Open,
                 AffectedSystems = new List<string> { "TerraFusion.API" }
             };
