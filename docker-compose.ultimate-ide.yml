@@ -1,270 +1,475 @@
 version: '3.8'
 
+# TerraFusion Ultimate IDE - Complete Docker Compose Configuration
+# Government-Grade Development Platform with Full Stack Integration
+# Classification: OFFICIAL USE ONLY
+
 services:
-  # Ultimate IDE Gateway (New)
-  terrafusion-ide-gateway:
-    build:
-      context: ./backend/TerraFusion.IDE.Gateway
-      dockerfile: Dockerfile
-    ports:
-      - "7000:7000"
-    environment:
-      - ASPNETCORE_URLS=http://0.0.0.0:7000
-      - ASPNETCORE_ENVIRONMENT=Development
-      - Services__TerraFusionAPI=http://terrafusion-api:5000
-      - Services__RustDevEngine=http://rust-dev-engine:8080
-      - Services__AISwarm=http://ai-swarm:3000
-      - Services__OpsTools=http://ops-tools:9000
-    depends_on:
-      - terrafusion-api
-      - rust-dev-engine
-      - ai-swarm
-      - ops-tools
-    networks:
-      - terrafusion-network
-
-  # Enhanced Frontend with Monaco IDE
-  terrafusion-ide-frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.ide
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://terrafusion-ide-gateway:7000
-      - VITE_WEBSOCKET_URL=ws://terrafusion-ide-gateway:7000/ws
-      - VITE_AI_SWARM_URL=http://ai-swarm:3000
-      - NODE_ENV=development
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    depends_on:
-      - terrafusion-ide-gateway
-    networks:
-      - terrafusion-network
-
-  # Existing TerraFusion API (Enhanced)
-  terrafusion-api:
-    build:
-      context: ./backend
-      dockerfile: TerraFusion.API/Dockerfile
-    ports:
-      - "5000:5000"
-    environment:
-      - ASPNETCORE_URLS=http://0.0.0.0:5000
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=postgres-enhanced;Port=5432;Database=terrafusion_ide;Username=${DB_USER:-terrafusion};Password=${DB_PASSWORD:-terrafusion123}
-      - Redis__ConnectionString=redis-enhanced:6379
-    depends_on:
-      - postgres-enhanced
-      - redis-enhanced
-    networks:
-      - terrafusion-network
-
-  # Rust Development Engine (From TerraFusionDevelopment)
-  rust-dev-engine:
-    build:
-      context: ./TerraFusionDevelopment
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - RUST_LOG=info
-      - DATABASE_URL=postgresql://terrafusion:terrafusion123@postgres-enhanced:5432/terrafusion_ide
-      - REDIS_URL=redis://redis-enhanced:6379
-      - SERVER_PORT=8080
-    depends_on:
-      - postgres-enhanced
-      - redis-enhanced
-    networks:
-      - terrafusion-network
-
-  # AI Swarm Orchestration
-  ai-swarm:
-    build:
-      context: ./ai-swarm-supreme-commander
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://terrafusion:terrafusion123@postgres-enhanced:5432/terrafusion_ide
-      - REDIS_URL=redis://redis-enhanced:6379
-      - AI_AGENTS_COUNT=1008
-      - SUPREME_COMMANDER=active
-    depends_on:
-      - postgres-enhanced
-      - redis-enhanced
-    networks:
-      - terrafusion-network
-
-  # Ops Tools Suite Integration
-  ops-tools:
-    build:
-      context: ./terrafusion-ops-tools
-      dockerfile: Dockerfile
-    ports:
-      - "9000:9000"
-    environment:
-      - NODE_ENV=development
-      - TOOLS_COUNT=45
-      - MONITORING_ENABLED=true
-      - COMPLIANCE_VALIDATION=true
-    volumes:
-      - ./terrafusion-ops-tools:/app
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - terrafusion-network
-
-  # Enhanced PostgreSQL Database
-  postgres-enhanced:
+  # PostgreSQL Database - Primary Data Storage
+  postgres-primary:
     image: postgres:15-alpine
+    container_name: terrafusion-db-primary
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-terrafusion_ultimate_ide}
+      POSTGRES_USER: ${DATABASE_USER:-terrafusion_admin}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-tf_secure_default}
+      POSTGRES_INITDB_ARGS: "--auth-host=md5"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/TerraFusion.Data/Scripts/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./deployment/config/postgresql.conf:/etc/postgresql/postgresql.conf
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_DB=terrafusion_ide
-      - POSTGRES_USER=${DB_USER:-terrafusion}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-terrafusion123}
-      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
-    volumes:
-      - postgres_ide_data:/var/lib/postgresql/data
-      - ./database/init-scripts:/docker-entrypoint-initdb.d
-      - ./database/ide-schema.sql:/docker-entrypoint-initdb.d/001-ide-schema.sql
-    networks:
-      - terrafusion-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-terrafusion} -d terrafusion_ide"]
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-terrafusion_admin} -d ${DATABASE_NAME:-terrafusion_ultimate_ide}"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # Redis for Real-time Features
-  redis-enhanced:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
-    volumes:
-      - redis_ide_data:/data
     networks:
       - terrafusion-network
+    labels:
+      - "terrafusion.service=database"
+      - "terrafusion.tier=data"
+      - "terrafusion.classification=${SECURITY_LEVEL:-SECRET}"
+
+  # Redis Cache - High-Performance Caching
+  redis-cache:
+    image: redis:7-alpine
+    container_name: terrafusion-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_secure_default} --maxmemory 2gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+      - ./deployment/config/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 10s
       timeout: 3s
-      retries: 3
+      retries: 5
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=cache"
+      - "terrafusion.tier=data"
 
-  # Prometheus Monitoring
+  # TerraFusion API Gateway - Main Backend Service
+  terrafusion-api:
+    build:
+      context: ./backend
+      dockerfile: TerraFusion.IDE.Gateway/Dockerfile
+      args:
+        BUILD_CONFIGURATION: Release
+    container_name: terrafusion-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${TERRAFUSION_ENVIRONMENT:-Production}
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres-primary;Port=5432;Database=${DATABASE_NAME:-terrafusion_ultimate_ide};Username=${DATABASE_USER:-terrafusion_admin};Password=${DATABASE_PASSWORD:-tf_secure_default}
+      - Redis__ConnectionString=redis-cache:6379,password=${REDIS_PASSWORD:-redis_secure_default}
+      - TerraFusion__County=${TERRAFUSION_COUNTY:-benton}
+      - TerraFusion__AIAgents=${TERRAFUSION_AI_AGENTS:-50000}
+      - TerraFusion__SecurityLevel=${TERRAFUSION_SECURITY_LEVEL:-SECRET}
+      - TerraFusion__ComplianceMode=${TERRAFUSION_COMPLIANCE_MODE:-FISMA}
+      - Security__SecretKey=${SECURITY_SECRET_KEY:-default_secret_key_change_in_production}
+      - Security__JWTExpiry=${SECURITY_JWT_EXPIRY:-3600}
+      - Monitoring__PrometheusEnabled=true
+      - Compliance__FISMAEnabled=${FISMA_COMPLIANCE_ENABLED:-true}
+      - Compliance__Section508Enabled=${SECTION_508_VALIDATION:-true}
+      - Compliance__AuditRetentionDays=${GOVERNMENT_AUDIT_RETENTION:-2555}
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - api_logs:/app/logs
+      - ./deployment/config/appsettings.Production.json:/app/appsettings.Production.json
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=api"
+      - "terrafusion.tier=backend"
+      - "terrafusion.classification=${SECURITY_LEVEL:-SECRET}"
+
+  # TerraFusion Frontend - React Application
+  terrafusion-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        BUILD_ENV: production
+        REACT_APP_API_URL: ${API_BASE_URL:-http://localhost:5000}
+        REACT_APP_COUNTY: ${TERRAFUSION_COUNTY:-benton}
+        REACT_APP_AI_AGENTS: ${TERRAFUSION_AI_AGENTS:-50000}
+        REACT_APP_SECURITY_LEVEL: ${TERRAFUSION_SECURITY_LEVEL:-SECRET}
+    container_name: terrafusion-frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=${API_BASE_URL:-http://localhost:5000}
+      - REACT_APP_COUNTY=${TERRAFUSION_COUNTY:-benton}
+      - REACT_APP_DEPLOYMENT_ID=${TERRAFUSION_DEPLOYMENT_ID:-unknown}
+    ports:
+      - "3000:80"
+    depends_on:
+      - terrafusion-api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=frontend"
+      - "terrafusion.tier=frontend"
+
+  # AI Supreme Commander - Central AI Orchestration
+  ai-supreme-commander:
+    build:
+      context: ./ai-swarm-supreme-commander
+      dockerfile: Dockerfile
+    container_name: terrafusion-ai-supreme-commander
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - AI_TOTAL_AGENTS=${TERRAFUSION_AI_AGENTS:-50000}
+      - AI_FIELD_GENERALS=7
+      - REDIS_URL=redis://redis-cache:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_secure_default}
+      - COUNTY=${TERRAFUSION_COUNTY:-benton}
+      - SECURITY_LEVEL=${TERRAFUSION_SECURITY_LEVEL:-SECRET}
+      - LOG_LEVEL=info
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ai_logs:/app/logs
+      - ./ai-swarm-config.json:/app/config/swarm-config.json
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=ai-supreme-commander"
+      - "terrafusion.tier=ai"
+      - "terrafusion.agents=1"
+
+  # AI Field Generals - Specialized Agent Controllers
+  ai-field-generals:
+    build:
+      context: ./ai-field-generals
+      dockerfile: Dockerfile
+    container_name: terrafusion-ai-field-generals
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - SUPREME_COMMANDER_URL=http://ai-supreme-commander:8080
+      - TOTAL_FIELD_GENERALS=7
+      - AGENTS_PER_GENERAL=${AGENTS_PER_GENERAL:-7142}
+      - REDIS_URL=redis://redis-cache:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_secure_default}
+      - SECURITY_LEVEL=${TERRAFUSION_SECURITY_LEVEL:-SECRET}
+    ports:
+      - "8090-8096:8090-8096"
+    depends_on:
+      - ai-supreme-commander
+      - redis-cache
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 7
+    volumes:
+      - field_generals_logs:/app/logs
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=ai-field-generals"
+      - "terrafusion.tier=ai"
+      - "terrafusion.agents=49999"
+
+  # Prometheus - Metrics Collection
   prometheus:
     image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./terrafusion-ops-tools/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./terrafusion-ops-tools/monitoring/rules:/etc/prometheus/rules
-      - prometheus_data:/prometheus
+    container_name: terrafusion-prometheus
+    restart: unless-stopped
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=2555d'  # 7 years for government compliance
+      - '--storage.tsdb.retention.size=500GB'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/rules/:/etc/prometheus/rules/
+      - prometheus_data:/prometheus
     networks:
       - terrafusion-network
+    labels:
+      - "terrafusion.service=prometheus"
+      - "terrafusion.tier=monitoring"
 
-  # Grafana Dashboards
+  # Grafana - Visualization Dashboard
   grafana:
     image: grafana/grafana:latest
+    container_name: terrafusion-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin_change_me}
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+      - GF_SERVER_ROOT_URL=http://localhost:3001
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
     ports:
       - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=terrafusion123
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_ROOT_URL=http://localhost:3001
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./terrafusion-ops-tools/monitoring/dashboards:/etc/grafana/provisioning/dashboards
-      - ./terrafusion-ops-tools/monitoring/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana-dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=grafana"
+      - "terrafusion.tier=monitoring"
+
+  # Elasticsearch - Log Aggregation and Search
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    container_name: terrafusion-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - cluster.name=terrafusion-logs
+      - node.name=terrafusion-es-01
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=elasticsearch"
+      - "terrafusion.tier=logging"
+
+  # Logstash - Log Processing Pipeline
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.9.0
+    container_name: terrafusion-logstash
+    restart: unless-stopped
+    environment:
+      - "LS_JAVA_OPTS=-Xms1g -Xmx1g"
+    volumes:
+      - ./monitoring/logstash/pipeline:/usr/share/logstash/pipeline
+      - ./monitoring/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - api_logs:/logs/api:ro
+      - ai_logs:/logs/ai:ro
+    ports:
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "9600:9600"
+    depends_on:
+      - elasticsearch
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=logstash"
+      - "terrafusion.tier=logging"
+
+  # Kibana - Log Visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.9.0
+    container_name: terrafusion-kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVER_NAME=terrafusion-kibana
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=5601
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=kibana"
+      - "terrafusion.tier=logging"
+
+  # Node Exporter - System Metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: terrafusion-node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - terrafusion-network
+    labels:
+      - "terrafusion.service=node-exporter"
+      - "terrafusion.tier=monitoring"
+
+  # Alertmanager - Alert Management
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: terrafusion-alertmanager
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
     depends_on:
       - prometheus
     networks:
       - terrafusion-network
+    labels:
+      - "terrafusion.service=alertmanager"
+      - "terrafusion.tier=monitoring"
 
-  # Elasticsearch for Advanced Search
-  elasticsearch:
-    image: elasticsearch:8.11.0
-    ports:
-      - "9200:9200"
+  # Government Compliance Validator - Continuous Compliance Monitoring
+  compliance-validator:
+    build:
+      context: ./compliance-validator
+      dockerfile: Dockerfile
+    container_name: terrafusion-compliance-validator
+    restart: unless-stopped
     environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - COMPLIANCE_MODE=${TERRAFUSION_COMPLIANCE_MODE:-FISMA}
+      - SECURITY_LEVEL=${TERRAFUSION_SECURITY_LEVEL:-SECRET}
+      - VALIDATION_INTERVAL=3600  # 1 hour
+      - AUDIT_RETENTION_DAYS=${GOVERNMENT_AUDIT_RETENTION:-2555}
+      - API_URL=http://terrafusion-api:5000
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-    networks:
-      - terrafusion-network
+      - compliance_reports:/app/reports
+      - ./deployment/config/compliance-rules:/app/config/rules
+    depends_on:
+      - terrafusion-api
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_health || exit 1"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:8100/health"]
+      interval: 60s
+      timeout: 15s
       retries: 3
-
-  # Nginx Load Balancer & SSL Termination
-  nginx-ide:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/ide.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./nginx/logs:/var/log/nginx
-    depends_on:
-      - terrafusion-ide-frontend
-      - terrafusion-ide-gateway
     networks:
       - terrafusion-network
+    labels:
+      - "terrafusion.service=compliance-validator"
+      - "terrafusion.tier=security"
+      - "terrafusion.classification=${SECURITY_LEVEL:-SECRET}"
 
-  # Code Quality & Security Scanner
-  sonarqube:
-    image: sonarqube:community
-    ports:
-      - "9001:9000"
-    environment:
-      - SONAR_JDBC_URL=jdbc:postgresql://postgres-enhanced:5432/sonarqube
-      - SONAR_JDBC_USERNAME=${DB_USER:-terrafusion}
-      - SONAR_JDBC_PASSWORD=${DB_PASSWORD:-terrafusion123}
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
-    depends_on:
-      - postgres-enhanced
-    networks:
-      - terrafusion-network
-
+# Named Volumes for Persistent Data
 volumes:
-  postgres_ide_data:
+  postgres_data:
     driver: local
-  redis_ide_data:
+    labels:
+      - "terrafusion.data=database"
+      - "terrafusion.retention=permanent"
+  redis_data:
     driver: local
+    labels:
+      - "terrafusion.data=cache"
+      - "terrafusion.retention=temporary"
   prometheus_data:
     driver: local
+    labels:
+      - "terrafusion.data=metrics"
+      - "terrafusion.retention=7years"
   grafana_data:
     driver: local
+    labels:
+      - "terrafusion.data=dashboards"
+      - "terrafusion.retention=permanent"
   elasticsearch_data:
     driver: local
-  sonarqube_data:
+    labels:
+      - "terrafusion.data=logs"
+      - "terrafusion.retention=7years"
+  alertmanager_data:
     driver: local
-  sonarqube_extensions:
+  api_logs:
     driver: local
-  sonarqube_logs:
+  ai_logs:
     driver: local
+  field_generals_logs:
+    driver: local
+  compliance_reports:
+    driver: local
+    labels:
+      - "terrafusion.data=compliance"
+      - "terrafusion.retention=permanent"
+      - "terrafusion.classification=${SECURITY_LEVEL:-SECRET}"
 
+# Network Configuration
 networks:
   terrafusion-network:
     driver: bridge
+    labels:
+      - "terrafusion.network=primary"
+      - "terrafusion.classification=${SECURITY_LEVEL:-SECRET}"
     ipam:
+      driver: default
       config:
-        - subnet: 172.28.0.0/16
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1

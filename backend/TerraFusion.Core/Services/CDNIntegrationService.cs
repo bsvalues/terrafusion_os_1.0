@@ -451,10 +451,10 @@ namespace TerraFusion.Core.Services
 
         private class UploadResponse
         {
-            public string Url { get; set; }
-            public string Path { get; set; }
+            public required string Url { get; set; }
+            public required string Path { get; set; }
             public long Size { get; set; }
-            public string ContentType { get; set; }
+            public required string ContentType { get; set; }
         }
     }
 }

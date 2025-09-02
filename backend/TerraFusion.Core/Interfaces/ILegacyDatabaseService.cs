@@ -67,13 +67,13 @@ namespace TerraFusion.Core.Interfaces
     /// </summary>
     public class LegacyPropertyRecord
     {
-        public string ParcelId { get; set; }
-        public string PropertyAddress { get; set; }
-        public string OwnerName { get; set; }
+        public required string ParcelId { get; set; }
+        public required string PropertyAddress { get; set; }
+        public required string OwnerName { get; set; }
         public decimal AssessedValue { get; set; }
         public decimal MarketValue { get; set; }
         public DateTime LastUpdated { get; set; }
-        public string PropertyType { get; set; }
+        public required string PropertyType { get; set; }
         public decimal LandArea { get; set; }
         public int BuildingCount { get; set; }
         public Dictionary<string, object> VendorSpecificData { get; set; } = new();
@@ -119,12 +119,12 @@ namespace TerraFusion.Core.Interfaces
     /// </summary>
     public class LegacyAuditRecord
     {
-        public string AuditId { get; set; }
-        public string ParcelId { get; set; }
-        public string Action { get; set; }
-        public string UserId { get; set; }
+        public required string AuditId { get; set; }
+        public required string ParcelId { get; set; }
+        public required string Action { get; set; }
+        public required string UserId { get; set; }
         public DateTime Timestamp { get; set; }
         public Dictionary<string, object> Changes { get; set; } = new();
-        public string Notes { get; set; }
+        public required string Notes { get; set; }
     }
 }

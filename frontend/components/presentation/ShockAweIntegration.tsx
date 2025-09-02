@@ -160,11 +160,12 @@ export const ShockAweIntegration: React.FC = () => {
             value={presentationMode} 
             onChange={(e) => setPresentationMode(e.target.value as any)}
             className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white"
-          ><>
+          >
+
 
             <option value="executive">Executive Mode</option>
             <option
-</>
+
 value="technical">Technical Mode</option>
             <option value="financial">Financial Mode</option>
           </select>
@@ -186,13 +187,14 @@ value="technical">Technical Mode</option>
       <div className="flex-1 p-8">
         <div className="max-w-7xl mx-auto">
           {/* Slide Header */}
-          <div className="text-center mb-12"><>
+          <div className="text-center mb-12">
+
 
             <h2 className="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
               {slide.title}
             </h2>
             <p
-</>
+
 className="text-2xl text-gray-300 font-light">
               {slide.subtitle}
             </p>
@@ -204,7 +206,8 @@ className="text-2xl text-gray-300 font-light">
           </div>
 
           {/* Slide Navigation */}
-          <div className="flex justify-center items-center gap-4"><>
+          <div className="flex justify-center items-center gap-4">
+
 
             <button
               onClick={() => setCurrentSlide((prev) => (prev - 1 + shockAweSlides.length) % shockAweSlides.length)}
@@ -214,9 +217,10 @@ className="text-2xl text-gray-300 font-light">
             </button>
             
             <div
-</>
+
 className="flex gap-2">
-              {shockAweSlides.map((_ /* , index */) => (<>
+              {shockAweSlides.map((_ /* , index */) => (
+
 
                 <button
                   key={index}
@@ -229,7 +233,7 @@ className="flex gap-2">
             </div>
             
             <button
-</>
+
 
               onClick={() => setCurrentSlide((prev) => (prev + 1) % shockAweSlides.length)}
               className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors"

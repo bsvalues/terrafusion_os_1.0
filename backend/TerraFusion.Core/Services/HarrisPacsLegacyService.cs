@@ -28,9 +28,9 @@ namespace TerraFusion.Core.Services
         {
             _configuration = configuration;
             _logger = logger;
-            _connectionString = _configuration.GetConnectionString("HarrisPacs");
-            _apiEndpoint = _configuration["HarrisPacs:ApiEndpoint"];
-            _apiKey = _configuration["HarrisPacs:ApiKey"];
+            _connectionString = _configuration.GetConnectionString("HarrisPacs") ?? string.Empty;
+            _apiEndpoint = _configuration["HarrisPacs:ApiEndpoint"] ?? string.Empty;
+            _apiKey = _configuration["HarrisPacs:ApiKey"] ?? string.Empty;
             Jurisdiction = _configuration["County:Name"] ?? "Unknown County";
         }
 

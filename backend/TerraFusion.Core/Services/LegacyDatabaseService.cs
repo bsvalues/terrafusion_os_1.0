@@ -98,7 +98,8 @@ public class LegacyDatabaseService
         {
             CountyName = countyName,
             AdapterType = adapterType,
-            StartTime = DateTime.UtcNow
+            StartTime = DateTime.UtcNow,
+            Error = null
         };
 
         try
@@ -238,7 +239,7 @@ public class HarrisPacsAdapter : ILegacyDatabaseAdapter
 {
     private readonly ILogger _logger;
     private readonly IConfiguration _configuration;
-    private string _connectionString;
+    private string _connectionString = string.Empty;
 
     public HarrisPacsAdapter(ILogger logger, IConfiguration configuration)
     {
@@ -288,6 +289,7 @@ public class HarrisPacsAdapter : ILegacyDatabaseAdapter
                 Address = $"Sample Address {i}",
                 City = "Kennewick",
                 State = "WA",
+                ZipCode = "99337",
                 AssessedValue = 350000 + (i * 1000),
                 PropertyType = i % 5 == 0 ? "Commercial" : "Residential"
             });
@@ -389,9 +391,9 @@ public class CsvImportAdapter : GenericSqlAdapter
 // Data Transfer Objects
 public class LegacyDatabaseConfiguration
 {
-    public string CountyName { get; set; }
-    public string DatabaseType { get; set; }
-    public string ConnectionString { get; set; }
+    public required string CountyName { get; set; }
+    public required string DatabaseType { get; set; }
+    public required string ConnectionString { get; set; }
     public int ImportBatchSize { get; set; } = 1000;
     public bool EnableValidation { get; set; } = true;
     public Dictionary<string, string> CustomMappings { get; set; } = new();
@@ -410,12 +412,12 @@ public class LegacyImportOptions
 public class LegacyImportResult
 {
     public string ImportId { get; set; } = Guid.NewGuid().ToString();
-    public string CountyName { get; set; }
-    public string AdapterType { get; set; }
+    public required string CountyName { get; set; }
+    public required string AdapterType { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime? EndTime { get; set; }
     public bool Success { get; set; }
-    public string Error { get; set; }
+    public required string Error { get; set; }
     public List<PropertyRecord> Properties { get; set; } = new();
     public List<AssessmentRecord> Assessments { get; set; } = new();
     public List<OwnerRecord> Owners { get; set; } = new();
@@ -424,8 +426,8 @@ public class LegacyImportResult
 
 public class ValidationResult
 {
-    public string ImportId { get; set; }
-    public string CountyName { get; set; }
+    public required string ImportId { get; set; }
+    public required string CountyName { get; set; }
     public bool IsValid { get; set; }
     public int PropertyCount { get; set; }
     public int AssessmentCount { get; set; }
@@ -437,20 +439,20 @@ public class ValidationResult
 // Record types
 public record PropertyRecord
 {
-    public string ParcelId { get; init; }
-    public string Address { get; init; }
-    public string City { get; init; }
-    public string State { get; init; }
-    public string ZipCode { get; init; }
+    public required string ParcelId { get; init; }
+    public required string Address { get; init; }
+    public required string City { get; init; }
+    public required string State { get; init; }
+    public required string ZipCode { get; init; }
     public decimal AssessedValue { get; init; }
-    public string PropertyType { get; init; }
+    public required string PropertyType { get; init; }
     public int? YearBuilt { get; init; }
     public int? SquareFootage { get; init; }
 }
 
 public record AssessmentRecord
 {
-    public string PropertyId { get; init; }
+    public required string PropertyId { get; init; }
     public int AssessmentYear { get; init; }
     public decimal AssessedValue { get; init; }
     public decimal MarketValue { get; init; }
@@ -459,14 +461,14 @@ public record AssessmentRecord
 
 public record OwnerRecord
 {
-    public string PropertyId { get; init; }
-    public string OwnerName { get; init; }
-    public string MailingAddress { get; init; }
+    public required string PropertyId { get; init; }
+    public required string OwnerName { get; init; }
+    public required string MailingAddress { get; init; }
 }
 
 public record SaleRecord
 {
-    public string PropertyId { get; init; }
+    public required string PropertyId { get; init; }
     public decimal SalePrice { get; init; }
     public DateTime SaleDate { get; init; }
 }

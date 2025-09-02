@@ -18,32 +18,32 @@ namespace TerraFusion.Core.Models
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required]
         [StringLength(20)]
-        public string Version { get; set; }
+        public required string Version { get; set; }
 
         [Required]
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string Category { get; set; }
+        public required string Category { get; set; }
 
         [Required]
-        public string AuthorId { get; set; }
+        public required string AuthorId { get; set; }
 
         public PluginStatus Status { get; set; }
 
         // URL to the stored plugin package (e.g., in Azure Blob Storage)
-        public string PackageUrl { get; set; }
+        public required string PackageUrl { get; set; }
 
         // URL to the plugin's icon
-        public string IconUrl { get; set; }
+        public required string IconUrl { get; set; }
 
         // Stores permissions as a JSON array string
-        public string PermissionsJson { get; set; }
+        public required string PermissionsJson { get; set; }
 
         public DateTime SubmittedAt { get; set; }
         public DateTime? LastUpdatedAt { get; set; }

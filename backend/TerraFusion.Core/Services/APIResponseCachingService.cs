@@ -451,11 +451,11 @@ namespace TerraFusion.Core.Services
 
         private class CachedResponse
         {
-            public string Data { get; set; }
+            public required string Data { get; set; }
             public DateTime CreatedAt { get; set; }
             public long SizeBytes { get; set; }
-            public string[] Tags { get; set; }
-            public string ContentType { get; set; }
+            public required string[] Tags { get; set; }
+            public required string ContentType { get; set; }
         }
 
         private class CacheItemMetadata
@@ -463,8 +463,8 @@ namespace TerraFusion.Core.Services
             public DateTime CreatedAt { get; set; }
             public DateTime ExpiresAt { get; set; }
             public long SizeBytes { get; set; }
-            public string[] Tags { get; set; }
-            public string ContentType { get; set; }
+            public required string[] Tags { get; set; }
+            public required string ContentType { get; set; }
         }
     }
 }

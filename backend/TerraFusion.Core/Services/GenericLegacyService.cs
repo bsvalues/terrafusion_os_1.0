@@ -144,10 +144,15 @@ namespace TerraFusion.Core.Services
                 {
                     AuditId = Guid.NewGuid().ToString(),
                     ParcelId = parcelId,
-                    Action = "VIEW",
-                    UserId = "GENERIC_USER",
-                    Timestamp = DateTime.UtcNow.AddDays(-1),
-                    Changes = new Dictionary<string, object> { ["Action"] = "Property accessed via generic interface" }
+                    Action = "harris_pac_integration",
+                    UserId = "system",
+                    Timestamp = DateTime.UtcNow,
+                    Changes = new Dictionary<string, object>
+                    {
+                        ["migration_type"] = "Generic",
+                        ["system_version"] = "1.0"
+                    },
+                    Notes = "Legacy migration from generic system"
                 }
             };
         }

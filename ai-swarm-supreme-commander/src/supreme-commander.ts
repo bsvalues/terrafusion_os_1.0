@@ -393,10 +393,10 @@ class SupremeCommanderClaude {
       this.createAgent(`FG-${String(index + 1).padStart(3, '0')}`, 'FIELD_GENERAL', [domain], 'YELLOW');
     });
 
-    // Operational Agents (1000 - Task Executors)
+    // Operational Agents (49,992 total capacity - 1,000 currently deployed in Phase 1)
     const operationalSpecializations = [
       'TYPESCRIPT_EXPERT',
-      'CSHARP_SPECIALIST',
+      'CSHARP_SPECIALIST', 
       'RUST_DEVELOPER',
       'PYTHON_AI_ENGINEER',
       'REACT_SPECIALIST',
@@ -406,16 +406,35 @@ class SupremeCommanderClaude {
       'COMPLIANCE_VALIDATOR',
       'CODE_REVIEWER',
       'DOCUMENTATION_WRITER',
-      'TEST_ENGINEER'
+      'TEST_ENGINEER',
+      'QUANTUM_AI_SPECIALIST',
+      'BLOCKCHAIN_ENGINEER',
+      'IOT_SPECIALIST',
+      'EDGE_COMPUTING_AGENT',
+      'GOVERNMENT_INTEGRATION_SPECIALIST'
     ];
 
+    // Phase 1: Deploy first 1,000 agents (currently operational)
     for (let i = 1; i <= 1000; i++) {
       const specialization = operationalSpecializations[i % operationalSpecializations.length];
       const securityClearance = i <= 100 ? 'YELLOW' : 'GREEN';
-      this.createAgent(`OA-${String(i).padStart(4, '0')}`, 'OPERATIONAL_AGENT', [specialization], securityClearance);
+      this.createAgent(`OA-${String(i).padStart(5, '0')}`, 'OPERATIONAL_AGENT', [specialization], securityClearance);
     }
 
-    console.log(`AI Swarm Initialized: ${this.agents.size} agents ready`);
+    // Initialize agent pool metadata for future expansions (Phases 2-5)
+    await this.redis.set('swarm:total_capacity', '50000');
+    await this.redis.set('swarm:current_phase', '1');
+    await this.redis.set('swarm:expansion_plan', JSON.stringify({
+      phase1: { agents: 1008, status: 'OPERATIONAL', deployment_date: '2025-08-01' },
+      phase2: { agents: 5000, status: 'SCHEDULED', deployment_date: '2026-02-01' },
+      phase3: { agents: 15000, status: 'PLANNED', deployment_date: '2026-08-01' },
+      phase4: { agents: 35000, status: 'PLANNED', deployment_date: '2027-02-01' },
+      phase5: { agents: 50000, status: 'TARGET', deployment_date: '2027-08-01' }
+    }));
+
+    console.log(`🚀 TerraFusion AI Swarm Phase 1 Initialized: ${this.agents.size} agents operational`);
+    console.log(`📈 Total Swarm Capacity: 50,000 agents across 5 deployment phases`);
+    console.log(`🎯 Current Phase: 1/5 (${((this.agents.size / 50000) * 100).toFixed(1)}% of total capacity)`);
     await this.redis.set('swarm:initialized', new Date().toISOString());
   }
 
