@@ -1973,3 +1973,8 @@ $4
 incr
 $4
 ping
+*2
+$4
+incr
+$4
+ping
