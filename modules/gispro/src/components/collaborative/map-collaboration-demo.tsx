@@ -245,6 +245,7 @@ export default function MapCollaborationDemo() {
 
           <CardTitle>Map Collaboration Demo</CardTitle>
           <CardDescription
+</>
 </>>
             Collaborate in real-time on maps with others
           </CardDescription>
@@ -289,6 +290,7 @@ export default function MapCollaborationDemo() {
                 <label htmlFor="room-id" className="text-sm font-medium block mb-1">Room ID:</label>
                 <Input
 </>
+
                   id="room-id"
                   value={roomId}
                   onChange={(e) => setRoomId(e.target.value)}
@@ -302,6 +304,7 @@ export default function MapCollaborationDemo() {
                 <label htmlFor="room-name" className="text-sm font-medium block mb-1">Room Name:</label>
                 <Input
 </>
+
                   id="room-name"
                   value={roomName}
                   onChange={(e) => setRoomName(e.target.value)}
@@ -326,19 +329,22 @@ export default function MapCollaborationDemo() {
                   Map
                 </TabsTrigger>
                 <TabsTrigger
-</> value="chat" className="flex items-center"><>
+</>
+value="chat" className="flex items-center"><>
 
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Chat
                 </TabsTrigger>
                 <TabsTrigger
-</> value="users" className="flex items-center"><>
+</>
+value="users" className="flex items-center"><>
 
                   <Users className="mr-2 h-4 w-4" />
                   Users
                 </TabsTrigger>
                 <div
-</> className="flex-1 flex justify-end">
+</>
+className="flex-1 flex justify-end">
                   <Button variant="outline" size="sm" onClick={handleLeaveRoom}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Leave Room
@@ -361,7 +367,8 @@ export default function MapCollaborationDemo() {
                         This is a simulated map area for collaboration demo
                       </p>
                       <p
-</> className="text-xs text-muted-foreground mt-2">
+</>
+className="text-xs text-muted-foreground mt-2">
                         (In a real application, this would be a Mapbox or Leaflet map)
                       </p>
                     </div>
@@ -378,7 +385,8 @@ export default function MapCollaborationDemo() {
                         <MapPin className="h-4 w-4" />
                       </Button>
                       <Button
-</> 
+</>
+
                         size="icon" 
                         variant="outline" 
                         onClick={() => simulateDrawing('line')}
@@ -388,7 +396,8 @@ export default function MapCollaborationDemo() {
                         <Edit3 className="h-4 w-4" />
                       </Button>
                       <Button
-</> 
+</>
+
                         size="icon" 
                         variant="outline" 
                         onClick={() => simulateDrawing('polygon')}
@@ -424,7 +433,8 @@ export default function MapCollaborationDemo() {
 
                         <p className="text-xs font-medium mb-1">Recent Drawings:</p>
                         <div
-</> className="max-h-24 overflow-y-auto space-y-1">
+</>
+className="max-h-24 overflow-y-auto space-y-1">
                           {drawings.slice(-5).map((drawing) => (
                             <div key={drawing.id} className="text-xs flex items-center space-x-2"><>
 
@@ -433,6 +443,7 @@ export default function MapCollaborationDemo() {
                                 style={{ backgroundColor: drawing.properties?.color || '#FF5733' }}
                               ></span>
                               <span
+</>
 </>>
                                 {drawing.properties?.label || `${drawing.type} by ${drawing.username}`}
                               </span>
@@ -472,7 +483,8 @@ export default function MapCollaborationDemo() {
                                 {msg.username || 'Unknown user'}
                               </span>
                               <span
-</> className="text-xs opacity-70">
+</>
+className="text-xs opacity-70">
                                 {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}
                               </span>
                             </div>
@@ -504,7 +516,8 @@ export default function MapCollaborationDemo() {
 
                   <h3 className="text-sm font-medium mb-3">Active Users in Room</h3>
                   <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                     {/* Current user */}
                     <div className="flex items-center space-x-3 p-2 bg-muted/30 rounded-md">
                       <Avatar>
@@ -514,7 +527,8 @@ export default function MapCollaborationDemo() {
 
                         <p className="text-sm font-medium">{username} (You)</p>
                         <p
-</> className="text-xs text-muted-foreground">ID: {userId.substring(0, 8)}</p>
+</>
+className="text-xs text-muted-foreground">ID: {userId.substring(0, 8)}</p>
                       </div>
                       <Badge className="ml-auto">Active</Badge>
                     </div>
@@ -529,7 +543,8 @@ export default function MapCollaborationDemo() {
 
                           <p className="text-sm font-medium">{cursor.username}</p>
                           <p
-</> className="text-xs text-muted-foreground">ID: {cursor.userId.substring(0, 8)}</p>
+</>
+className="text-xs text-muted-foreground">ID: {cursor.userId.substring(0, 8)}</p>
                         </div>
                         <Badge variant="outline" className="ml-auto">Active</Badge>
                       </div>

@@ -184,7 +184,8 @@ export function CostComparisonWizard() {
 
           <h3 className="text-lg font-medium">Cost Scenario Comparison Wizard</h3>
           <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
             Compare building cost scenarios for different regions, types, and specifications
           </p>
         </div>
@@ -195,7 +196,8 @@ export function CostComparisonWizard() {
 
               <TabsTrigger value="edit">Edit Scenarios</TabsTrigger>
               <TabsTrigger
-</> value="results" disabled={!scenarios.some(s => s.results)}>
+</>
+value="results" disabled={!scenarios.some(s => s.results)}>
                 View Results
               </TabsTrigger>
             </TabsList>
@@ -225,7 +227,8 @@ export function CostComparisonWizard() {
                 </Button>
                 
                 <CardHeader
-</> className="pb-2">
+</>
+className="pb-2">
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <Input
@@ -243,6 +246,7 @@ export function CostComparisonWizard() {
                     <Label htmlFor={`region-${scenario.id}`}>Region</Label>
                     <Select
 </>
+
                       value={scenario.region}
                       onValueChange={(value) => updateScenario(scenario.id, "region", value)}
                     >
@@ -251,6 +255,7 @@ export function CostComparisonWizard() {
                         <SelectValue placeholder="Select region" />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>>
                         {regions.map((region) => (
                           <SelectItem key={region.value} value={region.value}>
@@ -266,6 +271,7 @@ export function CostComparisonWizard() {
                     <Label htmlFor={`building-type-${scenario.id}`}>Building Type</Label>
                     <Select
 </>
+
                       value={scenario.buildingType}
                       onValueChange={(value) => updateScenario(scenario.id, "buildingType", value)}
                     >
@@ -274,6 +280,7 @@ export function CostComparisonWizard() {
                         <SelectValue placeholder="Select building type" />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>>
                         {buildingTypes.map((type) => (
                           <SelectItem key={type.value} value={type.value}>
@@ -289,6 +296,7 @@ export function CostComparisonWizard() {
                     <Label htmlFor={`square-footage-${scenario.id}`}>Square Footage</Label>
                     <Input
 </>
+
                       id={`square-footage-${scenario.id}`}
                       type="number"
                       value={scenario.squareFootage}
@@ -301,6 +309,7 @@ export function CostComparisonWizard() {
                     <Label htmlFor={`complexity-${scenario.id}`}>Complexity Level</Label>
                     <Select
 </>
+
                       value={scenario.complexityLevel}
                       onValueChange={(value) => updateScenario(scenario.id, "complexityLevel", value)}
                     >
@@ -309,6 +318,7 @@ export function CostComparisonWizard() {
                         <SelectValue placeholder="Select complexity" />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>>
                         {complexityLevels.map((level: { value: string; label: string }) => (
                           <SelectItem key={level.value} value={level.value}>
@@ -324,6 +334,7 @@ export function CostComparisonWizard() {
                     <Label htmlFor={`year-${scenario.id}`}>Assessment Year</Label>
                     <Input
 </>
+
                       id={`year-${scenario.id}`}
                       type="number"
                       value={scenario.year}
@@ -375,7 +386,8 @@ export function CostComparisonWizard() {
 
               <h3 className="text-lg font-medium">Comparison Results</h3>
               <Button
-</> variant="outline" size="sm" onClick={clearResults}>
+</>
+variant="outline" size="sm" onClick={clearResults}>
                 Reset Calculations
               </Button>
             </div>
@@ -536,7 +548,8 @@ export function CostComparisonWizard() {
               No calculation results available. Please calculate scenarios first.
             </p>
             <Button
-</> 
+</>
+
               onClick={() => setActiveTab("edit")} 
               variant="outline" 
               className="mt-4"

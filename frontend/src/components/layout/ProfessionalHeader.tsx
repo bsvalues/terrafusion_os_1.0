@@ -64,10 +64,15 @@ const ProfessionalHeader: React.FC = () => {
               boxShadow: '0 4px 20px rgba(0, 210, 255, 0.3)',
             }}
           >
+
+
             <Business sx={{ color: 'white', fontSize: 28 }} />
           </Box>
           <Box
+
 >
+
+
             <Typography
               variant="h5"
               sx={{
@@ -80,6 +85,7 @@ const ProfessionalHeader: React.FC = () => {
               Terrafusion OS
             </Typography>
             <Typography
+
 variant="caption"
               sx={{
                 color: 'rgba(255, 255, 255, 0.8)',
@@ -104,6 +110,8 @@ variant="caption"
             label="County System Online"
             size="small"
           />
+
+
           <StatusChip
             icon={<Security />}
             label="FISMA Compliant"
@@ -112,7 +120,10 @@ variant="caption"
         </SystemStats>
 
         <Box
+
 sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+
+
           <Button
             variant="outlined"
             sx={{
@@ -128,6 +139,7 @@ sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           </Button>
           
           <IconButton
+
 sx={{ color: 'white' }}>
             <Badge badgeContent={3} color="error">
               <Notifications />

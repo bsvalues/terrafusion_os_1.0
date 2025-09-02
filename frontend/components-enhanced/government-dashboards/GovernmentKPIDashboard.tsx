@@ -239,7 +239,8 @@ const GovernmentKPIDashboard: React.FC = () => {
           🏛️ Terrafusion Government KPI Dashboard
         </Typography>
         <Box
-</> sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+</>
+sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <FormControlLabel
             control={
               <Switch
@@ -282,17 +283,18 @@ const GovernmentKPIDashboard: React.FC = () => {
                 </Box>
                 
                 <Typography
-</> variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+</>
+variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
                   {formatValue(metric.value, metric.unit)}
                 </Typography><>
 
-                
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
                   {metric.title}
                 </Typography>
                 
                 <LinearProgress
 </>
+
                   variant="determinate"
                   value={(metric.value / metric.target) * 100}
                   sx={{
@@ -311,7 +313,8 @@ const GovernmentKPIDashboard: React.FC = () => {
                     Target: {formatValue(metric.target, metric.unit)}
                   </Typography>
                   <Typography
-</> 
+</>
+
                     variant="caption" 
                     sx={{ 
                       color: metric.trend === 'up' ? 'success.main' : 
@@ -338,7 +341,8 @@ const GovernmentKPIDashboard: React.FC = () => {
                 Revenue Trends & AI Optimization Impact
               </Typography>
               <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                 <AreaChart data={revenueData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
@@ -360,7 +364,8 @@ const GovernmentKPIDashboard: React.FC = () => {
                 Revenue Sources Distribution
               </Typography>
               <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                 <PieChart>
                   <Pie
                     data={[
@@ -384,7 +389,8 @@ const GovernmentKPIDashboard: React.FC = () => {
                       ))}
                   </Pie>
                   <RechartsTooltip
-</> formatter={(value: number) => [`$${(value / 1000000).toFixed(2)}M`, '']} />
+</>
+formatter={(value: number) => [`$${(value / 1000000).toFixed(2)}M`, '']} />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
@@ -403,7 +409,8 @@ const GovernmentKPIDashboard: React.FC = () => {
                 AI Swarm Performance
               </Typography>
               <ResponsiveContainer
-</> width="100%" height={250}>
+</>
+width="100%" height={250}>
                 <LineChart data={aiPerformanceData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="timestamp" />
@@ -427,7 +434,8 @@ const GovernmentKPIDashboard: React.FC = () => {
                 Revenue Discovery Performance
               </Typography>
               <ResponsiveContainer
-</> width="100%" height={250}>
+</>
+width="100%" height={250}>
                 <BarChart data={aiPerformanceData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="timestamp" />

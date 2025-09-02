@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:    
+metadata:      
   name: {{ include "terrafusion-backend.fullname" . }}
   labels:
     {{- include "terrafusion-backend.labels" . | nindent 4 }}
@@ -56,7 +56,7 @@ spec:
           env:
             {{- toYaml .Values.env | nindent 12 }}
           envFrom:
-            - configMapRef:    
+            - configMapRef:      
                 name: {{ include "terrafusion-backend.fullname" . }}-config
           volumeMounts:
             {{- with .Values.extraVolumeMounts }}
@@ -88,5 +88,5 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
         - name: config-volume
-          configMap:    
+          configMap:      
             name: {{ include "terrafusion-backend.fullname" . }}-config

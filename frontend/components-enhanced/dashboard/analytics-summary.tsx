@@ -79,7 +79,8 @@ export function AnalyticsSummary() {
 
                   <p className="text-sm font-medium text-muted-foreground">{kpi.title}</p>
                   <p
-</> className="text-2xl font-bold">
+</>
+className="text-2xl font-bold">
                     {kpi.value}
                     {typeof kpi.value === "number" ? "%" : ""}
                   </p>
@@ -112,7 +113,8 @@ export function AnalyticsSummary() {
 
                 <p className="text-tf-light/70">Chart coming soon</p>
                 <p
-</> className="text-sm text-tf-accent">94% Weekly Average</p>
+</>
+className="text-sm text-tf-accent">94% Weekly Average</p>
               </div>
             </div>
           </CardContent>
@@ -132,7 +134,8 @@ export function AnalyticsSummary() {
 
                 <p className="text-tf-light/70">Chart coming soon</p>
                 <p
-</> className="text-sm text-tf-success">$2.4M Monthly Revenue</p>
+</>
+className="text-sm text-tf-success">$2.4M Monthly Revenue</p>
               </div>
             </div>
           </CardContent>

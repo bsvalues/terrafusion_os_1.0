@@ -168,6 +168,7 @@ export const MapboxProvider: React.FC<MapboxProviderProps> = ({
 
           <AlertTitle>Error</AlertTitle>
           <AlertDescription
+</>
 </>>
             {error}
           </AlertDescription>

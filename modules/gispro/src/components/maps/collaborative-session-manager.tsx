@@ -266,7 +266,8 @@ export function CollaborativeSessionManager({
 
         <CardTitle className="text-sm font-medium">Session Management</CardTitle>
         <CardDescription
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
           Save and load map sessions
         </CardDescription>
       </CardHeader>
@@ -288,6 +289,7 @@ export function CollaborativeSessionManager({
 
               <DialogTitle>Save Session</DialogTitle>
               <DialogDescription
+</>
 </>>
                 Save the current map state to return to it later.
               </DialogDescription>
@@ -300,6 +302,7 @@ export function CollaborativeSessionManager({
                 </Label>
                 <Input
 </>
+
                   id="name"
                   value={sessionName}
                   onChange={(e) => setSessionName(e.target.value)}
@@ -314,6 +317,7 @@ export function CollaborativeSessionManager({
                 </Label>
                 <Textarea
 </>
+
                   id="description"
                   value={sessionDescription}
                   onChange={(e) => setSessionDescription(e.target.value)}
@@ -328,7 +332,8 @@ export function CollaborativeSessionManager({
                 Cancel
               </Button>
               <Button
-</> onClick={handleSaveSession}>Save</Button>
+</>
+onClick={handleSaveSession}>Save</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -350,6 +355,7 @@ export function CollaborativeSessionManager({
 
               <DialogTitle>Load Session</DialogTitle>
               <DialogDescription
+</>
 </>>
                 Select a previously saved session to load.
               </DialogDescription>
@@ -361,7 +367,8 @@ export function CollaborativeSessionManager({
                   Session
                 </Label>
                 <div
-</> className="col-span-3">
+</>
+className="col-span-3">
                   {savedSessions.length > 0 ? (
                     <Select
                       value={selectedSession}
@@ -372,6 +379,7 @@ export function CollaborativeSessionManager({
                         <SelectValue placeholder="Select a session" />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>>
                         {savedSessions.map((session) => (
                           <SelectItem key={session} value={session}>
@@ -406,12 +414,14 @@ export function CollaborativeSessionManager({
 
                     <span className="text-muted-foreground">Features: </span>
                     <span
+</>
 </>>{sessionDetails.features.length}</span>
                   </div>
                   <div className="mt-1 text-xs"><>
 
                     <span className="text-muted-foreground">Annotations: </span>
                     <span
+</>
 </>>{sessionDetails.annotations.length}</span>
                   </div>
                 </div>
@@ -429,13 +439,15 @@ export function CollaborativeSessionManager({
                 Delete
               </Button>
               <div
-</> className="space-x-2"><>
+</>
+className="space-x-2"><>
 
                 <Button variant="outline" onClick={() => setLoadDialogOpen(false)}>
                   Cancel
                 </Button>
                 <Button
-</> 
+</>
+
                   onClick={handleLoadSession}
                   disabled={!selectedSession}
                 >

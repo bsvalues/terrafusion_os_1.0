@@ -83,7 +83,8 @@ export function FileFilterBar({ onFilterChange, categories, fileTypes }: FileFil
 
         <h3 className="text-lg font-medium">Filters</h3>
         <Button
-</> 
+</>
+
           variant="outline" 
           size="sm" 
           onClick={() => setIsOpen(!isOpen)}
@@ -135,6 +136,7 @@ export function FileFilterBar({ onFilterChange, categories, fileTypes }: FileFil
                 <SelectValue placeholder="Select file type" />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 <SelectItem value="">Any type</SelectItem>
                 {fileTypes.map((type) => (
@@ -155,6 +157,7 @@ export function FileFilterBar({ onFilterChange, categories, fileTypes }: FileFil
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 <SelectItem value="">Any category</SelectItem>
                 {categories.map((category) => (
@@ -175,6 +178,7 @@ export function FileFilterBar({ onFilterChange, categories, fileTypes }: FileFil
                 <SelectValue placeholder="Select size range" />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 <SelectItem value="">Any size</SelectItem>
                 {sizeRanges.map((range) => (

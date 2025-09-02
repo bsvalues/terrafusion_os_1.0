@@ -317,7 +317,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
           <h2 className="text-2xl font-bold tracking-tight">Project Management</h2>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             Manage your government projects with real-time collaboration
           </p>
         </div>
@@ -335,7 +336,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
           </Button>
           
           <Dialog
-</> open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+</>
+open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -361,7 +363,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
             <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
             <FileText
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
@@ -373,7 +376,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
             <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
             <Activity
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.active}</div>
@@ -385,7 +389,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
             <CheckCircle2
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.completed}</div>
@@ -397,7 +402,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
             <CardTitle className="text-sm font-medium">Overdue</CardTitle>
             <AlertCircle
-</> className="h-4 w-4 text-destructive" />
+</>
+className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-destructive">{stats.overdue}</div>
@@ -411,7 +417,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
           <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger
-</> value="tasks">Tasks</TabsTrigger>
+</>
+value="tasks">Tasks</TabsTrigger>
           {showAnalytics && <TabsTrigger value="analytics">Analytics</TabsTrigger>}
           {showTeamView && <TabsTrigger value="teams">Teams</TabsTrigger>}
         </TabsList>
@@ -440,19 +447,23 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem
-</> value={ProjectStatus.DRAFT}>Draft</SelectItem><>
+</>
+value={ProjectStatus.DRAFT}>Draft</SelectItem><>
 
                   <SelectItem value={ProjectStatus.PLANNING}>Planning</SelectItem>
                   <SelectItem
-</> value={ProjectStatus.ACTIVE}>Active</SelectItem><>
+</>
+value={ProjectStatus.ACTIVE}>Active</SelectItem><>
 
                   <SelectItem value={ProjectStatus.ON_HOLD}>On Hold</SelectItem>
                   <SelectItem
-</> value={ProjectStatus.COMPLETED}>Completed</SelectItem>
+</>
+value={ProjectStatus.COMPLETED}>Completed</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -462,15 +473,18 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="all">All Priority</SelectItem>
                   <SelectItem
-</> value={ProjectPriority.LOW}>Low</SelectItem><>
+</>
+value={ProjectPriority.LOW}>Low</SelectItem><>
 
                   <SelectItem value={ProjectPriority.MEDIUM}>Medium</SelectItem>
                   <SelectItem
-</> value={ProjectPriority.HIGH}>High</SelectItem>
+</>
+value={ProjectPriority.HIGH}>High</SelectItem>
                   <SelectItem value={ProjectPriority.CRITICAL}>Critical</SelectItem>
                 </SelectContent>
               </Select>
@@ -486,6 +500,7 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
                 </Button>
                 <Button
 </>
+
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('list')}
@@ -509,7 +524,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
                 <p className="text-lg font-medium mb-2">No projects found</p>
                 <p
-</> className="text-muted-foreground mb-4">
+</>
+className="text-muted-foreground mb-4">
                   {projects.length === 0 
                     ? "Create your first project to get started"
                     : "Try adjusting your filters"
@@ -534,7 +550,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
                         <CardTitle className="text-lg">{project.name}</CardTitle>
                         <CardDescription
-</> className="mt-1 line-clamp-2">
+</>
+className="mt-1 line-clamp-2">
                           {project.description}
                         </CardDescription>
                       </div>
@@ -549,7 +566,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem
-</> onClick={() => setSelectedProject(project)}>
+</>
+onClick={() => setSelectedProject(project)}>
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuSeparator /><>
@@ -560,7 +578,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
                             Mark Active
                           </DropdownMenuItem>
                           <DropdownMenuItem
-</> 
+</>
+
                             onClick={() => handleStatusChange(project.id, ProjectStatus.ON_HOLD)}
                           >
                             Put On Hold
@@ -580,7 +599,8 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
                         {project.status.replace('_', ' ')}
                       </Badge>
                       <Badge
-</> variant={getPriorityBadgeVariant(project.priority)}>
+</>
+variant={getPriorityBadgeVariant(project.priority)}>
                         {project.priority}
                       </Badge>
                       <Badge variant="outline">
@@ -596,6 +616,7 @@ export const ProjectManagementDashboard: React.FC<ProjectManagementDashboardProp
 
                         <span>{project.team.name}</span>
                         <span
+</>
 </>>•</span>
                         <span>{project.participants.length} members</span>
                       </div>

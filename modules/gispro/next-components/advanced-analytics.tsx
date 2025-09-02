@@ -157,6 +157,7 @@ export function AdvancedAnalytics() {
                 Advanced Analytics Engine
               </CardTitle>
               <CardDescription
+</>
 </>>
                 AI-powered predictive models and market intelligence with sacred geometry insights
               </CardDescription>
@@ -173,13 +174,15 @@ export function AdvancedAnalytics() {
                 {refreshInterval ? "Auto" : "Manual"}
               </Button>
               <Button
-</> variant="outline" size="sm" onClick={loadAnalyticsData} disabled={isLoading}><>
+</>
+variant="outline" size="sm" onClick={loadAnalyticsData} disabled={isLoading}><>
 
                 <Refresh className={`h-4 w-4 mr-1 ${isLoading ? "animate-spin" : ""}`} />
                 Refresh
               </Button>
               <Button
-</> variant="outline" size="sm" onClick={exportData} disabled={!analyticsData}>
+</>
+variant="outline" size="sm" onClick={exportData} disabled={!analyticsData}>
                 <Download className="h-4 w-4 mr-1" />
                 Export
               </Button>
@@ -198,11 +201,13 @@ export function AdvancedAnalytics() {
 
                 <TabsTrigger value="predictive">Predictive Models</TabsTrigger>
                 <TabsTrigger
-</> value="performance">Performance</TabsTrigger><>
+</>
+value="performance">Performance</TabsTrigger><>
 
                 <TabsTrigger value="intelligence">Market Intelligence</TabsTrigger>
                 <TabsTrigger
-</> value="geometry">Sacred Geometry</TabsTrigger>
+</>
+value="geometry">Sacred Geometry</TabsTrigger>
               </TabsList>
 
               <TabsContent value="predictive">
@@ -218,7 +223,8 @@ export function AdvancedAnalytics() {
 
                         <div className="font-bold text-lg">{analyticsData.performance_metrics.model_accuracy}%</div>
                         <Progress
-</> value={analyticsData.performance_metrics.model_accuracy} className="h-1" />
+</>
+value={analyticsData.performance_metrics.model_accuracy} className="h-1" />
                       </CardContent>
                     </Card>
 
@@ -233,7 +239,8 @@ export function AdvancedAnalytics() {
                           {analyticsData.performance_metrics.prediction_confidence}%
                         </div>
                         <Progress
-</> value={analyticsData.performance_metrics.prediction_confidence} className="h-1" />
+</>
+value={analyticsData.performance_metrics.prediction_confidence} className="h-1" />
                       </CardContent>
                     </Card>
 
@@ -246,7 +253,8 @@ export function AdvancedAnalytics() {
 
                         <div className="font-bold text-lg">{analyticsData.performance_metrics.data_quality_score}%</div>
                         <Progress
-</> value={analyticsData.performance_metrics.data_quality_score} className="h-1" />
+</>
+value={analyticsData.performance_metrics.data_quality_score} className="h-1" />
                       </CardContent>
                     </Card>
 
@@ -259,7 +267,8 @@ export function AdvancedAnalytics() {
 
                         <div className="font-bold text-lg">{analyticsData.performance_metrics.processing_speed}%</div>
                         <Progress
-</> value={analyticsData.performance_metrics.processing_speed} className="h-1" />
+</>
+value={analyticsData.performance_metrics.processing_speed} className="h-1" />
                       </CardContent>
                     </Card>
                   </div>
@@ -324,7 +333,8 @@ export function AdvancedAnalytics() {
 
                               <span className="text-sm font-medium">{indicator.factor}</span>
                               <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                                 <Badge
                                   variant={
@@ -338,7 +348,8 @@ export function AdvancedAnalytics() {
                                   {indicator.trend}
                                 </Badge>
                                 <span
-</> className="text-sm text-gray-600">{(indicator.weight * 100).toFixed(0)}%</span>
+</>
+className="text-sm text-gray-600">{(indicator.weight * 100).toFixed(0)}%</span>
                               </div>
                             </div>
                           ))}
@@ -363,7 +374,8 @@ export function AdvancedAnalytics() {
 
                               <span className="capitalize">{key.replace("_", " ")}</span>
                               <span
-</> className="font-medium">{value}%</span>
+</>
+className="font-medium">{value}%</span>
                             </div>
                             <Progress value={value} className="h-2" />
                           </div>
@@ -382,25 +394,29 @@ export function AdvancedAnalytics() {
 
                           <span className="font-medium text-green-900">AI Engine Status</span>
                           <Badge
-</> className="bg-green-100 text-green-800">Optimal</Badge>
+</>
+className="bg-green-100 text-green-800">Optimal</Badge>
                         </div>
                         <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg"><>
 
                           <span className="font-medium text-blue-900">Data Pipeline</span>
                           <Badge
-</> className="bg-blue-100 text-blue-800">Active</Badge>
+</>
+className="bg-blue-100 text-blue-800">Active</Badge>
                         </div>
                         <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg"><>
 
                           <span className="font-medium text-purple-900">Geometry Engine</span>
                           <Badge
-</> className="bg-purple-100 text-purple-800">Running</Badge>
+</>
+className="bg-purple-100 text-purple-800">Running</Badge>
                         </div>
                         <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg"><>
 
                           <span className="font-medium text-yellow-900">Market Sync</span>
                           <Badge
-</> className="bg-yellow-100 text-yellow-800">Real-time</Badge>
+</>
+className="bg-yellow-100 text-yellow-800">Real-time</Badge>
                         </div>
                       </div>
                     </CardContent>
@@ -458,7 +474,8 @@ export function AdvancedAnalytics() {
                               ))}
                             </Pie>
                             <Tooltip
-</> />
+</>
+/>
                           </PieChart>
                         </ResponsiveContainer>
                       </CardContent>
@@ -495,13 +512,15 @@ export function AdvancedAnalytics() {
 
                               <div className="font-medium">{trend.trend}</div>
                               <div
-</> className="text-sm text-gray-600">Impact Score: {trend.impact_score}/10</div>
+</>
+className="text-sm text-gray-600">Impact Score: {trend.impact_score}/10</div>
                             </div>
                             <div className="text-right"><>
 
                               <div className="font-medium">{trend.adoption_rate}%</div>
                               <div
-</> className="text-sm text-gray-600">Adoption</div>
+</>
+className="text-sm text-gray-600">Adoption</div>
                             </div>
                           </div>
                         ))}
@@ -523,7 +542,8 @@ export function AdvancedAnalytics() {
                             {(analyticsData.geometry_insights.fibonacci_correlation * 100).toFixed(1)}%
                           </div>
                           <div
-</> className="text-sm text-gray-600">Fibonacci Correlation</div>
+</>
+className="text-sm text-gray-600">Fibonacci Correlation</div>
                         </div>
                       </CardContent>
                     </Card>
@@ -536,7 +556,8 @@ export function AdvancedAnalytics() {
                             {(analyticsData.geometry_insights.golden_ratio_premium * 100).toFixed(1)}%
                           </div>
                           <div
-</> className="text-sm text-gray-600">Golden Ratio Premium</div>
+</>
+className="text-sm text-gray-600">Golden Ratio Premium</div>
                         </div>
                       </CardContent>
                     </Card>
@@ -549,7 +570,8 @@ export function AdvancedAnalytics() {
                             {analyticsData.geometry_insights.pattern_recognition.length}
                           </div>
                           <div
-</> className="text-sm text-gray-600">Patterns Detected</div>
+</>
+className="text-sm text-gray-600">Patterns Detected</div>
                         </div>
                       </CardContent>
                     </Card>
@@ -568,12 +590,14 @@ export function AdvancedAnalytics() {
 
                               <span className="font-medium">{pattern.pattern}</span>
                               <Badge
-</> variant="outline">+{(pattern.value_impact * 100).toFixed(1)}% value impact</Badge>
+</>
+variant="outline">+{(pattern.value_impact * 100).toFixed(1)}% value impact</Badge>
                             </div>
                             <div className="flex justify-between text-sm text-gray-600"><>
 
                               <span>Frequency: {pattern.frequency} properties</span>
                               <span
+</>
 </>>Impact: {(pattern.value_impact * 100).toFixed(2)}%</span>
                             </div>
                             <Progress value={(pattern.frequency / 50) * 100} className="h-2" />
@@ -594,7 +618,8 @@ export function AdvancedAnalytics() {
 
                           <h4 className="font-medium">Key Findings</h4>
                           <ul
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                             <li className="flex items-start gap-2">
                               <span className="text-purple-600 mt-1">•</span>
                               Properties with Fibonacci proportions show 3.2% higher values on average
@@ -613,7 +638,8 @@ export function AdvancedAnalytics() {
 
                           <h4 className="font-medium">Recommendations</h4>
                           <ul
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                             <li className="flex items-start gap-2">
                               <span className="text-blue-600 mt-1">•</span>
                               Highlight geometric features in property marketing

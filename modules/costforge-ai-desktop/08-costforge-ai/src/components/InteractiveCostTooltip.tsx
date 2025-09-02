@@ -57,7 +57,8 @@ const InteractiveCostTooltip = ({ title, content, funFact, impact, children }: T
 
               <h4 className="font-medium text-sm text-[#243E4D]">{title}</h4>
               <Badge
-</> 
+</>
+
                 variant="outline" 
                 className={`text-xs ${getImpactColor()}`}
               >

@@ -90,13 +90,15 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({
               <LightbulbIcon fontSize="small" />
             </Avatar>
             <Box
+</>
 </>><>
 
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 {title}
               </Typography>
               <Typography
-</> variant="caption" color="text.secondary">
+</>
+variant="caption" color="text.secondary">
                 {category}
               </Typography>
             </Box>
@@ -116,20 +118,21 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({
           </Box>
         </Box><>
 
-
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {description}
         </Typography>
 
         <Box
-</> sx={{ mb: 2 }}>
+</>
+sx={{ mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}><>
 
             <Typography variant="caption" color="text.secondary">
               Confidence Level
             </Typography>
             <Typography
-</> variant="caption" color="text.secondary">
+</>
+variant="caption" color="text.secondary">
               {confidence}%
             </Typography>
           </Box><>
@@ -143,7 +146,8 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({
         </Box>
 
         <Box
-</> sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+</>
+sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Button
             size="small"
             onClick={() => setExpanded(!expanded)}
@@ -167,7 +171,8 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({
               Recommended Actions:
             </Typography>
             <List
-</> dense>
+</>
+dense>
               {recommendations.map((recommendation /* , index */) => (
                 <ListItem key={index} sx={{ pl: 0 }}>
                   <ListItemIcon sx={{ minWidth: 32 }}><>
@@ -176,6 +181,7 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({
                   </ListItemIcon>
                   <ListItemText
 </>
+
                     primary={recommendation}
                     primaryTypographyProps={{ variant: 'body2' }}
                   />

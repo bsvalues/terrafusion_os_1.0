@@ -401,6 +401,7 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
             Real-Time Collaboration
           </CardTitle>
           <CardDescription
+</>
 </>>
             Start a live collaboration session with your team
           </CardDescription>
@@ -428,7 +429,8 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
                   {type === SessionType.PRESENTATION && '📊'}
                 </div>
                 <span
-</> className="text-sm capitalize">{type.replace('_', ' ')}</span>
+</>
+className="text-sm capitalize">{type.replace('_', ' ')}</span>
               </Button>
             ))}
           </div>
@@ -449,7 +451,8 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
 
                 <h3 className="font-semibold">Collaboration Session</h3>
                 <Badge
-</> variant={getSessionStatusBadgeVariant(session.status)}>
+</>
+variant={getSessionStatusBadgeVariant(session.status)}>
                   {session.status}
                 </Badge>
                 {isRecording && (
@@ -468,6 +471,7 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
               </span>
               
               <DropdownMenu
+</>
 </>>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm">
@@ -478,20 +482,19 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
 
                   <DropdownMenuLabel>Session Settings</DropdownMenuLabel>
                   <DropdownMenuItem
-</> onClick={toggleRecording}>
+</>
+onClick={toggleRecording}>
                     {isRecording ? (
-                      <>
                         <StopCircle className="h-4 w-4 mr-2" />
                         Stop Recording
-                      </>
-                    ) : (
-                      <>
+                    ) : (<>
+
                         <Record className="h-4 w-4 mr-2" />
                         Start Recording
-                      </>
                     )}
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator
+</> />
                   <DropdownMenuItem onClick={leaveSession} className="text-red-600">
                     <PhoneOff className="h-4 w-4 mr-2" />
                     Leave Session
@@ -515,13 +518,15 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
                 Video
               </TabsTrigger>
               <TabsTrigger
-</> value="screen"><>
+</>
+value="screen"><>
 
                 <Monitor className="h-4 w-4 mr-2" />
                 Screen
               </TabsTrigger>
               <TabsTrigger
-</> value="whiteboard">
+</>
+value="whiteboard">
                 <PaintBucket className="h-4 w-4 mr-2" />
                 Whiteboard
               </TabsTrigger>
@@ -610,7 +615,8 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
 
                         <p className="text-lg font-medium mb-2">No Screen Sharing</p>
                         <p
-</> className="text-sm">
+</>
+className="text-sm">
                           Click the screen share button to share your screen
                         </p>
                       </div>
@@ -627,7 +633,8 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
 
                     <CardTitle className="text-sm">Collaborative Whiteboard</CardTitle>
                     <div
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                       {[
                         { tool: WhiteboardTool.PEN, icon: ArrowRight, label: 'Pen' },
                         { tool: WhiteboardTool.HIGHLIGHTER, icon: ArrowRight, label: 'Highlighter' },
@@ -696,7 +703,8 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
                       {participant.user.id === currentUser?.id && ' (You)'}
                     </p>
                     <div
-</> className="flex items-center gap-1 text-xs text-muted-foreground">
+</>
+className="flex items-center gap-1 text-xs text-muted-foreground">
                       {getParticipantRoleIcon(participant.role)}
                       <span>{participant.role}</span>
                     </div>
@@ -759,7 +767,8 @@ export const RealTimeSessionManager: React.FC<RealTimeSessionManagerProps> = ({
             </Button>
             
             <div
-</> className="mx-4 border-l h-6"></div>
+</>
+className="mx-4 border-l h-6"></div>
             
             <Button
               variant="destructive"

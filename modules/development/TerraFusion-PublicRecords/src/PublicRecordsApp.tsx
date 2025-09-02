@@ -135,11 +135,13 @@ const PublicRecordsApp: React.FC = () => {
                 <FileText className="text-white" size={20} />
               </div>
               <div
+</>
 </>><>
 
                 <h1 className="text-xl font-bold text-gray-900">Terrafusion Public Records</h1>
                 <p
-</> className="text-sm text-gray-600">Benton County Records Request System</p>
+</>
+className="text-sm text-gray-600">Benton County Records Request System</p>
               </div>
             </div>
             <div className="flex gap-2"><>
@@ -156,6 +158,7 @@ const PublicRecordsApp: React.FC = () => {
               </button>
               <button
 </>
+
                 onClick={() => setView('admin')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   view === 'admin' 
@@ -178,7 +181,8 @@ const PublicRecordsApp: React.FC = () => {
 
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Submit a Public Records Request</h2>
             <p
-</> className="text-sm text-gray-600 mb-6">
+</>
+className="text-sm text-gray-600 mb-6">
               Washington State law requires that all public records be made available for public inspection and copying, 
               unless they fall within specific exemptions. Please provide as much detail as possible about the records you're requesting.
             </p>
@@ -190,6 +194,7 @@ const PublicRecordsApp: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
                   <input
 </>
+
                     type="text"
                     value={newRequest.name}
                     onChange={(e) => setNewRequest({...newRequest, name: e.target.value})}
@@ -202,6 +207,7 @@ const PublicRecordsApp: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
                   <input
 </>
+
                     type="email"
                     value={newRequest.email}
                     onChange={(e) => setNewRequest({...newRequest, email: e.target.value})}
@@ -216,6 +222,7 @@ const PublicRecordsApp: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
                 <input
 </>
+
                   type="tel"
                   value={newRequest.phone}
                   onChange={(e) => setNewRequest({...newRequest, phone: e.target.value})}
@@ -229,6 +236,7 @@ const PublicRecordsApp: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Describe the Records You're Requesting *</label>
                 <textarea
 </>
+
                   value={newRequest.description}
                   onChange={(e) => setNewRequest({...newRequest, description: e.target.value})}
                   rows={4}
@@ -242,6 +250,7 @@ const PublicRecordsApp: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Request Urgency</label>
                 <select
 </>
+
                   value={newRequest.urgency}
                   onChange={(e) => setNewRequest({...newRequest, urgency: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -249,7 +258,8 @@ const PublicRecordsApp: React.FC = () => {
 
                   <option value="standard">Standard (5 business days)</option>
                   <option
-</> value="urgent">Urgent (3 business days - additional fees may apply)</option>
+</>
+value="urgent">Urgent (3 business days - additional fees may apply)</option>
                 </select>
               </div>
               
@@ -269,7 +279,8 @@ const PublicRecordsApp: React.FC = () => {
 
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Track Your Request</h2>
             <div
-</> className="flex gap-2 mb-4">
+</>
+className="flex gap-2 mb-4">
               <input
                 type="text"
                 placeholder="Enter your request ID or email..."
@@ -301,7 +312,8 @@ const PublicRecordsApp: React.FC = () => {
                 {requests.filter(r => r.status === 'pending').length}
               </div>
               <div
-</> className="text-sm text-gray-600">Pending Requests</div>
+</>
+className="text-sm text-gray-600">Pending Requests</div>
             </div>
             
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
@@ -314,7 +326,8 @@ const PublicRecordsApp: React.FC = () => {
                 {requests.filter(r => r.status === 'in_progress').length}
               </div>
               <div
-</> className="text-sm text-gray-600">In Progress</div>
+</>
+className="text-sm text-gray-600">In Progress</div>
             </div>
             
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
@@ -327,7 +340,8 @@ const PublicRecordsApp: React.FC = () => {
                 {requests.filter(r => r.status === 'completed').length}
               </div>
               <div
-</> className="text-sm text-gray-600">Completed</div>
+</>
+className="text-sm text-gray-600">Completed</div>
             </div>
             
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
@@ -338,7 +352,8 @@ const PublicRecordsApp: React.FC = () => {
 
               <div className="text-2xl font-bold text-gray-900">3.2</div>
               <div
-</> className="text-sm text-gray-600">Days to Complete</div>
+</>
+className="text-sm text-gray-600">Days to Complete</div>
             </div>
           </div>
 
@@ -357,6 +372,7 @@ const PublicRecordsApp: React.FC = () => {
               </div>
               <select
 </>
+
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -364,11 +380,13 @@ const PublicRecordsApp: React.FC = () => {
 
                 <option value="all">All Status</option>
                 <option
-</> value="pending">Pending</option><>
+</>
+value="pending">Pending</option><>
 
                 <option value="in_progress">In Progress</option>
                 <option
-</> value="completed">Completed</option>
+</>
+value="completed">Completed</option>
                 <option value="rejected">Rejected</option>
               </select>
               <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
@@ -386,15 +404,18 @@ const PublicRecordsApp: React.FC = () => {
 
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Request ID</th>
                   <th
-</> className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Requestor</th><>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Requestor</th><>
 
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
                   <th
-</> className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th><>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th><>
 
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                   <th
-</> className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Due Date</th>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Due Date</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
               </thead>
@@ -404,12 +425,14 @@ const PublicRecordsApp: React.FC = () => {
 
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{request.id}</td>
                     <td
-</> className="px-4 py-3 text-sm">
+</>
+className="px-4 py-3 text-sm">
                       <div><>
 
                         <div className="font-medium text-gray-900">{request.requestorName}</div>
                         <div
-</> className="text-gray-500">{request.requestorEmail}</div>
+</>
+className="text-gray-500">{request.requestorEmail}</div>
                       </div>
                     </td><>
 
@@ -417,7 +440,8 @@ const PublicRecordsApp: React.FC = () => {
                       {request.description}
                     </td>
                     <td
-</> className="px-4 py-3 text-sm text-gray-600">
+</>
+className="px-4 py-3 text-sm text-gray-600">
                       {request.department || 'Unassigned'}
                     </td>
                     <td className="px-4 py-3">
@@ -431,14 +455,16 @@ const PublicRecordsApp: React.FC = () => {
                       {request.dateDue.toLocaleDateString()}
                     </td>
                     <td
-</> className="px-4 py-3">
+</>
+className="px-4 py-3">
                       <div className="flex gap-2">
                         <button className="text-blue-600 hover:text-blue-800"><>
 
                           <Eye size={16} />
                         </button>
                         <button
-</> className="text-gray-600 hover:text-gray-800">
+</>
+className="text-gray-600 hover:text-gray-800">
                           <MessageSquare size={16} />
                         </button>
                         {request.documents && (

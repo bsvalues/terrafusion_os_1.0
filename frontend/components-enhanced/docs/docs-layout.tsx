@@ -36,11 +36,13 @@ export function DocsLayout({ children }: DocsLayoutProps) {
                   <BookOpen className="w-4 h-4 text-white" />
                 </div>
                 <div
+</>
 </>><>
 
                   <h1 className="font-heading font-bold text-lg">Terrafusion Docs</h1>
                   <p
-</> className="text-xs text-muted-foreground hidden sm:block">{terraFusionBrand.essence}</p>
+</>
+className="text-xs text-muted-foreground hidden sm:block">{terraFusionBrand.essence}</p>
                 </div>
               </div>
 
@@ -77,7 +79,8 @@ export function DocsLayout({ children }: DocsLayoutProps) {
                 Live Demo
               </Button>
               <Button
-</> size="sm" className="bg-tf-primary hover:bg-tf-primary-dark text-white">
+</>
+size="sm" className="bg-tf-primary hover:bg-tf-primary-dark text-white">
                 Get Started
               </Button>
             </div>

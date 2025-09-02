@@ -117,14 +117,16 @@ export function ProjectTracker({
 
           <span>{projectName}</span>
           <Badge
-</> variant={totalProgress >= 80 ? "default" : totalProgress >= 50 ? "secondary" : "outline"} className="ml-2 text-sm">
+</>
+variant={totalProgress >= 80 ? "default" : totalProgress >= 50 ? "secondary" : "outline"} className="ml-2 text-sm">
             {totalProgress}% Complete
           </Badge>
         </CardTitle><>
 
         <CardDescription>{projectDescription}</CardDescription>
         <Progress
-</> value={totalProgress} className="h-2 mt-2" />
+</>
+value={totalProgress} className="h-2 mt-2" />
       </CardHeader>
       
       <CardContent>
@@ -134,7 +136,8 @@ export function ProjectTracker({
 
             <div className="text-3xl font-bold">{completedFeatures}</div>
             <div
-</> className="text-sm text-muted-foreground">Completed Features</div>
+</>
+className="text-sm text-muted-foreground">Completed Features</div>
           </div>
           
           <div className="col-span-1 flex flex-col items-center justify-center p-4 border rounded-lg bg-primary/5">
@@ -142,7 +145,8 @@ export function ProjectTracker({
 
             <div className="text-3xl font-bold">{inProgressFeatures}</div>
             <div
-</> className="text-sm text-muted-foreground">In Progress</div>
+</>
+className="text-sm text-muted-foreground">In Progress</div>
           </div>
           
           <div className="col-span-1 flex flex-col items-center justify-center p-4 border rounded-lg bg-primary/5">
@@ -150,7 +154,8 @@ export function ProjectTracker({
 
             <div className="text-3xl font-bold">{plannedFeatures}</div>
             <div
-</> className="text-sm text-muted-foreground">Planned Features</div>
+</>
+className="text-sm text-muted-foreground">Planned Features</div>
           </div>
         </div>
         
@@ -159,7 +164,8 @@ export function ProjectTracker({
 
             <TabsTrigger value="all">All Features</TabsTrigger>
             <TabsTrigger
-</> value="byCategory">By Category</TabsTrigger>
+</>
+value="byCategory">By Category</TabsTrigger>
             <TabsTrigger value="byStatus">By Status</TabsTrigger>
           </TabsList>
           
@@ -183,7 +189,8 @@ export function ProjectTracker({
                     </h3>
                     
                     <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                       {feature.priority && (
                         <Badge variant="outline" className={getPriorityColor(feature.priority)}>
                           {feature.priority.charAt(0).toUpperCase() + feature.priority.slice(1)}
@@ -232,11 +239,11 @@ export function ProjectTracker({
                     )}
                   </div><>
 
-                  
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                   
                   <div
-</> className="flex justify-between items-center mt-2">
+</>
+className="flex justify-between items-center mt-2">
                     <Progress value={feature.progress} className="h-1 flex-grow mr-2" />
                     <span className="text-xs font-medium">{feature.progress}%</span>
                   </div>
@@ -256,7 +263,8 @@ export function ProjectTracker({
                       {getCategoryLabel(category)}
                     </h3>
                     <Badge
-</> variant="outline">
+</>
+variant="outline">
                       {categoryProgress[category]}% Complete
                     </Badge>
                   </div>
@@ -283,6 +291,7 @@ export function ProjectTracker({
                           
                           <Badge
 </>
+
                             variant={
                               feature.status === 'completed' 
                                 ? 'default' 
@@ -311,13 +320,15 @@ export function ProjectTracker({
                   Completed
                 </h3>
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   {features.filter(f => f.status === 'completed').map(feature => (
                     <div key={feature.id} className="flex justify-between items-center p-2 border-b last:border-0"><>
 
                       <span className="text-sm">{feature.name}</span>
                       <Badge
-</> variant="default">{feature.progress}%</Badge>
+</>
+variant="default">{feature.progress}%</Badge>
                     </div>
                   ))}
                 </div>
@@ -330,13 +341,15 @@ export function ProjectTracker({
                   In Progress
                 </h3>
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   {features.filter(f => f.status === 'in-progress').map(feature => (
                     <div key={feature.id} className="flex justify-between items-center p-2 border-b last:border-0"><>
 
                       <span className="text-sm">{feature.name}</span>
                       <Badge
-</> variant="secondary">{feature.progress}%</Badge>
+</>
+variant="secondary">{feature.progress}%</Badge>
                     </div>
                   ))}
                 </div>
@@ -349,13 +362,15 @@ export function ProjectTracker({
                   Planned
                 </h3>
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   {features.filter(f => f.status === 'planned').map(feature => (
                     <div key={feature.id} className="flex justify-between items-center p-2 border-b last:border-0"><>
 
                       <span className="text-sm">{feature.name}</span>
                       <Badge
-</> variant="outline">{feature.progress}%</Badge>
+</>
+variant="outline">{feature.progress}%</Badge>
                     </div>
                   ))}
                 </div>
@@ -373,11 +388,13 @@ export function ProjectTracker({
         </div>
         
         <div
-</> className="flex items-center text-sm text-muted-foreground"><>
+</>
+className="flex items-center text-sm text-muted-foreground"><>
 
           <span className="mr-1">Project Status:</span>
           <Badge
-</> 
+</>
+
             variant={totalProgress >= 80 ? "default" : totalProgress >= 50 ? "secondary" : "outline"}
           >
             {totalProgress >= 80 

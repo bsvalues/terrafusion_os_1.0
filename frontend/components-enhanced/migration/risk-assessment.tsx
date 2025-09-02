@@ -75,13 +75,15 @@ export function RiskAssessment() {
 
                   <span className="text-gray-400 text-sm">Probability: </span>
                   <span
-</> className={`font-semibold ${getRiskColor(risk.probability)}`}>{risk.probability}</span>
+</>
+className={`font-semibold ${getRiskColor(risk.probability)}`}>{risk.probability}</span>
                 </div>
                 <div><>
 
                   <span className="text-gray-400 text-sm">Impact: </span>
                   <span
-</> className={`font-semibold ${getRiskColor(risk.impact)}`}>{risk.impact}</span>
+</>
+className={`font-semibold ${getRiskColor(risk.impact)}`}>{risk.impact}</span>
                 </div>
               </div>
               <div className="flex items-start gap-2">

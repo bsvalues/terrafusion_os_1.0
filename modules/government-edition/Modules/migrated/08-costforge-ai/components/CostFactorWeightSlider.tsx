@@ -494,7 +494,8 @@ export function CostFactorWeightSlider() {
 
           <h3 className="text-lg font-medium">Cost Factor Weighting Tool</h3>
           <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
             Customize how different factors influence building cost calculations for Benton County assessments
           </p>
         </div>
@@ -504,7 +505,8 @@ export function CostFactorWeightSlider() {
 
             <TabsTrigger value="editor">Editor</TabsTrigger>
             <TabsTrigger
-</> value="presets">Presets</TabsTrigger>
+</>
+value="presets">Presets</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -515,6 +517,7 @@ export function CostFactorWeightSlider() {
 
             <CardTitle className="text-base">Factor Weight Adjustment</CardTitle>
             <CardDescription
+</>
 </>>
               Adjust the weights of different factors that influence building cost calculations
             </CardDescription>
@@ -543,6 +546,7 @@ export function CostFactorWeightSlider() {
                 </div>
                 <Slider
 </>
+
                   id={`slider-${factor.id}`}
                   min={0}
                   max={2}
@@ -560,7 +564,8 @@ export function CostFactorWeightSlider() {
               <Refresh className="mr-2 h-4 w-4" /> Reset to Defaults
             </Button>
             <Button
-</> onClick={saveWeightsToSystem}>
+</>
+onClick={saveWeightsToSystem}>
               <Save className="mr-2 h-4 w-4" /> Save Weights
             </Button>
           </CardFooter>
@@ -571,6 +576,7 @@ export function CostFactorWeightSlider() {
 
             <CardTitle className="text-base">Preview Impact</CardTitle>
             <CardDescription
+</>
 </>>
               See how your weight adjustments would affect cost calculations
             </CardDescription>
@@ -582,6 +588,7 @@ export function CostFactorWeightSlider() {
                 <Label htmlFor="preview-region">Region</Label>
                 <Select
 </>
+
                   value={selectedRegion}
                   onValueChange={setSelectedRegion}
                 >
@@ -590,6 +597,7 @@ export function CostFactorWeightSlider() {
                     <SelectValue placeholder="Select region" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>>
                     {regions.map((region) => (
                       <SelectItem key={region.value} value={region.value}>
@@ -605,6 +613,7 @@ export function CostFactorWeightSlider() {
                 <Label htmlFor="preview-building-type">Building Type</Label>
                 <Select
 </>
+
                   value={selectedBuildingType}
                   onValueChange={setSelectedBuildingType}
                 >
@@ -613,6 +622,7 @@ export function CostFactorWeightSlider() {
                     <SelectValue placeholder="Select building type" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>>
                     {buildingTypes.map((type) => (
                       <SelectItem key={type.value} value={type.value}>
@@ -641,7 +651,8 @@ export function CostFactorWeightSlider() {
 
                     <div className="text-sm text-muted-foreground">Standard Price</div>
                     <div
-</> className="text-2xl font-bold">
+</>
+className="text-2xl font-bold">
                       ${previewResults.basePrice.toFixed(2)}
                     </div>
                     <div className="text-xs text-muted-foreground">per square foot</div>
@@ -651,7 +662,8 @@ export function CostFactorWeightSlider() {
 
                     <div className="text-sm text-muted-foreground">Adjusted Price</div>
                     <div
-</> className="text-2xl font-bold text-primary">
+</>
+className="text-2xl font-bold text-primary">
                       ${previewResults.adjustedPrice.toFixed(2)}
                     </div>
                     <div className="text-xs flex items-center"><>
@@ -661,7 +673,8 @@ export function CostFactorWeightSlider() {
                         ${Math.abs(previewResults.difference).toFixed(2)}
                       </Badge>
                       <span
-</> className="ml-1 text-muted-foreground">per square foot</span>
+</>
+className="ml-1 text-muted-foreground">per square foot</span>
                     </div>
                   </div>
                 </div>
@@ -699,6 +712,7 @@ export function CostFactorWeightSlider() {
 
             <CardTitle className="text-base">Predefined Presets</CardTitle>
             <CardDescription
+</>
 </>>
               Standard weighting configurations for different assessment scenarios
             </CardDescription>
@@ -718,7 +732,8 @@ export function CostFactorWeightSlider() {
 
                   <div className="font-medium">{preset.name}</div>
                   <div
-</> className="text-sm text-muted-foreground">{preset.description}</div>
+</>
+className="text-sm text-muted-foreground">{preset.description}</div>
                 </div>
               ))}
             </div>
@@ -731,6 +746,7 @@ export function CostFactorWeightSlider() {
 
             <CardTitle className="text-base">System Default Presets</CardTitle>
             <CardDescription
+</>
 </>>
               Official Benton County assessment presets for different building types
             </CardDescription>
@@ -745,7 +761,8 @@ export function CostFactorWeightSlider() {
 
                 <p>Error loading system presets.</p>
                 <p
-</> className="text-sm">Please try refreshing the page.</p>
+</>
+className="text-sm">Please try refreshing the page.</p>
               </div>
             ) : defaultServerPresets.data && defaultServerPresets.data.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -772,7 +789,8 @@ export function CostFactorWeightSlider() {
 
                     <div className="font-medium">{preset.name}</div>
                     <div
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                       {preset.description || "Official assessment preset"}
                     </div>
                     <div className="mt-2">
@@ -795,6 +813,7 @@ export function CostFactorWeightSlider() {
 
             <CardTitle className="text-base">Your Saved Presets</CardTitle>
             <CardDescription
+</>
 </>>
               Saved weight configurations for your specific assessment needs
             </CardDescription>
@@ -810,7 +829,8 @@ export function CostFactorWeightSlider() {
 
                   <p>Error loading your presets.</p>
                   <p
-</> className="text-sm">Please try refreshing the page.</p>
+</>
+className="text-sm">Please try refreshing the page.</p>
                 </div>
               ) : userServerPresets?.data && userServerPresets.data.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -826,7 +846,8 @@ export function CostFactorWeightSlider() {
 
                       <div className="font-medium">{preset.name}</div>
                       <div
-</> className="text-sm text-muted-foreground mb-6">{preset.description || "Custom preset"}</div>
+</>
+className="text-sm text-muted-foreground mb-6">{preset.description || "Custom preset"}</div>
                       <div className="absolute bottom-2 right-2 flex"><>
 
                         <Button 
@@ -840,7 +861,8 @@ export function CostFactorWeightSlider() {
                           Delete
                         </Button>
                         <Button
-</> 
+</>
+
                           variant="outline" 
                           size="sm" 
                           onClick={() => {
@@ -866,7 +888,8 @@ export function CostFactorWeightSlider() {
 
                   <p>You haven't saved any presets yet.</p>
                   <p
-</> className="text-sm">Use the form below to save your current weights as a preset.</p>
+</>
+className="text-sm">Use the form below to save your current weights as a preset.</p>
                 </div>
               )
             ) : (
@@ -884,6 +907,7 @@ export function CostFactorWeightSlider() {
 
               <CardTitle className="text-base">Local Presets (Legacy)</CardTitle>
               <CardDescription
+</>
 </>>
                 Previously saved presets stored in your browser
               </CardDescription>
@@ -902,7 +926,8 @@ export function CostFactorWeightSlider() {
 
                     <div className="font-medium">{preset.name}</div>
                     <div
-</> className="text-sm text-muted-foreground mb-6">{preset.description}</div>
+</>
+className="text-sm text-muted-foreground mb-6">{preset.description}</div>
                     <div className="absolute bottom-2 right-2 flex"><>
 
                       <Button 
@@ -916,7 +941,8 @@ export function CostFactorWeightSlider() {
                         Delete
                       </Button>
                       <Button
-</> 
+</>
+
                         variant="outline" 
                         size="sm" 
                         onClick={() => applyPreset(preset.id)}
@@ -936,6 +962,7 @@ export function CostFactorWeightSlider() {
 
             <CardTitle className="text-base">Save New Preset</CardTitle>
             <CardDescription
+</>
 </>>
               Save your current weight settings as a reusable preset
             </CardDescription>
@@ -945,7 +972,8 @@ export function CostFactorWeightSlider() {
 
               <Label htmlFor="preset-name">Preset Name</Label>
               <Input
-</> 
+</>
+
                 id="preset-name" 
                 value={presetName}
                 onChange={(e) => setPresetName(e.target.value)}
@@ -957,7 +985,8 @@ export function CostFactorWeightSlider() {
 
               <Label htmlFor="preset-description">Description (Optional)</Label>
               <Input
-</> 
+</>
+
                 id="preset-description" 
                 value={presetDescription}
                 onChange={(e) => setPresetDescription(e.target.value)}

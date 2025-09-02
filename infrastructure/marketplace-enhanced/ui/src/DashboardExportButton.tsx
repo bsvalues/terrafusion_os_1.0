@@ -26,11 +26,13 @@ export function DashboardExportButton({ plugins }) {
 
       <button className="tf-btn tf-btn-export" aria-haspopup="listbox">Export ▼</button>
       <div
-</> className="tf-export-menu"><>
+</>
+className="tf-export-menu"><>
 
         <button onClick={()=>handleExport('csv')}>Export as CSV</button>
         <button
-</> onClick={()=>handleExport('xlsx')}>Export as Excel</button>
+</>
+onClick={()=>handleExport('xlsx')}>Export as Excel</button>
         <button onClick={()=>handleExport('json')}>Export as JSON</button>
       </div>
     </div>

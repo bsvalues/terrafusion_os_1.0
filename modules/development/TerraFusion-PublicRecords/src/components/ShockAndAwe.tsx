@@ -63,7 +63,6 @@ export const ShockAndAwe: React.FC = () => {
   };
 
   return (
-    <>
       {/* Floating Action Button */}
       <AnimatePresence>
         {!showChat && (
@@ -110,11 +109,13 @@ export const ShockAndAwe: React.FC = () => {
                     />
                   </div>
                   <div
+</>
 </>><>
 
                     <h3 className="text-white font-bold">Terrafusion AI</h3>
                     <p
-</> className="text-xs text-purple-300">Always discovering</p>
+</>
+className="text-xs text-purple-300">Always discovering</p>
                   </div>
                 </div>
                 <button
@@ -143,7 +144,8 @@ export const ShockAndAwe: React.FC = () => {
 
                     <p className="text-sm">{msg.message}</p>
                     <p
-</> className="text-xs opacity-60 mt-1">
+</>
+className="text-xs opacity-60 mt-1">
                       {msg.timestamp.toLocaleTimeString()}
                     </p>
                   </div>
@@ -191,6 +193,7 @@ export const ShockAndAwe: React.FC = () => {
                 </button>
                 <button
 </>
+
                   onClick={() => setMessage("How much does it cost?")}
                   className="flex-1 bg-white/10 text-white text-xs py-2 px-3 rounded-lg hover:bg-white/20 transition-colors"
                 >
@@ -230,6 +233,5 @@ export const ShockAndAwe: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
   );
 };

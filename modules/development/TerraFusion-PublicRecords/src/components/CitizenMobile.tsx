@@ -77,11 +77,13 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
           <span>9:41 AM</span>
           <span
+</>
 </>>Terrafusion</span>
           <div className="flex gap-1"><>
 
             <span>5G</span>
             <span
+</>
 </>>100%</span>
           </div>
         </div>
@@ -104,7 +106,8 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
                 Hi, Sarah 👋
               </h1>
               <p
-</> className="text-gray-600 mt-1">
+</>
+className="text-gray-600 mt-1">
                 What do you need today?
               </p>
             </div>
@@ -128,7 +131,8 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
                   <Mic className={`w-5 h-5 ${isVoiceActive ? 'text-red-500 animate-pulse' : 'text-gray-400'}`} />
                 </button>
                 <button
-</> onClick={handlePhotoSearch}>
+</>
+onClick={handlePhotoSearch}>
                   <Camera className="w-5 h-5 text-gray-400" />
                 </button>
               </div>
@@ -139,7 +143,8 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
               <h2 className="text-lg font-semibold mb-3">Quick Actions</h2>
               <div
-</> className="grid grid-cols-2 gap-3">
+</>
+className="grid grid-cols-2 gap-3">
                 {quickActions.map((action /* , index */) => (
                   <motion.button
                     key={index}
@@ -152,7 +157,8 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
                     <div className="text-2xl mb-2">{action.icon}</div>
                     <div
-</> className="text-sm font-medium text-gray-900">
+</>
+className="text-sm font-medium text-gray-900">
                       {action.label}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
@@ -171,6 +177,7 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
                 AI Found for You
               </h2>
               <motion
+</>
 </>.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -182,13 +189,15 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
                     <DollarSign className="w-4 h-4 text-green-600" />
                   </div>
                   <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
                     <p className="text-sm font-medium text-gray-900">
                       You might qualify for property tax reduction
                     </p>
                     <p
-</> className="text-xs text-gray-600 mt-1">
+</>
+className="text-xs text-gray-600 mt-1">
                       Based on recent assessment changes
                     </p>
                     <button className="text-xs text-purple-600 font-medium mt-2">
@@ -205,19 +214,22 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
                 <div className="text-xl font-bold text-blue-600">3 min</div>
                 <div
-</> className="text-xs text-gray-600">Wait time</div>
+</>
+className="text-xs text-gray-600">Wait time</div>
               </div>
               <div className="bg-white rounded-xl p-3 text-center"><>
 
                 <div className="text-xl font-bold text-green-600">14</div>
                 <div
-</> className="text-xs text-gray-600">Permits today</div>
+</>
+className="text-xs text-gray-600">Permits today</div>
               </div>
               <div className="bg-white rounded-xl p-3 text-center"><>
 
                 <div className="text-xl font-bold text-purple-600">94%</div>
                 <div
-</> className="text-xs text-gray-600">Satisfaction</div>
+</>
+className="text-xs text-gray-600">Satisfaction</div>
               </div>
             </div>
           </motion.div>
@@ -235,7 +247,8 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
             <h1 className="text-2xl font-bold mb-4">Notifications</h1>
             
             <div
-</> className="space-y-3">
+</>
+className="space-y-3">
               {notifications.map((notif) => (
                 <motion.div
                   key={notif.id}
@@ -248,13 +261,15 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
                     <div className="text-2xl">{notif.icon}</div>
                     <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
                       <p className="font-medium text-gray-900">
                         {notif.title}
                       </p>
                       <p
-</> className="text-sm text-gray-600 mt-1">
+</>
+className="text-sm text-gray-600 mt-1">
                         {notif.message}
                       </p>
                       <p className="text-xs text-gray-400 mt-2">
@@ -288,18 +303,21 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
               <h2 className="font-medium mb-3">Saved Searches</h2>
               <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                 <div className="flex items-center justify-between py-2 border-b"><>
 
                   <span className="text-sm">Permits on Main St</span>
                   <span
-</> className="text-xs text-blue-600">3 new</span>
+</>
+className="text-xs text-blue-600">3 new</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b"><>
 
                   <span className="text-sm">Council meetings about parks</span>
                   <span
-</> className="text-xs text-gray-400">None</span>
+</>
+className="text-xs text-gray-400">None</span>
                 </div>
               </div>
             </div>
@@ -309,13 +327,15 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
               <h2 className="font-medium mb-3">Your Properties</h2>
               <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div><>
 
                     <p className="text-sm font-medium">123 Oak Street</p>
                     <p
-</> className="text-xs text-gray-500">Primary Residence</p>
+</>
+className="text-xs text-gray-500">Primary Residence</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-gray-400" />
                 </div>
@@ -327,12 +347,14 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
               <h2 className="font-medium mb-3">Settings</h2>
               <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                 <div className="flex items-center justify-between"><>
 
                   <span className="text-sm">Push Notifications</span>
                   <div
-</> className="bg-green-500 rounded-full w-12 h-6 relative">
+</>
+className="bg-green-500 rounded-full w-12 h-6 relative">
                     <div className="absolute right-1 top-1 bg-white rounded-full w-4 h-4" />
                   </div>
                 </div>
@@ -340,7 +362,8 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
                   <span className="text-sm">Location Services</span>
                   <div
-</> className="bg-green-500 rounded-full w-12 h-6 relative">
+</>
+className="bg-green-500 rounded-full w-12 h-6 relative">
                     <div className="absolute right-1 top-1 bg-white rounded-full w-4 h-4" />
                   </div>
                 </div>
@@ -401,7 +424,8 @@ export const CitizenMobile: React.FC<MobileViewProps> = ({ onSearch }) => {
 
               <p className="text-lg font-medium">Listening...</p>
               <p
-</> className="text-sm text-gray-500 mt-2">
+</>
+className="text-sm text-gray-500 mt-2">
                 "When is bulk trash pickup?"
               </p>
             </motion.div>

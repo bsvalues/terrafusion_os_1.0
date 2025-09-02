@@ -130,6 +130,7 @@ export function DemoDashboard() {
               </Badge>
               <Button
 </>
+
                 size="sm"
                 onClick={() => setIsPlaying(!isPlaying)}
                 className={isPlaying ? "bg-tf-error hover:bg-tf-error/80" : "bg-tf-success hover:bg-tf-success/80"}
@@ -155,7 +156,8 @@ export function DemoDashboard() {
 
                   <h1 className="font-heading font-bold text-lg">Madison County Dashboard</h1>
                   <p
-</> className="text-xs text-muted-foreground">Government. Transcended.</p>
+</>
+className="text-xs text-muted-foreground">Government. Transcended.</p>
                 </div>
               </div>
               <Badge variant="secondary" className="bg-tf-success/10 text-tf-success border-tf-success/20">
@@ -173,7 +175,8 @@ export function DemoDashboard() {
 
                 <p className="text-sm font-medium">County Administrator</p>
                 <p
-</> className="text-xs text-muted-foreground">Madison County</p>
+</>
+className="text-xs text-muted-foreground">Madison County</p>
               </div>
             </div>
           </div>
@@ -190,12 +193,14 @@ export function DemoDashboard() {
 
                   <p className="text-sm font-medium text-muted-foreground">Active Modules</p>
                   <p
-</> className="text-2xl font-bold">{animatedValues.activeModules}/14</p><>
+</>
+className="text-2xl font-bold">{animatedValues.activeModules}/14</p><>
 
                   <Progress value={(animatedValues.activeModules / 14) * 100} className="w-16 h-2 mt-2" />
                 </div>
                 <div
-</> className="p-3 rounded-full bg-tf-primary/10 border border-tf-primary/20">
+</>
+className="p-3 rounded-full bg-tf-primary/10 border border-tf-primary/20">
                   <Activity className="w-6 h-6 text-tf-primary" />
                 </div>
               </div>
@@ -209,7 +214,8 @@ export function DemoDashboard() {
 
                   <p className="text-sm font-medium text-muted-foreground">Daily Transactions</p>
                   <p
-</> className="text-2xl font-bold">{animatedValues.dailyTransactions.toLocaleString()}</p>
+</>
+className="text-2xl font-bold">{animatedValues.dailyTransactions.toLocaleString()}</p>
                   <p className="text-xs text-tf-success mt-1">+18% from yesterday</p>
                 </div>
                 <div className="p-3 rounded-full bg-tf-accent/10 border border-tf-accent/20">
@@ -226,7 +232,8 @@ export function DemoDashboard() {
 
                   <p className="text-sm font-medium text-muted-foreground">Active Users</p>
                   <p
-</> className="text-2xl font-bold">{animatedValues.activeUsers.toLocaleString()}</p>
+</>
+className="text-2xl font-bold">{animatedValues.activeUsers.toLocaleString()}</p>
                   <p className="text-xs text-tf-success mt-1">+5% this month</p>
                 </div>
                 <div className="p-3 rounded-full bg-tf-success/10 border border-tf-success/20">
@@ -243,7 +250,8 @@ export function DemoDashboard() {
 
                   <p className="text-sm font-medium text-muted-foreground">Revenue Processed</p>
                   <p
-</> className="text-2xl font-bold">{formatCurrency(animatedValues.revenueProcessed)}</p>
+</>
+className="text-2xl font-bold">{formatCurrency(animatedValues.revenueProcessed)}</p>
                   <p className="text-xs text-tf-success mt-1">+12% this quarter</p>
                 </div>
                 <div className="p-3 rounded-full bg-tf-warning/10 border border-tf-warning/20">
@@ -281,11 +289,13 @@ export function DemoDashboard() {
                           <Icon className={`w-4 h-4 text-${module.color}`} />
                         </div>
                         <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
                           <p className="font-medium text-sm">{module.name}</p>
                           <div
-</> className="flex items-center gap-2 mt-1">
+</>
+className="flex items-center gap-2 mt-1">
                             <div className={`w-2 h-2 rounded-full bg-${module.color} animate-pulse`} />
                             <span className="text-xs text-muted-foreground capitalize">{module.status}</span>
                           </div>
@@ -329,7 +339,8 @@ export function DemoDashboard() {
 
                       <p className="text-sm font-medium">{activity.user}</p>
                       <p
-</> className="text-sm text-muted-foreground">{activity.action}</p>
+</>
+className="text-sm text-muted-foreground">{activity.action}</p>
                       <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
                     </div>
                     <CheckCircle className="w-4 h-4 text-tf-success mt-1" />
@@ -359,7 +370,8 @@ export function DemoDashboard() {
 
                     <span className="text-sm font-medium">Processing Efficiency</span>
                     <span
-</> className="text-sm text-muted-foreground">94%</span>
+</>
+className="text-sm text-muted-foreground">94%</span>
                   </div>
                   <Progress value={94} className="h-2" />
                   <p className="text-xs text-tf-success">+6% vs target</p>
@@ -370,7 +382,8 @@ export function DemoDashboard() {
 
                     <span className="text-sm font-medium">User Satisfaction</span>
                     <span
-</> className="text-sm text-muted-foreground">98%</span>
+</>
+className="text-sm text-muted-foreground">98%</span>
                   </div>
                   <Progress value={98} className="h-2" />
                   <p className="text-xs text-tf-success">+13% vs target</p>
@@ -381,7 +394,8 @@ export function DemoDashboard() {
 
                     <span className="text-sm font-medium">System Uptime</span>
                     <span
-</> className="text-sm text-muted-foreground">99.9%</span>
+</>
+className="text-sm text-muted-foreground">99.9%</span>
                   </div>
                   <Progress value={99.9} className="h-2" />
                   <p className="text-xs text-tf-success">Exceeds SLA</p>

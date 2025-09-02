@@ -15,7 +15,8 @@ const presentationSlides = [
 
         <div className="text-sm text-tf-accent mb-8">*[SILENCE. 10 SECONDS OF ABSOLUTE SILENCE.]*</div>
         <h2
-</> className="text-4xl md:text-6xl font-bold text-tf-light leading-tight">
+</>
+className="text-4xl md:text-6xl font-bold text-tf-light leading-tight">
           Today, we don't discuss software.
         </h2>
         <h2 className="text-4xl md:text-6xl font-bold clarity-gradient bg-clip-text text-transparent">
@@ -34,25 +35,29 @@ const presentationSlides = [
 
           <div className="text-6xl font-black text-tf-error">379,000,000×</div>
           <div
-</> className="text-xl text-tf-light">slower than it should be</div>
+</>
+className="text-xl text-tf-light">slower than it should be</div>
         </div>
         <div className="space-y-6"><>
 
           <div className="text-6xl font-black text-tf-error">$2.8 trillion</div>
           <div
-</> className="text-xl text-tf-light">wasted annually on bureaucratic friction</div>
+</>
+className="text-xl text-tf-light">wasted annually on bureaucratic friction</div>
         </div>
         <div className="space-y-6"><>
 
           <div className="text-6xl font-black text-tf-error">350 million</div>
           <div
-</> className="text-xl text-tf-light">citizens trapped in 1970s technology</div>
+</>
+className="text-xl text-tf-light">citizens trapped in 1970s technology</div>
         </div>
         <div className="mt-12 space-y-4"><>
 
           <p className="text-2xl text-tf-accent italic">This is not acceptable.</p>
           <p
-</> className="text-2xl text-tf-transcend font-bold">This ends now.</p>
+</>
+className="text-2xl text-tf-transcend font-bold">This ends now.</p>
         </div>
       </div>
     ),
@@ -68,12 +73,14 @@ const presentationSlides = [
           Terrafusion OS
         </h1>
         <h2
-</> className="text-4xl font-bold text-tf-primary">Government. Transcended.</h2>
+</>
+className="text-4xl font-bold text-tf-primary">Government. Transcended.</h2>
         <div className="space-y-6 max-w-4xl mx-auto"><>
 
           <p className="text-2xl text-tf-light">Not an upgrade. Not an improvement.</p>
           <p
-</> className="text-3xl font-bold text-tf-transcend">
+</>
+className="text-3xl font-bold text-tf-transcend">
             Complete replacement of the operating system that runs America.
           </p>
         </div>
@@ -91,24 +98,28 @@ const presentationSlides = [
 
             <h3 className="text-2xl font-bold text-tf-primary mb-6">Performance</h3>
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               <div><>
 
                 <div className="text-3xl font-black text-tf-transcend">379,000,000×</div>
                 <div
-</> className="text-sm text-tf-light">speed improvement</div>
+</>
+className="text-sm text-tf-light">speed improvement</div>
               </div>
               <div><>
 
                 <div className="text-3xl font-black text-tf-transcend">0.47ms</div>
                 <div
-</> className="text-sm text-tf-light">property valuation</div>
+</>
+className="text-sm text-tf-light">property valuation</div>
               </div>
               <div><>
 
                 <div className="text-3xl font-black text-tf-transcend">&lt;2s</div>
                 <div
-</> className="text-sm text-tf-light">response time</div>
+</>
+className="text-sm text-tf-light">response time</div>
               </div>
             </div>
           </CardContent>
@@ -119,24 +130,28 @@ const presentationSlides = [
 
             <h3 className="text-2xl font-bold text-tf-accent mb-6">Scale</h3>
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               <div><>
 
                 <div className="text-3xl font-black text-tf-transcend">3,142</div>
                 <div
-</> className="text-sm text-tf-light">counties nationwide</div>
+</>
+className="text-sm text-tf-light">counties nationwide</div>
               </div>
               <div><>
 
                 <div className="text-3xl font-black text-tf-transcend">$1B</div>
                 <div
-</> className="text-sm text-tf-light">ARR potential</div>
+</>
+className="text-sm text-tf-light">ARR potential</div>
               </div>
               <div><>
 
                 <div className="text-3xl font-black text-tf-transcend">1,008</div>
                 <div
-</> className="text-sm text-tf-light">AI agents</div>
+</>
+className="text-sm text-tf-light">AI agents</div>
               </div>
             </div>
           </CardContent>
@@ -147,7 +162,8 @@ const presentationSlides = [
 
             <h3 className="text-2xl font-bold text-tf-transcend mb-6">Inevitability</h3>
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               <div>
                 <Badge className="bg-tf-success/20 text-tf-success border-tf-success/30">Patent Protection</Badge>
               </div>
@@ -175,30 +191,35 @@ const presentationSlides = [
 
               <h3 className="text-xl font-bold text-tf-success mb-4">Phase 1: Foundation</h3>
               <Badge
-</> className="mb-4 bg-tf-success/20 text-tf-success">COMPLETE</Badge>
+</>
+className="mb-4 bg-tf-success/20 text-tf-success">COMPLETE</Badge>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2"><>
 
                   <div className="w-2 h-2 bg-tf-success rounded-full"></div>
                   <span
+</>
 </>>19 modules production-ready</span>
                 </div>
                 <div className="flex items-center gap-2"><>
 
                   <div className="w-2 h-2 bg-tf-success rounded-full"></div>
                   <span
+</>
 </>>1,008 AI agents deployed</span>
                 </div>
                 <div className="flex items-center gap-2"><>
 
                   <div className="w-2 h-2 bg-tf-success rounded-full"></div>
                   <span
+</>
 </>>Patent portfolio secured</span>
                 </div>
                 <div className="flex items-center gap-2"><>
 
                   <div className="w-2 h-2 bg-tf-success rounded-full"></div>
                   <span
+</>
 </>>Benton County live production</span>
                 </div>
               </div>
@@ -210,7 +231,8 @@ const presentationSlides = [
 
               <h3 className="text-xl font-bold text-tf-primary mb-4">Phase 2: Shock & Awe</h3>
               <Badge
-</> className="mb-4 bg-tf-primary/20 text-tf-primary">Q1 2025</Badge>
+</>
+className="mb-4 bg-tf-primary/20 text-tf-primary">Q1 2025</Badge>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Target className="w-4 h-4 text-tf-primary" />
@@ -237,7 +259,8 @@ const presentationSlides = [
 
               <h3 className="text-xl font-bold text-tf-transcend mb-4">Phase 3: Total Domination</h3>
               <Badge
-</> className="mb-4 bg-tf-transcend/20 text-tf-transcend">2025-2027</Badge>
+</>
+className="mb-4 bg-tf-transcend/20 text-tf-transcend">2025-2027</Badge>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Rocket className="w-4 h-4 text-tf-transcend" />
@@ -272,7 +295,8 @@ const presentationSlides = [
 
           <div className="text-sm text-tf-accent mb-8">*[SINGLE SLIDE. WHITE BACKGROUND. ONE SENTENCE.]*</div>
           <blockquote
-</> className="text-3xl md:text-4xl font-bold text-tf-light leading-relaxed">
+</>
+className="text-3xl md:text-4xl font-bold text-tf-light leading-relaxed">
             "Terrafusion OS is not what government technology needs.
             <br />
             <span className="clarity-gradient bg-clip-text text-transparent">
@@ -293,7 +317,8 @@ const presentationSlides = [
 
           <h2 className="text-4xl font-bold text-tf-error">This is not a request for permission.</h2>
           <h2
-</> className="text-4xl font-bold text-tf-transcend">This is notification of inevitability.</h2>
+</>
+className="text-4xl font-bold text-tf-transcend">This is notification of inevitability.</h2>
         </div>
         
         <div className="space-y-6 max-w-4xl mx-auto"><>
@@ -302,7 +327,8 @@ const presentationSlides = [
             Terrafusion OS will transform American government.
           </p>
           <p
-</> className="text-2xl text-tf-primary">
+</>
+className="text-2xl text-tf-primary">
             The only question is whether you are part of the transformation
             <br />
             or replaced by it.
@@ -315,7 +341,8 @@ const presentationSlides = [
             "Every county we transform is millions of citizens whose lives get better."
           </p>
           <p
-</> className="text-xl text-tf-accent italic">The transcendence begins now.</p>
+</>
+className="text-xl text-tf-accent italic">The transcendence begins now.</p>
         </div>
       </div>
     ),
@@ -383,6 +410,7 @@ export function ShockAweeBoardPresentation() {
             </Badge>
             <Button
 </>
+
               variant="outline"
               size="sm"
               onClick={() => setIsAutoPlay(!isAutoPlay)}
@@ -419,7 +447,8 @@ export function ShockAweeBoardPresentation() {
           </Button>
           
           <div
-</> className="flex gap-2">
+</>
+className="flex gap-2">
             {presentationSlides.map((_ /* , index */) => (<>
 
               <button
@@ -436,6 +465,7 @@ export function ShockAweeBoardPresentation() {
           
           <Button
 </>
+
             onClick={nextSlide}
             disabled={currentSlide === presentationSlides.length - 1}
             className="bg-tf-primary hover:bg-tf-primary-dark text-white transcend-glow"

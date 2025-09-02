@@ -70,7 +70,8 @@ export const ArcGISProvider: React.FC<ArcGISProviderProps> = ({
 
           <p className="text-red-500">{error}</p>
           <p
-</> className="text-sm mt-2">
+</>
+className="text-sm mt-2">
             Falling back to alternative map provider if available.
           </p>
         </Card>

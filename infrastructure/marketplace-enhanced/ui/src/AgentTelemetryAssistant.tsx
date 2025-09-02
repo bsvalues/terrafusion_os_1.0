@@ -92,7 +92,8 @@ export function AgentTelemetryAssistant() {
 
       <h2>Agent Telemetry Assistant</h2>
       <table
-</> className="tf-table">
+</>
+className="tf-table">
         <thead>
           <tr>
             <th>Plugin</th><th>Health</th><th>Deploys</th><th>Rollbacks</th><th>Restarts</th><th>Actions</th><th>Audit</th>
@@ -110,14 +111,17 @@ export function AgentTelemetryAssistant() {
 
                 <td>{plugin.name}</td>
                 <td
+</>
 </>>{healthy === undefined ? '—' : healthy ? '🟢' : '🔴'}</td><>
 
                 <td>{deploys}</td>
                 <td
+</>
 </>>{rollbacks}</td><>
 
                 <td>{restarts}</td>
                 <td
+</>
 </>>
                   <button onClick={()=>handleAction('deploy',id)}>Deploy</button>{' '}
                   <button onClick={()=>handleAction('rollback',id)}>Rollback</button>{' '}
@@ -141,7 +145,8 @@ export function AgentTelemetryAssistant() {
 
               <h3>Audit Log: {sidebar.find(p=>p.id===selected)?.name || selected}</h3>
               <button
-</> className="tf-modal-close" onClick={()=>setSelected(null)}>×</button>
+</>
+className="tf-modal-close" onClick={()=>setSelected(null)}>×</button>
             </div>
             <div className="tf-modal-content">
               <table className="tf-audit-table">
@@ -154,6 +159,7 @@ export function AgentTelemetryAssistant() {
 
                       <td>{log.timestamp}</td>
                       <td
+</>
 </>>{log.user}</td>
                       <td>{log.action}</td>
                     </tr>

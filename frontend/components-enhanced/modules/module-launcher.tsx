@@ -55,7 +55,8 @@ export function ModuleLauncher() {
 
             <h1 className="text-3xl font-heading font-bold">Module Launcher</h1>
             <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
               Manage and launch your Terrafusion modules. {activeModules.length} of {modules.length} modules active.
             </p>
           </div>
@@ -79,6 +80,7 @@ export function ModuleLauncher() {
 
           <Select
 </>
+
             value={selectedCategory}
             onValueChange={(value) => setSelectedCategory(value as ModuleCategory | "all")}
           >
@@ -88,6 +90,7 @@ export function ModuleLauncher() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent
+</>
 </>>
               {categories.map((category) => (
                 <SelectItem key={category.value} value={category.value}>
@@ -103,7 +106,8 @@ export function ModuleLauncher() {
               <Grid className="w-4 h-4" />
             </Button>
             <Button
-</> variant={viewMode === "list" ? "default" : "outline"} size="sm" onClick={() => setViewMode("list")}>
+</>
+variant={viewMode === "list" ? "default" : "outline"} size="sm" onClick={() => setViewMode("list")}>
               <List className="w-4 h-4" />
             </Button>
           </div>
@@ -134,6 +138,7 @@ export function ModuleLauncher() {
           <p className="text-muted-foreground">No modules found matching your criteria.</p>
           <Button
 </>
+
             variant="outline"
             onClick={() => {
               setSearchTerm("")

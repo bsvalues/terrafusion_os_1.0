@@ -110,11 +110,13 @@ export function PluginSidebar() {
 
           <option value="az">A-Z</option>
           <option
-</> value="za">Z-A</option><>
+</>
+value="za">Z-A</option><>
 
           <option value="recent">Most Recent</option>
           <option
-</> value="popular">Most Launched</option>
+</>
+value="popular">Most Launched</option>
         </select>
         <select title="Filter by category" value={category} onChange={e => setCategory(e.target.value)}>
           <option value="all">All Categories</option>
@@ -150,6 +152,7 @@ export function PluginSidebar() {
             <span className="plugin-usage" title="Launch count">{stats.count}</span>
             <button
 </>
+
               className="launch-button"
               tabIndex={0}
               aria-label={`Launch ${plugin.name}`}
@@ -196,37 +199,39 @@ export function PluginSidebar() {
         };
         return (
           <div className="plugin-detail">
-            {editMode ? (
-              <><>
+            {editMode ? (<>
 
                 <h2>Edit Plugin</h2>
                 <label
+</>
 </>>
                   Name:<>
 
                   <input value={editName} onChange={e => setEditName(e.target.value)} />
                 </label>
                 <label
+</>
 </>>
                   Tags (comma separated):<>
 
                   <input value={editTags} onChange={e => setEditTags(e.target.value)} />
                 </label>
                 <label
+</>
 </>>
                   Categories (comma separated):<>
 
                   <input value={editCategories} onChange={e => setEditCategories(e.target.value)} />
                 </label>
                 <button
-</> onClick={handleEditSave}>Save</button>
+</>
+onClick={handleEditSave}>Save</button>
                 <button onClick={() => setEditMode(false)}>Cancel</button>
-              </>
-            ) : (
-              <><>
+            ) : (<>
 
                 <h2>{selectedPlugin.name}</h2>
                 <p
+</>
 </>><strong>Tags:</strong> {selectedPlugin.tags?.join(', ')}</p>
                 <p><strong>API:</strong> {selectedPlugin.api}</p>
                 <p><strong>K8s:</strong> {selectedPlugin.k8s}</p>
@@ -235,11 +240,13 @@ export function PluginSidebar() {
 
                 <button onClick={() => handleLaunch(selectedPlugin)}>Launch</button>
                 <button
-</> onClick={() => setEditMode(true)}>Edit</button><>
+</>
+onClick={() => setEditMode(true)}>Edit</button><>
 
                 <button onClick={() => setRemoveConfirm(true)}>Remove</button>
                 <button
-</> onClick={() => {
+</>
+onClick={() => {
                   setSelectedPlugin(null);
                   setTimeout(() => {
                     if (lastFocusedPlugin.current) {
@@ -251,14 +258,14 @@ export function PluginSidebar() {
                     }
                   }, 0);
                 }}>Close</button>
-              </>
             )}
             {removeConfirm && (
               <div className="remove-confirm"><>
 
                 <p>Are you sure you want to remove this plugin?</p>
                 <button
-</> onClick={handleRemove}>Yes, Remove</button>
+</>
+onClick={handleRemove}>Yes, Remove</button>
                 <button onClick={() => setRemoveConfirm(false)}>Cancel</button>
               </div>
             )}

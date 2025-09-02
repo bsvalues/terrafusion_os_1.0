@@ -81,7 +81,8 @@ const ProfessionalApp: React.FC = () => {
 
           <p className="text-sm text-blue-200">Public Records System</p>
           <p
-</> className="text-xs text-blue-300 mt-1">Benton County, WA</p>
+</>
+className="text-xs text-blue-300 mt-1">Benton County, WA</p>
         </div>
         
         <nav className="p-4">
@@ -116,11 +117,13 @@ const ProfessionalApp: React.FC = () => {
               <Users size={16} className="text-white" />
             </div>
             <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
               <p className="text-sm font-medium text-white">{user.name}</p>
               <p
-</> className="text-xs text-blue-200">{user.role}</p>
+</>
+className="text-xs text-blue-200">{user.role}</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -129,12 +132,14 @@ const ProfessionalApp: React.FC = () => {
               <Settings size={16} />
             </button>
             <button
-</> className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colors"><>
+</>
+className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colors"><>
 
               <Bell size={16} />
             </button>
             <button
-</> className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colors">
+</>
+className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colors">
               <LogOut size={16} />
             </button>
           </div>
@@ -152,7 +157,8 @@ const ProfessionalApp: React.FC = () => {
                 {navigationItems.find(item => item.id === activeView)?.label}
               </h2>
               <p
-</> className="text-sm text-gray-600 mt-1">
+</>
+className="text-sm text-gray-600 mt-1">
                 Terrafusion OS • Government Edition • Benton County, Washington
               </p>
             </div>
@@ -162,7 +168,8 @@ const ProfessionalApp: React.FC = () => {
 
                 <span className="font-semibold text-blue-700">{BentonCountyData.statistics.totalParcels.toLocaleString()}</span>
                 <span
-</> className="text-gray-400 mx-2">|</span>
+</>
+className="text-gray-400 mx-2">|</span>
                 <span className="text-gray-500">Citizens:</span>{' '}
                 <span className="font-semibold text-blue-700">{BentonCountyData.county.population.toLocaleString()}</span>
               </div>
@@ -170,7 +177,8 @@ const ProfessionalApp: React.FC = () => {
 
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span
-</> className="text-xs text-gray-600">System Online</span>
+</>
+className="text-xs text-gray-600">System Online</span>
               </div>
             </div>
           </div>
@@ -189,11 +197,13 @@ const ProfessionalApp: React.FC = () => {
                     <Search className="text-white" size={20} />
                   </div>
                   <div
+</>
 </>><>
 
                     <h3 className="text-lg font-bold text-gray-900">Terrafusion Instant Search</h3>
                     <p
-</> className="text-xs text-gray-600">AI-Powered Property Intelligence</p>
+</>
+className="text-xs text-gray-600">AI-Powered Property Intelligence</p>
                   </div>
                 </div>
                 <InstantSearch 
@@ -212,7 +222,8 @@ const ProfessionalApp: React.FC = () => {
 
                   <div className="text-sm text-gray-600">Total Parcels</div>
                   <div
-</> className="text-2xl font-bold text-blue-900 mt-1">
+</>
+className="text-2xl font-bold text-blue-900 mt-1">
                     {BentonCountyData.statistics.totalParcels.toLocaleString()}
                   </div>
                 </div>
@@ -224,7 +235,8 @@ const ProfessionalApp: React.FC = () => {
 
                   <div className="text-sm text-gray-600">Total Value</div>
                   <div
-</> className="text-2xl font-bold text-blue-900 mt-1">
+</>
+className="text-2xl font-bold text-blue-900 mt-1">
                     ${(BentonCountyData.statistics.totalAssessedValue / 1e9).toFixed(1)}B
                   </div>
                 </div>
@@ -236,7 +248,8 @@ const ProfessionalApp: React.FC = () => {
 
                   <div className="text-sm text-gray-600">Property Value</div>
                   <div
-</> className="text-2xl font-bold text-blue-900 mt-1">
+</>
+className="text-2xl font-bold text-blue-900 mt-1">
                     ${(BentonCountyData.statistics.averageValue / 1000).toFixed(0)}K
                   </div>
                 </div>
@@ -248,7 +261,8 @@ const ProfessionalApp: React.FC = () => {
 
                   <div className="text-sm text-gray-600">Documents</div>
                   <div
-</> className="text-2xl font-bold text-blue-900 mt-1">
+</>
+className="text-2xl font-bold text-blue-900 mt-1">
                     1.2M+
                   </div>
                 </div>
@@ -266,11 +280,13 @@ const ProfessionalApp: React.FC = () => {
                     <FileText className="text-white" size={20} />
                   </div>
                   <div
+</>
 </>><>
 
                     <h3 className="text-lg font-bold text-gray-900">Terrafusion Document Archive</h3>
                     <p
-</> className="text-xs text-gray-600">Recent Documents & Records</p>
+</>
+className="text-xs text-gray-600">Recent Documents & Records</p>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -286,7 +302,8 @@ const ProfessionalApp: React.FC = () => {
 
                           <p className="font-medium text-gray-900">{doc.name}</p>
                           <p
-</> className="text-sm text-gray-600">{doc.date} • {doc.size}</p>
+</>
+className="text-sm text-gray-600">{doc.date} • {doc.size}</p>
                         </div>
                       </div>
                       <ChevronRight className="text-gray-400" size={20} />
@@ -301,21 +318,24 @@ const ProfessionalApp: React.FC = () => {
 
                   <div className="text-lg font-semibold text-gray-900">Property Deeds</div>
                   <div
-</> className="text-sm text-gray-600 mt-1">342 documents</div>
+</>
+className="text-sm text-gray-600 mt-1">342 documents</div>
                 </div>
                 <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4">
                   <Building className="text-green-600 mb-2" size={24} /><>
 
                   <div className="text-lg font-semibold text-gray-900">Building Permits</div>
                   <div
-</> className="text-sm text-gray-600 mt-1">89 active permits</div>
+</>
+className="text-sm text-gray-600 mt-1">89 active permits</div>
                 </div>
                 <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4">
                   <DollarSign className="text-purple-600 mb-2" size={24} /><>
 
                   <div className="text-lg font-semibold text-gray-900">Tax Records</div>
                   <div
-</> className="text-sm text-gray-600 mt-1">1,847 assessments</div>
+</>
+className="text-sm text-gray-600 mt-1">1,847 assessments</div>
                 </div>
               </div>
             </div>
@@ -332,11 +352,13 @@ const ProfessionalApp: React.FC = () => {
                       <Building className="text-white" size={20} />
                     </div>
                     <div
+</>
 </>><>
 
                       <h3 className="text-lg font-bold text-gray-900">Terrafusion Permit System</h3>
                       <p
-</> className="text-xs text-gray-600">Digital Permit Applications</p>
+</>
+className="text-xs text-gray-600">Digital Permit Applications</p>
                     </div>
                   </div>
                   <button
@@ -356,13 +378,15 @@ const ProfessionalApp: React.FC = () => {
 
                   <div className="text-sm text-gray-600">Active Permits</div>
                   <div
-</> className="text-2xl font-semibold text-gray-900 mt-1">23</div>
+</>
+className="text-2xl font-semibold text-gray-900 mt-1">23</div>
                 </div>
                 <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4"><>
 
                   <div className="text-sm text-gray-600">Pending Review</div>
                   <div
-</> className="text-2xl font-semibold text-gray-900 mt-1">7</div>
+</>
+className="text-2xl font-semibold text-gray-900 mt-1">7</div>
                 </div>
               </div>
             </div>
@@ -382,11 +406,13 @@ const ProfessionalApp: React.FC = () => {
                   <DollarSign className="text-white" size={20} />
                 </div>
                 <div
+</>
 </>><>
 
                   <h3 className="text-lg font-bold text-gray-900">Terrafusion Payment Center</h3>
                   <p
-</> className="text-xs text-gray-600">Secure Online Payment Processing</p>
+</>
+className="text-xs text-gray-600">Secure Online Payment Processing</p>
                 </div>
               </div><>
 
@@ -395,6 +421,7 @@ const ProfessionalApp: React.FC = () => {
               </p>
               <button
 </>
+
                 onClick={() => setShowPayment(true)}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
@@ -420,7 +447,8 @@ const ProfessionalApp: React.FC = () => {
 
               <span>© 2024 Terrafusion</span>
               <span
-</> className="text-blue-400">•</span>
+</>
+className="text-blue-400">•</span>
               <span>Government. Transcended.</span>
             </div>
           </div>

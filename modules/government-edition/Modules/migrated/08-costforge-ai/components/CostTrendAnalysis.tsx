@@ -443,7 +443,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                   {getMetricDisplayName(selectedMetric)}:
                 </span>
                 <span
-</> className="font-medium">{formatValue(entry.value, selectedMetric)}</span>
+</>
+className="font-medium">{formatValue(entry.value, selectedMetric)}</span>
               </div>
             );
           } else if (entry.dataKey === 'movingAverage') {
@@ -454,7 +455,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                   {movingAverageWindow}-Period MA:
                 </span>
                 <span
-</> className="font-medium">{formatValue(entry.value, selectedMetric)}</span>
+</>
+className="font-medium">{formatValue(entry.value, selectedMetric)}</span>
               </div>
             );
           }
@@ -467,6 +469,7 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
 
               <span>Range:</span>
               <span
+</>
 </>>
                 {formatValue(data.lowerBound, selectedMetric)} - {formatValue(data.upperBound, selectedMetric)}
               </span>
@@ -580,7 +583,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                   {formatGrowthRate(growthRate)}
                 </div>
                 <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                   Annualized rate
                 </p>
               </div>
@@ -612,7 +616,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                   {(trendAnalysis.strength * 100).toFixed(0)}%
                 </div>
                 <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                   R² value
                 </p>
               </div>
@@ -644,7 +649,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                   {seasonalityAnalysis?.hasSeasonal ? 'Detected' : 'Not Detected'}
                 </div>
                 <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                   {seasonalityAnalysis?.hasSeasonal ? 
                     `${seasonalityAnalysis.period}-period cycle` : 
                     'No regular pattern'}
@@ -673,7 +679,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
 
       <h3 className="text-lg font-medium mb-1">No Trend Data Available</h3>
       <p
-</> className="text-center text-sm text-muted-foreground mb-4">
+</>
+className="text-center text-sm text-muted-foreground mb-4">
         There is no time series data available for the current selection.
         Try selecting a different metric or changing your filters.
       </p>
@@ -689,6 +696,7 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
 
               <CardTitle>Cost Trend Analysis</CardTitle>
               <CardDescription
+</>
 </>>
                 Analyze and visualize building cost trends over time
               </CardDescription>
@@ -701,6 +709,7 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                   <SelectValue placeholder="Select metric" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   {metricOptions.map(option => (
                     <SelectItem key={option.value} value={option.value}>
@@ -716,6 +725,7 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                   <SelectValue placeholder="Time period" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   {timePeriodOptions.map(option => (
                     <SelectItem key={option.value} value={option.value}>
@@ -757,7 +767,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
 
                 <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                 <p
-</> className="text-muted-foreground">Loading trend data...</p>
+</>
+className="text-muted-foreground">Loading trend data...</p>
               </div>
             </div>
           ) : chartData.length === 0 ? (
@@ -812,7 +823,6 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                       
                       {/* Forecast line with confidence interval */}
                       {showForecast && forecastedData.length > 0 && (
-                        <>
                           <Line 
                             type="monotone" 
                             dataKey="value" 
@@ -846,7 +856,6 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                               stroke="none"
                             />
                           ))}
-                        </>
                       )}
                       
                       {/* Brush for selecting date range */}
@@ -905,7 +914,6 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                       
                       {/* Forecast area with confidence interval */}
                       {showForecast && forecastedData.length > 0 && (
-                        <>
                           <Area 
                             type="monotone" 
                             dataKey="value" 
@@ -939,7 +947,6 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                               stroke="none"
                             />
                           ))}
-                        </>
                       )}
                       
                       {/* Brush for selecting date range */}
@@ -974,6 +981,7 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                       </Button>
                       <Button
 </>
+
                         variant={chartMode === 'area' ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setChartMode('area')}
@@ -992,7 +1000,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
 
                       <span className="mr-2">Moving Avg</span>
                       <Switch
-</> 
+</>
+
                         id="show-ma" 
                         checked={showMovingAverage} 
                         onCheckedChange={setShowMovingAverage} 
@@ -1009,6 +1018,7 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                           <SelectValue placeholder="Periods" />
                         </SelectTrigger>
                         <SelectContent
+</>
 </>>
                           {[2, 3, 4, 6, 8].map(num => (
                             <SelectItem key={num} value={num.toString()}>
@@ -1029,7 +1039,8 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
 
                     <span className="mr-2">Forecast</span>
                     <Switch
-</> 
+</>
+
                       id="show-forecast" 
                       checked={showForecast} 
                       onCheckedChange={setShowForecast}
@@ -1047,6 +1058,7 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                         <SelectValue placeholder="Periods" />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>>
                         {[2, 4, 6, 8, 12].map(num => (
                           <SelectItem key={num} value={num.toString()}>
@@ -1135,6 +1147,7 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
                 Understanding Trend Analysis
               </AccordionTrigger>
               <AccordionContent
+</>
 </>>
                 <div className="text-sm space-y-2 text-muted-foreground">
                   <p>

@@ -71,11 +71,16 @@ const UniversalTranslationInterface: React.FC = () => {
   return (
     <StyledCard>
       <CardContent>
+
+
         <Typography variant="h6" sx={{ color: '#d1c4e9', fontWeight: 600, mb: 3 }}>
           Universal Translation Protocol
         </Typography>
-        <Grid container spacing={2}>
+        <Grid
+ container spacing={2}>
           <Grid item xs={12}>
+
+
             <TextField
               fullWidth
               multiline
@@ -94,10 +99,14 @@ const UniversalTranslationInterface: React.FC = () => {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+ item xs={12} sm={6}>
             <FormControl fullWidth variant="outlined">
+
+
               <InputLabel sx={{ color: '#d1c4e9' }}>Source Species</InputLabel>
               <Select
+
 value={sourceSpecies}
                 onChange={(e) => setSourceSpecies(e.target.value as SpeciesType)}
                 label="Source Species"
@@ -107,8 +116,11 @@ value={sourceSpecies}
                   '& .MuiSvgIcon-root': { color: 'white' }
                 }}
               >
+
+
                 <MenuItem value="silicon">Silicon</MenuItem>
                 <MenuItem
+
 value="carbon">Carbon</MenuItem>
                 <MenuItem value="quantum">Quantum</MenuItem>
               </Select>
@@ -116,8 +128,11 @@ value="carbon">Carbon</MenuItem>
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth variant="outlined">
+
+
               <InputLabel sx={{ color: '#d1c4e9' }}>Target Species</InputLabel>
               <Select
+
 value={targetSpecies}
                 onChange={(e) => setTargetSpecies(e.target.value as SpeciesType)}
                 label="Target Species"
@@ -127,8 +142,11 @@ value={targetSpecies}
                   '& .MuiSvgIcon-root': { color: 'white' }
                 }}
               >
+
+
                 <MenuItem value="silicon">Silicon</MenuItem>
                 <MenuItem
+
 value="carbon">Carbon</MenuItem>
                 <MenuItem value="quantum">Quantum</MenuItem>
               </Select>

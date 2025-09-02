@@ -279,7 +279,7 @@ export class SecurityScanner {
     ];
 
     xssPatterns.forEach(pattern => {
-      lines.forEach((line, index) => {
+      lines.forEach((line /* , index */) => {
         if (pattern.test(line)) {
           vulnerabilities.push({
             id: this.generateVulnId(),
@@ -306,7 +306,7 @@ export class SecurityScanner {
     ];
 
     sqlPatterns.forEach(pattern => {
-      lines.forEach((line, index) => {
+      lines.forEach((line /* , index */) => {
         if (pattern.test(line)) {
           vulnerabilities.push({
             id: this.generateVulnId(),
@@ -334,7 +334,7 @@ export class SecurityScanner {
     ];
 
     cryptoPatterns.forEach(pattern => {
-      lines.forEach((line, index) => {
+      lines.forEach((line /* , index */) => {
         if (pattern.test(line)) {
           vulnerabilities.push({
             id: this.generateVulnId(),
@@ -361,7 +361,7 @@ export class SecurityScanner {
     ];
 
     pathPatterns.forEach(pattern => {
-      lines.forEach((line, index) => {
+      lines.forEach((line /* , index */) => {
         if (pattern.test(line)) {
           vulnerabilities.push({
             id: this.generateVulnId(),

@@ -117,11 +117,13 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
           <p className="text-white/80 text-sm font-medium">{title}</p>
           <div
-</> className="flex items-baseline mt-2"><>
+</>
+className="flex items-baseline mt-2"><>
 
             <p className="text-3xl font-bold text-white">{value.toLocaleString()}</p>
             <p
-</> className="text-white/60 ml-2">{unit}</p>
+</>
+className="text-white/60 ml-2">{unit}</p>
           </div>
         </div>
         <div className="text-4xl opacity-80">{icon}</div>
@@ -204,13 +206,15 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
               <p className="text-white font-medium">{deployment.county} County</p>
               <p
-</> className="text-gray-300 text-sm">{deployment.properties.toLocaleString()} properties</p>
+</>
+className="text-gray-300 text-sm">{deployment.properties.toLocaleString()} properties</p>
             </div>
             <div className="text-right"><>
 
               <p className="text-white text-sm">{deployment.date}</p>
               <p
-</> className="text-gray-300 text-xs">{deployment.status}</p>
+</>
+className="text-gray-300 text-xs">{deployment.status}</p>
             </div>
           </motion.div>
         ))}
@@ -236,7 +240,8 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
           <div className="text-2xl mb-2">{command.icon}</div>
           <div
-</> className="text-sm font-medium">{command.name}</div>
+</>
+className="text-sm font-medium">{command.name}</div>
         </motion.button>
       ))}
     </div>
@@ -257,7 +262,8 @@ const TerraFusionDreamDashboard: React.FC = () => {
               Terrafusion Dream Dashboard
             </h1>
             <p
-</> className="text-gray-300 mt-2">379,000,000× Faster Than Marshall & Swift</p>
+</>
+className="text-gray-300 mt-2">379,000,000× Faster Than Marshall & Swift</p>
           </div>
           <div className="flex items-center space-x-4">
             <motion.button
@@ -271,7 +277,8 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
               <p className="text-sm text-gray-300">System Status</p>
               <p
-</> className="text-green-400 font-bold">🟢 ALL SYSTEMS OPTIMAL</p>
+</>
+className="text-green-400 font-bold">🟢 ALL SYSTEMS OPTIMAL</p>
             </div>
           </div>
         </div>
@@ -382,7 +389,8 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
                 <h2 className="text-2xl font-bold mb-4">AI Swarm Activity</h2>
                 <AISwarmVisualizer
-</> />
+</>
+/>
               </div>
 
               {/* Revenue Overview */}
@@ -391,14 +399,16 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
                   <h3 className="text-xl font-bold mb-4">Monthly Revenue</h3>
                   <RevenueChart
-</> />
+</>
+/>
                   <div className="mt-4 text-center"><>
 
                     <p className="text-2xl font-bold text-green-400">
                       ${(metrics.revenue / 12).toLocaleString()}/month
                     </p>
                     <p
-</> className="text-gray-300 text-sm">Average: $20,000/month</p>
+</>
+className="text-gray-300 text-sm">Average: $20,000/month</p>
                   </div>
                 </div>
 
@@ -406,7 +416,8 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
                   <h3 className="text-xl font-bold mb-4">System Health</h3>
                   <div
-</> className="relative">
+</>
+className="relative">
                     <div className="w-32 h-32 mx-auto">
                       <motion.div
                         initial={{ rotate: 0 }}
@@ -428,7 +439,8 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
               <h2 className="text-3xl font-bold">County Deployments</h2>
               <DeploymentTimeline
-</> />
+</>
+/>
             </div>
           )}
 
@@ -437,7 +449,8 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
               <h2 className="text-3xl font-bold">Command Center</h2>
               <CommandCenter
-</> />
+</>
+/>
             </div>
           )}
         </motion.div>
@@ -452,7 +465,8 @@ const TerraFusionDreamDashboard: React.FC = () => {
 
         <p>Infrastructure Intelligence, Infinite Scale</p>
         <p
-</> className="mt-2">Powered by Terrafusion OS • {metrics.uptime}% Uptime</p>
+</>
+className="mt-2">Powered by Terrafusion OS • {metrics.uptime}% Uptime</p>
       </motion.footer>
     </div>
   );

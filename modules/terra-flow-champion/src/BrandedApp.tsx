@@ -16,7 +16,8 @@ const BrandedApp: React.FC = () => {
 
           <span className="module-code">TF</span>
           <span
-</> className="brand-text">Terra Flow</span>
+</>
+className="brand-text">Terra Flow</span>
         </div>
         <div className="performance-indicator">
           <span className="performance-text">Workflow Automation System</span>
@@ -29,16 +30,19 @@ const BrandedApp: React.FC = () => {
       </div>
       
       <div
-</> className="terrafusion-footer">
+</>
+className="terrafusion-footer">
         <div className="system-status"><>
 
           <span className="status-item">Terra Flow: ACTIVE</span>
           <span
-</> className="status-separator">|</span><>
+</>
+className="status-separator">|</span><>
 
           <span className="status-item">Workflows: AUTOMATED</span>
           <span
-</> className="status-separator">|</span>
+</>
+className="status-separator">|</span>
           <span className="status-item">Performance: CHAMPIONSHIP</span>
         </div>
       </div>

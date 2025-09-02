@@ -100,7 +100,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
           <div className="text-lg font-semibold text-white mb-4">🤖 Terrafusion AI Assistant</div>
           <div
-</> className="flex space-x-2">
+</>
+className="flex space-x-2">
             <input
               type="text"
               value={aiQuery}
@@ -131,7 +132,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
           <div className="text-lg font-semibold text-white mb-4">💻 Development Terminal</div>
           <div
-</> className="bg-black p-4 rounded flex-1 overflow-y-auto font-mono text-sm">
+</>
+className="bg-black p-4 rounded flex-1 overflow-y-auto font-mono text-sm">
             <div className="text-green-400 whitespace-pre-wrap">{terminalOutput}</div>
           </div>
           <div className="flex space-x-2 mt-2">
@@ -155,7 +157,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
               Dev
             </button>
             <button
-</> 
+</>
+
               onClick={() => executeTerminalCommand('git status')}
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded"
             >
@@ -175,7 +178,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
           <div className="text-lg font-semibold text-white mb-4">🗄️ Database Management</div>
           <div
-</> className="flex space-x-2">
+</>
+className="flex space-x-2">
             <textarea
               value={databaseQuery}
               onChange={(e) => setDatabaseQuery(e.target.value)}
@@ -211,7 +215,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
           <div className="text-lg font-semibold text-white mb-4">🗺️ Geospatial Tools (LeafScope)</div>
           <div
-</> className="grid grid-cols-2 gap-4"><>
+</>
+className="grid grid-cols-2 gap-4"><>
 
             <button 
               onClick={() => loadGeospatialData()}
@@ -220,7 +225,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
               Load Parcel Data
             </button>
             <button
-</> 
+</>
+
               onClick={() => spatialAnalysis()}
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
             >
@@ -234,7 +240,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
                   <div className="font-semibold mb-2">Geospatial Data Loaded:</div>
                   <div
-</> className="text-xs">
+</>
+className="text-xs">
                     {geospatialData.map((item /* , index */) => (
                       <div key={index} className="mb-1">
                         Parcel {item.parcel_id}: {item.address} - {item.assessed_value}
@@ -260,7 +267,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
           <div className="text-lg font-semibold text-white mb-4">🔌 Plugin Development</div>
           <div
-</> className="grid grid-cols-2 gap-4"><>
+</>
+className="grid grid-cols-2 gap-4"><>
 
             <button 
               onClick={() => createPluginTemplate()}
@@ -269,7 +277,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
               Create Template
             </button>
             <button
-</> 
+</>
+
               onClick={() => deployPlugin()}
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
             >
@@ -281,18 +290,22 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
               <div className="font-semibold mb-2">Available Plugin Templates:</div>
               <div
-</> className="space-y-2 text-xs"><>
+</>
+className="space-y-2 text-xs"><>
 
                 <div>🏗️ CostForge AI Pro - AI Property Valuation</div>
                 <div
+</>
 </>>🤖 TerraFlow Pro - Workflow Automation</div><>
 
                 <div>💰 TerraLevy Advanced - Financial Management</div>
                 <div
+</>
 </>>🏠 Property Comparison Engine - Market Analysis</div><>
 
                 <div>📝 Document Processing AI - Automation</div>
                 <div
+</>
 </>>💳 Payment Processing Pro - Revenue Tools</div>
               </div>
             </div>
@@ -310,30 +323,35 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
           <div className="text-lg font-semibold text-white mb-4">📊 Analytics Dashboard</div>
           <div
-</> className="grid grid-cols-2 gap-4">
+</>
+className="grid grid-cols-2 gap-4">
             <div className="bg-gray-800 p-4 rounded text-center"><>
 
               <div className="text-2xl font-bold text-green-400">18</div>
               <div
-</> className="text-gray-400 text-sm">Active Modules</div>
+</>
+className="text-gray-400 text-sm">Active Modules</div>
             </div>
             <div className="bg-gray-800 p-4 rounded text-center"><>
 
               <div className="text-2xl font-bold text-blue-400">1,008</div>
               <div
-</> className="text-gray-400 text-sm">AI Agents</div>
+</>
+className="text-gray-400 text-sm">AI Agents</div>
             </div>
             <div className="bg-gray-800 p-4 rounded text-center"><>
 
               <div className="text-2xl font-bold text-purple-400">94.7%</div>
               <div
-</> className="text-gray-400 text-sm">Test Coverage</div>
+</>
+className="text-gray-400 text-sm">Test Coverage</div>
             </div>
             <div className="bg-gray-800 p-4 rounded text-center"><>
 
               <div className="text-2xl font-bold text-yellow-400">379M×</div>
               <div
-</> className="text-gray-400 text-sm">Performance</div>
+</>
+className="text-gray-400 text-sm">Performance</div>
             </div>
           </div>
           <div className="bg-gray-800 p-4 rounded flex-1">
@@ -341,29 +359,34 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
               <div className="font-semibold mb-2">System Status:</div>
               <div
-</> className="space-y-1 text-xs">
+</>
+className="space-y-1 text-xs">
                 <div className="flex items-center space-x-2"><>
 
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <span
+</>
 </>>TerraFusionIDE - Operational</span>
                 </div>
                 <div className="flex items-center space-x-2"><>
 
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <span
+</>
 </>>AI Swarm - 1,008 agents active</span>
                 </div>
                 <div className="flex items-center space-x-2"><>
 
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <span
+</>
 </>>Database - Connected</span>
                 </div>
                 <div className="flex items-center space-x-2"><>
 
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <span
+</>
 </>>Geospatial - LeafScope ready</span>
                 </div>
               </div>
@@ -460,7 +483,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
             <div className="text-2xl font-bold text-blue-400">🚀 Terrafusion IDE ULTIMATE</div>
             <div
-</> className="text-gray-400">Your Complete Government Technology Development Universe</div>
+</>
+className="text-gray-400">Your Complete Government Technology Development Universe</div>
           </div>
           <div className="flex items-center space-x-2">
             <button className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm"><>
@@ -469,13 +493,15 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
               Run All
             </button>
             <button
-</> className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"><>
+</>
+className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"><>
 
               <Save className="w-4 h-4 inline mr-1" />
               Save All
             </button>
             <button
-</> className="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
+</>
+className="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
               <Zap className="w-4 h-4 inline mr-1" />
               Deploy
             </button>
@@ -508,20 +534,23 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
             <div className="text-sm text-gray-400 mb-2">Quick Actions</div>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               <button className="w-full bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm"><>
 
                 <GitBranch className="w-4 h-4 inline mr-2" />
                 Git Operations
               </button>
               <button
-</> className="w-full bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm"><>
+</>
+className="w-full bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm"><>
 
                 <Shield className="w-4 h-4 inline mr-2" />
                 Compliance Check
               </button>
               <button
-</> className="w-full bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded text-sm">
+</>
+className="w-full bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded text-sm">
                 <BarChart3 className="w-4 h-4 inline mr-2" />
                 Performance Test
               </button>
@@ -542,16 +571,19 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
 
             <span className="text-green-400">● Terrafusion IDE Ready</span>
             <span
-</> className="text-blue-400">● AI Swarm: 1,008 agents</span><>
+</>
+className="text-blue-400">● AI Swarm: 1,008 agents</span><>
 
             <span className="text-purple-400">● Database: Connected</span>
             <span
-</> className="text-yellow-400">● Compliance: FISMA Ready</span>
+</>
+className="text-yellow-400">● Compliance: FISMA Ready</span>
           </div>
           <div className="flex items-center space-x-4"><>
 
             <span>TypeScript</span>
             <span
+</>
 </>>UTF-8</span>
             <span>Ln 1, Col 1</span>
           </div>

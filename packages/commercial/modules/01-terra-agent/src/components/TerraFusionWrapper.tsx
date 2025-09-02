@@ -47,18 +47,21 @@ export const TerraFusionWrapper: React.FC<TerraFusionWrapperProps> = ({
 
               <span className="app-icon">{appIcon}</span>
               <div
-</> className="app-info"><>
+</>
+className="app-info"><>
 
                 <h1 className="app-name">{appName}</h1>
                 <div
-</> className="app-tagline">Powered by Terrafusion • Government. Transcended.</div>
+</>
+className="app-tagline">Powered by Terrafusion • Government. Transcended.</div>
               </div>
             </div>
             <div className="app-status"><>
 
               <span className="status-badge">v{appVersion}</span>
               <span
-</> className="status-badge championship">Championship Edition</span>
+</>
+className="status-badge championship">Championship Edition</span>
             </div>
           </div>
         </header><>
@@ -67,16 +70,19 @@ export const TerraFusionWrapper: React.FC<TerraFusionWrapperProps> = ({
           {children}
         </main>
         <footer
-</> className="terrafusion-app-footer">
+</>
+className="terrafusion-app-footer">
           <div className="footer-content"><>
 
             <span>© 2025 Terrafusion</span>
             <span
-</> className="separator">•</span><>
+</>
+className="separator">•</span><>
 
             <span>379M× Faster Than Legacy Systems</span>
             <span
-</> className="separator">•</span>
+</>
+className="separator">•</span>
             <span>We do it right the first time.</span>
           </div>
         </footer>

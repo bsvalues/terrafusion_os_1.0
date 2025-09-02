@@ -247,14 +247,16 @@ const CostMatrixDashboard: React.FC = () => {
               System Overview
             </Typography>
             <Grid
-</> container spacing={2}>
+</>
+container spacing={2}>
               <Grid item xs={12} sm={3}><>
 
                 <Typography variant="body2" color="textSecondary">
                   Total Matrices
                 </Typography>
                 <Typography
-</> variant="h6">
+</>
+variant="h6">
                   {metadata.totalMatrices.toLocaleString()}
                 </Typography>
               </Grid>
@@ -264,7 +266,8 @@ const CostMatrixDashboard: React.FC = () => {
                   Counties
                 </Typography>
                 <Typography
-</> variant="h6">
+</>
+variant="h6">
                   {metadata.counties.length}
                 </Typography>
               </Grid>
@@ -274,7 +277,8 @@ const CostMatrixDashboard: React.FC = () => {
                   Regions
                 </Typography>
                 <Typography
-</> variant="h6">
+</>
+variant="h6">
                   {metadata.regions.length}
                 </Typography>
               </Grid>
@@ -284,7 +288,8 @@ const CostMatrixDashboard: React.FC = () => {
                   Building Types
                 </Typography>
                 <Typography
-</> variant="h6">
+</>
+variant="h6">
                   {metadata.buildingTypes.length}
                 </Typography>
               </Grid>
@@ -306,13 +311,15 @@ const CostMatrixDashboard: React.FC = () => {
             Cost Calculator
           </Typography>
           <Grid
-</> container spacing={2}>
+</>
+container spacing={2}>
             <Grid item xs={12} sm={3}>
               <FormControl fullWidth><>
 
                 <InputLabel>County</InputLabel>
                 <Select
 </>
+
                   value={calcCounty}
                   onChange={(e) => setCalcCounty(e.target.value)}
                   label="County"
@@ -331,6 +338,7 @@ const CostMatrixDashboard: React.FC = () => {
                 <InputLabel>Region</InputLabel>
                 <Select
 </>
+
                   value={calcRegion}
                   onChange={(e) => setCalcRegion(e.target.value)}
                   label="Region"
@@ -349,6 +357,7 @@ const CostMatrixDashboard: React.FC = () => {
                 <InputLabel>Building Type</InputLabel>
                 <Select
 </>
+
                   value={calcBuildingType}
                   onChange={(e) => setCalcBuildingType(e.target.value)}
                   label="Building Type"
@@ -373,7 +382,8 @@ const CostMatrixDashboard: React.FC = () => {
               />
             </Grid>
             <Grid
-</> item xs={12} sm={4}><>
+</>
+item xs={12} sm={4}><>
 
               <TextField
                 fullWidth
@@ -385,7 +395,8 @@ const CostMatrixDashboard: React.FC = () => {
               />
             </Grid>
             <Grid
-</> item xs={12} sm={4}><>
+</>
+item xs={12} sm={4}><>
 
               <TextField
                 fullWidth
@@ -397,7 +408,8 @@ const CostMatrixDashboard: React.FC = () => {
               />
             </Grid>
             <Grid
-</> item xs={12} sm={4}><>
+</>
+item xs={12} sm={4}><>
 
               <TextField
                 fullWidth
@@ -409,7 +421,8 @@ const CostMatrixDashboard: React.FC = () => {
               />
             </Grid>
             <Grid
-</> item xs={12}>
+</>
+item xs={12}>
               <Button
                 variant="contained"
                 startIcon={<CalculateIcon />}
@@ -430,14 +443,16 @@ const CostMatrixDashboard: React.FC = () => {
                 Calculation Result
               </Typography>
               <Grid
-</> container spacing={2}>
+</>
+container spacing={2}>
                 <Grid item xs={12} sm={6}><>
 
                   <Typography variant="body2" color="textSecondary">
                     Base Cost per Sq Ft
                   </Typography>
                   <Typography
-</> variant="h6">
+</>
+variant="h6">
                     {formatCurrency(calculationResult.baseCostPerSqFt)}
                   </Typography>
                 </Grid>
@@ -447,7 +462,8 @@ const CostMatrixDashboard: React.FC = () => {
                     Total Estimated Cost
                   </Typography>
                   <Typography
-</> variant="h4" color="primary">
+</>
+variant="h4" color="primary">
                     {formatCurrency(calculationResult.totalCost)}
                   </Typography>
                 </Grid>
@@ -466,6 +482,7 @@ const CostMatrixDashboard: React.FC = () => {
               Cost Matrices ({matrices.length})
             </Typography>
             <Box
+</>
 </>>
               <Tooltip title="Refresh matrices from data files">
                 <IconButton onClick={refreshMatrices} disabled={loading}>
@@ -482,6 +499,7 @@ const CostMatrixDashboard: React.FC = () => {
                 <InputLabel>Filter by County</InputLabel>
                 <Select
 </>
+
                   value={selectedCounty}
                   onChange={(e) => setSelectedCounty(e.target.value)}
                   label="Filter by County"
@@ -501,6 +519,7 @@ const CostMatrixDashboard: React.FC = () => {
                 <InputLabel>Filter by Region</InputLabel>
                 <Select
 </>
+
                   value={selectedRegion}
                   onChange={(e) => setSelectedRegion(e.target.value)}
                   label="Filter by Region"
@@ -528,23 +547,28 @@ const CostMatrixDashboard: React.FC = () => {
 
                   <TableCell>County</TableCell>
                   <TableCell
+</>
 </>>Region</TableCell><>
 
                   <TableCell>Building Type</TableCell>
                   <TableCell
+</>
 </>>Description</TableCell><>
 
                   <TableCell align="right">Base Cost</TableCell>
                   <TableCell
-</> align="right">Min Cost</TableCell><>
+</>
+align="right">Min Cost</TableCell><>
 
                   <TableCell align="right">Max Cost</TableCell>
                   <TableCell
-</> align="center">Data Points</TableCell><>
+</>
+align="center">Data Points</TableCell><>
 
                   <TableCell align="center">Year</TableCell>
                   <TableCell
-</> align="center">Actions</TableCell>
+</>
+align="center">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -555,17 +579,20 @@ const CostMatrixDashboard: React.FC = () => {
                       <Chip label={matrix.county} size="small" />
                     </TableCell>
                     <TableCell
+</>
 </>>{matrix.region}</TableCell><>
 
                     <TableCell>{matrix.buildingType}</TableCell>
                     <TableCell
+</>
 </>>{matrix.buildingTypeDescription}</TableCell><>
 
                     <TableCell align="right">
                       {formatCurrency(matrix.baseCost)}
                     </TableCell>
                     <TableCell
-</> align="right">
+</>
+align="right">
                       {formatCurrency(matrix.minCost)}
                     </TableCell><>
 
@@ -573,11 +600,13 @@ const CostMatrixDashboard: React.FC = () => {
                       {formatCurrency(matrix.maxCost)}
                     </TableCell>
                     <TableCell
-</> align="center">{matrix.dataPoints}</TableCell><>
+</>
+align="center">{matrix.dataPoints}</TableCell><>
 
                     <TableCell align="center">{matrix.matrixYear}</TableCell>
                     <TableCell
-</> align="center">
+</>
+align="center">
                       <Tooltip title={matrix.matrixDescription}>
                         <IconButton size="small">
                           <InfoIcon />

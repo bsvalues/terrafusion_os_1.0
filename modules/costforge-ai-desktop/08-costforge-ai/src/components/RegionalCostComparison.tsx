@@ -119,7 +119,8 @@ export function RegionalCostComparison({
 
           <div className="font-medium text-sm">{dataPoint.label}</div>
           <div
-</> className="font-semibold text-lg">${dataPoint.value.toLocaleString()}</div>
+</>
+className="font-semibold text-lg">${dataPoint.value.toLocaleString()}</div>
           <div className="text-xs text-muted-foreground">{dataPoint.category} type</div>
         </CardContent>
       </Card>
@@ -134,6 +135,7 @@ export function RegionalCostComparison({
 
             <CardTitle>Regional Cost Comparison</CardTitle>
             <CardDescription
+</>
 </>>
               {activeTab === 'baseCost' 
                 ? 'Base construction costs by region' 
@@ -152,6 +154,7 @@ export function RegionalCostComparison({
                 <SelectValue placeholder="Building Type" />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 <SelectItem value="All">All Types</SelectItem>
                 {buildingTypes.map(type => (
@@ -168,7 +171,8 @@ export function RegionalCostComparison({
 
           <TabsTrigger value="baseCost">Base Cost</TabsTrigger>
           <TabsTrigger
-</> value="adjustedCost">Adjusted Cost</TabsTrigger>
+</>
+value="adjustedCost">Adjusted Cost</TabsTrigger>
         </TabsList>
         
         <TabsContent value="baseCost" className="pt-0 px-0">

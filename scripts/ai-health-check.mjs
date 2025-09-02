@@ -14,7 +14,7 @@ const healthCheck = {
             },
             {
                 question: "How many AI agents are operational?",
-                expected: "1008",
+                expected: "50000",
                 critical: true
             },
             {
@@ -23,13 +23,38 @@ const healthCheck = {
                 critical: true
             },
             {
-                question: "What desktop shell does TerraFusion use?",
-                expected: "electron",
+                question: "What is TerraFusion's marketplace?",
+                expected: "World's First Government App Store",
+                critical: true
+            },
+            {
+                question: "What's the annual marketplace revenue potential?",
+                expected: "5.4M",
+                critical: true
+            },
+            {
+                question: "What's the additional ARPU from plugins per county?",
+                expected: "142",
+                critical: true
+            },
+            {
+                question: "What's the deployment model for counties?",
+                expected: "white glove professional installation",
+                critical: true
+            },
+            {
+                question: "What support level is included?",
+                expected: "24/7 platinum support",
                 critical: true
             },
             {
                 question: "What port does the OS kernel use?",
                 expected: "5000",
+                critical: false
+            },
+            {
+                question: "What's the combined ARPU (platform + plugins)?",
+                expected: "619",
                 critical: false
             }
         ];

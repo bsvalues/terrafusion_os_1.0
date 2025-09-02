@@ -53,13 +53,15 @@ export function MessagingFramework() {
 
               <h3 className="text-white font-semibold">{message.segment}</h3>
               <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                 <Badge variant="secondary" className="bg-primary/20 text-primary">
                   {message.performance}
                 </Badge>
                 <span
-</> className="text-accent text-sm">{message.confidence}</span>
+</>
+className="text-accent text-sm">{message.confidence}</span>
               </div>
             </div>
             <div className="space-y-2">
@@ -67,19 +69,22 @@ export function MessagingFramework() {
 
                 <span className="text-gray-400 text-sm">Primary: </span>
                 <span
-</> className="text-white font-medium">{message.primary}</span>
+</>
+className="text-white font-medium">{message.primary}</span>
               </div>
               <div><>
 
                 <span className="text-gray-400 text-sm">Secondary: </span>
                 <span
-</> className="text-gray-300">{message.secondary}</span>
+</>
+className="text-gray-300">{message.secondary}</span>
               </div>
               <div><>
 
                 <span className="text-gray-400 text-sm">CTA: </span>
                 <span
-</> className="text-transcend font-medium">{message.cta}</span>
+</>
+className="text-transcend font-medium">{message.cta}</span>
               </div>
             </div>
           </div>

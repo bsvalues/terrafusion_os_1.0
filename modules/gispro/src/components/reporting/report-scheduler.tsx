@@ -372,10 +372,12 @@ export const ReportScheduler = () => {
 
                   <p className="mb-1">• Schedule automated report generation</p>
                   <p
-</> className="mb-1">• Configure frequency and timing</p><>
+</>
+className="mb-1">• Configure frequency and timing</p><>
 
                   <p className="mb-1">• Set custom parameters for each schedule</p>
                   <p
+</>
 </>>• Manage all your report schedules</p>
                 </div>
               }
@@ -402,6 +404,7 @@ export const ReportScheduler = () => {
 
               <AlertTitle>Error</AlertTitle>
               <AlertDescription
+</>
 </>>
                 Failed to load report templates. Please try again later.
               </AlertDescription>
@@ -412,6 +415,7 @@ export const ReportScheduler = () => {
 
               <AlertTitle>No Templates Available</AlertTitle>
               <AlertDescription
+</>
 </>>
                 There are no report templates available for scheduling.
               </AlertDescription>
@@ -428,6 +432,7 @@ export const ReportScheduler = () => {
 
                         <FormLabel>Schedule Name</FormLabel>
                         <FormControl
+</>
 </>><>
 
                           <Input 
@@ -436,6 +441,7 @@ export const ReportScheduler = () => {
                           />
                         </FormControl>
                         <FormDescription
+</>
 </>>
                           A descriptive name to identify this schedule
                         </FormDescription>
@@ -453,6 +459,7 @@ export const ReportScheduler = () => {
                         <FormLabel>Report Template</FormLabel>
                         <Select
 </>
+
                           onValueChange={(value) => {
                             field.onChange(parseInt(value, 10));
                             handleTemplateChange(value);
@@ -478,7 +485,8 @@ export const ReportScheduler = () => {
                           {selectedTemplate?.description || 'The report template to use for this schedule'}
                         </FormDescription>
                         <FormMessage
-</> />
+</>
+/>
                       </FormItem>
                     )}
                   />
@@ -491,7 +499,8 @@ export const ReportScheduler = () => {
                   <h3 className="text-lg font-medium">Schedule Settings</h3>
                   
                   <div
-</> className="grid gap-6 md:grid-cols-2">
+</>
+className="grid gap-6 md:grid-cols-2">
                     <FormField
                       control={form.control}
                       name="frequency"
@@ -501,6 +510,7 @@ export const ReportScheduler = () => {
                           <FormLabel>Frequency</FormLabel>
                           <Select
 </>
+
                             onValueChange={field.onChange}
                             value={field.value}
                           >
@@ -513,11 +523,13 @@ export const ReportScheduler = () => {
 
                               <SelectItem value="daily">Daily</SelectItem>
                               <SelectItem
-</> value="weekly">Weekly</SelectItem><>
+</>
+value="weekly">Weekly</SelectItem><>
 
                               <SelectItem value="monthly">Monthly</SelectItem>
                               <SelectItem
-</> value="quarterly">Quarterly</SelectItem>
+</>
+value="quarterly">Quarterly</SelectItem>
                             </SelectContent>
                           </Select><>
 
@@ -525,7 +537,8 @@ export const ReportScheduler = () => {
                             How often the report should be generated
                           </FormDescription>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -540,6 +553,7 @@ export const ReportScheduler = () => {
                             <FormLabel>Day of Week</FormLabel>
                             <Select
 </>
+
                               onValueChange={(value) => field.onChange(parseInt(value, 10))}
                               value={field.value?.toString()}
                             >
@@ -552,15 +566,18 @@ export const ReportScheduler = () => {
 
                                 <SelectItem value="0">Sunday</SelectItem>
                                 <SelectItem
-</> value="1">Monday</SelectItem><>
+</>
+value="1">Monday</SelectItem><>
 
                                 <SelectItem value="2">Tuesday</SelectItem>
                                 <SelectItem
-</> value="3">Wednesday</SelectItem><>
+</>
+value="3">Wednesday</SelectItem><>
 
                                 <SelectItem value="4">Thursday</SelectItem>
                                 <SelectItem
-</> value="5">Friday</SelectItem>
+</>
+value="5">Friday</SelectItem>
                                 <SelectItem value="6">Saturday</SelectItem>
                               </SelectContent>
                             </Select><>
@@ -569,7 +586,8 @@ export const ReportScheduler = () => {
                               Which day of the week the report should run
                             </FormDescription>
                             <FormMessage
-</> />
+</>
+/>
                           </FormItem>
                         )}
                       />
@@ -585,6 +603,7 @@ export const ReportScheduler = () => {
                             <FormLabel>Day of Month</FormLabel>
                             <Select
 </>
+
                               onValueChange={(value) => field.onChange(parseInt(value, 10))}
                               value={field.value?.toString()}
                             >
@@ -606,7 +625,8 @@ export const ReportScheduler = () => {
                               Which day of the month the report should run
                             </FormDescription>
                             <FormMessage
-</> />
+</>
+/>
                           </FormItem>
                         )}
                       />
@@ -623,6 +643,7 @@ export const ReportScheduler = () => {
                           <FormLabel>Hour</FormLabel>
                           <Select
 </>
+
                             onValueChange={(value) => field.onChange(parseInt(value, 10))}
                             value={field.value?.toString()}
                           >
@@ -644,7 +665,8 @@ export const ReportScheduler = () => {
                             Hour of the day (24-hour format)
                           </FormDescription>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -658,6 +680,7 @@ export const ReportScheduler = () => {
                           <FormLabel>Minute</FormLabel>
                           <Select
 </>
+
                             onValueChange={(value) => field.onChange(parseInt(value, 10))}
                             value={field.value?.toString()}
                           >
@@ -679,7 +702,8 @@ export const ReportScheduler = () => {
                             Minute of the hour
                           </FormDescription>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -696,6 +720,7 @@ export const ReportScheduler = () => {
                             Active
                           </FormLabel>
                           <FormDescription
+</>
 </>>
                             Enable or disable this schedule
                           </FormDescription>
@@ -717,6 +742,7 @@ export const ReportScheduler = () => {
 
                     <AlertTitle>Schedule Preview</AlertTitle>
                     <AlertDescription
+</>
 </>>
                       Based on your settings, the report{' '}
                       <span className="font-medium">{selectedTemplate.name}</span>{' '}
@@ -750,7 +776,8 @@ export const ReportScheduler = () => {
             Cancel
           </Button>
           <Button
-</> 
+</>
+
             onClick={form.handleSubmit(onSubmit)}
             disabled={
               createScheduleMutation.isPending || 
@@ -783,10 +810,12 @@ export const ReportScheduler = () => {
 
                     <p className="mb-1">• Schedule automated report generation</p>
                     <p
-</> className="mb-1">• Configure frequency and timing</p><>
+</>
+className="mb-1">• Configure frequency and timing</p><>
 
                     <p className="mb-1">• Set custom parameters for each schedule</p>
                     <p
+</>
 </>>• Manage all your report schedules</p>
                   </div>
                 }
@@ -816,6 +845,7 @@ export const ReportScheduler = () => {
 
             <AlertTitle>Error</AlertTitle>
             <AlertDescription
+</>
 </>>
               Failed to load report schedules. Please try again later.
             </AlertDescription>
@@ -826,7 +856,8 @@ export const ReportScheduler = () => {
 
             <h3 className="text-lg font-medium">No Scheduled Reports</h3>
             <p
-</> className="text-muted-foreground mb-6 max-w-md mx-auto">
+</>
+className="text-muted-foreground mb-6 max-w-md mx-auto">
               You haven't created any report schedules yet. Schedule reports to automate your reporting workflow.
             </p>
             <Button onClick={() => setIsCreating(true)}>
@@ -842,15 +873,18 @@ export const ReportScheduler = () => {
 
                   <TableHead>Name</TableHead>
                   <TableHead
+</>
 </>>Report</TableHead><>
 
                   <TableHead>Frequency</TableHead>
                   <TableHead
+</>
 </>>Next Run</TableHead><>
 
                   <TableHead>Status</TableHead>
                   <TableHead
-</> className="text-right">Actions</TableHead>
+</>
+className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -859,11 +893,13 @@ export const ReportScheduler = () => {
 
                     <TableCell className="font-medium">{schedule.name}</TableCell>
                     <TableCell
+</>
 </>>{schedule.templateName}</TableCell><>
 
                     <TableCell>{formatFrequency(schedule)}</TableCell>
                     <TableCell
-</> className="whitespace-nowrap">
+</>
+className="whitespace-nowrap">
                       {format(new Date(schedule.nextRun), 'MMM d, yyyy h:mm a')}
                     </TableCell>
                     <TableCell>
@@ -876,9 +912,7 @@ export const ReportScheduler = () => {
                         )}
                       >
                         {schedule.active 
-                          ? <><CheckCircle2 className="h-3 w-3" /> Active</>
-                          : <><Pause className="h-3 w-3" /> Paused</>
-                        }
+                          ? <><CheckCircle2 className="h-3 w-3" /> Active<div : <><Pause className="h-3 w-3" /> Paused<div }
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -898,6 +932,7 @@ export const ReportScheduler = () => {
                         </Button>
                         
                         <DropdownMenu
+</>
 </>>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
@@ -914,15 +949,11 @@ export const ReportScheduler = () => {
                               className="text-amber-600"
                             >
                               {schedule.active ? (
-                                <>
                                   <Pause className="h-4 w-4 mr-2" />
                                   <span>Pause Schedule</span>
-                                </>
                               ) : (
-                                <>
                                   <Play className="h-4 w-4 mr-2" />
                                   <span>Activate Schedule</span>
-                                </>
                               )}
                             </DropdownMenuItem>
                             <DropdownMenuItem 

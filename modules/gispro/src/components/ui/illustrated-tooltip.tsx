@@ -68,7 +68,8 @@ export function IllustratedTooltip({
 
               <h4 className="font-medium text-sm mb-1">{title}</h4>
               <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                 {content}
               </div>
             </div>

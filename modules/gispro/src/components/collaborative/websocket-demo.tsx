@@ -124,6 +124,7 @@ export default function WebSocketDemo() {
 
           <CardTitle>WebSocket Collaboration Demo</CardTitle>
           <CardDescription
+</>
 </>>
             Real-time collaboration using WebSocket for BentonGeoPro
           </CardDescription>
@@ -135,7 +136,8 @@ export default function WebSocketDemo() {
 
               <p className="text-sm font-medium mb-1">Connection Status:</p>
               <Badge
-</> 
+</>
+
                 variant={
                   status === ConnectionStatusEnum.CONNECTED ? 'default' : 
                   status === ConnectionStatusEnum.CONNECTING ? 'outline' : 
@@ -153,7 +155,8 @@ export default function WebSocketDemo() {
 
               <p className="text-sm font-medium mb-1">Your Identity:</p>
               <Badge
-</> variant="outline" className="flex items-center gap-1">
+</>
+variant="outline" className="flex items-center gap-1">
                 <Users className="h-3 w-3" />
                 {username} (ID: {userId.substring(0, 5)})
               </Badge>
@@ -163,7 +166,8 @@ export default function WebSocketDemo() {
 
               <p className="text-sm font-medium mb-1">Current Room:</p>
               <Badge
-</> variant={currentRoom ? 'default' : 'secondary'} className="flex items-center gap-1">
+</>
+variant={currentRoom ? 'default' : 'secondary'} className="flex items-center gap-1">
                 {currentRoom || 'Not in a room'}
               </Badge>
             </div>
@@ -175,6 +179,7 @@ export default function WebSocketDemo() {
               <label htmlFor="room-id" className="text-sm font-medium block mb-1">Room ID:</label>
               <Input
 </>
+
                 id="room-id"
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
@@ -188,6 +193,7 @@ export default function WebSocketDemo() {
               <label htmlFor="room-name" className="text-sm font-medium block mb-1">Room Name:</label>
               <Input
 </>
+
                 id="room-name"
                 value={roomName}
                 onChange={(e) => setRoomName(e.target.value)}
@@ -215,7 +221,8 @@ export default function WebSocketDemo() {
               </Button>
               
               <Button
-</> variant="ghost" onClick={isConnected ? disconnect : reconnect} title={isConnected ? "Disconnect" : "Reconnect"}>
+</>
+variant="ghost" onClick={isConnected ? disconnect : reconnect} title={isConnected ? "Disconnect" : "Reconnect"}>
                 <Refresh className="h-4 w-4" />
               </Button>
             </div>
@@ -246,21 +253,20 @@ export default function WebSocketDemo() {
                 }`}
               >
                 {msg.type === MessageTypeEnum.CHAT_MESSAGE && (
-                  <>
                     <div className="flex justify-between items-start"><>
 
                       <span className="font-semibold text-xs">
                         {msg.username || 'Unknown user'}
                       </span>
                       <span
-</> className="text-xs opacity-70">
+</>
+className="text-xs opacity-70">
                         {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}
                       </span>
                     </div>
                     <div className="mt-1">
                       {msg.payload?.text}
                     </div>
-                  </>
                 )}
                 
                 {msg.type === 'user_presence' && (

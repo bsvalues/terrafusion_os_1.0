@@ -49,6 +49,7 @@ function App() {
 
         <h1 className="tf-gradient-text">🏢 PropertyWorkbench</h1>
         <p
+</>
 </>>Professional Property Management Platform</p>
       </header>
 
@@ -65,7 +66,8 @@ function App() {
         </div>
 
         <div
-</> className="properties-grid">
+</>
+className="properties-grid">
           {filteredProperties.map(property => (
             <div
               key={property.id}
@@ -75,6 +77,7 @@ function App() {
 
               <h3>{property.address}</h3>
               <p
+</>
 </>><strong>Owner:</strong> {property.owner}</p>
               <p><strong>Value:</strong> ${property.value.toLocaleString()}</p>
               <p><strong>Type:</strong> {property.type}</p>
@@ -90,6 +93,7 @@ function App() {
 
             <h2>Property Details</h2>
             <p
+</>
 </>><strong>Address:</strong> {selectedProperty.address}</p>
             <p><strong>Owner:</strong> {selectedProperty.owner}</p>
             <p><strong>Value:</strong> ${selectedProperty.value.toLocaleString()}</p>

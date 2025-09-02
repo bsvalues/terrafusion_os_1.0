@@ -18,13 +18,15 @@ const BrandedApp: React.FC = () => {
 
           <span className="module-code">MP</span>
           <span
-</> className="brand-text">Terrafusion Marketplace</span>
+</>
+className="brand-text">Terrafusion Marketplace</span>
         </div>
         <div className="marketplace-stats"><>
 
           <span className="stat-item">14 Applications</span>
           <span
-</> className="stat-item">Championship Quality</span>
+</>
+className="stat-item">Championship Quality</span>
           <span className="stat-item">Government Ready</span>
         </div>
       </div>
@@ -35,16 +37,19 @@ const BrandedApp: React.FC = () => {
       </div>
       
       <div
-</> className="terrafusion-footer">
+</>
+className="terrafusion-footer">
         <div className="marketplace-footer"><>
 
           <span className="status-item">Terrafusion Marketplace</span>
           <span
-</> className="status-separator">|</span><>
+</>
+className="status-separator">|</span><>
 
           <span className="status-item">Premium Government Applications</span>
           <span
-</> className="status-separator">|</span>
+</>
+className="status-separator">|</span>
           <span className="status-item">Enterprise Solutions</span>
         </div>
       </div>

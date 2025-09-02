@@ -313,7 +313,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Data Synchronization</h2>
         <p
-</> className="opacity-90">Real-time data synchronization and orchestration hub</p>
+</>
+className="opacity-90">Real-time data synchronization and orchestration hub</p>
       </div>
 
       {/* System Status Overview */}
@@ -324,14 +325,16 @@ function App() {
 
               <span className="text-sm font-medium text-gray-600">Active Syncs</span>
               <Activity
-</> className="h-4 w-4 text-blue-600" />
+</>
+className="h-4 w-4 text-blue-600" />
             </div><>
 
             <div className="text-2xl font-bold text-blue-600">
               {systemStatus.active_syncs}
             </div>
             <div
-</> className="text-xs text-gray-500">
+</>
+className="text-xs text-gray-500">
               {systemStatus.queued_jobs} queued
             </div>
           </div>
@@ -341,14 +344,16 @@ function App() {
 
               <span className="text-sm font-medium text-gray-600">Throughput</span>
               <Zap
-</> className="h-4 w-4 text-green-600" />
+</>
+className="h-4 w-4 text-green-600" />
             </div><>
 
             <div className="text-2xl font-bold text-green-600">
               {systemStatus.data_throughput.toFixed(1)}
             </div>
             <div
-</> className="text-xs text-gray-500">MB/s</div>
+</>
+className="text-xs text-gray-500">MB/s</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-4">
@@ -356,14 +361,16 @@ function App() {
 
               <span className="text-sm font-medium text-gray-600">Records Synced</span>
               <Database
-</> className="h-4 w-4 text-purple-600" />
+</>
+className="h-4 w-4 text-purple-600" />
             </div><>
 
             <div className="text-2xl font-bold text-purple-600">
               {systemStatus.total_records_synced.toLocaleString()}
             </div>
             <div
-</> className="text-xs text-gray-500">total</div>
+</>
+className="text-xs text-gray-500">total</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-4">
@@ -377,7 +384,8 @@ function App() {
               )}
             </div>
             <div
-</> className={`text-2xl font-bold capitalize ${
+</>
+className={`text-2xl font-bold capitalize ${
               systemStatus.overall_health === 'healthy' ? 'text-green-600' : 'text-red-600'
             }`}>
               {systemStatus.overall_health}
@@ -399,6 +407,7 @@ function App() {
           </h3>
           <button
 </>
+
             onClick={() => loadInitialData()}
             disabled={loading}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
@@ -420,7 +429,8 @@ function App() {
 
                     <h4 className="font-semibold">{source.name}</h4>
                     <p
-</> className="text-sm text-gray-600 capitalize">{source.type}</p>
+</>
+className="text-sm text-gray-600 capitalize">{source.type}</p>
                   </div>
                 </div>
                 <div className={`connection-indicator ${source.status}`}>
@@ -436,25 +446,29 @@ function App() {
 
                   <span>Records:</span>
                   <span
-</> className="font-semibold">{source.record_count.toLocaleString()}</span>
+</>
+className="font-semibold">{source.record_count.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span>Health Score:</span>
                   <span
-</> className="font-semibold text-green-600">{source.health_score}%</span>
+</>
+className="font-semibold text-green-600">{source.health_score}%</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span>Bandwidth:</span>
                   <span
-</> className="font-semibold">{source.bandwidth_usage} MB/s</span>
+</>
+className="font-semibold">{source.bandwidth_usage} MB/s</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span>Error Rate:</span>
                   <span
-</> className="font-semibold text-red-600">{source.error_rate}%</span>
+</>
+className="font-semibold text-red-600">{source.error_rate}%</span>
                 </div>
               </div>
 
@@ -472,6 +486,7 @@ function App() {
                 </div>
                 <button
 </>
+
                   onClick={() => triggerSync(source.id)}
                   disabled={source.status === 'syncing' || loading}
                   className="text-blue-600 hover:text-blue-800 disabled:opacity-50 text-sm"
@@ -493,7 +508,8 @@ function App() {
         </h3>
 
         <div
-</> className="space-y-4">
+</>
+className="space-y-4">
           {syncJobs.map((job) => (
             <div key={job.id} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
@@ -501,7 +517,8 @@ function App() {
 
                   <h4 className="font-semibold">{job.source_name}</h4>
                   <p
-</> className="text-sm text-gray-600 capitalize">
+</>
+className="text-sm text-gray-600 capitalize">
                     {job.sync_type} sync • {job.status}
                   </p>
                 </div>
@@ -511,7 +528,8 @@ function App() {
                     {job.records_processed.toLocaleString()} / {job.records_total.toLocaleString()}
                   </div>
                   <div
-</> className="text-xs text-gray-500">
+</>
+className="text-xs text-gray-500">
                     {job.progress}% complete
                   </div>
                 </div>
@@ -552,7 +570,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">System Integrations</h2>
         <p
-</> className="opacity-90">External and internal service connections</p>
+</>
+className="opacity-90">External and internal service connections</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -565,7 +584,8 @@ function App() {
 
                   <h3 className="font-semibold text-lg">{integration.name}</h3>
                   <p
-</> className="text-sm text-gray-600 capitalize">{integration.type}</p>
+</>
+className="text-sm text-gray-600 capitalize">{integration.type}</p>
                 </div>
               </div>
               <div className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -582,7 +602,8 @@ function App() {
 
                 <span className="text-gray-600">Endpoint:</span>
                 <div
-</> className="font-mono text-xs bg-gray-100 p-2 rounded mt-1">
+</>
+className="font-mono text-xs bg-gray-100 p-2 rounded mt-1">
                   {integration.endpoint}
                 </div>
               </div>
@@ -594,7 +615,8 @@ function App() {
                     {integration.response_time}ms
                   </div>
                   <div
-</> className="text-xs text-gray-600">Response Time</div>
+</>
+className="text-xs text-gray-600">Response Time</div>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded"><>
 
@@ -602,7 +624,8 @@ function App() {
                     {integration.success_rate}%
                   </div>
                   <div
-</> className="text-xs text-gray-600">Success Rate</div>
+</>
+className="text-xs text-gray-600">Success Rate</div>
                 </div>
               </div>
             </div>
@@ -622,7 +645,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Real-time Monitoring</h2>
         <p
-</> className="opacity-90">Live performance metrics and system analytics</p>
+</>
+className="opacity-90">Live performance metrics and system analytics</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -634,7 +658,8 @@ function App() {
           </h3>
           
           <div
-</> className="h-64">
+</>
+className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={syncMetrics}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -667,7 +692,8 @@ function App() {
           </h3>
           
           <div
-</> className="h-64">
+</>
+className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={throughputData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -703,7 +729,8 @@ function App() {
           </h3>
           
           <div
-</> className="h-64">
+</>
+className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -722,7 +749,8 @@ function App() {
                   ))}
                 </Pie>
                 <Tooltip
-</> />
+</>
+/>
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -736,34 +764,37 @@ function App() {
           </h3>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             {systemStatus && (
-              <>
                 <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
                   <span className="font-medium">CPU Usage</span>
                   <span
-</> className="text-lg font-bold text-blue-600">{systemStatus.cpu_usage}%</span>
+</>
+className="text-lg font-bold text-blue-600">{systemStatus.cpu_usage}%</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
                   <span className="font-medium">Memory Usage</span>
                   <span
-</> className="text-lg font-bold text-green-600">{systemStatus.memory_usage}%</span>
+</>
+className="text-lg font-bold text-green-600">{systemStatus.memory_usage}%</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
                   <span className="font-medium">Data Throughput</span>
                   <span
-</> className="text-lg font-bold text-purple-600">{systemStatus.data_throughput} MB/s</span>
+</>
+className="text-lg font-bold text-purple-600">{systemStatus.data_throughput} MB/s</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
                   <span className="font-medium">System Uptime</span>
                   <span
-</> className="text-lg font-bold text-orange-600">{systemStatus.uptime}</span>
+</>
+className="text-lg font-bold text-orange-600">{systemStatus.uptime}</span>
                 </div>
-              </>
             )}
           </div>
         </div>
@@ -777,7 +808,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Sync Configuration</h2>
         <p
-</> className="opacity-90">System settings and synchronization preferences</p>
+</>
+className="opacity-90">System settings and synchronization preferences</p>
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6">
@@ -788,7 +820,8 @@ function App() {
         </h3>
         
         <div
-</> className="text-center py-8 text-gray-500">
+</>
+className="text-center py-8 text-gray-500">
           Configuration panel coming soon...
         </div>
       </div>
@@ -807,7 +840,8 @@ function App() {
 
                 <h1 className="text-2xl font-bold text-gray-900">TerraFusionSync</h1>
                 <p
-</> className="text-sm text-gray-600">Real-time Data Synchronization</p>
+</>
+className="text-sm text-gray-600">Real-time Data Synchronization</p>
               </div>
             </div>
             <div className="flex items-center space-x-2"><>
@@ -816,7 +850,8 @@ function App() {
                 v3.0.0
               </div>
               <div
-</> className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+</>
+className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                 Championship Edition
               </div>
             </div>

@@ -19,15 +19,16 @@ export function NationalExpansionPreview() {
         </Badge>
 
         <h2
-</> className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-primary via-accent to-transcend bg-clip-text text-transparent">
+</>
+className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-primary via-accent to-transcend bg-clip-text text-transparent">
           TOTAL DOMINATION
         </h2><>
-
 
         <p className="text-2xl text-white/80 mb-4 font-bold">The Path to $1 Billion ARR</p>
 
         <p
-</> className="text-xl text-white/60 mb-12 max-w-4xl mx-auto leading-relaxed">
+</>
+className="text-xl text-white/60 mb-12 max-w-4xl mx-auto leading-relaxed">
           From 27 counties to 3,142 counties. From 2 states to all 50 states. The systematic transformation of American
           government technology is underway.
         </p>
@@ -38,25 +39,29 @@ export function NationalExpansionPreview() {
 
             <div className="text-4xl font-black text-primary mb-2">3,142</div>
             <div
-</> className="text-sm text-white/60 uppercase tracking-wide">Target Counties</div>
+</>
+className="text-sm text-white/60 uppercase tracking-wide">Target Counties</div>
           </div>
           <div className="p-6 bg-black/30 backdrop-blur-xl rounded-xl border border-accent/20"><>
 
             <div className="text-4xl font-black text-accent mb-2">50</div>
             <div
-</> className="text-sm text-white/60 uppercase tracking-wide">States</div>
+</>
+className="text-sm text-white/60 uppercase tracking-wide">States</div>
           </div>
           <div className="p-6 bg-black/30 backdrop-blur-xl rounded-xl border border-transcend/20"><>
 
             <div className="text-4xl font-black text-transcend mb-2">350M</div>
             <div
-</> className="text-sm text-white/60 uppercase tracking-wide">Citizens</div>
+</>
+className="text-sm text-white/60 uppercase tracking-wide">Citizens</div>
           </div>
           <div className="p-6 bg-black/30 backdrop-blur-xl rounded-xl border border-primary/20"><>
 
             <div className="text-4xl font-black text-primary mb-2">$1B</div>
             <div
-</> className="text-sm text-white/60 uppercase tracking-wide">ARR Target</div>
+</>
+className="text-sm text-white/60 uppercase tracking-wide">ARR Target</div>
           </div>
         </div>
 
@@ -65,33 +70,38 @@ export function NationalExpansionPreview() {
 
           <h3 className="text-2xl font-bold text-transcend mb-6">🎯 Next Battlegrounds</h3>
           <div
-</> className="grid grid-cols-2 md:grid-cols-4 gap-4">
+</>
+className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="p-4 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-lg border border-yellow-500/30"><>
 
               <div className="text-2xl mb-2">🌴</div>
               <div
-</> className="text-lg font-bold text-yellow-400">California</div>
+</>
+className="text-lg font-bold text-yellow-400">California</div>
               <div className="text-sm text-white/60">Q2 2025</div>
             </div>
             <div className="p-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-lg border border-red-500/30"><>
 
               <div className="text-2xl mb-2">🤠</div>
               <div
-</> className="text-lg font-bold text-red-400">Texas</div>
+</>
+className="text-lg font-bold text-red-400">Texas</div>
               <div className="text-sm text-white/60">Q3 2025</div>
             </div>
             <div className="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg border border-blue-500/30"><>
 
               <div className="text-2xl mb-2">🗽</div>
               <div
-</> className="text-lg font-bold text-blue-400">New York</div>
+</>
+className="text-lg font-bold text-blue-400">New York</div>
               <div className="text-sm text-white/60">Q4 2025</div>
             </div>
             <div className="p-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30"><>
 
               <div className="text-2xl mb-2">🏙️</div>
               <div
-</> className="text-lg font-bold text-purple-400">Illinois</div>
+</>
+className="text-lg font-bold text-purple-400">Illinois</div>
               <div className="text-sm text-white/60">Q1 2026</div>
             </div>
           </div>
@@ -125,7 +135,8 @@ export function NationalExpansionPreview() {
             "By 2030, every American will interact with their local government through Terrafusion technology."
           </p>
           <p
-</> className="text-lg text-white/80">
+</>
+className="text-lg text-white/80">
             We're not just modernizing government; we're redefining what citizens expect from it.
           </p>
           <div className="mt-4 text-transcend font-bold text-xl">#GovernmentTranscended</div>

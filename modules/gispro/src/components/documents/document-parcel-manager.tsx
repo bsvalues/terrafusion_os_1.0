@@ -426,6 +426,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
               Linked Parcels
             </CardTitle>
             <CardDescription
+</>
 </>>
               Manage parcel associations for this document
             </CardDescription>
@@ -447,12 +448,14 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                   <TableHead>Parcel Number</TableHead>
                   <TableHead
+</>
 </>>Address</TableHead>
                   {showLinkTypeOptions && <TableHead>Relationship Type</TableHead>}<>
 
                   <TableHead>Owner</TableHead>
                   <TableHead
-</> className="w-36 text-right">Actions</TableHead>
+</>
+className="w-36 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -461,6 +464,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                     <TableCell className="font-medium">{parcel.parcelNumber}</TableCell>
                     <TableCell
+</>
 </>>{parcel.address || 'No address'}</TableCell>
                     {showLinkTypeOptions && (
                       <TableCell>{getLinkTypeBadge(parcel.linkType)}</TableCell>
@@ -468,7 +472,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                     <TableCell>{parcel.owner || 'Unknown'}</TableCell>
                     <TableCell
-</> className="text-right">
+</>
+className="text-right">
                       <div className="flex justify-end space-x-1">
                         {showLinkTypeOptions && parcel.linkId && (
                           <Button
@@ -505,7 +510,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
               No Linked Parcels
             </h3>
             <p
-</> className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+</>
+className="text-sm text-slate-500 dark:text-slate-400 mb-4">
               This document isn't linked to any parcels yet
             </p>
             <Button
@@ -527,6 +533,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
             <DialogTitle>Link Document to Parcels</DialogTitle>
             <DialogDescription
+</>
 </>>
               Search for parcels to associate with this document
             </DialogDescription>
@@ -542,6 +549,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
                 </Label>
                 <Input
 </>
+
                   id="parcel-search"
                   placeholder="Search by parcel number or address"
                   value={searchQuery}
@@ -575,11 +583,13 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                           <TableHead>Parcel Number</TableHead>
                           <TableHead
+</>
 </>>Address</TableHead><>
 
                           <TableHead>Owner</TableHead>
                           <TableHead
-</> className="w-24 text-right">Actions</TableHead>
+</>
+className="w-24 text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -588,11 +598,13 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                             <TableCell className="font-medium">{parcel.parcelNumber}</TableCell>
                             <TableCell
+</>
 </>>{parcel.address || 'No address'}</TableCell><>
 
                             <TableCell>{parcel.owner || 'Unknown'}</TableCell>
                             <TableCell
-</> className="text-right">
+</>
+className="text-right">
                               {isParcelLinked(parcel.id) ? (
                                 <Badge variant="secondary">Linked</Badge>
                               ) : showLinkTypeOptions ? (
@@ -635,7 +647,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
                   No Results Found
                 </h3>
                 <p
-</> className="text-sm text-slate-500 dark:text-slate-400">
+</>
+className="text-sm text-slate-500 dark:text-slate-400">
                   Try a different search term or parcel number
                 </p>
               </div>
@@ -663,6 +676,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
             <DialogTitle>Configure Link Options</DialogTitle>
             <DialogDescription
+</>
 </>>
               Set the relationship type between document and parcel
             </DialogDescription>
@@ -675,7 +689,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                   <h4 className="font-medium">Document</h4>
                   <p
-</> className="text-sm text-muted-foreground">{document.name}</p>
+</>
+className="text-sm text-muted-foreground">{document.name}</p>
                 </div>
                 <FileText className="h-8 w-8 text-muted-foreground" />
               </div>
@@ -685,7 +700,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
               <div className="h-px flex-1 bg-border"></div>
               <Link2
-</> className="h-4 w-4" />
+</>
+className="h-4 w-4" />
               <div className="h-px flex-1 bg-border"></div>
             </div>
             
@@ -695,7 +711,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                   <h4 className="font-medium">Parcel</h4>
                   <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                     {selectedParcelToLink?.parcelNumber} 
                     {selectedParcelToLink?.address && ` - ${selectedParcelToLink.address}`}
                   </p>
@@ -709,12 +726,14 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                 <Label htmlFor="link-type">Link Type</Label>
                 <Select
-</> value={linkType} onValueChange={setLinkType}>
+</>
+value={linkType} onValueChange={setLinkType}>
                   <SelectTrigger id="link-type"><>
 
                     <SelectValue placeholder="Select relationship type" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>>
                     {documentLinkTypes.map(type => (
                       <SelectItem key={type.value} value={type.value}>
@@ -729,7 +748,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                 <Label htmlFor="link-notes">Notes</Label>
                 <Textarea
-</> 
+</>
+
                   id="link-notes"
                   placeholder="Additional information about this relationship (optional)"
                   value={linkNotes}
@@ -750,6 +770,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
             </Button>
             <Button
 </>
+
               onClick={handleSubmitLinkWithOptions}
               disabled={createLinkMutation.isPending}
             >
@@ -766,6 +787,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
             <DialogTitle>Edit Document-Parcel Relationship</DialogTitle>
             <DialogDescription
+</>
 </>>
               Update the relationship details between this document and parcel
             </DialogDescription>
@@ -778,7 +800,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                   <h4 className="font-medium">Document</h4>
                   <p
-</> className="text-sm text-muted-foreground">{document.name}</p>
+</>
+className="text-sm text-muted-foreground">{document.name}</p>
                 </div>
                 <FileText className="h-8 w-8 text-muted-foreground" />
               </div>
@@ -788,7 +811,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
               <div className="h-px flex-1 bg-border"></div>
               <Link2
-</> className="h-4 w-4" />
+</>
+className="h-4 w-4" />
               <div className="h-px flex-1 bg-border"></div>
             </div>
             
@@ -798,7 +822,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                   <h4 className="font-medium">Parcel</h4>
                   <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                     {selectedParcelToEdit?.parcelNumber} 
                     {selectedParcelToEdit?.address && ` - ${selectedParcelToEdit.address}`}
                   </p>
@@ -812,12 +837,14 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                 <Label htmlFor="edit-link-type">Link Type</Label>
                 <Select
-</> value={linkType} onValueChange={setLinkType}>
+</>
+value={linkType} onValueChange={setLinkType}>
                   <SelectTrigger id="edit-link-type"><>
 
                     <SelectValue placeholder="Select relationship type" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>>
                     {documentLinkTypes.map(type => (
                       <SelectItem key={type.value} value={type.value}>
@@ -832,7 +859,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
                 <Label htmlFor="edit-link-notes">Notes</Label>
                 <Textarea
-</> 
+</>
+
                   id="edit-link-notes"
                   placeholder="Additional information about this relationship (optional)"
                   value={linkNotes}
@@ -853,6 +881,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
             </Button>
             <Button
 </>
+
               onClick={handleSubmitEditLink}
               disabled={updateLinkMutation.isPending}
             >
@@ -872,6 +901,7 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
             <AlertDialogTitle>Confirm Unlink</AlertDialogTitle>
             <AlertDialogDescription
+</>
 </>>
               Are you sure you want to unlink this document from parcel{' '}
               <span className="font-semibold">{selectedParcelToUnlink?.parcelNumber}</span>?
@@ -882,7 +912,8 @@ export function DocumentParcelManager({ document, showLinkTypeOptions = false }:
 
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-</> 
+</>
+
               onClick={handleUnlinkParcel}
               disabled={unlinkParcelMutation.isPending}
             >

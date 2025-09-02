@@ -75,7 +75,8 @@ const WorkingApp: React.FC = () => {
             Benton County Public Records
           </h1>
           <p
-</> style={{ color: '#6b7280', marginTop: '4px' }}>
+</>
+style={{ color: '#6b7280', marginTop: '4px' }}>
             94,149 parcels • 206,873 citizens • Everything searchable
           </p>
         </div>
@@ -103,7 +104,8 @@ const WorkingApp: React.FC = () => {
           </h2>
           
           <div
-</> style={{ display: 'flex', gap: '12px' }}>
+</>
+style={{ display: 'flex', gap: '12px' }}>
             <input
               type="text"
               value={searchQuery}
@@ -202,7 +204,8 @@ const WorkingApp: React.FC = () => {
                       {property.address}
                     </h4>
                     <p
-</> style={{ color: '#6b7280', marginBottom: '4px' }}>
+</>
+style={{ color: '#6b7280', marginBottom: '4px' }}>
                       Owner: {property.owner}
                     </p><>
 
@@ -210,7 +213,8 @@ const WorkingApp: React.FC = () => {
                       Parcel ID: {property.parcelId}
                     </p>
                     <p
-</> style={{ color: '#111827', fontWeight: '500' }}>
+</>
+style={{ color: '#111827', fontWeight: '500' }}>
                       Assessed Value: ${property.value.toLocaleString()}
                     </p>
                   </div>
@@ -271,7 +275,8 @@ const WorkingApp: React.FC = () => {
                 {item.title}
               </h3>
               <p
-</> style={{ color: '#6b7280', fontSize: '14px' }}>
+</>
+style={{ color: '#6b7280', fontSize: '14px' }}>
                 {item.desc}
               </p>
             </div>
@@ -291,24 +296,28 @@ const WorkingApp: React.FC = () => {
             System Performance
           </h3>
           <div
-</> style={{ display: 'flex', justifyContent: 'center', gap: '60px' }}>
+</>
+style={{ display: 'flex', justifyContent: 'center', gap: '60px' }}>
             <div><>
 
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6' }}>0.001s</div>
               <div
-</> style={{ color: '#6b7280' }}>Search Speed</div>
+</>
+style={{ color: '#6b7280' }}>Search Speed</div>
             </div>
             <div><>
 
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>379M×</div>
               <div
-</> style={{ color: '#6b7280' }}>Faster than Legacy</div>
+</>
+style={{ color: '#6b7280' }}>Faster than Legacy</div>
             </div>
             <div><>
 
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#8b5cf6' }}>$0</div>
               <div
-</> style={{ color: '#6b7280' }}>Setup Cost</div>
+</>
+style={{ color: '#6b7280' }}>Setup Cost</div>
             </div>
           </div>
         </div>

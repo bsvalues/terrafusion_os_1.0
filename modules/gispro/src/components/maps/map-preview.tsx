@@ -75,7 +75,8 @@ export function MapPreview({ workflowId, parcelId, enableFullMap = false, onOpen
         </div>
         
         <div
-</> className="flex justify-between items-center">
+</>
+className="flex justify-between items-center">
           <span className="text-sm text-neutral-600">
             {parcelId ? `Parcel ID: ${parcelId}` : "Preview only. Full editing in next step."}
           </span>
@@ -105,7 +106,8 @@ export function MapPreview({ workflowId, parcelId, enableFullMap = false, onOpen
                 {layer.name}
               </Label>
               <span
-</> className="text-xs text-neutral-400">
+</>
+className="text-xs text-neutral-400">
                 {layer.source === 'county_gis' ? 'From county GIS' : 
                  layer.source === 'arcgis' ? 'ArcGIS Pro' :
                  layer.source?.includes('imagery') ? `${layer.source} imagery` : 'External'}

@@ -275,6 +275,7 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
           Batch Document Processor
         </CardTitle>
         <CardDescription
+</>
 </>>
           Upload, classify, and tag multiple documents at once
         </CardDescription>
@@ -288,7 +289,8 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
             Select files to process
           </Label>
           <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
             <input
               id="file-upload"
               ref={fileInputRef}
@@ -309,7 +311,8 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
             </Button>
             
             <Button
-</> 
+</>
+
               onClick={clearAll}
               variant="outline" 
               disabled={isProcessing || files.length === 0}
@@ -345,7 +348,8 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
                     Processing file {processingIndex + 1} of {files.length}...
                   </span>
                   <span
-</> className="text-sm font-medium">{progress}%</span>
+</>
+className="text-sm font-medium">{progress}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
               </div>
@@ -378,7 +382,8 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
 
                     <div className="text-sm font-medium truncate">{file.file.name}</div>
                     <div
-</> className="text-xs text-gray-500">
+</>
+className="text-xs text-gray-500">
                       {file.status === 'queued' && 'Queued for processing'}
                       {file.status === 'processing' && 'Processing...'}
                       {file.status === 'completed' && file.documentTypeLabel && (
@@ -453,7 +458,8 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
 
                 <h4 className="text-xs font-medium text-slate-500">Document Types</h4>
                 <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                   {Object.entries(documentTypes).map(([type, count]) => (
                     <Badge key={type} variant="outline" className="flex items-center gap-1">
                       {type.replace('_', ' ')}
@@ -474,7 +480,8 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
 
                 <h4 className="text-xs font-medium text-slate-500">Apply Tags</h4>
                 <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                   <select
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={selectedTag}
@@ -483,15 +490,18 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
 
                     <option value="">Select document type...</option>
                     <option
-</> value="plat_map">Plat Map</option><>
+</>
+value="plat_map">Plat Map</option><>
 
                     <option value="deed">Deed</option>
                     <option
-</> value="survey">Survey</option><>
+</>
+value="survey">Survey</option><>
 
                     <option value="legal_description">Legal Description</option>
                     <option
-</> value="boundary_line_adjustment">Boundary Line Adjustment</option>
+</>
+value="boundary_line_adjustment">Boundary Line Adjustment</option>
                     <option value="tax_form">Tax Form</option>
                   </select>
                   
@@ -512,7 +522,8 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
 
                 <h4 className="text-xs font-medium text-slate-500">Link to Parcel</h4>
                 <div
-</> className="flex items-center gap-2 opacity-50">
+</>
+className="flex items-center gap-2 opacity-50">
                   <input
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="Search for parcel..."
@@ -541,7 +552,8 @@ export function BatchDocumentProcessor({ workflowId, onComplete }: BatchDocument
 
             <h3 className="text-base font-medium text-slate-700 dark:text-slate-300 mb-1">No Files Selected</h3>
             <p
-</> className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-md">
+</>
+className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-md">
               Select multiple document files to process them in batch. Supported formats include PDF, JPG, PNG, and TIFF.
             </p>
             <Button 

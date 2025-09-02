@@ -11,10 +11,13 @@ const Monitoring: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ mb: 4 }}>
+
+
         <Typography variant="h3" component="h1" gutterBottom>
           🤖 Terrafusion AI Swarm Monitoring
         </Typography>
         <Typography
+
 variant="h6" color="text.secondary">
           Real-time monitoring of 50,000+ AI agents coordinated by Supreme Commander Claude
         </Typography>

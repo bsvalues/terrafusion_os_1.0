@@ -153,7 +153,8 @@ export default function ParcelGeneratorPage() {
 
             <h1 className="text-2xl font-bold text-neutral-800">Parcel ID Generator</h1>
             <p
-</> className="text-sm text-neutral-500">Generate new parcel numbers based on Benton County Ab/Sub code system</p>
+</>
+className="text-sm text-neutral-500">Generate new parcel numbers based on Benton County Ab/Sub code system</p>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -164,6 +165,7 @@ export default function ParcelGeneratorPage() {
 
                   <CardTitle>Parcel Number Generator</CardTitle>
                   <CardDescription
+</>
 </>>
                     Create new parcel numbers based on an existing parent parcel.
                   </CardDescription>
@@ -175,7 +177,8 @@ export default function ParcelGeneratorPage() {
 
                       <TabsTrigger value="generate">Generate</TabsTrigger>
                       <TabsTrigger
-</> value="results" disabled={generatedParcels.length === 0}>Results</TabsTrigger>
+</>
+value="results" disabled={generatedParcels.length === 0}>Results</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value="generate">
@@ -185,6 +188,7 @@ export default function ParcelGeneratorPage() {
                           <Label htmlFor="parentParcelId">Parent Parcel ID</Label>
                           <Input
 </>
+
                             id="parentParcelId"
                             placeholder="15-digit Parcel ID"
                             value={parentParcelId}
@@ -204,6 +208,7 @@ export default function ParcelGeneratorPage() {
                           <Label htmlFor="count">Number of Parcels to Generate</Label>
                           <Input
 </>
+
                             id="count"
                             type="number"
                             placeholder="Enter a number"
@@ -225,7 +230,8 @@ export default function ParcelGeneratorPage() {
 
                           <Label htmlFor="generationType">Generation Type</Label>
                           <RadioGroup
-</> 
+</>
+
                             defaultValue="sequential" 
                             value={generationType}
                             onValueChange={setGenerationType}
@@ -250,6 +256,7 @@ export default function ParcelGeneratorPage() {
                           <Label htmlFor="notes">Notes (Optional)</Label>
                           <Textarea
 </>
+
                             id="notes"
                             placeholder="Enter any notes about these parcels"
                             value={notes}
@@ -263,7 +270,8 @@ export default function ParcelGeneratorPage() {
 
                           <AlertTitle className="text-amber-800">Important</AlertTitle>
                           <AlertDescription
-</> className="text-amber-700">
+</>
+className="text-amber-700">
                             New parcel numbers are automatically added to the Abstract Codes database. Please ensure the parent parcel ID is correct before proceeding.
                           </AlertDescription>
                         </Alert>
@@ -277,7 +285,8 @@ export default function ParcelGeneratorPage() {
 
                             <h3 className="font-medium">Generated Parcel Numbers</h3>
                             <Button
-</> 
+</>
+
                               variant="outline" 
                               size="sm"
                               onClick={copyAllToClipboard}
@@ -298,7 +307,8 @@ export default function ParcelGeneratorPage() {
 
                                     <span className="text-xs text-neutral-500 w-6">{index + 1}.</span>
                                     <span
-</> className="font-mono">{parcelNumber}</span>
+</>
+className="font-mono">{parcelNumber}</span>
                                   </div>
                                   <Button 
                                     variant="ghost" 
@@ -317,7 +327,8 @@ export default function ParcelGeneratorPage() {
 
                             <AlertTitle className="text-green-800">Success</AlertTitle>
                             <AlertDescription
-</> className="text-green-700">
+</>
+className="text-green-700">
                               {generatedParcels.length} new parcel numbers have been generated and saved to the system.
                             </AlertDescription>
                           </Alert>
@@ -331,7 +342,8 @@ export default function ParcelGeneratorPage() {
                               Back to Generator
                             </Button>
                             <Button
-</> 
+</>
+
                               variant="default"
                               onClick={() => {
                                 setParentParcelId("");
@@ -351,7 +363,8 @@ export default function ParcelGeneratorPage() {
 
                           <p className="text-neutral-500">No parcels have been generated yet.</p>
                           <Button
-</> 
+</>
+
                             variant="link"
                             onClick={() => setActiveTab("generate")}
                           >
@@ -371,15 +384,11 @@ export default function ParcelGeneratorPage() {
                       disabled={generateParcelsMutation.isPending}
                     >
                       {generateParcelsMutation.isPending ? (
-                        <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Generating...
-                        </>
                       ) : (
-                        <>
                           <KeySquare className="mr-2 h-4 w-4" />
                           Generate Parcel Numbers
-                        </>
                       )}
                     </Button>
                   )}
@@ -403,14 +412,16 @@ export default function ParcelGeneratorPage() {
                         15-Digit Format
                       </h4>
                       <div
-</> className="flex items-center justify-center mb-2">
+</>
+className="flex items-center justify-center mb-2">
                         <div className="flex"><>
 
                           <div className="border border-neutral-300 px-2 py-1 bg-primary-100 text-primary-800 font-mono text-xs">
                             1-2-3-4-5-6
                           </div>
                           <div
-</> className="border border-neutral-300 px-2 py-1 bg-secondary-100 text-secondary-800 font-mono text-xs">
+</>
+className="border border-neutral-300 px-2 py-1 bg-secondary-100 text-secondary-800 font-mono text-xs">
                             7-8-9
                           </div>
                           <div className="border border-neutral-300 px-2 py-1 bg-neutral-100 text-neutral-800 font-mono text-xs">
@@ -429,14 +440,17 @@ export default function ParcelGeneratorPage() {
 
                       <h4 className="text-sm font-medium">Generation Rules</h4>
                       <ul
-</> className="text-xs space-y-1.5 text-neutral-600"><>
+</>
+className="text-xs space-y-1.5 text-neutral-600"><>
 
                         <li>• New parcel numbers maintain township-range-section</li>
                             <li
+</>
 </>>• Abstract code (digits 7-9) may change based on type</li><>
 
                         <li>• Sequential numbers start from the next available</li>
                             <li
+</>
 </>>• BLA format uses specific abstract code conventions</li>
                         <li>• Short Plats follow county specific numbering rules</li>
                       </ul>
@@ -447,7 +461,8 @@ export default function ParcelGeneratorPage() {
 
                         <p className="font-medium">Need assistance with Ab/Sub code rules?</p>
                         <p
-</> className="mt-1">Refer to the Benton County Abstract Code Manual or ask the assistant below.</p>
+</>
+className="mt-1">Refer to the Benton County Abstract Code Manual or ask the assistant below.</p>
                       </AlertDescription>
                     </Alert>
                   </div>

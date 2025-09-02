@@ -15,40 +15,45 @@ export function WashingtonLanding() {
             Washington Counties
           </span>
           <br
-</> />
+</>
+/>
           <span className="text-white">Strategic Migration Plan</span>
         </h1><>
-
 
         <p className="text-xl text-white/70 mb-8 max-w-3xl mx-auto">
           12 Washington Counties | 2.3M Parcels | $847B Property Value | 72-Hour Migration
         </p>
 
         <div
-</> className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+</>
+className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-black/30 backdrop-blur-sm border border-transcend/20 rounded-2xl p-6"><>
 
             <div className="text-3xl font-black text-transcend mb-2">12</div>
             <div
-</> className="text-white/60 text-sm">Target Counties</div>
+</>
+className="text-white/60 text-sm">Target Counties</div>
           </div>
           <div className="bg-black/30 backdrop-blur-sm border border-accent/20 rounded-2xl p-6"><>
 
             <div className="text-3xl font-black text-accent mb-2">2.3M</div>
             <div
-</> className="text-white/60 text-sm">Total Parcels</div>
+</>
+className="text-white/60 text-sm">Total Parcels</div>
           </div>
           <div className="bg-black/30 backdrop-blur-sm border border-primary/20 rounded-2xl p-6"><>
 
             <div className="text-3xl font-black text-primary mb-2">$847B</div>
             <div
-</> className="text-white/60 text-sm">Property Value</div>
+</>
+className="text-white/60 text-sm">Property Value</div>
           </div>
           <div className="bg-black/30 backdrop-blur-sm border border-accent/20 rounded-2xl p-6"><>
 
             <div className="text-3xl font-black text-accent mb-2">72hr</div>
             <div
-</> className="text-white/60 text-sm">Migration Time</div>
+</>
+className="text-white/60 text-sm">Migration Time</div>
           </div>
         </div>
 
@@ -62,6 +67,7 @@ export function WashingtonLanding() {
           </Button>
           <Button
 </>
+
             size="lg"
             variant="outline"
             className="border-transcend text-transcend hover:bg-transcend hover:text-dark bg-transparent"

@@ -101,6 +101,7 @@ export function MarketAnalysis() {
             Real-time Market Analysis
           </CardTitle>
           <CardDescription
+</>
 </>>
             Dynamic visualization of market forces and property flows using advanced analytics
           </CardDescription>
@@ -111,7 +112,8 @@ export function MarketAnalysis() {
 
             <h3 className="font-medium mb-3">Select Market Region</h3>
             <div
-</> className="flex gap-2">
+</>
+className="flex gap-2">
               {regions.map((region) => (
                 <Button
                   key={region}
@@ -146,6 +148,7 @@ export function MarketAnalysis() {
                       <div className="font-bold text-lg">${(metrics.averagePrice / 1000).toFixed(0)}K</div>
                       <div
 </>
+
                         className={`text-xs flex items-center gap-1 ${
                           metrics.priceChange >= 0 ? "text-green-600" : "text-red-600"
                         }`}
@@ -169,7 +172,8 @@ export function MarketAnalysis() {
 
                       <div className="font-bold text-lg">{metrics.marketEnergy}</div>
                       <Progress
-</> value={metrics.marketEnergy} className="h-1" />
+</>
+value={metrics.marketEnergy} className="h-1" />
                     </CardContent>
                   </Card>
 
@@ -182,7 +186,8 @@ export function MarketAnalysis() {
 
                       <div className="font-bold text-lg">{metrics.activeListings}</div>
                       <div
-</> className="text-xs text-gray-500">properties</div>
+</>
+className="text-xs text-gray-500">properties</div>
                     </CardContent>
                   </Card>
 
@@ -191,7 +196,8 @@ export function MarketAnalysis() {
 
                       <div className="text-xs text-gray-600 mb-1">Days on Market</div>
                       <div
-</> className="font-bold text-lg">{metrics.daysOnMarket}</div>
+</>
+className="font-bold text-lg">{metrics.daysOnMarket}</div>
                       <div className="text-xs text-gray-500">average</div>
                     </CardContent>
                   </Card>
@@ -201,7 +207,8 @@ export function MarketAnalysis() {
 
                       <div className="text-xs text-gray-600 mb-1">Absorption Rate</div>
                       <div
-</> className="font-bold text-lg">{metrics.absorption}%</div>
+</>
+className="font-bold text-lg">{metrics.absorption}%</div>
                       <Progress value={metrics.absorption} className="h-1" />
                     </CardContent>
                   </Card>
@@ -211,7 +218,8 @@ export function MarketAnalysis() {
 
                       <div className="text-xs text-gray-600 mb-1">Market Status</div>
                       <Badge
-</> variant={metrics.marketEnergy > 75 ? "default" : "secondary"}>
+</>
+variant={metrics.marketEnergy > 75 ? "default" : "secondary"}>
                         {metrics.marketEnergy > 75 ? "Hot" : metrics.marketEnergy > 50 ? "Balanced" : "Cool"}
                       </Badge>
                     </CardContent>
@@ -286,11 +294,13 @@ export function MarketAnalysis() {
 
                         <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                         <div
+</>
 </>><>
 
                           <div className="font-medium text-sm">Strong Buyer Demand</div>
                           <div
-</> className="text-xs text-gray-600">
+</>
+className="text-xs text-gray-600">
                             Market energy indicates high buyer activity in {selectedRegion}
                           </div>
                         </div>
@@ -300,11 +310,13 @@ export function MarketAnalysis() {
 
                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                         <div
+</>
 </>><>
 
                           <div className="font-medium text-sm">Price Appreciation</div>
                           <div
-</> className="text-xs text-gray-600">Consistent upward trend in property values</div>
+</>
+className="text-xs text-gray-600">Consistent upward trend in property values</div>
                         </div>
                       </div>
 
@@ -312,11 +324,13 @@ export function MarketAnalysis() {
 
                         <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
                         <div
+</>
 </>><>
 
                           <div className="font-medium text-sm">Inventory Levels</div>
                           <div
-</> className="text-xs text-gray-600">
+</>
+className="text-xs text-gray-600">
                             Balanced supply-demand ratio for sustainable growth
                           </div>
                         </div>
@@ -326,11 +340,13 @@ export function MarketAnalysis() {
 
                         <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
                         <div
+</>
 </>><>
 
                           <div className="font-medium text-sm">Investment Opportunity</div>
                           <div
-</> className="text-xs text-gray-600">Favorable conditions for property investment</div>
+</>
+className="text-xs text-gray-600">Favorable conditions for property investment</div>
                         </div>
                       </div>
                     </div>

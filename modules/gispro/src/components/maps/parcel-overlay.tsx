@@ -213,6 +213,7 @@ export function ParcelOverlay({
 
             <div className="font-semibold">{hoveredParcel.parcelNumber}</div>
             <div
+</>
 </>>{hoveredParcel.owner}</div>
           </div>
         </Tooltip>

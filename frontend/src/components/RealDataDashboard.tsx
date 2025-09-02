@@ -73,12 +73,16 @@ const RealDataDashboard: React.FC<RealDataDashboardProps> = ({ className = '' })
       <div className="tf-dashboard-header">
         <div className="tf-header-title">
 
+
           <h2>🏛️ Benton County Real Data</h2>
           <div
+
 className="tf-connection-status">
+
 
             <span className="tf-status-icon">{getConnectionStatusIcon()}</span>
             <span
+
 className="tf-status-text">{getConnectionStatusText()}</span>
           </div>
         </div>
@@ -94,6 +98,7 @@ className="tf-status-text">{getConnectionStatusText()}</span>
       {/* Tab Navigation */}
       <div className="tf-tab-navigation">
 
+
         <button 
           className={`tf-tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
@@ -101,11 +106,13 @@ className="tf-status-text">{getConnectionStatusText()}</span>
           Overview
         </button>
         <button
+
 className={`tf-tab ${activeTab === 'properties' ? 'active' : ''}`}
           onClick={() => setActiveTab('properties')}
         >
           Properties
         </button>
+
 
         <button 
           className={`tf-tab ${activeTab === 'permits' ? 'active' : ''}`}
@@ -114,6 +121,7 @@ className={`tf-tab ${activeTab === 'properties' ? 'active' : ''}`}
           Permits
         </button>
         <button
+
 className={`tf-tab ${activeTab === 'health' ? 'active' : ''}`}
           onClick={() => setActiveTab('health')}
         >
@@ -135,26 +143,34 @@ className={`tf-tab ${activeTab === 'health' ? 'active' : ''}`}
                 <div className="tf-stats-grid">
                   <div className="tf-metric">
 
+
                     <div className="tf-metric-value">{realDataService.formatNumber(propertyStats.totalProperties)}</div>
                     <div
+
 className="tf-metric-label">Total Properties</div>
                   </div>
                   <div className="tf-metric">
 
+
                     <div className="tf-metric-value">{realDataService.formatNumber(propertyStats.totalPermits)}</div>
                     <div
+
 className="tf-metric-label">Building Permits</div>
                   </div>
                   <div className="tf-metric">
 
+
                     <div className="tf-metric-value">{realDataService.formatCurrency(propertyStats.totalAssessedValue)}</div>
                     <div
+
 className="tf-metric-label">Total Assessed Value</div>
                   </div>
                   <div className="tf-metric">
 
+
                     <div className="tf-metric-value">{realDataService.formatCurrency(propertyStats.averageAssessedValue)}</div>
                     <div
+
 className="tf-metric-label">Average Property Value</div>
                   </div>
                 </div>
@@ -165,29 +181,37 @@ className="tf-metric-label">Average Property Value</div>
 
             <div className="tf-card">
 
+
               <h3>Real-Time Status</h3>
               <div
+
 className="tf-status-grid">
                 <div className="tf-status-item">
 
+
                   <span className="tf-status-label">Harris PACS:</span>
                   <span
+
 className={`tf-status-indicator ${connectionStatus?.realPacsConnected ? 'connected' : 'disconnected'}`}>
                     {connectionStatus?.realPacsConnected ? '🟢 Connected' : '🔴 Disconnected'}
                   </span>
                 </div>
                 <div className="tf-status-item">
 
+
                   <span className="tf-status-label">Terrafusion Sync:</span>
                   <span
+
 className={`tf-status-indicator ${connectionStatus?.terrafusionSyncConnected ? 'connected' : 'disconnected'}`}>
                     {connectionStatus?.terrafusionSyncConnected ? '🟢 Connected' : '🔴 Disconnected'}
                   </span>
                 </div>
                 <div className="tf-status-item">
 
+
                   <span className="tf-status-label">Properties DB:</span>
                   <span
+
 className={`tf-status-indicator ${connectionStatus?.propertiesDbConnected ? 'connected' : 'disconnected'}`}>
                     {connectionStatus?.propertiesDbConnected ? '🟢 Connected' : '🔴 Disconnected'}
                   </span>
@@ -216,10 +240,12 @@ className={`tf-status-indicator ${connectionStatus?.propertiesDbConnected ? 'con
                     className="tf-search-input"
                   />
 
+
                   <button type="submit" className="tf-btn-primary" disabled={isSearchLoading}>
                     {isSearchLoading ? '⏳' : '🔍'} Search
                   </button>
                   <button
+
 type="button" 
                     onClick={clearResults}
                     className="tf-btn-secondary"
@@ -234,29 +260,39 @@ type="button"
             {properties.length > 0 && (
               <div className="tf-properties-results">
 
+
                 <h3>Search Results ({properties.length})</h3>
                 <div
+
 className="tf-properties-table">
                   <div className="tf-table-header">
 
+
                     <div>Parcel ID</div>
                     <div
+
 >Address</div>
+
 
                     <div>Owner</div>
                     <div
+
 >Assessed Value</div>
                     <div>Property Type</div>
                   </div>
                   {properties.map((property) => (
                     <div key={property.parcelId} className="tf-table-row">
 
+
                       <div className="tf-parcel-id">{property.parcelId}</div>
                       <div
+
 className="tf-address">{property.address}</div>
+
 
                       <div className="tf-owner">{property.ownerName}</div>
                       <div
+
 className="tf-value">{realDataService.formatCurrency(property.assessedValue)}</div>
                       <div className="tf-type">{property.propertyType}</div>
                     </div>
@@ -272,8 +308,10 @@ className="tf-value">{realDataService.formatCurrency(property.assessedValue)}</d
           <div className="tf-permits-tab">
             <div className="tf-permits-header">
 
+
               <h3>Recent Building Permits</h3>
               <button
+
 onClick={handleLoadPermits}
                 className="tf-btn-primary"
                 disabled={isPermitsLoading}
@@ -286,31 +324,43 @@ onClick={handleLoadPermits}
               <div className="tf-permits-table">
                 <div className="tf-table-header">
 
+
                   <div>Permit #</div>
                   <div
+
 >Type</div>
+
 
                   <div>Parcel ID</div>
                   <div
+
 >Description</div>
+
 
                   <div>Status</div>
                   <div
+
 >Value</div>
                 </div>
                 {permits.map((permit) => (
                   <div key={permit.permitNumber} className="tf-table-row">
 
+
                     <div className="tf-permit-number">{permit.permitNumber}</div>
                     <div
+
 className="tf-permit-type">{permit.permitType}</div>
+
 
                     <div className="tf-parcel-id">{permit.parcelId}</div>
                     <div
+
 className="tf-description">{permit.description}</div>
+
 
                     <div className={`tf-status ${permit.status.toLowerCase()}`}>{permit.status}</div>
                     <div
+
 className="tf-value">
                       {permit.estimatedValue ? realDataService.formatCurrency(permit.estimatedValue) : 'N/A'}
                     </div>
@@ -332,39 +382,51 @@ className="tf-value">
                 {Object.entries(databaseHealth.databases).map(([name, info]) => (
                   <div key={name} className="tf-db-health-card">
 
+
                     <h4>{name}</h4>
                     <div
+
 className="tf-health-info">
                       <div className="tf-health-row">
 
+
                         <span>Status:</span>
                         <span
+
 className={`tf-status ${info.isAccessible ? 'healthy' : 'unhealthy'}`}>
                           {info.isAccessible ? '✅ Accessible' : '❌ Not Accessible'}
                         </span>
                       </div>
                       <div className="tf-health-row">
 
+
                         <span>Size:</span>
                         <span
+
 >{realDataService.formatFileSize(info.sizeBytes)}</span>
                       </div>
                       <div className="tf-health-row">
 
+
                         <span>Tables:</span>
                         <span
+
 >{info.tableCount}</span>
                       </div>
                       <div className="tf-health-row">
 
+
                         <span>Records:</span>
                         <span
+
 >{realDataService.formatNumber(info.recordCount)}</span>
                       </div>
                       <div className="tf-health-row">
 
+
                         <span>Last Modified:</span>
                         <span
+
 >{realDataService.formatDate(info.lastModified)}</span>
                       </div>
                       {info.error && (

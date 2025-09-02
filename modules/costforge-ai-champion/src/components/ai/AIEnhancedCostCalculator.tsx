@@ -164,6 +164,7 @@ const AIEnhancedCostCalculator: React.FC = () => {
             AI-Enhanced Cost Calculator
           </CardTitle>
           <CardDescription
+</>
 </>>
             Advanced cost analysis combining traditional methods with AI predictions
           </CardDescription>
@@ -176,13 +177,15 @@ const AIEnhancedCostCalculator: React.FC = () => {
               Claude AI {serviceStatus.anthropic ? 'Available' : 'Offline'}
             </Badge>
             <Badge
-</> variant={serviceStatus.openai ? 'default' : 'secondary'}><>
+</>
+variant={serviceStatus.openai ? 'default' : 'secondary'}><>
 
               <CheckCircle className={`mr-1 h-3 w-3 ${serviceStatus.openai ? 'text-green-500' : 'text-gray-500'}`} />
               OpenAI {serviceStatus.openai ? 'Available' : 'Offline'}
             </Badge>
             <Badge
-</> variant={serviceStatus.database ? 'default' : 'secondary'}>
+</>
+variant={serviceStatus.database ? 'default' : 'secondary'}>
               <CheckCircle className={`mr-1 h-3 w-3 ${serviceStatus.database ? 'text-green-500' : 'text-gray-500'}`} />
               Database {serviceStatus.database ? 'Connected' : 'Offline'}
             </Badge>
@@ -196,6 +199,7 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
           <CardTitle>Building Information</CardTitle>
           <CardDescription
+</>
 </>>
             Enter building details for comprehensive cost analysis
           </CardDescription>
@@ -208,7 +212,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                 <Label htmlFor="buildingType">Building Type</Label>
                 <Select
-</> 
+</>
+
                   onValueChange={(value) => form.setValue('buildingType', value)}
                   defaultValue={form.getValues('buildingType')}
                 >
@@ -217,15 +222,18 @@ const AIEnhancedCostCalculator: React.FC = () => {
                     <SelectValue placeholder="Select building type" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>><>
 
                     <SelectItem value="Residential">Residential</SelectItem>
                     <SelectItem
-</> value="Commercial">Commercial</SelectItem><>
+</>
+value="Commercial">Commercial</SelectItem><>
 
                     <SelectItem value="Industrial">Industrial</SelectItem>
                     <SelectItem
-</> value="Agricultural">Agricultural</SelectItem>
+</>
+value="Agricultural">Agricultural</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -236,6 +244,7 @@ const AIEnhancedCostCalculator: React.FC = () => {
                 <Label htmlFor="squareFootage">Square Footage</Label>
                 <Input
 </>
+
                   {...form.register('squareFootage')}
                   type="number"
                   placeholder="2000"
@@ -252,7 +261,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                 <Label htmlFor="region">Region</Label>
                 <Select
-</> 
+</>
+
                   onValueChange={(value) => form.setValue('region', value)}
                   defaultValue={form.getValues('region')}
                 >
@@ -261,11 +271,13 @@ const AIEnhancedCostCalculator: React.FC = () => {
                     <SelectValue placeholder="Select region" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>><>
 
                     <SelectItem value="Benton">Benton County</SelectItem>
                     <SelectItem
-</> value="Urban">Urban Area</SelectItem>
+</>
+value="Urban">Urban Area</SelectItem>
                     <SelectItem value="Rural">Rural Area</SelectItem>
                   </SelectContent>
                 </Select>
@@ -276,7 +288,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                 <Label htmlFor="quality">Quality Level</Label>
                 <Select
-</> 
+</>
+
                   onValueChange={(value) => form.setValue('quality', value)}
                   defaultValue={form.getValues('quality')}
                 >
@@ -285,15 +298,18 @@ const AIEnhancedCostCalculator: React.FC = () => {
                     <SelectValue placeholder="Select quality" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>><>
 
                     <SelectItem value="Excellent">Excellent</SelectItem>
                     <SelectItem
-</> value="Good">Good</SelectItem><>
+</>
+value="Good">Good</SelectItem><>
 
                     <SelectItem value="Average">Average</SelectItem>
                     <SelectItem
-</> value="Fair">Fair</SelectItem>
+</>
+value="Fair">Fair</SelectItem>
                     <SelectItem value="Poor">Poor</SelectItem>
                   </SelectContent>
                 </Select>
@@ -305,6 +321,7 @@ const AIEnhancedCostCalculator: React.FC = () => {
                 <Label htmlFor="yearBuilt">Year Built</Label>
                 <Input
 </>
+
                   {...form.register('yearBuilt')}
                   type="number"
                   placeholder="2000"
@@ -319,6 +336,7 @@ const AIEnhancedCostCalculator: React.FC = () => {
                 </Label>
                 <Slider
 </>
+
                   value={[form.watch('conditionFactor') || 0.8]}
                   onValueChange={(value) => form.setValue('conditionFactor', value[0])}
                   max={1}
@@ -339,6 +357,7 @@ const AIEnhancedCostCalculator: React.FC = () => {
                 </Label>
                 <Slider
 </>
+
                   value={[form.watch('complexityFactor') || 0.5]}
                   onValueChange={(value) => form.setValue('complexityFactor', value[0])}
                   max={1}
@@ -378,15 +397,11 @@ const AIEnhancedCostCalculator: React.FC = () => {
               disabled={isCalculating}
             >
               {isCalculating ? (
-                <>
                   <Clock className="mr-2 h-4 w-4 animate-spin" />
                   Calculating...
-                </>
               ) : (
-                <>
                   <Calculator className="mr-2 h-4 w-4" />
                   Calculate Enhanced Cost Analysis
-                </>
               )}
             </Button>
           </form>
@@ -408,11 +423,13 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                 <TabsTrigger value="summary">Summary</TabsTrigger>
                 <TabsTrigger
-</> value="traditional">Traditional</TabsTrigger><>
+</>
+value="traditional">Traditional</TabsTrigger><>
 
                 <TabsTrigger value="ai">AI Analysis</TabsTrigger>
                 <TabsTrigger
-</> value="comparison">Comparison</TabsTrigger>
+</>
+value="comparison">Comparison</TabsTrigger>
               </TabsList>
 
               {/* Summary Tab */}
@@ -426,7 +443,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                           <p className="text-sm font-medium">Recommended Cost</p>
                           <p
-</> className="text-2xl font-bold">
+</>
+className="text-2xl font-bold">
                             ${typeof analysisResult.recommendation?.totalCost === 'number' 
                               ? analysisResult.recommendation.totalCost.toLocaleString()
                               : analysisResult.traditional?.totalCost?.toLocaleString() || 'N/A'}
@@ -444,7 +462,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                           <p className="text-sm font-medium">Confidence Level</p>
                           <p
-</> className={`text-lg font-semibold ${
+</>
+className={`text-lg font-semibold ${
                             analysisResult.comparison 
                               ? getConfidenceColor(1 - (analysisResult.comparison.percentageDifference / 100))
                               : 'text-gray-600'
@@ -478,7 +497,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <p className="text-sm font-medium">Total Cost</p>
                         <p
-</> className="text-xl font-bold">
+</>
+className="text-xl font-bold">
                           ${analysisResult.traditional.totalCost?.toLocaleString()}
                         </p>
                       </div>
@@ -486,7 +506,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <p className="text-sm font-medium">Cost per Sq Ft</p>
                         <p
-</> className="text-xl font-bold">
+</>
+className="text-xl font-bold">
                           ${analysisResult.traditional.costPerSqFt?.toFixed(2)}
                         </p>
                       </div>
@@ -497,13 +518,15 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <h3 className="text-lg font-medium">Cost Breakdown</h3>
                         <div
-</> className="grid grid-cols-2 gap-2 text-sm">
+</>
+className="grid grid-cols-2 gap-2 text-sm">
                           {Object.entries(analysisResult.traditional.breakdown).map(([category, cost]) => (
                             <div key={category} className="flex justify-between p-2 bg-muted rounded"><>
 
                               <span className="capitalize">{category}:</span>
                               <span
-</> className="font-medium">${(cost as number).toLocaleString()}</span>
+</>
+className="font-medium">${(cost as number).toLocaleString()}</span>
                             </div>
                           ))}
                         </div>
@@ -533,7 +556,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <p className="text-sm font-medium">AI Predicted Cost</p>
                         <p
-</> className="text-xl font-bold">
+</>
+className="text-xl font-bold">
                           ${analysisResult.ai.result.totalCost?.replace(/,/g, '') ? 
                             Number(analysisResult.ai.result.totalCost.replace(/,/g, '')).toLocaleString() :
                             analysisResult.ai.result.totalCost}
@@ -543,7 +567,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <p className="text-sm font-medium">Cost per Sq Ft</p>
                         <p
-</> className="text-xl font-bold">
+</>
+className="text-xl font-bold">
                           ${analysisResult.ai.result.costPerSquareFoot?.toFixed(2)}
                         </p>
                       </div>
@@ -554,14 +579,16 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <h3 className="text-lg font-medium">AI Prediction Factors</h3>
                         <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                           {analysisResult.ai.result.predictionFactors.map((factor: any /* , index */: number) => (
                             <div key={index} className="p-3 border rounded-lg">
                               <div className="flex items-center justify-between mb-1"><>
 
                                 <span className="font-medium">{factor.factor}</span>
                                 <Badge
-</> variant={
+</>
+variant={
                                   factor.impact === 'positive' ? 'default' : 
                                   factor.impact === 'negative' ? 'destructive' : 'secondary'
                                 }>
@@ -571,7 +598,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                               <p className="text-sm text-muted-foreground">{factor.explanation}</p>
                               <div
-</> className="mt-2">
+</>
+className="mt-2">
                                 <Progress 
                                   value={factor.importance * 100} 
                                   className="h-2"
@@ -595,7 +623,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <p className="text-sm font-medium text-muted-foreground">Traditional</p>
                         <p
-</> className="text-xl font-bold">
+</>
+className="text-xl font-bold">
                           ${analysisResult.comparison.traditionalCost.toLocaleString()}
                         </p>
                       </div>
@@ -603,7 +632,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <p className="text-sm font-medium text-muted-foreground">AI Prediction</p>
                         <p
-</> className="text-xl font-bold">
+</>
+className="text-xl font-bold">
                           ${analysisResult.comparison.aiCost.toLocaleString()}
                         </p>
                       </div>
@@ -611,7 +641,8 @@ const AIEnhancedCostCalculator: React.FC = () => {
 
                         <p className="text-sm font-medium text-muted-foreground">Difference</p>
                         <p
-</> className="text-xl font-bold">
+</>
+className="text-xl font-bold">
                           {analysisResult.comparison.percentageDifference.toFixed(1)}%
                         </p>
                       </div>

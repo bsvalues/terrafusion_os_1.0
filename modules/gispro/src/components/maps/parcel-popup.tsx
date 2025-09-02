@@ -77,6 +77,7 @@ export function ParcelPopup({
               Parcel {parcel.id || parcel.parcelNumber}
             </CardTitle>
             <CardDescription
+</>
 </>>
               {parcel.owner || 'Unknown Owner'}
             </CardDescription>
@@ -128,7 +129,6 @@ export function ParcelPopup({
       </CardContent>
       
       {(onViewDetails || onSelectParcel) && (
-        <>
           <Separator />
           <CardFooter className="pt-2 pb-2 flex gap-2 justify-end">
             {onSelectParcel && (
@@ -153,7 +153,6 @@ export function ParcelPopup({
               </Button>
             )}
           </CardFooter>
-        </>
       )}
     </Card>
   );

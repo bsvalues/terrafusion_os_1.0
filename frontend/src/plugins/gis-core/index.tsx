@@ -43,15 +43,19 @@ function GisCorePlugin({ context }: { context: any }) {
     <div className={styles.root}>
       <div className={styles.header}>
 
+
         <div className={styles.title}>GIS Core</div>
         <div
+
 className={styles.subtitle}>Interactive Parcel Viewer & Mapping</div>
       </div>
 
       <div className={styles.info}>
 
+
         <div>County: {context.countyConfig?.countyId ?? 'unknown'}</div>
         <div
+
 >Legacy: {context.countyConfig?.legacySystem ?? 'unknown'}</div>
         <div>Session: {context.sessionId ?? 'none'}</div>
       </div>
@@ -82,8 +86,10 @@ className={styles.subtitle}>Interactive Parcel Viewer & Mapping</div>
       {parcelData && (
         <div className={styles.results}>
 
+
           <div className={styles.resultsTitle}>GIS Data:</div>
           <div
+
 className={styles.mapPlaceholder}>
             📍 Interactive Map Placeholder
             <div className={styles.mapNote}>

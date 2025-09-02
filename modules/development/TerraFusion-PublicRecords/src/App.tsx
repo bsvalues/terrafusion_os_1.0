@@ -60,7 +60,8 @@ const App: React.FC = () => {
             ${countyStatus?.savings} IN ANNUAL SAVINGS IDENTIFIED
           </span>
           <Zap
-</> className="w-6 h-6 animate-pulse" />
+</>
+className="w-6 h-6 animate-pulse" />
         </div>
       </motion.div>
 
@@ -77,7 +78,8 @@ const App: React.FC = () => {
             Terrafusion Public Records - Benton County
           </h1>
           <p
-</> className="text-2xl text-purple-200">
+</>
+className="text-2xl text-purple-200">
             {BentonCountyData.statistics.totalParcels.toLocaleString()} parcels • {BentonCountyData.county.population.toLocaleString()} citizens • Already indexed.
           </p>
           <div className="mt-6 flex justify-center gap-8">
@@ -88,7 +90,8 @@ const App: React.FC = () => {
 
               <div className="text-3xl font-bold text-white">0.001s</div>
               <div
-</> className="text-sm text-purple-200">Search Speed</div>
+</>
+className="text-sm text-purple-200">Search Speed</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -97,7 +100,8 @@ const App: React.FC = () => {
 
               <div className="text-3xl font-bold text-white">379M×</div>
               <div
-</> className="text-sm text-purple-200">Faster than Legacy</div>
+</>
+className="text-sm text-purple-200">Faster than Legacy</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -106,7 +110,8 @@ const App: React.FC = () => {
 
               <div className="text-3xl font-bold text-white">$0</div>
               <div
-</> className="text-sm text-purple-200">Installation Cost</div>
+</>
+className="text-sm text-purple-200">Installation Cost</div>
             </motion.div>
           </div>
         </motion.div>
@@ -133,7 +138,8 @@ const App: React.FC = () => {
               AI Already Found These Issues
             </h2>
             <AIInsights
-</> discoveries={aiDiscoveries} />
+</>
+discoveries={aiDiscoveries} />
           </motion.div>
         </section>
       )}
@@ -151,7 +157,8 @@ const App: React.FC = () => {
             Your County's Real-Time Pulse
           </h2>
           <CountyPulse
-</> />
+</>
+/>
         </motion.div>
       </section>
 
@@ -169,7 +176,8 @@ const App: React.FC = () => {
             Migrate from Legacy CAMA Systems Now
           </h2>
           <p
-</> className="text-xl text-white/80 mb-6">
+</>
+className="text-xl text-white/80 mb-6">
             Migration completes in 60 seconds. During their next sales call.
           </p>
           <button
@@ -200,7 +208,8 @@ const App: React.FC = () => {
             Your competitors are still writing RFPs.
           </p>
           <p
-</> className="text-3xl font-bold text-white">
+</>
+className="text-3xl font-bold text-white">
             We've already won.
           </p>
           <div className="mt-8 text-sm text-purple-300">

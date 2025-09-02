@@ -36,13 +36,11 @@ interface ArcGISResponse {
 // Helper component to highlight matches
 const HighlightMatch = ({ text, highlight }: { text: string; highlight: string }) => {
   if (!highlight.trim()) {
-    return <>{text}</>
-  }
+    return <>{text}<div }
   const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi")
   const parts = String(text).split(regex)
 
   return (
-    <>
       {parts.map((part, i) =>
         regex.test(part) ? (
           <mark key={i} className="bg-yellow-300 dark:bg-yellow-500 px-0.5 rounded-sm">
@@ -52,7 +50,6 @@ const HighlightMatch = ({ text, highlight }: { text: string; highlight: string }
           <Fragment key={i}>{part}</Fragment>
         ),
       )}
-    </>
   )
 }
 
@@ -197,6 +194,7 @@ export function BentonCountyGisViewer() {
           Benton County GIS Data Viewer
         </CardTitle>
         <CardDescription
+</>
 </>>
           Explore various GIS layers for Benton County, Washington. Data sourced from ArcGIS REST Services.
         </CardDescription>
@@ -209,12 +207,14 @@ export function BentonCountyGisViewer() {
               Select GIS Layer
             </label>
             <Select
-</> value={selectedService} onValueChange={handleServiceChange}>
+</>
+value={selectedService} onValueChange={handleServiceChange}>
               <SelectTrigger id="gis-layer-select"><>
 
                 <SelectValue placeholder="Select a GIS Layer" />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 {bentonCountyServices.map((service) => (
                   <SelectItem key={service.value} value={service.value}>
@@ -230,21 +230,25 @@ export function BentonCountyGisViewer() {
               Records
             </label>
             <Select
-</> value={recordCount} onValueChange={handleRecordCountChange}>
+</>
+value={recordCount} onValueChange={handleRecordCountChange}>
               <SelectTrigger id="record-count-select"><>
 
                 <SelectValue placeholder="Count" />
               </SelectTrigger>
               <SelectContent
+</>
 </>><>
 
                 <SelectItem value="5">5</SelectItem>
                 <SelectItem
-</> value="10">10</SelectItem><>
+</>
+value="10">10</SelectItem><>
 
                 <SelectItem value="25">25</SelectItem>
                 <SelectItem
-</> value="50">50</SelectItem>
+</>
+value="50">50</SelectItem>
                 <SelectItem value="100">100</SelectItem>
               </SelectContent>
             </Select>
@@ -254,6 +258,7 @@ export function BentonCountyGisViewer() {
 
               <label className="text-sm font-medium mb-1 block opacity-0 sm:opacity-100 hidden sm:block">Columns</label>
               <DropdownMenu
+</>
 </>>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full sm:w-auto">
@@ -265,7 +270,8 @@ export function BentonCountyGisViewer() {
 
                   <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
                   <DropdownMenuSeparator
-</> />
+</>
+/>
                   {allAvailableFields.map((field) => (
                     <DropdownMenuCheckboxItem
                       key={field.name}

@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:    
+metadata:      
   name: {{ include "terrafusion-frontend.fullname" . }}
   labels:
     {{- include "terrafusion-frontend.labels" . | nindent 4 }}
@@ -53,16 +53,16 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
-            - configMapRef:    
+            - configMapRef:      
                 name: {{ include "terrafusion-frontend.fullname" . }}-config
-            - secretRef:    
+            - secretRef:      
                 name: {{ include "terrafusion-frontend.fullname" . }}-secret
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d
       volumes:
         - name: nginx-config
-          configMap:    
+          configMap:      
             name: {{ include "terrafusion-frontend.fullname" . }}-nginx
       {{- with .Values.nodeSelector }}
       nodeSelector:

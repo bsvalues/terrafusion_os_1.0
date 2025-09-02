@@ -141,7 +141,7 @@ const GovernmentArchitecture: React.FC = () => {
   useEffect(() => {
     // Animate module tiles on load
     const tiles = document.querySelectorAll('.module-tile');
-    tiles.forEach((tile , index) => {
+    tiles.forEach((tile, index) => {
       setTimeout(() => {
         (tile as HTMLElement).style.opacity = '0';
         (tile as HTMLElement).style.transform = 'translateY(20px)';
@@ -179,6 +179,8 @@ const GovernmentArchitecture: React.FC = () => {
           background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
           animation: 'sweep 3s infinite'
         }} />
+
+
         <h1 style={{
           fontSize: '3em',
           fontWeight: 900,
@@ -195,6 +197,7 @@ const GovernmentArchitecture: React.FC = () => {
         </h1>
         
         <div
+
 style={{
           fontSize: '1.5em',
           color: '#00e676',
@@ -215,6 +218,8 @@ style={{
         margin: '30px',
         textAlign: 'center'
       }}>
+
+
         <div style={{
           fontSize: '1.5em',
           color: '#ffd700',
@@ -223,6 +228,7 @@ style={{
           PERFORMANCE MULTIPLIER
         </div>
         <div
+
 style={{
           fontSize: '4em',
           fontWeight: 900,
@@ -273,7 +279,7 @@ style={{
             padding: '15px',
             margin: '15px 0'
           }}>
-            {techStack.map((tech , index) => (
+            {techStack.map((tech, index) => (
               <div key={index} style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -285,8 +291,11 @@ style={{
                 borderRadius: '5px',
                 transition: 'all 0.2s ease'
               }}>
+
+
                 <span>{tech.name}</span>
                 <span
+
 style={{
                   background: '#00e676',
                   color: '#000',
@@ -313,6 +322,8 @@ style={{
             overflowX: 'auto',
             position: 'relative'
           }}>
+
+
             <div style={{
               position: 'absolute',
               top: '5px',
@@ -324,6 +335,7 @@ style={{
               C#
             </div>
             <pre
+
 style={{ margin: 0, color: '#fff' }}>{`// WebView2 Launcher (WPF)
 public class TerraFusionLauncher {
     private WebView2 webView;
@@ -371,7 +383,7 @@ public class TerraFusionLauncher {
             gap: '15px',
             margin: '20px 0'
           }}>
-            {securityFramework.map((item , index) => (
+            {securityFramework.map((item, index) => (
               <div key={index} style={{
                 background: 'rgba(0, 230, 118, 0.1)',
                 border: '1px solid #00e676',
@@ -379,6 +391,8 @@ public class TerraFusionLauncher {
                 padding: '15px',
                 textAlign: 'center'
               }}>
+
+
                 <div style={{
                   fontSize: '2em',
                   marginBottom: '10px'
@@ -386,6 +400,7 @@ public class TerraFusionLauncher {
                   {item.icon}
                 </div>
                 <div
+
 >{item.name}</div>
               </div>
             ))}
@@ -402,6 +417,8 @@ public class TerraFusionLauncher {
             overflowX: 'auto',
             position: 'relative'
           }}>
+
+
             <div style={{
               position: 'absolute',
               top: '5px',
@@ -413,6 +430,7 @@ public class TerraFusionLauncher {
               CSP
             </div>
             <pre
+
 style={{ margin: 0, color: '#fff' }}>{`Content-Security-Policy:
   default-src 'self';
   connect-src 'self' https://127.0.0.1:* https://*.county.gov;
@@ -450,7 +468,7 @@ style={{ margin: 0, color: '#fff' }}>{`Content-Security-Policy:
           'Sign: Code signing with county certificate + RFC3161 timestamp',
           'Deploy: SCCM/Intune push to all county workstations',
           'Launch: No admin required, runs as standard user'
-        ].map((step , index) => (
+        ].map((step, index) => (
           <div key={index} style={{
             display: 'flex',
             alignItems: 'center',
@@ -503,7 +521,7 @@ style={{ margin: 0, color: '#fff' }}>{`Content-Security-Policy:
           gap: '10px',
           marginTop: '20px'
         }}>
-          {agentSwarm.map((agent , index) => (
+          {agentSwarm.map((agent, index) => (
             <div key={index} style={{
               background: swarmActive ? 'rgba(79, 195, 247, 0.3)' : 'rgba(79, 195, 247, 0.1)',
               border: '1px solid #4fc3f7',
@@ -515,6 +533,8 @@ style={{ margin: 0, color: '#fff' }}>{`Content-Security-Policy:
               transform: swarmActive ? 'scale(1.05)' : 'scale(1)',
               boxShadow: swarmActive ? '0 5px 20px rgba(79, 195, 247, 0.5)' : 'none'
             }}>
+
+
               <div style={{
                 fontSize: '2em',
                 fontWeight: 'bold',
@@ -523,6 +543,7 @@ style={{ margin: 0, color: '#fff' }}>{`Content-Security-Policy:
                 {agent.count}
               </div>
               <div
+
 style={{
                 fontSize: '0.9em',
                 color: '#8e9eab',
@@ -562,7 +583,7 @@ style={{
           gap: '15px',
           padding: '20px'
         }}>
-          {modules.map((module , index) => (
+          {modules.map((module, index) => (
             <div key={index} className="module-tile" style={{
               background: 'rgba(30, 40, 60, 0.9)',
               border: '2px solid #4fc3f7',
@@ -574,6 +595,8 @@ style={{
               position: 'relative',
               overflow: 'hidden'
             }}>
+
+
               <div style={{
                 fontSize: '2.5em',
                 marginBottom: '10px'
@@ -581,6 +604,7 @@ style={{
                 {module.icon}
               </div>
               <div
+
 style={{
                 fontWeight: 'bold',
                 color: '#4fc3f7'
@@ -612,7 +636,7 @@ style={{
           <span>✅</span> GOVERNMENT COMPLIANCE CHECKLIST
         </div>
         
-        {complianceItems.map((item , index) => (
+        {complianceItems.map((item, index) => (
           <div key={index} style={{
             display: 'flex',
             alignItems: 'center',
@@ -640,6 +664,8 @@ style={{
         padding: '30px',
         flexWrap: 'wrap'
       }}>
+
+
         <button
           onClick={deployChampionship}
           style={{
@@ -664,6 +690,7 @@ style={{
         </button>
         
         <button
+
 onClick={activateSwarm}
           style={{
             background: 'linear-gradient(135deg, #4fc3f7 0%, #00e676 100%)',

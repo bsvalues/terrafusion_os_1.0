@@ -95,11 +95,13 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
               <Brain className="w-6 h-6 text-white" />
             </div>
             <div
+</>
 </>><>
 
               <h1 className="text-xl font-bold">Terrafusion IDE ULTIMATE POWER</h1>
               <p
-</> className="text-sm text-gray-400">AI Swarm + Quantum Performance + Government Grade</p>
+</>
+className="text-sm text-gray-400">AI Swarm + Quantum Performance + Government Grade</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -112,7 +114,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
               {showHybridAgents ? 'Hide' : 'Show'} AI Agents
             </button>
             <div
-</> className="flex items-center gap-2 text-sm">
+</>
+className="flex items-center gap-2 text-sm">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               AI Swarm: 1,008 Agents Online
             </div>
@@ -135,6 +138,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('ai')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'ai' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -146,6 +150,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('terminal')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'terminal' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -157,6 +162,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('database')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'database' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -168,6 +174,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('geospatial')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'geospatial' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -179,6 +186,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('plugins')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'plugins' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -190,6 +198,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('analytics')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'analytics' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -201,6 +210,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('ml-optimization')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'ml-optimization' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -212,6 +222,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('government-agents')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'government-agents' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -223,6 +234,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => setActiveTab('ai-chat')}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'ai-chat' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -237,7 +249,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
             <h3 className="text-sm font-semibold text-gray-400 mb-3">Quick Actions</h3>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               {quickActions.map((action /* , index */) => (
                 <button
                   key={index}
@@ -260,14 +273,16 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                   <h2 className="text-xl font-bold">Code Editor</h2>
                   <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                     <button className="px-3 py-1 bg-green-600 rounded text-sm hover:bg-green-700 transition-colors"><>
 
                       <Play className="w-4 h-4 inline mr-1" />
                       Run
                     </button>
                     <button
-</> className="px-3 py-1 bg-blue-600 rounded text-sm hover:bg-blue-700 transition-colors">
+</>
+className="px-3 py-1 bg-blue-600 rounded text-sm hover:bg-blue-700 transition-colors">
                       <FileText className="w-4 h-4 inline mr-1" />
                       Save
                     </button>
@@ -283,7 +298,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                   <h3 className="text-lg font-semibold mb-2">AI Code Analysis</h3>
                   <p
-</> className="text-gray-300 text-sm">
+</>
+className="text-gray-300 text-sm">
                     🧠 AI Swarm analyzing code patterns...<br/>
                     ✅ Code quality: 98%<br/>
                     🚀 Performance optimization suggestions available<br/>
@@ -298,7 +314,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                 <h2 className="text-xl font-bold">AI Assistant</h2>
                 <div
-</> className="bg-gray-800 rounded-lg p-4">
+</>
+className="bg-gray-800 rounded-lg p-4">
                   <div className="flex gap-2 mb-4">
                     <input
                       type="text"
@@ -318,7 +335,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                     <h3 className="text-lg font-semibold mb-2">AI Response</h3>
                     <p
-</> className="text-gray-300 text-sm">
+</>
+className="text-gray-300 text-sm">
                       🤖 AI Swarm: 1,008 specialized agents<br/>
                       🧠 Claude-Flow: 87 MCP tools available<br/>
                       🚀 Quantum Performance: 379M× enhancement<br/>
@@ -335,7 +353,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                 <h2 className="text-xl font-bold">Terminal</h2>
                 <div
-</> className="bg-gray-800 rounded-lg p-4">
+</>
+className="bg-gray-800 rounded-lg p-4">
                   <div className="flex gap-2 mb-4">
                     <input
                       type="text"
@@ -370,7 +389,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                 <h2 className="text-xl font-bold">Database Management</h2>
                 <div
-</> className="bg-gray-800 rounded-lg p-4">
+</>
+className="bg-gray-800 rounded-lg p-4">
                   <div className="flex gap-2 mb-4">
                     <input
                       type="text"
@@ -390,7 +410,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                     <h3 className="text-lg font-semibold mb-2">Database Status</h3>
                     <p
-</> className="text-gray-300 text-sm">
+</>
+className="text-gray-300 text-sm">
                       🗄️ PostgreSQL: Connected<br/>
                       📊 Harris PACS: Synchronized<br/>
                       🔒 Security: FISMA compliant<br/>
@@ -407,7 +428,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                 <h2 className="text-xl font-bold">Geospatial Tools</h2>
                 <div
-</> className="bg-gray-800 rounded-lg p-4">
+</>
+className="bg-gray-800 rounded-lg p-4">
                   <div className="flex gap-2 mb-4">
                     <input
                       type="text"
@@ -427,7 +449,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                     <h3 className="text-lg font-semibold mb-2">LeafScope Status</h3>
                     <p
-</> className="text-gray-300 text-sm">
+</>
+className="text-gray-300 text-sm">
                       🗺️ LeafScope: Active<br/>
                       🌍 PostGIS: Connected<br/>
                       📐 Spatial Analysis: Ready<br/>
@@ -444,7 +467,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                 <h2 className="text-xl font-bold">Plugin Development</h2>
                 <div
-</> className="bg-gray-800 rounded-lg p-4"><>
+</>
+className="bg-gray-800 rounded-lg p-4"><>
 
                   <button
                     onClick={handlePluginDevelopment}
@@ -453,11 +477,13 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
                     Create Plugin
                   </button>
                   <div
-</> className="bg-gray-700 rounded-lg p-4 min-h-64"><>
+</>
+className="bg-gray-700 rounded-lg p-4 min-h-64"><>
 
                     <h3 className="text-lg font-semibold mb-2">Plugin Development</h3>
                     <p
-</> className="text-gray-300 text-sm">
+</>
+className="text-gray-300 text-sm">
                       🔌 Terrafusion SDK: Government plugin platform<br/>
                       📦 Package: Automated dependency management<br/>
                       🚀 Deployment: Auto-deploy to marketplace<br/>
@@ -474,7 +500,8 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                 <h2 className="text-xl font-bold">Analytics Dashboard</h2>
                 <div
-</> className="bg-gray-800 rounded-lg p-4"><>
+</>
+className="bg-gray-800 rounded-lg p-4"><>
 
                   <button
                     onClick={handleAnalytics}
@@ -483,11 +510,13 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
                     Generate Analytics
                   </button>
                   <div
-</> className="bg-gray-700 rounded-lg p-4 min-h-64"><>
+</>
+className="bg-gray-700 rounded-lg p-4 min-h-64"><>
 
                     <h3 className="text-lg font-semibold mb-2">Analytics Overview</h3>
                     <p
-</> className="text-gray-300 text-sm">
+</>
+className="text-gray-300 text-sm">
                       📊 Real-time data processing<br/>
                       🧠 AI-powered insights<br/>
                       📈 Performance metrics<br/>
@@ -525,6 +554,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                 <span>AI Swarm: 1,008 Agents Online</span>
                 <span
+</>
 </>>Quantum Engine: Active</span>
                 <span>Performance: 379M× Enhancement</span>
               </div>
@@ -532,6 +562,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
 
                 <span>FISMA: Compliant</span>
                 <span
+</>
 </>>Security: 100%</span>
                 <span>Confidence: 97%</span>
               </div>
@@ -549,6 +580,7 @@ const TerraFusionIDE_ULTIMATE_POWER: React.FC = () => {
                 <h2 className="text-2xl font-bold text-gray-800">Terrafusion Hybrid Agent System</h2>
                 <button
 </>
+
                   onClick={() => setShowHybridAgents(false)}
                   className="text-gray-500 hover:text-gray-700"
                   title="Close Hybrid Agent System"

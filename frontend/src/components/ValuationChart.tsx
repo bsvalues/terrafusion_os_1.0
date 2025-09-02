@@ -8,8 +8,10 @@ const ValuationChart: React.FC<ValuationChartProps> = ({ data }) => {
   return (
     <div className="valuation-chart p-4 border rounded">
 
+
       <h3 className="text-lg font-semibold mb-2">Property Valuation Chart</h3>
       <div
+
 className="bg-gray-100 h-64 rounded flex items-center justify-center">
         <p className="text-gray-600">Chart visualization placeholder</p>
       </div>

@@ -17,7 +17,8 @@ const BrandedApp: React.FC = () => {
 
           <span className="module-code">CF</span>
           <span
-</> className="brand-text">CostForge AI</span>
+</>
+className="brand-text">CostForge AI</span>
           <span className="crown-badge">CROWN JEWEL</span>
         </div>
         <div className="performance-indicator">
@@ -31,16 +32,19 @@ const BrandedApp: React.FC = () => {
       </div>
       
       <div
-</> className="terrafusion-footer">
+</>
+className="terrafusion-footer">
         <div className="system-status"><>
 
           <span className="status-item">CostForge AI: ACTIVE</span>
           <span
-</> className="status-separator">|</span><>
+</>
+className="status-separator">|</span><>
 
           <span className="status-item">Crown Jewel: OPERATIONAL</span>
           <span
-</> className="status-separator">|</span>
+</>
+className="status-separator">|</span>
           <span className="status-item">379M× Performance: CHAMPIONSHIP</span>
         </div>
       </div>

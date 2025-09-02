@@ -100,11 +100,13 @@ export default function ProgressTrackerDemo() {
             <h1 className="text-3xl font-bold">Workflow Progress Tracker Demo</h1>
             
             <div
-</> className="flex gap-2"><>
+</>
+className="flex gap-2"><>
 
               <Button onClick={handlePrevStep} variant="outline">Previous Step</Button>
               <Button
-</> onClick={handleNextStep}>Next Step</Button>
+</>
+onClick={handleNextStep}>Next Step</Button>
               <Button onClick={handleResetSteps} variant="destructive">Reset</Button>
             </div>
           </div>
@@ -116,6 +118,7 @@ export default function ProgressTrackerDemo() {
 
                 <CardTitle>Configuration</CardTitle>
                 <CardDescription
+</>
 </>>Customize the progress tracker display</CardDescription>
               </CardHeader>
               
@@ -124,7 +127,8 @@ export default function ProgressTrackerDemo() {
 
                   <Label htmlFor="workflow-type">Workflow Type</Label>
                   <Select
-</> 
+</>
+
                     value={workflowType} 
                     onValueChange={(value) => {
                       setWorkflowType(value as WorkflowType);
@@ -136,6 +140,7 @@ export default function ProgressTrackerDemo() {
                       <SelectValue placeholder="Select workflow type" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>>
                       {workflowTypes.map((type) => (
                         <SelectItem key={type} value={type}>
@@ -150,7 +155,8 @@ export default function ProgressTrackerDemo() {
 
                   <Label htmlFor="status">Workflow Status</Label>
                   <Select
-</> 
+</>
+
                     value={status} 
                     onValueChange={(value) => {
                       setStatus(value as any);
@@ -161,15 +167,18 @@ export default function ProgressTrackerDemo() {
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>><>
 
                       <SelectItem value="draft">Draft</SelectItem>
                       <SelectItem
-</> value="in_progress">In Progress</SelectItem><>
+</>
+value="in_progress">In Progress</SelectItem><>
 
                       <SelectItem value="review">Review</SelectItem>
                       <SelectItem
-</> value="completed">Completed</SelectItem>
+</>
+value="completed">Completed</SelectItem>
                       <SelectItem value="archived">Archived</SelectItem>
                     </SelectContent>
                   </Select>
@@ -179,7 +188,8 @@ export default function ProgressTrackerDemo() {
 
                   <Label htmlFor="animation-speed">Animation Speed</Label>
                   <Select
-</> 
+</>
+
                     value={animationSpeed} 
                     onValueChange={(value) => {
                       setAnimationSpeed(value as any);
@@ -190,11 +200,13 @@ export default function ProgressTrackerDemo() {
                       <SelectValue placeholder="Select animation speed" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>><>
 
                       <SelectItem value="slow">Slow</SelectItem>
                       <SelectItem
-</> value="medium">Medium</SelectItem>
+</>
+value="medium">Medium</SelectItem>
                       <SelectItem value="fast">Fast</SelectItem>
                     </SelectContent>
                   </Select>
@@ -204,7 +216,8 @@ export default function ProgressTrackerDemo() {
 
                   <Label htmlFor="size">Size</Label>
                   <Select
-</> 
+</>
+
                     value={size} 
                     onValueChange={(value) => {
                       setSize(value as any);
@@ -215,11 +228,13 @@ export default function ProgressTrackerDemo() {
                       <SelectValue placeholder="Select size" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>><>
 
                       <SelectItem value="sm">Small</SelectItem>
                       <SelectItem
-</> value="md">Medium</SelectItem>
+</>
+value="md">Medium</SelectItem>
                       <SelectItem value="lg">Large</SelectItem>
                     </SelectContent>
                   </Select>
@@ -229,7 +244,8 @@ export default function ProgressTrackerDemo() {
 
                   <Label htmlFor="orientation">Orientation</Label>
                   <Select
-</> 
+</>
+
                     value={orientation} 
                     onValueChange={(value) => {
                       setOrientation(value as any);
@@ -240,11 +256,13 @@ export default function ProgressTrackerDemo() {
                       <SelectValue placeholder="Select orientation" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>><>
 
                       <SelectItem value="horizontal">Horizontal</SelectItem>
                       <SelectItem
-</> value="vertical">Vertical</SelectItem>
+</>
+value="vertical">Vertical</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -256,6 +274,7 @@ export default function ProgressTrackerDemo() {
                   <Label htmlFor="show-labels">Show Step Labels</Label>
                   <Switch
 </>
+
                     id="show-labels"
                     checked={showLabels}
                     onCheckedChange={setShowLabels}
@@ -267,6 +286,7 @@ export default function ProgressTrackerDemo() {
                   <Label htmlFor="show-percentage">Show Percentage</Label>
                   <Switch
 </>
+
                     id="show-percentage"
                     checked={showPercentage}
                     onCheckedChange={setShowPercentage}
@@ -281,6 +301,7 @@ export default function ProgressTrackerDemo() {
 
                 <CardTitle>Progress Tracker Preview</CardTitle>
                 <CardDescription
+</>
 </>>
                   Current step: {currentStep} | Status: {status}
                 </CardDescription>
@@ -303,6 +324,7 @@ export default function ProgressTrackerDemo() {
 
                   <p>This component demonstrates an animated workflow progress tracker that can be configured with different options.</p>
                   <p
+</>
 </>>Use the configuration panel to customize the appearance and behavior of the tracker.</p>
                 </div>
               </CardContent>
@@ -314,6 +336,7 @@ export default function ProgressTrackerDemo() {
 
                 <CardTitle>Component Usage Example</CardTitle>
                 <CardDescription
+</>
 </>>
                   Add this code to your components to use the progress tracker
                 </CardDescription>

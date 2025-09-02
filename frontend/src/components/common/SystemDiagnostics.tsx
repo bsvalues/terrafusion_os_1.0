@@ -46,48 +46,72 @@ const SystemDiagnostics: React.FC = () => {
       onClick={() => setIsVisible(false)}
       sx={{ cursor: 'pointer' }}
     >
+
+
       <div className="tf-osdiag-title">SYSTEM DIAGNOSTICS</div>
       
       <div
+
 className="tf-osdiag-metric">
+
+
         <span>UPTIME:</span>
         <span
+
 className="tf-osdiag-value">{metrics.uptime}</span>
       </div>
       
       <div className="tf-osdiag-metric">
+
+
         <span>CPU:</span>
         <span
+
 className="tf-osdiag-value">{metrics.cpuUsage.toFixed(1)}%</span>
       </div>
       
       <div className="tf-osdiag-metric">
+
+
         <span>MEMORY:</span>
         <span
+
 className="tf-osdiag-value">{metrics.memoryUsage.toFixed(1)}%</span>
       </div>
       
       <div className="tf-osdiag-metric">
+
+
         <span>AI AGENTS:</span>
         <span
+
 className="tf-osdiag-value">{metrics.aiAgentsActive}</span>
       </div>
       
       <div className="tf-osdiag-metric">
+
+
         <span>Q-COHERENCE:</span>
         <span
+
 className="tf-osdiag-value">{metrics.quantumCoherence.toFixed(1)}%</span>
       </div>
       
       <div className="tf-osdiag-metric">
+
+
         <span>LATENCY:</span>
         <span
+
 className="tf-osdiag-value">{metrics.networkLatency}ms</span>
       </div>
       
       <div className="tf-osdiag-metric">
+
+
         <span>SECURITY:</span>
         <span
+
 className="tf-osdiag-value" style={{ color: '#00ff88' }}>{metrics.securityStatus}</span>
       </div>
       

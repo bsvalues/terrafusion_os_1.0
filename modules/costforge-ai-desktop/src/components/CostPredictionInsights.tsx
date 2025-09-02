@@ -300,6 +300,7 @@ export function CostPredictionInsights({
           <Skeleton className="h-4 w-1/2" />
         </CardHeader>
         <CardContent
+</>
 </>>
           <Skeleton className="h-[300px] w-full" />
         </CardContent>
@@ -315,6 +316,7 @@ export function CostPredictionInsights({
 
           <CardTitle>{title}</CardTitle>
           <CardDescription
+</>
 </>>{description}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -323,6 +325,7 @@ export function CostPredictionInsights({
 
             <AlertTitle>Error</AlertTitle>
             <AlertDescription
+</>
 </>>
               Failed to load cost prediction data. Please try again later.
             </AlertDescription>
@@ -340,6 +343,7 @@ export function CostPredictionInsights({
 
           <CardTitle>{title}</CardTitle>
           <CardDescription
+</>
 </>>{description}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center min-h-[300px]">
@@ -371,6 +375,7 @@ export function CostPredictionInsights({
                   <SelectValue placeholder="All Regions" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   <SelectItem value="all">All Regions</SelectItem>
                   {regions.map((region) => (
@@ -390,6 +395,7 @@ export function CostPredictionInsights({
                   <SelectValue placeholder="All Building Types" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   <SelectItem value="all">All Building Types</SelectItem>
                   {buildingTypes.map((type) => (
@@ -409,15 +415,18 @@ export function CostPredictionInsights({
                   <SelectValue placeholder="Prediction Years" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="1">1 Year</SelectItem>
                   <SelectItem
-</> value="2">2 Years</SelectItem><>
+</>
+value="2">2 Years</SelectItem><>
 
                   <SelectItem value="3">3 Years</SelectItem>
                   <SelectItem
-</> value="5">5 Years</SelectItem>
+</>
+value="5">5 Years</SelectItem>
                   <SelectItem value="10">10 Years</SelectItem>
                 </SelectContent>
               </Select>
@@ -432,13 +441,15 @@ export function CostPredictionInsights({
             {selectedRegion || "All Regions"}
           </Badge>
           <Badge
-</> variant="secondary" className="flex items-center gap-1"><>
+</>
+variant="secondary" className="flex items-center gap-1"><>
 
             <Building className="h-3 w-3" />
             {getCurrentBuildingTypeLabel()}
           </Badge>
           <Badge
-</> 
+</>
+
             variant={growthRate.rate >= 0 ? "default" : "destructive"}
             className="flex items-center gap-1"
           >
@@ -521,7 +532,8 @@ export function CostPredictionInsights({
             </h3>
             
             <div
-</> className="flex gap-2"><>
+</>
+className="flex gap-2"><>
 
               <Button 
                 variant="outline" 
@@ -532,7 +544,8 @@ export function CostPredictionInsights({
                 {analysisLoading ? 'Analyzing...' : 'Generate Insights'}
               </Button>
               <Button
-</> 
+</>
+
                 variant="secondary"
                 size="sm"
                 onClick={() => generateAIInsights(true)}
@@ -555,7 +568,8 @@ export function CostPredictionInsights({
 
               <h4 className="font-medium mb-2 text-sm">Current Cost</h4>
               <div
-</> className="text-2xl font-bold text-blue-700">
+</>
+className="text-2xl font-bold text-blue-700">
                 ${historical.length > 0 ? historical[historical.length-1].cost : 'N/A'}
                 <span className="text-sm font-normal text-gray-500 ml-1">per sq.ft</span>
               </div>
@@ -568,7 +582,8 @@ export function CostPredictionInsights({
 
               <h4 className="font-medium mb-2 text-sm">Projected Cost</h4>
               <div
-</> className="text-2xl font-bold text-orange-700">
+</>
+className="text-2xl font-bold text-orange-700">
                 ${predicted.length > 0 ? predicted[predicted.length-1].cost : 'N/A'}
                 <span className="text-sm font-normal text-gray-500 ml-1">per sq.ft</span>
               </div>

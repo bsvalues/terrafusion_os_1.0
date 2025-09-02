@@ -154,6 +154,7 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
 
         <Typography variant="h6">Revenue Trends</Typography>
         <Box
+</>
 </>>
           <Tooltip title="Revenue is trending up 12% vs last period">
             <TrendingUpIcon color="success" />
@@ -203,7 +204,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         System Performance
       </Typography>
       <Grid
-</> container spacing={3}>
+</>
+container spacing={3}>
         {performanceMetrics.map((metric /* , index */) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <PerformanceGauge
@@ -227,7 +229,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         Strategic Insights
       </Typography>
       <Grid
-</> container spacing={2}>
+</>
+container spacing={2}>
         {strategicInsights.map((insight /* , index */) => (
           <Grid item xs={12} md={6} key={index}>
             <StrategicInsightCard
@@ -252,7 +255,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         Compliance Status
       </Typography>
       <Grid
-</> container spacing={2}>
+</>
+container spacing={2}>
         {dashboardData?.complianceData?.map((item /* , index */) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Card sx={{ height: '100%' }}>
@@ -270,7 +274,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   Score: {item.score}%
                 </Typography>
                 <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                   Last Audit: {new Date(item.lastAudit).toLocaleDateString()}
                 </Typography>
                 {item.issues > 0 && (
@@ -296,7 +301,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         AI Agent Performance
       </Typography>
       <Grid
-</> container spacing={2}>
+</>
+container spacing={2}>
         <Grid item xs={12} md={8}>
           <ResponsiveContainer width="100%" height={250}>
             <AreaChart data={dashboardData?.aiPerformanceData || []}>
@@ -338,6 +344,7 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               />
             </ListItem>
             <ListItem
+</>
 </>>
               <ListItemIcon>
                 <Avatar sx={{ bgcolor: 'success.main' }}>
@@ -351,6 +358,7 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               />
             </ListItem>
             <ListItem
+</>
 </>>
               <ListItemIcon>
                 <Avatar sx={{ bgcolor: 'info.main' }}>
@@ -373,6 +381,7 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
 
       <DialogTitle>Dashboard Settings</DialogTitle>
       <DialogContent
+</>
 </>>
         <Box sx={{ mt: 2 }}>
           <FormControlLabel
@@ -394,7 +403,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
           Visible Metrics
         </Typography>
         <Grid
-</> container spacing={1}>
+</>
+container spacing={1}>
           {['revenue', 'efficiency', 'compliance', 'performance', 'ai-agents', 'security'].map((metric) => (
             <Grid item key={metric}>
               <Chip
@@ -418,6 +428,7 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
         <Button onClick={() => setShowSettingsDialog(false)}>Cancel</Button>
         <Button
 </>
+
           variant="contained"
           onClick={() => {
             updateSettings({ autoRefresh, selectedMetrics });
@@ -451,7 +462,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             Executive Dashboard
           </Typography>
           <Typography
-</> variant="subtitle1" color="text.secondary">
+</>
+variant="subtitle1" color="text.secondary">
             {jurisdiction} • Last updated: {lastUpdated?.toLocaleTimeString()}
           </Typography>
         </Box>
@@ -461,6 +473,7 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             <InputLabel>Time Range</InputLabel>
             <Select
 </>
+
               value={selectedTimeRange}
               onChange={(e) => setSelectedTimeRange(e.target.value)}
               label="Time Range"
@@ -511,7 +524,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
           {renderRevenueChart()}
         </Grid>
         <Grid
-</> item xs={12} lg={4}>
+</>
+item xs={12} lg={4}>
           {renderPerformanceMetrics()}
         </Grid>
       </Grid>
@@ -528,7 +542,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
           {renderComplianceStatus()}
         </Grid>
         <Grid
-</> item xs={12} md={6}>
+</>
+item xs={12} md={6}>
           {renderAIAgentStatus()}
         </Grid>
       </Grid>

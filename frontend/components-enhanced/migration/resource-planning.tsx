@@ -47,7 +47,8 @@ export function ResourcePlanning() {
 
               <h3 className="text-white font-semibold">{resource.category}</h3>
               <span
-</> className="text-accent text-sm ml-auto">{resource.commitment}</span>
+</>
+className="text-accent text-sm ml-auto">{resource.commitment}</span>
             </div>
             <ul className="space-y-1">
               {resource.resources.map((item, itemIndex) => (

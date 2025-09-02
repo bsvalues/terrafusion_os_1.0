@@ -34,7 +34,8 @@ export function DashboardHeader() {
 
                 <h1 className="font-heading font-bold text-lg">Terrafusion OS</h1>
                 <p
-</> className="text-xs text-muted-foreground">{terraFusionBrand.essence}</p>
+</>
+className="text-xs text-muted-foreground">{terraFusionBrand.essence}</p>
               </div>
             </div>
 
@@ -98,7 +99,8 @@ export function DashboardHeader() {
 
                     <p className="text-sm font-medium">County Admin</p>
                     <p
-</> className="text-xs text-muted-foreground">Madison County</p>
+</>
+className="text-xs text-muted-foreground">Madison County</p>
                   </div>
                   <ChevronDown className="w-4 h-4" />
                 </Button>
@@ -107,20 +109,23 @@ export function DashboardHeader() {
 
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator
-</> />
+</>
+/>
                 <DropdownMenuItem><>
 
                   <User className="w-4 h-4 mr-2" />
                   Profile Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem
+</>
 </>><>
 
                   <Settings className="w-4 h-4 mr-2" />
                   System Preferences
                 </DropdownMenuItem>
                 <DropdownMenuSeparator
-</> />
+</>
+/>
                 <DropdownMenuItem className="text-destructive">
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out

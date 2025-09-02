@@ -35,15 +35,18 @@ export default function GAMAClone() {
             geometry, AI, and advanced analytics
           </p>
           <div
-</> className="flex items-center justify-center gap-2 mt-4"><>
+</>
+className="flex items-center justify-center gap-2 mt-4"><>
 
             <Badge variant="secondary">React + Three.js</Badge>
             <Badge
-</> variant="secondary">Node.js API</Badge><>
+</>
+variant="secondary">Node.js API</Badge><>
 
             <Badge variant="secondary">Python AI Agents</Badge>
             <Badge
-</> variant="secondary">PostgreSQL + PostGIS</Badge>
+</>
+variant="secondary">PostgreSQL + PostGIS</Badge>
           </div>
         </div>
 
@@ -56,6 +59,7 @@ export default function GAMAClone() {
               System Status
             </CardTitle>
             <CardDescription
+</>
 </>>GAMA system components and deployment status</CardDescription>
           </CardHeader>
           <CardContent>
@@ -117,6 +121,7 @@ export default function GAMAClone() {
 
             <CardTitle>Production Architecture</CardTitle>
             <CardDescription
+</>
 </>>Complete GAMA system with API endpoints and real-time capabilities</CardDescription>
           </CardHeader>
           <CardContent>
@@ -125,23 +130,27 @@ export default function GAMAClone() {
 
                 <h4 className="font-medium">API Layer</h4>
                 <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span
+</>
 </>>/api/properties - Property CRUD operations</span>
                   </div>
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span
+</>
 </>>/api/analysis - AI property analysis</span>
                   </div>
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span
+</>
 </>>/api/market - Real-time market data</span>
                   </div>
                 </div>
@@ -151,23 +160,27 @@ export default function GAMAClone() {
 
                 <h4 className="font-medium">AI Components</h4>
                 <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <span
+</>
 </>>Property valuation engine</span>
                   </div>
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <span
+</>
 </>>Sacred geometry calculator</span>
                   </div>
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <span
+</>
 </>>Market trend predictor</span>
                   </div>
                 </div>
@@ -177,23 +190,27 @@ export default function GAMAClone() {
 
                 <h4 className="font-medium">User Interface</h4>
                 <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                     <span
+</>
 </>>Real-time dashboard</span>
                   </div>
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                     <span
+</>
 </>>Property search & analysis</span>
                   </div>
                   <div className="flex items-center gap-2"><>
 
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                     <span
+</>
 </>>Sacred geometry visualization</span>
                   </div>
                 </div>
@@ -209,7 +226,8 @@ export default function GAMAClone() {
 
               <h3 className="text-2xl font-bold mb-4">Ready to Explore GAMA?</h3>
               <p
-</> className="text-gray-600 mb-6 max-w-md">
+</>
+className="text-gray-600 mb-6 max-w-md">
                 Access the full professional dashboard with real-time market data, AI analysis, and sacred geometry
                 insights.
               </p>
@@ -229,6 +247,7 @@ export default function GAMAClone() {
 
             <CardTitle>Quick Start Commands</CardTitle>
             <CardDescription
+</>
 </>>Get GAMA running locally in minutes</CardDescription>
           </CardHeader>
           <CardContent>
@@ -237,24 +256,29 @@ export default function GAMAClone() {
 
                 <div className="text-green-400"># Clone and setup GAMA</div>
                 <div
+</>
 </>>git clone https://github.com/bsvalues/TerraFusionTheory.git</div><>
 
                 <div>cd TerraFusionTheory</div>
                 <div
+</>
 </>>cp .env.example .env</div>
                 <br /><>
 
                 <div className="text-green-400"># Start development environment</div>
                 <div
+</>
 </>>npm install && npm run dev</div><>
 
                 <div>python -m pip install -r requirements.txt</div>
                 <div
+</>
 </>>python agents/run.py</div>
                 <br /><>
 
                 <div className="text-green-400"># Production deployment</div>
                 <div
+</>
 </>>docker-compose up -d</div>
                 <div>kubectl apply -f k8s/</div>
               </div>
@@ -283,7 +307,8 @@ function FeatureCard({
 
         <div className="flex justify-center mb-2">{icon}</div>
         <CardTitle
-</> className="text-lg">{title}</CardTitle>
+</>
+className="text-lg">{title}</CardTitle>
         <Badge variant="default" className="w-fit mx-auto">
           {status}
         </Badge>

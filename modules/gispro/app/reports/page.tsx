@@ -147,7 +147,8 @@ export default function ReportsPage() {
             GAMA Reports Center
           </h1>
           <p
-</> className="text-xl text-gray-600 mt-2">Generate comprehensive property and market analysis reports</p>
+</>
+className="text-xl text-gray-600 mt-2">Generate comprehensive property and market analysis reports</p>
         </div>
 
         <Tabs defaultValue="generate" className="space-y-6">
@@ -155,7 +156,8 @@ export default function ReportsPage() {
 
             <TabsTrigger value="generate">Generate Reports</TabsTrigger>
             <TabsTrigger
-</> value="history">Report History</TabsTrigger>
+</>
+value="history">Report History</TabsTrigger>
           </TabsList>
 
           <TabsContent value="generate">
@@ -169,6 +171,7 @@ export default function ReportsPage() {
                     Generate New Report
                   </CardTitle>
                   <CardDescription
+</>
 </>>
                     Create detailed analysis reports with AI-powered insights and sacred geometry analysis
                   </CardDescription>
@@ -179,7 +182,8 @@ export default function ReportsPage() {
 
                     <Label>Report Type</Label>
                     <div
-</> className="grid grid-cols-2 gap-3">
+</>
+className="grid grid-cols-2 gap-3">
                       <Button
                         variant={selectedType === "market_analysis" ? "default" : "outline"}
                         size="sm"
@@ -192,6 +196,7 @@ export default function ReportsPage() {
                       </Button>
                       <Button
 </>
+
                         variant={selectedType === "property_valuation" ? "default" : "outline"}
                         size="sm"
                         onClick={() => setSelectedType("property_valuation")}
@@ -203,6 +208,7 @@ export default function ReportsPage() {
                       </Button>
                       <Button
 </>
+
                         variant={selectedType === "portfolio_summary" ? "default" : "outline"}
                         size="sm"
                         onClick={() => setSelectedType("portfolio_summary")}
@@ -214,6 +220,7 @@ export default function ReportsPage() {
                       </Button>
                       <Button
 </>
+
                         variant={selectedType === "risk_assessment" ? "default" : "outline"}
                         size="sm"
                         onClick={() => setSelectedType("risk_assessment")}
@@ -233,6 +240,7 @@ export default function ReportsPage() {
                         <Label htmlFor="region">Region</Label>
                         <select
 </>
+
                           id="region"
                           className="w-full p-2 border rounded-md"
                           value={reportParams.region}
@@ -241,11 +249,13 @@ export default function ReportsPage() {
 
                           <option value="Downtown">Downtown</option>
                           <option
-</> value="Suburbs">Suburbs</option><>
+</>
+value="Suburbs">Suburbs</option><>
 
                           <option value="Waterfront">Waterfront</option>
                           <option
-</> value="Historic District">Historic District</option>
+</>
+value="Historic District">Historic District</option>
                         </select>
                       </div>
                     )}
@@ -256,6 +266,7 @@ export default function ReportsPage() {
                         <Label htmlFor="property_id">Property ID</Label>
                         <Input
 </>
+
                           id="property_id"
                           value={reportParams.property_id}
                           onChange={(e) => setReportParams((prev) => ({ ...prev, property_id: e.target.value }))}
@@ -270,6 +281,7 @@ export default function ReportsPage() {
                         <Label htmlFor="portfolio_id">Portfolio ID</Label>
                         <Input
 </>
+
                           id="portfolio_id"
                           value={reportParams.portfolio_id}
                           onChange={(e) => setReportParams((prev) => ({ ...prev, portfolio_id: e.target.value }))}
@@ -284,6 +296,7 @@ export default function ReportsPage() {
                         <Label htmlFor="start_date">Start Date</Label>
                         <Input
 </>
+
                           id="start_date"
                           type="date"
                           value={reportParams.date_range.start}
@@ -300,6 +313,7 @@ export default function ReportsPage() {
                         <Label htmlFor="end_date">End Date</Label>
                         <Input
 </>
+
                           id="end_date"
                           type="date"
                           value={reportParams.date_range.end}
@@ -329,6 +343,7 @@ export default function ReportsPage() {
                     Report Preview
                   </CardTitle>
                   <CardDescription
+</>
 </>>Preview of the selected report type and parameters</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -353,7 +368,8 @@ export default function ReportsPage() {
 
                       <h4 className="font-medium">Report Will Include:</h4>
                       <ul
-</> className="text-sm text-gray-600 space-y-1">
+</>
+className="text-sm text-gray-600 space-y-1">
                         <li className="flex items-start gap-2">
                           <span className="text-blue-600 mt-1">•</span>
                           AI-powered analysis and insights
@@ -391,6 +407,7 @@ export default function ReportsPage() {
                   Report History
                 </CardTitle>
                 <CardDescription
+</>
 </>>View and download previously generated reports</CardDescription>
               </CardHeader>
               <CardContent>
@@ -413,7 +430,8 @@ export default function ReportsPage() {
 
                                 <div className="font-medium">{report.title}</div>
                                 <div
-</> className="text-sm text-gray-600">
+</>
+className="text-sm text-gray-600">
                                   {report.generated_at
                                     ? `Generated: ${new Date(report.generated_at).toLocaleString()}`
                                     : "In progress..."}

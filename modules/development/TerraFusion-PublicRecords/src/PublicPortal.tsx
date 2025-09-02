@@ -210,7 +210,8 @@ const PublicPortal: React.FC = () => {
               Welcome to Benton County Public Records
             </h1>
             <p
-</> className="text-xl text-gray-600">
+</>
+className="text-xl text-gray-600">
               Serving {BentonCountyData.county.population.toLocaleString()} citizens across {BentonCountyData.cities.length} cities
             </p>
             <p className="text-lg text-gray-500 mt-2">
@@ -308,7 +309,8 @@ const PublicPortal: React.FC = () => {
 
                         <h3 className="text-xl font-bold text-gray-900">{result.title}</h3>
                         <p
-</> className="text-gray-600 mt-1">{result.description}</p>
+</>
+className="text-gray-600 mt-1">{result.description}</p>
                       </div>
                       {result.aiHelp && (
                         <div className="flex items-center gap-1 text-purple-600">
@@ -336,7 +338,8 @@ const PublicPortal: React.FC = () => {
 
                         <div className="text-sm font-medium text-gray-700 mb-2">Documents needed:</div>
                         <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                           {result.documents.map((doc) => (
                             <span key={doc} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
                               {doc}
@@ -367,7 +370,8 @@ const PublicPortal: React.FC = () => {
 
           <h2 className="text-2xl font-bold text-center mb-8">Benton County Right Now</h2>
           <div
-</> className="grid grid-cols-1 md:grid-cols-3 gap-6">
+</>
+className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="bg-white rounded-xl p-6 shadow-lg"
@@ -375,7 +379,8 @@ const PublicPortal: React.FC = () => {
 
               <div className="text-3xl font-bold text-blue-600">{Math.floor(BentonCountyData.statistics.annualPermits / 365)}</div>
               <div
-</> className="text-gray-600">Permits issued today</div>
+</>
+className="text-gray-600">Permits issued today</div>
               <div className="text-sm text-green-600 mt-2">↑ 40% faster than state average</div>
             </motion.div>
             <motion.div
@@ -385,7 +390,8 @@ const PublicPortal: React.FC = () => {
 
               <div className="text-3xl font-bold text-purple-600">3 min</div>
               <div
-</> className="text-gray-600">Current wait time</div>
+</>
+className="text-gray-600">Current wait time</div>
               <div className="text-sm text-gray-500 mt-2">Prosser Office: Walk in now!</div>
             </motion.div>
             <motion.div
@@ -395,7 +401,8 @@ const PublicPortal: React.FC = () => {
 
               <div className="text-3xl font-bold text-green-600">${Math.floor(parseInt(BentonCountyData.budgetImpact.annualSavings) / 12)}K</div>
               <div
-</> className="text-gray-600">Saved this month</div>
+</>
+className="text-gray-600">Saved this month</div>
               <div className="text-sm text-gray-500 mt-2">vs Legacy CAMA System</div>
             </motion.div>
           </div>

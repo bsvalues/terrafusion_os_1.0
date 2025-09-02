@@ -156,7 +156,8 @@ export const CountyPulse: React.FC = () => {
 
               <h3 className="text-3xl font-bold text-white mb-2">Benton County Pulse</h3>
               <p
-</> className="text-purple-200">Real-time activity across {BentonCountyData.county.area}</p>
+</>
+className="text-purple-200">Real-time activity across {BentonCountyData.county.area}</p>
             </div>
 
             {/* Center Metrics */}
@@ -171,7 +172,8 @@ export const CountyPulse: React.FC = () => {
                   {pulseData.activeNow.toLocaleString()}
                 </div>
                 <div
-</> className="text-purple-200">Active Processes Now</div>
+</>
+className="text-purple-200">Active Processes Now</div>
               </motion.div>
             </div>
 
@@ -200,7 +202,8 @@ export const CountyPulse: React.FC = () => {
             Live Activity Feed
           </h4>
           <div
-</> className="space-y-3">
+</>
+className="space-y-3">
             {activities.map((activity /* , index */) => (
               <motion.div
                 key={activity.id}
@@ -213,7 +216,8 @@ export const CountyPulse: React.FC = () => {
 
                   <p className="text-white text-sm font-medium">{activity.description}</p>
                   <p
-</> className="text-white/50 text-xs">
+</>
+className="text-white/50 text-xs">
                     {activity.timestamp.toLocaleTimeString()}
                   </p>
                 </div>
@@ -233,7 +237,8 @@ export const CountyPulse: React.FC = () => {
             Today's Metrics
           </h4>
           <div
-</> className="grid grid-cols-2 gap-4">
+</>
+className="grid grid-cols-2 gap-4">
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="bg-white/5 rounded-lg p-4"
@@ -242,7 +247,8 @@ export const CountyPulse: React.FC = () => {
 
               <div className="text-2xl font-bold text-white">{pulseData.permits}</div>
               <div
-</> className="text-sm text-white/60">Permits Today</div>
+</>
+className="text-sm text-white/60">Permits Today</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -252,7 +258,8 @@ export const CountyPulse: React.FC = () => {
 
               <div className="text-2xl font-bold text-white">{pulseData.contracts}</div>
               <div
-</> className="text-sm text-white/60">Contracts</div>
+</>
+className="text-sm text-white/60">Contracts</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -262,7 +269,8 @@ export const CountyPulse: React.FC = () => {
 
               <div className="text-2xl font-bold text-white">{pulseData.meetings}</div>
               <div
-</> className="text-sm text-white/60">Meetings</div>
+</>
+className="text-sm text-white/60">Meetings</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -272,7 +280,8 @@ export const CountyPulse: React.FC = () => {
 
               <div className="text-2xl font-bold text-white">{pulseData.revenue}</div>
               <div
-</> className="text-sm text-white/60">Revenue YTD</div>
+</>
+className="text-sm text-white/60">Revenue YTD</div>
             </motion.div>
           </div>
         </div>

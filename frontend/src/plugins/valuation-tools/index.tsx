@@ -45,15 +45,19 @@ function ValuationToolsPlugin({ context }: { context: any }) {
     <div className={styles.root}>
       <div className={styles.header}>
 
+
         <div className={styles.title}>Valuation Tools</div>
         <div
+
 className={styles.subtitle}>AI-Powered Property Assessment & MRA Integration</div>
       </div>
 
       <div className={styles.info}>
 
+
         <div>County: {context.countyConfig?.countyId ?? 'unknown'}</div>
         <div
+
 >Legacy: {context.countyConfig?.legacySystem ?? 'unknown'}</div>
         <div>Session: {context.sessionId ?? 'none'}</div>
       </div>
@@ -61,8 +65,10 @@ className={styles.subtitle}>AI-Powered Property Assessment & MRA Integration</di
       <div className={styles.controls}>
         <div className={styles.inputGroup}>
 
+
           <label className={styles.label}>Property ID:</label>
           <input
+
 type='text'
             placeholder='Enter Property ID (optional)'
             value={propertyId}
@@ -73,8 +79,10 @@ type='text'
 
         <div className={styles.inputGroup}>
 
+
           <label className={styles.label}>Assessment Type:</label>
           <select
+
 value={selectedTool} 
             onChange={(e) => setSelectedTool(e.target.value)}
             title="Select valuation tool"
@@ -91,11 +99,13 @@ value={selectedTool}
 
         <div className={styles.actions}>
 
+
           <button className={styles.button} onClick={handleRunValuation} disabled={loading}>
             {loading ? 'Processing...' : 'Run AI Valuation'}
           </button>
 
           <button
+
 className={styles.buttonSecondary} onClick={handleMRAAccess} disabled={loading}>
             {loading ? 'Accessing...' : 'Access MRA Data'}
           </button>
@@ -105,8 +115,10 @@ className={styles.buttonSecondary} onClick={handleMRAAccess} disabled={loading}>
       {valuation && (
         <div className={styles.results}>
 
+
           <div className={styles.resultsTitle}>Valuation Results:</div>
           <pre
+
 className={styles.resultsData}>{JSON.stringify(valuation, null, 2)}</pre>
         </div>
       )}

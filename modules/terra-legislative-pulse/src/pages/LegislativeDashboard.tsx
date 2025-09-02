@@ -65,7 +65,8 @@ const LegislativeDashboard = () => {
 
           <h1 className="legislative-title">Legislative Dashboard</h1>
           <p
-</> className="legislative-body mt-1">Monitor legislative activity and regulatory changes</p>
+</>
+className="legislative-body mt-1">Monitor legislative activity and regulatory changes</p>
         </div>
         <div className="flex space-x-3">
           <button className="legislative-button"><>
@@ -74,7 +75,8 @@ const LegislativeDashboard = () => {
             New Alert
           </button>
           <button
-</> className="legislative-button">
+</>
+className="legislative-button">
             <Calendar className="w-4 h-4 mr-2 inline" />
             Schedule
           </button>
@@ -90,7 +92,8 @@ const LegislativeDashboard = () => {
 
                 <p className="text-sm font-medium text-gray-600">{stat.label}</p>
                 <p
-</> className="text-2xl font-bold text-government mt-1">{stat.value}</p>
+</>
+className="text-2xl font-bold text-government mt-1">{stat.value}</p>
                 <p className={`text-xs mt-1 ${
                   stat.trend === 'up' ? 'text-green-600' :
                   stat.trend === 'alert' ? 'text-red-600' : 'text-gray-500'
@@ -118,7 +121,8 @@ const LegislativeDashboard = () => {
 
               <h2 className="legislative-subtitle">Recent Legislative Activity</h2>
               <button
-</> className="text-sm text-government hover:underline">View All</button>
+</>
+className="text-sm text-government hover:underline">View All</button>
             </div>
             <div className="space-y-4">
               {recentBills.map((bill /* , index */) => (
@@ -131,7 +135,8 @@ const LegislativeDashboard = () => {
                           {bill.id}
                         </span>
                         <span
-</> className={`status-badge ${
+</>
+className={`status-badge ${
                           bill.priority === 'Critical' ? 'priority-critical' :
                           bill.priority === 'High' ? 'priority-high' :
                           'priority-medium'
@@ -142,11 +147,13 @@ const LegislativeDashboard = () => {
 
                       <h3 className="font-semibold mt-1 text-gray-900">{bill.title}</h3>
                       <p
-</> className="text-sm text-gray-600 mt-1">{bill.impact}</p>
+</>
+className="text-sm text-gray-600 mt-1">{bill.impact}</p>
                       <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500"><>
 
                         <span>Status: {bill.status}</span>
                         <span
+</>
 </>>•</span>
                         <span>Updated {bill.lastUpdate}</span>
                       </div>
@@ -164,7 +171,8 @@ const LegislativeDashboard = () => {
 
             <h2 className="legislative-subtitle mb-4">Upcoming Events</h2>
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               {upcomingEvents.map((event /* , index */) => (
                 <div key={index} className="border-b border-gray-200 last:border-b-0 pb-3 last:pb-0">
                   <div className="flex items-start space-x-3">
@@ -174,7 +182,8 @@ const LegislativeDashboard = () => {
                         {new Date(event.date).getDate()}
                       </div>
                       <div
-</> className="text-xs text-gray-500 uppercase">
+</>
+className="text-xs text-gray-500 uppercase">
                         {new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}
                       </div>
                     </div>
@@ -182,7 +191,8 @@ const LegislativeDashboard = () => {
 
                       <h3 className="font-medium text-gray-900">{event.title}</h3>
                       <p
-</> className="text-sm text-gray-600 mt-1">{event.description}</p>
+</>
+className="text-sm text-gray-600 mt-1">{event.description}</p>
                       <p className="text-xs text-gray-500 mt-1">{event.time}</p>
                     </div>
                   </div>
@@ -201,7 +211,8 @@ const LegislativeDashboard = () => {
 
         <h2 className="legislative-subtitle mb-4">Quick Actions</h2>
         <div
-</> className="grid grid-cols-2 md:grid-cols-4 gap-4">
+</>
+className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <FileText className="w-8 h-8 text-government mb-2" />
             <span className="text-sm font-medium">Track Bill</span>

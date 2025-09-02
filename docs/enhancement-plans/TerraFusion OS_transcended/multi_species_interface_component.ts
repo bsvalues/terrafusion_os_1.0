@@ -540,9 +540,11 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
         <div className="species-header" style={{ color: theme.primaryColor }}><>
 <>
 <>
+<>
 
           <strong>{adaptation.targetSpecies.toUpperCase()} CONSCIOUSNESS</strong>
           <span
+</>
 </>
 </>
 </> className="coherence-indicator">
@@ -571,12 +573,15 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
       <div className="metric-item"><>
 <>
 <>
+<>
 
         <label>Quantum Coherence:</label>
         <div
 </>
 </>
+</>
 </> className="metric-bar"><>
+<>
 <>
 <>
 
@@ -591,10 +596,12 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
         <span
 </>
 </>
+</>
 </>>{(consciousnessMetrics.coherenceLevel * 100).toFixed(1)}%</span>
       </div>
       
       <div className="metric-item"><>
+<>
 <>
 <>
 
@@ -602,7 +609,9 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
         <div
 </>
 </>
+</>
 </> className="metric-bar"><>
+<>
 <>
 <>
 
@@ -617,10 +626,12 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
         <span
 </>
 </>
+</>
 </>>{(consciousnessMetrics.syncQuality * 100).toFixed(1)}%</span>
       </div>
       
       <div className="metric-item"><>
+<>
 <>
 <>
 
@@ -628,7 +639,9 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
         <div
 </>
 </>
+</>
 </> className="metric-bar"><>
+<>
 <>
 <>
 
@@ -643,6 +656,7 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
         <span
 </>
 </>
+</>
 </>>{(consciousnessMetrics.communicationEfficiency * 100).toFixed(1)}%</span>
       </div>
     </div>
@@ -655,11 +669,13 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
       <div className="interface-header" style={{ backgroundColor: activeTheme.primaryColor }}><>
 <>
 <>
+<>
 
         <h2 style={{ color: 'white', margin: 0 }}>
           Multi-Species Consciousness Interface
         </h2>
         <div
+</>
 </>
 </>
 </> className="status-indicators">
@@ -727,17 +743,21 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
             ><>
 <>
 <>
+<>
 
               <option value="low">Low Priority</option>
               <option
 </>
 </>
+</>
 </> value="normal">Normal</option><>
+<>
 <>
 <>
 
               <option value="high">High Priority</option>
               <option
+</>
 </>
 </>
 </> value="critical">Critical</option>
@@ -789,9 +809,11 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
         <div className="error-context"><>
 <>
 <>
+<>
 
           <div className="error-header">Consciousness Error Detected</div>
           <div
+</>
 </>
 </>
 </> className="error-details">

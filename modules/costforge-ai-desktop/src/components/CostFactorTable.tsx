@@ -66,7 +66,8 @@ export function CostFactorTable({
 
         <CardTitle className="text-xl font-bold">Cost Factors</CardTitle>
         <div
-</> className="flex items-center space-x-2">
+</>
+className="flex items-center space-x-2">
           <CostSourceSelector
             value={source}
             onChange={handleSourceChange}
@@ -114,6 +115,7 @@ export function CostFactorTable({
 
                       <TableHead>Code</TableHead>
                       <TableHead
+</>
 </>>Description</TableHead>
                       <TableHead className="text-right">Value</TableHead>
                     </TableRow>
@@ -131,6 +133,7 @@ export function CostFactorTable({
 
                           <TableCell className="font-medium">{factor.code}</TableCell>
                           <TableCell
+</>
 </>>{factor.description}</TableCell>
                           <TableCell className="text-right">
                             {type === 'baseRate'

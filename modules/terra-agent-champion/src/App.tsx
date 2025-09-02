@@ -99,6 +99,7 @@ function App() {
 
       <h1>TerraAgent Desktop</h1>
       <p
+</>
 </>>Your AI-powered property analysis assistant</p>
 
       {/* Agent Status Section */}
@@ -108,12 +109,14 @@ function App() {
 
             <h3>{agent.name}</h3>
             <span
-</> className={`agent-status ${agent.status}`}>
+</>
+className={`agent-status ${agent.status}`}>
               {agent.status}
             </span><>
 
             <p>{agent.description}</p>
             <small
+</>
 </>>Type: {agent.type}</small>
           </div>
         ))}
@@ -127,6 +130,7 @@ function App() {
 
               <div>{message.content}</div>
               <small
+</>
 </>>{message.timestamp.toLocaleTimeString()}</small>
             </div>
           ))}

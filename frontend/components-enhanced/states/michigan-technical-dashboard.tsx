@@ -56,7 +56,8 @@ export function MichiganTechnicalDashboard() {
 
                   <h3 className="text-white font-semibold">{county.name}</h3>
                   <Badge
-</> variant="secondary" className="bg-accent/20 text-accent">
+</>
+variant="secondary" className="bg-accent/20 text-accent">
                     {county.status}
                   </Badge>
                 </div>
@@ -65,19 +66,22 @@ export function MichiganTechnicalDashboard() {
 
                     <span className="text-gray-400">Population: </span>
                     <span
-</> className="text-white">{county.population}</span>
+</>
+className="text-white">{county.population}</span>
                   </div>
                   <div><>
 
                     <span className="text-gray-400">Parcels: </span>
                     <span
-</> className="text-accent">{county.parcels}</span>
+</>
+className="text-accent">{county.parcels}</span>
                   </div>
                   <div><>
 
                     <span className="text-gray-400">Value: </span>
                     <span
-</> className="text-transcend">{county.value}</span>
+</>
+className="text-transcend">{county.value}</span>
                   </div>
                 </div>
                 <Progress value={county.progress} className="h-2" />
@@ -105,19 +109,22 @@ export function MichiganTechnicalDashboard() {
 
                     <span className="text-gray-400">URL: </span>
                     <span
-</> className="text-transcend">{spec.url}</span>
+</>
+className="text-transcend">{spec.url}</span>
                   </div>
                   <div><>
 
                     <span className="text-gray-400">Status: </span>
                     <span
-</> className="text-accent">{spec.status}</span>
+</>
+className="text-accent">{spec.status}</span>
                   </div>
                   <div><>
 
                     <span className="text-gray-400">Migration: </span>
                     <span
-</> className="text-white">{spec.migration}</span>
+</>
+className="text-white">{spec.migration}</span>
                   </div>
                 </div>
               </div>
@@ -136,12 +143,14 @@ export function MichiganTechnicalDashboard() {
 
               <h3 className="text-white font-semibold mb-2">Week 1: Detroit Metro Blitz</h3>
               <p
-</> className="text-gray-300 text-sm mb-2">Wayne, Oakland, Macomb Counties</p>
+</>
+className="text-gray-300 text-sm mb-2">Wayne, Oakland, Macomb Counties</p>
               <div className="flex justify-between items-center"><>
 
                 <span className="text-accent">$10.8M ARR Target</span>
                 <Badge
-</> variant="secondary" className="bg-primary/20 text-primary">
+</>
+variant="secondary" className="bg-primary/20 text-primary">
                   Ready
                 </Badge>
               </div>
@@ -150,12 +159,14 @@ export function MichiganTechnicalDashboard() {
 
               <h3 className="text-white font-semibold mb-2">Week 2-3: University Corridor</h3>
               <p
-</> className="text-gray-300 text-sm mb-2">Washtenaw, Ingham, Kent Counties</p>
+</>
+className="text-gray-300 text-sm mb-2">Washtenaw, Ingham, Kent Counties</p>
               <div className="flex justify-between items-center"><>
 
                 <span className="text-accent">$7.2M ARR Target</span>
                 <Badge
-</> variant="secondary" className="bg-transcend/20 text-transcend">
+</>
+variant="secondary" className="bg-transcend/20 text-transcend">
                   Planning
                 </Badge>
               </div>
@@ -164,12 +175,14 @@ export function MichiganTechnicalDashboard() {
 
               <h3 className="text-white font-semibold mb-2">Week 4-6: Statewide Completion</h3>
               <p
-</> className="text-gray-300 text-sm mb-2">Remaining 74 Counties</p>
+</>
+className="text-gray-300 text-sm mb-2">Remaining 74 Counties</p>
               <div className="flex justify-between items-center"><>
 
                 <span className="text-accent">$36M ARR Target</span>
                 <Badge
-</> variant="secondary" className="bg-yellow-400/20 text-yellow-400">
+</>
+variant="secondary" className="bg-yellow-400/20 text-yellow-400">
                   Scheduled
                 </Badge>
               </div>

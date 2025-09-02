@@ -255,6 +255,7 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
               </div>
               
               <motion
+</>
 </>.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -264,13 +265,15 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
 
                 <p className="font-medium text-gray-700">{getStageDescription()}</p>
                 <p
-</> className="text-2xl font-bold mt-1 flex items-center justify-center"><>
+</>
+className="text-2xl font-bold mt-1 flex items-center justify-center"><>
 
                   <DollarSign className="h-5 w-5" />
                   {Math.round(currentCost).toLocaleString()}
                 </p>
                 <p
-</> className="text-xs text-gray-600 mt-2 max-w-[220px]">
+</>
+className="text-xs text-gray-600 mt-2 max-w-[220px]">
                   {getStageExplanation()}
                 </p>
               </motion.div>
@@ -300,14 +303,16 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
 
           <h4 className="font-semibold text-gray-800 mb-2 border-b pb-1">Cost Breakdown</h4>
           <div
-</> className="flex justify-between items-center mb-1">
+</>
+className="flex justify-between items-center mb-1">
             <span className="flex items-center"><>
 
               <DollarSign className="h-3 w-3 mr-1 text-[#243E4D]" />
               Base Cost:
             </span>
             <span
-</> className="font-medium">${baseCost.toLocaleString()}</span>
+</>
+className="font-medium">${baseCost.toLocaleString()}</span>
           </div>
           <div className="flex justify-between items-center mb-1">
             <span className="flex items-center"><>
@@ -316,7 +321,8 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
               Complexity:
             </span>
             <span
-</> 
+</>
+
               className={`font-medium ${complexityFactor > 1 ? 'text-[#3F51B5]' : 'text-gray-600'}`}
             >
               ×{complexityFactor.toFixed(2)}
@@ -329,7 +335,8 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
               Condition:
             </span>
             <span
-</> 
+</>
+
               className={`font-medium ${conditionFactor > 1 ? 'text-[#3CAB36]' : 'text-gray-600'}`}
             >
               ×{conditionFactor.toFixed(2)}
@@ -342,7 +349,8 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
               Regional:
             </span>
             <span
-</> 
+</>
+
               className={`font-medium ${regionalMultiplier > 1 ? 'text-[#29B7D3]' : 'text-gray-600'}`}
             >
               ×{regionalMultiplier.toFixed(2)}
@@ -355,7 +363,8 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
               Age Depreciation:
             </span>
             <span
-</> 
+</>
+
               className={`font-medium ${ageDepreciation > 0 ? 'text-[#F5A623]' : 'text-[#3CAB36]'}`}
             >
               {ageDepreciation > 0 ? `−${ageDepreciation}%` : 'None'}
@@ -365,7 +374,8 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
 
             <span>Final Cost:</span>
             <span
-</> className="text-[#243E4D]">${Math.round(currentCost).toLocaleString()}</span>
+</>
+className="text-[#243E4D]">${Math.round(currentCost).toLocaleString()}</span>
           </div>
         </motion.div>
       )}

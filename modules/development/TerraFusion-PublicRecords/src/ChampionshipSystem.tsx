@@ -93,7 +93,8 @@ const ChampionshipSystem: React.FC = () => {
                   Benton County Command Center
                 </h1>
                 <p
-</> className="text-sm text-gray-600">
+</>
+className="text-sm text-gray-600">
                   Serving {countyMetrics?.citizensServed.toLocaleString()} citizens at {countyMetrics?.avgResponseTime}
                 </p>
               </div>
@@ -144,7 +145,8 @@ const ChampionshipSystem: React.FC = () => {
                     <Mic className="w-5 h-5 text-gray-500" />
                   </button>
                   <button
-</> className="p-2 hover:bg-gray-100 rounded">
+</>
+className="p-2 hover:bg-gray-100 rounded">
                     <Camera className="w-5 h-5 text-gray-500" />
                   </button>
                 </div>
@@ -182,7 +184,8 @@ const ChampionshipSystem: React.FC = () => {
 
               <h2 className="text-xl font-bold text-gray-900">Live Citizen Requests</h2>
               <span
-</> className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+</>
+className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                 AI Handling 73%
               </span>
             </div>
@@ -194,7 +197,8 @@ const ChampionshipSystem: React.FC = () => {
 
                       <p className="font-medium text-gray-900">"{request.query}"</p>
                       <p
-</> className="text-sm text-gray-600 mt-1">{request.time}</p>
+</>
+className="text-sm text-gray-600 mt-1">{request.time}</p>
                     </div>
                     <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                       request.status === 'resolved' ? 'bg-green-100 text-green-700' :
@@ -219,7 +223,8 @@ const ChampionshipSystem: React.FC = () => {
 
             <h2 className="text-xl font-bold text-gray-900 mb-4">Today's Impact</h2>
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-8 h-8 text-green-600" />
@@ -227,7 +232,8 @@ const ChampionshipSystem: React.FC = () => {
 
                     <p className="font-medium text-gray-900">Requests Completed</p>
                     <p
-</> className="text-2xl font-bold text-green-600">892</p>
+</>
+className="text-2xl font-bold text-green-600">892</p>
                   </div>
                 </div>
                 <span className="text-sm text-green-700">↑ 47% vs yesterday</span>
@@ -240,7 +246,8 @@ const ChampionshipSystem: React.FC = () => {
 
                     <p className="font-medium text-gray-900">Avg Response Time</p>
                     <p
-</> className="text-2xl font-bold text-purple-600">0.001s</p>
+</>
+className="text-2xl font-bold text-purple-600">0.001s</p>
                   </div>
                 </div>
                 <span className="text-sm text-purple-700">379M× faster</span>
@@ -253,7 +260,8 @@ const ChampionshipSystem: React.FC = () => {
 
                     <p className="font-medium text-gray-900">Citizen Satisfaction</p>
                     <p
-</> className="text-2xl font-bold text-blue-600">94%</p>
+</>
+className="text-2xl font-bold text-blue-600">94%</p>
                   </div>
                 </div>
                 <span className="text-sm text-blue-700">↑ 12% this week</span>
@@ -321,7 +329,8 @@ const ChampionshipSystem: React.FC = () => {
               What can we help you find?
             </h1>
             <p
-</> className="text-xl text-gray-600">
+</>
+className="text-xl text-gray-600">
               Just type, speak, or take a photo
             </p>
           </div>
@@ -343,12 +352,14 @@ const ChampionshipSystem: React.FC = () => {
                   <Mic className="w-6 h-6 text-gray-500" />
                 </button>
                 <button
-</> className="p-3 hover:bg-gray-100 rounded-lg transition-colors"><>
+</>
+className="p-3 hover:bg-gray-100 rounded-lg transition-colors"><>
 
                   <Camera className="w-6 h-6 text-gray-500" />
                 </button>
                 <button
-</> className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+</>
+className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                   <Search className="w-6 h-6" />
                 </button>
               </div>

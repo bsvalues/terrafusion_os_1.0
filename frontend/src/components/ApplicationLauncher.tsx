@@ -170,6 +170,8 @@ const ApplicationLauncher: React.FC = () => {
     }}>
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+
+
         <h1 style={{
           fontSize: '3rem',
           background: 'linear-gradient(45deg, #00d2ff, #667eea)',
@@ -182,6 +184,7 @@ const ApplicationLauncher: React.FC = () => {
           Terrafusion REAL Applications
         </h1>
         <div
+
 style={{
           color: '#00d2ff',
           fontSize: '1.2rem',
@@ -277,6 +280,8 @@ style={{
               alignItems: 'center',
               marginBottom: '10px'
             }}>
+
+
               <div style={{
                 fontSize: '0.9rem',
                 color: '#667eea'
@@ -284,6 +289,7 @@ style={{
                 Module {app.id.toString().padStart(2, '0')}
               </div>
               <div
+
 style={{
                 fontSize: '0.8rem',
                 color: getStatusColor(app.status),
@@ -376,6 +382,8 @@ style={{
           gap: '20px'
         }}>
           <div>
+
+
             <div style={{
               fontSize: '2rem',
               fontWeight: 'bold',
@@ -385,11 +393,14 @@ style={{
               {applications.length}
             </div>
             <div
+
 style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               Government Modules
             </div>
           </div>
           <div>
+
+
             <div style={{
               fontSize: '2rem',
               fontWeight: 'bold',
@@ -399,11 +410,14 @@ style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               1008
             </div>
             <div
+
 style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               Active AI Agents
             </div>
           </div>
           <div>
+
+
             <div style={{
               fontSize: '2rem',
               fontWeight: 'bold',
@@ -413,11 +427,14 @@ style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               89,247
             </div>
             <div
+
 style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               Harris PACS Parcels
             </div>
           </div>
           <div>
+
+
             <div style={{
               fontSize: '2rem',
               fontWeight: 'bold',
@@ -427,6 +444,7 @@ style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               {launchedApps.size}
             </div>
             <div
+
 style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               Modules Launched
             </div>

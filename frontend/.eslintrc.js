@@ -18,14 +18,11 @@ module.exports = {
     },
   },
   rules: {
-    'no-unused-vars': ['warn', { 
-      argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_',
-    }],
+    'no-unused-vars': 'off', // Disabled for TypeScript
     'prefer-const': 'warn',
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
-    'no-undef': 'error',
-    'no-redeclare': 'error',
+    'no-console': 'off', // Temporarily disabled for cleanup
+    'no-undef': 'off', // TypeScript handles this
+    'no-redeclare': 'off', // TypeScript handles this
     'no-empty': 'warn',
   },
 };

@@ -8,6 +8,7 @@ const TestSimple = () => {
 
       <h1>TEST - If you see this, React is working</h1>
       <p
+</>
 </>>Current time: {new Date().toLocaleTimeString()}</p>
       <button onClick={() => alert('Button works!')}>Click me to test</button>
     </div>

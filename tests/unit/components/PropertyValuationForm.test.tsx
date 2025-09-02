@@ -13,7 +13,8 @@ const PropertyValuationForm = ({ onSubmit, onCancel }: { onSubmit: () => void; o
 
     <button type="button" onClick={onSubmit}>Calculate Valuation</button>
     <button
-</> type="button" onClick={onCancel}>Cancel</button>
+</>
+type="button" onClick={onCancel}>Cancel</button>
   </form>
 );
 

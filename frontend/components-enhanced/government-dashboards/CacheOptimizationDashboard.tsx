@@ -228,7 +228,8 @@ const CacheOptimizationDashboard: React.FC = () => {
 
         <Typography variant="h4" gutterBottom>Cache & Optimization Dashboard</Typography>
         <LinearProgress
-</> />
+</>
+/>
       </Box>
     );
   }
@@ -239,6 +240,7 @@ const CacheOptimizationDashboard: React.FC = () => {
 
         <Typography variant="h4">Cache & Optimization Dashboard</Typography>
         <Box
+</>
 </>><>
 
           <Button
@@ -251,6 +253,7 @@ const CacheOptimizationDashboard: React.FC = () => {
           </Button>
           <Button
 </>
+
             startIcon={<Delete />}
             onClick={() => setInvalidateDialogOpen(true)}
             color="warning"
@@ -274,7 +277,6 @@ const CacheOptimizationDashboard: React.FC = () => {
       )}
 
       {statistics && (
-        <>
           {/* Key Performance Indicators */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} md={3}>
@@ -289,7 +291,8 @@ const CacheOptimizationDashboard: React.FC = () => {
                     {(statistics.redis.hitRatio * 100).toFixed(1)}%
                   </Typography>
                   <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                     Hit Ratio ({formatNumber(statistics.redis.hitCount)} hits)
                   </Typography>
                   <Typography variant="caption" display="block">
@@ -311,7 +314,8 @@ const CacheOptimizationDashboard: React.FC = () => {
                     {(statistics.apiCache.hitRatio * 100).toFixed(1)}%
                   </Typography>
                   <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                     Hit Ratio ({formatNumber(statistics.apiCache.totalRequests)} requests)
                   </Typography>
                   <Typography variant="caption" display="block">
@@ -333,7 +337,8 @@ const CacheOptimizationDashboard: React.FC = () => {
                     {(statistics.cdn.hitRatio * 100).toFixed(1)}%
                   </Typography>
                   <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                     Hit Ratio ({formatNumber(statistics.cdn.totalRequests)} requests)
                   </Typography>
                   <Typography variant="caption" display="block">
@@ -355,7 +360,8 @@ const CacheOptimizationDashboard: React.FC = () => {
                     {formatBytes(statistics.cdn.bandwidthUsed)}
                   </Typography>
                   <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                     Total Bandwidth Used
                   </Typography>
                   <Typography variant="caption" display="block">
@@ -374,7 +380,8 @@ const CacheOptimizationDashboard: React.FC = () => {
 
                   <Typography variant="h6" gutterBottom>Cache Hit Ratios</Typography>
                   <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                     <BarChart data={[
                       { name: 'Redis', hitRatio: statistics.redis.hitRatio * 100, color: '#1976d2' },
                       { name: 'API Cache', hitRatio: statistics.apiCache.hitRatio * 100, color: '#388e3c' },
@@ -397,7 +404,8 @@ const CacheOptimizationDashboard: React.FC = () => {
 
                   <Typography variant="h6" gutterBottom>API Endpoint Performance</Typography>
                   <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                     <BarChart data={Object.entries(statistics.apiCache.averageResponseTimesByEndpoint).map(([endpoint, time]) => ({
                       endpoint: endpoint.split('/').pop() || endpoint,
                       responseTime: time
@@ -421,6 +429,7 @@ const CacheOptimizationDashboard: React.FC = () => {
 
                 <Typography variant="h6" gutterBottom>CDN Edge Locations</Typography>
                 <TableContainer
+</>
 </>>
                   <Table>
                     <TableHead>
@@ -428,10 +437,12 @@ const CacheOptimizationDashboard: React.FC = () => {
 
                         <TableCell>Location</TableCell>
                         <TableCell
+</>
 </>>Region</TableCell><>
 
                         <TableCell>Status</TableCell>
                         <TableCell
+</>
 </>>Load</TableCell>
                       </TableRow>
                     </TableHead>
@@ -441,6 +452,7 @@ const CacheOptimizationDashboard: React.FC = () => {
 
                           <TableCell>{location.name}</TableCell>
                           <TableCell
+</>
 </>>{location.region}</TableCell>
                           <TableCell><>
 
@@ -451,6 +463,7 @@ const CacheOptimizationDashboard: React.FC = () => {
                             />
                           </TableCell>
                           <TableCell
+</>
 </>>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               <LinearProgress
@@ -471,7 +484,6 @@ const CacheOptimizationDashboard: React.FC = () => {
               </CardContent>
             </Card>
           )}
-        </>
       )}
 
       {/* Cache Invalidation Dialog */}
@@ -479,19 +491,22 @@ const CacheOptimizationDashboard: React.FC = () => {
 
         <DialogTitle>Invalidate Cache</DialogTitle>
         <DialogContent
+</>
 </>>
           <FormControl fullWidth sx={{ mb: 2, mt: 1 }}><>
 
             <InputLabel>Invalidation Type</InputLabel>
             <Select
 </>
+
               value={selectedInvalidationType}
               onChange={(e) => setSelectedInvalidationType(e.target.value as 'key' | 'pattern' | 'tag')}
             ><>
 
               <MenuItem value="key">By Key</MenuItem>
               <MenuItem
-</> value="pattern">By Pattern</MenuItem>
+</>
+value="pattern">By Pattern</MenuItem>
               <MenuItem value="tag">By Tag</MenuItem>
             </Select>
           </FormControl>
@@ -528,11 +543,13 @@ const CacheOptimizationDashboard: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions
+</>
 </>><>
 
           <Button onClick={() => setInvalidateDialogOpen(false)}>Cancel</Button>
           <Button
-</> onClick={handleInvalidateCache} color="warning" variant="contained">
+</>
+onClick={handleInvalidateCache} color="warning" variant="contained">
             Invalidate
           </Button>
         </DialogActions>

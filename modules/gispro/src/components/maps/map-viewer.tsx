@@ -94,10 +94,12 @@ export function MapViewer({
 
               <p className="mb-1">• Click and drag to pan around the map</p>
               <p
-</> className="mb-1">• Use the zoom controls in the top right or scroll to zoom in/out</p><>
+</>
+className="mb-1">• Use the zoom controls in the top right or scroll to zoom in/out</p><>
 
               <p className="mb-1">• Click on parcels to select them</p>
               <p
+</>
 </>>• View different layers using the layer control if enabled</p>
             </div>
           }

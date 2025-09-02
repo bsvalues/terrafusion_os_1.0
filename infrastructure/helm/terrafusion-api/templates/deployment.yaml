@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:    
+metadata:      
   name: {{ include "terrafusion-api.fullname" . }}
   labels:
     {{- include "terrafusion-api.labels" . | nindent 4 }}
@@ -98,7 +98,7 @@ spec:
       volumes:
         {{- toYaml .Values.volumes | nindent 8 }}
         - name: fluent-bit-config
-          configMap:    
+          configMap:      
             name: {{ include "terrafusion-api.fullname" . }}-fluent-bit
       {{- with .Values.affinity }}
       affinity:

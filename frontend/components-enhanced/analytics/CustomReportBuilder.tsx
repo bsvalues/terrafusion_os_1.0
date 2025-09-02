@@ -242,7 +242,8 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
             Report Elements
           </Typography>
           <Grid
-</> container spacing={2}>
+</>
+container spacing={2}>
             {[
               { type: 'chart', icon: <ChartIcon />, label: 'Chart' },
               { type: 'table', icon: <TableIcon />, label: 'Table' },
@@ -313,7 +314,8 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
 
               <Typography variant="h6">Drag elements here to build your report</Typography>
               <Typography
-</> variant="body2">
+</>
+variant="body2">
                 Start by dragging charts, tables, or metrics from the left panel
               </Typography>
             </Box>
@@ -337,7 +339,8 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
                         <DragIcon color="action" />
                       </Box>
                       <Typography
-</> variant="h6" sx={{ flexGrow: 1 }}>
+</>
+variant="h6" sx={{ flexGrow: 1 }}>
                         {element.title}
                       </Typography>
                       <Tooltip title="Edit">
@@ -376,7 +379,8 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
         Report Settings
       </Typography>
       <Grid
-</> container spacing={3}>
+</>
+container spacing={3}>
         <Grid item xs={12} md={6}><>
 
           <TextField
@@ -387,7 +391,8 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
           />
         </Grid>
         <Grid
-</> item xs={12} md={6}><>
+</>
+item xs={12} md={6}><>
 
           <TextField
             fullWidth
@@ -397,23 +402,27 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
           />
         </Grid>
         <Grid
-</> item xs={12} md={6}>
+</>
+item xs={12} md={6}>
           <FormControl fullWidth><>
 
             <InputLabel>Category</InputLabel>
             <Select
 </>
+
               value={report.category}
               onChange={(e) => setReport(prev => ({ ...prev, category: e.target.value }))}
             ><>
 
               <MenuItem value="revenue">Revenue Analysis</MenuItem>
               <MenuItem
-</> value="performance">Performance Metrics</MenuItem><>
+</>
+value="performance">Performance Metrics</MenuItem><>
 
               <MenuItem value="compliance">Compliance Reports</MenuItem>
               <MenuItem
-</> value="operations">Operations Dashboard</MenuItem>
+</>
+value="operations">Operations Dashboard</MenuItem>
               <MenuItem value="executive">Executive Summary</MenuItem>
             </Select>
           </FormControl>
@@ -424,17 +433,20 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
             <InputLabel>Access Level</InputLabel>
             <Select
 </>
+
               value={report.accessLevel}
               onChange={(e) => setReport(prev => ({ ...prev, accessLevel: e.target.value }))}
             ><>
 
               <MenuItem value="public">Public</MenuItem>
               <MenuItem
-</> value="internal">Internal</MenuItem><>
+</>
+value="internal">Internal</MenuItem><>
 
               <MenuItem value="restricted">Restricted</MenuItem>
               <MenuItem
-</> value="confidential">Confidential</MenuItem>
+</>
+value="confidential">Confidential</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -458,6 +470,7 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
 
       <DialogTitle>Schedule Report</DialogTitle>
       <DialogContent
+</>
 </>><>
 
         <ScheduleConfiguration
@@ -466,11 +479,13 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
         />
       </DialogContent>
       <DialogActions
+</>
 </>><>
 
         <Button onClick={() => setShowScheduleDialog(false)}>Cancel</Button>
         <Button
 </>
+
           variant="contained"
           onClick={async () => {
             await scheduleReport(report);
@@ -493,7 +508,8 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
 
               <Typography variant="h4">Custom Report Builder</Typography>
               <Box
-</> sx={{ display: 'flex', gap: 1 }}><>
+</>
+sx={{ display: 'flex', gap: 1 }}><>
 
                 <Button
                   variant="outlined"
@@ -505,6 +521,7 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
                 </Button>
                 <Button
 </>
+
                   variant="outlined"
                   startIcon={<ScheduleIcon />}
                   onClick={() => setShowScheduleDialog(true)}
@@ -521,6 +538,7 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
                 </Button>
                 <Button
 </>
+
                   variant="contained"
                   startIcon={<SaveIcon />}
                   onClick={handleSaveReport}
@@ -546,7 +564,8 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
                 <Tab label="Settings" />
               </Tabs>
               <Box
-</> sx={{ mt: 2 }}>
+</>
+sx={{ mt: 2 }}>
                 {activeTab === 0 && renderAvailableElements()}
                 {activeTab === 1 && renderReportSettings()}
               </Box>
@@ -601,7 +620,8 @@ const ReportElementPreview: React.FC<{ element: ReportElement }> = ({ element })
               $1,234,567
             </Typography>
             <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
               Sample Metric
             </Typography>
           </Box>
@@ -659,17 +679,20 @@ const ScheduleConfiguration: React.FC<{
               <InputLabel>Frequency</InputLabel>
               <Select
 </>
+
                 value={localSchedule.frequency}
                 onChange={(e) => setLocalSchedule(prev => ({ ...prev, frequency: e.target.value as any }))}
               ><>
 
                 <MenuItem value="daily">Daily</MenuItem>
                 <MenuItem
-</> value="weekly">Weekly</MenuItem><>
+</>
+value="weekly">Weekly</MenuItem><>
 
                 <MenuItem value="monthly">Monthly</MenuItem>
                 <MenuItem
-</> value="quarterly">Quarterly</MenuItem>
+</>
+value="quarterly">Quarterly</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -684,7 +707,8 @@ const ScheduleConfiguration: React.FC<{
             />
           </Grid>
           <Grid
-</> item xs={12}>
+</>
+item xs={12}>
             <TextField
               fullWidth
               label="Recipients (comma-separated emails)"

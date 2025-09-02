@@ -62,11 +62,13 @@ export function MigrationAssessment() {
 
               <h3 className="text-white font-semibold mb-2">{area.area}</h3>
               <Progress
-</> value={area.score} className="h-2 mb-2" /><>
+</>
+value={area.score} className="h-2 mb-2" /><>
 
               <p className="text-sm text-gray-400">{area.details}</p>
               <p
-</> className="text-lg font-bold text-white mt-2">{area.score}%</p>
+</>
+className="text-lg font-bold text-white mt-2">{area.score}%</p>
             </div>
           ))}
         </div>

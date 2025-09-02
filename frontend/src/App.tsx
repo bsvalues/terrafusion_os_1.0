@@ -5,7 +5,7 @@ import { TerraFusionCSSProvider, ComplianceWrapper } from './components/TerraFus
 import './App.css';
 import './styles/terrafusion-brand.css';
 
-// Import TerraFusion Intelligent CSS Architecture (PhD-Level Solution)
+// Import Terrafusion Intelligent CSS Architecture (PhD-Level Solution)
 import './styles/terrafusion-intelligent-architecture.css';
 
 // Use the consistent API base URL
@@ -133,7 +133,7 @@ function TerraFusionDashboard() {
         <div className="tf-header-left">
           <div className="tf-logo">
             <span className="tf-logo-icon">🌍</span>
-            <span className="tf-logo-text">TerraFusion OS</span>
+            <span className="tf-logo-text">Terrafusion OS</span>
           </div>
           <div className="tf-tagline">Government. Transcended.</div>
         </div>
@@ -233,7 +233,7 @@ const App: React.FC = () => {
             <section className="tf-hero-section">
               <div className="tf-hero-header">
                 <div className="tf-title">
-                  TerraFusion OS
+                  Terrafusion OS
                 </div>
                 <div className="tf-tagline">
                   Government. Transcended.
@@ -258,7 +258,7 @@ const App: React.FC = () => {
                     onClick={switchToOS}
                     className="tf-btn tf-btn-primary tf-ultimate-focusable tf-neural-sync"
                   >
-                    Enter TerraFusion OS
+                    Enter Terrafusion OS
                   </button>
                   <button className="tf-btn tf-btn-secondary tf-ultimate-focusable tf-transcend-pulse">
                     Discover Features

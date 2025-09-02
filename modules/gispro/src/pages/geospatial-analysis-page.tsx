@@ -410,6 +410,7 @@ export default function GeospatialAnalysisPage() {
 
               <CardTitle>Geospatial Analysis</CardTitle>
               <CardDescription
+</>
 </>>Perform advanced geospatial operations on map features</CardDescription>
             </CardHeader>
             <CardContent className="h-[calc(100%-8rem)]">
@@ -575,7 +576,8 @@ export default function GeospatialAnalysisPage() {
                   Clear Selection
                 </Button>
                 <Button
-</> variant="outline" size="sm" onClick={handleClearResults}>
+</>
+variant="outline" size="sm" onClick={handleClearResults}>
                   Clear Results
                 </Button>
                 <Button 
@@ -590,7 +592,8 @@ export default function GeospatialAnalysisPage() {
                   {!isMobile && "Buildings"}
                 </Button>
                 <Button
-</> 
+</>
+
                   variant={showPropertyListings ? "default" : "outline"} 
                   size="sm"
                   onClick={() => setShowPropertyListings(!showPropertyListings)}
@@ -607,13 +610,15 @@ export default function GeospatialAnalysisPage() {
                   Run Analysis
                 </Button>
                 <Button
-</> variant="default" size="sm" onClick={handleDownloadReport} disabled={!analysisResult}><>
+</>
+variant="default" size="sm" onClick={handleDownloadReport} disabled={!analysisResult}><>
 
                   <DownloadCloud className="mr-2 h-4 w-4" />
                   Download Report
                 </Button>
                 <FileImportExport
-</> 
+</>
+
                   features={selectedFeatures.length > 0 ? selectedFeatures : (resultFeatures ? resultFeatures : undefined)}
                   onImport={handleImportedData} 
                 />
@@ -630,6 +635,7 @@ export default function GeospatialAnalysisPage() {
 
               <CardTitle>Analysis Controls</CardTitle>
               <CardDescription
+</>
 </>>Select operation and parameters</CardDescription>
             </CardHeader>
             <CardContent>
@@ -643,7 +649,8 @@ export default function GeospatialAnalysisPage() {
 
                         <FormLabel>Operation</FormLabel>
                         <div
-</> className="grid grid-cols-2 gap-2">
+</>
+className="grid grid-cols-2 gap-2">
                           {Object.values(GeospatialOperationType).map((op) => (
                             <Button
                               key={op}
@@ -658,6 +665,7 @@ export default function GeospatialAnalysisPage() {
 
                               <span className="mr-2">{operationIcons[op]}</span>
                               <span
+</>
 </>>{operationLabels[op]}</span>
                             </Button>
                           ))}
@@ -671,7 +679,6 @@ export default function GeospatialAnalysisPage() {
                   
                   {/* Buffer-specific controls */}
                   {currentOperation === GeospatialOperationType.BUFFER && (
-                    <>
                       <FormField
                         control={form.control}
                         name="bufferDistance"
@@ -680,7 +687,8 @@ export default function GeospatialAnalysisPage() {
 
                             <FormLabel>Buffer Distance</FormLabel>
                             <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                               <Slider
                                 defaultValue={[field.value || 100]}
                                 min={1}
@@ -709,6 +717,7 @@ export default function GeospatialAnalysisPage() {
                             <FormLabel>Distance Unit</FormLabel>
                             <Select
 </>
+
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                             >
@@ -721,17 +730,18 @@ export default function GeospatialAnalysisPage() {
 
                                 <SelectItem value={MeasurementUnit.FEET}>Feet</SelectItem>
                                 <SelectItem
-</> value={MeasurementUnit.METERS}>Meters</SelectItem><>
+</>
+value={MeasurementUnit.METERS}>Meters</SelectItem><>
 
                                 <SelectItem value={MeasurementUnit.KILOMETERS}>Kilometers</SelectItem>
                                 <SelectItem
-</> value={MeasurementUnit.MILES}>Miles</SelectItem>
+</>
+value={MeasurementUnit.MILES}>Miles</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormItem>
                         )}
                       />
-                    </>
                   )}
                   
                   {/* Simplify-specific controls */}
@@ -744,7 +754,8 @@ export default function GeospatialAnalysisPage() {
 
                           <FormLabel>Simplification Tolerance</FormLabel>
                           <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                             <Slider
                               defaultValue={[field.value || 0.01]}
                               min={0.001}
@@ -763,6 +774,7 @@ export default function GeospatialAnalysisPage() {
                             />
                           </div>
                           <FormDescription
+</>
 </>>Higher values result in more simplification</FormDescription>
                         </FormItem>
                       )}
@@ -785,6 +797,7 @@ export default function GeospatialAnalysisPage() {
                           />
                         </FormControl>
                         <FormLabel
+</>
 </>>Preserve Properties</FormLabel>
                       </FormItem>
                     )}
@@ -809,6 +822,7 @@ export default function GeospatialAnalysisPage() {
 
                 <CardTitle>Analysis Results</CardTitle>
                 <CardDescription
+</>
 </>>
                   {operationLabels[analysisResult.type as GeospatialOperationType]} operation completed
                 </CardDescription>
@@ -819,7 +833,8 @@ export default function GeospatialAnalysisPage() {
 
                     <TabsTrigger value="summary" className="flex-1">Summary</TabsTrigger>
                     <TabsTrigger
-</> value="details" className="flex-1">Details</TabsTrigger>
+</>
+value="details" className="flex-1">Details</TabsTrigger>
                     <TabsTrigger value="metadata" className="flex-1">Metadata</TabsTrigger>
                   </TabsList>
                   
@@ -829,7 +844,8 @@ export default function GeospatialAnalysisPage() {
 
                         <span className="mr-2">{operationIcons[analysisResult.type as GeospatialOperationType]}</span>
                         <span
-</> className="font-medium">{operationLabels[analysisResult.type as GeospatialOperationType]}</span>
+</>
+className="font-medium">{operationLabels[analysisResult.type as GeospatialOperationType]}</span>
                       </div>
                       <Badge variant="outline">Success</Badge>
                     </div>
@@ -843,7 +859,8 @@ export default function GeospatialAnalysisPage() {
                           {analysisResult.result.toFixed(2)}
                         </div>
                         <div
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
                           {analysisResult.metadata?.unit || ''}
                         </div>
                       </div>
@@ -853,7 +870,8 @@ export default function GeospatialAnalysisPage() {
 
                           <span className="text-sm text-muted-foreground">Features:</span>
                           <span
-</> className="font-medium">
+</>
+className="font-medium">
                             {resultFeatures?.features?.length || 1}
                           </span>
                         </div>
@@ -863,7 +881,8 @@ export default function GeospatialAnalysisPage() {
 
                             <span className="text-sm text-muted-foreground">Total Area:</span>
                             <span
-</> className="font-medium">
+</>
+className="font-medium">
                               {analysisResult.metadata.area.toFixed(2)} {analysisResult.metadata.unit}
                             </span>
                           </div>
@@ -874,7 +893,8 @@ export default function GeospatialAnalysisPage() {
 
                             <span className="text-sm text-muted-foreground">Distance:</span>
                             <span
-</> className="font-medium">
+</>
+className="font-medium">
                               {analysisResult.metadata.distance.toFixed(2)} {analysisResult.metadata.unit}
                             </span>
                           </div>
@@ -893,6 +913,7 @@ export default function GeospatialAnalysisPage() {
 
                               <span className="text-muted-foreground">{key}:</span>
                               <span
+</>
 </>>{String(value)}</span>
                             </div>
                           ))}
@@ -913,7 +934,8 @@ export default function GeospatialAnalysisPage() {
 
                             <span className="text-sm text-muted-foreground">{key}:</span>
                             <span
-</> className="font-medium">{String(value)}</span>
+</>
+className="font-medium">{String(value)}</span>
                           </div>
                         ))}
                         
@@ -921,7 +943,8 @@ export default function GeospatialAnalysisPage() {
 
                           <span className="text-sm text-muted-foreground">Computation Time:</span>
                           <span
-</> className="font-medium">
+</>
+className="font-medium">
                             {analysisResult.metadata.computationTimeMs || 0} ms
                           </span>
                         </div>

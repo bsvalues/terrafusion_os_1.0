@@ -158,7 +158,8 @@ const AppWithAuth: React.FC = () => {
               ← Back to Main App
             </button>
             <span
-</> className="text-sm">Dev Mode Active</span>
+</>
+className="text-sm">Dev Mode Active</span>
           </div>
         </div>
         <UserDashboard user={currentUser} onLogout={handleLogout} />
@@ -184,7 +185,6 @@ const AppWithAuth: React.FC = () => {
               </div>
               <div className="flex items-center gap-4">
                 {currentUser ? (
-                  <>
                     <button
                       onClick={() => setShowDashboard(true)}
                       className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
@@ -198,7 +198,6 @@ const AppWithAuth: React.FC = () => {
                         <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
                       )}
                     </button>
-                  </>
                 ) : (
                   <button
                     onClick={() => setShowAuth(true)}
@@ -257,7 +256,8 @@ const AppWithAuth: React.FC = () => {
 
               <h1 className="text-xl font-bold text-white">Terrafusion</h1>
               <div
-</> className="hidden md:flex items-center gap-2"><>
+</>
+className="hidden md:flex items-center gap-2"><>
 
                 <button
                   onClick={() => setViewMode('government')}
@@ -271,6 +271,7 @@ const AppWithAuth: React.FC = () => {
                 </button>
                 <button
 </>
+
                   onClick={() => setViewMode('public')}
                   className={`px-3 py-1 rounded-lg transition-all ${
                     viewMode === 'public' 
@@ -296,7 +297,6 @@ const AppWithAuth: React.FC = () => {
             {/* Right side - User Actions */}
             <div className="flex items-center gap-4">
               {currentUser ? (
-                <>
                   <button
                     onClick={() => setShowPermitApp(true)}
                     className="hidden md:flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -307,6 +307,7 @@ const AppWithAuth: React.FC = () => {
                   </button>
                   <button
 </>
+
                     onClick={() => setShowDashboard(true)}
                     className="flex items-center gap-2 px-3 py-2 text-white/90 hover:text-white"
                   >
@@ -324,7 +325,6 @@ const AppWithAuth: React.FC = () => {
                       <Shield className="w-5 h-5 text-blue-400" />
                     </div>
                   )}
-                </>
               ) : (
                 <button
                   onClick={() => setShowAuth(true)}
@@ -364,6 +364,7 @@ const AppWithAuth: React.FC = () => {
                   </button>
                   <button
 </>
+
                     onClick={() => { setViewMode('transparency'); setMobileMenuOpen(false); }}
                     className="text-left px-3 py-2 text-white/90 hover:text-white"
                   >
@@ -453,6 +454,7 @@ const AppWithAuth: React.FC = () => {
           <span>Welcome back, {currentUser.name}! </span>
           <button
 </>
+
             onClick={() => setShowDashboard(true)}
             className="underline hover:no-underline"
           >
@@ -475,7 +477,8 @@ const AppWithAuth: React.FC = () => {
             ${countyStatus?.savings} IN ANNUAL SAVINGS IDENTIFIED
           </span>
           <Zap
-</> className="w-6 h-6 animate-pulse" />
+</>
+className="w-6 h-6 animate-pulse" />
         </div>
       </motion.div>
 
@@ -492,7 +495,8 @@ const AppWithAuth: React.FC = () => {
             Terrafusion Public Records - Benton County
           </h1>
           <p
-</> className="text-2xl text-purple-200">
+</>
+className="text-2xl text-purple-200">
             {BentonCountyData.statistics.totalParcels.toLocaleString()} parcels • {BentonCountyData.county.population.toLocaleString()} citizens • Already indexed.
           </p>
           <div className="mt-6 flex justify-center gap-8">
@@ -503,7 +507,8 @@ const AppWithAuth: React.FC = () => {
 
               <div className="text-3xl font-bold text-white">0.001s</div>
               <div
-</> className="text-sm text-purple-200">Search Speed</div>
+</>
+className="text-sm text-purple-200">Search Speed</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -512,7 +517,8 @@ const AppWithAuth: React.FC = () => {
 
               <div className="text-3xl font-bold text-white">379M×</div>
               <div
-</> className="text-sm text-purple-200">Faster than Legacy</div>
+</>
+className="text-sm text-purple-200">Faster than Legacy</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -521,7 +527,8 @@ const AppWithAuth: React.FC = () => {
 
               <div className="text-3xl font-bold text-white">$0</div>
               <div
-</> className="text-sm text-purple-200">Installation Cost</div>
+</>
+className="text-sm text-purple-200">Installation Cost</div>
             </motion.div>
           </div>
         </motion.div>
@@ -538,7 +545,8 @@ const AppWithAuth: React.FC = () => {
 
             <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
             <div
-</> className="grid grid-cols-2 md:grid-cols-4 gap-4">
+</>
+className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <button
                 onClick={() => setShowPermitApp(true)}
                 className="p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-white"
@@ -593,7 +601,8 @@ const AppWithAuth: React.FC = () => {
               AI Already Found These Issues
             </h2>
             <AIInsights
-</> discoveries={aiDiscoveries} />
+</>
+discoveries={aiDiscoveries} />
           </motion.div>
         </section>
       )}
@@ -611,7 +620,8 @@ const AppWithAuth: React.FC = () => {
             Your County's Real-Time Pulse
           </h2>
           <CountyPulse
-</> />
+</>
+/>
         </motion.div>
       </section>
 
@@ -629,7 +639,8 @@ const AppWithAuth: React.FC = () => {
             Migrate from Legacy CAMA Systems Now
           </h2>
           <p
-</> className="text-xl text-white/80 mb-6">
+</>
+className="text-xl text-white/80 mb-6">
             Migration completes in 60 seconds. During their next sales call.
           </p>
           <button
@@ -716,7 +727,8 @@ const AppWithAuth: React.FC = () => {
             Your competitors are still writing RFPs.
           </p>
           <p
-</> className="text-3xl font-bold text-white">
+</>
+className="text-3xl font-bold text-white">
             We've already won.
           </p>
           <div className="mt-8 text-sm text-purple-300">

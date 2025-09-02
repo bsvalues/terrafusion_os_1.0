@@ -250,7 +250,8 @@ function checkBuildingCompliance(setback: number, zoning: string) {
 
               <h1 className="text-xl font-bold">Terrafusion IDE</h1>
               <span
-</> className="text-sm text-gray-400">Benton County Development Environment</span>
+</>
+className="text-sm text-gray-400">Benton County Development Environment</span>
             </div>
             
             <div className="flex items-center space-x-2">
@@ -290,6 +291,7 @@ function checkBuildingCompliance(setback: number, zoning: string) {
 
                 <span>County Data: {countyContext.total_documents} documents</span>
                 <span
+</>
 </>>Properties: {countyContext.properties_count}</span>
                 <span>Regulations: {countyContext.regulations_count}</span>
               </div>
@@ -367,18 +369,15 @@ function checkBuildingCompliance(setback: number, zoning: string) {
                 disabled={isQuerying || !aiQuestion.trim()}
                 className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-md transition-colors"
               >
-                {isQuerying ? (
-                  <><>
+                {isQuerying ? (<>
 
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     <span
+</>
 </>>Thinking...</span>
-                  </>
                 ) : (
-                  <>
                     <MessageSquare className="w-4 h-4" />
                     <span>Ask AI</span>
-                  </>
                 )}
               </button>
             </div>
@@ -393,7 +392,8 @@ function checkBuildingCompliance(setback: number, zoning: string) {
 
                     <span className="text-sm font-medium text-blue-400">AI Response</span>
                     <span
-</> className="text-xs text-gray-400">
+</>
+className="text-xs text-gray-400">
                       Confidence: {(aiResponse.confidence * 100).toFixed(0)}%
                     </span>
                   </div>

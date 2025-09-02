@@ -45,7 +45,8 @@ export function InvestmentTracking() {
 
               <h4 className="text-white font-medium">{investment.category}</h4>
               <Badge
-</> variant="secondary" className="bg-primary/20 text-primary">
+</>
+variant="secondary" className="bg-primary/20 text-primary">
                 {investment.status}
               </Badge>
             </div>
@@ -54,19 +55,22 @@ export function InvestmentTracking() {
 
                 <p className="text-gray-400">Allocated</p>
                 <p
-</> className="text-white font-semibold">{investment.allocated}</p>
+</>
+className="text-white font-semibold">{investment.allocated}</p>
               </div>
               <div><>
 
                 <p className="text-gray-400">Spent</p>
                 <p
-</> className="text-accent font-semibold">{investment.spent}</p>
+</>
+className="text-accent font-semibold">{investment.spent}</p>
               </div>
               <div><>
 
                 <p className="text-gray-400">Remaining</p>
                 <p
-</> className="text-transcend font-semibold">{investment.remaining}</p>
+</>
+className="text-transcend font-semibold">{investment.remaining}</p>
               </div>
             </div>
           </div>

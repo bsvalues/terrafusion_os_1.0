@@ -61,9 +61,12 @@ export const ModuleErrorBoundary: React.FC<ModuleErrorBoundaryProps> = ({
         <Card className='w-full max-w-md mx-auto'>
           <CardHeader className='text-center'>
             <div className='mx-auto mb-3 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center'>
+
+
               <Warning className='w-6 h-6 text-red-600' />
             </div>
             <CardTitle
+
 className='text-xl font-bold text-red-900'>Module Error</CardTitle>
             <CardDescription className='text-red-700'>
               {moduleName} encountered an unexpected error
@@ -73,8 +76,11 @@ className='text-xl font-bold text-red-900'>Module Error</CardTitle>
           <CardContent className='space-y-4'>
             <Alert className='border-red-200 bg-red-50'>
               <Warning className='h-4 w-4 text-red-600' />
+
+
               <AlertTitle className='text-red-800'>What happened?</AlertTitle>
               <AlertDescription
+
 className='text-red-700'>
                 The {moduleName} module stopped working due to an unexpected error. This might be
                 due to corrupted data, network issues, or a temporary system problem.
@@ -182,9 +188,12 @@ export const AIProcessingErrorBoundary: React.FC<{
       <Card className='w-full max-w-md mx-auto'>
         <CardHeader className='text-center'>
           <div className='mx-auto mb-3 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center'>
+
+
             <Warning className='w-6 h-6 text-blue-600' />
           </div>
           <CardTitle
+
 className='text-xl font-bold text-blue-900'>AI Processing Error</CardTitle>
           <CardDescription className='text-blue-700'>
             {processingType} is temporarily unavailable
@@ -194,13 +203,19 @@ className='text-xl font-bold text-blue-900'>AI Processing Error</CardTitle>
         <CardContent className='space-y-4'>
           <Alert className='border-blue-200 bg-blue-50'>
             <Warning className='h-4 w-4 text-blue-600' />
+
+
             <AlertTitle className='text-blue-800'>AI Service Issue</AlertTitle>
             <AlertDescription
+
 className='text-blue-700'>
               The AI processing service is experiencing issues. This could be due to:
               <ul className='mt-2 list-disc list-inside text-sm'>
+
+
                 <li>High processing load</li>
                             <li
+
 >Model initialization</li>
                 <li>Network connectivity</li>
               </ul>
@@ -212,11 +227,14 @@ className='text-blue-700'>
               onClick={() => window.location.reload()}
               className='flex items-center justify-center gap-2'
             >
+
+
               <Refresh className='w-4 h-4' />
               Retry AI Processing
             </Button>
 
             <Button
+
 onClick={() => (window.location.href = '/dashboard')}
               variant='outline'
               className='flex items-center justify-center gap-2'

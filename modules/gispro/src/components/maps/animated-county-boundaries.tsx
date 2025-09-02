@@ -200,6 +200,7 @@ export function AnimatedCountyBoundaries({
       
       <Button
 </>
+
         size="sm"
         variant={currentState === 'township' ? 'default' : 'outline'}
         onClick={() => transitionTo('township')}
@@ -209,7 +210,6 @@ export function AnimatedCountyBoundaries({
         Township
       </Button><>
 
-      
       <Button
         size="sm"
         variant={currentState === 'section' ? 'default' : 'outline'}
@@ -222,6 +222,7 @@ export function AnimatedCountyBoundaries({
       
       <Button
 </>
+
         size="sm"
         variant={currentState === 'parcel' ? 'default' : 'outline'}
         onClick={() => transitionTo('parcel')}

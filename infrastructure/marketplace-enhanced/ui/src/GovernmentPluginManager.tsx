@@ -210,7 +210,8 @@ export const GovernmentPluginManager: React.FC = () => {
 
           <h3>{plugin.name}</h3>
           <span
-</> className="tf-plugin-version">v{plugin.version}</span>
+</>
+className="tf-plugin-version">v{plugin.version}</span>
         </div>
         <div className="tf-plugin-badges"><>
 
@@ -221,7 +222,8 @@ export const GovernmentPluginManager: React.FC = () => {
             {plugin.governmentTier.toUpperCase()}
           </span>
           <span
-</> 
+</>
+
             className="tf-validation-badge"
             style={{ color: getStatusColor(plugin.validationStatus) }}
           >
@@ -235,30 +237,35 @@ export const GovernmentPluginManager: React.FC = () => {
         <p className="tf-plugin-description">{plugin.description}</p>
         
         <div
-</> className="tf-plugin-metrics">
+</>
+className="tf-plugin-metrics">
           <div className="tf-metric-item"><>
 
             <span className="tf-metric-label">Security Rating</span>
             <span
-</> className="tf-metric-value">{plugin.securityRating}/10</span>
+</>
+className="tf-metric-value">{plugin.securityRating}/10</span>
           </div>
           <div className="tf-metric-item"><>
 
             <span className="tf-metric-label">AI Confidence</span>
             <span
-</> className="tf-metric-value">{Math.round(plugin.aiConfidenceScore * 100)}%</span>
+</>
+className="tf-metric-value">{Math.round(plugin.aiConfidenceScore * 100)}%</span>
           </div>
           <div className="tf-metric-item"><>
 
             <span className="tf-metric-label">Active Counties</span>
             <span
-</> className="tf-metric-value">{plugin.deployedCounties.length}</span>
+</>
+className="tf-metric-value">{plugin.deployedCounties.length}</span>
           </div>
           <div className="tf-metric-item"><>
 
             <span className="tf-metric-label">Monthly Users</span>
             <span
-</> className="tf-metric-value">{plugin.monthlyActiveUsers}</span>
+</>
+className="tf-metric-value">{plugin.monthlyActiveUsers}</span>
           </div>
         </div>
 
@@ -288,7 +295,8 @@ export const GovernmentPluginManager: React.FC = () => {
 
         <button className="tf-btn tf-btn-primary tf-btn-sm">Deploy</button>
         <button
-</> className="tf-btn tf-btn-outline tf-btn-sm">Configure</button>
+</>
+className="tf-btn tf-btn-outline tf-btn-sm">Configure</button>
         <button className="tf-btn tf-btn-outline tf-btn-sm">Audit</button>
       </div>
     </div>
@@ -305,7 +313,8 @@ export const GovernmentPluginManager: React.FC = () => {
 
               <h2>{selectedPlugin.name}</h2>
               <button
-</> 
+</>
+
                 className="tf-close-btn"
                 onClick={() => setSelectedPlugin(null)}
               >
@@ -321,7 +330,8 @@ export const GovernmentPluginManager: React.FC = () => {
                 {selectedPlugin.governmentTier.toUpperCase()}
               </span>
               <span
-</> 
+</>
+
                 className="tf-validation-badge"
                 style={{ color: getStatusColor(selectedPlugin.validationStatus) }}
               >
@@ -335,29 +345,34 @@ export const GovernmentPluginManager: React.FC = () => {
 
               <h3>Plugin Information</h3>
               <div
-</> className="tf-detail-grid">
+</>
+className="tf-detail-grid">
                 <div className="tf-detail-item"><>
 
                   <span>Version:</span>
                   <span
+</>
 </>>{selectedPlugin.version}</span>
                 </div>
                 <div className="tf-detail-item"><>
 
                   <span>Publisher:</span>
                   <span
+</>
 </>>{selectedPlugin.publisher}</span>
                 </div>
                 <div className="tf-detail-item"><>
 
                   <span>Category:</span>
                   <span
+</>
 </>>{selectedPlugin.category.toUpperCase()}</span>
                 </div>
                 <div className="tf-detail-item"><>
 
                   <span>Deployment Method:</span>
                   <span
+</>
 </>>{selectedPlugin.deploymentMethod.toUpperCase()}</span>
                 </div>
               </div>
@@ -367,12 +382,14 @@ export const GovernmentPluginManager: React.FC = () => {
 
               <h3>Security & Compliance</h3>
               <div
-</> className="tf-security-metrics">
+</>
+className="tf-security-metrics">
                 <div className="tf-security-item"><>
 
                   <span>Security Rating:</span>
                   <div
-</> className="tf-rating-bar">
+</>
+className="tf-rating-bar">
                     <div 
                       className="tf-rating-fill"
                       style={{ width: `${selectedPlugin.securityRating * 10}%` }}
@@ -384,7 +401,8 @@ export const GovernmentPluginManager: React.FC = () => {
 
                   <span>AI Confidence:</span>
                   <div
-</> className="tf-rating-bar">
+</>
+className="tf-rating-bar">
                     <div 
                       className="tf-rating-fill"
                       style={{ width: `${selectedPlugin.aiConfidenceScore * 100}%` }}
@@ -397,7 +415,8 @@ export const GovernmentPluginManager: React.FC = () => {
 
                 <span>Compliance Level: </span>
                 <span
-</> style={{ color: getStatusColor('validated') }}>
+</>
+style={{ color: getStatusColor('validated') }}>
                   {selectedPlugin.complianceLevel.toUpperCase()}
                 </span>
               </div>
@@ -407,12 +426,14 @@ export const GovernmentPluginManager: React.FC = () => {
 
               <h3>Deployment & Usage</h3>
               <div
-</> className="tf-deployment-info">
+</>
+className="tf-deployment-info">
                 <div className="tf-deployment-item"><>
 
                   <span>Deployed Counties:</span>
                   <div
-</> className="tf-county-list">
+</>
+className="tf-county-list">
                     {selectedPlugin.deployedCounties.map(county => (
                       <span key={county} className="tf-county-tag">{county}</span>
                     ))}
@@ -422,7 +443,8 @@ export const GovernmentPluginManager: React.FC = () => {
 
                   <span>Supported Platforms:</span>
                   <div
-</> className="tf-platform-list">
+</>
+className="tf-platform-list">
                     {selectedPlugin.supportedPlatforms.map(platform => (
                       <span key={platform} className="tf-platform-tag">{platform}</span>
                     ))}
@@ -432,12 +454,14 @@ export const GovernmentPluginManager: React.FC = () => {
 
                   <span>Monthly Usage:</span>
                   <span
+</>
 </>>{selectedPlugin.monthlyUsage.toLocaleString()} operations</span>
                 </div>
                 <div className="tf-deployment-item"><>
 
                   <span>Active Users:</span>
                   <span
+</>
 </>>{selectedPlugin.monthlyActiveUsers} users</span>
                 </div>
               </div>
@@ -447,23 +471,27 @@ export const GovernmentPluginManager: React.FC = () => {
 
               <h3>Licensing & Billing</h3>
               <div
-</> className="tf-billing-info">
+</>
+className="tf-billing-info">
                 <div className="tf-billing-item"><>
 
                   <span>License Type:</span>
                   <span
+</>
 </>>{selectedPlugin.licenseType.toUpperCase()}</span>
                 </div>
                 <div className="tf-billing-item"><>
 
                   <span>Pricing Tier:</span>
                   <span
+</>
 </>>{selectedPlugin.pricingTier.toUpperCase()}</span>
                 </div>
                 <div className="tf-billing-item"><>
 
                   <span>Monthly Cost:</span>
                   <span
+</>
 </>>${selectedPlugin.usageCost.toLocaleString()}</span>
                 </div>
               </div>
@@ -474,11 +502,13 @@ export const GovernmentPluginManager: React.FC = () => {
 
             <button className="tf-btn tf-btn-primary">Deploy to County</button>
             <button
-</> className="tf-btn tf-btn-outline">Configure Settings</button><>
+</>
+className="tf-btn tf-btn-outline">Configure Settings</button><>
 
             <button className="tf-btn tf-btn-outline">View Audit Trail</button>
             <button
-</> className="tf-btn tf-btn-outline">Generate Report</button>
+</>
+className="tf-btn tf-btn-outline">Generate Report</button>
           </div>
         </div>
       </div>
@@ -492,6 +522,7 @@ export const GovernmentPluginManager: React.FC = () => {
 
           <h1>Government Plugin Marketplace</h1>
           <p
+</>
 </>>Federated Software Ecosystem for Municipal Operations</p>
         </div>
         <div className="tf-header-stats">
@@ -499,19 +530,22 @@ export const GovernmentPluginManager: React.FC = () => {
 
             <span className="tf-stat-number">{plugins.length}</span>
             <span
-</> className="tf-stat-label">Available Plugins</span>
+</>
+className="tf-stat-label">Available Plugins</span>
           </div>
           <div className="tf-stat"><>
 
             <span className="tf-stat-number">{plugins.filter(p => p.validationStatus === 'validated').length}</span>
             <span
-</> className="tf-stat-label">Validated</span>
+</>
+className="tf-stat-label">Validated</span>
           </div>
           <div className="tf-stat"><>
 
             <span className="tf-stat-number">{plugins.reduce((sum, p) => sum + p.deployedCounties.length, 0)}</span>
             <span
-</> className="tf-stat-label">Deployments</span>
+</>
+className="tf-stat-label">Deployments</span>
           </div>
         </div>
       </div>
@@ -529,7 +563,8 @@ export const GovernmentPluginManager: React.FC = () => {
         </div>
 
         <div
-</> className="tf-filter-section">
+</>
+className="tf-filter-section">
           <select 
             value={filterCategory} 
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -540,19 +575,23 @@ export const GovernmentPluginManager: React.FC = () => {
 
             <option value="all">All Categories</option>
             <option
-</> value="assessment">Assessment</option><>
+</>
+value="assessment">Assessment</option><>
 
             <option value="taxation">Taxation</option>
             <option
-</> value="gis">GIS</option><>
+</>
+value="gis">GIS</option><>
 
             <option value="compliance">Compliance</option>
             <option
-</> value="reporting">Reporting</option><>
+</>
+value="reporting">Reporting</option><>
 
             <option value="pilt">PILT</option>
             <option
-</> value="costforge">CostForge</option>
+</>
+value="costforge">CostForge</option>
           </select>
 
           <select 
@@ -565,11 +604,13 @@ export const GovernmentPluginManager: React.FC = () => {
 
             <option value="all">All Tiers</option>
             <option
-</> value="county">County</option><>
+</>
+value="county">County</option><>
 
             <option value="state">State</option>
             <option
-</> value="federal">Federal</option>
+</>
+value="federal">Federal</option>
             <option value="multi-jurisdictional">Multi-Jurisdictional</option>
           </select>
 
@@ -581,11 +622,13 @@ export const GovernmentPluginManager: React.FC = () => {
 
             <option value="all">All Status</option>
             <option
-</> value="validated">Validated</option><>
+</>
+value="validated">Validated</option><>
 
             <option value="pending">Pending</option>
             <option
-</> value="failed">Failed</option>
+</>
+value="failed">Failed</option>
           </select>
         </div>
 
@@ -598,7 +641,8 @@ export const GovernmentPluginManager: React.FC = () => {
             Grid
           </button>
           <button
-</> 
+</>
+
             className={`tf-view-btn ${viewMode === 'list' ? 'active' : ''}`}
             onClick={() => setViewMode('list')}
           >

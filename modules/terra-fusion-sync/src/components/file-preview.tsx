@@ -106,7 +106,8 @@ export function FilePreview({ file }: FilePreviewProps) {
 
             <span className="font-medium">{key}: </span>
             <span
-</> className="text-muted-foreground">{value?.toString() || 'N/A'}</span>
+</>
+className="text-muted-foreground">{value?.toString() || 'N/A'}</span>
           </div>
         ))}
       </div>
@@ -121,11 +122,13 @@ export function FilePreview({ file }: FilePreviewProps) {
 
           <CardTitle className="text-lg truncate" title={file.name}>{file.name}</CardTitle>
           <div
-</> className="flex items-center gap-2 mt-1"><>
+</>
+className="flex items-center gap-2 mt-1"><>
 
             <Badge variant="secondary">{file.type}</Badge>
             <span
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
               {formatBytes(file.size)}
             </span>
           </div>
@@ -143,7 +146,8 @@ export function FilePreview({ file }: FilePreviewProps) {
               AI Summary
             </h4>
             <p
-</> className="text-sm text-muted-foreground line-clamp-3">{file.aiSummary}</p>
+</>
+className="text-sm text-muted-foreground line-clamp-3">{file.aiSummary}</p>
           </div>
         )}
       </CardContent>
@@ -178,7 +182,8 @@ export function FilePreview({ file }: FilePreviewProps) {
 
                 <TabsTrigger value="preview">Preview</TabsTrigger>
                 <TabsTrigger
-</> value="metadata">Metadata</TabsTrigger>
+</>
+value="metadata">Metadata</TabsTrigger>
                 <TabsTrigger value="analysis">AI Analysis</TabsTrigger>
               </TabsList>
               
@@ -190,7 +195,8 @@ export function FilePreview({ file }: FilePreviewProps) {
 
                     <p>Detailed preview available based on file type</p>
                     <p
-</> className="text-sm text-muted-foreground mt-2">
+</>
+className="text-sm text-muted-foreground mt-2">
                       Integration with specialized viewers for different file formats
                     </p>
                   </div>
@@ -202,30 +208,35 @@ export function FilePreview({ file }: FilePreviewProps) {
 
                   <h3 className="text-lg font-medium mb-3">File Information</h3>
                   <div
-</> className="grid grid-cols-2 gap-y-3 text-sm">
+</>
+className="grid grid-cols-2 gap-y-3 text-sm">
                     <div><>
 
                       <span className="font-medium">Name: </span>
                       <span
-</> className="text-muted-foreground">{file.name}</span>
+</>
+className="text-muted-foreground">{file.name}</span>
                     </div>
                     <div><>
 
                       <span className="font-medium">Size: </span>
                       <span
-</> className="text-muted-foreground">{formatBytes(file.size)}</span>
+</>
+className="text-muted-foreground">{formatBytes(file.size)}</span>
                     </div>
                     <div><>
 
                       <span className="font-medium">Type: </span>
                       <span
-</> className="text-muted-foreground">{file.type}</span>
+</>
+className="text-muted-foreground">{file.type}</span>
                     </div>
                     <div><>
 
                       <span className="font-medium">Created: </span>
                       <span
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
                         {file.createdAt ? new Date(file.createdAt).toLocaleString() : 'Unknown'}
                       </span>
                     </div>
@@ -233,27 +244,28 @@ export function FilePreview({ file }: FilePreviewProps) {
 
                       <span className="font-medium">Path: </span>
                       <span
-</> className="text-muted-foreground">{file.path}</span>
+</>
+className="text-muted-foreground">{file.path}</span>
                     </div>
                     <div><>
 
                       <span className="font-medium">Category: </span>
                       <span
-</> className="text-muted-foreground">{file.category || 'Uncategorized'}</span>
+</>
+className="text-muted-foreground">{file.category || 'Uncategorized'}</span>
                     </div>
                     <div><>
 
                       <span className="font-medium">Transfer Type: </span>
                       <span
-</> className="text-muted-foreground">{file.transferType || 'local'}</span>
+</>
+className="text-muted-foreground">{file.transferType || 'local'}</span>
                     </div>
                   </div>
                   
                   {file.metadata && Object.keys(file.metadata).length > 0 && (
-                    <>
                       <h3 className="text-lg font-medium mt-6 mb-3">Extended Metadata</h3>
                       {renderMetadata()}
-                    </>
                   )}
                 </div>
               </TabsContent>
@@ -273,34 +285,40 @@ export function FilePreview({ file }: FilePreviewProps) {
 
                   <h3 className="text-lg font-medium mt-6 mb-3">Content Statistics</h3>
                   <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                     <div>
                       <div className="flex justify-between text-sm mb-1"><>
 
                         <span>Relevance Score</span>
                         <span
+</>
 </>>78%</span>
                       </div><>
 
                       <Progress value={78} />
                     </div>
                     <div
+</>
 </>>
                       <div className="flex justify-between text-sm mb-1"><>
 
                         <span>Data Quality</span>
                         <span
+</>
 </>>92%</span>
                       </div><>
 
                       <Progress value={92} />
                     </div>
                     <div
+</>
 </>>
                       <div className="flex justify-between text-sm mb-1"><>
 
                         <span>Processing Status</span>
                         <span
+</>
 </>>100%</span>
                       </div>
                       <Progress value={100} />
@@ -316,7 +334,8 @@ export function FilePreview({ file }: FilePreviewProps) {
                 Close
               </Button>
               <Button
-</> size="sm">
+</>
+size="sm">
                 <Download className="h-4 w-4 mr-1" /> Download
               </Button>
             </div>

@@ -248,11 +248,11 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
   };
 
   return (
-    <>
       <DialogHeader><>
 
         <DialogTitle>Create New Task</DialogTitle>
         <DialogDescription
+</>
 </>>
           Create a new task and assign it to a team member. Tasks help break down project work into manageable pieces.
         </DialogDescription>
@@ -270,6 +270,7 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                   <FormLabel>Task Title *</FormLabel>
                   <FormControl
+</>
 </>><>
 
                     <Input 
@@ -278,7 +279,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
                     />
                   </FormControl>
                   <FormMessage
-</> />
+</>
+/>
                 </FormItem>
               )}
             />
@@ -291,7 +293,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                   <FormLabel>Task Type</FormLabel>
                   <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select task type" />
@@ -307,7 +310,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
                               {type.replace('_', ' ')}
                             </div>
                             <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                               {getTaskTypeDescription(type)}
                             </div>
                           </div>
@@ -330,6 +334,7 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                 <FormLabel>Description *</FormLabel>
                 <FormControl
+</>
 </>><>
 
                   <Textarea
@@ -339,7 +344,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
                   />
                 </FormControl>
                 <FormMessage
-</> />
+</>
+/>
               </FormItem>
             )}
           />
@@ -353,7 +359,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                   <FormLabel>Priority</FormLabel>
                   <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select priority" />
@@ -369,7 +376,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
                               {priority.charAt(0).toUpperCase() + priority.slice(1)}
                             </div>
                             <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                               {getPriorityDescription(priority)}
                             </div>
                           </div>
@@ -391,7 +399,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                   <FormLabel>Project *</FormLabel>
                   <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select project" />
@@ -404,7 +413,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                             <div className="font-medium">{project.name}</div>
                             <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                               {project.team.name} • {project.status}
                             </div>
                           </div>
@@ -426,7 +436,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                 <FormLabel>Assignee</FormLabel>
                 <Popover
-</> open={assigneeComboboxOpen} onOpenChange={setAssigneeComboboxOpen}>
+</>
+open={assigneeComboboxOpen} onOpenChange={setAssigneeComboboxOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
@@ -457,6 +468,7 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                       <CommandEmpty>No team members found.</CommandEmpty>
                       <CommandGroup
+</>
 </>>
                         <CommandItem
                           value=""
@@ -500,7 +512,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                                 <div className="font-medium">{assignee.name}</div>
                                 <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                                   {assignee.role} • {assignee.department}
                                 </div>
                               </div>
@@ -525,6 +538,7 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                   <FormLabel>Due Date</FormLabel>
                   <Popover
+</>
 </>>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -566,6 +580,7 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
                   <FormLabel>Estimated Hours</FormLabel>
                   <FormControl
+</>
 </>>
                     <div className="relative">
                       <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -591,6 +606,7 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
             <FormLabel>Tags</FormLabel>
             <FormControl
+</>
 </>>
               <div className="space-y-2">
                 <div className="flex gap-2">
@@ -633,29 +649,34 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
 
               <h4 className="font-medium text-sm mb-2">Project Details</h4>
               <div
-</> className="grid grid-cols-2 gap-4 text-sm">
+</>
+className="grid grid-cols-2 gap-4 text-sm">
                 <div><>
 
                   <span className="text-muted-foreground">Team: </span>
                   <span
+</>
 </>>{selectedProject.team.name}</span>
                 </div>
                 <div><>
 
                   <span className="text-muted-foreground">Status: </span>
                   <span
+</>
 </>>{selectedProject.status.replace('_', ' ')}</span>
                 </div>
                 <div><>
 
                   <span className="text-muted-foreground">Due: </span>
                   <span
+</>
 </>>{format(new Date(selectedProject.timeline.endDate), 'PPP')}</span>
                 </div>
                 <div><>
 
                   <span className="text-muted-foreground">Tasks: </span>
                   <span
+</>
 </>>{selectedProject.tasks.length} existing</span>
                 </div>
               </div>
@@ -668,7 +689,8 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
               Cancel
             </Button>
             <Button
-</> 
+</>
+
               type="submit" 
               disabled={!isValid || createTaskMutation.isLoading}
             >
@@ -677,7 +699,6 @@ export const TaskCreateDialog: React.FC<TaskCreateDialogProps> = ({
           </div>
         </form>
       </Form>
-    </>
   );
 };
 

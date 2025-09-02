@@ -148,10 +148,12 @@ export const ReportsDashboard = () => {
 
                   <p className="mb-1">• View your reports and their status</p>
                   <p
-</> className="mb-1">• Generate new reports from templates</p><>
+</>
+className="mb-1">• Generate new reports from templates</p><>
 
                   <p className="mb-1">• Schedule automated report generation</p>
                   <p
+</>
 </>>• Export reports in various formats</p>
                 </div>
               }
@@ -172,13 +174,15 @@ export const ReportsDashboard = () => {
             Reports
           </TabsTrigger>
           <TabsTrigger
-</> value="generate"><>
+</>
+value="generate"><>
 
             <Plus className="h-4 w-4 mr-2" />
             Generate
           </TabsTrigger>
           <TabsTrigger
-</> value="schedule">
+</>
+value="schedule">
             <Calendar className="h-4 w-4 mr-2" />
             Schedule
           </TabsTrigger>
@@ -190,6 +194,7 @@ export const ReportsDashboard = () => {
 
               <CardTitle>Reports List</CardTitle>
               <CardDescription
+</>
 </>>
                 View and manage previously generated reports
               </CardDescription>
@@ -208,7 +213,8 @@ export const ReportsDashboard = () => {
                 </div>
                 
                 <div
-</> className="flex gap-2">
+</>
+className="flex gap-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" className="flex items-center gap-1">
@@ -303,7 +309,8 @@ export const ReportsDashboard = () => {
 
                   <h3 className="text-lg font-medium">No reports found</h3>
                   <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
                     {searchTerm || statusFilter
                       ? "Try adjusting your filters or create a new report"
                       : "Start by generating a new report from the 'Generate' tab"}
@@ -317,15 +324,18 @@ export const ReportsDashboard = () => {
 
                         <TableHead>Name</TableHead>
                         <TableHead
+</>
 </>>Template</TableHead><>
 
                         <TableHead>Status</TableHead>
                         <TableHead
+</>
 </>>Created</TableHead><>
 
                         <TableHead>Completed</TableHead>
                         <TableHead
-</> className="text-right">Actions</TableHead>
+</>
+className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -334,11 +344,13 @@ export const ReportsDashboard = () => {
 
                           <TableCell className="font-medium">{report.name}</TableCell>
                           <TableCell
+</>
 </>>{report.templateName}</TableCell><>
 
                           <TableCell>{getStatusBadge(report.status)}</TableCell>
                           <TableCell
-</> className="whitespace-nowrap">
+</>
+className="whitespace-nowrap">
                             {format(parseISO(report.createdAt), 'MMM d, yyyy h:mm a')}
                           </TableCell><>
 
@@ -349,7 +361,8 @@ export const ReportsDashboard = () => {
                             }
                           </TableCell>
                           <TableCell
-</> className="text-right">
+</>
+className="text-right">
                             <div className="flex items-center justify-end gap-2">
                               <Button
                                 variant="ghost"
@@ -414,7 +427,8 @@ export const ReportsDashboard = () => {
         </TabsContent>
         
         <TabsContent
-</> value="schedule">
+</>
+value="schedule">
           <ReportScheduler />
         </TabsContent>
       </Tabs>

@@ -9,7 +9,8 @@ const ComplianceMonitor = () => {
 
           <h1 className="legislative-title">Compliance Monitor</h1>
           <p
-</> className="legislative-body mt-1">Track regulatory requirements and compliance deadlines</p>
+</>
+className="legislative-body mt-1">Track regulatory requirements and compliance deadlines</p>
         </div>
         <div className="flex space-x-3">
           <button className="legislative-button">
@@ -27,7 +28,8 @@ const ComplianceMonitor = () => {
 
               <p className="text-sm font-medium text-gray-600">Compliant</p>
               <p
-</> className="text-2xl font-bold text-green-600 mt-1">23</p>
+</>
+className="text-2xl font-bold text-green-600 mt-1">23</p>
             </div>
             <CheckCircle className="w-8 h-8 text-green-500" />
           </div>
@@ -38,7 +40,8 @@ const ComplianceMonitor = () => {
 
               <p className="text-sm font-medium text-gray-600">Pending</p>
               <p
-</> className="text-2xl font-bold text-yellow-600 mt-1">8</p>
+</>
+className="text-2xl font-bold text-yellow-600 mt-1">8</p>
             </div>
             <Clock className="w-8 h-8 text-yellow-500" />
           </div>
@@ -49,7 +52,8 @@ const ComplianceMonitor = () => {
 
               <p className="text-sm font-medium text-gray-600">At Risk</p>
               <p
-</> className="text-2xl font-bold text-red-600 mt-1">3</p>
+</>
+className="text-2xl font-bold text-red-600 mt-1">3</p>
             </div>
             <Warning className="w-8 h-8 text-red-500" />
           </div>
@@ -60,7 +64,8 @@ const ComplianceMonitor = () => {
 
               <p className="text-sm font-medium text-gray-600">Protected</p>
               <p
-</> className="text-2xl font-bold text-blue-600 mt-1">98%</p>
+</>
+className="text-2xl font-bold text-blue-600 mt-1">98%</p>
             </div>
             <Shield className="w-8 h-8 text-blue-500" />
           </div>
@@ -72,7 +77,8 @@ const ComplianceMonitor = () => {
 
         <h2 className="legislative-subtitle mb-4">Upcoming Compliance Deadlines</h2>
         <div
-</> className="space-y-4">
+</>
+className="space-y-4">
           {[
             {
               title: 'Property Assessment Data Validation',
@@ -114,7 +120,8 @@ const ComplianceMonitor = () => {
 
                     <h3 className="font-semibold text-gray-900">{item.title}</h3>
                     <span
-</> className={`status-badge text-xs ${
+</>
+className={`status-badge text-xs ${
                       item.priority === 'critical' ? 'priority-critical' :
                       item.priority === 'high' ? 'priority-high' :
                       'priority-medium'
@@ -132,14 +139,16 @@ const ComplianceMonitor = () => {
 
                   <p className="text-sm text-gray-600 mb-2">{item.requirement}</p>
                   <div
-</> className="flex items-center space-x-4 text-sm">
+</>
+className="flex items-center space-x-4 text-sm">
                     <div className="flex items-center text-gray-500"><>
 
                       <Calendar className="w-4 h-4 mr-1" />
                       Due {new Date(item.deadline).toLocaleDateString()}
                     </div>
                     <div
-</> className={`flex items-center ${
+</>
+className={`flex items-center ${
                       item.daysLeft <= 14 ? 'text-red-600' :
                       item.daysLeft <= 30 ? 'text-yellow-600' :
                       'text-green-600'
@@ -169,7 +178,8 @@ const ComplianceMonitor = () => {
 
         <h2 className="legislative-subtitle mb-4">Compliance Categories</h2>
         <div
-</> className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             {
               category: 'Data Privacy',
@@ -213,7 +223,8 @@ const ComplianceMonitor = () => {
 
                 <h3 className="font-medium text-gray-900">{cat.category}</h3>
                 <div
-</> className={`w-3 h-3 rounded-full ${
+</>
+className={`w-3 h-3 rounded-full ${
                   cat.status === 'excellent' ? 'bg-green-500' :
                   cat.status === 'good' ? 'bg-blue-500' :
                   cat.status === 'warning' ? 'bg-yellow-500' :
@@ -225,6 +236,7 @@ const ComplianceMonitor = () => {
 
                   <span>{cat.compliant} of {cat.requirements} compliant</span>
                   <span
+</>
 </>>{Math.round((cat.compliant / cat.requirements) * 100)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">

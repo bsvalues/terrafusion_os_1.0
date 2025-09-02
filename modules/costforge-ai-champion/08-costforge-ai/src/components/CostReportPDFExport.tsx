@@ -159,7 +159,6 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
   };
 
   return (
-    <>
       <Button 
         variant="outline" 
         className="flex items-center"
@@ -167,15 +166,11 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
         disabled={exporting}
       >
         {exporting ? (
-          <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Exporting...
-          </>
         ) : (
-          <>
             <FileDown className="mr-2 h-4 w-4" />
             Export as PDF
-          </>
         )}
       </Button>
       
@@ -186,7 +181,8 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
             <h2 className="text-2xl font-bold mb-2">Cost Calculation Results</h2>
             <p
-</> className="text-gray-600">
+</>
+className="text-gray-600">
               {calculationResult.squareFootage || 0} sq ft {calculationResult.buildingType ? calculationResult.buildingType.toLowerCase() : 'unknown'} building in {calculationResult.region ? calculationResult.region.toLowerCase().replace('_', ' ') : 'unknown location'}
             </p>
           </div>
@@ -196,7 +192,8 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
               <h3 className="text-lg font-semibold mb-2">Total Building Cost</h3>
               <div
-</> className="text-3xl font-bold text-blue-700">
+</>
+className="text-3xl font-bold text-blue-700">
                 {formatCurrency(calculationResult.totalCost || 0)}
               </div>
               <div className="text-sm text-gray-600 mt-1">
@@ -207,32 +204,37 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
               <h3 className="text-lg font-semibold mb-2">Cost Factors</h3>
               <div
-</> className="space-y-1">
+</>
+className="space-y-1">
                 <div className="flex justify-between"><>
 
                   <span>Base Cost:</span>
                   <span
-</> className="font-medium">{formatCurrency(calculationResult.baseCost ? Number(calculationResult.baseCost) : 0)}/sq ft</span>
+</>
+className="font-medium">{formatCurrency(calculationResult.baseCost ? Number(calculationResult.baseCost) : 0)}/sq ft</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span>Complexity Factor:</span>
                   <span
-</> className="font-medium">{calculationResult.complexityFactor ? calculationResult.complexityFactor.toFixed(2) : '1.00'}</span>
+</>
+className="font-medium">{calculationResult.complexityFactor ? calculationResult.complexityFactor.toFixed(2) : '1.00'}</span>
                 </div>
                 {calculationResult.conditionFactor && (
                   <div className="flex justify-between"><>
 
                     <span>Condition Factor:</span>
                     <span
-</> className="font-medium">{calculationResult.conditionFactor ? calculationResult.conditionFactor.toFixed(2) : '1.00'}</span>
+</>
+className="font-medium">{calculationResult.conditionFactor ? calculationResult.conditionFactor.toFixed(2) : '1.00'}</span>
                   </div>
                 )}
                 <div className="flex justify-between"><>
 
                   <span>Region Factor:</span>
                   <span
-</> className="font-medium">{calculationResult.regionFactor ? Number(calculationResult.regionFactor).toFixed(2) : '1.00'}</span>
+</>
+className="font-medium">{calculationResult.regionFactor ? Number(calculationResult.regionFactor).toFixed(2) : '1.00'}</span>
                 </div>
               </div>
             </div>
@@ -242,13 +244,15 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
             <h3 className="text-xl font-semibold mb-4">Cost Breakdown</h3>
             <table
-</> className="w-full border-collapse">
+</>
+className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100"><>
 
                   <th className="border p-2 text-left">Category</th>
                   <th
-</> className="border p-2 text-right">Amount</th>
+</>
+className="border p-2 text-right">Amount</th>
                   <th className="border p-2 text-right">Percentage</th>
                 </tr>
               </thead>
@@ -262,7 +266,8 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
                       <td className="border p-2">{item.category}</td>
                       <td
-</> className="border p-2 text-right">{formatCurrency(item.cost)}</td>
+</>
+className="border p-2 text-right">{formatCurrency(item.cost)}</td>
                       <td className="border p-2 text-right">{percentage.toFixed(1)}%</td>
                     </tr>
                   );
@@ -271,7 +276,8 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
                   <td className="border p-2">Total Cost</td>
                   <td
-</> className="border p-2 text-right">{formatCurrency(calculationResult.totalCost || 0)}</td>
+</>
+className="border p-2 text-right">{formatCurrency(calculationResult.totalCost || 0)}</td>
                   <td className="border p-2 text-right">100%</td>
                 </tr>
               </tbody>
@@ -283,13 +289,15 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
               <h3 className="text-xl font-semibold mb-4">Materials Cost Breakdown</h3>
               <table
-</> className="w-full border-collapse">
+</>
+className="w-full border-collapse">
                 <thead>
                   <tr className="bg-gray-100"><>
 
                     <th className="border p-2 text-left">Material</th>
                     <th
-</> className="border p-2 text-right">Cost</th>
+</>
+className="border p-2 text-right">Cost</th>
                     <th className="border p-2 text-right">Percentage</th>
                   </tr>
                 </thead>
@@ -304,7 +312,8 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
                         <td className="border p-2">{formattedName}</td>
                         <td
-</> className="border p-2 text-right">{formatCurrency(materialCost)}</td>
+</>
+className="border p-2 text-right">{formatCurrency(materialCost)}</td>
                         <td className="border p-2 text-right">{percentage.toFixed(1)}%</td>
                       </tr>
                     );
@@ -318,11 +327,11 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
 
             <p>This report was generated by TerraBuild - Benton County Property Assessment Platform.</p>
             <p
+</>
 </>>All calculations are approximate and may require professional validation.</p>
           </div>
         </div>
       </div>
-    </>
   );
 };
 

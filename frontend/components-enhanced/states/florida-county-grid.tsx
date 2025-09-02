@@ -79,7 +79,8 @@ export function FloridaCountyGrid() {
 
         <h2 className="text-3xl font-bold text-transcend mb-4">PRIORITY COUNTY TARGETS</h2>
         <p
-</> className="text-primary">Strategic conquest sequence for maximum impact</p>
+</>
+className="text-primary">Strategic conquest sequence for maximum impact</p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -93,7 +94,8 @@ export function FloridaCountyGrid() {
 
                 <h3 className="font-bold text-white text-lg">{county.name}</h3>
                 <Badge
-</> variant={county.tier === "TIER 1" ? "destructive" : "default"}>{county.tier}</Badge>
+</>
+variant={county.tier === "TIER 1" ? "destructive" : "default"}>{county.tier}</Badge>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -101,31 +103,36 @@ export function FloridaCountyGrid() {
 
                   <span className="text-gray-300">Population:</span>
                   <span
-</> className="text-transcend font-semibold">{county.population}</span>
+</>
+className="text-transcend font-semibold">{county.population}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span className="text-gray-300">Parcels:</span>
                   <span
-</> className="text-transcend font-semibold">{county.parcels}</span>
+</>
+className="text-transcend font-semibold">{county.parcels}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span className="text-gray-300">Property Value:</span>
                   <span
-</> className="text-accent font-semibold">{county.propertyValue}</span>
+</>
+className="text-accent font-semibold">{county.propertyValue}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span className="text-gray-300">Current System:</span>
                   <span
-</> className="text-primary text-sm">{county.system}</span>
+</>
+className="text-primary text-sm">{county.system}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span className="text-gray-300">Readiness:</span>
                   <span
-</> className="text-transcend font-bold">{county.readiness}%</span>
+</>
+className="text-transcend font-bold">{county.readiness}%</span>
                 </div>
               </div>
 
@@ -134,7 +141,8 @@ export function FloridaCountyGrid() {
 
                   <div className="text-2xl font-black text-accent">{county.revenue}</div>
                   <div
-</> className="text-xs text-gray-400">Annual Revenue</div>
+</>
+className="text-xs text-gray-400">Annual Revenue</div>
                 </div>
 
                 <div className="flex flex-wrap gap-1">
@@ -156,33 +164,38 @@ export function FloridaCountyGrid() {
 
           <h3 className="text-2xl font-bold text-blue-400 mb-6 text-center">🏝️ FLORIDA-SPECIFIC ADVANTAGES</h3>
           <div
-</> className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+</>
+className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center"><>
 
               <div className="text-4xl mb-2">🌪️</div>
               <div
-</> className="font-bold text-transcend">Hurricane Ready</div>
+</>
+className="font-bold text-transcend">Hurricane Ready</div>
               <div className="text-sm text-blue-300">Real-time damage assessment</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-4xl mb-2">🏖️</div>
               <div
-</> className="font-bold text-transcend">Tourism Properties</div>
+</>
+className="font-bold text-transcend">Tourism Properties</div>
               <div className="text-sm text-blue-300">Short-term rental tracking</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-4xl mb-2">🏌️</div>
               <div
-</> className="font-bold text-transcend">Retirement Communities</div>
+</>
+className="font-bold text-transcend">Retirement Communities</div>
               <div className="text-sm text-blue-300">Age-restricted properties</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-4xl mb-2">🌊</div>
               <div
-</> className="font-bold text-transcend">Sea Level Rise</div>
+</>
+className="font-bold text-transcend">Sea Level Rise</div>
               <div className="text-sm text-blue-300">Environmental modeling</div>
             </div>
           </div>

@@ -91,14 +91,16 @@ export const ROICalculator: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Current System</h2>
             
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               <div><>
 
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Annual Software Costs
                 </label>
                 <div
-</> className="relative">
+</>
+className="relative">
                   <DollarSign className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
@@ -116,7 +118,8 @@ export const ROICalculator: React.FC = () => {
                   Average Processing Time (minutes)
                 </label>
                 <div
-</> className="relative">
+</>
+className="relative">
                   <Clock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
@@ -134,7 +137,8 @@ export const ROICalculator: React.FC = () => {
                   Number of Users
                 </label>
                 <div
-</> className="relative">
+</>
+className="relative">
                   <Users className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                   <input
                     type="number"
@@ -151,24 +155,28 @@ export const ROICalculator: React.FC = () => {
 
               <h3 className="text-lg font-semibold text-blue-800 mb-3">Terrafusion OS Performance</h3>
               <div
-</> className="space-y-2 text-sm text-blue-700">
+</>
+className="space-y-2 text-sm text-blue-700">
                 <div className="flex justify-between"><>
 
                   <span>Annual License Cost:</span>
                   <span
-</> className="font-semibold">${metrics.terraFusionCost.toLocaleString()}</span>
+</>
+className="font-semibold">${metrics.terraFusionCost.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span>Processing Time:</span>
                   <span
-</> className="font-semibold">{metrics.terraFusionTime} seconds</span>
+</>
+className="font-semibold">{metrics.terraFusionTime} seconds</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span>Speed Improvement:</span>
                   <span
-</> className="font-semibold text-green-600">379,000,000×</span>
+</>
+className="font-semibold text-green-600">379,000,000×</span>
                 </div>
               </div>
             </div>
@@ -180,7 +188,8 @@ export const ROICalculator: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Savings</h2>
             
             <div
-</> className="grid grid-cols-1 gap-4">
+</>
+className="grid grid-cols-1 gap-4">
               {/* Cost Savings */}
               <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-2">
@@ -192,7 +201,8 @@ export const ROICalculator: React.FC = () => {
                   ${results.annualSavings.toLocaleString()}
                 </div>
                 <div
-</> className="text-sm text-green-600 mt-1">
+</>
+className="text-sm text-green-600 mt-1">
                   License + Operational Savings
                 </div>
               </div>
@@ -208,7 +218,8 @@ export const ROICalculator: React.FC = () => {
                   {results.timeSavings.toFixed(1)}%
                 </div>
                 <div
-</> className="text-sm text-blue-600 mt-1">
+</>
+className="text-sm text-blue-600 mt-1">
                   Processing Time Reduction
                 </div>
               </div>
@@ -224,7 +235,8 @@ export const ROICalculator: React.FC = () => {
                   {results.productivityGain.toFixed(0)}%
                 </div>
                 <div
-</> className="text-sm text-purple-600 mt-1">
+</>
+className="text-sm text-purple-600 mt-1">
                   Efficiency Improvement
                 </div>
               </div>
@@ -240,7 +252,8 @@ export const ROICalculator: React.FC = () => {
                   {results.roi.toFixed(0)}%
                 </div>
                 <div
-</> className="text-sm text-orange-600 mt-1">
+</>
+className="text-sm text-orange-600 mt-1">
                   Payback in {results.paybackPeriod.toFixed(1)} months
                 </div>
               </div>
@@ -251,25 +264,29 @@ export const ROICalculator: React.FC = () => {
 
               <h3 className="text-xl font-bold mb-3">5-Year Impact</h3>
               <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                 <div className="flex justify-between"><>
 
                   <span>Total Savings:</span>
                   <span
-</> className="font-bold">${(results.annualSavings * 5).toLocaleString()}</span>
+</>
+className="font-bold">${(results.annualSavings * 5).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span>Investment:</span>
                   <span
-</> className="font-bold">${(metrics.terraFusionCost * 5).toLocaleString()}</span>
+</>
+className="font-bold">${(metrics.terraFusionCost * 5).toLocaleString()}</span>
                 </div>
                 <div className="border-t border-white/20 pt-2 mt-2">
                   <div className="flex justify-between text-lg"><>
 
                     <span>Net Benefit:</span>
                     <span
-</> className="font-bold">${((results.annualSavings - metrics.terraFusionCost) * 5).toLocaleString()}</span>
+</>
+className="font-bold">${((results.annualSavings - metrics.terraFusionCost) * 5).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -285,7 +302,8 @@ export const ROICalculator: React.FC = () => {
               * Calculations based on industry averages and Terrafusion OS performance benchmarks
             </p>
             <p
-</> className="text-sm mt-1">
+</>
+className="text-sm mt-1">
               Ready to transform your government operations? 
               <a href="#contact" className="text-blue-600 hover:text-blue-800 font-medium ml-1">
                 Contact our team

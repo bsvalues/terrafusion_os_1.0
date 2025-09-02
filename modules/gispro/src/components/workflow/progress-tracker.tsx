@@ -33,7 +33,8 @@ export function ProgressTracker({ steps, currentStep, onStepClick }: ProgressTra
                   {step.id}
                 </button>
                 <span
-</> 
+</>
+
                   className={cn(
                     "text-xs font-medium mt-1",
                     (isActive || isCompleted) ? "text-primary-600" : "text-neutral-500"

@@ -175,7 +175,8 @@ const CostBreakdownCard: React.FC<CostBreakdownCardProps> = ({
 
               <div className="text-sm font-medium text-muted-foreground">Base Cost</div>
               <div
-</> className="text-2xl font-bold">
+</>
+className="text-2xl font-bold">
                 <DataPointContext
                   value={baseCost}
                   format="currency"
@@ -195,11 +196,13 @@ const CostBreakdownCard: React.FC<CostBreakdownCardProps> = ({
             </div>
             
             <div
-</> className="flex-1 space-y-1"><>
+</>
+className="flex-1 space-y-1"><>
 
               <div className="text-sm font-medium text-muted-foreground">Final Cost</div>
               <div
-</> className="text-2xl font-bold text-primary">
+</>
+className="text-2xl font-bold text-primary">
                 <DataPointContext
                   value={finalCost}
                   format="currency"
@@ -228,7 +231,8 @@ const CostBreakdownCard: React.FC<CostBreakdownCardProps> = ({
 
             <h3 className="text-sm font-medium text-muted-foreground">Cost Factors</h3>
             <div
-</> className={cn(
+</>
+className={cn(
               "grid gap-2",
               expandedView ? "grid-cols-1" : "grid-cols-2"
             )}>
@@ -254,7 +258,8 @@ const CostBreakdownCard: React.FC<CostBreakdownCardProps> = ({
                         {getIconForFactor(factor)}
                       </div>
                       <div
-</> className="font-medium">{factor.name}</div>
+</>
+className="font-medium">{factor.name}</div>
                     </div>
                     
                     <DataPointContext
@@ -300,7 +305,8 @@ const CostBreakdownCard: React.FC<CostBreakdownCardProps> = ({
 
                               <div className="w-24 truncate">{item.label}:</div>
                               <div
-</> className="flex-1 h-1.5 bg-gray-100 rounded-full ml-2">
+</>
+className="flex-1 h-1.5 bg-gray-100 rounded-full ml-2">
                                 <div 
                                   className="h-full bg-primary/60 rounded-full"
                                   style={{ width: `${item.percentage}%` }}
@@ -321,7 +327,8 @@ const CostBreakdownCard: React.FC<CostBreakdownCardProps> = ({
 
                           <div className="text-xs font-medium">Historical Trend:</div>
                           <div
-</> className="h-16 mt-1 flex items-end gap-1">
+</>
+className="h-16 mt-1 flex items-end gap-1">
                             {factor.trend.map((point, i) => {
                               const maxValue = Math.max(...factor.trend!.map(p => p.value));
                               const height = (point.value / maxValue) * 100;
@@ -337,7 +344,8 @@ const CostBreakdownCard: React.FC<CostBreakdownCardProps> = ({
                                     style={{ height: `${height}%` }}
                                   ></div>
                                   <div
-</> className="opacity-0 group-hover/trend:opacity-100 absolute -top-6 left-1/2 transform -translate-x-1/2 text-[10px] bg-primary text-white px-1 py-0.5 rounded whitespace-nowrap">
+</>
+className="opacity-0 group-hover/trend:opacity-100 absolute -top-6 left-1/2 transform -translate-x-1/2 text-[10px] bg-primary text-white px-1 py-0.5 rounded whitespace-nowrap">
                                     {factor.unit === 'currency' ? formatCurrency(point.value) : 
                                      factor.unit === 'percentage' ? formatPercentage(point.value) : 
                                      point.value.toFixed(2)}

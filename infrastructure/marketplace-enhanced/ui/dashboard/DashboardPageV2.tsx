@@ -452,6 +452,7 @@ export function DashboardPage() {
 
         <h2>Error Loading Dashboard</h2>
         <p
+</>
 </>>{error}</p>
         <Button onClick={fetchDashboardData}>Retry</Button>
       </div>
@@ -464,7 +465,8 @@ export function DashboardPage() {
 
         <h1>🧠 Terrafusion Plugin Dashboard</h1>
         <div
-</> className="header-status">
+</>
+className="header-status">
           <span className="ws-indicator" title={`WebSocket: ${wsStatus}`}>
             {getWsStatusIcon()}
           </span>
@@ -476,7 +478,8 @@ export function DashboardPage() {
 
           <label htmlFor="filter">Filter:</label>
           <select
-</> 
+</>
+
             id="filter"
             value={filter} 
             onChange={(e) => setFilter(e.target.value as FilterType)}
@@ -484,7 +487,8 @@ export function DashboardPage() {
 
             <option value="all">All ({data.plugins.length})</option>
             <option
-</> value="unhealthy">
+</>
+value="unhealthy">
               Unhealthy ({data.plugins.filter(p => !p.healthy).length})
             </option>
             <option value="launched">
@@ -505,6 +509,7 @@ export function DashboardPage() {
           
           <Button
 </>
+
             size="sm"
             variant="outline"
             onClick={() => setShowLogs(!showLogs)}
@@ -530,7 +535,8 @@ export function DashboardPage() {
 
           <h3>System Logs</h3>
           <div
-</> className="log-entries">
+</>
+className="log-entries">
             {logs.length === 0 ? (
               <div className="log-empty">No logs yet...</div>
             ) : (
@@ -571,7 +577,8 @@ export function DashboardPage() {
 
                   <h2>{plugin.name}</h2>
                   <span
-</> className="plugin-version">v{plugin.version}</span>
+</>
+className="plugin-version">v{plugin.version}</span>
                   <span 
                     className={`health-badge ${plugin.healthy ? 'healthy' : 'unhealthy'}`}
                     title={plugin.healthy ? 'Healthy' : 'Unhealthy'}
@@ -592,6 +599,7 @@ export function DashboardPage() {
                   
                   <Button
 </>
+
                     size="sm"
                     disabled={adminLoading === `${plugin.id}-restart`}
                     onClick={() => handleAdminAction(plugin.id, 'restart')}
@@ -615,13 +623,15 @@ export function DashboardPage() {
 
                   <span className="stat-label">Launches</span>
                   <span
-</> className="stat-value">{plugin.launchCount}</span>
+</>
+className="stat-value">{plugin.launchCount}</span>
                 </div>
                 <div className="stat"><>
 
                   <span className="stat-label">Uptime</span>
                   <span
-</> 
+</>
+
                     className="stat-value"
                     style={{ color: getUptimeColor(plugin.uptime) }}
                   >
@@ -632,7 +642,8 @@ export function DashboardPage() {
 
                   <span className="stat-label">Errors</span>
                   <span
-</> className="stat-value error-count">
+</>
+className="stat-value error-count">
                     {plugin.errors.length}
                   </span>
                 </div>
@@ -692,7 +703,8 @@ export function DashboardPage() {
 
                       <strong>Tags:</strong>
                       <div
-</> className="tag-list">
+</>
+className="tag-list">
                         {plugin.tags.map((tag, i) => (
                           <span key={i} className="tag">{tag}</span>
                         ))}
@@ -705,7 +717,8 @@ export function DashboardPage() {
 
                       <strong>Recent Errors:</strong>
                       <ul
-</> className="error-list">
+</>
+className="error-list">
                         {plugin.errors.slice(0, 3).map((error, i) => (
                           <li key={i}>{error}</li>
                         ))}
@@ -732,7 +745,8 @@ export function DashboardPage() {
                       View Full Details
                     </Button>
                     <a
-</> 
+</>
+
                       href={`/admin/plugin/${plugin.id}`}
                       className="admin-link"
                     >
@@ -754,7 +768,8 @@ export function DashboardPage() {
             <h2>{modalPlugin.name} - Full Details</h2>
             
             <div
-</> className="modal-section">
+</>
+className="modal-section">
               <p><strong>Version:</strong> {modalPlugin.version}</p>
               <p><strong>Owner:</strong> {modalPlugin.owner}</p>
               <p><strong>Current Uptime:</strong> {formatUptime(modalPlugin.uptime)}</p>
@@ -766,7 +781,8 @@ export function DashboardPage() {
 
                 <h3>All Errors ({modalPlugin.errors.length})</h3>
                 <ul
-</> className="error-list-full">
+</>
+className="error-list-full">
                   {modalPlugin.errors.map((error, i) => (
                     <li key={i}>{error}</li>
                   ))}
@@ -779,7 +795,8 @@ export function DashboardPage() {
 
                 <h3>Error Trend</h3>
                 <ResponsiveContainer
-</> width="100%" height={200}>
+</>
+width="100%" height={200}>
                   <LineChart data={modalPlugin.errorTrend}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
@@ -804,6 +821,7 @@ export function DashboardPage() {
               <Button onClick={() => setModalPlugin(null)}>Close</Button>
               <Button
 </>
+
                 variant="outline"
                 onClick={() => window.open(`/admin/plugin/${modalPlugin.id}`, '_blank')}
               >

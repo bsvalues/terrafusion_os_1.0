@@ -150,7 +150,8 @@ export const AIAnalyticsDashboard: React.FC = () => {
         </Typography>
         
         <Box
-</> display="flex" alignItems="center" gap={2}>
+</>
+display="flex" alignItems="center" gap={2}>
           
           <Tooltip title="Refresh Data">
             <IconButton onClick={refetch}>
@@ -174,7 +175,8 @@ export const AIAnalyticsDashboard: React.FC = () => {
 
               <Typography color="textSecondary" gutterBottom>Models Loaded</Typography>
               <Typography
-</> variant="h4">{analyticsData.modelsLoaded}</Typography>
+</>
+variant="h4">{analyticsData.modelsLoaded}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -184,7 +186,8 @@ export const AIAnalyticsDashboard: React.FC = () => {
 
               <Typography color="textSecondary" gutterBottom>Datasets Processed</Typography>
               <Typography
-</> variant="h4">{analyticsData.datasetsProcessed}</Typography>
+</>
+variant="h4">{analyticsData.datasetsProcessed}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -194,7 +197,8 @@ export const AIAnalyticsDashboard: React.FC = () => {
 
               <Typography color="textSecondary" gutterBottom>Inference Accuracy</Typography>
               <Typography
-</> variant="h4">{(analyticsData.inferenceAccuracy * 100).toFixed(2)}%</Typography>
+</>
+variant="h4">{(analyticsData.inferenceAccuracy * 100).toFixed(2)}%</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -211,6 +215,7 @@ export const AIAnalyticsDashboard: React.FC = () => {
                 AI Models Performance
               </Typography>
               <TableContainer
+</>
 </>>
                 <Table>
                   <TableHead>
@@ -218,10 +223,12 @@ export const AIAnalyticsDashboard: React.FC = () => {
 
                       <TableCell>Model</TableCell>
                       <TableCell
+</>
 </>>Accuracy</TableCell><>
 
                       <TableCell>Precision</TableCell>
                       <TableCell
+</>
 </>>Recall</TableCell>
                     </TableRow>
                   </TableHead>
@@ -231,10 +238,12 @@ export const AIAnalyticsDashboard: React.FC = () => {
 
                         <TableCell>{model.modelName}</TableCell>
                         <TableCell
+</>
 </>>{(model.accuracy * 100).toFixed(2)}%</TableCell><>
 
                         <TableCell>{(model.precision * 100).toFixed(2)}%</TableCell>
                         <TableCell
+</>
 </>>{(model.recall * 100).toFixed(2)}%</TableCell>
                       </TableRow>
                     ))}

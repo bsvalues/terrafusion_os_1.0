@@ -25,7 +25,8 @@ export function BasicMapViewer({
 
         <h3 className="text-lg font-medium text-neutral-700">Interactive Map</h3>
         <p
-</> className="text-sm text-neutral-500">Geographic Information System</p>
+</>
+className="text-sm text-neutral-500">Geographic Information System</p>
       </div>
       
       {parcelId && (
@@ -33,7 +34,8 @@ export function BasicMapViewer({
 
           <h4 className="font-medium text-neutral-800 mb-1">Selected Parcel</h4>
           <p
-</> className="text-neutral-600 text-sm">Parcel ID: {parcelId}</p>
+</>
+className="text-neutral-600 text-sm">Parcel ID: {parcelId}</p>
         </div>
       )}
       
@@ -41,7 +43,8 @@ export function BasicMapViewer({
 
         <h4 className="font-medium text-neutral-800 mb-1">Active Map Layers</h4>
         <ul
-</> className="text-sm space-y-1">
+</>
+className="text-sm space-y-1">
           {visibleLayers.length > 0 ? (
             visibleLayers.map(layer => (
               <li key={layer.id} className="text-neutral-600">

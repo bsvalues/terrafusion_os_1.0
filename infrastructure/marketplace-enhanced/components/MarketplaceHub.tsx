@@ -229,7 +229,8 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
                   <Zap className="w-5 h-5 text-white" />
                 </div>
                 <h1
-</> className="text-xl font-bold text-gray-900">Terrafusion Marketplace</h1>
+</>
+className="text-xl font-bold text-gray-900">Terrafusion Marketplace</h1>
               </div>
               
               {/* Role Badge */}
@@ -259,6 +260,7 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
               
               <button
 </>
+
                 onClick={() => setActiveTab('dashboard')}
                 className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'dashboard'
@@ -273,6 +275,7 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
 
               <button
 </>
+
                 onClick={() => setActiveTab('installed')}
                 className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'installed'
@@ -329,11 +332,13 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
                               'bg-blue-500'
                             }`}></div>
                             <div
-</> className="flex-1 min-w-0"><>
+</>
+className="flex-1 min-w-0"><>
 
                               <p className="text-sm font-medium text-gray-900">{notification.title}</p>
                               <p
-</> className="text-sm text-gray-600">{notification.message}</p>
+</>
+className="text-sm text-gray-600">{notification.message}</p>
                               <p className="text-xs text-gray-500 mt-1">
                                 {notification.timestamp.toLocaleTimeString()}
                               </p>
@@ -353,7 +358,8 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
                   <User className="w-5 h-5 text-gray-600" />
                 </div>
                 <ChevronDown
-</> className="w-4 h-4 text-gray-400" />
+</>
+className="w-4 h-4 text-gray-400" />
               </div>
             </div>
           </div>
@@ -404,7 +410,8 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
 
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Marketplace</h3>
               <ul
-</> className="space-y-2 text-sm text-gray-600">
+</>
+className="space-y-2 text-sm text-gray-600">
                 <li><a href="#" className="hover:text-gray-900">Browse Plugins</a></li>
                 <li><a href="#" className="hover:text-gray-900">Featured Apps</a></li>
                 <li><a href="#" className="hover:text-gray-900">New Releases</a></li>
@@ -414,7 +421,8 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
 
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Developers</h3>
               <ul
-</> className="space-y-2 text-sm text-gray-600">
+</>
+className="space-y-2 text-sm text-gray-600">
                 <li><a href="#" className="hover:text-gray-900">Developer Portal</a></li>
                 <li><a href="#" className="hover:text-gray-900">API Documentation</a></li>
                 <li><a href="#" className="hover:text-gray-900">Plugin SDK</a></li>
@@ -424,7 +432,8 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
 
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Support</h3>
               <ul
-</> className="space-y-2 text-sm text-gray-600">
+</>
+className="space-y-2 text-sm text-gray-600">
                 <li><a href="#" className="hover:text-gray-900">Help Center</a></li>
                 <li><a href="#" className="hover:text-gray-900">Community Forum</a></li>
                 <li><a href="#" className="hover:text-gray-900">Contact Support</a></li>
@@ -434,7 +443,8 @@ export const MarketplaceHub: React.FC<MarketplaceHubProps> = ({
 
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Terrafusion</h3>
               <ul
-</> className="space-y-2 text-sm text-gray-600">
+</>
+className="space-y-2 text-sm text-gray-600">
                 <li><a href="#" className="hover:text-gray-900">About</a></li>
                 <li><a href="#" className="hover:text-gray-900">Security</a></li>
                 <li><a href="#" className="hover:text-gray-900">Compliance</a></li>
@@ -463,7 +473,8 @@ const InstalledPluginsView: React.FC<{
 
       <h2 className="text-2xl font-bold text-gray-900">Installed Plugins</h2>
       <span
-</> className="text-sm text-gray-600">{plugins.length} plugins installed</span>
+</>
+className="text-sm text-gray-600">{plugins.length} plugins installed</span>
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -473,16 +484,17 @@ const InstalledPluginsView: React.FC<{
 
             <h3 className="text-lg font-semibold text-gray-900">{plugin.name}</h3>
             <span
-</> className="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">
+</>
+className="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">
               Installed
             </span>
           </div><>
 
-          
           <p className="text-gray-600 text-sm mb-4">{plugin.description}</p>
           
           <div
-</> className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
+</>
+className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
             <div className="flex items-center space-x-1">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
               <span>{plugin.rating.toFixed(1)}</span>
@@ -507,6 +519,7 @@ const InstalledPluginsView: React.FC<{
             </button>
             <button
 </>
+
               onClick={() => onUninstall?.(plugin.id)}
               className="flex-1 px-3 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
             >
@@ -530,7 +543,8 @@ const SecurityOverview: React.FC<{
 
       <h2 className="text-2xl font-bold text-gray-900">Security Overview</h2>
       <button
-</> className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+</>
+className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
         Run Full Scan
       </button>
     </div>
@@ -543,7 +557,8 @@ const SecurityOverview: React.FC<{
 
             <h3 className="font-semibold text-gray-900">Security Score</h3>
             <p
-</> className="text-2xl font-bold text-green-600">94.2%</p>
+</>
+className="text-2xl font-bold text-green-600">94.2%</p>
           </div>
         </div>
         <p className="text-sm text-gray-600">Overall marketplace security health</p>
@@ -556,7 +571,8 @@ const SecurityOverview: React.FC<{
 
             <h3 className="font-semibold text-gray-900">Compliance</h3>
             <p
-</> className="text-2xl font-bold text-blue-600">98.7%</p>
+</>
+className="text-2xl font-bold text-blue-600">98.7%</p>
           </div>
         </div>
         <p className="text-sm text-gray-600">NIST & FISMA compliance rate</p>
@@ -569,7 +585,8 @@ const SecurityOverview: React.FC<{
 
             <h3 className="font-semibold text-gray-900">Active Scans</h3>
             <p
-</> className="text-2xl font-bold text-purple-600">12</p>
+</>
+className="text-2xl font-bold text-purple-600">12</p>
           </div>
         </div>
         <p className="text-sm text-gray-600">Ongoing security assessments</p>
@@ -580,7 +597,8 @@ const SecurityOverview: React.FC<{
 
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Security Reports</h3>
       <div
-</> className="space-y-4">
+</>
+className="space-y-4">
         {plugins.slice(0, 5).map(plugin => (
           <div key={plugin.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
             <div className="flex items-center space-x-3"><>
@@ -590,18 +608,21 @@ const SecurityOverview: React.FC<{
                 plugin.compliance_score > 70 ? 'bg-yellow-500' : 'bg-red-500'
               }`}></div>
               <div
+</>
 </>><>
 
                 <p className="font-medium text-gray-900">{plugin.name}</p>
                 <p
-</> className="text-sm text-gray-600">Last scanned: 2 hours ago</p>
+</>
+className="text-sm text-gray-600">Last scanned: 2 hours ago</p>
               </div>
             </div>
             <div className="flex items-center space-x-4"><>
 
               <span className="text-sm font-medium text-gray-900">{plugin.compliance_score}%</span>
               <button
-</> className="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
+</>
+className="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
                 View Report
               </button>
             </div>

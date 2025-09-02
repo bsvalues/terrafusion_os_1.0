@@ -269,10 +269,12 @@ const AIAgentMonitoringDashboard: React.FC = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
 
+
         <Typography variant="h4" className="tf-heading-display tf-text-gradient">
           🤖 Terrafusion AI Swarm Command Center
         </Typography>
         <Box
+
 sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Chip 
             label={`${swarmMetrics.activeAgents}/${swarmMetrics.totalAgents} Active`}
@@ -295,13 +297,17 @@ sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: 'var(--tf-trust-blue)', mr: 2 }}>
 
+
                   <SmartToyIcon />
                 </Avatar>
                 <Box
+
 >
+
 
                   <Typography variant="h4" className="tf-heading-2">{swarmMetrics.totalAgents}</Typography>
                   <Typography
+
 variant="body2" color="textSecondary">AI Agents</Typography>
                 </Box>
               </Box>
@@ -320,13 +326,17 @@ variant="body2" color="textSecondary">AI Agents</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: 'var(--tf-success-green)', mr: 2 }}>
 
+
                   <PsychologyIcon />
                 </Avatar>
                 <Box
+
 >
+
 
                   <Typography variant="h4" className="tf-heading-2">{swarmMetrics.collectiveIntelligence.toFixed(1)}%</Typography>
                   <Typography
+
 variant="body2" color="textSecondary">Collective Intelligence</Typography>
                 </Box>
               </Box>
@@ -346,13 +356,17 @@ variant="body2" color="textSecondary">Collective Intelligence</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: 'var(--tf-transcend-cyan)', mr: 2 }}>
 
+
                   <SpeedIcon />
                 </Avatar>
                 <Box
+
 >
+
 
                   <Typography variant="h4" className="tf-heading-2">{swarmMetrics.taskThroughput.toLocaleString()}</Typography>
                   <Typography
+
 variant="body2" color="textSecondary">Tasks/Hour</Typography>
                 </Box>
               </Box>
@@ -372,13 +386,17 @@ variant="body2" color="textSecondary">Tasks/Hour</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: 'error.main', mr: 2 }}>
 
+
                   <WarningIcon />
                 </Avatar>
                 <Box
+
 >
+
 
                   <Typography variant="h4" className="tf-heading-2">{swarmMetrics.errorRate.toFixed(1)}%</Typography>
                   <Typography
+
 variant="body2" color="textSecondary">Error Rate</Typography>
                 </Box>
               </Box>
@@ -399,10 +417,12 @@ variant="body2" color="textSecondary">Error Rate</Typography>
           <Card className="tf-card">
             <CardContent>
 
+
               <Typography variant="h6" className="tf-heading-3" sx={{ mb: 2 }}>
                 AI Swarm Performance Trends
               </Typography>
               <ResponsiveContainer
+
 width="100%" height={300}>
                 <LineChart data={performanceData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -423,10 +443,12 @@ width="100%" height={300}>
           <Card className="tf-card">
             <CardContent>
 
+
               <Typography variant="h6" className="tf-heading-3" sx={{ mb: 2 }}>
                 Swarm Capability Radar
               </Typography>
               <ResponsiveContainer
+
 width="100%" height={300}>
                 <RadarChart data={radarData}>
                   <PolarGrid />
@@ -446,25 +468,33 @@ width="100%" height={300}>
           <Card className="tf-card">
             <CardContent>
 
+
               <Typography variant="h6" className="tf-heading-3" sx={{ mb: 2 }}>
                 Individual Agent Status
               </Typography>
               <TableContainer
+
 component={Paper} sx={{ maxHeight: 400 }}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
 
+
                       <TableCell>Agent</TableCell>
                       <TableCell
+
 >Type</TableCell>
+
 
                       <TableCell>Status</TableCell>
                       <TableCell
+
 >Performance</TableCell>
+
 
                       <TableCell>Tasks</TableCell>
                       <TableCell
+
 >Efficiency</TableCell>
                       <TableCell>Actions</TableCell>
                     </TableRow>
@@ -475,16 +505,20 @@ component={Paper} sx={{ maxHeight: 400 }}>
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
+
                             <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
                               {getAgentTypeIcon(agent.type)}
                             </Avatar>
                             <Box
+
 >
+
 
                               <Typography variant="body2" fontWeight="bold">
                                 {agent.name}
                               </Typography>
                               <Typography
+
 variant="caption" color="textSecondary">
                                 {agent.specialization}
                               </Typography>
@@ -493,6 +527,7 @@ variant="caption" color="textSecondary">
                         </TableCell>
                         <TableCell>
 
+
                           <Chip 
                             label={agent.type} 
                             size="small" 
@@ -500,6 +535,7 @@ variant="caption" color="textSecondary">
                           />
                         </TableCell>
                         <TableCell
+
 >
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             {getStatusIcon(agent.status)}
@@ -522,8 +558,10 @@ variant="caption" color="textSecondary">
                           </Box>
                         </TableCell>
 
+
                         <TableCell>{agent.tasksCompleted.toLocaleString()}</TableCell>
                         <TableCell
+
 >{agent.efficiency.toFixed(1)}%</TableCell>
                         <TableCell>
                           <Tooltip title="View Details">
@@ -550,10 +588,12 @@ variant="caption" color="textSecondary">
           <Card className="tf-card">
             <CardContent>
 
+
               <Typography variant="h6" className="tf-heading-3" sx={{ mb: 2 }}>
                 Agent Type Distribution
               </Typography>
               <List
+
 >
                 {['scout', 'worker', 'queen', 'sentinel', 'communicator'].map((type) => {
                   const count = agents.filter(agent => agent.type === type).length;

@@ -123,7 +123,8 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
 
           <AlertTitle>{alert.title}</AlertTitle>
           <Typography
-</> variant="body2" sx={{ mb: 1 }}>
+</>
+variant="body2" sx={{ mb: 1 }}>
             {alert.message}
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

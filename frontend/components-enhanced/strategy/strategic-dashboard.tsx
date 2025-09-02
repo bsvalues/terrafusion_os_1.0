@@ -13,7 +13,8 @@ export function StrategicDashboard() {
         <CampaignExecution />
       </div>
       <PerformanceMetrics
-</> />
+</>
+/>
     </div>
   )
 }

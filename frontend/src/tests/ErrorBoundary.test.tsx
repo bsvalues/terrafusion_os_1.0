@@ -171,15 +171,21 @@ describe('Error Boundary System', () => {
 
       return (
         <div>
+
+
           <button onClick={triggerError} data-testid='trigger-error'>
             Trigger Error
           </button>
           <button
+
 onClick={clearErrors} data-testid='clear-errors'>
             Clear Errors
           </button>
+
+
           <div data-testid='error-count'>{state.errors.length}</div>
           <div
+
 data-testid='has-errors'>{hasErrors.toString()}</div>
         </div>
       );
@@ -288,17 +294,23 @@ data-testid='has-errors'>{hasErrors.toString()}</div>
 
       return (
         <div>
+
+
           <button onClick={testAsyncError} data-testid='test-async'>
             Test Async Error
           </button>
           <button
+
 onClick={testApiError} data-testid='test-api'>
             Test API Error
           </button>
+
+
           <button onClick={testValidationError} data-testid='test-validation'>
             Test Validation Error
           </button>
           <button
+
 onClick={testRetryOperation} data-testid='test-retry'>
             Test Retry Operation
           </button>
@@ -421,8 +433,11 @@ onClick={testRetryOperation} data-testid='test-retry'>
 
         return (
           <div>
+
+
             <div>Property Assessment Module</div>
             <button
+
 onClick={() => setShouldFail(true)} data-testid='fail-assessment'>
               Trigger Assessment Error
             </button>

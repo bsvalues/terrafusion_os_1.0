@@ -108,6 +108,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
 
           <CardTitle>{title}</CardTitle>
           <CardDescription
+</>
 </>>
             Explore error handling and notification features
           </CardDescription>
@@ -122,6 +123,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
                 Error Occurred
               </AlertTitle>
               <AlertDescription
+</>
 </>>{errorMessage}</AlertDescription>
             </Alert>
           )}
@@ -133,6 +135,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
 
                 <CardTitle>Simulate Errors</CardTitle>
                 <CardDescription
+</>
 </>>Trigger different types of errors</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2"><>
@@ -145,7 +148,8 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
                   Simulate JavaScript Error
                 </Button>
                 <Button
-</> 
+</>
+
                   onClick={simulateApiError} 
                   variant="outline"
                   className="w-full"
@@ -161,7 +165,8 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
                   Simulate Validation Error
                 </Button>
                 <Button
-</> 
+</>
+
                   onClick={clearError} 
                   variant="outline"
                   className="w-full"
@@ -178,6 +183,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
 
                 <CardTitle>Toast Notifications</CardTitle>
                 <CardDescription
+</>
 </>>Display different types of toast messages</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2"><>
@@ -190,7 +196,8 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
                   Success Toast
                 </Button>
                 <Button
-</> 
+</>
+
                   onClick={showErrorToast} 
                   className="w-full"
                   variant="destructive"
@@ -208,7 +215,8 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
                   Warning Toast
                 </Button>
                 <Button
-</> 
+</>
+
                   onClick={showInfoToast} 
                   className="w-full"
                   variant="outline"
@@ -233,6 +241,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
 
               <CardTitle>Alert Examples</CardTitle>
               <CardDescription
+</>
 </>>Different types of alert components</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -240,6 +249,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
 
                 <AlertTitle>Success</AlertTitle>
                 <AlertDescription
+</>
 </>>Your data has been saved successfully.</AlertDescription>
               </Alert>
               
@@ -247,6 +257,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
 
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription
+</>
 </>>Failed to save your data. Please try again.</AlertDescription>
               </Alert>
               
@@ -254,6 +265,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
 
                 <AlertTitle>Warning</AlertTitle>
                 <AlertDescription
+</>
 </>>Your account will expire in 7 days.</AlertDescription>
               </Alert>
               
@@ -261,6 +273,7 @@ export function ErrorHandlingDemo({ title = "Error Handling Demo" }: ErrorHandli
 
                 <AlertTitle>Information</AlertTitle>
                 <AlertDescription
+</>
 </>>A new version is available. Please update.</AlertDescription>
               </Alert>
             </CardContent>

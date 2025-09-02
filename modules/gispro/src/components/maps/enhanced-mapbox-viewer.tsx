@@ -109,13 +109,15 @@ export function EnhancedMapboxViewer({
                 Layers
               </TabsTrigger>
               <TabsTrigger
-</> value="draw" className="flex-1"><>
+</>
+value="draw" className="flex-1"><>
 
                 <Pencil className="h-4 w-4 mr-2" />
                 Draw
               </TabsTrigger>
               <TabsTrigger
-</> value="measure" className="flex-1">
+</>
+value="measure" className="flex-1">
                 <Ruler className="h-4 w-4 mr-2" />
                 Measure
               </TabsTrigger>
@@ -125,7 +127,8 @@ export function EnhancedMapboxViewer({
 
               <h3 className="text-lg font-semibold mb-2">Map Layers</h3>
               <p
-</> className="text-sm text-gray-500 mb-4">
+</>
+className="text-sm text-gray-500 mb-4">
                 Toggle map layers on/off and adjust their opacity.
               </p>
               {/* Layer controls will go here */}
@@ -134,7 +137,8 @@ export function EnhancedMapboxViewer({
 
                   <span className="text-sm">Base Map</span>
                   <Button
-</> size="sm" variant="outline">
+</>
+size="sm" variant="outline">
                     Visible
                   </Button>
                 </div>
@@ -142,7 +146,8 @@ export function EnhancedMapboxViewer({
 
                   <span className="text-sm">Parcels</span>
                   <Button
-</> size="sm" variant="outline">
+</>
+size="sm" variant="outline">
                     Visible
                   </Button>
                 </div>
@@ -150,7 +155,8 @@ export function EnhancedMapboxViewer({
 
                   <span className="text-sm">County Boundaries</span>
                   <Button
-</> size="sm" variant="outline">
+</>
+size="sm" variant="outline">
                     Visible
                   </Button>
                 </div>
@@ -161,7 +167,8 @@ export function EnhancedMapboxViewer({
 
               <h3 className="text-lg font-semibold mb-2">Drawing Tools</h3>
               <p
-</> className="text-sm text-gray-500 mb-4">
+</>
+className="text-sm text-gray-500 mb-4">
                 Create and edit features on the map.
               </p>
               <div className="flex flex-wrap gap-2 mb-4">
@@ -256,7 +263,8 @@ export function EnhancedMapboxViewer({
                   Undo
                 </Button>
                 <Button
-</> size="sm">
+</>
+size="sm">
                   <Save className="h-4 w-4 mr-2" />
                   Save
                 </Button>
@@ -267,7 +275,8 @@ export function EnhancedMapboxViewer({
 
               <h3 className="text-lg font-semibold mb-2">Measurement Tools</h3>
               <p
-</> className="text-sm text-gray-500 mb-4">
+</>
+className="text-sm text-gray-500 mb-4">
                 Measure distances and areas on the map.
               </p>
               <div className="space-y-2">
@@ -277,7 +286,8 @@ export function EnhancedMapboxViewer({
                   Measure Distance
                 </Button>
                 <Button
-</> variant="outline" className="w-full">
+</>
+variant="outline" className="w-full">
                   <Square className="h-4 w-4 mr-2" />
                   Measure Area
                 </Button>

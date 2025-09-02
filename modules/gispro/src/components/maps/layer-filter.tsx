@@ -153,7 +153,8 @@ const LayerFilter: React.FC<LayerFilterProps> = ({
                 Layer Filter
               </h3>
               <button
-</> 
+</>
+
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="px-2 py-1 text-xs bg-gray-200 rounded"
               >
@@ -162,13 +163,13 @@ const LayerFilter: React.FC<LayerFilterProps> = ({
             </div>
             
             {isExpanded && (
-              <>
                 {/* Layer type filters */}
                 <div className="border-t pt-2"><>
 
                   <h4 className="text-xs font-medium mb-1">Layer Type</h4>
                   <div
-</> className="flex flex-col space-y-1">
+</>
+className="flex flex-col space-y-1">
                     {layerTypes.map(type => (
                       <label 
                         key={type} 
@@ -207,11 +208,13 @@ const LayerFilter: React.FC<LayerFilterProps> = ({
 
                         <option value="equals">=</option>
                         <option
-</> value="contains">contains</option><>
+</>
+value="contains">contains</option><>
 
                         <option value="greaterThan">&gt;</option>
                         <option
-</> value="lessThan">&lt;</option>
+</>
+value="lessThan">&lt;</option>
                       </select>
                       
                       <Input
@@ -251,6 +254,7 @@ const LayerFilter: React.FC<LayerFilterProps> = ({
                   
                   <Button
 </>
+
                     variant="default"
                     size="sm"
                     onClick={applyFilters}
@@ -259,7 +263,6 @@ const LayerFilter: React.FC<LayerFilterProps> = ({
                     Apply Filters
                   </Button>
                 </div>
-              </>
             )}
           </div>
         </div>,

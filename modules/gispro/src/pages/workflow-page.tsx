@@ -203,13 +203,13 @@ export default function WorkflowPage() {
           <h2 className="text-lg font-semibold text-neutral-800 mb-4">Basic Information</h2>
           
           {workflowType === 'long_plat' && (
-            <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div><>
 
                   <Label htmlFor="platName">Plat Name</Label>
                   <Input
 </>
+
                     id="platName"
                     name="platName"
                     placeholder="Enter plat name"
@@ -223,6 +223,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="platNumber">Plat Number</Label>
                   <Input
 </>
+
                     id="platNumber"
                     name="platNumber"
                     placeholder="Enter plat number"
@@ -239,6 +240,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="parentParcelId">Parent Parcel ID</Label>
                   <Input
 </>
+
                     id="parentParcelId"
                     name="parentParcelId"
                     placeholder="15-digit parcel ID"
@@ -252,6 +254,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="totalLots">Total Lots</Label>
                   <Input
 </>
+
                     id="totalLots"
                     name="totalLots"
                     type="number"
@@ -266,6 +269,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="acreage">Total Acreage</Label>
                   <Input
 </>
+
                     id="acreage"
                     name="acreage"
                     placeholder="Total area in acres"
@@ -281,6 +285,7 @@ export default function WorkflowPage() {
                 <Label htmlFor="legalDescription">Legal Description</Label>
                 <Textarea
 </>
+
                   id="legalDescription"
                   name="legalDescription"
                   rows={3}
@@ -297,6 +302,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="submissionDate">Submission Date</Label>
                   <Input
 </>
+
                     id="submissionDate"
                     name="submissionDate"
                     type="date"
@@ -310,6 +316,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="assignedStaff">Assigned Staff</Label>
                   <select
 </>
+
                     id="assignedStaff"
                     name="assignedStaff"
                     value={formData.assignedStaff || ""}
@@ -319,25 +326,26 @@ export default function WorkflowPage() {
 
                     <option value="">Select staff member</option>
                     <option
-</> value="john.doe">John Doe</option><>
+</>
+value="john.doe">John Doe</option><>
 
                     <option value="jane.smith">Jane Smith</option>
                     <option
-</> value="robert.johnson">Robert Johnson</option>
+</>
+value="robert.johnson">Robert Johnson</option>
                   </select>
                 </div>
               </div>
-            </>
           )}
           
           {workflowType === 'bla' && (
-            <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div><>
 
                   <Label htmlFor="blaNumber">BLA Number</Label>
                   <Input
 </>
+
                     id="blaNumber"
                     name="blaNumber"
                     placeholder="Enter BLA number"
@@ -351,6 +359,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="applicantName">Applicant Name</Label>
                   <Input
 </>
+
                     id="applicantName"
                     name="applicantName"
                     placeholder="Enter applicant name"
@@ -367,6 +376,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="parcel1">Parcel ID 1</Label>
                   <Input
 </>
+
                     id="parcel1"
                     name="parcel1"
                     placeholder="15-digit parcel ID"
@@ -380,6 +390,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="parcel2">Parcel ID 2</Label>
                   <Input
 </>
+
                     id="parcel2"
                     name="parcel2"
                     placeholder="15-digit parcel ID"
@@ -395,6 +406,7 @@ export default function WorkflowPage() {
                 <Label htmlFor="blaDescription">BLA Description</Label>
                 <Textarea
 </>
+
                   id="blaDescription"
                   name="blaDescription"
                   rows={3}
@@ -411,6 +423,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="blaSubmissionDate">Submission Date</Label>
                   <Input
 </>
+
                     id="blaSubmissionDate"
                     name="blaSubmissionDate"
                     type="date"
@@ -424,6 +437,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="blaAssignedStaff">Assigned Staff</Label>
                   <select
 </>
+
                     id="blaAssignedStaff"
                     name="blaAssignedStaff"
                     value={formData.blaAssignedStaff || ""}
@@ -433,25 +447,26 @@ export default function WorkflowPage() {
 
                     <option value="">Select staff member</option>
                     <option
-</> value="john.doe">John Doe</option><>
+</>
+value="john.doe">John Doe</option><>
 
                     <option value="jane.smith">Jane Smith</option>
                     <option
-</> value="robert.johnson">Robert Johnson</option>
+</>
+value="robert.johnson">Robert Johnson</option>
                   </select>
                 </div>
               </div>
-            </>
           )}
           
           {workflowType === 'merge_split' && (
-            <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div><>
 
                   <Label htmlFor="caseNumber">Case Number</Label>
                   <Input
 </>
+
                     id="caseNumber"
                     name="caseNumber"
                     placeholder="Enter case number"
@@ -465,6 +480,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="caseType">Case Type</Label>
                   <select
 </>
+
                     id="caseType"
                     name="caseType"
                     value={formData.caseType || ""}
@@ -474,7 +490,8 @@ export default function WorkflowPage() {
 
                     <option value="">Select type</option>
                     <option
-</> value="merge">Merge</option>
+</>
+value="merge">Merge</option>
                     <option value="split">Split</option>
                   </select>
                 </div>
@@ -485,6 +502,7 @@ export default function WorkflowPage() {
                 <Label htmlFor="parentParcels">Parent Parcel IDs</Label>
                 <Textarea
 </>
+
                   id="parentParcels"
                   name="parentParcels"
                   rows={2}
@@ -501,6 +519,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="requestedParcelCount">Requested Parcel Count</Label>
                   <Input
 </>
+
                     id="requestedParcelCount"
                     name="requestedParcelCount"
                     type="number"
@@ -515,6 +534,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="totalAcreage">Total Acreage</Label>
                   <Input
 </>
+
                     id="totalAcreage"
                     name="totalAcreage"
                     placeholder="Total area in acres"
@@ -530,6 +550,7 @@ export default function WorkflowPage() {
                 <Label htmlFor="description">Description</Label>
                 <Textarea
 </>
+
                   id="description"
                   name="description"
                   rows={3}
@@ -546,6 +567,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="submissionDate">Submission Date</Label>
                   <Input
 </>
+
                     id="submissionDate"
                     name="submissionDate"
                     type="date"
@@ -559,6 +581,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="assignedStaff">Assigned Staff</Label>
                   <select
 </>
+
                     id="assignedStaff"
                     name="assignedStaff"
                     value={formData.assignedStaff || ""}
@@ -568,25 +591,26 @@ export default function WorkflowPage() {
 
                     <option value="">Select staff member</option>
                     <option
-</> value="john.doe">John Doe</option><>
+</>
+value="john.doe">John Doe</option><>
 
                     <option value="jane.smith">Jane Smith</option>
                     <option
-</> value="robert.johnson">Robert Johnson</option>
+</>
+value="robert.johnson">Robert Johnson</option>
                   </select>
                 </div>
               </div>
-            </>
           )}
           
           {workflowType === 'sm00_report' && (
-            <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div><>
 
                   <Label htmlFor="reportMonth">Report Month</Label>
                   <Input
 </>
+
                     id="reportMonth"
                     name="reportMonth"
                     type="month"
@@ -600,6 +624,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="assessmentYear">Assessment Year</Label>
                   <Input
 </>
+
                     id="assessmentYear"
                     name="assessmentYear"
                     type="number"
@@ -617,6 +642,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="supplementGroup">Supplement Group</Label>
                   <select
 </>
+
                     id="supplementGroup"
                     name="supplementGroup"
                     value={formData.supplementGroup || ""}
@@ -626,11 +652,13 @@ export default function WorkflowPage() {
 
                     <option value="">Select group</option>
                     <option
-</> value="1">Group 1</option><>
+</>
+value="1">Group 1</option><>
 
                     <option value="2">Group 2</option>
                     <option
-</> value="3">Group 3</option>
+</>
+value="3">Group 3</option>
                     <option value="all">All Groups</option>
                   </select>
                 </div>
@@ -639,6 +667,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="status">Status</Label>
                   <select
 </>
+
                     id="status"
                     name="status"
                     value={formData.status || ""}
@@ -648,11 +677,13 @@ export default function WorkflowPage() {
 
                     <option value="">Select status</option>
                     <option
-</> value="pending">Pending</option><>
+</>
+value="pending">Pending</option><>
 
                     <option value="review">In Review</option>
                     <option
-</> value="sent">Sent</option>
+</>
+value="sent">Sent</option>
                   </select>
                 </div>
               </div>
@@ -663,6 +694,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="recipientList">Recipient List</Label>
                   <Textarea
 </>
+
                     id="recipientList"
                     name="recipientList"
                     rows={3}
@@ -677,6 +709,7 @@ export default function WorkflowPage() {
                   <Label htmlFor="notes">Notes</Label>
                   <Textarea
 </>
+
                     id="notes"
                     name="notes"
                     rows={3}
@@ -687,7 +720,6 @@ export default function WorkflowPage() {
                   />
                 </div>
               </div>
-            </>
           )}
         </div>
       );
@@ -700,7 +732,8 @@ export default function WorkflowPage() {
 
           <h2 className="text-lg font-semibold text-neutral-800 mb-4">Upload Required Documents</h2>
           <p
-</> className="text-sm text-neutral-600 mb-6">
+</>
+className="text-sm text-neutral-600 mb-6">
             Please upload all required documents for this {workflowTypeLabels[workflowType].toLowerCase()}.
             Make sure all files are clearly named and in the appropriate format.
           </p>
@@ -711,14 +744,17 @@ export default function WorkflowPage() {
 
                 <h3 className="text-sm font-medium text-neutral-800">Required Documents:</h3>
                 <ul
-</> className="list-disc list-inside text-sm text-neutral-600 mt-2 space-y-1"><>
+</>
+className="list-disc list-inside text-sm text-neutral-600 mt-2 space-y-1"><>
 
                   <li>Plat Map (PDF or TIFF, 300+ DPI)</li>
                             <li
+</>
 </>>Filed Plat Documentation</li><>
 
                   <li>Legal Descriptions</li>
                             <li
+</>
 </>>Ownership Verification</li>
                 </ul>
               </div>
@@ -731,14 +767,17 @@ export default function WorkflowPage() {
 
                 <h3 className="text-sm font-medium text-neutral-800">Required Documents:</h3>
                 <ul
-</> className="list-disc list-inside text-sm text-neutral-600 mt-2 space-y-1"><>
+</>
+className="list-disc list-inside text-sm text-neutral-600 mt-2 space-y-1"><>
 
                   <li>BLA Survey Documents</li>
                             <li
+</>
 </>>Property Deed(s)</li><>
 
                   <li>Legal Descriptions (Both Original and New)</li>
                             <li
+</>
 </>>Ownership Verification</li>
                 </ul>
               </div>
@@ -751,14 +790,17 @@ export default function WorkflowPage() {
 
                 <h3 className="text-sm font-medium text-neutral-800">Required Documents:</h3>
                 <ul
-</> className="list-disc list-inside text-sm text-neutral-600 mt-2 space-y-1"><>
+</>
+className="list-disc list-inside text-sm text-neutral-600 mt-2 space-y-1"><>
 
                   <li>Property Deed(s)</li>
                             <li
+</>
 </>>Survey Documents (if available)</li><>
 
                   <li>Legal Descriptions</li>
                             <li
+</>
 </>>Parent Parcel Documentation</li>
                   {formData.caseType === 'split' && <li>Proposed Split Plan</li>}
                 </ul>
@@ -772,10 +814,12 @@ export default function WorkflowPage() {
 
                 <h3 className="text-sm font-medium text-neutral-800">Required Files:</h3>
                 <ul
-</> className="list-disc list-inside text-sm text-neutral-600 mt-2 space-y-1"><>
+</>
+className="list-disc list-inside text-sm text-neutral-600 mt-2 space-y-1"><>
 
                   <li>Previous Month's SM00 Report (for reference)</li>
                             <li
+</>
 </>>Segregation Tracking Sheet</li>
                   <li>Any supporting documentation</li>
                 </ul>
@@ -794,7 +838,8 @@ export default function WorkflowPage() {
           {steps[currentStep - 1]?.name || 'Step Content'}
         </h2>
         <p
-</> className="text-neutral-600 mb-6">
+</>
+className="text-neutral-600 mb-6">
           {steps[currentStep - 1]?.description || 'Complete the information required for this step.'}
         </p>
         
@@ -802,7 +847,8 @@ export default function WorkflowPage() {
 
           <p className="text-neutral-500 mb-2">Step content will be implemented based on workflow type.</p>
           <p
-</> className="text-sm text-neutral-400">Additional form fields will appear here.</p>
+</>
+className="text-sm text-neutral-400">Additional form fields will appear here.</p>
         </div>
       </div>
     );
@@ -823,7 +869,8 @@ export default function WorkflowPage() {
 
                 <h1 className="text-2xl font-bold text-neutral-800">{workflowTypeLabels[workflowType]}</h1>
                 <p
-</> className="text-sm text-neutral-500">{workflowTypeDescriptions[workflowType]}</p>
+</>
+className="text-sm text-neutral-500">{workflowTypeDescriptions[workflowType]}</p>
               </div>
               <div className="flex space-x-3">
                 <Button 
@@ -937,6 +984,7 @@ export default function WorkflowPage() {
               Previous Step
             </Button>
             <div
+</>
 </>>
               <Button
                 variant="outline"

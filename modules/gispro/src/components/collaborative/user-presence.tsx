@@ -178,7 +178,8 @@ export function UserPresence({
 
                 <span className="font-semibold">{status}</span>
                 <span
-</> className="ml-2 text-xs text-muted-foreground">
+</>
+className="ml-2 text-xs text-muted-foreground">
                   {formatTimeAgo(lastActivity)}
                 </span>
               </span>
@@ -220,7 +221,8 @@ export function UserPresence({
 
                     <span className="font-semibold">{user.username}</span>
                     <span
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                       {getActivityStatus(user.lastActivity)}
                     </span>
                   </div>
@@ -251,7 +253,8 @@ export function UserPresence({
             Online Users
           </span>
           <Badge
-</> variant="secondary" className="rounded-full">
+</>
+variant="secondary" className="rounded-full">
             {roomUsers.length}
           </Badge>
         </CardTitle>

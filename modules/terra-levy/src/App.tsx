@@ -167,7 +167,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Tax & Investment Calculator</h2>
         <p
-</> className="opacity-90">Advanced calculations for property tax planning and investment modeling</p>
+</>
+className="opacity-90">Advanced calculations for property tax planning and investment modeling</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -180,7 +181,8 @@ function App() {
           </h3>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             <div><>
 
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -188,6 +190,7 @@ function App() {
               </label>
               <input
 </>
+
                 type="number"
                 value={propertyValue}
                 onChange={(e) => setPropertyValue(Number(e.target.value))}
@@ -202,6 +205,7 @@ function App() {
               </label>
               <input
 </>
+
                 type="number"
                 value={downPayment}
                 onChange={(e) => setDownPayment(Number(e.target.value))}
@@ -217,6 +221,7 @@ function App() {
                 </label>
                 <input
 </>
+
                   type="number"
                   value={loanTerm}
                   onChange={(e) => setLoanTerm(Number(e.target.value))}
@@ -231,6 +236,7 @@ function App() {
                 </label>
                 <input
 </>
+
                   type="number"
                   step="0.1"
                   value={interestRate}
@@ -260,12 +266,14 @@ function App() {
             </h3>
             
             <div
-</> className="space-y-3">
+</>
+className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
                 <span className="font-medium">Monthly Payment</span>
                 <span
-</> className="text-lg font-bold text-green-600">
+</>
+className="text-lg font-bold text-green-600">
                   ${investmentModel.monthly_payment.toLocaleString()}
                 </span>
               </div>
@@ -274,7 +282,8 @@ function App() {
 
                 <span className="font-medium">Total Interest</span>
                 <span
-</> className="text-lg font-bold">
+</>
+className="text-lg font-bold">
                   ${investmentModel.total_interest.toLocaleString()}
                 </span>
               </div>
@@ -283,7 +292,8 @@ function App() {
 
                 <span className="font-medium">Break-even Years</span>
                 <span
-</> className="text-lg font-bold text-blue-600">
+</>
+className="text-lg font-bold text-blue-600">
                   {investmentModel.break_even_years} years
                 </span>
               </div>
@@ -292,7 +302,8 @@ function App() {
 
                 <span className="font-medium">Projected Appreciation</span>
                 <span
-</> className="text-lg font-bold text-purple-600">
+</>
+className="text-lg font-bold text-purple-600">
                   {investmentModel.projected_appreciation}
                 </span>
               </div>
@@ -310,22 +321,26 @@ function App() {
         </h3>
         
         <div
-</> className="overflow-x-auto">
+</>
+className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b"><>
 
                 <th className="text-left py-2">Property ID</th>
                 <th
-</> className="text-left py-2">Assessed Value</th><>
+</>
+className="text-left py-2">Assessed Value</th><>
 
                 <th className="text-left py-2">Tax Rate</th>
                 <th
-</> className="text-left py-2">Annual Tax</th><>
+</>
+className="text-left py-2">Annual Tax</th><>
 
                 <th className="text-left py-2">Exemptions</th>
                 <th
-</> className="text-left py-2">Effective Rate</th>
+</>
+className="text-left py-2">Effective Rate</th>
               </tr>
             </thead>
             <tbody>
@@ -334,11 +349,13 @@ function App() {
 
                   <td className="py-2">{calc.property_id}</td>
                   <td
-</> className="py-2">${calc.assessed_value.toLocaleString()}</td><>
+</>
+className="py-2">${calc.assessed_value.toLocaleString()}</td><>
 
                   <td className="py-2">{(calc.tax_rate * 100).toFixed(2)}%</td>
                   <td
-</> className="py-2 font-semibold">${calc.annual_tax.toLocaleString()}</td>
+</>
+className="py-2 font-semibold">${calc.annual_tax.toLocaleString()}</td>
                   <td className="py-2">
                     {calc.exemptions.length > 0 ? (
                       <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
@@ -364,7 +381,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Financial Analysis</h2>
         <p
-</> className="opacity-90">Advanced ROI analysis and investment optimization</p>
+</>
+className="opacity-90">Advanced ROI analysis and investment optimization</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -374,7 +392,8 @@ function App() {
 
               <h3 className="text-lg font-semibold">{analysis.name}</h3>
               <div
-</> className="flex items-center">
+</>
+className="flex items-center">
                 {analysis.status === 'completed' ? (
                   <CheckCircle className="h-5 w-5 text-green-600" />
                 ) : analysis.status === 'running' ? (
@@ -397,6 +416,7 @@ function App() {
 
                   <span>Progress</span>
                   <span
+</>
 </>>{analysis.progress}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -414,7 +434,8 @@ function App() {
 
                   <span className="font-medium">ROI Percentage</span>
                   <span
-</> className="text-lg font-bold text-green-600">
+</>
+className="text-lg font-bold text-green-600">
                     {analysis.result.roi_percentage}%
                   </span>
                 </div>
@@ -423,7 +444,8 @@ function App() {
 
                   <span className="font-medium">Payback Period</span>
                   <span
-</> className="text-lg font-bold">
+</>
+className="text-lg font-bold">
                     {analysis.result.payback_period}
                   </span>
                 </div>
@@ -432,7 +454,8 @@ function App() {
 
                   <span className="font-medium">Net Present Value</span>
                   <span
-</> className="text-lg font-bold text-blue-600">
+</>
+className="text-lg font-bold text-blue-600">
                     ${analysis.result.net_present_value.toLocaleString()}
                   </span>
                 </div>
@@ -441,7 +464,8 @@ function App() {
 
                   <span className="font-medium">Risk Level</span>
                   <span
-</> className={`text-lg font-bold ${
+</>
+className={`text-lg font-bold ${
                     analysis.result.risk_level === 'low' ? 'text-green-600' :
                     analysis.result.risk_level === 'medium' ? 'text-yellow-600' : 'text-red-600'
                   }`}>
@@ -462,7 +486,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Reports & Analytics</h2>
         <p
-</> className="opacity-90">Comprehensive reporting and business intelligence</p>
+</>
+className="opacity-90">Comprehensive reporting and business intelligence</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -471,12 +496,14 @@ function App() {
 
             <h3 className="text-lg font-semibold">Total Properties</h3>
             <Building
-</> className="h-8 w-8 text-blue-600" />
+</>
+className="h-8 w-8 text-blue-600" />
           </div><>
 
           <div className="text-3xl font-bold text-blue-600">1,247</div>
           <div
-</> className="text-sm text-gray-600 mt-1">+12% from last month</div>
+</>
+className="text-sm text-gray-600 mt-1">+12% from last month</div>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -484,12 +511,14 @@ function App() {
 
             <h3 className="text-lg font-semibold">Annual Tax Revenue</h3>
             <DollarSign
-</> className="h-8 w-8 text-green-600" />
+</>
+className="h-8 w-8 text-green-600" />
           </div><>
 
           <div className="text-3xl font-bold text-green-600">$2.4M</div>
           <div
-</> className="text-sm text-gray-600 mt-1">+8% from last year</div>
+</>
+className="text-sm text-gray-600 mt-1">+8% from last year</div>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -497,12 +526,14 @@ function App() {
 
             <h3 className="text-lg font-semibold">Average ROI</h3>
             <TrendingUp
-</> className="h-8 w-8 text-purple-600" />
+</>
+className="h-8 w-8 text-purple-600" />
           </div><>
 
           <div className="text-3xl font-bold text-purple-600">12.5%</div>
           <div
-</> className="text-sm text-gray-600 mt-1">Above market average</div>
+</>
+className="text-sm text-gray-600 mt-1">Above market average</div>
         </div>
       </div>
 
@@ -513,7 +544,8 @@ function App() {
           Performance Metrics
         </h3>
         <div
-</> className="text-center py-8 text-gray-500">
+</>
+className="text-center py-8 text-gray-500">
           Advanced analytics dashboard coming soon...
         </div>
       </div>
@@ -526,7 +558,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Compliance & Audit</h2>
         <p
-</> className="opacity-90">Regulatory compliance tracking and audit trails</p>
+</>
+className="opacity-90">Regulatory compliance tracking and audit trails</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -538,7 +571,8 @@ function App() {
           </h3>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded">
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
@@ -573,33 +607,38 @@ function App() {
           </h3>
           
           <div
-</> className="space-y-3 max-h-64 overflow-y-auto">
+</>
+className="space-y-3 max-h-64 overflow-y-auto">
             <div className="border-l-4 border-green-500 pl-4 py-2"><>
 
               <div className="font-medium text-sm">Tax calculation completed</div>
               <div
-</> className="text-xs text-gray-600">Property ID: prop-12345 - 2 minutes ago</div>
+</>
+className="text-xs text-gray-600">Property ID: prop-12345 - 2 minutes ago</div>
             </div>
             
             <div className="border-l-4 border-blue-500 pl-4 py-2"><>
 
               <div className="font-medium text-sm">Investment model generated</div>
               <div
-</> className="text-xs text-gray-600">Analysis ID: inv-001 - 15 minutes ago</div>
+</>
+className="text-xs text-gray-600">Analysis ID: inv-001 - 15 minutes ago</div>
             </div>
             
             <div className="border-l-4 border-purple-500 pl-4 py-2"><>
 
               <div className="font-medium text-sm">Compliance check passed</div>
               <div
-</> className="text-xs text-gray-600">System audit - 1 hour ago</div>
+</>
+className="text-xs text-gray-600">System audit - 1 hour ago</div>
             </div>
             
             <div className="border-l-4 border-orange-500 pl-4 py-2"><>
 
               <div className="font-medium text-sm">Data synchronization</div>
               <div
-</> className="text-xs text-gray-600">External MLS sync - 2 hours ago</div>
+</>
+className="text-xs text-gray-600">External MLS sync - 2 hours ago</div>
             </div>
           </div>
         </div>
@@ -617,11 +656,13 @@ function App() {
 
               <div className="tf-logo-glow mr-3">🚀</div>
               <div
+</>
 </>><>
 
                 <h1 className="tf-gradient-text text-2xl font-bold">Terrafusion OS</h1>
                 <p
-</> className="text-muted-foreground">Government. Transcended. • Tax & Levy Module</p>
+</>
+className="text-muted-foreground">Government. Transcended. • Tax & Levy Module</p>
               </div>
             </div>
             <div className="flex items-center space-x-2"><>
@@ -630,7 +671,8 @@ function App() {
                 v1.5.0
               </div>
               <div
-</> className="bg-secondary/20 text-secondary px-3 py-1 rounded-full text-sm font-medium border border-secondary/30">
+</>
+className="bg-secondary/20 text-secondary px-3 py-1 rounded-full text-sm font-medium border border-secondary/30">
                 AI-Enhanced
               </div>
             </div>

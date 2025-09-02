@@ -258,8 +258,11 @@ export const AISwarmDashboard: React.FC = () => {
               <DashboardIcon color="primary" sx={{ mr: 1 }} />
               <Typography variant="h6">Total Agents</Typography>
             </Box>
+
+
             <Typography variant="h3" color="primary">{swarmStatus.totalAgents.toLocaleString()}</Typography>
             <Typography
+
 variant="body2" color="text.secondary">
               Active: {swarmStatus.activeAgents.toLocaleString()} | Processing: {swarmStatus.processingAgents.toLocaleString()}
             </Typography>
@@ -274,8 +277,11 @@ variant="body2" color="text.secondary">
               <SpeedIcon color="success" sx={{ mr: 1 }} />
               <Typography variant="h6">Performance</Typography>
             </Box>
+
+
             <Typography variant="h3" color="success.main">{swarmStatus.performanceScore.toFixed(1)}%</Typography>
             <LinearProgress
+
 variant="determinate" 
               value={swarmStatus.performanceScore} 
               color="success"
@@ -292,8 +298,11 @@ variant="determinate"
               <QuantumIcon color="secondary" sx={{ mr: 1 }} />
               <Typography variant="h6">Quantum Coherence</Typography>
             </Box>
+
+
             <Typography variant="h3" color="secondary.main">{swarmStatus.quantumCoherence.toFixed(1)}%</Typography>
             <LinearProgress
+
 variant="determinate" 
               value={swarmStatus.quantumCoherence} 
               color="secondary"
@@ -310,8 +319,11 @@ variant="determinate"
               <ConsciousnessIcon color="warning" sx={{ mr: 1 }} />
               <Typography variant="h6">Consciousness Level</Typography>
             </Box>
+
+
             <Typography variant="h3" color="warning.main">{swarmStatus.consciousnessLevel.toFixed(1)}/10</Typography>
             <LinearProgress
+
 variant="determinate" 
               value={swarmStatus.consciousnessLevel * 10} 
               color="warning"
@@ -326,10 +338,13 @@ variant="determinate"
         <Card elevation={3}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
+
+
               <TimelineIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
               Real-Time Performance Metrics
             </Typography>
             <ResponsiveContainer
+
 width="100%" height={400}>
               <LineChart data={performanceHistory}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -351,11 +366,16 @@ width="100%" height={400}>
         <Card elevation={3}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
+
+
               <SettingsIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
               Quick Actions
             </Typography>
             <Box
+
 display="flex" flexDirection="column" gap={2}>
+
+
               <Button
                 variant="contained"
                 color="primary"
@@ -365,6 +385,7 @@ display="flex" flexDirection="column" gap={2}>
                 Refresh All Data
               </Button>
               <Button
+
 variant="contained"
                 color="secondary"
                 startIcon={<QuantumIcon />}
@@ -372,6 +393,8 @@ variant="contained"
               >
                 Quantum Recalibration
               </Button>
+
+
               <Button
                 variant="contained"
                 color="warning"
@@ -381,6 +404,7 @@ variant="contained"
                 Evolve Consciousness
               </Button>
               <Button
+
 variant="contained"
                 color="error"
                 startIcon={<StopIcon />}
@@ -399,10 +423,13 @@ variant="contained"
         <Card elevation={3}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
+
+
               <AnalyticsIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
               Task Performance Metrics
             </Typography>
             <TableContainer
+
 >
               <Table>
                 <TableHead>
@@ -417,11 +444,17 @@ variant="contained"
                 <TableBody>
                   {taskMetrics.map((task) => (
                     <TableRow key={task.type}>
+
+
                       <TableCell>{task.type}</TableCell>
                       <TableCell
+
 align="right">{task.count.toLocaleString()}</TableCell>
+
+
                       <TableCell align="right">{task.successRate.toFixed(1)}%</TableCell>
                       <TableCell
+
 align="right">{task.averageTime}</TableCell>
                       <TableCell align="center">
                         <Chip
@@ -447,10 +480,13 @@ align="right">{task.averageTime}</TableCell>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6">
+
+
             <MemoryIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
             Agent Status Monitor
           </Typography>
           <Button
+
 variant="outlined"
             startIcon={<RefreshIcon />}
             onClick={() => setSelectedAgents(generateMockAgentData())}
@@ -477,14 +513,22 @@ variant="outlined"
             <TableBody>
               {selectedAgents.map((agent) => (
                 <TableRow key={agent.id} hover>
+
+
                   <TableCell>{agent.id}</TableCell>
                   <TableCell
+
 >
+
+
                     <Chip label={agent.type} size="small" variant="outlined" />
                   </TableCell>
                   <TableCell
+
 align="center">{agent.tier}</TableCell>
                   <TableCell align="center">
+
+
                     <Chip
                       label={agent.status}
                       size="small"
@@ -492,6 +536,7 @@ align="center">{agent.tier}</TableCell>
                     />
                   </TableCell>
                   <TableCell
+
 align="right">
                     <Box display="flex" alignItems="center">
                       {agent.currentLoad}/{agent.maxLoad}
@@ -510,11 +555,17 @@ align="right">
                       {agent.healthScore.toFixed(0)}%
                     </Typography>
                   </TableCell>
+
+
                   <TableCell align="right">{(agent.successRate * 100).toFixed(1)}%</TableCell>
                   <TableCell
+
 align="right">{agent.responseTime.toFixed(0)}ms</TableCell>
+
+
                   <TableCell align="right">{(agent.quantumCoherence * 100).toFixed(1)}%</TableCell>
                   <TableCell
+
 >{agent.lastActivity}</TableCell>
                 </TableRow>
               ))}
@@ -528,8 +579,11 @@ align="right">{agent.responseTime.toFixed(0)}ms</TableCell>
   // Settings Dialog
   const settingsDialog = (
     <Dialog open={showSettings} onClose={() => setShowSettings(false)} maxWidth="sm" fullWidth>
+
+
       <DialogTitle>Dashboard Settings</DialogTitle>
       <DialogContent
+
 >
         <Box display="flex" flexDirection="column" gap={3} mt={2}>
           <FormControlLabel
@@ -549,16 +603,25 @@ align="right">{agent.responseTime.toFixed(0)}ms</TableCell>
             disabled={!isAutoRefresh}
           />
           <FormControl>
+
+
             <InputLabel>Default View</InputLabel>
             <Select
+
 value={selectedView}
               onChange={(e) => setSelectedView(e.target.value as any)}
             >
+
+
               <MenuItem value="overview">Overview</MenuItem>
               <MenuItem
+
 value="agents">Agents</MenuItem>
+
+
               <MenuItem value="performance">Performance</MenuItem>
               <MenuItem
+
 value="tasks">Tasks</MenuItem>
               <MenuItem value="quantum">Quantum</MenuItem>
             </Select>
@@ -566,8 +629,11 @@ value="tasks">Tasks</MenuItem>
         </Box>
       </DialogContent>
       <DialogActions>
+
+
         <Button onClick={() => setShowSettings(false)}>Cancel</Button>
         <Button
+
 variant="contained" onClick={() => setShowSettings(false)}>Save</Button>
       </DialogActions>
     </Dialog>
@@ -577,10 +643,13 @@ variant="contained" onClick={() => setShowSettings(false)}>Save</Button>
     <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+
+
         <Typography variant="h4" component="h1" fontWeight="bold">
           🤖 Terrafusion AI Swarm Command Center
         </Typography>
         <Box
+
 display="flex" gap={2}>
           <Chip
             icon={<CheckIcon />}

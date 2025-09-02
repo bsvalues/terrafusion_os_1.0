@@ -166,7 +166,8 @@ const CountyGovernmentSystem: React.FC = () => {
             Welcome back, {currentUser.name}
           </h1>
           <p
-</> className="text-gray-600 mt-1">
+</>
+className="text-gray-600 mt-1">
             {currentUser.department} • {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
@@ -185,7 +186,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
                     <p className="text-sm text-gray-600">{stat.label}</p>
                     <p
-</> className={`text-3xl font-bold text-${stat.color}-600 mt-2`}>
+</>
+className={`text-3xl font-bold text-${stat.color}-600 mt-2`}>
                       {stat.value}
                     </p>
                   </div>
@@ -202,7 +204,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
             <h2 className="text-xl font-semibold text-gray-900">My Work Queue</h2>
             <button
-</> className="text-sm text-blue-600 hover:underline">View All</button>
+</>
+className="text-sm text-blue-600 hover:underline">View All</button>
           </div>
           <div className="space-y-3">
             {workQueue.slice(0, 5).map((item) => (
@@ -219,7 +222,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
                     <p className="font-medium text-gray-900">{item.subject}</p>
                     <p
-</> className="text-sm text-gray-600">
+</>
+className="text-sm text-gray-600">
                       {item.requester} • Due {item.dueDate}
                     </p>
                   </div>
@@ -235,7 +239,8 @@ const CountyGovernmentSystem: React.FC = () => {
                     {item.status.toUpperCase()}
                   </span>
                   <button
-</> className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+</>
+className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
                     Open
                   </button>
                 </div>
@@ -254,7 +259,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
             <h3 className="font-semibold text-lg">Property Search</h3>
             <p
-</> className="text-blue-100 text-sm mt-1">Access 94,149 property records</p>
+</>
+className="text-blue-100 text-sm mt-1">Access 94,149 property records</p>
           </button>
 
           <button
@@ -265,7 +271,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
             <h3 className="font-semibold text-lg">GIS Mapping</h3>
             <p
-</> className="text-green-100 text-sm mt-1">Interactive parcel maps</p>
+</>
+className="text-green-100 text-sm mt-1">Interactive parcel maps</p>
           </button>
 
           <button
@@ -276,7 +283,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
             <h3 className="font-semibold text-lg">Generate Reports</h3>
             <p
-</> className="text-purple-100 text-sm mt-1">Analytics & insights</p>
+</>
+className="text-purple-100 text-sm mt-1">Analytics & insights</p>
           </button>
         </div>
       </div>
@@ -290,7 +298,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
         <h1 className="text-3xl font-bold text-gray-900">Property Management</h1>
         <p
-</> className="text-gray-600 mt-1">Manage assessments, valuations, and property records</p>
+</>
+className="text-gray-600 mt-1">Manage assessments, valuations, and property records</p>
       </div>
 
       {/* Search Bar */}
@@ -308,7 +317,8 @@ const CountyGovernmentSystem: React.FC = () => {
             Search
           </button>
           <button
-</> className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">
+</>
+className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">
             New Assessment
           </button>
         </div>
@@ -328,7 +338,8 @@ const CountyGovernmentSystem: React.FC = () => {
                   Parcel ID
                 </th>
                 <th
-</> className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+</>
+className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Address
                 </th><>
 
@@ -336,7 +347,8 @@ const CountyGovernmentSystem: React.FC = () => {
                   Owner
                 </th>
                 <th
-</> className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+</>
+className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Assessed Value
                 </th><>
 
@@ -344,7 +356,8 @@ const CountyGovernmentSystem: React.FC = () => {
                   Status
                 </th>
                 <th
-</> className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+</>
+className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -357,7 +370,8 @@ const CountyGovernmentSystem: React.FC = () => {
                     {property.parcelId}
                   </td>
                   <td
-</> className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+</>
+className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {property.address}
                   </td><>
 
@@ -365,7 +379,8 @@ const CountyGovernmentSystem: React.FC = () => {
                     {property.owner}
                   </td>
                   <td
-</> className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+</>
+className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     ${property.assessedValue.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -386,7 +401,8 @@ const CountyGovernmentSystem: React.FC = () => {
                       View
                     </button>
                     <button
-</> className="text-green-600 hover:text-green-900 mr-3">
+</>
+className="text-green-600 hover:text-green-900 mr-3">
                       Edit
                     </button>
                     <button className="text-purple-600 hover:text-purple-900">
@@ -418,7 +434,8 @@ const CountyGovernmentSystem: React.FC = () => {
                     Benton County Government
                   </h1>
                   <p
-</> className="text-xs text-gray-600">Public Records Management System</p>
+</>
+className="text-xs text-gray-600">Public Records Management System</p>
                 </div>
               </div>
               
@@ -457,14 +474,16 @@ const CountyGovernmentSystem: React.FC = () => {
 
                   <p className="text-sm font-medium text-gray-900">{currentUser.name}</p>
                   <p
-</> className="text-xs text-gray-600">{currentUser.department}</p>
+</>
+className="text-xs text-gray-600">{currentUser.department}</p>
                 </div>
                 <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"><>
 
                   <Settings className="w-5 h-5" />
                 </button>
                 <button
-</> className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+</>
+className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
                   <LogOut className="w-5 h-5" />
                 </button>
               </div>
@@ -511,7 +530,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Permit Management</h2>
               <p
-</> className="text-gray-600">Process building permits, inspections, and applications</p>
+</>
+className="text-gray-600">Process building permits, inspections, and applications</p>
             </div>
           )}
           {activeView === 'documents' && (
@@ -519,7 +539,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Document Management</h2>
               <p
-</> className="text-gray-600">Manage public records, deeds, and official documents</p>
+</>
+className="text-gray-600">Manage public records, deeds, and official documents</p>
             </div>
           )}
           {activeView === 'reports' && (
@@ -527,7 +548,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Reports & Analytics</h2>
               <p
-</> className="text-gray-600">Generate reports, analytics, and insights</p>
+</>
+className="text-gray-600">Generate reports, analytics, and insights</p>
             </div>
           )}
           {activeView === 'public' && (
@@ -535,7 +557,8 @@ const CountyGovernmentSystem: React.FC = () => {
 
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Public Portal</h2>
               <p
-</> className="text-gray-600">Configure and manage the public-facing records portal</p>
+</>
+className="text-gray-600">Configure and manage the public-facing records portal</p>
             </div>
           )}
         </div>
@@ -551,13 +574,15 @@ const CountyGovernmentSystem: React.FC = () => {
               94,149 Properties Indexed
             </span>
             <span
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
               <Users className="w-4 h-4 text-blue-400" />
               47 Active Users
             </span>
             <span
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-yellow-400" />
               0.001s Response Time
             </span>

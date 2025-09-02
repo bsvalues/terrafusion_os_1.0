@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Grid, 
   Card, 
@@ -41,8 +41,6 @@ import {
   CartesianGrid, 
   Tooltip as RechartsTooltip, 
   ResponsiveContainer,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell
@@ -61,7 +59,7 @@ import {
 const ModuleEcosystemDashboard: React.FC = () => {
   const {
     ecosystemStatus,
-    performanceSummary,
+    performanceSummary: _performanceSummary,
     isLoading,
     error,
     initializeEcosystem,
@@ -159,10 +157,13 @@ const ModuleEcosystemDashboard: React.FC = () => {
     <Box sx={{ flexGrow: 1, p: 3 }}>
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+
+
         <Typography variant="h4" component="h1">
           Terrafusion OS Module Ecosystem
         </Typography>
         <Box
+
 display="flex" gap={1}>
           <Chip 
             label={`${connectionStatus === 'connected' ? 'Real-time' : 'Polling'}`}
@@ -198,10 +199,13 @@ display="flex" gap={1}>
             <CardContent>
               <Box display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
+
+
                   <Typography color="textSecondary" gutterBottom>
                     Total Modules
                   </Typography>
                   <Typography
+
 variant="h4">
                     {currentStatus?.totalModules || 0}
                   </Typography>
@@ -220,13 +224,18 @@ variant="h4">
             <CardContent>
               <Box display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
+
+
                   <Typography color="textSecondary" gutterBottom>
                     System Health
                   </Typography>
                   <Typography
+
 variant="h4">
                     {healthScore}%
                   </Typography>
+
+
                   <LinearProgress 
                     variant="determinate" 
                     value={healthScore} 
@@ -234,6 +243,7 @@ variant="h4">
                   />
                 </Box>
                 <CheckCircleIcon
+
 sx={{ fontSize: 40, color: healthScore > 80 ? 'success.main' : 'warning.main' }} />
               </Box>
             </CardContent>
@@ -245,10 +255,13 @@ sx={{ fontSize: 40, color: healthScore > 80 ? 'success.main' : 'warning.main' }}
             <CardContent>
               <Box display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
+
+
                   <Typography color="textSecondary" gutterBottom>
                     Memory Usage
                   </Typography>
                   <Typography
+
 variant="h4">
                     {formatBytes(currentStatus?.totalMemoryUsage || 0)}
                   </Typography>
@@ -267,10 +280,13 @@ variant="h4">
             <CardContent>
               <Box display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
+
+
                   <Typography color="textSecondary" gutterBottom>
                     Components
                   </Typography>
                   <Typography
+
 variant="h4">
                     {(currentStatus?.totalComponentCount || 0).toLocaleString()}
                   </Typography>
@@ -291,8 +307,11 @@ variant="h4">
           <Card>
             <CardContent>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+
+
                 <Typography variant="h6">System Performance</Typography>
                 <Tooltip
+
 title="Real-time performance metrics">
                   <TimelineIcon />
                 </Tooltip>
@@ -329,8 +348,11 @@ title="Real-time performance metrics">
         <Grid item xs={12} lg={4}>
           <Card>
             <CardContent>
+
+
               <Typography variant="h6" mb={2}>Module Distribution</Typography>
               <Box
+
 height={300}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -352,11 +374,14 @@ height={300}>
                         { name: 'Tier 1', value: moduleDistribution.tier1, color: '#4caf50' },
                         { name: 'Tier 2', value: moduleDistribution.tier2, color: '#2196f3' },
                         { name: 'Tier 3', value: moduleDistribution.tier3, color: '#ff9800' }
-                      ].map((entry , index) => (
+                      ].map((entry, index) => (
+
+
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
                     <RechartsTooltip
+
 />
                   </PieChart>
                 </ResponsiveContainer>
@@ -369,8 +394,11 @@ height={300}>
         <Grid item xs={12}>
           <Card>
             <CardContent>
+
+
               <Typography variant="h6" mb={2}>Module Health Status</Typography>
               <Box
+
 sx={{ maxHeight: 400, overflow: 'auto' }}>
                 <List>
                   {currentStatus?.moduleHealthStatuses.map((module) => (
@@ -385,16 +413,22 @@ sx={{ maxHeight: 400, overflow: 'auto' }}>
                           borderRadius: 1
                         }}
                       >
+
+
                         <ListItemIcon>
                           {getHealthIcon(module.health)}
                         </ListItemIcon>
                         <ListItemText
+
 primary={
                             <Box display="flex" justifyContent="space-between" alignItems="center">
+
+
                               <Typography variant="subtitle1" fontWeight="medium">
                                 {module.moduleId}
                               </Typography>
                               <Chip
+
 label={module.health}
                                 color={
                                   module.health === 'Healthy' ? 'success' :
@@ -433,13 +467,19 @@ label={module.health}
 
       {/* Initialize Dialog */}
       <Dialog open={showInitDialog} onClose={() => setShowInitDialog(false)} maxWidth="sm" fullWidth>
+
+
         <DialogTitle>Initialize Module Ecosystem</DialogTitle>
         <DialogContent
+
 >
+
+
           <Typography paragraph>
             This will initialize the complete Terrafusion OS module ecosystem with all 33 modules.
           </Typography>
           <Typography
+
 paragraph color="textSecondary">
             • Creates hierarchical module structure<br/>
             • Establishes inter-module dependencies<br/>
@@ -447,10 +487,13 @@ paragraph color="textSecondary">
             • Enables health checks
           </Typography>
           <Box display="flex" justifyContent="flex-end" gap={2} mt={3}>
+
+
             <Button onClick={() => setShowInitDialog(false)}>
               Cancel
             </Button>
             <Button
+
 variant="contained" 
               onClick={() => {
                 initializeEcosystem();
@@ -471,18 +514,24 @@ variant="contained"
         maxWidth="md" 
         fullWidth
       >
+
+
         <DialogTitle>
           Module Details: {selectedModule?.moduleId}
         </DialogTitle>
         <DialogContent
+
 >
           {selectedModule && (
             <Box>
               <Grid container spacing={2} mb={2}>
                 <Grid item xs={6}>
                   <Paper sx={{ p: 2 }}>
+
+
                     <Typography variant="subtitle2" color="textSecondary">Health Status</Typography>
                     <Box
+
 display="flex" alignItems="center" gap={1} mt={1}>
                       {getHealthIcon(selectedModule.health)}
                       <Typography variant="h6">{selectedModule.health}</Typography>
@@ -491,27 +540,33 @@ display="flex" alignItems="center" gap={1} mt={1}>
                 </Grid>
                 <Grid item xs={6}>
                   <Paper sx={{ p: 2 }}>
+
+
                     <Typography variant="subtitle2" color="textSecondary">Uptime</Typography>
                     <Typography
+
 variant="h6" mt={1}>{selectedModule.uptime}</Typography>
                   </Paper>
                 </Grid>
               </Grid>
 
               <Divider sx={{ my: 2 }} />
+
+
               <Typography variant="h6" mb={2}>Health Checks</Typography>
               <Box
+
 mb={2}>
-                {selectedModule.healthChecks.map((check , index) => (
+                {selectedModule.healthChecks.map((check, index) => (
                   <Chip key={index} label={check} variant="outlined" sx={{ mr: 1, mb: 1 }} />
                 ))}
               </Box>
 
               {selectedModule.issues.length > 0 && (
-                <>
+                <div>
                   <Typography variant="h6" mb={2} color="error">Issues</Typography>
                   <List dense>
-                    {selectedModule.issues.map((issue , index) => (
+                    {selectedModule.issues.map((issue, index) => (
                       <ListItem key={index}>
                         <ListItemIcon>
                           <ErrorIcon color="error" />
@@ -520,10 +575,13 @@ mb={2}>
                       </ListItem>
                     ))}
                   </List>
-                </>
+                </div>
               )}
+
+
               <Typography variant="h6" mb={2}>Metrics</Typography>
               <Paper
+
 sx={{ p: 2 }}>
                 <pre style={{ fontSize: '12px', overflow: 'auto' }}>
                   {JSON.stringify(selectedModule.healthMetrics, null, 2)}

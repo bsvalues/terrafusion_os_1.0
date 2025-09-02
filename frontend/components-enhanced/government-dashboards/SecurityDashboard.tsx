@@ -146,7 +146,8 @@ const SecurityDashboard: React.FC = () => {
           🛡️ Security & Compliance Dashboard
         </Typography>
         <Box
-</> sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+</>
+sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Tooltip title="Refresh Data">
             <IconButton onClick={refetch}>
               <Refresh />
@@ -174,11 +175,13 @@ const SecurityDashboard: React.FC = () => {
                   <Security />
                 </Avatar>
                 <Box
+</>
 </>><>
 
                   <Typography variant="h4">{securityData.threatsDetected}</Typography>
                   <Typography
-</> variant="body2" color="textSecondary">Threats Detected</Typography>
+</>
+variant="body2" color="textSecondary">Threats Detected</Typography>
                 </Box>
               </Box>
               <LinearProgress 
@@ -200,11 +203,13 @@ const SecurityDashboard: React.FC = () => {
                   <Shield />
                 </Avatar>
                 <Box
+</>
 </>><>
 
                   <Typography variant="h4">{securityData.anomaliesFound}</Typography>
                   <Typography
-</> variant="body2" color="textSecondary">Anomalies Found</Typography>
+</>
+variant="body2" color="textSecondary">Anomalies Found</Typography>
                 </Box>
               </Box>
               <LinearProgress 
@@ -226,11 +231,13 @@ const SecurityDashboard: React.FC = () => {
                   <Assessment />
                 </Avatar>
                 <Box
+</>
 </>><>
 
                   <Typography variant="h4">{(securityData.systemResilienceScore * 100).toFixed(1)}%</Typography>
                   <Typography
-</> variant="body2" color="textSecondary">System Resilience</Typography>
+</>
+variant="body2" color="textSecondary">System Resilience</Typography>
                 </Box>
               </Box>
               <LinearProgress 
@@ -255,17 +262,20 @@ const SecurityDashboard: React.FC = () => {
                 Recent Threats
               </Typography>
               <TableContainer
-</> component={Paper} sx={{ maxHeight: 400 }}>
+</>
+component={Paper} sx={{ maxHeight: 400 }}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow><>
 
                       <TableCell>Severity</TableCell>
                       <TableCell
+</>
 </>>Threat Type</TableCell><>
 
                       <TableCell>Status</TableCell>
                       <TableCell
+</>
 </>>Time</TableCell>
                       <TableCell>Actions</TableCell>
                     </TableRow>
@@ -284,6 +294,7 @@ const SecurityDashboard: React.FC = () => {
 
                         <TableCell>{threat.threatType}</TableCell>
                         <TableCell
+</>
 </>><>
 
                           <Chip 
@@ -293,6 +304,7 @@ const SecurityDashboard: React.FC = () => {
                           />
                         </TableCell>
                         <TableCell
+</>
 </>>
                           <Typography variant="body2">
                             {new Date(threat.timestamp).toLocaleString()}

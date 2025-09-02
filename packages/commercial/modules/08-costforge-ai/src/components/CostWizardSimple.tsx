@@ -79,17 +79,20 @@ const CostWizardSimple = () => {
 
                 <Label>Building Type</Label>
                 <Select
-</> value={formData.buildingType} onValueChange={(value) => updateFormData('buildingType', value)}>
+</>
+value={formData.buildingType} onValueChange={(value) => updateFormData('buildingType', value)}>
                   <SelectTrigger><>
 
                     <SelectValue placeholder="Select building type" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>><>
 
                     <SelectItem value="residential">Residential</SelectItem>
                     <SelectItem
-</> value="commercial">Commercial</SelectItem>
+</>
+value="commercial">Commercial</SelectItem>
                     <SelectItem value="industrial">Industrial</SelectItem>
                   </SelectContent>
                 </Select>
@@ -99,17 +102,20 @@ const CostWizardSimple = () => {
 
                 <Label>Region</Label>
                 <Select
-</> value={formData.region} onValueChange={(value) => updateFormData('region', value)}>
+</>
+value={formData.region} onValueChange={(value) => updateFormData('region', value)}>
                   <SelectTrigger><>
 
                     <SelectValue placeholder="Select region" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>><>
 
                     <SelectItem value="Benton County">Benton County</SelectItem>
                     <SelectItem
-</> value="Franklin County">Franklin County</SelectItem>
+</>
+value="Franklin County">Franklin County</SelectItem>
                     <SelectItem value="Walla Walla County">Walla Walla County</SelectItem>
                   </SelectContent>
                 </Select>
@@ -127,6 +133,7 @@ const CostWizardSimple = () => {
                 <Label>Square Footage</Label>
                 <Input
 </>
+
                   type="number"
                   placeholder="Enter square footage"
                   value={formData.squareFootage}
@@ -139,6 +146,7 @@ const CostWizardSimple = () => {
                 <Label>Year Built</Label>
                 <Input
 </>
+
                   type="number"
                   placeholder="Enter year built"
                   value={formData.yearBuilt}
@@ -157,21 +165,25 @@ const CostWizardSimple = () => {
 
                 <Label>Construction Quality</Label>
                 <Select
-</> value={formData.quality} onValueChange={(value) => updateFormData('quality', value)}>
+</>
+value={formData.quality} onValueChange={(value) => updateFormData('quality', value)}>
                   <SelectTrigger><>
 
                     <SelectValue placeholder="Select quality level" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>><>
 
                     <SelectItem value="economy">Economy</SelectItem>
                     <SelectItem
-</> value="standard">Standard</SelectItem><>
+</>
+value="standard">Standard</SelectItem><>
 
                     <SelectItem value="good">Good</SelectItem>
                     <SelectItem
-</> value="excellent">Excellent</SelectItem>
+</>
+value="excellent">Excellent</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -197,7 +209,8 @@ const CostWizardSimple = () => {
                     ${estimatedCost.toLocaleString()}
                   </div>
                   <div
-</> className="text-slate-400">
+</>
+className="text-slate-400">
                     Estimated replacement cost for {formData.squareFootage} sq ft {formData.quality} quality {formData.buildingType} building
                   </div>
                   <div className="text-sm text-slate-500">
@@ -229,7 +242,8 @@ const CostWizardSimple = () => {
               <step.icon className="h-5 w-5" />
             </div>
             <div
-</> className="ml-3">
+</>
+className="ml-3">
               <div className={`text-sm font-medium ${
                 currentStep >= step.id ? 'text-slate-100' : 'text-slate-400'
               }`}>

@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:    
+metadata:      
   name: {{ include "terrafusion-api.fullname" . }}
   labels:
     {{- include "terrafusion-api.labels" . | nindent 4 }}

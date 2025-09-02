@@ -93,7 +93,8 @@ export function DocumentClassificationResult({
 
           <h3 className="text-base font-medium mb-1">Document Type</h3>
           <div
-</> className="flex items-center space-x-2">
+</>
+className="flex items-center space-x-2">
             <Badge className="capitalize px-3 py-1">{classification.documentTypeLabel}</Badge>
             
             {classification.wasManuallyClassified && (
@@ -123,7 +124,8 @@ export function DocumentClassificationResult({
 
           <span className="text-sm font-medium">Confidence Score</span>
           <DocumentConfidenceIndicator
-</> 
+</>
+
             confidence={classification.confidence} 
             showPercentage={true}
           />
@@ -150,7 +152,8 @@ export function DocumentClassificationResult({
 
               <p className="font-medium text-red-800 dark:text-red-300">Low classification confidence</p>
               <p
-</> className="text-xs text-red-700 dark:text-red-400 mt-0.5">
+</>
+className="text-xs text-red-700 dark:text-red-400 mt-0.5">
                 This document may be misclassified. Consider manually reviewing the document type.
               </p>
             </div>

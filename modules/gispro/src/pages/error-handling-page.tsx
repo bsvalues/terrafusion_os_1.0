@@ -28,6 +28,7 @@ export default function ErrorHandlingPage() {
 
           <CardTitle>Toast Notifications</CardTitle>
           <CardDescription
+</>
 </>>
             Display various types of notifications to the user
           </CardDescription>
@@ -51,6 +52,7 @@ export default function ErrorHandlingPage() {
           
           <Button
 </>
+
             onClick={() => 
               toast({
                 title: 'Success!',
@@ -68,6 +70,7 @@ export default function ErrorHandlingPage() {
           
           <Button
 </>
+
             onClick={() => 
               toast({
                 title: 'Warning: Warning',
@@ -85,6 +88,7 @@ export default function ErrorHandlingPage() {
           
           <Button
 </>
+
             onClick={() => 
               toast({
                 title: 'Error',
@@ -102,6 +106,7 @@ export default function ErrorHandlingPage() {
           
           <Button
 </>
+
             onClick={() => 
               toast({
                 title: 'Custom Toast',
@@ -129,6 +134,7 @@ export default function ErrorHandlingPage() {
 
           <CardTitle>Error Boundary</CardTitle>
           <CardDescription
+</>
 </>>
             Demonstrates how the application handles uncaught exceptions
           </CardDescription>
@@ -140,7 +146,8 @@ export default function ErrorHandlingPage() {
             how error boundaries catch and handle errors gracefully.
           </p>
           <Button
-</> 
+</>
+
             variant="destructive"
             onClick={causeError}
           >
@@ -156,6 +163,7 @@ export default function ErrorHandlingPage() {
 
           <CardTitle>State Error Handling</CardTitle>
           <CardDescription
+</>
 </>>
             Demonstrates handling errors in state updates
           </CardDescription>
@@ -190,6 +198,7 @@ export default function ErrorHandlingPage() {
             
             <Button
 </>
+
               variant="outline"
               onClick={() => {
                 if (counter <= 0) {

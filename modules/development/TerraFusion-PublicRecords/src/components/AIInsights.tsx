@@ -151,7 +151,8 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ discoveries: initialDisc
                 {getIcon(discovery.type)}
               </div>
               <span
-</> className="text-xs font-bold tracking-wider opacity-80">
+</>
+className="text-xs font-bold tracking-wider opacity-80">
                 {getTypeLabel(discovery.type)}
               </span>
             </div>
@@ -220,13 +221,15 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ discoveries: initialDisc
                     {getIcon(selectedDiscovery.type)}
                   </div>
                   <div
+</>
 </>><>
 
                     <div className="text-sm font-bold text-white/60 mb-1">
                       {getTypeLabel(selectedDiscovery.type)}
                     </div>
                     <h2
-</> className="text-2xl font-bold text-white">
+</>
+className="text-2xl font-bold text-white">
                       {selectedDiscovery.title}
                     </h2>
                   </div>
@@ -250,7 +253,8 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ discoveries: initialDisc
 
                     <div className="text-sm text-green-400 mb-1">Potential Savings</div>
                     <div
-</> className="text-2xl font-bold text-white">{selectedDiscovery.savings}</div>
+</>
+className="text-2xl font-bold text-white">{selectedDiscovery.savings}</div>
                   </div>
                 )}
                 {selectedDiscovery.confidence && (
@@ -258,7 +262,8 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ discoveries: initialDisc
 
                     <div className="text-sm text-purple-400 mb-1">AI Confidence</div>
                     <div
-</> className="text-2xl font-bold text-white">{selectedDiscovery.confidence}%</div>
+</>
+className="text-2xl font-bold text-white">{selectedDiscovery.confidence}%</div>
                   </div>
                 )}
               </div>
@@ -272,7 +277,8 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ discoveries: initialDisc
 
                       <div className="text-sm font-bold text-blue-400 mb-2">AI Recommendation</div>
                       <p
-</> className="text-white/80">{selectedDiscovery.recommendation}</p>
+</>
+className="text-white/80">{selectedDiscovery.recommendation}</p>
                     </div>
                   </div>
                 </div>
@@ -285,7 +291,8 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ discoveries: initialDisc
                   Take Action Now
                 </button>
                 <button
-</> className="flex-1 bg-white/10 text-white py-3 px-6 rounded-lg font-semibold hover:bg-white/20 transition-colors">
+</>
+className="flex-1 bg-white/10 text-white py-3 px-6 rounded-lg font-semibold hover:bg-white/20 transition-colors">
                   Schedule for Later
                 </button>
               </div>

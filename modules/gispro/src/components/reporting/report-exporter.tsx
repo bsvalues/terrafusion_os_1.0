@@ -120,6 +120,7 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
 
           <CardTitle>Export Report</CardTitle>
           <CardDescription
+</>
 </>>Choose a format to export this report</CardDescription>
         </CardHeader>
         <CardContent>
@@ -139,6 +140,7 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
 
           <CardTitle>Export Report</CardTitle>
           <CardDescription
+</>
 </>>Choose a format to export this report</CardDescription>
         </CardHeader>
         <CardContent>
@@ -147,6 +149,7 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
 
             <AlertTitle>Error</AlertTitle>
             <AlertDescription
+</>
 </>>
               Unable to check export availability. Please try again later.
             </AlertDescription>
@@ -164,6 +167,7 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
 
           <CardTitle>Export Report</CardTitle>
           <CardDescription
+</>
 </>>Choose a format to export this report</CardDescription>
         </CardHeader>
         <CardContent>
@@ -172,6 +176,7 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
 
             <AlertTitle>Exports Not Available</AlertTitle>
             <AlertDescription
+</>
 </>>
               This report type does not support exports or exports are still being generated.
             </AlertDescription>
@@ -194,10 +199,12 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
 
                 <p className="mb-1">• Download reports in various formats</p>
                 <p
-</> className="mb-1">• PDF for sharing and printing</p><>
+</>
+className="mb-1">• PDF for sharing and printing</p><>
 
                 <p className="mb-1">• CSV/Excel for data analysis</p>
                 <p
+</>
 </>>• GeoJSON for GIS applications</p>
               </div>
             }
@@ -216,19 +223,22 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
               PDF
             </TabsTrigger>
             <TabsTrigger
-</> value="csv" className="flex items-center"><>
+</>
+value="csv" className="flex items-center"><>
 
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               CSV
             </TabsTrigger>
             <TabsTrigger
-</> value="excel" className="flex items-center"><>
+</>
+value="excel" className="flex items-center"><>
 
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               Excel
             </TabsTrigger>
             <TabsTrigger
-</> value="geojson" className="flex items-center">
+</>
+value="geojson" className="flex items-center">
               <Database className="h-4 w-4 mr-2" />
               GeoJSON
             </TabsTrigger>
@@ -250,15 +260,11 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
                 disabled={isExporting}
               >
                 {isExporting ? (
-                  <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Exporting...
-                  </>
                 ) : (
-                  <>
                     <Download className="mr-2 h-4 w-4" />
                     Download {format.toUpperCase()}
-                  </>
                 )}
               </Button>
             ) : (
@@ -267,6 +273,7 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
 
                 <AlertTitle>Format Unavailable</AlertTitle>
                 <AlertDescription
+</>
 </>>
                   The {format.toUpperCase()} format is not available for this report.
                 </AlertDescription>
@@ -280,6 +287,7 @@ export const ReportExporter = ({ report }: ReportExporterProps) => {
 
               <AlertTitle>Last Export</AlertTitle>
               <AlertDescription
+</>
 </>>
                 You last exported this report as {exportQuery.data.lastExport.format.toUpperCase()} 
                 on {new Date(exportQuery.data.lastExport.exportedAt).toLocaleString()}.

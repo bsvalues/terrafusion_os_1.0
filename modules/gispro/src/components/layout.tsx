@@ -68,21 +68,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, title }) => {
 
             <NavLink href="/" icon={<Home size={18} />}>Dashboard</NavLink>
             <NavLink
-</> href="/workflows" icon={<LayoutGrid size={18} />}>Workflows</NavLink><>
+</>
+href="/workflows" icon={<LayoutGrid size={18} />}>Workflows</NavLink><>
 
             <NavLink href="/map" icon={<Map size={18} />}>Map View</NavLink>
             <NavLink
-</> href="/parcels" icon={<Map size={18} />}>Parcels</NavLink><>
+</>
+href="/parcels" icon={<Map size={18} />}>Parcels</NavLink><>
 
             <NavLink href="/documents" icon={<FileText size={18} />}>Documents</NavLink>
             <NavLink
-</> href="/users" icon={<Users size={18} />}>Users</NavLink><>
+</>
+href="/users" icon={<Users size={18} />}>Users</NavLink><>
 
             <NavLink href="/legal-description-agent" icon={<FileText size={18} />}>
               Legal Description Agent
             </NavLink>
             <NavLink
-</> href="/collaborative-workspace" icon={<Users size={18} />}>
+</>
+href="/collaborative-workspace" icon={<Users size={18} />}>
               Collaborative Workspace
             </NavLink><>
 
@@ -90,7 +94,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, title }) => {
               WebSocket Demo
             </NavLink>
             <NavLink
-</> href="/settings" icon={<Settings size={18} />}>Settings</NavLink>
+</>
+href="/settings" icon={<Settings size={18} />}>Settings</NavLink>
           </nav>
         </aside>
         

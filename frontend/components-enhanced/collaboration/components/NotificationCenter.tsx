@@ -360,7 +360,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
           <p className="font-medium">Failed to load notifications</p>
           <Button
-</> variant="outline" size="sm" onClick={() => refetch()} className="mt-2">
+</>
+variant="outline" size="sm" onClick={() => refetch()} className="mt-2">
             Retry
           </Button>
         </CardContent>
@@ -390,6 +391,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
                 <CardTitle>Notifications</CardTitle>
                 <CardDescription
+</>
 </>>
                   {stats.unreadCount} unread • {stats.todayCount} today
                 </CardDescription>
@@ -419,7 +421,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
                   <DropdownMenuLabel>View Options</DropdownMenuLabel>
                   <DropdownMenuItem
-</> onClick={() => setShowOnlyUnread(!showOnlyUnread)}>
+</>
+onClick={() => setShowOnlyUnread(!showOnlyUnread)}>
                     {showOnlyUnread ? <Eye className="h-4 w-4 mr-2" /> : <EyeOff className="h-4 w-4 mr-2" />}
                     {showOnlyUnread ? 'Show All' : 'Show Unread Only'}
                   </DropdownMenuItem>
@@ -457,15 +460,18 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="all">All Priority</SelectItem>
                   <SelectItem
-</> value={NotificationPriority.URGENT}>Urgent</SelectItem><>
+</>
+value={NotificationPriority.URGENT}>Urgent</SelectItem><>
 
                   <SelectItem value={NotificationPriority.HIGH}>High</SelectItem>
                   <SelectItem
-</> value={NotificationPriority.MEDIUM}>Medium</SelectItem>
+</>
+value={NotificationPriority.MEDIUM}>Medium</SelectItem>
                   <SelectItem value={NotificationPriority.LOW}>Low</SelectItem>
                 </SelectContent>
               </Select>
@@ -476,15 +482,18 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem
-</> value={NotificationType.TASK_ASSIGNED}>Tasks</SelectItem><>
+</>
+value={NotificationType.TASK_ASSIGNED}>Tasks</SelectItem><>
 
                   <SelectItem value={NotificationType.PROJECT_UPDATE}>Projects</SelectItem>
                   <SelectItem
-</> value={NotificationType.MENTION}>Mentions</SelectItem>
+</>
+value={NotificationType.MENTION}>Mentions</SelectItem>
                   <SelectItem value={NotificationType.TEAM_INVITATION}>Teams</SelectItem>
                 </SelectContent>
               </Select>
@@ -501,7 +510,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             All ({notifications.length})
           </TabsTrigger>
           <TabsTrigger
-</> value="tasks">
+</>
+value="tasks">
             Tasks
           </TabsTrigger><>
 
@@ -509,7 +519,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             Projects
           </TabsTrigger>
           <TabsTrigger
-</> value="mentions">
+</>
+value="mentions">
             Mentions
           </TabsTrigger>
           <TabsTrigger value="team">
@@ -527,6 +538,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     <Bell className="h-8 w-8" />
                   </div>
                   <p
+</>
 </>>Loading notifications...</p>
                 </div>
               </CardContent>
@@ -538,7 +550,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
                 <p className="font-medium mb-2">No notifications found</p>
                 <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                   {searchQuery || priorityFilter !== 'all' || typeFilter !== 'all'
                     ? 'Try adjusting your filters'
                     : 'You\'re all caught up!'
@@ -591,7 +604,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                                     {notification.title}
                                   </p>
                                   <p
-</> className="text-sm text-muted-foreground mt-1 leading-relaxed">
+</>
+className="text-sm text-muted-foreground mt-1 leading-relaxed">
                                     {notification.message}
                                   </p>
                                 </div>

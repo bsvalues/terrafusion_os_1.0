@@ -308,7 +308,8 @@ const KnowledgeBaseSearch: React.FC = () => {
       </Typography>
       
       <Typography
-</> variant="subtitle1" color="text.secondary" gutterBottom>
+</>
+variant="subtitle1" color="text.secondary" gutterBottom>
         Search workflows, troubleshooting guides, best practices, and documentation
       </Typography>
 
@@ -345,7 +346,8 @@ const KnowledgeBaseSearch: React.FC = () => {
             Recent searches:
           </Typography>
           <Box
-</> sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+</>
+sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
             {searchHistory.slice(0, 5).map((query /* , index */) => (
               <Chip
                 key={index}
@@ -479,7 +481,8 @@ const KnowledgeBaseSearch: React.FC = () => {
                       </Box>
                       
                       <Box
-</> sx={{ flexGrow: 1 }}>
+</>
+sx={{ flexGrow: 1 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}><>
 
                           <Typography
@@ -500,6 +503,7 @@ const KnowledgeBaseSearch: React.FC = () => {
                           
                           <Chip
 </>
+
                             label={item.difficulty}
                             size="small"
                             color={getDifficultyColor(item.difficulty) as any}
@@ -512,18 +516,19 @@ const KnowledgeBaseSearch: React.FC = () => {
                             {item.category}
                           </Typography>
                           <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                             {item.subcategory}
                           </Typography>
                         </Breadcrumbs><>
-
 
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                           {item.content.substring(0, 200)}...
                         </Typography>
 
                         <Box
-</> sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+</>
+sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                           {item.tags.map((tag) => (<>
 
                             <Chip
@@ -537,7 +542,8 @@ const KnowledgeBaseSearch: React.FC = () => {
                         </Box>
 
                         <Box
-</> sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+</>
+sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Rating value={item.rating} precision={0.1} readOnly size="small" /><>
 
@@ -545,7 +551,8 @@ const KnowledgeBaseSearch: React.FC = () => {
                               {item.views} views
                             </Typography>
                             <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                               Updated {item.lastUpdated.toLocaleDateString()}
                             </Typography>
                           </Box>
@@ -560,7 +567,8 @@ const KnowledgeBaseSearch: React.FC = () => {
                               <BookmarkIcon />
                             </IconButton>
                             <IconButton
-</> size="small">
+</>
+size="small">
                               <ShareIcon />
                             </IconButton>
                           </Box>
@@ -583,7 +591,6 @@ const KnowledgeBaseSearch: React.FC = () => {
         fullWidth
       >
         {selectedItem && (
-          <>
             <DialogTitle>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 {getTypeIcon(selectedItem.type)}
@@ -598,19 +605,20 @@ const KnowledgeBaseSearch: React.FC = () => {
                     {selectedItem.category}
                   </Typography>
                   <Typography
-</> variant="body2">
+</>
+variant="body2">
                     {selectedItem.subcategory}
                   </Typography>
                 </Breadcrumbs>
               </Box><>
-
 
               <Typography variant="body1" paragraph>
                 {selectedItem.content}
               </Typography>
 
               <Box
-</> sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+</>
+sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                 {selectedItem.tags.map((tag) => (<>
 
                   <Chip key={tag} label={tag} size="small" />
@@ -618,7 +626,8 @@ const KnowledgeBaseSearch: React.FC = () => {
               </Box>
 
               <Divider
-</> sx={{ my: 2 }} />
+</>
+sx={{ my: 2 }} />
 
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Box><>
@@ -627,7 +636,8 @@ const KnowledgeBaseSearch: React.FC = () => {
                     By {selectedItem.author} • Updated {selectedItem.lastUpdated.toLocaleDateString()}
                   </Typography>
                   <Rating
-</> value={selectedItem.rating} precision={0.1} readOnly size="small" />
+</>
+value={selectedItem.rating} precision={0.1} readOnly size="small" />
                 </Box>
                 
                 <Box sx={{ display: 'flex', gap: 1 }}><>
@@ -641,6 +651,7 @@ const KnowledgeBaseSearch: React.FC = () => {
                   </Button>
                   <Button
 </>
+
                     startIcon={<ThumbDownIcon />}
                     onClick={() => handleFeedback(selectedItem.id, false)}
                     size="small"
@@ -654,14 +665,14 @@ const KnowledgeBaseSearch: React.FC = () => {
 
               <Button onClick={() => setSelectedItem(null)}>Close</Button>
               <Button
-</> variant="contained" onClick={() => {
+</>
+variant="contained" onClick={() => {
                 // In real implementation, this would navigate to the full article
                 window.open(`/docs/knowledge-base/${selectedItem.id}`, '_blank');
               }}>
                 View Full Article
               </Button>
             </DialogActions>
-          </>
         )}
       </Dialog>
     </Box>

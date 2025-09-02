@@ -265,8 +265,10 @@ export default function AIMatrixAnalyzer() {
         <CardContent>
           <Alert variant="destructive">
 <>
+
             <AlertTitle>API Key Missing</AlertTitle>
             <AlertDescription
+</>
 </>>
               OpenAI API key is not configured. Please contact your administrator to set up the API key for AI-powered matrix analysis.
             </AlertDescription>
@@ -299,9 +301,11 @@ export default function AIMatrixAnalyzer() {
         <div className="space-y-4">
           <div className="space-y-2">
 <>
+
             <Label htmlFor="matrix-data">Cost Matrix Data (JSON Format)</Label>
             <Textarea
 </>
+
               id="matrix-data"
               placeholder={`Enter your cost matrix data in JSON format, for example:
 {
@@ -342,19 +346,21 @@ export default function AIMatrixAnalyzer() {
               className="flex items-center gap-2"
             >
               {isAnalyzing ? (
-                <>
+
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Analyzing Matrix...
-                </>
+
               ) : (
-                <>
+<>
+
                   <Brain className="h-4 w-4" />
                   Analyze Matrix
-                </>
+
               )}
             </Button>
             
-            <Button variant="outline" onClick={handleClear}>
+            <Button
+</> variant="outline" onClick={handleClear}>
               Clear
             </Button>
           </div>
@@ -367,40 +373,52 @@ export default function AIMatrixAnalyzer() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card className="p-4">
 <>
+
                 <div className="text-2xl font-bold text-blue-600">{analysisResult.summary.total_entries}</div>
                 <div
-</> className="text-sm text-muted-foreground">Total Entries</div>
+</>
+className="text-sm text-muted-foreground">Total Entries</div>
               </Card>
               <Card className="p-4">
 <>
+
                 <div className="text-2xl font-bold text-green-600">{analysisResult.summary.categories_analyzed}</div>
                 <div
-</> className="text-sm text-muted-foreground">Categories</div>
+</>
+className="text-sm text-muted-foreground">Categories</div>
               </Card>
               <Card className="p-4">
 <>
+
                 <div className="text-2xl font-bold text-red-600">{analysisResult.summary.anomalies_detected}</div>
                 <div
-</> className="text-sm text-muted-foreground">Anomalies</div>
+</>
+className="text-sm text-muted-foreground">Anomalies</div>
               </Card>
               <Card className="p-4">
 <>
+
                 <div className="text-2xl font-bold text-purple-600">{Math.round(analysisResult.summary.confidence_score * 100)}%</div>
                 <div
-</> className="text-sm text-muted-foreground">Confidence</div>
+</>
+className="text-sm text-muted-foreground">Confidence</div>
               </Card>
             </div>
             
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-4">
 <>
+
                 <TabsTrigger value="insights">Insights</TabsTrigger>
                 <TabsTrigger
-</> value="anomalies">Anomalies</TabsTrigger>
+</>
+value="anomalies">Anomalies</TabsTrigger>
 <>
+
                 <TabsTrigger value="optimization">Optimization</TabsTrigger>
                 <TabsTrigger
-</> value="trends">Trends</TabsTrigger>
+</>
+value="trends">Trends</TabsTrigger>
               </TabsList>
               
               <TabsContent value="insights" className="space-y-4">
@@ -410,8 +428,10 @@ export default function AIMatrixAnalyzer() {
                       <CardHeader className="pb-3">
                         <CardTitle className="text-sm flex items-center gap-2">
 <>
+
                           <Badge variant="outline">{insight.type}</Badge>
                           <span
+</>
 </>>{insight.category}</span>
                           <Badge className={getImpactColor(insight.impact)}>
                             {insight.impact} impact
@@ -439,9 +459,11 @@ export default function AIMatrixAnalyzer() {
                         <CardTitle className="text-sm flex items-center gap-2">
                           <Warning className="h-4 w-4" />
 <>
+
                           <span>{anomaly.category} - {anomaly.item}</span>
                           <Badge
-</> className={getSeverityColor(anomaly.severity)}>
+</>
+className={getSeverityColor(anomaly.severity)}>
                             {anomaly.severity}
                           </Badge>
                         </CardTitle>
@@ -450,20 +472,26 @@ export default function AIMatrixAnalyzer() {
                         <div className="grid grid-cols-3 gap-4 text-sm">
                           <div>
 <>
+
                             <span className="font-medium">Expected Range:</span>
                             <div
+</>
 </>>${anomaly.expected_range[0]} - ${anomaly.expected_range[1]}</div>
                           </div>
                           <div>
 <>
+
                             <span className="font-medium">Actual Value:</span>
                             <div
-</> className="font-semibold text-red-600">${anomaly.actual_value}</div>
+</>
+className="font-semibold text-red-600">${anomaly.actual_value}</div>
                           </div>
                           <div>
 <>
+
                             <span className="font-medium">Variance:</span>
                             <div
+</>
 </>>{Math.abs(anomaly.actual_value - ((anomaly.expected_range[0] + anomaly.expected_range[1]) / 2)).toFixed(1)}</div>
                           </div>
                         </div>
@@ -482,9 +510,11 @@ export default function AIMatrixAnalyzer() {
                         <CardTitle className="text-sm flex items-center gap-2">
                           <TrendingUp className="h-4 w-4 text-green-600" />
 <>
+
                           <span>{opp.category}</span>
                           <Badge
-</> variant="outline">
+</>
+variant="outline">
                             ${opp.savings_potential.toLocaleString()} savings
                           </Badge>
                         </CardTitle>
@@ -493,20 +523,26 @@ export default function AIMatrixAnalyzer() {
                         <div className="grid grid-cols-3 gap-4 text-sm">
                           <div>
 <>
+
                             <span className="font-medium">Current Cost:</span>
                             <div
+</>
 </>>${opp.current_cost.toLocaleString()}</div>
                           </div>
                           <div>
 <>
+
                             <span className="font-medium">Optimized Cost:</span>
                             <div
-</> className="text-green-600 font-semibold">${opp.optimized_cost.toLocaleString()}</div>
+</>
+className="text-green-600 font-semibold">${opp.optimized_cost.toLocaleString()}</div>
                           </div>
                           <div>
 <>
+
                             <span className="font-medium">Difficulty:</span>
                             <div
+</>
 </>>
                               <Badge variant={opp.implementation_difficulty === 'easy' ? 'default' : opp.implementation_difficulty === 'moderate' ? 'secondary' : 'destructive'}>
                                 {opp.implementation_difficulty}
@@ -515,13 +551,17 @@ export default function AIMatrixAnalyzer() {
                           </div>
                         </div>
 <>
+
                         <p className="text-sm text-muted-foreground">{opp.recommendation}</p>
                         <div
-</> className="w-full">
+</>
+className="w-full">
 <>
+
                           <div className="text-xs text-muted-foreground mb-1">Savings Potential</div>
                           <Progress
-</> value={(opp.savings_potential / opp.current_cost) * 100} className="h-2" />
+</>
+value={(opp.savings_potential / opp.current_cost) * 100} className="h-2" />
                           <div className="text-xs text-right mt-1">
                             {Math.round((opp.savings_potential / opp.current_cost) * 100)}% reduction
                           </div>
@@ -540,9 +580,11 @@ export default function AIMatrixAnalyzer() {
                         <CardTitle className="text-sm flex items-center gap-2">
                           <BarChart3 className="h-4 w-4" />
 <>
+
                           <span>{trend.category}</span>
                           <Badge
-</> variant={trend.direction === 'increasing' ? 'destructive' : trend.direction === 'decreasing' ? 'default' : 'secondary'}>
+</>
+variant={trend.direction === 'increasing' ? 'destructive' : trend.direction === 'decreasing' ? 'default' : 'secondary'}>
                             {trend.direction}
                           </Badge>
                         </CardTitle>
@@ -550,9 +592,11 @@ export default function AIMatrixAnalyzer() {
                       <CardContent className="pt-0 space-y-2">
                         <div className="flex justify-between items-center text-sm">
 <>
+
                           <span className="font-medium">Rate of Change:</span>
                           <span
-</> className={trend.rate_of_change > 0.05 ? 'text-red-600' : trend.rate_of_change < 0 ? 'text-green-600' : 'text-gray-600'}>
+</>
+className={trend.rate_of_change > 0.05 ? 'text-red-600' : trend.rate_of_change < 0 ? 'text-green-600' : 'text-gray-600'}>
                             {(trend.rate_of_change * 100).toFixed(1)}% annually
                           </span>
                         </div>

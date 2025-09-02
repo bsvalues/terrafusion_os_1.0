@@ -94,7 +94,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
 
         <h1 className="text-3xl font-bold tracking-tight">Document Classification</h1>
         <p
-</> className="text-muted-foreground mt-2">
+</>
+className="text-muted-foreground mt-2">
           Machine learning-powered document classification for Benton County Assessor's Office
         </p>
       </div>
@@ -127,6 +128,7 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                     Document Input
                   </CardTitle>
                   <CardDescription
+</>
 </>>
                     Enter document text to classify or select from examples
                   </CardDescription>
@@ -138,6 +140,7 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                     <Label htmlFor="documentTitle">Document Title</Label>
                     <Input
 </>
+
                       id="documentTitle"
                       placeholder="Enter document title (optional)"
                       value={documentTitle}
@@ -150,6 +153,7 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                     <Label htmlFor="documentText">Document Text</Label>
                     <Textarea
 </>
+
                       id="documentText"
                       placeholder="Paste document text here to classify"
                       className="min-h-[200px]"
@@ -170,7 +174,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                     </Button>
                     
                     <Button
-</> 
+</>
+
                       variant="outline" 
                       onClick={handleClear}
                       disabled={isClassifying}
@@ -186,6 +191,7 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
 
                   <CardTitle>Document Examples</CardTitle>
                   <CardDescription
+</>
 </>>
                     Try with pre-written document text examples
                   </CardDescription>
@@ -197,7 +203,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
 
                       <TabsTrigger value="plat_map">Plat Map</TabsTrigger>
                       <TabsTrigger
-</> value="deed">Deed</TabsTrigger>
+</>
+value="deed">Deed</TabsTrigger>
                       <TabsTrigger value="survey">Survey</TabsTrigger>
                     </TabsList>
                     
@@ -220,7 +227,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
 
                           <p className="font-medium mb-2">{example.name}</p>
                           <p
-</> className="text-slate-700 dark:text-slate-300 whitespace-pre-line">
+</>
+className="text-slate-700 dark:text-slate-300 whitespace-pre-line">
                             {example.text}
                           </p>
                         </div>
@@ -252,6 +260,7 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                     Classification Results
                   </CardTitle>
                   <CardDescription
+</>
 </>>
                     AI-powered document type detection results
                   </CardDescription>
@@ -268,7 +277,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                         No Document Classified Yet
                       </h3>
                       <p
-</> className="text-slate-500 dark:text-slate-400 text-sm">
+</>
+className="text-slate-500 dark:text-slate-400 text-sm">
                         Enter document text and click "Classify Document" to see results
                       </p>
                     </div>
@@ -282,6 +292,7 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
 
                     <CardTitle>How It Works</CardTitle>
                     <CardDescription
+</>
 </>>
                       Understanding the classification process
                     </CardDescription>
@@ -292,7 +303,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
 
                       <h3 className="font-medium">ML-based Classification</h3>
                       <p
-</> className="text-sm text-slate-600 dark:text-slate-400">
+</>
+className="text-sm text-slate-600 dark:text-slate-400">
                         Our document classifier uses machine learning to analyze document text and identify patterns that match known document types in the Benton County Assessor's Office workflow.
                       </p>
                     </div>
@@ -301,7 +313,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
 
                       <h3 className="font-medium">Confidence Score</h3>
                       <p
-</> className="text-sm text-slate-600 dark:text-slate-400">
+</>
+className="text-sm text-slate-600 dark:text-slate-400">
                         The confidence score indicates how certain the model is about the classification. Higher confidence means the document more clearly matches a known document type.
                       </p>
                     </div>
@@ -310,7 +323,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
 
                       <h3 className="font-medium">Alternative Types</h3>
                       <p
-</> className="text-sm text-slate-600 dark:text-slate-400">
+</>
+className="text-sm text-slate-600 dark:text-slate-400">
                         When a document contains elements of multiple document types, the system shows alternative classifications with their confidence scores.
                       </p>
                     </div>
@@ -332,6 +346,7 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                   Batch Document Classification
                 </CardTitle>
                 <CardDescription
+</>
 </>>
                   Upload and classify multiple documents at once
                 </CardDescription>
@@ -351,7 +366,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                       No Workflow Available
                     </h3>
                     <p
-</> className="text-slate-500 dark:text-slate-400 mb-4">
+</>
+className="text-slate-500 dark:text-slate-400 mb-4">
                       Please create or select a workflow to use batch processing
                     </p>
                     <Button variant="outline">
@@ -376,7 +392,8 @@ BENCHMARK: CITY OF KENNEWICK MONUMENT NO. 47 ELEVATION: 432.58 FEET (NAVD 88)`
                 No Workflow Available
               </h3>
               <p
-</> className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
+</>
+className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
                 Please create or select a workflow to use the document management features
               </p>
               <Button>

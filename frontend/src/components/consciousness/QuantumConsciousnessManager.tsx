@@ -83,10 +83,13 @@ const QuantumConsciousnessManager: React.FC = () => {
     <StyledCard>
       <CardContent>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+
+
             <Typography variant="h6" sx={{ color: '#d1c4e9', fontWeight: 600 }}>
                 Quantum Consciousness Manager
             </Typography>
             <Chip
+
 label={systemState} 
                 color={systemState === 'Stable' ? 'success' : systemState === 'Optimal Coherence' ? 'primary' : 'warning'} 
                 size="small"
@@ -95,10 +98,13 @@ label={systemState}
         </Stack>
 
         <Box sx={{ my: 3 }}>
+
+
           <Typography gutterBottom sx={{ color: 'rgba(255,255,255,0.7)' }}>
             Quantum Coherence Target: {quantumCoherence}%
           </Typography>
           <QuantumSlider
+
 value={quantumCoherence}
             onChange={handleCoherenceChange}
             aria-labelledby="quantum-coherence-slider"
@@ -109,10 +115,13 @@ value={quantumCoherence}
         </Box>
         
         <Box>
+
+
             <Typography gutterBottom sx={{ color: 'rgba(255,255,255,0.7)', mb: 2 }}>
                 Active Protocols
             </Typography>
-            <Grid container spacing={1}>
+            <Grid
+ container spacing={1}>
                 {protocols.map(protocol => (
                     <Grid item xs={6} md={12/5} key={protocol}>
                         <Button

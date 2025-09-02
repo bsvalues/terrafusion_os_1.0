@@ -12,16 +12,17 @@ export function WashingtonShowcase() {
         </Badge>
 
         <h2
-</> className="text-4xl font-black mb-6"><>
+</>
+className="text-4xl font-black mb-6"><>
 
           <span className="bg-gradient-to-r from-primary via-transcend to-accent bg-clip-text text-transparent">
             Washington State Counties
           </span>
           <br
-</> />
+</>
+/>
           <span className="text-white">Leading the Nation</span>
         </h2><>
-
 
         <p className="text-xl text-white/70 mb-8 max-w-3xl mx-auto">
           12 counties, 2.3M parcels, $847B in property value. See how Washington is becoming the first fully-transcended
@@ -29,30 +30,35 @@ export function WashingtonShowcase() {
         </p>
 
         <div
-</> className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+</>
+className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-black/30 backdrop-blur-sm border border-transcend/20 rounded-2xl p-6"><>
 
             <div className="text-3xl font-black text-transcend mb-2">12</div>
             <div
-</> className="text-white/60 text-sm">Target Counties</div>
+</>
+className="text-white/60 text-sm">Target Counties</div>
           </div>
           <div className="bg-black/30 backdrop-blur-sm border border-accent/20 rounded-2xl p-6"><>
 
             <div className="text-3xl font-black text-accent mb-2">72hr</div>
             <div
-</> className="text-white/60 text-sm">Migration Time</div>
+</>
+className="text-white/60 text-sm">Migration Time</div>
           </div>
           <div className="bg-black/30 backdrop-blur-sm border border-primary/20 rounded-2xl p-6"><>
 
             <div className="text-3xl font-black text-primary mb-2">$28M</div>
             <div
-</> className="text-white/60 text-sm">Annual Savings</div>
+</>
+className="text-white/60 text-sm">Annual Savings</div>
           </div>
           <div className="bg-black/30 backdrop-blur-sm border border-accent/20 rounded-2xl p-6"><>
 
             <div className="text-3xl font-black text-accent mb-2">98%</div>
             <div
-</> className="text-white/60 text-sm">Integration Ready</div>
+</>
+className="text-white/60 text-sm">Integration Ready</div>
           </div>
         </div>
 

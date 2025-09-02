@@ -51,7 +51,8 @@ export function FloridaTimeline() {
 
         <h2 className="text-3xl font-bold text-transcend mb-4">FLORIDA CONQUEST TIMELINE</h2>
         <p
-</> className="text-primary">From the Panhandle to the Keys in 90 days</p>
+</>
+className="text-primary">From the Panhandle to the Keys in 90 days</p>
       </div>
 
       <div className="relative">
@@ -60,7 +61,8 @@ export function FloridaTimeline() {
         <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-transcend to-accent"></div>
 
         <div
-</> className="space-y-8">
+</>
+className="space-y-8">
           {timelinePhases.map((phase /* , index */) => (
             <div key={index} className="relative flex items-start">
               {/* Timeline Dot */}
@@ -75,14 +77,16 @@ export function FloridaTimeline() {
 
                         <div className="text-accent font-bold text-sm mb-1">{phase.phase}</div>
                         <h3
-</> className="text-xl font-bold text-white mb-2">{phase.title}</h3>
+</>
+className="text-xl font-bold text-white mb-2">{phase.title}</h3>
                         <p className="text-transcend text-sm">{phase.description}</p>
                       </div>
                       <div className="lg:text-right mt-4 lg:mt-0"><>
 
                         <div className="text-2xl font-black text-accent">{phase.revenue}</div>
                         <div
-</> className="text-sm text-primary">{phase.population}</div>
+</>
+className="text-sm text-primary">{phase.population}</div>
                       </div>
                     </div>
 
@@ -91,7 +95,8 @@ export function FloridaTimeline() {
 
                         <h4 className="font-semibold text-transcend mb-2">Key Actions:</h4>
                         <ul
-</> className="space-y-1">
+</>
+className="space-y-1">
                           {phase.actions.map((action, idx) => (
                             <li key={idx} className="text-sm text-gray-300 flex items-start">
                               <span className="text-accent mr-2">•</span>
@@ -105,7 +110,8 @@ export function FloridaTimeline() {
 
                           <div className="text-lg font-bold text-transcend">Phase {index + 1}</div>
                           <div
-</> className="text-sm text-primary">Strategic Priority</div>
+</>
+className="text-sm text-primary">Strategic Priority</div>
                         </div>
                       </div>
                     </div>
@@ -123,7 +129,8 @@ export function FloridaTimeline() {
 
           <h3 className="text-2xl font-bold text-transcend mb-4">🌟 THE FLORIDA VISION</h3>
           <p
-</> className="text-lg text-white mb-6 italic">
+</>
+className="text-lg text-white mb-6 italic">
             "By Q2 2025, Florida becomes the first fully-digital state, managing $2.1T in property value with
             hurricane-speed efficiency and tourism-grade excellence."
           </p>
@@ -132,25 +139,29 @@ export function FloridaTimeline() {
 
               <div className="text-3xl font-black text-accent">15+</div>
               <div
-</> className="text-sm text-transcend">Counties Conquered</div>
+</>
+className="text-sm text-transcend">Counties Conquered</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-black text-accent">5.8M</div>
               <div
-</> className="text-sm text-transcend">Parcels Managed</div>
+</>
+className="text-sm text-transcend">Parcels Managed</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-black text-accent">$156M</div>
               <div
-</> className="text-sm text-transcend">Annual Savings</div>
+</>
+className="text-sm text-transcend">Annual Savings</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-black text-accent">100%</div>
               <div
-</> className="text-sm text-transcend">Hurricane Ready</div>
+</>
+className="text-sm text-transcend">Hurricane Ready</div>
             </div>
           </div>
         </CardContent>

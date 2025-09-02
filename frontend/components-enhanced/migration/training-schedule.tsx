@@ -63,19 +63,22 @@ export function TrainingSchedule() {
 
                 <span className="text-gray-400">Audience: </span>
                 <span
-</> className="text-white">{session.audience}</span>
+</>
+className="text-white">{session.audience}</span>
               </div>
               <div><>
 
                 <span className="text-gray-400">Duration: </span>
                 <span
-</> className="text-accent">{session.duration}</span>
+</>
+className="text-accent">{session.duration}</span>
               </div>
               <div><>
 
                 <span className="text-gray-400">Format: </span>
                 <span
-</> className="text-gray-300">{session.format}</span>
+</>
+className="text-gray-300">{session.format}</span>
               </div>
             </div>
           </div>

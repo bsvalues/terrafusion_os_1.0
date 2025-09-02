@@ -110,7 +110,8 @@ export const MarketplaceApp: React.FC = () => {
 
             <h3 className="font-semibold text-lg">{plugin.name}</h3>
             <p
-</> className="text-sm text-gray-500">v{plugin.version} by {plugin.author}</p>
+</>
+className="text-sm text-gray-500">v{plugin.version} by {plugin.author}</p>
           </div>
         </div>
         <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
@@ -118,11 +119,11 @@ export const MarketplaceApp: React.FC = () => {
         </span>
       </div><>
 
-      
       <p className="text-gray-600 mb-4 line-clamp-2">{plugin.description}</p>
       
       <div
-</> className="flex items-center justify-between">
+</>
+className="flex items-center justify-between">
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-1">
             <Download size={14} />
@@ -158,7 +159,8 @@ export const MarketplaceApp: React.FC = () => {
 
             <h3 className="font-semibold">{plugin.name}</h3>
             <span
-</> className="text-sm text-gray-500">v{plugin.version}</span>
+</>
+className="text-sm text-gray-500">v{plugin.version}</span>
             <span className="px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-600">
               {plugin.category}
             </span>
@@ -180,6 +182,7 @@ export const MarketplaceApp: React.FC = () => {
         </div>
         <button
 </>
+
           onClick={(e) => {
             e.stopPropagation();
             installPlugin(plugin);
@@ -207,7 +210,8 @@ export const MarketplaceApp: React.FC = () => {
 
                 <h2 className="text-2xl font-bold">{plugin.name}</h2>
                 <p
-</> className="text-gray-500">v{plugin.version} by {plugin.author}</p>
+</>
+className="text-gray-500">v{plugin.version} by {plugin.author}</p>
               </div>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
@@ -217,7 +221,8 @@ export const MarketplaceApp: React.FC = () => {
 
             <h3 className="font-semibold mb-2">Description</h3>
             <p
-</> className="text-gray-600">{plugin.description}</p>
+</>
+className="text-gray-600">{plugin.description}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
@@ -225,25 +230,29 @@ export const MarketplaceApp: React.FC = () => {
 
               <h4 className="font-semibold mb-1">Category</h4>
               <p
-</> className="text-gray-600">{plugin.category}</p>
+</>
+className="text-gray-600">{plugin.category}</p>
             </div>
             <div><>
 
               <h4 className="font-semibold mb-1">License</h4>
               <p
-</> className="text-gray-600">MIT</p>
+</>
+className="text-gray-600">MIT</p>
             </div>
             <div><>
 
               <h4 className="font-semibold mb-1">Downloads</h4>
               <p
-</> className="text-gray-600">{plugin.downloads.toLocaleString()}</p>
+</>
+className="text-gray-600">{plugin.downloads.toLocaleString()}</p>
             </div>
             <div><>
 
               <h4 className="font-semibold mb-1">Rating</h4>
               <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                 {renderStars(plugin.rating)}
                 <span className="text-gray-600">({plugin.ratingCount} reviews)</span>
               </div>
@@ -254,7 +263,8 @@ export const MarketplaceApp: React.FC = () => {
 
             <h3 className="font-semibold mb-2">Tags</h3>
             <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
               {plugin.tags.map((tag) => (
                 <span key={tag} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
                   {tag}
@@ -278,6 +288,7 @@ export const MarketplaceApp: React.FC = () => {
             </button>
             <button
 </>
+
               onClick={() => window.open(`https://github.com/${plugin.author}/${plugin.name}`, '_blank')}
               className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
@@ -297,7 +308,8 @@ export const MarketplaceApp: React.FC = () => {
 
             <h1 className="text-2xl font-bold">Terrafusion Marketplace</h1>
             <div
-</> className="flex items-center gap-4">
+</>
+className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} /><>
 
@@ -311,6 +323,7 @@ export const MarketplaceApp: React.FC = () => {
               </div>
               <select
 </>
+
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -318,11 +331,13 @@ export const MarketplaceApp: React.FC = () => {
 
                 <option value="downloads">Most Downloads</option>
                 <option
-</> value="rating">Highest Rated</option><>
+</>
+value="rating">Highest Rated</option><>
 
                 <option value="name">Name</option>
                 <option
-</> value="updated">Recently Updated</option>
+</>
+value="updated">Recently Updated</option>
               </select>
               <div className="flex items-center border rounded-lg">
                 <button
@@ -334,6 +349,7 @@ export const MarketplaceApp: React.FC = () => {
                 </button>
                 <button
 </>
+
                   onClick={() => setViewMode('list')}
                   className={`p-2 ${viewMode === 'list' ? 'bg-gray-100' : ''}`}
                 >
@@ -351,7 +367,8 @@ export const MarketplaceApp: React.FC = () => {
 
             <h2 className="font-semibold mb-4">Categories</h2>
             <ul
-</> className="space-y-2">
+</>
+className="space-y-2">
               <li>
                 <button
                   onClick={() => setSelectedCategory(null)}
@@ -374,7 +391,8 @@ export const MarketplaceApp: React.FC = () => {
 
                       <span>{category.icon}</span>
                       <span
-</> className="capitalize">{category.name}</span>
+</>
+className="capitalize">{category.name}</span>
                     </span>
                     <span className="text-sm text-gray-500">{category.count}</span>
                   </button>

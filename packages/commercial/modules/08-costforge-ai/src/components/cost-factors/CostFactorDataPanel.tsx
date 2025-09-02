@@ -55,6 +55,7 @@ export function CostFactorDataPanel() {
           <Skeleton className="h-4 w-1/2" />
         </CardHeader>
         <CardContent
+</>
 </>>
           <div className="space-y-4">
             <Skeleton className="h-10 w-full" />
@@ -77,6 +78,7 @@ export function CostFactorDataPanel() {
 
         <AlertTitle>Error loading cost factors</AlertTitle>
         <AlertDescription
+</>
 </>>
           {error instanceof Error 
             ? error.message 
@@ -92,6 +94,7 @@ export function CostFactorDataPanel() {
 
         <CardTitle>{costFactors.source}</CardTitle>
         <CardDescription
+</>
 </>>
           Version {costFactors.version} ({costFactors.year}) - Last updated: {new Date(costFactors.lastUpdated).toLocaleDateString()}
         </CardDescription>
@@ -105,25 +108,29 @@ export function CostFactorDataPanel() {
               Regions
             </TabsTrigger>
             <TabsTrigger
-</> value="quality"><>
+</>
+value="quality"><>
 
               <Star className="h-4 w-4 mr-2" />
               Quality
             </TabsTrigger>
             <TabsTrigger
-</> value="condition"><>
+</>
+value="condition"><>
 
               <Award className="h-4 w-4 mr-2" />
               Condition
             </TabsTrigger>
             <TabsTrigger
-</> value="baseRates"><>
+</>
+value="baseRates"><>
 
               <Building className="h-4 w-4 mr-2" />
               Base Rates
             </TabsTrigger>
             <TabsTrigger
-</> value="aging">
+</>
+value="aging">
               <Clock className="h-4 w-4 mr-2" />
               Aging
             </TabsTrigger>
@@ -167,14 +174,16 @@ export function CostFactorDataPanel() {
 
                       <h4 className="font-medium text-sm border-b border-gray-200 pb-1">{category}</h4>
                       <div
-</> className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {regions.map(([region, factor]) => (
                           <Card key={region} className="overflow-hidden border border-gray-200 hover:border-primary/50 transition-colors">
                             <CardHeader className="p-3 pb-2"><>
 
                               <CardTitle className="text-sm font-medium">{region}</CardTitle>
                               <CardDescription
-</> className="text-xs">Factor: {factor.toFixed(2)}x</CardDescription>
+</>
+className="text-xs">Factor: {factor.toFixed(2)}x</CardDescription>
                             </CardHeader>
                             <CardContent className="p-2">
                               <RegionVisualization 
@@ -197,13 +206,15 @@ export function CostFactorDataPanel() {
 
             <h3 className="text-lg font-medium">Quality Factors</h3>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               {Object.entries(costFactors.qualityFactors).map(([quality, factor]) => (
                 <div key={quality} className="flex justify-between border-b pb-1"><>
 
                   <span className="text-muted-foreground">{quality}</span>
                   <span
-</> className="font-medium">{factor.toFixed(2)}</span>
+</>
+className="font-medium">{factor.toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -213,13 +224,15 @@ export function CostFactorDataPanel() {
 
             <h3 className="text-lg font-medium">Condition Factors</h3>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               {Object.entries(costFactors.conditionFactors).map(([condition, factor]) => (
                 <div key={condition} className="flex justify-between border-b pb-1"><>
 
                   <span className="text-muted-foreground">{condition}</span>
                   <span
-</> className="font-medium">{factor.toFixed(2)}</span>
+</>
+className="font-medium">{factor.toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -229,13 +242,15 @@ export function CostFactorDataPanel() {
 
             <h3 className="text-lg font-medium">Base Rates</h3>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               {Object.entries(costFactors.baseRates).map(([type, rate]) => (
                 <div key={type} className="flex justify-between border-b pb-1"><>
 
                   <span className="text-muted-foreground">{type}</span>
                   <span
-</> className="font-medium">${rate.toFixed(2)}</span>
+</>
+className="font-medium">${rate.toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -245,13 +260,15 @@ export function CostFactorDataPanel() {
 
             <h3 className="text-lg font-medium">Aging Factors</h3>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               {Object.entries(costFactors.agingFactors).map(([age, factor]) => (
                 <div key={age} className="flex justify-between border-b pb-1"><>
 
                   <span className="text-muted-foreground">{age}</span>
                   <span
-</> className="font-medium">{factor.toFixed(2)}</span>
+</>
+className="font-medium">{factor.toFixed(2)}</span>
                 </div>
               ))}
             </div>

@@ -128,6 +128,7 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
 
         <CardTitle>{title}</CardTitle>
         <CardDescription
+</>
 </>>{description}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -138,15 +139,18 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
 
             <div className="text-xs text-muted-foreground -ml-2">Value</div>
             <div
-</> className="text-xs text-muted-foreground">{formatCurrency(maxValue)}</div><>
+</>
+className="text-xs text-muted-foreground">{formatCurrency(maxValue)}</div><>
 
             <div className="text-xs text-muted-foreground">{formatCurrency(maxValue * 0.75)}</div>
             <div
-</> className="text-xs text-muted-foreground">{formatCurrency(maxValue * 0.5)}</div><>
+</>
+className="text-xs text-muted-foreground">{formatCurrency(maxValue * 0.5)}</div><>
 
             <div className="text-xs text-muted-foreground">{formatCurrency(maxValue * 0.25)}</div>
             <div
-</> className="text-xs text-muted-foreground">$0</div>
+</>
+className="text-xs text-muted-foreground">$0</div>
           </div>
           
           {/* X-axis (Cost) */}
@@ -154,11 +158,13 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
 
             <div className="text-xs text-muted-foreground">$0</div>
             <div
-</> className="text-xs text-muted-foreground">{formatCurrency(maxCost * 0.25)}</div><>
+</>
+className="text-xs text-muted-foreground">{formatCurrency(maxCost * 0.25)}</div><>
 
             <div className="text-xs text-muted-foreground">{formatCurrency(maxCost * 0.5)}</div>
             <div
-</> className="text-xs text-muted-foreground">{formatCurrency(maxCost * 0.75)}</div>
+</>
+className="text-xs text-muted-foreground">{formatCurrency(maxCost * 0.75)}</div>
             <div className="text-xs text-muted-foreground">{formatCurrency(maxCost)}</div>
           </div>
           
@@ -246,7 +252,8 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
                           Cost:
                         </span>
                         <span
-</> className="font-medium">{formatCurrency(point.cost)}</span>
+</>
+className="font-medium">{formatCurrency(point.cost)}</span>
                       </div>
                       <div className="flex items-center justify-between mb-1">
                         <span className="flex items-center gap-1"><>
@@ -255,7 +262,8 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
                           Value:
                         </span>
                         <span
-</> className="font-medium">{formatCurrency(point.value)}</span>
+</>
+className="font-medium">{formatCurrency(point.value)}</span>
                       </div>
                       <div className="flex items-center justify-between mb-1">
                         <span className="flex items-center gap-1"><>
@@ -264,7 +272,8 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
                           ROI:
                         </span>
                         <span
-</> className={cn(
+</>
+className={cn(
                           "font-medium",
                           roi > 0 ? "text-green-600" : "text-red-600"
                         )}>
@@ -278,7 +287,8 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
                           Efficiency:
                         </span>
                         <span
-</> className={cn(
+</>
+className={cn(
                           "font-medium",
                           efficiency > 1 ? "text-green-600" : "text-amber-600"
                         )}>
@@ -305,7 +315,8 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
 
             <div className="text-xs text-muted-foreground mb-1">Best ROI</div>
             <div
-</> className="font-medium">
+</>
+className="font-medium">
               {(() => {
                 const bestROI = dataPoints.reduce((best, point) => {
                   const roi = calculateROI(point.cost, point.value);
@@ -331,7 +342,8 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
 
             <div className="text-xs text-muted-foreground mb-1">Best Value</div>
             <div
-</> className="font-medium">
+</>
+className="font-medium">
               {(() => {
                 const bestValue = dataPoints.reduce((best, point) => {
                   const efficiency = calculateEfficiency(point.cost, point.value);
@@ -358,7 +370,8 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
 
             <div className="text-xs text-muted-foreground mb-1">Average ROI</div>
             <div
-</> className="font-medium">
+</>
+className="font-medium">
               {(() => {
                 const totalROI = dataPoints.reduce((sum, point) => {
                   return sum + calculateROI(point.cost, point.value);
@@ -387,25 +400,29 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
 
             <div className="text-sm font-medium">{selectedPoint.label} Details</div>
             <div
-</> className="mt-1 text-sm">{selectedPoint.description}</div>
+</>
+className="mt-1 text-sm">{selectedPoint.description}</div>
             <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
               <div className="flex justify-between"><>
 
                 <span className="text-muted-foreground">Cost:</span>
                 <span
-</> className="font-medium">{formatCurrency(selectedPoint.cost)}</span>
+</>
+className="font-medium">{formatCurrency(selectedPoint.cost)}</span>
               </div>
               <div className="flex justify-between"><>
 
                 <span className="text-muted-foreground">Value:</span>
                 <span
-</> className="font-medium">{formatCurrency(selectedPoint.value)}</span>
+</>
+className="font-medium">{formatCurrency(selectedPoint.value)}</span>
               </div>
               <div className="flex justify-between"><>
 
                 <span className="text-muted-foreground">ROI:</span>
                 <span
-</> className={cn(
+</>
+className={cn(
                   "font-medium",
                   calculateROI(selectedPoint.cost, selectedPoint.value) > 0 ? "text-green-600" : "text-red-600"
                 )}>
@@ -416,7 +433,8 @@ const CostValueRelationship: React.FC<CostValueRelationshipProps> = ({
 
                 <span className="text-muted-foreground">Value Ratio:</span>
                 <span
-</> className={cn(
+</>
+className={cn(
                   "font-medium",
                   calculateEfficiency(selectedPoint.cost, selectedPoint.value) > 1 ? "text-green-600" : "text-amber-600"
                 )}>

@@ -46,7 +46,8 @@ export function PerformanceMetrics() {
 
               <h3 className="text-white font-semibold mb-2">{metric.title}</h3>
               <p
-</> className="text-2xl font-bold text-white mb-1">{metric.value}</p>
+</>
+className="text-2xl font-bold text-white mb-1">{metric.value}</p>
               <p className="text-sm text-accent">{metric.change} this month</p>
             </div>
           ))}

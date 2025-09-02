@@ -259,7 +259,8 @@ export function WorkflowDashboard() {
 
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
           <p
-</> className="mt-2 text-sm text-muted-foreground">Loading workflows...</p>
+</>
+className="mt-2 text-sm text-muted-foreground">Loading workflows...</p>
         </div>
       </div>
     );
@@ -271,7 +272,8 @@ export function WorkflowDashboard() {
 
         <h1 className="text-3xl font-bold tracking-tight">Workflow Dashboard</h1>
         <p
-</> className="text-muted-foreground">Manage and track all your workflows</p>
+</>
+className="text-muted-foreground">Manage and track all your workflows</p>
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -281,11 +283,13 @@ export function WorkflowDashboard() {
 
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger
-</> value="draft">Draft</TabsTrigger><>
+</>
+value="draft">Draft</TabsTrigger><>
 
               <TabsTrigger value="in_progress">In Progress</TabsTrigger>
               <TabsTrigger
-</> value="review">Review</TabsTrigger>
+</>
+value="review">Review</TabsTrigger>
               <TabsTrigger value="completed">Completed</TabsTrigger>
             </TabsList>
             
@@ -302,7 +306,8 @@ export function WorkflowDashboard() {
                 />
               </div>
               <Dialog
-</> open={showDateFilterDialog} onOpenChange={setShowDateFilterDialog}>
+</>
+open={showDateFilterDialog} onOpenChange={setShowDateFilterDialog}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="flex items-center gap-1">
                     <Calendar size={16} />
@@ -314,6 +319,7 @@ export function WorkflowDashboard() {
 
                     <DialogTitle>Filter by Date</DialogTitle>
                     <DialogDescription
+</>
 </>>
                       Set a date range to filter workflows by their creation date
                     </DialogDescription>
@@ -324,6 +330,7 @@ export function WorkflowDashboard() {
 
                         <Label htmlFor="start-date">Start Date</Label>
                         <Popover
+</>
 </>>
                           <PopoverTrigger asChild>
                             <Button
@@ -352,6 +359,7 @@ export function WorkflowDashboard() {
 
                         <Label htmlFor="end-date">End Date</Label>
                         <Popover
+</>
 </>>
                           <PopoverTrigger asChild>
                             <Button
@@ -388,7 +396,8 @@ export function WorkflowDashboard() {
                       Clear
                     </Button>
                     <Button
-</> type="button" onClick={applyDateFilter}>Apply</Button>
+</>
+type="button" onClick={applyDateFilter}>Apply</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
@@ -418,7 +427,8 @@ export function WorkflowDashboard() {
                 All Priorities
               </Button>
               <Button
-</> 
+</>
+
                 variant={selectedPriority === 'high' ? "default" : "outline"} 
                 size="sm" 
                 onClick={() => setSelectedPriority('high')}
@@ -429,7 +439,8 @@ export function WorkflowDashboard() {
                 High Priority
               </Button>
               <Button
-</> 
+</>
+
                 variant={selectedPriority === 'medium' ? "default" : "outline"} 
                 size="sm" 
                 onClick={() => setSelectedPriority('medium')}
@@ -440,7 +451,8 @@ export function WorkflowDashboard() {
                 Medium Priority
               </Button>
               <Button
-</> 
+</>
+
                 variant={selectedPriority === 'low' ? "default" : "outline"} 
                 size="sm" 
                 onClick={() => setSelectedPriority('low')}
@@ -458,7 +470,8 @@ export function WorkflowDashboard() {
 
                   <h3 className="mt-2 text-lg font-medium">No workflows found</h3>
                   <p
-</> className="mt-1 text-sm text-muted-foreground">
+</>
+className="mt-1 text-sm text-muted-foreground">
                     {activeTab === 'all' 
                       ? 'There are no workflows that match your filters.' 
                       : `There are no workflows with status '${activeTab}'.`}
@@ -484,7 +497,8 @@ export function WorkflowDashboard() {
 
                             <CardTitle className="text-xl">{workflow.title}</CardTitle>
                             <CardDescription
-</> className="mt-1">
+</>
+className="mt-1">
                               {workflow.type.replace('_', ' ').toUpperCase()}
                             </CardDescription>
                           </div>
@@ -499,7 +513,8 @@ export function WorkflowDashboard() {
                           {workflow.description || 'No description provided'}
                         </p>
                         <div
-</> className="flex items-center mt-4 text-sm text-muted-foreground">
+</>
+className="flex items-center mt-4 text-sm text-muted-foreground">
                           <Clock size={16} className="mr-1" />
                           <span>Updated {formatDate(workflow.updatedAt)}</span>
                         </div>
@@ -510,7 +525,8 @@ export function WorkflowDashboard() {
                           {workflow.priority.charAt(0).toUpperCase() + workflow.priority.slice(1)} Priority
                         </Badge>
                         <div
-</> className="flex items-center">
+</>
+className="flex items-center">
                           <Button variant="ghost" size="sm" onClick={(e) => {
                             e.stopPropagation();
                             handleWorkflowClick(workflow);
@@ -536,6 +552,7 @@ export function WorkflowDashboard() {
 
             <DialogTitle>Change Priority</DialogTitle>
             <DialogDescription
+</>
 </>>
               Update the priority level for {selectedWorkflow?.title}
             </DialogDescription>
@@ -545,7 +562,8 @@ export function WorkflowDashboard() {
 
               <Label htmlFor="priority">Priority</Label>
               <Select
-</> 
+</>
+
                 onValueChange={handlePriorityChange} 
                 defaultValue={selectedWorkflow?.priority || "medium"}
               >
@@ -554,11 +572,13 @@ export function WorkflowDashboard() {
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="high">High Priority</SelectItem>
                   <SelectItem
-</> value="medium">Medium Priority</SelectItem>
+</>
+value="medium">Medium Priority</SelectItem>
                   <SelectItem value="low">Low Priority</SelectItem>
                 </SelectContent>
               </Select>
@@ -579,6 +599,7 @@ export function WorkflowDashboard() {
 
             <DialogTitle>Workflow Timeline</DialogTitle>
             <DialogDescription
+</>
 </>>
               View the history and updates for {selectedWorkflow?.title}
             </DialogDescription>
@@ -599,7 +620,8 @@ export function WorkflowDashboard() {
                   Change Priority
                 </Button>
                 <Badge
-</> className={getStatusColor(selectedWorkflow?.status || 'draft')}>
+</>
+className={getStatusColor(selectedWorkflow?.status || 'draft')}>
                   {selectedWorkflow?.status?.replace('_', ' ') || 'draft'}
                 </Badge>
               </div>
@@ -632,7 +654,8 @@ export function WorkflowDashboard() {
                           <div className="h-full w-px bg-border" />
                         </div>
                         <div
-</> className="mb-4 flex-1">
+</>
+className="mb-4 flex-1">
                           <CollapsibleTrigger asChild>
                             <div className="cursor-pointer hover:bg-slate-50 rounded p-1 -m-1">
                               <div className="flex items-center justify-between">
@@ -647,7 +670,8 @@ export function WorkflowDashboard() {
                                 )}
                               </div>
                               <p
-</> className="text-sm text-muted-foreground">{event.description}</p>
+</>
+className="text-sm text-muted-foreground">{event.description}</p>
                               <p className="mt-1 flex items-center text-xs text-muted-foreground">
                                 <CalendarDays className="mr-1 h-3 w-3" />
                                 {formatDate(event.createdAt)}
@@ -662,10 +686,8 @@ export function WorkflowDashboard() {
                                   try {
                                     const metadata = JSON.parse(event.metadata as string);
                                     return (
-                                      <>
                                         <p><span className="font-medium">Old Priority:</span> {metadata.oldPriority}</p>
                                         <p><span className="font-medium">New Priority:</span> {metadata.newPriority}</p>
-                                      </>
                                     );
                                   } catch (e) {
                                     return <p>Invalid metadata format</p>;
@@ -675,10 +697,8 @@ export function WorkflowDashboard() {
                                   try {
                                     const metadata = JSON.parse(event.metadata as string);
                                     return (
-                                      <>
                                         <p><span className="font-medium">Old Status:</span> {metadata.oldStatus}</p>
                                         <p><span className="font-medium">New Status:</span> {metadata.newStatus}</p>
-                                      </>
                                     );
                                   } catch (e) {
                                     return <p>Invalid metadata format</p>;
@@ -716,7 +736,6 @@ export function WorkflowDashboard() {
                     </Collapsible>
                   ))
                 ) : (
-                  <>
                     {/* If no events, show basic information */}
                     <div className="flex">
                       <div className="mr-4 flex flex-col items-center">
@@ -725,13 +744,15 @@ export function WorkflowDashboard() {
                           <FileText className="h-5 w-5 text-primary" />
                         </div>
                         <div
-</> className="h-full w-px bg-border" />
+</>
+className="h-full w-px bg-border" />
                       </div>
                       <div className="mb-4 flex-1"><>
 
                         <h4 className="text-sm font-medium">Created</h4>
                         <p
-</> className="text-sm text-muted-foreground">Workflow was created</p>
+</>
+className="text-sm text-muted-foreground">Workflow was created</p>
                         <p className="mt-1 flex items-center text-xs text-muted-foreground">
                           <CalendarDays className="mr-1 h-3 w-3" />
                           {selectedWorkflow?.createdAt && formatDate(selectedWorkflow.createdAt)}
@@ -749,14 +770,14 @@ export function WorkflowDashboard() {
 
                         <h4 className="text-sm font-medium">Updated</h4>
                         <p
-</> className="text-sm text-muted-foreground">Last modification to workflow</p>
+</>
+className="text-sm text-muted-foreground">Last modification to workflow</p>
                         <p className="mt-1 flex items-center text-xs text-muted-foreground">
                           <CalendarDays className="mr-1 h-3 w-3" />
                           {selectedWorkflow?.updatedAt && formatDate(selectedWorkflow.updatedAt)}
                         </p>
                       </div>
                     </div>
-                  </>
                 )}
               </div>
             </ScrollArea>
@@ -776,7 +797,8 @@ export function WorkflowDashboard() {
                   Close
                 </Button>
                 <Button
-</> size="sm">View Details</Button>
+</>
+size="sm">View Details</Button>
               </div>
             </div>
           </div>

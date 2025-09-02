@@ -55,6 +55,7 @@ export function CampaignExecution() {
               <h3 className="text-white font-semibold">{campaign.name}</h3>
               <Badge
 </>
+
                 variant="secondary"
                 className={`${
                   campaign.status === "Active"
@@ -73,19 +74,22 @@ export function CampaignExecution() {
 
                 <span className="text-gray-400">Target: </span>
                 <span
-</> className="text-white">{campaign.target}</span>
+</>
+className="text-white">{campaign.target}</span>
               </div>
               <div><>
 
                 <span className="text-gray-400">Current: </span>
                 <span
-</> className="text-accent">{campaign.current}</span>
+</>
+className="text-accent">{campaign.current}</span>
               </div>
               <div><>
 
                 <span className="text-gray-400">Rate: </span>
                 <span
-</> className="text-transcend">{campaign.conversion}</span>
+</>
+className="text-transcend">{campaign.conversion}</span>
               </div>
             </div>
           </div>

@@ -312,9 +312,11 @@ export function ContextualDataViewer({
             <div className="space-y-3">
               <div>
 <>
+
                 <h4 className="font-medium">{dataPoint.label}</h4>
                 <p
-</> className="text-sm text-muted-foreground">{dataPoint.context}</p>
+</>
+className="text-sm text-muted-foreground">{dataPoint.context}</p>
                 {dataPoint.explanation && (
                   <p className="text-xs text-muted-foreground mt-1">{dataPoint.explanation}</p>
                 )}
@@ -323,9 +325,11 @@ export function ContextualDataViewer({
               {dataPoint.trendData && (
                 <div>
 <>
+
                   <h5 className="text-sm font-medium mb-2">Trend Analysis</h5>
                   <ResponsiveContainer
-</> width="100%" height={120}>
+</>
+width="100%" height={120}>
                     <LineChart data={dataPoint.trendData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
@@ -339,19 +343,25 @@ export function ContextualDataViewer({
               {dataPoint.breakdownData && (
                 <div>
 <>
+
                   <h5 className="text-sm font-medium mb-2">Breakdown</h5>
                   <div
-</> className="space-y-1">
+</>
+className="space-y-1">
                     {dataPoint.breakdownData.map((item /* , index */) => (
                       <div key={index} className="flex justify-between items-center text-sm">
 <>
+
                         <span>{item.label}</span>
                         <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
 <>
+
                           <span className="font-mono">{formatValue(item.value, dataPoint.format)}</span>
                           <span
-</> className="text-muted-foreground">({item.percentage}%)</span>
+</>
+className="text-muted-foreground">({item.percentage}%)</span>
                         </div>
                       </div>
                     ))}
@@ -380,9 +390,11 @@ export function ContextualDataViewer({
         <Tabs value={activeView} onValueChange={(value) => setActiveView(value as any)}>
           <TabsList className="grid w-full grid-cols-3">
 <>
+
             <TabsTrigger value="table">Data Table</TabsTrigger>
             <TabsTrigger
-</> value="trends">Trends</TabsTrigger>
+</>
+value="trends">Trends</TabsTrigger>
             <TabsTrigger value="breakdowns">Breakdowns</TabsTrigger>
           </TabsList>
           
@@ -391,8 +403,10 @@ export function ContextualDataViewer({
               <TableHeader>
                 <TableRow>
 <>
+
                   <TableHead>Metric</TableHead>
                   <TableHead
+</>
 </>>Value</TableHead>
                   <TableHead>Context</TableHead>
                 </TableRow>
@@ -407,9 +421,11 @@ export function ContextualDataViewer({
                       </div>
                     </TableCell>
 <>
+
                     <TableCell>{renderDataPoint(dataPoint)}</TableCell>
                     <TableCell
-</> className="text-sm text-muted-foreground max-w-xs">
+</>
+className="text-sm text-muted-foreground max-w-xs">
                       {dataPoint.context}
                     </TableCell>
                   </TableRow>
@@ -453,9 +469,11 @@ export function ContextualDataViewer({
                         <div key={itemIndex} className="space-y-1">
                           <div className="flex justify-between text-sm">
 <>
+
                             <span>{item.label}</span>
                             <span
-</> className="font-mono">{formatValue(item.value, dataPoint.format)}</span>
+</>
+className="font-mono">{formatValue(item.value, dataPoint.format)}</span>
                           </div>
                           <Progress value={Math.abs(item.percentage)} className="h-2" />
                         </div>

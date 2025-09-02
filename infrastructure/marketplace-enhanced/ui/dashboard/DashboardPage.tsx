@@ -326,6 +326,7 @@ export function DashboardPage() {
 
         <h2>Error Loading Dashboard</h2>
         <p
+</>
 </>>{error}</p>
         <Button onClick={fetchDashboardData}>Retry</Button>
       </div>
@@ -338,13 +339,15 @@ export function DashboardPage() {
 
         <h1>🧠 Terrafusion Plugin Dashboard</h1>
         <div
-</> className="dashboard-meta"><>
+</>
+className="dashboard-meta"><>
 
           <span className="last-update">
             Last updated: {lastUpdate.toLocaleTimeString()}
           </span>
           <span
-</> className={`ws-status ${wsConnected ? 'connected' : 'disconnected'}`}>
+</>
+className={`ws-status ${wsConnected ? 'connected' : 'disconnected'}`}>
             {wsConnected ? '🟢 Live' : '🔴 Offline'}
           </span>
         </div>
@@ -355,7 +358,8 @@ export function DashboardPage() {
 
           <label htmlFor="filter-select">Filter:</label>
           <select
-</> 
+</>
+
             id="filter-select"
             value={filter} 
             onChange={(e) => setFilter(e.target.value as FilterType)}
@@ -364,7 +368,8 @@ export function DashboardPage() {
 
             <option value="all">All Plugins ({data.plugins.length})</option>
             <option
-</> value="unhealthy">Unhealthy ({data.plugins.filter(p => !p.healthy).length})</option>
+</>
+value="unhealthy">Unhealthy ({data.plugins.filter(p => !p.healthy).length})</option>
             <option value="launched">Launched ({data.plugins.filter(p => p.launchCount > 0).length})</option>
           </select>
         </div>
@@ -375,7 +380,8 @@ export function DashboardPage() {
             🔄 Refresh
           </Button>
           <a
-</> href="/admin" className="admin-link">
+</>
+href="/admin" className="admin-link">
             ↪ Admin Shell
           </a>
         </div>
@@ -386,7 +392,8 @@ export function DashboardPage() {
 
           <h2>Top Plugins by Launch Count</h2>
           <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
             <BarChart data={chartData} layout="horizontal" margin={{ top: 20, right: 20, bottom: 20, left: 150 }}>
               <XAxis type="number" allowDecimals={false} />
               <YAxis type="category" dataKey="name" width={140} />
@@ -418,7 +425,8 @@ export function DashboardPage() {
                 Plugin {sortKey === 'name' && (sortAsc ? '↑' : '↓')}
               </th>
               <th
-</> role="columnheader"
+</>
+role="columnheader"
                   onClick={() => handleSort('version')}
                   className="sortable"
                   aria-sort={sortKey === 'version' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
@@ -436,7 +444,8 @@ export function DashboardPage() {
                 Status {sortKey === 'healthy' && (sortAsc ? '↑' : '↓')}
               </th>
               <th
-</> role="columnheader"
+</>
+role="columnheader"
                   onClick={() => handleSort('launchCount')}
                   className="sortable"
                   aria-sort={sortKey === 'launchCount' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
@@ -447,11 +456,13 @@ export function DashboardPage() {
 
               <th role="columnheader">Errors</th>
               <th
-</> role="columnheader">Onboarding</th><>
+</>
+role="columnheader">Onboarding</th><>
 
               <th role="columnheader">Tags</th>
               <th
-</> role="columnheader">Categories</th><>
+</>
+role="columnheader">Categories</th><>
 
               <th role="columnheader"
                   onClick={() => handleSort('owner')}
@@ -462,7 +473,8 @@ export function DashboardPage() {
                 Owner {sortKey === 'owner' && (sortAsc ? '↑' : '↓')}
               </th>
               <th
-</> role="columnheader"
+</>
+role="columnheader"
                   onClick={() => handleSort('uptime')}
                   className="sortable"
                   aria-sort={sortKey === 'uptime' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
@@ -485,7 +497,8 @@ export function DashboardPage() {
 
                 <td role="cell">{p.name}</td>
                 <td
-</> role="cell">{p.version}</td>
+</>
+role="cell">{p.version}</td>
                 <td role="cell" aria-label={p.healthy ? 'Healthy' : 'Unhealthy'}>
                   <span className={`status-indicator ${p.healthy ? 'healthy' : 'unhealthy'}`}>
                     {p.healthy ? '🟢' : '🔴'}
@@ -494,7 +507,8 @@ export function DashboardPage() {
 
                 <td role="cell">{p.launchCount}</td>
                 <td
-</> role="cell">
+</>
+role="cell">
                   {p.errors.length > 0 ? (
                     <Button 
                       variant="link" 
@@ -533,7 +547,8 @@ export function DashboardPage() {
 
                 <td role="cell">{p.owner}</td>
                 <td
-</> role="cell" className={p.uptime && p.uptime < 0.95 ? 'low-uptime' : ''}>
+</>
+role="cell" className={p.uptime && p.uptime < 0.95 ? 'low-uptime' : ''}>
                   {p.uptime !== null ? `${(p.uptime * 100).toFixed(1)}%` : '—'}
                 </td>
                 <td role="cell">
@@ -566,7 +581,8 @@ export function DashboardPage() {
             </h2>
             
             <div
-</> className="modal-section">
+</>
+className="modal-section">
               <p className="plugin-version">
                 <strong>Version:</strong> {modalPlugin.version}
               </p>
@@ -583,7 +599,8 @@ export function DashboardPage() {
 
                 <h3>Changelog</h3>
                 <ul
-</> className="changelog-list">
+</>
+className="changelog-list">
                   {modalPlugin.changelog.map((line, i) => (
                     <li key={i}>{line}</li>
                   ))}
@@ -596,7 +613,8 @@ export function DashboardPage() {
 
                 <h3>Recent Errors</h3>
                 <ul
-</> className="error-list">
+</>
+className="error-list">
                   {modalPlugin.errors.map((e, i) => (
                     <li key={i} className="error-item">{e}</li>
                   ))}
@@ -609,7 +627,8 @@ export function DashboardPage() {
 
                 <h3>Error Trend</h3>
                 <ResponsiveContainer
-</> width="100%" height={200}>
+</>
+width="100%" height={200}>
                   <LineChart data={modalPlugin.errorTrend}>
                     <XAxis 
                       dataKey="timestamp" 
@@ -638,7 +657,8 @@ export function DashboardPage() {
                 Close
               </Button>
               <Button
-</> 
+</>
+
                 variant="outline"
                 onClick={() => window.open(`/admin/plugin/${modalPlugin.id}`, '_blank')}
               >

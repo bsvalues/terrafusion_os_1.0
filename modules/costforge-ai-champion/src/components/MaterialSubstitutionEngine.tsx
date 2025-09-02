@@ -235,9 +235,11 @@ export function MaterialSubstitutionEngine({
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-3">
 <>
+
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
             <TabsTrigger
-</> value="recommendations">Recommendations</TabsTrigger>
+</>
+value="recommendations">Recommendations</TabsTrigger>
             <TabsTrigger value="results">Results</TabsTrigger>
           </TabsList>
           
@@ -245,9 +247,11 @@ export function MaterialSubstitutionEngine({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-3">
 <>
+
                 <Label className="text-sm font-medium">Optimization Priorities</Label>
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <Switch 
                       id="cost-priority"
@@ -280,9 +284,11 @@ export function MaterialSubstitutionEngine({
               
               <div className="space-y-3">
 <>
+
                 <Label className="text-sm font-medium">Quality Impact Tolerance</Label>
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   <Slider
                     value={[optimizationPreferences.maximumQualityImpact]}
                     onValueChange={(value) => 
@@ -293,12 +299,16 @@ export function MaterialSubstitutionEngine({
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
 <>
+
                     <span>None</span>
                     <span
+</>
 </>>Minor</span>
 <>
+
                     <span>Moderate</span>
                     <span
+</>
 </>>Significant</span>
                   </div>
                 </div>
@@ -326,9 +336,11 @@ export function MaterialSubstitutionEngine({
                         <div className="flex justify-between items-start">
                           <div>
 <>
+
                             <h4 className="font-medium">{rec.originalMaterial} → {rec.suggestedAlternative}</h4>
                             <p
-</> className="text-sm text-muted-foreground">{rec.reasonForRecommendation}</p>
+</>
+className="text-sm text-muted-foreground">{rec.reasonForRecommendation}</p>
                           </div>
                           <Badge className={qualityImpactColors[rec.qualityImpact]}>
                             {rec.qualityImpact} impact
@@ -338,24 +350,30 @@ export function MaterialSubstitutionEngine({
                         <div className="grid grid-cols-3 gap-4 text-sm">
                           <div>
 <>
+
                             <span className="font-medium">Cost Savings:</span>
                             <div
-</> className="text-green-600">${rec.potentialSavings.toLocaleString()} ({rec.costReductionPercentage}%)</div>
+</>
+className="text-green-600">${rec.potentialSavings.toLocaleString()} ({rec.costReductionPercentage}%)</div>
                           </div>
                           <div>
 <>
+
                             <span className="font-medium">Sustainability:</span>
                             <div
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                               <Progress value={rec.sustainabilityScore} className="w-12" />
                               {rec.sustainabilityScore}%
                             </div>
                           </div>
                           <div>
 <>
+
                             <span className="font-medium">Availability:</span>
                             <div
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                               <Progress value={rec.availabilityScore} className="w-12" />
                               {rec.availabilityScore}%
                             </div>
@@ -365,17 +383,21 @@ export function MaterialSubstitutionEngine({
                         <div className="space-y-2">
                           <div>
 <>
+
                             <span className="font-medium text-green-700">Advantages:</span>
                             <ul
-</> className="text-sm list-disc list-inside text-muted-foreground">
+</>
+className="text-sm list-disc list-inside text-muted-foreground">
                               {rec.advantages.map((adv, i) => <li key={i}>{adv}</li>)}
                             </ul>
                           </div>
                           <div>
 <>
+
                             <span className="font-medium text-amber-700">Considerations:</span>
                             <ul
-</> className="text-sm list-disc list-inside text-muted-foreground">
+</>
+className="text-sm list-disc list-inside text-muted-foreground">
                               {rec.disadvantages.map((dis, i) => <li key={i}>{dis}</li>)}
                             </ul>
                           </div>
@@ -383,6 +405,7 @@ export function MaterialSubstitutionEngine({
                         
                         <div className="flex gap-2">
 <>
+
                           <Button 
                             size="sm" 
                             onClick={() => {
@@ -397,7 +420,8 @@ export function MaterialSubstitutionEngine({
                             Apply Substitution
                           </Button>
                           <Button
-</> size="sm" variant="outline">
+</>
+size="sm" variant="outline">
                             Get Quote
                           </Button>
                         </div>
@@ -415,27 +439,35 @@ export function MaterialSubstitutionEngine({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Card className="p-4">
 <>
+
                     <h4 className="font-medium mb-2">Cost Analysis</h4>
                     <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                       <div className="flex justify-between">
 <>
+
                         <span>Original Cost:</span>
                         <span
-</> className="font-mono">${optimizationResults.totalOriginalCost.toLocaleString()}</span>
+</>
+className="font-mono">${optimizationResults.totalOriginalCost.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
 <>
+
                         <span>Optimized Cost:</span>
                         <span
-</> className="font-mono">${optimizationResults.totalOptimizedCost.toLocaleString()}</span>
+</>
+className="font-mono">${optimizationResults.totalOptimizedCost.toLocaleString()}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between text-green-600 font-medium">
 <>
+
                         <span>Total Savings:</span>
                         <span
-</> className="font-mono">
+</>
+className="font-mono">
                           ${optimizationResults.savingsAmount.toLocaleString()} 
                           ({optimizationResults.savingsPercentage.toFixed(1)}%)
                         </span>
@@ -445,19 +477,25 @@ export function MaterialSubstitutionEngine({
                   
                   <Card className="p-4">
 <>
+
                     <h4 className="font-medium mb-2">Optimization Summary</h4>
                     <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                       <div className="flex justify-between">
 <>
+
                         <span>Recommendations:</span>
                         <span
+</>
 </>>{optimizationResults.numberOfRecommendations}</span>
                       </div>
                       <div className="flex justify-between">
 <>
+
                         <span>Avg. Sustainability Score:</span>
                         <span
+</>
 </>>{optimizationResults.averageSustainabilityScore.toFixed(1)}%</span>
                       </div>
                     </div>

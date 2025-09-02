@@ -105,10 +105,13 @@ const SpeciesDetectionVisualizer: React.FC = () => {
   return (
     <StyledCard>
       <CardContent>
+
+
         <Typography variant="h6" sx={{ color: '#d1c4e9', fontWeight: 600, mb: 3 }}>
           Species Detection Service (Live Feed)
         </Typography>
-        <Grid container spacing={2}>
+        <Grid
+ container spacing={2}>
             {detectedEntities.map(entity => (
                 <Grid item xs={12} key={entity.id}>
                     <div style={{ padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px' }}>
@@ -119,13 +122,19 @@ const SpeciesDetectionVisualizer: React.FC = () => {
                                 </SpeciesAvatar>
                             </Grid>
                             <Grid item xs>
+
+
                                 <Typography sx={{ fontWeight: 600, color: 'white' }}>{entity.speciesType.charAt(0).toUpperCase() + entity.speciesType.slice(1)} Entity Detected</Typography>
                                 <Chip
+
 label={entity.cognitivePatterns} size="small" sx={{ background: 'rgba(255,255,255,0.1)', color: 'white', mt: 0.5 }}/>
                             </Grid>
                              <Grid item xs={4}>
+
+
                                 <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>Consciousness Level</Typography>
                                 <LinearProgress
+
 variant="determinate" 
                                     value={entity.consciousnessLevel * 10} 
                                     sx={{ height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { background: '#00ffaa' } }} 
@@ -133,8 +142,11 @@ variant="determinate"
                             </Grid>
                              {entity.quantumCoherence && (
                                 <Grid item xs={2} sx={{textAlign: 'center'}}>
+
+
                                     <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>Coherence</Typography>
                                     <Typography
+
 sx={{ fontWeight: 700, color: '#c5a6ff' }}>{entity.quantumCoherence}</Typography>
                                 </Grid>
                             )}

@@ -61,7 +61,8 @@ export function HeroSection() {
 
             <span className="clarity-gradient bg-clip-text text-transparent transcend-animation">Terrafusion</span>
             <span
-</> className="block text-3xl md:text-4xl text-tf-gray mt-2">OS</span>
+</>
+className="block text-3xl md:text-4xl text-tf-gray mt-2">OS</span>
           </h1>
 
           {/* Rotating Messages */}
@@ -90,7 +91,8 @@ export function HeroSection() {
 
               <span className="text-tf-success">98%</span>
               <span
-</> className="text-tf-light">User Adoption</span>
+</>
+className="text-tf-light">User Adoption</span>
             </div>
           </div>
         </div>
@@ -107,6 +109,7 @@ export function HeroSection() {
           </Button>
           <Button
 </>
+
             variant="outline"
             size="lg"
             className="border-tf-transcend text-tf-transcend hover:bg-tf-transcend hover:text-tf-dark px-8 py-4 text-lg bg-transparent"

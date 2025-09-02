@@ -228,7 +228,8 @@ const AICommandBrain: React.FC = () => {
 
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span
-</> className="text-sm text-green-400">Neural Networks Active</span>
+</>
+className="text-sm text-green-400">Neural Networks Active</span>
           </div>
         </div>
 
@@ -241,7 +242,8 @@ const AICommandBrain: React.FC = () => {
 
             <div className="text-2xl font-bold">{aiStatus.activeModels}</div>
             <div
-</> className="text-sm text-slate-400">Active Models</div>
+</>
+className="text-sm text-slate-400">Active Models</div>
           </div>
           <div className="bg-slate-800/50 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
@@ -251,7 +253,8 @@ const AICommandBrain: React.FC = () => {
 
             <div className="text-2xl font-bold">{aiStatus.predictionsToday}</div>
             <div
-</> className="text-sm text-slate-400">Predictions Today</div>
+</>
+className="text-sm text-slate-400">Predictions Today</div>
           </div>
           <div className="bg-slate-800/50 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
@@ -261,7 +264,8 @@ const AICommandBrain: React.FC = () => {
 
             <div className="text-2xl font-bold">{aiStatus.automationsRun}</div>
             <div
-</> className="text-sm text-slate-400">Automations Run</div>
+</>
+className="text-sm text-slate-400">Automations Run</div>
           </div>
           <div className="bg-slate-800/50 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
@@ -271,7 +275,8 @@ const AICommandBrain: React.FC = () => {
 
             <div className="text-2xl font-bold">{aiStatus.dataProcessed}</div>
             <div
-</> className="text-sm text-slate-400">Data Processed</div>
+</>
+className="text-sm text-slate-400">Data Processed</div>
           </div>
         </div>
       </div>
@@ -284,7 +289,8 @@ const AICommandBrain: React.FC = () => {
           Active AI Capabilities
         </h3>
         <div
-</> className="grid grid-cols-3 gap-4">
+</>
+className="grid grid-cols-3 gap-4">
           {capabilities.map(capability => (
             <div key={capability.id} className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
               <div className="flex items-start justify-between mb-3">
@@ -294,11 +300,13 @@ const AICommandBrain: React.FC = () => {
                     <capability.icon size={20} />
                   </div>
                   <div
+</>
 </>><>
 
                     <h4 className="font-semibold">{capability.name}</h4>
                     <p
-</> className="text-xs text-slate-400">{capability.description}</p>
+</>
+className="text-xs text-slate-400">{capability.description}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1"><>
@@ -307,7 +315,8 @@ const AICommandBrain: React.FC = () => {
                     capability.status === 'active' ? 'bg-green-500' : 'bg-yellow-500'
                   }`}></div>
                   <span
-</> className="text-xs capitalize">{capability.status}</span>
+</>
+className="text-xs capitalize">{capability.status}</span>
                 </div>
               </div>
               <div className="space-y-2">
@@ -315,13 +324,15 @@ const AICommandBrain: React.FC = () => {
 
                   <span className="text-slate-400">Accuracy</span>
                   <span
-</> className="text-green-400 font-mono">{capability.accuracy}%</span>
+</>
+className="text-green-400 font-mono">{capability.accuracy}%</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-slate-400">Processed</span>
                   <span
-</> className="font-mono">{capability.processedToday.toLocaleString()}</span>
+</>
+className="font-mono">{capability.processedToday.toLocaleString()}</span>
                 </div>
                 <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
                   <div 
@@ -343,7 +354,8 @@ const AICommandBrain: React.FC = () => {
           Predictive Insights
         </h3>
         <div
-</> className="space-y-3">
+</>
+className="space-y-3">
           {predictions.map(prediction => (
             <div key={prediction.id} className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
               <div className="flex items-start justify-between">
@@ -359,7 +371,8 @@ const AICommandBrain: React.FC = () => {
                       {prediction.type.toUpperCase()}
                     </span>
                     <span
-</> className="text-sm text-slate-400">{prediction.timeframe}</span>
+</>
+className="text-sm text-slate-400">{prediction.timeframe}</span>
                     <div className="flex items-center gap-1">
                       <div className="h-1.5 w-20 bg-slate-700 rounded-full overflow-hidden"><>
 
@@ -369,13 +382,15 @@ const AICommandBrain: React.FC = () => {
                         />
                       </div>
                       <span
-</> className="text-xs text-slate-400">{prediction.confidence}%</span>
+</>
+className="text-xs text-slate-400">{prediction.confidence}%</span>
                     </div>
                   </div><>
 
                   <p className="font-medium mb-1">{prediction.prediction}</p>
                   <p
-</> className="text-sm text-slate-400 mb-2">{prediction.impact}</p>
+</>
+className="text-sm text-slate-400 mb-2">{prediction.impact}</p>
                   <div className="flex items-center gap-2 p-2 bg-blue-900/20 rounded-lg border border-blue-700/30">
                     <Sparkles className="text-blue-400" size={14} />
                     <span className="text-sm text-blue-300">Action: {prediction.suggestedAction}</span>
@@ -398,18 +413,21 @@ const AICommandBrain: React.FC = () => {
           Active Automations
         </h3>
         <div
-</> className="bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden">
+</>
+className="bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden">
           <table className="w-full">
             <thead className="bg-slate-900/50 border-b border-slate-700">
               <tr><>
 
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Automation</th>
                 <th
-</> className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Trigger</th><>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Trigger</th><>
 
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Executions</th>
                 <th
-</> className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Time Saved</th>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Time Saved</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Status</th>
               </tr>
             </thead>
@@ -425,7 +443,8 @@ const AICommandBrain: React.FC = () => {
 
                   <td className="px-4 py-3 text-sm text-slate-400">{automation.trigger}</td>
                   <td
-</> className="px-4 py-3">
+</>
+className="px-4 py-3">
                     <span className="font-mono text-sm">{automation.executedCount.toLocaleString()}</span>
                   </td>
                   <td className="px-4 py-3">
@@ -456,13 +475,15 @@ const AICommandBrain: React.FC = () => {
           AI Learning Progress
         </h3>
         <div
-</> className="space-y-3">
+</>
+className="space-y-3">
           <div>
             <div className="flex justify-between text-sm mb-1"><>
 
               <span>Citizen Language Patterns</span>
               <span
-</> className="text-blue-400">Learning: 1,234 new patterns today</span>
+</>
+className="text-blue-400">Learning: 1,234 new patterns today</span>
             </div>
             <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all" style={{ width: '87%' }}></div>
@@ -473,7 +494,8 @@ const AICommandBrain: React.FC = () => {
 
               <span>Document Classification</span>
               <span
-</> className="text-green-400">Optimized: 99.2% accuracy</span>
+</>
+className="text-green-400">Optimized: 99.2% accuracy</span>
             </div>
             <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all" style={{ width: '99%' }}></div>
@@ -484,7 +506,8 @@ const AICommandBrain: React.FC = () => {
 
               <span>Predictive Models</span>
               <span
-</> className="text-purple-400">Training: 47 scenarios</span>
+</>
+className="text-purple-400">Training: 47 scenarios</span>
             </div>
             <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all animate-pulse" style={{ width: '73%' }}></div>

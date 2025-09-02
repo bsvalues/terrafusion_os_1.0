@@ -122,7 +122,8 @@ export const DeveloperPortal: React.FC<DeveloperPortalProps> = ({
 
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         <span
-</> className="ml-2 text-gray-600">Loading developer portal...</span>
+</>
+className="ml-2 text-gray-600">Loading developer portal...</span>
       </div>
     );
   }
@@ -140,7 +141,8 @@ export const DeveloperPortal: React.FC<DeveloperPortalProps> = ({
                   <Code className="w-5 h-5 text-white" />
                 </div>
                 <h1
-</> className="text-xl font-bold text-gray-900">Developer Portal</h1>
+</>
+className="text-xl font-bold text-gray-900">Developer Portal</h1>
               </div>
               
               {/* Certification Badge */}
@@ -269,7 +271,8 @@ const OverviewTab: React.FC<{ stats: DeveloperStats; plugins: Plugin[] }> = ({ s
 
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
         <div
-</> className="space-y-4">
+</>
+className="space-y-4">
           <ActivityItem
             icon={<Download className="w-4 h-4 text-green-600" />}
             title="Property Analyzer Pro downloaded"
@@ -295,14 +298,16 @@ const OverviewTab: React.FC<{ stats: DeveloperStats; plugins: Plugin[] }> = ({ s
 
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Plugin Performance</h3>
         <div
-</> className="space-y-4">
+</>
+className="space-y-4">
           {plugins.slice(0, 3).map(plugin => (
             <div key={plugin.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div><>
 
                 <p className="font-medium text-gray-900">{plugin.name}</p>
                 <p
-</> className="text-sm text-gray-600">{plugin.downloads} downloads</p>
+</>
+className="text-sm text-gray-600">{plugin.downloads} downloads</p>
               </div>
               <div className="flex items-center space-x-2">
                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -323,15 +328,18 @@ const PluginsTab: React.FC<{ plugins: Plugin[]; onEdit?: (pluginId: string) => v
 
       <h2 className="text-2xl font-bold text-gray-900">My Plugins</h2>
       <div
-</> className="flex items-center space-x-4">
+</>
+className="flex items-center space-x-4">
         <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm"><>
 
           <option>All Status</option>
           <option
+</>
 </>>Published</option><>
 
           <option>Draft</option>
           <option
+</>
 </>>Under Review</option>
         </select>
       </div>
@@ -352,12 +360,14 @@ const AnalyticsTab: React.FC<{ plugins: Plugin[]; stats: DeveloperStats | null }
     <h2 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
 
     <div
-</> className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+</>
+className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="bg-white rounded-lg border border-gray-200 p-6"><>
 
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Download Trends</h3>
         <div
-</> className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+</>
+className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
           <div className="text-center">
             <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-600">Chart visualization</p>
@@ -369,7 +379,8 @@ const AnalyticsTab: React.FC<{ plugins: Plugin[]; stats: DeveloperStats | null }
 
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Growth</h3>
         <div
-</> className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+</>
+className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
           <div className="text-center">
             <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-600">Revenue chart</p>
@@ -387,11 +398,13 @@ const CommunityTab: React.FC = () => (
     <h2 className="text-2xl font-bold text-gray-900">Developer Community</h2>
     
     <div
-</> className="bg-white rounded-lg border border-gray-200 p-6"><>
+</>
+className="bg-white rounded-lg border border-gray-200 p-6"><>
 
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Forum Activity</h3>
       <div
-</> className="space-y-4">
+</>
+className="space-y-4">
         <ForumPost
           title="Best practices for county data security"
           author="john_dev"
@@ -418,7 +431,8 @@ const ResourcesTab: React.FC = () => (
     <h2 className="text-2xl font-bold text-gray-900">Developer Resources</h2>
 
     <div
-</> className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+</>
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <ResourceCard
         icon={<Book className="w-8 h-8 text-blue-600" />}
         title="Documentation"
@@ -455,7 +469,8 @@ const StatCard: React.FC<{
 
         <p className="text-sm font-medium text-gray-600">{title}</p>
         <p
-</> className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+</>
+className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
       </div>
       <div className="p-3 bg-gray-50 rounded-lg">
         {icon}
@@ -471,7 +486,8 @@ const StatCard: React.FC<{
         {change}
       </span>
       <span
-</> className="text-sm text-gray-500 ml-2">vs last period</span>
+</>
+className="text-sm text-gray-500 ml-2">vs last period</span>
     </div>
   </div>
 );
@@ -488,11 +504,13 @@ const ActivityItem: React.FC<{
       {icon}
     </div>
     <div
-</> className="flex-1 min-w-0"><>
+</>
+className="flex-1 min-w-0"><>
 
       <p className="text-sm font-medium text-gray-900">{title}</p>
       <p
-</> className="text-sm text-gray-600">{description}</p>
+</>
+className="text-sm text-gray-600">{description}</p>
     </div>
     <div className="flex-shrink-0">
       <span className="text-xs text-gray-500">{timestamp}</span>
@@ -506,7 +524,8 @@ const PluginCard: React.FC<{ plugin: Plugin; onEdit?: (pluginId: string) => void
 
       <h3 className="text-lg font-semibold text-gray-900">{plugin.name}</h3>
       <span
-</> className={`px-2 py-1 text-xs font-medium rounded-full ${
+</>
+className={`px-2 py-1 text-xs font-medium rounded-full ${
         plugin.status === 'published' ? 'bg-green-100 text-green-800' :
         plugin.status === 'review' ? 'bg-yellow-100 text-yellow-800' :
         plugin.status === 'draft' ? 'bg-gray-100 text-gray-800' :
@@ -516,11 +535,11 @@ const PluginCard: React.FC<{ plugin: Plugin; onEdit?: (pluginId: string) => void
       </span>
     </div><>
 
-    
     <p className="text-gray-600 text-sm mb-4">{plugin.description}</p>
     
     <div
-</> className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
+</>
+className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
       <div className="flex items-center space-x-1">
         <Download className="w-4 h-4" />
         <span>{plugin.downloads}</span>
@@ -544,7 +563,8 @@ const PluginCard: React.FC<{ plugin: Plugin; onEdit?: (pluginId: string) => void
         Edit
       </button>
       <button
-</> className="flex-1 px-3 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+</>
+className="flex-1 px-3 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
         View
       </button>
     </div>
@@ -562,10 +582,12 @@ const ForumPost: React.FC<{
 
     <h4 className="font-medium text-gray-900 mb-1">{title}</h4>
     <div
-</> className="flex items-center space-x-4 text-sm text-gray-600"><>
+</>
+className="flex items-center space-x-4 text-sm text-gray-600"><>
 
       <span>by {author}</span>
       <span
+</>
 </>>{replies} replies</span>
       <span>{timestamp}</span>
     </div>
@@ -593,11 +615,13 @@ const ResourceCard: React.FC<{
 
     <p className="text-sm text-gray-600 mb-3">{description}</p>
     <a
-</> href={link} className="text-indigo-600 hover:text-indigo-700 text-sm font-medium flex items-center space-x-1"><>
+</>
+href={link} className="text-indigo-600 hover:text-indigo-700 text-sm font-medium flex items-center space-x-1"><>
 
       <span>Learn more</span>
       <ExternalLink
-</> className="w-3 h-3" />
+</>
+className="w-3 h-3" />
     </a>
   </div>
 );

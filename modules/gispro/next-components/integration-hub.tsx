@@ -159,6 +159,7 @@ export function IntegrationHub() {
             Integration Hub
           </CardTitle>
           <CardDescription
+</>
 </>>
             Manage external data sources and API integrations for enhanced property analysis
           </CardDescription>
@@ -169,7 +170,8 @@ export function IntegrationHub() {
 
               <TabsTrigger value="status">Integration Status</TabsTrigger>
               <TabsTrigger
-</> value="data">External Data</TabsTrigger>
+</>
+value="data">External Data</TabsTrigger>
               <TabsTrigger value="settings">Configuration</TabsTrigger>
             </TabsList>
 
@@ -185,7 +187,8 @@ export function IntegrationHub() {
                           {integrations.filter((i) => i.status === "active").length}
                         </div>
                         <div
-</> className="text-sm text-gray-600">Active</div>
+</>
+className="text-sm text-gray-600">Active</div>
                       </div>
                     </CardContent>
                   </Card>
@@ -198,7 +201,8 @@ export function IntegrationHub() {
                           {integrations.reduce((sum, i) => sum + i.data_points, 0).toLocaleString()}
                         </div>
                         <div
-</> className="text-sm text-gray-600">Data Points</div>
+</>
+className="text-sm text-gray-600">Data Points</div>
                       </div>
                     </CardContent>
                   </Card>
@@ -211,7 +215,8 @@ export function IntegrationHub() {
                           {integrations.reduce((sum, i) => sum + i.api_calls_today, 0).toLocaleString()}
                         </div>
                         <div
-</> className="text-sm text-gray-600">API Calls Today</div>
+</>
+className="text-sm text-gray-600">API Calls Today</div>
                       </div>
                     </CardContent>
                   </Card>
@@ -229,7 +234,8 @@ export function IntegrationHub() {
                           %
                         </div>
                         <div
-</> className="text-sm text-gray-600">Rate Usage</div>
+</>
+className="text-sm text-gray-600">Rate Usage</div>
                       </div>
                     </CardContent>
                   </Card>
@@ -259,7 +265,8 @@ export function IntegrationHub() {
 
                                 <div className="font-medium">{integration.name}</div>
                                 <div
-</> className="text-sm text-gray-600 capitalize">{integration.type} Integration</div>
+</>
+className="text-sm text-gray-600 capitalize">{integration.type} Integration</div>
                               </div>
                             </div>
 
@@ -268,7 +275,8 @@ export function IntegrationHub() {
 
                                 <div className="font-medium">{integration.data_points.toLocaleString()}</div>
                                 <div
-</> className="text-gray-600">data points</div>
+</>
+className="text-gray-600">data points</div>
                               </div>
 
                               <div className="text-right text-sm"><>
@@ -277,7 +285,8 @@ export function IntegrationHub() {
                                   {integration.api_calls_today}/{integration.rate_limit}
                                 </div>
                                 <div
-</> className="text-gray-600">API calls</div>
+</>
+className="text-gray-600">API calls</div>
                               </div>
 
                               <div className="flex items-center gap-2">
@@ -304,6 +313,7 @@ export function IntegrationHub() {
 
                               <span>Rate Limit Usage</span>
                               <span
+</>
 </>>{Math.round((integration.api_calls_today / integration.rate_limit) * 100)}%</span>
                             </div><>
 
@@ -314,7 +324,8 @@ export function IntegrationHub() {
                           </div>
 
                           <div
-</> className="mt-2 text-xs text-gray-500">
+</>
+className="mt-2 text-xs text-gray-500">
                             Last sync: {new Date(integration.last_sync).toLocaleString()}
                           </div>
                         </CardContent>
@@ -340,6 +351,7 @@ export function IntegrationHub() {
                   </Button>
                   <Button
 </>
+
                     variant="outline"
                     onClick={() => fetchExternalData("zillow", { address: "123 Main St" })}
                     disabled={isLoading}
@@ -350,6 +362,7 @@ export function IntegrationHub() {
                   </Button>
                   <Button
 </>
+
                     variant="outline"
                     onClick={() => fetchExternalData("census", { zipCode: "12345" })}
                     disabled={isLoading}
@@ -360,6 +373,7 @@ export function IntegrationHub() {
                   </Button>
                   <Button
 </>
+
                     variant="outline"
                     onClick={() => fetchExternalData("weather", { location: "Downtown" })}
                     disabled={isLoading}
@@ -387,11 +401,13 @@ export function IntegrationHub() {
                               {data.source}
                             </CardTitle>
                             <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                               <Badge variant="outline">{(data.confidence * 100).toFixed(0)}% confidence</Badge>
                               <span
-</> className="text-xs text-gray-500">
+</>
+className="text-xs text-gray-500">
                                 {new Date(data.timestamp).toLocaleTimeString()}
                               </span>
                             </div>
@@ -430,7 +446,8 @@ export function IntegrationHub() {
 
                             <span className="text-sm font-medium">{integration.name}</span>
                             <span
-</> className="text-sm text-gray-600">{integration.rate_limit.toLocaleString()}/day</span>
+</>
+className="text-sm text-gray-600">{integration.rate_limit.toLocaleString()}/day</span>
                           </div>
                         ))}
                       </div>
@@ -447,25 +464,29 @@ export function IntegrationHub() {
 
                           <span className="text-sm font-medium">MLS Data</span>
                           <span
-</> className="text-sm text-gray-600">Every 5 minutes</span>
+</>
+className="text-sm text-gray-600">Every 5 minutes</span>
                         </div>
                         <div className="flex justify-between items-center"><>
 
                           <span className="text-sm font-medium">Market Data</span>
                           <span
-</> className="text-sm text-gray-600">Every 15 minutes</span>
+</>
+className="text-sm text-gray-600">Every 15 minutes</span>
                         </div>
                         <div className="flex justify-between items-center"><>
 
                           <span className="text-sm font-medium">Census Data</span>
                           <span
-</> className="text-sm text-gray-600">Daily</span>
+</>
+className="text-sm text-gray-600">Daily</span>
                         </div>
                         <div className="flex justify-between items-center"><>
 
                           <span className="text-sm font-medium">Weather Data</span>
                           <span
-</> className="text-sm text-gray-600">Hourly</span>
+</>
+className="text-sm text-gray-600">Hourly</span>
                         </div>
                       </div>
                     </CardContent>
@@ -482,19 +503,22 @@ export function IntegrationHub() {
 
                         <div className="text-2xl font-bold text-green-600">98.5%</div>
                         <div
-</> className="text-sm text-green-800">Data Accuracy</div>
+</>
+className="text-sm text-green-800">Data Accuracy</div>
                       </div>
                       <div className="text-center p-4 bg-blue-50 rounded-lg"><>
 
                         <div className="text-2xl font-bold text-blue-600">99.2%</div>
                         <div
-</> className="text-sm text-blue-800">Uptime</div>
+</>
+className="text-sm text-blue-800">Uptime</div>
                       </div>
                       <div className="text-center p-4 bg-purple-50 rounded-lg"><>
 
                         <div className="text-2xl font-bold text-purple-600">1.2s</div>
                         <div
-</> className="text-sm text-purple-800">Avg Response</div>
+</>
+className="text-sm text-purple-800">Avg Response</div>
                       </div>
                     </div>
                   </CardContent>

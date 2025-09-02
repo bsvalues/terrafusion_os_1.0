@@ -44,7 +44,8 @@ function App() {
 
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <h2
-</> className="text-2xl font-bold text-gray-900 mb-2">Initializing CostForge AI</h2>
+</>
+className="text-2xl font-bold text-gray-900 mb-2">Initializing CostForge AI</h2>
           <p className="text-gray-600">Loading AI models and cost analysis engines...</p>
         </div>
       </div>
@@ -78,7 +79,8 @@ function App() {
                     AI Enhanced
                   </div>
                   <div
-</> className="bg-purple-900/50 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full text-sm font-medium">
+</>
+className="bg-purple-900/50 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full text-sm font-medium">
                     Quantum Ready
                   </div>
                 </div>
@@ -104,7 +106,8 @@ function App() {
 
                       <div className="font-semibold">{item.label}</div>
                       <div
-</> className="text-xs text-gray-400 mt-1">{item.description}</div>
+</>
+className="text-xs text-gray-400 mt-1">{item.description}</div>
                     </div>
                   </button>
                 ))}
@@ -132,12 +135,14 @@ function App() {
 
                   <h3 className="text-lg font-semibold">CostForge AI</h3>
                   <p
-</> className="text-gray-400 text-sm">Powered by Terrafusion Technology</p>
+</>
+className="text-gray-400 text-sm">Powered by Terrafusion Technology</p>
                 </div>
                 <div className="flex space-x-6 text-sm text-gray-400"><>
 
                   <span>AI Models: Active</span>
                   <span
+</>
 </>>ML Engine: v3.2</span>
                   <span>Quantum: Enabled</span>
                 </div>

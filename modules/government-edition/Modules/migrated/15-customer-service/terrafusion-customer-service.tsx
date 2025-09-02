@@ -337,7 +337,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <h3 className="font-semibold">Terrafusion OS • Government. Transcended.</h3>
               <p
-</> className="text-sm opacity-90">
+</>
+className="text-sm opacity-90">
                 Active Agent: {agents[activeAgent].name} • {userRole === 'county-it' ? 'IT Administrator' : 'County Staff'} • Clarity Level: {agents[activeAgent].iq}
               </p>
             </div>
@@ -347,13 +348,15 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <p>County Network</p>
               <p
-</> className="font-semibold">{networkData.connectedCounties} Connected</p>
+</>
+className="font-semibold">{networkData.connectedCounties} Connected</p>
             </div>
             <div className="flex items-center space-x-2"><>
 
               <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#22d3ee' }}></div>
               <span
-</> className="text-sm">Transcendence Active</span>
+</>
+className="text-sm">Transcendence Active</span>
             </div>
           </div>
         </div>
@@ -402,7 +405,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <p className="text-sm whitespace-pre-line">{message.content}</p>
               <p
-</> className="text-xs opacity-70 mt-2">
+</>
+className="text-xs opacity-70 mt-2">
                 {message.timestamp.toLocaleTimeString()}
               </p>
             </div>
@@ -422,7 +426,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
                   <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}></div>
                   <div
-</> className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'rgba(255,255,255,0.6)', animationDelay: '0.1s' }}></div>
+</>
+className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'rgba(255,255,255,0.6)', animationDelay: '0.1s' }}></div>
                   <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'rgba(255,255,255,0.6)', animationDelay: '0.2s' }}></div>
                 </div>
                 <span className="text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>Orchestrating clarity...</span>
@@ -449,7 +454,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <p className="font-semibold" style={{ color: '#00ff88' }}>Transcendence complete: {ticketCreated.id}</p>
               <p
-</> className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>{ticketCreated.title}</p>
+</>
+className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>{ticketCreated.title}</p>
               <p className="text-xs mt-1" style={{ color: '#22d3ee' }}>Your path is clear.</p>
             </div>
           </div>
@@ -482,12 +488,14 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
             <Mic className="w-5 h-5" />
           </button>
           <button
-</> style={{ color: 'rgba(255,255,255,0.7)' }} className="hover:opacity-80"><>
+</>
+style={{ color: 'rgba(255,255,255,0.7)' }} className="hover:opacity-80"><>
 
             <Camera className="w-5 h-5" />
           </button>
           <button
-</> 
+</>
+
             onClick={handleSendMessage}
             className="p-2 rounded-lg transition-all"
             style={{
@@ -516,13 +524,15 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
             <h2 className="text-3xl font-bold">Government. Transcended.</h2>
             <p
-</> style={{ color: 'rgba(255,255,255,0.9)' }}>Turn complexity into clarity across every department</p>
+</>
+style={{ color: 'rgba(255,255,255,0.9)' }}>Turn complexity into clarity across every department</p>
           </div>
           <div className="text-right"><>
 
             <p className="text-sm opacity-90">Transcendence Level</p>
             <p
-</> className="text-2xl font-bold">{analytics.consciousnessLevel}</p>
+</>
+className="text-2xl font-bold">{analytics.consciousnessLevel}</p>
           </div>
         </div>
       </div>
@@ -540,7 +550,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Response Time</p>
               <p
-</> className="text-3xl font-bold" style={{ color: '#00d2ff' }}>{analytics.avgResponseTime}</p>
+</>
+className="text-3xl font-bold" style={{ color: '#00d2ff' }}>{analytics.avgResponseTime}</p>
               <p className="text-xs" style={{ color: '#00ff88' }}>↓ 94% faster</p>
             </div>
             <Zap className="w-12 h-12 opacity-20" style={{ color: '#00d2ff' }} />
@@ -558,7 +569,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>AI Resolution Rate</p>
               <p
-</> className="text-3xl font-bold" style={{ color: '#0891b2' }}>{analytics.aiResolutionRate}</p>
+</>
+className="text-3xl font-bold" style={{ color: '#0891b2' }}>{analytics.aiResolutionRate}</p>
               <p className="text-xs" style={{ color: '#00ff88' }}>↑ +127% improvement</p>
             </div>
             <Brain className="w-12 h-12 opacity-20" style={{ color: '#0891b2' }} />
@@ -576,7 +588,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Predictive Prevention</p>
               <p
-</> className="text-3xl font-bold" style={{ color: '#667eea' }}>{analytics.predictivePrevention}</p>
+</>
+className="text-3xl font-bold" style={{ color: '#667eea' }}>{analytics.predictivePrevention}</p>
               <p className="text-xs" style={{ color: '#00ff88' }}>Problems prevented</p>
             </div>
             <Radar className="w-12 h-12 opacity-20" style={{ color: '#667eea' }} />
@@ -594,7 +607,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Democratic Impact</p>
               <p
-</> className="text-3xl font-bold" style={{ color: '#22d3ee' }}>{analytics.democraticImpact}</p>
+</>
+className="text-3xl font-bold" style={{ color: '#22d3ee' }}>{analytics.democraticImpact}</p>
               <p className="text-xs" style={{ color: '#00ff88' }}>Citizen satisfaction</p>
             </div>
             <Globe className="w-12 h-12 opacity-20" style={{ color: '#22d3ee' }} />
@@ -614,7 +628,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
           <h3 className="text-xl font-bold" style={{ color: '#ffffff' }}>County Excellence Network</h3>
           <div
-</> className="px-3 py-1 rounded-full text-sm" style={{
+</>
+className="px-3 py-1 rounded-full text-sm" style={{
             background: 'rgba(0,255,136,0.2)',
             color: '#00ff88'
           }}>
@@ -627,19 +642,22 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
             <p className="text-3xl font-bold" style={{ color: '#00d2ff' }}>{networkData.sharedSolutions.toLocaleString()}</p>
             <p
-</> className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Clarity Solutions</p>
+</>
+className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Clarity Solutions</p>
           </div>
           <div className="text-center"><>
 
             <p className="text-3xl font-bold" style={{ color: '#0891b2' }}>{networkData.collectiveIQ.toLocaleString()}</p>
             <p
-</> className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Collective Excellence</p>
+</>
+className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Collective Excellence</p>
           </div>
           <div className="text-center"><>
 
             <p className="text-3xl font-bold" style={{ color: '#22d3ee' }}>{networkData.networkEffect}</p>
             <p
-</> className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Government Transcendence</p>
+</>
+className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Government Transcendence</p>
           </div>
         </div>
       </div>
@@ -656,7 +674,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
           <h3 className="text-xl font-bold" style={{ color: '#ffffff' }}>Foresight Engine</h3>
           <div
-</> className="px-3 py-1 rounded-full text-sm" style={{
+</>
+className="px-3 py-1 rounded-full text-sm" style={{
             background: 'rgba(102,126,234,0.2)',
             color: '#667eea'
           }}>
@@ -676,7 +695,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
                   <p className="font-semibold" style={{ color: '#ffffff' }}>{prediction.issue}</p>
                   <p
-</> className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.7)' }}>Timeline: {prediction.timeline} • Confidence: {prediction.confidence}</p>
+</>
+className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.7)' }}>Timeline: {prediction.timeline} • Confidence: {prediction.confidence}</p>
                   <p className="text-sm mt-1" style={{ color: '#00ff88' }}>Prevention: {prediction.prevention}</p>
                 </div>
                 <div className="text-right">
@@ -709,7 +729,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
           <h3 className="text-xl font-bold" style={{ color: '#ffffff' }}>Transcendence AI System</h3>
           <div
-</> className="px-3 py-1 rounded-full text-sm" style={{
+</>
+className="px-3 py-1 rounded-full text-sm" style={{
             background: 'rgba(102,126,234,0.2)',
             color: '#667eea'
           }}>
@@ -732,12 +753,14 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>{agent.specialty}</p>
               <div
-</> className="flex items-center justify-between">
+</>
+className="flex items-center justify-between">
                 <div className="flex items-center space-x-2"><>
 
                   <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#00ff88' }}></div>
                   <span
-</> className="text-xs" style={{ color: '#00ff88' }}>Active</span>
+</>
+className="text-xs" style={{ color: '#00ff88' }}>Active</span>
                 </div>
                 <div className="text-right">
                   <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>IQ: {agent.iq}</p>
@@ -760,7 +783,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
           <h3 className="text-xl font-bold" style={{ color: '#ffffff' }}>System Excellence Monitoring</h3>
           <div
-</> className="px-3 py-1 rounded-full text-sm" style={{
+</>
+className="px-3 py-1 rounded-full text-sm" style={{
             background: 'rgba(34,211,238,0.2)',
             color: '#22d3ee'
           }}>
@@ -773,7 +797,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
             <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>Government Stability</p>
             <div
-</> className="w-full rounded-full h-3" style={{ background: 'rgba(255,255,255,0.1)' }}>
+</>
+className="w-full rounded-full h-3" style={{ background: 'rgba(255,255,255,0.1)' }}>
               <div 
                 className="h-3 rounded-full transition-all duration-1000"
                 style={{ 
@@ -789,7 +814,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
             <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>User Empowerment</p>
             <div
-</> className="w-full rounded-full h-3" style={{ background: 'rgba(255,255,255,0.1)' }}>
+</>
+className="w-full rounded-full h-3" style={{ background: 'rgba(255,255,255,0.1)' }}>
               <div 
                 className="h-3 rounded-full transition-all duration-1000"
                 style={{ 
@@ -805,7 +831,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
             <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>System Excellence</p>
             <div
-</> className="w-full rounded-full h-3" style={{ background: 'rgba(255,255,255,0.1)' }}>
+</>
+className="w-full rounded-full h-3" style={{ background: 'rgba(255,255,255,0.1)' }}>
               <div 
                 className="h-3 rounded-full transition-all duration-1000"
                 style={{ 
@@ -823,25 +850,29 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Workflow Clarity</p>
             <p
-</> className="font-semibold" style={{ color: '#00ff88' }}>{quantumMetrics.causalLoopDetection}</p>
+</>
+className="font-semibold" style={{ color: '#00ff88' }}>{quantumMetrics.causalLoopDetection}</p>
           </div>
           <div><>
 
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Network Health</p>
             <p
-</> className="font-semibold" style={{ color: '#0891b2' }}>{quantumMetrics.multiverseAlignment}</p>
+</>
+className="font-semibold" style={{ color: '#0891b2' }}>{quantumMetrics.multiverseAlignment}</p>
           </div>
           <div><>
 
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>User Connection</p>
             <p
-</> className="font-semibold" style={{ color: '#00d2ff' }}>{quantumMetrics.quantumEntanglement}</p>
+</>
+className="font-semibold" style={{ color: '#00d2ff' }}>{quantumMetrics.quantumEntanglement}</p>
           </div>
           <div><>
 
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>Uptime Excellence</p>
             <p
-</> className="font-semibold" style={{ color: '#667eea' }}>{quantumMetrics.timeStreamConsistency}%</p>
+</>
+className="font-semibold" style={{ color: '#667eea' }}>{quantumMetrics.timeStreamConsistency}%</p>
           </div>
         </div>
       </div>
@@ -884,7 +915,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <option value="county-it">County IT Admin</option>
               <option
-</> value="county-staff">County Staff</option>
+</>
+value="county-staff">County Staff</option>
               <option value="admin">System Admin</option>
             </select>
             
@@ -979,7 +1011,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <h2 className="text-3xl font-bold mb-2">County Excellence Network</h2>
               <p
-</> className="text-lg">Government transcended across {networkData.connectedCounties} counties</p>
+</>
+className="text-lg">Government transcended across {networkData.connectedCounties} counties</p>
               <p style={{ color: 'rgba(255,255,255,0.9)' }} className="mt-2">Turning complexity into clarity, together</p>
             </div>
           </div>
@@ -993,7 +1026,8 @@ Your complexity is already 73% clearer just by reaching out. Ready to complete y
 
               <h2 className="text-3xl font-bold mb-2">Foresight Engine</h2>
               <p
-</> className="text-lg">Anticipating needs before they arise</p>
+</>
+className="text-lg">Anticipating needs before they arise</p>
               <p style={{ color: 'rgba(255,255,255,0.9)' }} className="mt-2">{analytics.predictivePrevention} of issues prevented through clarity foresight</p>
             </div>
           </div>

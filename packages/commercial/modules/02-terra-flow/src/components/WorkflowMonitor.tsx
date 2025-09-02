@@ -223,7 +223,8 @@ const MetricCard: React.FC<{
 
         <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
         <p
-</> className="text-gray-600 font-medium">{title}</p>
+</>
+className="text-gray-600 font-medium">{title}</p>
         {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
       </div>
     </motion.div>
@@ -310,7 +311,8 @@ const WorkflowMonitor: React.FC = () => {
 
           <h1 className="text-2xl font-bold text-gray-900">Workflow Monitor</h1>
           <p
-</> className="text-gray-600">Real-time workflow execution monitoring and analytics</p>
+</>
+className="text-gray-600">Real-time workflow execution monitoring and analytics</p>
         </div>
         <div className="flex items-center space-x-3">
           <motion.button
@@ -378,6 +380,7 @@ const WorkflowMonitor: React.FC = () => {
             </div>
             <select
 </>
+
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -385,11 +388,13 @@ const WorkflowMonitor: React.FC = () => {
 
               <option value="all">All Status</option>
               <option
-</> value="running">Running</option><>
+</>
+value="running">Running</option><>
 
               <option value="completed">Completed</option>
               <option
-</> value="failed">Failed</option>
+</>
+value="failed">Failed</option>
               <option value="paused">Paused</option>
             </select>
           </div>
@@ -425,11 +430,13 @@ const WorkflowMonitor: React.FC = () => {
                     )}
                   </button>
                   <div
+</>
 </>><>
 
                     <h3 className="font-medium text-gray-900">{execution.workflowName}</h3>
                     <p
-</> className="text-sm text-gray-500">
+</>
+className="text-sm text-gray-500">
                       Started {formatTimestamp(execution.startTime)}
                       {execution.triggeredBy && ` • Triggered by ${execution.triggeredBy}`}
                     </p>
@@ -456,7 +463,8 @@ const WorkflowMonitor: React.FC = () => {
                       <Eye className="w-4 h-4 text-gray-400" />
                     </button>
                     <button
-</> className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+</>
+className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
                       <Download className="w-4 h-4 text-gray-400" />
                     </button>
                   </div>
@@ -483,7 +491,8 @@ const WorkflowMonitor: React.FC = () => {
 
                       <h4 className="font-medium text-gray-900 mb-3">Execution Steps</h4>
                       <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                         {execution.steps.map(step => (
                           <div key={step.id} className="flex items-center justify-between py-2">
                             <div className="flex items-center space-x-3">
@@ -531,7 +540,8 @@ const WorkflowMonitor: React.FC = () => {
                       {selectedExecution.workflowName}
                     </h3>
                     <p
-</> className="text-gray-600">Execution ID: {selectedExecution.id}</p>
+</>
+className="text-gray-600">Execution ID: {selectedExecution.id}</p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <StatusBadge status={selectedExecution.status} />
@@ -552,19 +562,22 @@ const WorkflowMonitor: React.FC = () => {
 
                       <h4 className="font-medium text-gray-900 mb-2">Execution Details</h4>
                       <div
-</> className="bg-gray-50 rounded-lg p-4 space-y-2">
+</>
+className="bg-gray-50 rounded-lg p-4 space-y-2">
                         <div className="flex justify-between"><>
 
                           <span className="text-gray-600">Started:</span>
                           <span
-</> className="text-gray-900">{formatTimestamp(selectedExecution.startTime)}</span>
+</>
+className="text-gray-900">{formatTimestamp(selectedExecution.startTime)}</span>
                         </div>
                         {selectedExecution.endTime && (
                           <div className="flex justify-between"><>
 
                             <span className="text-gray-600">Ended:</span>
                             <span
-</> className="text-gray-900">{formatTimestamp(selectedExecution.endTime)}</span>
+</>
+className="text-gray-900">{formatTimestamp(selectedExecution.endTime)}</span>
                           </div>
                         )}
                         {selectedExecution.duration && (
@@ -572,14 +585,16 @@ const WorkflowMonitor: React.FC = () => {
 
                             <span className="text-gray-600">Duration:</span>
                             <span
-</> className="text-gray-900">{formatDuration(selectedExecution.duration)}</span>
+</>
+className="text-gray-900">{formatDuration(selectedExecution.duration)}</span>
                           </div>
                         )}
                         <div className="flex justify-between"><>
 
                           <span className="text-gray-600">Triggered by:</span>
                           <span
-</> className="text-gray-900 capitalize">{selectedExecution.triggeredBy}</span>
+</>
+className="text-gray-900 capitalize">{selectedExecution.triggeredBy}</span>
                         </div>
                       </div>
                     </div>
@@ -590,12 +605,14 @@ const WorkflowMonitor: React.FC = () => {
 
                       <h4 className="font-medium text-gray-900 mb-2">Input/Output Data</h4>
                       <div
-</> className="bg-gray-50 rounded-lg p-4">
+</>
+className="bg-gray-50 rounded-lg p-4">
                         <div className="mb-3"><>
 
                           <span className="text-sm font-medium text-gray-700">Input:</span>
                           <pre
-</> className="text-xs text-gray-600 mt-1 bg-white p-2 rounded">
+</>
+className="text-xs text-gray-600 mt-1 bg-white p-2 rounded">
                             {JSON.stringify(selectedExecution.inputData, null, 2)}
                           </pre>
                         </div>
@@ -604,7 +621,8 @@ const WorkflowMonitor: React.FC = () => {
 
                             <span className="text-sm font-medium text-gray-700">Output:</span>
                             <pre
-</> className="text-xs text-gray-600 mt-1 bg-white p-2 rounded">
+</>
+className="text-xs text-gray-600 mt-1 bg-white p-2 rounded">
                               {JSON.stringify(selectedExecution.outputData, null, 2)}
                             </pre>
                           </div>
@@ -618,7 +636,8 @@ const WorkflowMonitor: React.FC = () => {
 
                   <h4 className="font-medium text-gray-900 mb-4">Step Details</h4>
                   <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                     {selectedExecution.steps.map((step /* , index */) => (
                       <div key={step.id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
@@ -628,7 +647,8 @@ const WorkflowMonitor: React.FC = () => {
                               {index + 1}
                             </span>
                             <span
-</> className="font-medium text-gray-900">{step.name}</span>
+</>
+className="font-medium text-gray-900">{step.name}</span>
                           </div>
                           <div className="flex items-center space-x-3">
                             <StatusBadge status={step.status} size="sm" />

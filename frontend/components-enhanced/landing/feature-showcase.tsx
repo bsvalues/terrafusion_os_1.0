@@ -143,7 +143,8 @@ export function FeatureShowcase() {
                       <Icon className={`w-5 h-5 text-${module.color}`} />
                     </div>
                     <Badge
-</> variant="secondary" className="text-xs">
+</>
+variant="secondary" className="text-xs">
                       {module.badge}
                     </Badge>
                   </div>

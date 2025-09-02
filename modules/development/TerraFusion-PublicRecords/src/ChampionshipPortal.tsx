@@ -128,7 +128,8 @@ const ChampionshipPortal: React.FC = () => {
 
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
           <div
-</> className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+</>
+className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
           <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
         </div>
 
@@ -141,7 +142,8 @@ const ChampionshipPortal: React.FC = () => {
                 <Zap className="text-white" size={20} />
               </div>
               <span
-</> className="text-xl font-bold">Terrafusion</span>
+</>
+className="text-xl font-bold">Terrafusion</span>
               <span className="text-sm opacity-60">Benton County</span>
             </div>
             <div className="flex gap-3">
@@ -155,6 +157,7 @@ const ChampionshipPortal: React.FC = () => {
               </button>
               <button
 </>
+
                 onClick={() => setMode('command')}
                 className="text-sm opacity-60 hover:opacity-100 transition-opacity"
               >
@@ -167,7 +170,6 @@ const ChampionshipPortal: React.FC = () => {
         {/* THE ENTIRE CITIZEN INTERFACE */}
         <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-6">
           {!results.length ? (
-            <>
               {/* The One Search Box */}
               <div className="text-center mb-8 animate-fade-in"><>
 
@@ -175,7 +177,8 @@ const ChampionshipPortal: React.FC = () => {
                   What can we help you find?
                 </h1>
                 <p
-</> className="text-xl opacity-80">
+</>
+className="text-xl opacity-80">
                   Just type like you talk. We'll understand.
                 </p>
               </div>
@@ -211,12 +214,14 @@ const ChampionshipPortal: React.FC = () => {
                         <Mic className="text-white" size={20} />
                       </button>
                       <button
-</> className="p-3 hover:bg-white/10 rounded-xl transition-all"><>
+</>
+className="p-3 hover:bg-white/10 rounded-xl transition-all"><>
 
                         <Camera className="text-white" size={20} />
                       </button>
                       <button
 </>
+
                         onClick={executeSearch}
                         className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold hover:shadow-lg transition-all"
                       >
@@ -257,7 +262,8 @@ const ChampionshipPortal: React.FC = () => {
                     {stats.searchesNow}
                   </div>
                   <div
-</> className="text-sm opacity-60">searches now</div>
+</>
+className="text-sm opacity-60">searches now</div>
                 </div>
                 <div><>
 
@@ -265,7 +271,8 @@ const ChampionshipPortal: React.FC = () => {
                     {stats.avgResponseTime}s
                   </div>
                   <div
-</> className="text-sm opacity-60">avg response</div>
+</>
+className="text-sm opacity-60">avg response</div>
                 </div>
                 <div><>
 
@@ -273,7 +280,8 @@ const ChampionshipPortal: React.FC = () => {
                     {stats.recordsIndexed.toLocaleString()}
                   </div>
                   <div
-</> className="text-sm opacity-60">records indexed</div>
+</>
+className="text-sm opacity-60">records indexed</div>
                 </div>
                 <div><>
 
@@ -281,10 +289,10 @@ const ChampionshipPortal: React.FC = () => {
                     {stats.citizensServed.toLocaleString()}
                   </div>
                   <div
-</> className="text-sm opacity-60">citizens served</div>
+</>
+className="text-sm opacity-60">citizens served</div>
                 </div>
               </div>
-            </>
           ) : (
             /* Search Results */
             <div className="w-full max-w-4xl animate-fade-in">
@@ -324,14 +332,16 @@ const ChampionshipPortal: React.FC = () => {
 
                           <span className="text-yellow-400 font-semibold">Instant Answer</span>
                           <span
-</> className="text-xs opacity-60 ml-auto">
+</>
+className="text-xs opacity-60 ml-auto">
                             {result.time}s • {result.confidence}% confident
                           </span>
                         </div><>
 
                         <h3 className="text-xl font-bold mb-2">{result.title}</h3>
                         <p
-</> className="opacity-90">{result.content}</p>
+</>
+className="opacity-90">{result.content}</p>
                       </div>
                     )}
 
@@ -346,7 +356,8 @@ const ChampionshipPortal: React.FC = () => {
 
                             <h3 className="text-lg font-bold">{result.title}</h3>
                             <p
-</> className="text-sm opacity-70 mt-1">
+</>
+className="text-sm opacity-70 mt-1">
                               {result.date} • Status: {result.status}
                             </p>
                           </div>
@@ -362,11 +373,13 @@ const ChampionshipPortal: React.FC = () => {
 
                         <span className="text-2xl">{result.icon}</span>
                         <div
+</>
 </>><>
 
                           <h4 className="font-semibold mb-1">{result.title}</h4>
                           <p
-</> className="text-sm opacity-80">{result.content}</p>
+</>
+className="text-sm opacity-80">{result.content}</p>
                         </div>
                       </div>
                     )}
@@ -384,7 +397,8 @@ const ChampionshipPortal: React.FC = () => {
 
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span
-</> className="opacity-60">All systems operational</span>
+</>
+className="opacity-60">All systems operational</span>
             </div>
             <div className="opacity-60">
               Last updated: {new Date().toLocaleTimeString()}

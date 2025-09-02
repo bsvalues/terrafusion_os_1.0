@@ -14,7 +14,8 @@ export function CallToAction() {
           </Badge>
 
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             <h2 className="text-5xl md:text-6xl font-heading font-bold">
               Ready to <span className="text-tf-transcend">Transcend</span>?
             </h2>
@@ -31,7 +32,8 @@ export function CallToAction() {
 
                 <h3 className="font-heading font-semibold text-tf-light">Live Demo</h3>
                 <p
-</> className="text-sm text-tf-light/70">See Terrafusion in action</p>
+</>
+className="text-sm text-tf-light/70">See Terrafusion in action</p>
                 <Button className="w-full bg-tf-primary hover:bg-tf-primary-dark">Watch Demo</Button>
               </CardContent>
             </Card>
@@ -42,7 +44,8 @@ export function CallToAction() {
 
                 <h3 className="font-heading font-semibold text-tf-light">Executive Briefing</h3>
                 <p
-</> className="text-sm text-tf-light/70">30-minute strategic overview</p>
+</>
+className="text-sm text-tf-light/70">30-minute strategic overview</p>
                 <Button className="w-full bg-tf-accent hover:bg-tf-accent-dark text-tf-dark">Schedule Now</Button>
               </CardContent>
             </Card>
@@ -53,7 +56,8 @@ export function CallToAction() {
 
                 <h3 className="font-heading font-semibold text-tf-light">ROI Calculator</h3>
                 <p
-</> className="text-sm text-tf-light/70">Calculate your savings</p>
+</>
+className="text-sm text-tf-light/70">Calculate your savings</p>
                 <Button
                   variant="outline"
                   className="w-full border-tf-transcend text-tf-transcend hover:bg-tf-transcend hover:text-tf-dark bg-transparent"
@@ -75,14 +79,17 @@ export function CallToAction() {
             </Button>
 
             <div
-</> className="flex flex-wrap justify-center gap-8 text-sm text-tf-light/60"><>
+</>
+className="flex flex-wrap justify-center gap-8 text-sm text-tf-light/60"><>
 
               <span>✓ No long-term contracts</span>
               <span
+</>
 </>>✓ 30-day pilot program</span><>
 
               <span>✓ Full support included</span>
               <span
+</>
 </>>✓ SOC 2 Type II compliant</span>
             </div>
           </div>

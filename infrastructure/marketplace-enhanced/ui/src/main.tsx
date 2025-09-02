@@ -24,15 +24,18 @@ function NavBar() {
 
       <Link to="/" className="tf-logo">Terrafusion</Link>
       <div
-</> className="tf-nav-links"><>
+</>
+className="tf-nav-links"><>
 
         <Link className={loc.pathname==='/'?'active':''} to="/">Government Dashboard</Link>
         <Link
-</> className={loc.pathname==='/plugins'?'active':''} to="/plugins">Plugin Marketplace</Link><>
+</>
+className={loc.pathname==='/plugins'?'active':''} to="/plugins">Plugin Marketplace</Link><>
 
         <Link className={loc.pathname==='/analytics'?'active':''} to="/analytics">Advanced Analytics</Link>
         <Link
-</> className={loc.pathname==='/legacy'?'active':''} to="/legacy">Legacy Dashboard</Link>
+</>
+className={loc.pathname==='/legacy'?'active':''} to="/legacy">Legacy Dashboard</Link>
         <Link className={loc.pathname==='/agent-telemetry'?'active':''} to="/agent-telemetry">Agent Telemetry</Link>
       </div>
     </nav>

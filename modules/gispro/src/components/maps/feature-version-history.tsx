@@ -143,6 +143,7 @@ export function FeatureVersionHistory({
 
           <DialogTitle>Feature Version History</DialogTitle>
           <DialogDescription
+</>
 </>>
             View and restore previous versions of this feature
           </DialogDescription>
@@ -156,7 +157,6 @@ export function FeatureVersionHistory({
             </p>
           </div>
         ) : (
-          <>
             <div className="flex justify-between items-center mb-4"><>
 
               <div className="text-sm text-muted-foreground">
@@ -165,6 +165,7 @@ export function FeatureVersionHistory({
               
               <Button
 </>
+
                 variant="outline"
                 size="sm"
                 onClick={() => {
@@ -182,11 +183,13 @@ export function FeatureVersionHistory({
 
                   <TableHead className="w-[100px]">Date</TableHead>
                   <TableHead
+</>
 </>>Description</TableHead><>
 
                   <TableHead className="w-[140px]">Created By</TableHead>
                   <TableHead
-</> className="w-[100px]"></TableHead>
+</>
+className="w-[100px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -205,7 +208,8 @@ export function FeatureVersionHistory({
 
                         <span>{formatDate(version.timestamp)}</span>
                         <span
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                           {formatRelativeTime(version.timestamp)}
                         </span>
                       </div>
@@ -221,6 +225,7 @@ export function FeatureVersionHistory({
 
                     <TableCell>{version.createdBy || 'System'}</TableCell>
                     <TableCell
+</>
 </>>
                       {index > 0 && !compareMode && (
                         <Button
@@ -259,24 +264,28 @@ export function FeatureVersionHistory({
 
                 <h3 className="text-lg font-medium mb-2">Version Details</h3>
                 <div
-</> className="grid grid-cols-2 gap-4">
+</>
+className="grid grid-cols-2 gap-4">
                   <div><>
 
                     <p className="text-sm font-medium">Date:</p>
                     <p
-</> className="text-sm">{formatDate(selectedVersion.timestamp)}</p>
+</>
+className="text-sm">{formatDate(selectedVersion.timestamp)}</p>
                   </div>
                   <div><>
 
                     <p className="text-sm font-medium">Created By:</p>
                     <p
-</> className="text-sm">{selectedVersion.createdBy || 'System'}</p>
+</>
+className="text-sm">{selectedVersion.createdBy || 'System'}</p>
                   </div>
                   <div className="col-span-2"><>
 
                     <p className="text-sm font-medium">Description:</p>
                     <p
-</> className="text-sm">{selectedVersion.description || 'No description'}</p>
+</>
+className="text-sm">{selectedVersion.description || 'No description'}</p>
                   </div>
                 </div>
                 
@@ -285,6 +294,7 @@ export function FeatureVersionHistory({
 
                     <AccordionTrigger>Show Feature Details</AccordionTrigger>
                     <AccordionContent
+</>
 </>>
                       <pre className="bg-muted p-2 rounded-md overflow-auto text-xs">
                         {JSON.stringify(selectedVersion.feature, null, 2)}
@@ -309,7 +319,8 @@ export function FeatureVersionHistory({
 
                       <h4 className="text-md font-medium mb-1">Newer Version</h4>
                       <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                         {formatDate(compareVersions[0].timestamp)}
                       </p>
                       <p className="text-sm mb-3">
@@ -321,7 +332,8 @@ export function FeatureVersionHistory({
 
                       <h4 className="text-md font-medium mb-1">Older Version</h4>
                       <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                         {formatDate(compareVersions[1].timestamp)}
                       </p>
                       <p className="text-sm mb-3">
@@ -332,7 +344,6 @@ export function FeatureVersionHistory({
                 )}
               </div>
             )}
-          </>
         )}
         
         <DialogFooter className="mt-6">

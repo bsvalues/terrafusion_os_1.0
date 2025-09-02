@@ -89,6 +89,7 @@ export function HierarchicalCostVisualization({
             <Skeleton className="h-6 w-3/4" />
           </CardTitle>
           <CardDescription
+</>
 </>>
             <Skeleton className="h-4 w-1/2" />
           </CardDescription>
@@ -109,6 +110,7 @@ export function HierarchicalCostVisualization({
 
           <CardTitle>Hierarchical Cost Analysis</CardTitle>
           <CardDescription
+</>
 </>>
             Drill down into building costs by county and quality
           </CardDescription>
@@ -138,6 +140,7 @@ export function HierarchicalCostVisualization({
 
         <CardTitle>Hierarchical Cost Analysis</CardTitle>
         <CardDescription
+</>
 </>>
           Drill down into building costs by county and quality
         </CardDescription>

@@ -1,10 +1,10 @@
 /**
- * TerraFusion CSS React Integration
+ * Terrafusion CSS React Integration
  * 
- * React hooks and components for integrating with the TerraFusion CSS Engine
+ * React hooks and components for integrating with the Terrafusion CSS Engine
  * Provides reactive CSS updates based on AI states and performance metrics
  * 
- * @author TerraFusion AI Team
+ * @author Terrafusion AI Team
  */
 
 import React, { useEffect, useState, useContext, createContext, ReactNode } from 'react';
@@ -190,8 +190,11 @@ export const AIAgentStatus: React.FC<AIAgentStatusProps> = ({
 
     return (
       <div className={`tf-ai-global-status ${className}`}>
+
+
         <span className="tf-agent-count">{activeCount}/{aiAgentCount}</span>
-        <span className="tf-status-indicator tf-status-active"></span>
+        <span
+ className="tf-status-indicator tf-status-active"></span>
       </div>
     );
   }
@@ -203,8 +206,11 @@ export const AIAgentStatus: React.FC<AIAgentStatusProps> = ({
 
   return (
     <div className={`tf-ai-agent-status tf-status-${agentState.status} ${className}`}>
+
+
       <span className="tf-agent-id">{agentId}</span>
-      <span className="tf-status-indicator"></span>
+      <span
+ className="tf-status-indicator"></span>
       <span className="tf-coherence-level" style={{
         opacity: agentState.coherence
       }}></span>
@@ -298,7 +304,7 @@ export const ComplianceWrapper: React.FC<ComplianceWrapperProps> = ({
     <div 
       className={complianceClassName}
       role="application"
-      aria-label="TerraFusion Government Interface"
+      aria-label="Terrafusion Government Interface"
     >
       {children}
     </div>

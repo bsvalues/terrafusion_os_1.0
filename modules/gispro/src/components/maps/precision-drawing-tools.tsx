@@ -258,6 +258,7 @@ export function PrecisionDrawingTools({
                   <h4 className="font-medium text-sm">Create Rectangle</h4>
                   <FormField
 </>
+
                     control={rectangleForm.control}
                     name="width"
                     render={({ field }) => (
@@ -265,12 +266,14 @@ export function PrecisionDrawingTools({
 
                         <FormLabel>Width</FormLabel>
                         <FormControl
+</>
 </>><>
 
                           <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage
-</> />
+</>
+/>
                       </FormItem>
                     )}
                   />
@@ -282,12 +285,14 @@ export function PrecisionDrawingTools({
 
                         <FormLabel>Height</FormLabel>
                         <FormControl
+</>
 </>><>
 
                           <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage
-</> />
+</>
+/>
                       </FormItem>
                     )}
                   />
@@ -299,7 +304,8 @@ export function PrecisionDrawingTools({
 
                         <FormLabel>Units</FormLabel>
                         <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select units" />
@@ -309,7 +315,8 @@ export function PrecisionDrawingTools({
 
                             <SelectItem value="feet">Feet</SelectItem>
                             <SelectItem
-</> value="meters">Meters</SelectItem>
+</>
+value="meters">Meters</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -326,7 +333,8 @@ export function PrecisionDrawingTools({
                       Cancel
                     </Button>
                     <Button
-</> type="submit">Create</Button>
+</>
+type="submit">Create</Button>
                   </div>
                 </form>
               </Form>
@@ -347,6 +355,7 @@ export function PrecisionDrawingTools({
                   <h4 className="font-medium text-sm">Create Circle</h4>
                   <FormField
 </>
+
                     control={circleForm.control}
                     name="radius"
                     render={({ field }) => (
@@ -354,12 +363,14 @@ export function PrecisionDrawingTools({
 
                         <FormLabel>Radius</FormLabel>
                         <FormControl
+</>
 </>><>
 
                           <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage
-</> />
+</>
+/>
                       </FormItem>
                     )}
                   />
@@ -371,7 +382,8 @@ export function PrecisionDrawingTools({
 
                         <FormLabel>Units</FormLabel>
                         <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select units" />
@@ -381,7 +393,8 @@ export function PrecisionDrawingTools({
 
                             <SelectItem value="feet">Feet</SelectItem>
                             <SelectItem
-</> value="meters">Meters</SelectItem>
+</>
+value="meters">Meters</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -398,7 +411,8 @@ export function PrecisionDrawingTools({
                       Cancel
                     </Button>
                     <Button
-</> type="submit">Create</Button>
+</>
+type="submit">Create</Button>
                   </div>
                 </form>
               </Form>
@@ -433,7 +447,8 @@ export function PrecisionDrawingTools({
 
                   <h4 className="font-medium text-sm">Generate Parcel Number</h4>
                   <div
-</> className="grid grid-cols-2 gap-3">
+</>
+className="grid grid-cols-2 gap-3">
                     <FormField
                       control={parcelNumberForm.control}
                       name="township"
@@ -442,12 +457,14 @@ export function PrecisionDrawingTools({
 
                           <FormLabel>Township</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input type="number" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -459,12 +476,14 @@ export function PrecisionDrawingTools({
 
                           <FormLabel>Range</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input type="number" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -478,12 +497,14 @@ export function PrecisionDrawingTools({
 
                           <FormLabel>Section</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input type="number" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -495,7 +516,8 @@ export function PrecisionDrawingTools({
 
                           <FormLabel>Quarter</FormLabel>
                           <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Quarter" />
@@ -505,11 +527,13 @@ export function PrecisionDrawingTools({
 
                               <SelectItem value="NE">NE</SelectItem>
                               <SelectItem
-</> value="NW">NW</SelectItem><>
+</>
+value="NW">NW</SelectItem><>
 
                               <SelectItem value="SE">SE</SelectItem>
                               <SelectItem
-</> value="SW">SW</SelectItem>
+</>
+value="SW">SW</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -525,12 +549,14 @@ export function PrecisionDrawingTools({
 
                         <FormLabel>Parcel Number</FormLabel>
                         <FormControl
+</>
 </>><>
 
                           <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage
-</> />
+</>
+/>
                       </FormItem>
                     )}
                   />
@@ -544,7 +570,8 @@ export function PrecisionDrawingTools({
                       Cancel
                     </Button>
                     <Button
-</> type="submit">Generate</Button>
+</>
+type="submit">Generate</Button>
                   </div>
                 </form>
               </Form>
@@ -552,11 +579,11 @@ export function PrecisionDrawingTools({
           </Popover>
         </div><>
 
-        
         <div className="w-full h-px bg-gray-200 my-1"></div>
         
         <div
-</> className="flex space-x-1">
+</>
+className="flex space-x-1">
           {/* Split Tool */}
           <Button 
             variant="outline" 
@@ -648,11 +675,11 @@ export function PrecisionDrawingTools({
           </Button>
         </div><>
 
-        
         <div className="w-full h-px bg-gray-200 my-1"></div>
         
         <div
-</> className="flex space-x-1">
+</>
+className="flex space-x-1">
           {/* Undo Button */}
           <Button 
             variant="outline" 

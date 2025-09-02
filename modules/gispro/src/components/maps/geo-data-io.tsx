@@ -160,7 +160,6 @@ export function GeoDataIO({
   };
   
   return (
-    <>
       {/* Import Dialog */}
       <Dialog open={importDialogOpen} onOpenChange={handleImportDialogOpenChange}>
         <DialogContent className="sm:max-w-[500px]">
@@ -171,6 +170,7 @@ export function GeoDataIO({
               Import GeoJSON Data
             </DialogTitle>
             <DialogDescription
+</>
 </>>
               Import GeoJSON data from a file or paste it directly.
             </DialogDescription>
@@ -188,6 +188,7 @@ export function GeoDataIO({
               </Button>
               <Button
 </>
+
                 variant={importMethod === 'text' ? "default" : "outline"}
                 onClick={() => setImportMethod('text')}
                 className="flex-1"
@@ -202,6 +203,7 @@ export function GeoDataIO({
                 <Label htmlFor="geojson-file">GeoJSON File</Label>
                 <Input
 </>
+
                   id="geojson-file"
                   type="file"
                   accept=".json,.geojson"
@@ -218,6 +220,7 @@ export function GeoDataIO({
                 <Label htmlFor="geojson-text">GeoJSON Data</Label>
                 <Textarea
 </>
+
                   id="geojson-text"
                   placeholder='{"type": "FeatureCollection", "features": [...]}'
                   value={importJsonText}
@@ -244,7 +247,8 @@ export function GeoDataIO({
               Cancel
             </Button>
             <Button
-</> onClick={handleImport}>Import Data</Button>
+</>
+onClick={handleImport}>Import Data</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -259,6 +263,7 @@ export function GeoDataIO({
               Export GeoJSON Data
             </DialogTitle>
             <DialogDescription
+</>
 </>>
               Export map features as GeoJSON data
             </DialogDescription>
@@ -270,6 +275,7 @@ export function GeoDataIO({
               <Label htmlFor="export-geojson-text">GeoJSON Data</Label>
               <Textarea
 </>
+
                 id="export-geojson-text"
                 value={exportJsonText}
                 readOnly
@@ -287,10 +293,10 @@ export function GeoDataIO({
               Cancel
             </Button>
             <Button
-</> onClick={handleExport}>Download JSON</Button>
+</>
+onClick={handleExport}>Download JSON</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
   );
 }

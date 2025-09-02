@@ -107,7 +107,8 @@ export function StrategicMessagingDashboard() {
 
                 <div className="text-3xl">{segment.icon}</div>
                 <Badge
-</> className={`bg-gradient-to-r ${segment.color} text-white`}>{segment.name}</Badge>
+</>
+className={`bg-gradient-to-r ${segment.color} text-white`}>{segment.name}</Badge>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
@@ -115,25 +116,29 @@ export function StrategicMessagingDashboard() {
 
                   <div className="text-lg font-bold text-transcend">{segment.targetCounties.toLocaleString()}</div>
                   <div
-</> className="text-xs text-white/60">Target Counties</div>
+</>
+className="text-xs text-white/60">Target Counties</div>
                 </div>
                 <div className="bg-black/30 rounded-lg p-3 text-center"><>
 
                   <div className="text-lg font-bold text-accent">{segment.conversionRate}%</div>
                   <div
-</> className="text-xs text-white/60">Conversion Rate</div>
+</>
+className="text-xs text-white/60">Conversion Rate</div>
                 </div>
                 <div className="bg-black/30 rounded-lg p-3 text-center"><>
 
                   <div className="text-lg font-bold text-primary">{segment.upfrontCost}</div>
                   <div
-</> className="text-xs text-white/60">Upfront Cost</div>
+</>
+className="text-xs text-white/60">Upfront Cost</div>
                 </div>
                 <div className="bg-black/30 rounded-lg p-3 text-center"><>
 
                   <div className="text-lg font-bold text-accent">{segment.interestScore}%</div>
                   <div
-</> className="text-xs text-white/60">Interest Score</div>
+</>
+className="text-xs text-white/60">Interest Score</div>
                 </div>
               </div>
 
@@ -141,7 +146,8 @@ export function StrategicMessagingDashboard() {
 
                 <div className="font-semibold text-transcend text-sm mb-1">{segment.headline}</div>
                 <div
-</> className="text-xs text-white/70 italic">"{segment.hook}"</div>
+</>
+className="text-xs text-white/70 italic">"{segment.hook}"</div>
               </div>
 
               <ul className="space-y-1 mb-4">
@@ -176,7 +182,8 @@ export function StrategicMessagingDashboard() {
 
               <div className="text-2xl font-black text-primary mb-2">{metrics.smallEngagement.toFixed(0)}%</div>
               <div
-</> className="text-sm text-white/60">Small County Engagement</div>
+</>
+className="text-sm text-white/60">Small County Engagement</div>
               <div className="flex justify-center mt-2">
                 <div
                   className={`w-2 h-2 rounded-full ${metrics.smallEngagement > 85 ? "bg-green-500" : metrics.smallEngagement > 75 ? "bg-yellow-500" : "bg-red-500"} animate-pulse`}
@@ -187,7 +194,8 @@ export function StrategicMessagingDashboard() {
 
               <div className="text-2xl font-black text-accent mb-2">{metrics.largeMetrics.toFixed(0)}%</div>
               <div
-</> className="text-sm text-white/60">Large County Metrics</div>
+</>
+className="text-sm text-white/60">Large County Metrics</div>
               <div className="flex justify-center mt-2">
                 <div
                   className={`w-2 h-2 rounded-full ${metrics.largeMetrics > 90 ? "bg-green-500" : metrics.largeMetrics > 80 ? "bg-yellow-500" : "bg-red-500"} animate-pulse`}
@@ -198,7 +206,8 @@ export function StrategicMessagingDashboard() {
 
               <div className="text-2xl font-black text-transcend mb-2">{metrics.technicalAPI.toFixed(0)}%</div>
               <div
-</> className="text-sm text-white/60">Technical API Interest</div>
+</>
+className="text-sm text-white/60">Technical API Interest</div>
               <div className="flex justify-center mt-2">
                 <div
                   className={`w-2 h-2 rounded-full ${metrics.technicalAPI > 90 ? "bg-green-500" : metrics.technicalAPI > 80 ? "bg-yellow-500" : "bg-red-500"} animate-pulse`}
@@ -209,7 +218,8 @@ export function StrategicMessagingDashboard() {
 
               <div className="text-2xl font-black text-yellow-500 mb-2">{metrics.traditionalTrust.toFixed(0)}%</div>
               <div
-</> className="text-sm text-white/60">Traditional Trust Score</div>
+</>
+className="text-sm text-white/60">Traditional Trust Score</div>
               <div className="flex justify-center mt-2">
                 <div
                   className={`w-2 h-2 rounded-full ${metrics.traditionalTrust > 80 ? "bg-green-500" : metrics.traditionalTrust > 70 ? "bg-yellow-500" : "bg-red-500"} animate-pulse`}
@@ -223,7 +233,8 @@ export function StrategicMessagingDashboard() {
 
             <h3 className="text-lg font-semibold text-transcend mb-4">💡 Strategic Insights</h3>
             <div
-</> className="space-y-3 text-sm">
+</>
+className="space-y-3 text-sm">
               <div className="text-white/80">
                 <strong>Small Counties:</strong> "Right-Sized Revolution" messaging showing 3.2× higher engagement than
                 generic messaging

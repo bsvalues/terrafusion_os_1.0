@@ -212,12 +212,12 @@ export default function FullScreenMapPage() {
 
   // Create the sidebar content
   const sidebarContent = (
-    <>
       <div className="p-4 border-b"><>
 
         <h2 className="text-lg font-semibold mb-1">Map Controls</h2>
         <p
-</> className="text-sm text-muted-foreground">Configure map display and tools</p>
+</>
+className="text-sm text-muted-foreground">Configure map display and tools</p>
       </div>
 
       <Tabs defaultValue="property" className="w-full">
@@ -250,44 +250,51 @@ export default function FullScreenMapPage() {
 
                 <Label className="text-xs font-medium text-gray-500">Parcel ID</Label>
                 <p
-</> className="text-sm font-medium">{selectedParcelId}</p>
+</>
+className="text-sm font-medium">{selectedParcelId}</p>
               </div>
               <div><>
 
                 <Label className="text-xs font-medium text-gray-500">Owner</Label>
                 <p
-</> className="text-sm font-medium">John Smith</p>
+</>
+className="text-sm font-medium">John Smith</p>
               </div>
               <div><>
 
                 <Label className="text-xs font-medium text-gray-500">Address</Label>
                 <p
-</> className="text-sm font-medium">123 Main St, Kennewick, WA 99336</p>
+</>
+className="text-sm font-medium">123 Main St, Kennewick, WA 99336</p>
               </div>
               <div><>
 
                 <Label className="text-xs font-medium text-gray-500">Area</Label>
                 <p
-</> className="text-sm font-medium">2.45 acres (10,724 sq ft)</p>
+</>
+className="text-sm font-medium">2.45 acres (10,724 sq ft)</p>
               </div>
               <div><>
 
                 <Label className="text-xs font-medium text-gray-500">Zoning</Label>
                 <p
-</> className="text-sm font-medium">Residential (R-1)</p>
+</>
+className="text-sm font-medium">Residential (R-1)</p>
               </div>
               <div><>
 
                 <Label className="text-xs font-medium text-gray-500">Assessed Value</Label>
                 <p
-</> className="text-sm font-medium">$245,000</p>
+</>
+className="text-sm font-medium">$245,000</p>
               </div>
               
               <div className="pt-2 grid grid-cols-2 gap-2"><>
 
                 <Button variant="outline" size="sm" className="w-full">View Details</Button>
                 <Button
-</> variant="outline" size="sm" className="w-full">Export</Button>
+</>
+variant="outline" size="sm" className="w-full">Export</Button>
               </div>
             </div>
           ) : (
@@ -296,7 +303,8 @@ export default function FullScreenMapPage() {
 
               <p className="text-gray-500 mb-1">No parcel selected</p>
               <p
-</> className="text-xs text-gray-400">Click on a parcel on the map to see its details</p>
+</>
+className="text-xs text-gray-400">Click on a parcel on the map to see its details</p>
             </div>
           )}
         </TabsContent>
@@ -328,11 +336,13 @@ export default function FullScreenMapPage() {
 
               <Label className="text-xs font-medium text-gray-500 mb-2 block">Base Map</Label>
               <div
-</> className="grid grid-cols-3 gap-2"><>
+</>
+className="grid grid-cols-3 gap-2"><>
 
                 <Button variant="outline" size="sm" className="w-full text-xs">Streets</Button>
                 <Button
-</> variant="outline" size="sm" className="w-full text-xs">Satellite</Button>
+</>
+variant="outline" size="sm" className="w-full text-xs">Satellite</Button>
                 <Button variant="outline" size="sm" className="w-full text-xs">Hybrid</Button>
               </div>
             </div>
@@ -341,7 +351,8 @@ export default function FullScreenMapPage() {
 
               <Label className="text-xs font-medium text-gray-500 mb-2 block">Opacity</Label>
               <Input
-</> 
+</>
+
                 type="range" 
                 min="0" 
                 max="100" 
@@ -352,6 +363,7 @@ export default function FullScreenMapPage() {
 
                 <span>0%</span>
                 <span
+</>
 </>>50%</span>
                 <span>100%</span>
               </div>
@@ -366,7 +378,8 @@ export default function FullScreenMapPage() {
 
               <Label className="text-xs font-medium text-gray-500 mb-2 block">Active Tool</Label>
               <div
-</> className="grid grid-cols-3 gap-2">
+</>
+className="grid grid-cols-3 gap-2">
                 <Button 
                   variant={activeTool === MapTool.PAN ? 'default' : 'outline'} 
                   size="sm" 
@@ -378,7 +391,8 @@ export default function FullScreenMapPage() {
                   Pan
                 </Button>
                 <Button
-</> 
+</>
+
                   variant={activeTool === MapTool.SELECT ? 'default' : 'outline'} 
                   size="sm" 
                   className="w-full text-xs"
@@ -389,7 +403,8 @@ export default function FullScreenMapPage() {
                   Select
                 </Button>
                 <Button
-</> 
+</>
+
                   variant={activeTool === MapTool.MEASURE ? 'default' : 'outline'} 
                   size="sm" 
                   className="w-full text-xs"
@@ -406,7 +421,8 @@ export default function FullScreenMapPage() {
 
                 <Label className="text-xs font-medium text-gray-500 mb-2 block">Measurement</Label>
                 <RadioGroup
-</> 
+</>
+
                   value={measurementType || ''}
                   onValueChange={(value) => {
                     if (value === '') {
@@ -432,7 +448,8 @@ export default function FullScreenMapPage() {
 
                   <Label className="text-xs font-medium text-gray-500 mb-2 block">Units</Label>
                   <RadioGroup
-</> 
+</>
+
                     value={measurementUnit}
                     onValueChange={(value) => setMeasurementUnit(value as MeasurementUnit)}
                   >
@@ -459,7 +476,8 @@ export default function FullScreenMapPage() {
 
                       <Label className="text-xs font-medium text-gray-500 block">Measurement Result</Label>
                       <p
-</> className="text-sm font-medium">
+</>
+className="text-sm font-medium">
                         {measurementType === MeasurementType.DISTANCE ? 'Distance' : 'Area'}: {measurementValue.toFixed(2)} {
                           measurementType === MeasurementType.DISTANCE 
                             ? (measurementUnit === MeasurementUnit.FEET ? 'ft' : 
@@ -479,20 +497,23 @@ export default function FullScreenMapPage() {
 
                 <Label className="text-xs font-medium text-gray-500 mb-2 block">Drawing Tools</Label>
                 <div
-</> className="grid grid-cols-3 gap-2">
+</>
+className="grid grid-cols-3 gap-2">
                   <Button variant="outline" size="sm" className="w-full text-xs"><>
 
                     <Pencil className="h-3.5 w-3.5 mr-1" />
                     Free
                   </Button>
                   <Button
-</> variant="outline" size="sm" className="w-full text-xs"><>
+</>
+variant="outline" size="sm" className="w-full text-xs"><>
 
                     <Square className="h-3.5 w-3.5 mr-1" />
                     Rectangle
                   </Button>
                   <Button
-</> variant="outline" size="sm" className="w-full text-xs">
+</>
+variant="outline" size="sm" className="w-full text-xs">
                     <Circle className="h-3.5 w-3.5 mr-1" />
                     Circle
                   </Button>
@@ -509,7 +530,6 @@ export default function FullScreenMapPage() {
           </div>
         </TabsContent>
       </Tabs>
-    </>
   );
 
   return (
@@ -594,19 +614,22 @@ export default function FullScreenMapPage() {
 
               <Label className="text-xs font-medium text-gray-500">Parcel ID</Label>
               <p
-</> className="text-sm font-medium">{selectedParcelId}</p>
+</>
+className="text-sm font-medium">{selectedParcelId}</p>
             </div>
             <div><>
 
               <Label className="text-xs font-medium text-gray-500">Owner</Label>
               <p
-</> className="text-sm font-medium">John Smith</p>
+</>
+className="text-sm font-medium">John Smith</p>
             </div>
             <div><>
 
               <Label className="text-xs font-medium text-gray-500">Assessed Value</Label>
               <p
-</> className="text-sm font-medium">$245,000</p>
+</>
+className="text-sm font-medium">$245,000</p>
             </div>
             
             <Button variant="outline" size="sm" className="w-full flex items-center justify-center gap-1">

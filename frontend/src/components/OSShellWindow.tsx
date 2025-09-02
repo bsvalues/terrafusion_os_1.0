@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Import TerraFusion Ultimate CSS Architecture
+// Import Terrafusion Ultimate CSS Architecture
 import '../styles/terrafusion-intelligent-architecture.css';
 
 interface OSShellWindowProps {
@@ -77,7 +77,7 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
       setLoadingStatus('Connecting to unified orchestration...');
       await connectToUnifiedBackend();
       
-      setLoadingStatus('Initializing TerraFusion Shell...');
+      setLoadingStatus('Initializing Terrafusion Shell...');
       await initializeWebView();
       
       setLoadingStatus('Starting AI agent coordination...');
@@ -91,7 +91,7 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error during initialization';
-      setError(`Failed to initialize TerraFusion OS: ${errorMessage}`);
+      setError(`Failed to initialize Terrafusion OS: ${errorMessage}`);
     }
   };
 
@@ -113,7 +113,7 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
             const moduleCount = health.checks?.modules?.activeCount || health.ModuleCount || 0;
             if (process.env.NODE_ENV === 'development') {
               // eslint-disable-next-line no-console
-              console.log('✅ TerraFusion Unified Backend connected:', moduleCount, 'modules');
+              console.log('✅ Terrafusion Unified Backend connected:', moduleCount, 'modules');
             }
             setApiPort(port);
             // Update system metrics from backend
@@ -133,7 +133,7 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
           if (basicResponse?.ok) {
             if (process.env.NODE_ENV === 'development') {
               // eslint-disable-next-line no-console
-              console.log('✅ TerraFusion Basic Backend connected');
+              console.log('✅ Terrafusion Basic Backend connected');
             }
             setApiPort(port);
             return;
@@ -152,11 +152,11 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
       }
     }
 
-    throw new Error('Could not connect to TerraFusion backend services');
+    throw new Error('Could not connect to Terrafusion backend services');
   };
 
   const initializeWebView = async (): Promise<void> => {
-    // Initialize TerraFusion bridge for desktop integration
+    // Initialize Terrafusion bridge for desktop integration
     if (!window.terrafusion) {
       window.terrafusion = {
         shell: {
@@ -178,7 +178,7 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
               // eslint-disable-next-line no-console
               console.log('Shell: Close requested (browser mode)');
             }
-            if (confirm('Close TerraFusion OS?')) {
+            if (confirm('Close Terrafusion OS?')) {
               window.close();
             }
           },
@@ -245,10 +245,13 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
     return (
       <div className="tf-ultimate-component tf-system-failure tf-stress-adaptive" data-stress="high">
         <div className="tf-card tf-error tf-auto-recover" data-error="true">
+
+
           <div className="tf-title" style={{ fontSize: '2rem', marginBottom: '1rem' }}>
             ⚠️ System Recovery Mode
           </div>
-          <div className="tf-error-message" data-context="support">
+          <div
+ className="tf-error-message" data-context="support">
             {error}
           </div>
           <button
@@ -270,12 +273,15 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
         <div className="tf-ultimate-component tf-loading-message tf-clarity-fade" 
              data-context="government">
           
-          {/* TerraFusion OS Logo with Quantum Effects */}
+          {/* Terrafusion OS Logo with Quantum Effects */}
+
+
           <div className="tf-title tf-ai-command-brain">
-            🚀 TerraFusion OS
+            🚀 Terrafusion OS
           </div>
           
-          <div className="tf-tagline tf-neural-sync">
+          <div
+ className="tf-tagline tf-neural-sync">
             {/* Auto-displays: "Government. Transcended." */}
           </div>
           
@@ -314,16 +320,25 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
           {/* Performance Monitor HUD */}
           <div className="tf-performance-hud" style={{ '--tf-debug-mode': 'block' } as React.CSSProperties}>
             <div className="tf-performance-metric" data-status="optimal">
+
+
               <span>AI Agents</span>
-              <span>{systemMetrics.activeAgents}/{systemMetrics.aiAgentCount}</span>
+              <span
+>{systemMetrics.activeAgents}/{systemMetrics.aiAgentCount}</span>
             </div>
             <div className="tf-performance-metric" data-status="optimal">
+
+
               <span>Quantum Coherence</span>
-              <span>{(systemMetrics.quantumCoherence * 100).toFixed(1)}%</span>
+              <span
+>{(systemMetrics.quantumCoherence * 100).toFixed(1)}%</span>
             </div>
             <div className="tf-performance-metric" data-status="optimal">
+
+
               <span>System Reliability</span>
-              <span>{(systemMetrics.systemReliability * 100).toFixed(2)}%</span>
+              <span
+>{(systemMetrics.systemReliability * 100).toFixed(2)}%</span>
             </div>
           </div>
         </div>
@@ -353,17 +368,17 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
         <button
           onClick={() => window.terrafusion?.shell.minimize()}
           className="tf-window-control tf-window-minimize tf-ultimate-focusable"
-          title="Minimize TerraFusion OS"
+          title="Minimize Terrafusion OS"
         />
         <button
           onClick={() => window.terrafusion?.shell.maximize()}
           className="tf-window-control tf-window-maximize tf-ultimate-focusable"
-          title="Maximize TerraFusion OS"
+          title="Maximize Terrafusion OS"
         />
         <button
           onClick={() => window.terrafusion?.shell.close()}
           className="tf-window-control tf-window-close tf-ultimate-focusable"
-          title="Close TerraFusion OS"
+          title="Close Terrafusion OS"
         />
       </div>
       

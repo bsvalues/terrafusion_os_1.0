@@ -103,6 +103,7 @@ export function RealTimeDashboard() {
                 Real-Time Market Dashboard
               </CardTitle>
               <CardDescription
+</>
 </>>Live market data with AI-powered insights and sacred geometry analysis</CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -117,7 +118,8 @@ export function RealTimeDashboard() {
                 {autoRefresh ? "Auto" : "Manual"}
               </Button>
               <Button
-</> variant="outline" size="sm" onClick={fetchMarketData} disabled={isLoading}>
+</>
+variant="outline" size="sm" onClick={fetchMarketData} disabled={isLoading}>
                 <Refresh className={`h-4 w-4 mr-1 ${isLoading ? "animate-spin" : ""}`} />
                 Refresh
               </Button>
@@ -130,7 +132,8 @@ export function RealTimeDashboard() {
 
             <h3 className="font-medium mb-3">Market Region</h3>
             <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
               {regions.map((region) => (
                 <Button
                   key={region}
@@ -158,7 +161,8 @@ export function RealTimeDashboard() {
 
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span
-</> className="text-sm font-medium">Live Data</span>
+</>
+className="text-sm font-medium">Live Data</span>
                   <Badge variant="outline">{selectedRegion}</Badge>
                 </div>
                 {lastUpdated && (
@@ -177,7 +181,8 @@ export function RealTimeDashboard() {
 
                     <div className="font-bold text-lg">${(marketData.average_price / 1000).toFixed(0)}K</div>
                     <div
-</> className={`text-xs flex items-center gap-1 ${getTrendColor(marketData.trend)}`}>
+</>
+className={`text-xs flex items-center gap-1 ${getTrendColor(marketData.trend)}`}>
                       {getTrendIcon(marketData.trend)}
                       {marketData.price_change > 0 ? "+" : ""}
                       {marketData.price_change.toFixed(1)}%
@@ -194,7 +199,8 @@ export function RealTimeDashboard() {
 
                     <div className="font-bold text-lg">{marketData.market_energy}</div>
                     <Progress
-</> value={marketData.market_energy} className="h-1" />
+</>
+value={marketData.market_energy} className="h-1" />
                   </CardContent>
                 </Card>
 
@@ -207,7 +213,8 @@ export function RealTimeDashboard() {
 
                     <div className="font-bold text-lg">{marketData.active_listings}</div>
                     <div
-</> className="text-xs text-gray-500">properties</div>
+</>
+className="text-xs text-gray-500">properties</div>
                   </CardContent>
                 </Card>
 
@@ -220,7 +227,8 @@ export function RealTimeDashboard() {
 
                     <div className="font-bold text-lg">{marketData.days_on_market}</div>
                     <div
-</> className="text-xs text-gray-500">average</div>
+</>
+className="text-xs text-gray-500">average</div>
                   </CardContent>
                 </Card>
               </div>
@@ -295,7 +303,8 @@ export function RealTimeDashboard() {
 
                       <div className="font-medium text-blue-900">Market Trend</div>
                       <div
-</> className="flex items-center justify-center gap-1 mt-1">
+</>
+className="flex items-center justify-center gap-1 mt-1">
                         {getTrendIcon(marketData.trend)}
                         <span className={`font-bold capitalize ${getTrendColor(marketData.trend)}`}>
                           {marketData.trend}
@@ -307,17 +316,20 @@ export function RealTimeDashboard() {
 
                       <div className="font-medium text-green-900">Absorption Rate</div>
                       <div
-</> className="font-bold text-green-700 mt-1">{marketData.absorption_rate}%</div><>
+</>
+className="font-bold text-green-700 mt-1">{marketData.absorption_rate}%</div><>
 
                       <Progress value={marketData.absorption_rate} className="mt-2 h-1" />
                     </div>
 
                     <div
-</> className="text-center p-4 bg-purple-50 rounded-lg"><>
+</>
+className="text-center p-4 bg-purple-50 rounded-lg"><>
 
                       <div className="font-medium text-purple-900">Market Health</div>
                       <div
-</> className="font-bold text-purple-700 mt-1">
+</>
+className="font-bold text-purple-700 mt-1">
                         {marketData.market_energy > 70
                           ? "Excellent"
                           : marketData.market_energy > 50

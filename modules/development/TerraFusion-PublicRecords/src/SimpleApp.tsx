@@ -34,6 +34,7 @@ const SimpleApp: React.FC = () => {
               <h1 className="text-3xl font-bold">User Dashboard</h1>
               <button
 </>
+
                 onClick={() => setShowDashboard(false)}
                 className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
               >
@@ -45,19 +46,22 @@ const SimpleApp: React.FC = () => {
 
                 <h3 className="text-lg font-semibold text-blue-900">Applications</h3>
                 <p
-</> className="text-3xl font-bold text-blue-600 mt-2">5</p>
+</>
+className="text-3xl font-bold text-blue-600 mt-2">5</p>
               </div>
               <div className="bg-green-50 p-6 rounded-lg"><>
 
                 <h3 className="text-lg font-semibold text-green-900">Payments</h3>
                 <p
-</> className="text-3xl font-bold text-green-600 mt-2">$1,825</p>
+</>
+className="text-3xl font-bold text-green-600 mt-2">$1,825</p>
               </div>
               <div className="bg-purple-50 p-6 rounded-lg"><>
 
                 <h3 className="text-lg font-semibold text-purple-900">Documents</h3>
                 <p
-</> className="text-3xl font-bold text-purple-600 mt-2">12</p>
+</>
+className="text-3xl font-bold text-purple-600 mt-2">12</p>
               </div>
             </div>
           </div>
@@ -112,7 +116,8 @@ const SimpleApp: React.FC = () => {
             Terrafusion Public Records
           </h1>
           <p
-</> className="text-2xl text-purple-200">
+</>
+className="text-2xl text-purple-200">
             Benton County • 94,149 parcels • 206,873 citizens
           </p>
         </motion.div>
@@ -140,7 +145,8 @@ const SimpleApp: React.FC = () => {
 
             <h3 className="text-xl font-bold mb-2">📝 Permit Applications</h3>
             <p
-</> className="text-white/80">Apply for permits online with our 5-step wizard</p>
+</>
+className="text-white/80">Apply for permits online with our 5-step wizard</p>
             <button className="mt-4 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30">
               Apply Now →
             </button>
@@ -153,7 +159,8 @@ const SimpleApp: React.FC = () => {
 
             <h3 className="text-xl font-bold mb-2">💳 Payment Processing</h3>
             <p
-</> className="text-white/80">Secure online payments for all fees and services</p>
+</>
+className="text-white/80">Secure online payments for all fees and services</p>
             <button className="mt-4 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30">
               Pay Online →
             </button>
@@ -166,7 +173,8 @@ const SimpleApp: React.FC = () => {
 
             <h3 className="text-xl font-bold mb-2">📄 Document Viewer</h3>
             <p
-</> className="text-white/80">View documents with AI-powered OCR extraction</p>
+</>
+className="text-white/80">View documents with AI-powered OCR extraction</p>
             <button className="mt-4 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30">
               View Docs →
             </button>
@@ -179,19 +187,22 @@ const SimpleApp: React.FC = () => {
 
             <div className="text-3xl font-bold text-white">0.001s</div>
             <div
-</> className="text-sm text-purple-200">Search Speed</div>
+</>
+className="text-sm text-purple-200">Search Speed</div>
           </div>
           <div className="text-center"><>
 
             <div className="text-3xl font-bold text-white">379M×</div>
             <div
-</> className="text-sm text-purple-200">Faster than Legacy</div>
+</>
+className="text-sm text-purple-200">Faster than Legacy</div>
           </div>
           <div className="text-center"><>
 
             <div className="text-3xl font-bold text-white">$0</div>
             <div
-</> className="text-sm text-purple-200">Installation Cost</div>
+</>
+className="text-sm text-purple-200">Installation Cost</div>
           </div>
         </div>
       </div>
@@ -201,7 +212,8 @@ const SimpleApp: React.FC = () => {
 
         <p className="text-2xl mb-2">Your competitors are still writing RFPs.</p>
         <p
-</> className="text-3xl font-bold text-white">We've already won.</p>
+</>
+className="text-3xl font-bold text-white">We've already won.</p>
       </footer>
     </div>
   );

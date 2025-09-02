@@ -159,6 +159,8 @@ const ABTestingFramework: React.FC = () => {
       case 'emotional':
         return (
           <div style={{ textAlign: 'center' }}>
+
+
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -176,7 +178,8 @@ const ABTestingFramework: React.FC = () => {
             }}>
               {getCountyIcon(currentCounty)} {county.name} Success Story
             </div>
-            <h1 style={{
+            <h1
+ style={{
               fontSize: 'clamp(48px, 8vw, 96px)',
               fontWeight: 300,
               marginBottom: '24px',
@@ -202,6 +205,8 @@ const ABTestingFramework: React.FC = () => {
               <small style={{ fontSize: '0.8em' }}>- {county.official}, {county.name}</small>
             </p>
 
+
+
             <p style={{
               fontSize: 'clamp(18px, 3vw, 24px)',
               fontWeight: 300,
@@ -213,7 +218,10 @@ const ABTestingFramework: React.FC = () => {
             }}>
               Join thousands of county employees who've transcended the old way of working.
             </p>
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div
+ style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+
+
               <button
                 onClick={() => trackCTA('primary')}
                 style={{
@@ -231,6 +239,7 @@ const ABTestingFramework: React.FC = () => {
                 Transform Your County
               </button>
               <button
+
                 onClick={() => trackCTA('secondary')}
                 style={{
                   padding: '16px 40px',
@@ -253,6 +262,8 @@ const ABTestingFramework: React.FC = () => {
       case 'data':
         return (
           <div style={{ textAlign: 'center' }}>
+
+
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -271,6 +282,7 @@ const ABTestingFramework: React.FC = () => {
               {getCountyIcon(currentCounty)} {county.name} Performance
             </div>
             <h1
+
 style={{
               fontSize: 'clamp(48px, 8vw, 96px)',
               fontWeight: 300,
@@ -294,13 +306,15 @@ style={{
                 { number: county.savings, label: 'Annual Savings' },
                 { number: county.properties, label: 'Properties Managed' },
                 { number: '94%', label: 'Accuracy Rate' }
-              ].map((metric , index) => (
+              ].map((metric, index) => (
                 <div key={index} style={{
                   background: 'rgba(0, 255, 238, 0.1)',
                   padding: '20px',
                   borderRadius: '12px',
                   border: '1px solid #00ffee'
                 }}>
+
+
                   <div style={{
                     fontSize: '36px',
                     fontWeight: 'bold',
@@ -309,6 +323,7 @@ style={{
                     {metric.number}
                   </div>
                   <div
+
 style={{
                     fontSize: '14px',
                     color: 'rgba(255, 255, 255, 0.7)',
@@ -319,6 +334,8 @@ style={{
                 </div>
               ))}
             </div>
+
+
             <p style={{
               fontSize: 'clamp(18px, 3vw, 24px)',
               fontWeight: 300,
@@ -331,7 +348,10 @@ style={{
               Real results from counties like yours. Verified. Documented. Repeatable.
             </p>
             <div
+
 style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+
+
               <button
                 onClick={() => trackCTA('primary')}
                 style={{
@@ -349,6 +369,7 @@ style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap
                 See Your Projections
               </button>
               <button
+
 onClick={() => trackCTA('secondary')}
                 style={{
                   padding: '16px 40px',
@@ -371,6 +392,8 @@ onClick={() => trackCTA('secondary')}
       case 'urgency':
         return (
           <div style={{ textAlign: 'center' }}>
+
+
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -389,6 +412,7 @@ onClick={() => trackCTA('secondary')}
               ⚡ Limited Availability
             </div>
             <h1
+
 style={{
               fontSize: 'clamp(48px, 8vw, 96px)',
               fontWeight: 300,
@@ -398,6 +422,8 @@ style={{
             }}>
               Only 3 Pilot Slots Remaining
             </h1>
+
+
             <div style={{
               background: 'rgba(255, 0, 0, 0.1)',
               border: '2px solid #ff3333',
@@ -412,6 +438,7 @@ style={{
               Offer expires in: {String(countdown.hours).padStart(2, '0')}:{String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
             </div>
             <p
+
 style={{
               fontSize: 'clamp(18px, 3vw, 24px)',
               fontWeight: 300,
@@ -437,6 +464,8 @@ style={{
               6 months free implementation support
             </p>
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+
+
               <button
                 onClick={() => trackCTA('primary')}
                 style={{
@@ -454,6 +483,7 @@ style={{
                 Claim Your Slot Now
               </button>
               <button
+
 onClick={() => trackCTA('secondary')}
                 style={{
                   padding: '16px 40px',
@@ -476,6 +506,8 @@ onClick={() => trackCTA('secondary')}
       default: // control
         return (
           <div style={{ textAlign: 'center' }}>
+
+
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -494,6 +526,7 @@ onClick={() => trackCTA('secondary')}
               {getCountyIcon(currentCounty)} {county.name} Ready
             </div>
             <h1
+
 style={{
               fontSize: 'clamp(48px, 8vw, 96px)',
               fontWeight: 300,
@@ -503,6 +536,8 @@ style={{
             }}>
               Government. Transcended.
             </h1>
+
+
             <p style={{
               fontSize: 'clamp(18px, 3vw, 24px)',
               fontWeight: 300,
@@ -516,7 +551,10 @@ style={{
               Make better decisions faster. Serve {county.population} citizens with confidence.
             </p>
             <div
+
 style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+
+
               <button
                 onClick={() => trackCTA('primary')}
                 style={{
@@ -534,6 +572,7 @@ style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap
                 Begin Transcendence
               </button>
               <button
+
 onClick={() => trackCTA('secondary')}
                 style={{
                   padding: '16px 40px',
@@ -601,6 +640,8 @@ onClick={() => trackCTA('secondary')}
         backdropFilter: 'blur(10px)',
         minWidth: '300px'
       }}>
+
+
         <h3 style={{
           color: '#00ffee',
           marginBottom: '15px',
@@ -613,11 +654,15 @@ onClick={() => trackCTA('secondary')}
         </h3>
         
         <div
+
 style={{ marginBottom: '15px' }}>
+
+
           <label style={{ fontSize: '12px', color: '#999', display: 'block', marginBottom: '5px' }}>
             Select County:
           </label>
           <select
+
 value={currentCounty}
             onChange={(e) => switchCounty(e.target.value)}
             style={{
@@ -630,11 +675,17 @@ value={currentCounty}
               fontSize: '14px'
             }}
           >
+
+
             <option value="benton">Benton County, WA</option>
             <option
+
 value="clark">Clark County, WA</option>
+
+
             <option value="king">King County, WA</option>
             <option
+
 value="snohomish">Snohomish County, WA</option>
             <option value="pierce">Pierce County, WA</option>
           </select>
@@ -676,23 +727,35 @@ value="snohomish">Snohomish County, WA</option>
           fontSize: '12px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+
+
             <span>Engagement Rate:</span>
             <span
+
 style={{ color: '#00ffee', fontWeight: 'bold' }}>{metrics.engagementRate}%</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+
+
             <span>Time on Page:</span>
             <span
+
 style={{ color: '#00ffee', fontWeight: 'bold' }}>{metrics.timeOnPage}s</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+
+
             <span>CTA Clicks:</span>
             <span
+
 style={{ color: '#00ffee', fontWeight: 'bold' }}>{metrics.ctaClicks}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+
+
             <span>Conversion Rate:</span>
             <span
+
 style={{ color: '#00ffee', fontWeight: 'bold' }}>{metrics.conversionRate}%</span>
           </div>
         </div>

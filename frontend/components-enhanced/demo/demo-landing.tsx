@@ -64,7 +64,8 @@ export function DemoLanding() {
 
                 <h1 className="font-heading font-bold text-lg">Terrafusion OS Demo</h1>
                 <p
-</> className="text-xs text-tf-light/70">{terraFusionBrand.essence}</p>
+</>
+className="text-xs text-tf-light/70">{terraFusionBrand.essence}</p>
               </div>
             </div>
             <Badge variant="secondary" className="bg-tf-transcend/20 text-tf-transcend border-tf-transcend/30">
@@ -109,7 +110,8 @@ export function DemoLanding() {
 
             <h3 className="text-2xl font-heading font-bold mb-2">Choose Your Experience</h3>
             <p
-</> className="text-tf-light/70">Select a role to see Terrafusion from their perspective</p>
+</>
+className="text-tf-light/70">Select a role to see Terrafusion from their perspective</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -133,17 +135,20 @@ export function DemoLanding() {
                           <Icon className={`w-6 h-6 text-${scenario.color}`} />
                         </div>
                         <div
+</>
 </>><>
 
                           <CardTitle className="text-tf-light">{scenario.title}</CardTitle>
                           <div
-</> className="flex items-center gap-2 mt-1"><>
+</>
+className="flex items-center gap-2 mt-1"><>
 
                             <Badge variant="secondary" className="text-xs">
                               {scenario.duration}
                             </Badge>
                             <span
-</> className="text-xs text-tf-light/60">Interactive Demo</span>
+</>
+className="text-xs text-tf-light/60">Interactive Demo</span>
                           </div>
                         </div>
                       </div>
@@ -155,11 +160,13 @@ export function DemoLanding() {
                     <p className="text-sm text-tf-light/80">{scenario.description}</p>
 
                     <div
-</> className="space-y-2"><>
+</>
+className="space-y-2"><>
 
                       <p className="text-xs font-medium text-tf-light/90">Featured Capabilities:</p>
                       <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                         {scenario.features.map((feature /* , index */) => (
                           <Badge
                             key={index}
@@ -212,7 +219,8 @@ export function DemoLanding() {
 
             <h3 className="text-2xl font-heading font-bold mb-2">What You'll Experience</h3>
             <p
-</> className="text-tf-light/70">Real workflows, real data, real transcendence</p>
+</>
+className="text-tf-light/70">Real workflows, real data, real transcendence</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -222,7 +230,8 @@ export function DemoLanding() {
                 <Zap className="w-6 h-6 text-tf-primary" />
               </div>
               <h4
-</> className="font-heading font-semibold text-tf-light">Lightning Speed</h4>
+</>
+className="font-heading font-semibold text-tf-light">Lightning Speed</h4>
               <p className="text-sm text-tf-light/70">
                 Watch CostForge AI process 1,000+ property valuations in under 10 seconds
               </p>
@@ -234,7 +243,8 @@ export function DemoLanding() {
                 <Users className="w-6 h-6 text-tf-accent" />
               </div>
               <h4
-</> className="font-heading font-semibold text-tf-light">Citizen-First Design</h4>
+</>
+className="font-heading font-semibold text-tf-light">Citizen-First Design</h4>
               <p className="text-sm text-tf-light/70">
                 Experience the citizen portal that makes government services feel like modern apps
               </p>
@@ -246,7 +256,8 @@ export function DemoLanding() {
                 <Shield className="w-6 h-6 text-tf-success" />
               </div>
               <h4
-</> className="font-heading font-semibold text-tf-light">Enterprise Security</h4>
+</>
+className="font-heading font-semibold text-tf-light">Enterprise Security</h4>
               <p className="text-sm text-tf-light/70">
                 See SOC 2 Type II compliance in action with real-time audit trails and monitoring
               </p>
@@ -260,7 +271,8 @@ export function DemoLanding() {
 
             <h3 className="text-2xl font-heading font-bold mb-4">Ready to Transcend Your County?</h3>
             <p
-</> className="text-tf-light/80 mb-6 max-w-2xl mx-auto">
+</>
+className="text-tf-light/80 mb-6 max-w-2xl mx-auto">
               After experiencing the demo, schedule a personalized consultation to see how Terrafusion OS can transform
               your specific county operations.
             </p>
@@ -271,6 +283,7 @@ export function DemoLanding() {
               </Button>
               <Button
 </>
+
                 variant="outline"
                 size="lg"
                 className="border-tf-transcend text-tf-transcend hover:bg-tf-transcend hover:text-tf-dark bg-transparent px-8"

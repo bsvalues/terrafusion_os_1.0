@@ -56,7 +56,8 @@ export function DashboardDrilldownModal({ plugin, onClose }) {
 
           <button className="tf-btn tf-btn-admin" onClick={()=>{/* admin actions */}}>Admin Actions</button>
           <button
-</> className="tf-btn tf-btn-close" onClick={onClose}>Close</button>
+</>
+className="tf-btn tf-btn-close" onClick={onClose}>Close</button>
         </div>
       </div>
     </div>

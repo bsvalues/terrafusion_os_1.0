@@ -109,6 +109,8 @@ const BrandKit: React.FC = () => {
               TF
             </div>
           </div>
+
+
           <h1 style={{
             fontSize: 'clamp(3rem, 8vw, 5rem)',
             fontWeight: 100,
@@ -124,6 +126,7 @@ const BrandKit: React.FC = () => {
           </h1>
           
           <div
+
 style={{
             fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
             fontWeight: 200,
@@ -150,6 +153,8 @@ style={{
         {/* Brand Identity Section */}
         {activeSection === 'brand' && (
           <section>
+
+
             <h2 style={{
               fontSize: '2.5rem',
               fontWeight: 200,
@@ -165,6 +170,7 @@ style={{
             </h2>
             
             <div
+
 style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -177,8 +183,11 @@ style={{
                 borderRadius: '20px',
                 padding: '2rem'
               }}>
+
+
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✨</div>
                 <div
+
 style={{
                   fontSize: '1.5rem',
                   fontWeight: 300,
@@ -199,8 +208,11 @@ style={{
                 borderRadius: '20px',
                 padding: '2rem'
               }}>
+
+
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
                 <div
+
 style={{
                   fontSize: '1.5rem',
                   fontWeight: 300,
@@ -221,8 +233,11 @@ style={{
                 borderRadius: '20px',
                 padding: '2rem'
               }}>
+
+
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💎</div>
                 <div
+
 style={{
                   fontSize: '1.5rem',
                   fontWeight: 300,
@@ -245,6 +260,8 @@ style={{
         {/* Colors Section */}
         {activeSection === 'colors' && (
           <section>
+
+
             <h2 style={{
               fontSize: '2.5rem',
               fontWeight: 200,
@@ -260,13 +277,16 @@ style={{
             </h2>
             
             <div
+
 style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: '2rem'
             }}>
-              {colorPalette.map((color , index) => (
+              {colorPalette.map((color, index) => (
                 <div key={index} style={{ textAlign: 'center' }}>
+
+
                   <div style={{
                     height: '120px',
                     borderRadius: '16px',
@@ -284,6 +304,7 @@ style={{
                     {color.label}
                   </div>
                   <div
+
 style={{
                     fontSize: '1.1rem',
                     fontWeight: 500,
@@ -308,6 +329,8 @@ style={{
         {/* Typography Section */}
         {activeSection === 'typography' && (
           <section>
+
+
             <h2 style={{
               fontSize: '2.5rem',
               fontWeight: 200,
@@ -323,36 +346,46 @@ style={{
             </h2>
             
             <div
+
 style={{
               background: 'rgba(0,0,0,0.4)',
               borderRadius: '20px',
               padding: '3rem'
             }}>
               <div style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+
+
                 <div style={{ fontSize: '0.875rem', color: '#00ffaa', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.5rem' }}>
                   Display Large
                 </div>
                 <div
+
 style={{ fontSize: '4rem', fontWeight: 100, letterSpacing: '-2px' }}>
                   Government. Transcended.
                 </div>
               </div>
 
               <div style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+
+
                 <div style={{ fontSize: '0.875rem', color: '#00ffaa', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.5rem' }}>
                   Display Medium
                 </div>
                 <div
+
 style={{ fontSize: '3rem', fontWeight: 200, letterSpacing: '-1px' }}>
                   Turn Complexity into Clarity
                 </div>
               </div>
 
               <div>
+
+
                 <div style={{ fontSize: '0.875rem', color: '#00ffaa', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.5rem' }}>
                   Body Text
                 </div>
                 <div
+
 style={{ fontSize: '1rem', lineHeight: 1.8, color: 'rgba(255,255,255,0.9)' }}>
                   Terrafusion represents the pinnacle of government technology innovation. Our platform processes property data 379 million times faster than traditional methods while maintaining 98% accuracy.
                 </div>
@@ -364,6 +397,8 @@ style={{ fontSize: '1rem', lineHeight: 1.8, color: 'rgba(255,255,255,0.9)' }}>
         {/* Modules Section */}
         {activeSection === 'modules' && (
           <section>
+
+
             <h2 style={{
               fontSize: '2.5rem',
               fontWeight: 200,
@@ -379,12 +414,13 @@ style={{ fontSize: '1rem', lineHeight: 1.8, color: 'rgba(255,255,255,0.9)' }}>
             </h2>
             
             <div
+
 style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
               gap: '2rem'
             }}>
-              {modules.map((module , index) => (
+              {modules.map((module, index) => (
                 <div key={index} style={{
                   background: 'linear-gradient(135deg, rgba(0,255,238,0.1) 0%, rgba(0,153,255,0.05) 100%)',
                   backdropFilter: 'blur(20px)',
@@ -394,10 +430,13 @@ style={{
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer'
                 }}>
+
+
                   <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>
                     {module.icon}
                   </div>
                   <div
+
 style={{
                     fontSize: '1.25rem',
                     fontWeight: 400,
@@ -428,6 +467,8 @@ style={{
         textAlign: 'center',
         marginTop: '5rem'
       }}>
+
+
         <div style={{
           fontSize: '2rem',
           fontWeight: 100,
@@ -440,6 +481,7 @@ style={{
           Terrafusion OS
         </div>
         <div
+
 style={{
           color: '#00ffee',
           fontSize: '1.25rem',

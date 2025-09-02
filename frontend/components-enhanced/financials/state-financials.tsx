@@ -50,7 +50,8 @@ export function StateFinancials() {
 
                 <h4 className="text-white font-semibold">{state.name}</h4>
                 <p
-</> className="text-sm text-gray-400">
+</>
+className="text-sm text-gray-400">
                   {state.counties}/{state.totalCounties} counties
                 </p>
               </div>
@@ -58,7 +59,8 @@ export function StateFinancials() {
 
                 <p className="text-white font-semibold">{state.arr}</p>
                 <p
-</> className="text-sm text-accent">{state.growth}</p>
+</>
+className="text-sm text-accent">{state.growth}</p>
               </div>
             </div>
             <Progress value={state.completion} className="h-2" />

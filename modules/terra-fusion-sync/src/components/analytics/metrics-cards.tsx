@@ -27,7 +27,8 @@ export function MetricsCards() {
 
           <CardTitle className="text-sm font-medium">Processed Files</CardTitle>
           <FileText
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold" data-testid="processed-files-value">
@@ -40,7 +41,8 @@ export function MetricsCards() {
 
           <CardTitle className="text-sm font-medium">Avg RAG Score</CardTitle>
           <Network
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold" data-testid="rag-score-value">
@@ -53,7 +55,8 @@ export function MetricsCards() {
 
           <CardTitle className="text-sm font-medium">Transformations</CardTitle>
           <BarChart
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold" data-testid="transformations-value">

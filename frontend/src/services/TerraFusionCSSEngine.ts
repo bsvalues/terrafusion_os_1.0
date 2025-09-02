@@ -1,10 +1,10 @@
 /**
- * TerraFusion CSS Engine - PhD-Level Intelligent CSS Architecture
+ * Terrafusion CSS Engine - PhD-Level Intelligent CSS Architecture
  * 
  * Transforms static CSS conditionals into dynamic, AI-responsive design system
- * Integrates with TerraFusion OS for real-time performance adaptation
+ * Integrates with Terrafusion OS for real-time performance adaptation
  * 
- * @author TerraFusion AI Team
+ * @author Terrafusion AI Team
  * @version 1.0.0
  * @license Government Use Only
  */
@@ -124,7 +124,7 @@ export class TerraFusionCSSEngine {
       });
 
       await this.signalRConnection.start();
-      console.log('🔗 TerraFusion CSS Engine connected to SignalR');
+      console.log('🔗 Terrafusion CSS Engine connected to SignalR');
     } catch (error) {
       console.error('❌ SignalR connection failed:', error);
     }

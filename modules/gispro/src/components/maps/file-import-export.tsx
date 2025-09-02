@@ -366,6 +366,7 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
 
           <DialogTitle>Import/Export GIS Data</DialogTitle>
           <DialogDescription
+</>
 </>>
             Import data from various file formats or export your current features
           </DialogDescription>
@@ -379,7 +380,8 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
               Import
             </TabsTrigger>
             <TabsTrigger
-</> value="export">
+</>
+value="export">
               <Download className="mr-2 h-4 w-4" />
               Export
             </TabsTrigger>
@@ -391,7 +393,8 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
 
               <Label>Choose Import Format</Label>
               <RadioGroup
-</> 
+</>
+
                 value={selectedImportFormat}
                 onValueChange={setSelectedImportFormat}
                 className="flex flex-col space-y-1"
@@ -438,7 +441,8 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
 
               <Label htmlFor="import-file">Upload File</Label>
               <Input
-</> 
+</>
+
                 id="import-file" 
                 type="file" 
                 onChange={handleFileImport}
@@ -452,7 +456,6 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
               />
             </div><>
 
-            
             <div className="text-sm text-muted-foreground">
               {selectedImportFormat === 'shapefile' && 
                 "Upload a zipped Shapefile (.zip) containing .shp, .dbf, and .prj files"}
@@ -467,7 +470,8 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
             </div>
             
             <Button
-</> className="w-full" disabled={importing}>
+</>
+className="w-full" disabled={importing}>
               {importing ? 'Importing...' : 'Import File'}
             </Button>
           </TabsContent>
@@ -478,7 +482,8 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
 
               <Label>Choose Export Format</Label>
               <RadioGroup
-</> 
+</>
+
                 value={selectedExportFormat}
                 onValueChange={setSelectedExportFormat}
                 className="flex flex-col space-y-1"
@@ -525,7 +530,8 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
 
               <Label>Export Options</Label>
               <div
-</> className="flex items-center space-x-2">
+</>
+className="flex items-center space-x-2">
                 <Checkbox 
                   id="include-styles" 
                   checked={includeStyles}
@@ -547,7 +553,6 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
               </div>
             </div><>
 
-            
             <div className="text-sm text-muted-foreground">
               {selectedExportFormat === 'shapefile' && 
                 "Exports all features as a zipped Shapefile (.zip) with all necessary component files"}
@@ -562,7 +567,8 @@ export const FileImportExport = ({ features, onImport }: FileImportExportProps) 
             </div>
             
             <Button
-</> className="w-full" onClick={handleExport} disabled={exporting}>
+</>
+className="w-full" onClick={handleExport} disabled={exporting}>
               {exporting ? 'Exporting...' : 'Export Data'}
             </Button>
           </TabsContent>

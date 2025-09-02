@@ -67,7 +67,8 @@ export function TransformationSuggestions({ data, onApply }: TransformationSugge
 
         <p>Connect a data source to get AI-powered suggestions</p>
         <p
-</> className="text-sm mt-2 text-muted-foreground">
+</>
+className="text-sm mt-2 text-muted-foreground">
           The AI will analyze your data and suggest useful transformations
         </p>
       </div>
@@ -82,7 +83,8 @@ export function TransformationSuggestions({ data, onApply }: TransformationSugge
 
             <h3 className="text-lg font-semibold">AI Suggestions</h3>
             <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
               Get intelligent transformation suggestions based on your data structure
             </p>
           </div>
@@ -116,7 +118,8 @@ export function TransformationSuggestions({ data, onApply }: TransformationSugge
 
           <h3 className="text-lg font-semibold">Transformation Suggestions</h3>
           <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
             Select a suggestion to apply to your data
           </p>
         </div>
@@ -147,7 +150,8 @@ export function TransformationSuggestions({ data, onApply }: TransformationSugge
 
                     <CardTitle className="text-base">{suggestion.name}</CardTitle>
                     <CardDescription
-</> className="mt-1">
+</>
+className="mt-1">
                       {suggestion.description}
                     </CardDescription>
                   </div>
@@ -179,6 +183,7 @@ export function TransformationSuggestions({ data, onApply }: TransformationSugge
                 </Button>
                 <Button
 </>
+
                   variant="default"
                   size="sm"
                   onClick={() => {

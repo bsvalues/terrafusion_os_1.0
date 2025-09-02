@@ -166,6 +166,7 @@ export function PropertySearch() {
             Property Search & Analysis
           </CardTitle>
           <CardDescription
+</>
 </>>Search properties and get AI-powered analysis with sacred geometry insights</CardDescription>
         </CardHeader>
         <CardContent>
@@ -177,6 +178,7 @@ export function PropertySearch() {
                 <Label htmlFor="location">Location</Label>
                 <Input
 </>
+
                   id="location"
                   placeholder="Enter location or address"
                   value={filters.location}
@@ -188,6 +190,7 @@ export function PropertySearch() {
                 <Label htmlFor="minPrice">Min Price</Label>
                 <Input
 </>
+
                   id="minPrice"
                   type="number"
                   placeholder="Min price"
@@ -200,6 +203,7 @@ export function PropertySearch() {
                 <Label htmlFor="maxPrice">Max Price</Label>
                 <Input
 </>
+
                   id="maxPrice"
                   type="number"
                   placeholder="Max price"
@@ -215,6 +219,7 @@ export function PropertySearch() {
                 <Label htmlFor="minBedrooms">Min Bedrooms</Label>
                 <Input
 </>
+
                   id="minBedrooms"
                   type="number"
                   placeholder="Min bedrooms"
@@ -227,6 +232,7 @@ export function PropertySearch() {
                 <Label htmlFor="maxBedrooms">Max Bedrooms</Label>
                 <Input
 </>
+
                   id="maxBedrooms"
                   type="number"
                   placeholder="Max bedrooms"
@@ -243,7 +249,8 @@ export function PropertySearch() {
                 Search
               </Button>
               <Button
-</> variant="outline" onClick={clearFilters}>
+</>
+variant="outline" onClick={clearFilters}>
                 Clear Filters
               </Button>
             </div>
@@ -260,7 +267,8 @@ export function PropertySearch() {
 
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                   <p
-</> className="text-sm text-gray-600 mt-2">Loading properties...</p>
+</>
+className="text-sm text-gray-600 mt-2">Loading properties...</p>
                 </div>
               ) : filteredProperties.length > 0 ? (
                 <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -281,7 +289,8 @@ export function PropertySearch() {
                               {property.address}
                             </div>
                             <div
-</> className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+</>
+className="text-sm text-gray-600 flex items-center gap-1 mt-1">
                               <MapPin className="h-3 w-3" />
                               {property.location_type}
                             </div>
@@ -298,19 +307,22 @@ export function PropertySearch() {
                             {property.size_sqft.toLocaleString()} sq ft
                           </div>
                           <div
-</> className="flex items-center gap-1"><>
+</>
+className="flex items-center gap-1"><>
 
                             <Bed className="h-3 w-3 text-gray-500" />
                             {property.bedrooms} bed
                           </div>
                           <div
-</> className="flex items-center gap-1"><>
+</>
+className="flex items-center gap-1"><>
 
                             <Bath className="h-3 w-3 text-gray-500" />
                             {property.bathrooms} bath
                           </div>
                           <div
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                             <Calendar className="h-3 w-3 text-gray-500" />
                             Built {property.year_built}
                           </div>
@@ -357,6 +369,7 @@ export function PropertySearch() {
 
                     <CardTitle className="text-base">{selectedProperty.address}</CardTitle>
                     <CardDescription
+</>
 </>>GAMA AI Analysis</CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -365,7 +378,8 @@ export function PropertySearch() {
 
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                         <p
-</> className="text-sm text-gray-600 mt-2">Running AI analysis...</p>
+</>
+className="text-sm text-gray-600 mt-2">Running AI analysis...</p>
                       </div>
                     ) : analysisResult ? (
                       <div className="space-y-4">
@@ -374,7 +388,8 @@ export function PropertySearch() {
 
                             <div className="text-sm text-gray-600">Estimated Value</div>
                             <div
-</> className="font-bold text-lg text-green-600">
+</>
+className="font-bold text-lg text-green-600">
                               ${analysisResult.estimated_value.toLocaleString()}
                             </div>
                           </div>
@@ -382,7 +397,8 @@ export function PropertySearch() {
 
                             <div className="text-sm text-gray-600">Confidence</div>
                             <div
-</> className="font-bold text-lg text-blue-600">
+</>
+className="font-bold text-lg text-blue-600">
                               {(analysisResult.confidence_score * 100).toFixed(0)}%
                             </div>
                           </div>
@@ -393,19 +409,22 @@ export function PropertySearch() {
 
                             <span>Geometry Factor:</span>
                             <span
-</> className="font-medium">{analysisResult.geometry_factor}</span>
+</>
+className="font-medium">{analysisResult.geometry_factor}</span>
                           </div>
                           <div className="flex justify-between text-sm"><>
 
                             <span>Market Factor:</span>
                             <span
-</> className="font-medium">{analysisResult.market_factor}</span>
+</>
+className="font-medium">{analysisResult.market_factor}</span>
                           </div>
                           <div className="flex justify-between text-sm"><>
 
                             <span>Risk Level:</span>
                             <Badge
 </>
+
                               variant={analysisResult.risk_assessment.risk_level === "Low" ? "default" : "secondary"}
                             >
                               {analysisResult.risk_assessment.risk_level}
@@ -417,7 +436,8 @@ export function PropertySearch() {
 
                           <h4 className="font-medium mb-2">AI Recommendations</h4>
                           <ul
-</> className="space-y-1">
+</>
+className="space-y-1">
                             {analysisResult.recommendations.map((rec: string /* , index */: number) => (
                               <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
                                 <span className="text-blue-600 mt-1">•</span>

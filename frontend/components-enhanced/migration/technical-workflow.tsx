@@ -49,18 +49,21 @@ export function TechnicalWorkflow() {
                   <step.icon className="w-6 h-6 text-primary" />
                 </div>
                 <div
-</> className="flex-1">
+</>
+className="flex-1">
                   <div className="flex items-center justify-between mb-2"><>
 
                     <h3 className="text-white font-semibold">{step.step}</h3>
                     <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                       <Badge variant="secondary" className="bg-accent/20 text-accent">
                         {step.status}
                       </Badge>
                       <span
-</> className="text-sm text-gray-400">{step.duration}</span>
+</>
+className="text-sm text-gray-400">{step.duration}</span>
                     </div>
                   </div>
                   <p className="text-sm text-gray-300">{step.description}</p>

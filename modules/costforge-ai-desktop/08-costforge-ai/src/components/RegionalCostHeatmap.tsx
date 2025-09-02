@@ -69,6 +69,7 @@ export function RegionalCostHeatmap({
             <Skeleton className="h-6 w-3/4" />
           </CardTitle>
           <CardDescription
+</>
 </>>
             <Skeleton className="h-4 w-1/2" />
           </CardDescription>
@@ -91,6 +92,7 @@ export function RegionalCostHeatmap({
 
           <CardTitle>Regional Cost Analysis</CardTitle>
           <CardDescription
+</>
 </>>
             Building costs across counties in {region}
           </CardDescription>
@@ -115,6 +117,7 @@ export function RegionalCostHeatmap({
 
             <CardTitle>Regional Cost Analysis</CardTitle>
             <CardDescription
+</>
 </>>
               Building costs across counties in {region}
             </CardDescription>
@@ -145,7 +148,8 @@ export function RegionalCostHeatmap({
 
               <div className="font-medium">{county.name || 'Unknown'}</div>
               <div
-</> className="text-sm mt-1">{formatCurrency(county.avgCost)}</div>
+</>
+className="text-sm mt-1">{formatCurrency(county.avgCost)}</div>
               <div className="text-xs mt-1">
                 {county.count ? `${county.count} data points` : 'No data'}
               </div>
@@ -158,17 +162,20 @@ export function RegionalCostHeatmap({
 
           <div className="text-sm mr-2">Cost Range:</div>
           <div
-</> className="flex h-2 flex-1 rounded-md overflow-hidden"><>
+</>
+className="flex h-2 flex-1 rounded-md overflow-hidden"><>
 
             <div className="h-full w-1/3" style={{ background: 'linear-gradient(to right, #0000ff, #00ff00)' }}></div>
             <div
-</> className="h-full w-1/3" style={{ background: 'linear-gradient(to right, #00ff00, #ffff00)' }}></div>
+</>
+className="h-full w-1/3" style={{ background: 'linear-gradient(to right, #00ff00, #ffff00)' }}></div>
             <div className="h-full w-1/3" style={{ background: 'linear-gradient(to right, #ffff00, #ff0000)' }}></div>
           </div>
           <div className="flex justify-between w-full text-xs mt-1"><>
 
             <span>{formatCurrency(minCost)}</span>
             <span
+</>
 </>>{formatCurrency(maxCost)}</span>
           </div>
         </div>

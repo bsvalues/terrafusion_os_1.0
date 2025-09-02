@@ -1,5 +1,5 @@
 /**
- * 🔐 TerraFusion OS 1.0 - Quantum Security Engine
+ * 🔐 Terrafusion OS 1.0 - Quantum Security Engine
  * PhD-Level Unhackable Government Compliance System
  * 
  * Revolutionary quantum-secured immutable ledger that replaces traditional audit
@@ -14,7 +14,7 @@
  * Performance Target: Unhackable government compliance with quantum security
  * Security Level: Beyond classified - quantum-secured immutable ledger
  * 
- * @author GitHub Copilot (TerraFusion AI)
+ * @author GitHub Copilot (Terrafusion AI)
  * @version 1.0.0
  * @date September 1, 2025
  */
@@ -22,7 +22,7 @@
 import { EventEmitter } from 'events';
 
 import { Logger } from '../utils/Logger';
-import { ProductionAuditService } from '../TerraFusion.Security/ProductionAuditService';
+import { ProductionAuditService } from '../Terrafusion.Security/ProductionAuditService';
 
 // ================================================================================================
 // QUANTUM SECURITY CORE INTERFACES

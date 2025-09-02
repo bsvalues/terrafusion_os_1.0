@@ -449,13 +449,15 @@ function App() {
                 <Brain className="text-white" size={32} />
               </div>
               <div
+</>
 </>><>
 
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Terrafusion AI Command Brain
                 </h1>
                 <p
-</> className="text-sm text-slate-400">Neural Intelligence Platform v4.1.0 • Government Edition</p>
+</>
+className="text-sm text-slate-400">Neural Intelligence Platform v4.1.0 • Government Edition</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
@@ -463,7 +465,8 @@ function App() {
 
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span
-</> className="text-sm text-green-400">All Systems Operational</span>
+</>
+className="text-sm text-green-400">All Systems Operational</span>
               </div>
               <div className="text-sm text-slate-400">
                 Uptime: <span className="font-mono text-green-400">{systemMetrics.uptime}%</span>
@@ -520,7 +523,8 @@ function App() {
 
                 <div className="text-3xl font-bold">{systemMetrics.totalModels}</div>
                 <div
-</> className="text-sm text-slate-400">AI Models Active</div>
+</>
+className="text-sm text-slate-400">AI Models Active</div>
                 <div className="mt-4 h-1 bg-slate-700 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500" style={{ width: '87%' }}></div>
                 </div>
@@ -534,7 +538,8 @@ function App() {
 
                 <div className="text-3xl font-bold">{(systemMetrics.predictionsToday / 1000).toFixed(1)}K</div>
                 <div
-</> className="text-sm text-slate-400">Predictions Today</div>
+</>
+className="text-sm text-slate-400">Predictions Today</div>
                 <div className="mt-4 h-1 bg-slate-700 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 animate-pulse" style={{ width: '73%' }}></div>
                 </div>
@@ -548,7 +553,8 @@ function App() {
 
                 <div className="text-3xl font-bold">{systemMetrics.dataProcessed}</div>
                 <div
-</> className="text-sm text-slate-400">Data Processed</div>
+</>
+className="text-sm text-slate-400">Data Processed</div>
                 <div className="mt-4 h-1 bg-slate-700 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500" style={{ width: '92%' }}></div>
                 </div>
@@ -562,7 +568,8 @@ function App() {
 
                 <div className="text-3xl font-bold">${(systemMetrics.costSaved / 1000000).toFixed(1)}M</div>
                 <div
-</> className="text-sm text-slate-400">Cost Saved</div>
+</>
+className="text-sm text-slate-400">Cost Saved</div>
                 <div className="mt-4 h-1 bg-slate-700 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-orange-500 to-red-500" style={{ width: '95%' }}></div>
                 </div>
@@ -578,24 +585,28 @@ function App() {
                   Security Status
                 </h3>
                 <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Threats Blocked</span>
                     <span
-</> className="text-red-400 font-mono">{systemMetrics.threatsBlocked}</span>
+</>
+className="text-red-400 font-mono">{systemMetrics.threatsBlocked}</span>
                   </div>
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Incidents Detected</span>
                     <span
-</> className="text-yellow-400 font-mono">{systemMetrics.incidentsDetected}</span>
+</>
+className="text-yellow-400 font-mono">{systemMetrics.incidentsDetected}</span>
                   </div>
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Compliance Score</span>
                     <span
-</> className="text-green-400 font-mono">{systemMetrics.complianceScore}%</span>
+</>
+className="text-green-400 font-mono">{systemMetrics.complianceScore}%</span>
                   </div>
                 </div>
               </div>
@@ -607,24 +618,28 @@ function App() {
                   Performance Metrics
                 </h3>
                 <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Avg Accuracy</span>
                     <span
-</> className="text-green-400 font-mono">{systemMetrics.avgAccuracy}%</span>
+</>
+className="text-green-400 font-mono">{systemMetrics.avgAccuracy}%</span>
                   </div>
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Avg Latency</span>
                     <span
-</> className="text-blue-400 font-mono">{systemMetrics.avgLatency}s</span>
+</>
+className="text-blue-400 font-mono">{systemMetrics.avgLatency}s</span>
                   </div>
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Neural Networks</span>
                     <span
-</> className="text-purple-400 font-mono">{systemMetrics.activeNeuralNets}</span>
+</>
+className="text-purple-400 font-mono">{systemMetrics.activeNeuralNets}</span>
                   </div>
                 </div>
               </div>
@@ -636,24 +651,28 @@ function App() {
                   Automation Impact
                 </h3>
                 <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Active Rules</span>
                     <span
-</> className="text-yellow-400 font-mono">{systemMetrics.automationRules}</span>
+</>
+className="text-yellow-400 font-mono">{systemMetrics.automationRules}</span>
                   </div>
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Tasks Automated</span>
                     <span
-</> className="text-green-400 font-mono">847K</span>
+</>
+className="text-green-400 font-mono">847K</span>
                   </div>
                   <div className="flex justify-between"><>
 
                     <span className="text-slate-400">Time Saved</span>
                     <span
-</> className="text-blue-400 font-mono">2,847 hrs</span>
+</>
+className="text-blue-400 font-mono">2,847 hrs</span>
                   </div>
                 </div>
               </div>
@@ -667,7 +686,8 @@ function App() {
 
             <h2 className="text-2xl font-bold mb-4">Active AI Models</h2>
             <div
-</> className="grid grid-cols-2 gap-6">
+</>
+className="grid grid-cols-2 gap-6">
               {aiModels.map(model => (
                 <div key={model.id} className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700/50 p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -675,7 +695,8 @@ function App() {
 
                       <h3 className="text-xl font-bold mb-1">{model.name}</h3>
                       <p
-</> className="text-sm text-slate-400">{model.type}</p>
+</>
+className="text-sm text-slate-400">{model.type}</p>
                     </div>
                     <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                       model.status === 'active' ? 'bg-green-900/30 text-green-400' :
@@ -692,19 +713,22 @@ function App() {
 
                       <div className="text-2xl font-bold text-green-400">{model.accuracy}%</div>
                       <div
-</> className="text-xs text-slate-400">Accuracy</div>
+</>
+className="text-xs text-slate-400">Accuracy</div>
                     </div>
                     <div><>
 
                       <div className="text-2xl font-bold text-blue-400">{model.latency}s</div>
                       <div
-</> className="text-xs text-slate-400">Latency</div>
+</>
+className="text-xs text-slate-400">Latency</div>
                     </div>
                     <div><>
 
                       <div className="text-2xl font-bold text-purple-400">{(model.requests / 1000000).toFixed(1)}M</div>
                       <div
-</> className="text-xs text-slate-400">Requests</div>
+</>
+className="text-xs text-slate-400">Requests</div>
                     </div>
                   </div>
 
@@ -712,7 +736,8 @@ function App() {
 
                     <div className="text-sm text-slate-400 mb-2">Capabilities</div>
                     <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                       {model.capabilities.map(cap => (
                         <span key={cap} className="px-2 py-1 bg-purple-900/30 text-purple-400 rounded text-xs">
                           {cap}
@@ -725,7 +750,8 @@ function App() {
 
                     <span className="text-slate-400">Data Processed: {model.dataProcessed}</span>
                     <span
-</> className="text-slate-400">Last Trained: {model.lastTrained.toLocaleDateString()}</span>
+</>
+className="text-slate-400">Last Trained: {model.lastTrained.toLocaleDateString()}</span>
                   </div>
                 </div>
               ))}
@@ -739,14 +765,16 @@ function App() {
 
             <h2 className="text-2xl font-bold mb-4">Neural Network Architecture</h2>
             <div
-</> className="grid grid-cols-2 gap-6">
+</>
+className="grid grid-cols-2 gap-6">
               {neuralNetworks.map(network => (
                 <div key={network.id} className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700/50 p-6">
                   <div className="flex items-start justify-between mb-4"><>
 
                     <h3 className="text-xl font-bold">{network.name}</h3>
                     <div
-</> className={`flex items-center gap-2 ${
+</>
+className={`flex items-center gap-2 ${
                       network.status === 'online' ? 'text-green-400' :
                       network.status === 'training' ? 'text-yellow-400' :
                       'text-red-400'
@@ -758,7 +786,8 @@ function App() {
                         'bg-red-500'
                       }`}></div>
                       <span
-</> className="text-sm">{network.status}</span>
+</>
+className="text-sm">{network.status}</span>
                     </div>
                   </div>
 
@@ -767,25 +796,29 @@ function App() {
 
                       <div className="text-sm text-slate-400">Architecture</div>
                       <div
-</> className="text-lg font-mono">{network.layers} layers</div>
+</>
+className="text-lg font-mono">{network.layers} layers</div>
                     </div>
                     <div><>
 
                       <div className="text-sm text-slate-400">Neurons</div>
                       <div
-</> className="text-lg font-mono">{(network.neurons / 1000000).toFixed(1)}M</div>
+</>
+className="text-lg font-mono">{(network.neurons / 1000000).toFixed(1)}M</div>
                     </div>
                     <div><>
 
                       <div className="text-sm text-slate-400">Connections</div>
                       <div
-</> className="text-lg font-mono">{(network.connections / 1000000).toFixed(0)}M</div>
+</>
+className="text-lg font-mono">{(network.connections / 1000000).toFixed(0)}M</div>
                     </div>
                     <div><>
 
                       <div className="text-sm text-slate-400">Performance</div>
                       <div
-</> className="text-lg font-mono text-green-400">{network.performance}%</div>
+</>
+className="text-lg font-mono text-green-400">{network.performance}%</div>
                     </div>
                   </div>
 
@@ -794,13 +827,15 @@ function App() {
 
                       <span className="text-slate-400">Activation</span>
                       <span
-</> className="font-mono">{network.activationFunction}</span>
+</>
+className="font-mono">{network.activationFunction}</span>
                     </div>
                     <div className="flex justify-between text-sm"><>
 
                       <span className="text-slate-400">Learning Rate</span>
                       <span
-</> className="font-mono">{network.learningRate}</span>
+</>
+className="font-mono">{network.learningRate}</span>
                     </div>
                   </div>
 
@@ -822,22 +857,26 @@ function App() {
 
             <h2 className="text-2xl font-bold mb-4">Automation Rules</h2>
             <div
-</> className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700/50 overflow-hidden">
+</>
+className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700/50 overflow-hidden">
               <table className="w-full">
                 <thead className="bg-slate-900/50 border-b border-slate-700">
                   <tr><>
 
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Rule</th>
                     <th
-</> className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Trigger</th><>
+</>
+className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Trigger</th><>
 
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Executions</th>
                     <th
-</> className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Success Rate</th><>
+</>
+className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Success Rate</th><>
 
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Avg Time</th>
                     <th
-</> className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Status</th>
+</>
+className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700">
@@ -848,13 +887,15 @@ function App() {
 
                           <div className="font-medium">{rule.name}</div>
                           <div
-</> className="text-sm text-slate-400">{rule.action}</div>
+</>
+className="text-sm text-slate-400">{rule.action}</div>
                         </div>
                       </td><>
 
                       <td className="px-6 py-4 text-sm">{rule.trigger}</td>
                       <td
-</> className="px-6 py-4">
+</>
+className="px-6 py-4">
                         <span className="font-mono text-sm">{rule.executionCount.toLocaleString()}</span>
                       </td>
                       <td className="px-6 py-4">
@@ -895,7 +936,8 @@ function App() {
 
             <h2 className="text-2xl font-bold mb-4">Predictive Insights</h2>
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               {predictions.map(prediction => (
                 <div key={prediction.id} className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700/50 p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -917,14 +959,16 @@ function App() {
 
                         <h3 className="text-lg font-bold mb-1">{prediction.title}</h3>
                         <p
-</> className="text-sm text-slate-400 mb-3">{prediction.description}</p>
+</>
+className="text-sm text-slate-400 mb-3">{prediction.description}</p>
                         
                         <div className="flex items-center gap-4 mb-3">
                           <div className="flex items-center gap-2"><>
 
                             <span className="text-xs text-slate-400">Confidence:</span>
                             <div
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                               <div className="h-1.5 w-20 bg-slate-700 rounded-full overflow-hidden"><>
 
                                 <div 
@@ -937,7 +981,8 @@ function App() {
                                 />
                               </div>
                               <span
-</> className="text-xs font-mono">{prediction.confidence}%</span>
+</>
+className="text-xs font-mono">{prediction.confidence}%</span>
                             </div>
                           </div><>
 
@@ -950,7 +995,8 @@ function App() {
                             {prediction.impact.toUpperCase()} IMPACT
                           </span>
                           <span
-</> className="text-xs text-slate-400">{prediction.timeframe}</span>
+</>
+className="text-xs text-slate-400">{prediction.timeframe}</span>
                         </div>
 
                         {prediction.potentialValue && (
@@ -958,7 +1004,8 @@ function App() {
 
                             <span className="text-slate-400">Potential Value: </span>
                             <span
-</> className={`font-bold ${
+</>
+className={`font-bold ${
                               prediction.potentialValue > 0 ? 'text-green-400' : 'text-red-400'
                             }`}>
                               ${Math.abs(prediction.potentialValue).toLocaleString()}
@@ -973,7 +1020,8 @@ function App() {
                             Suggested Actions
                           </div>
                           <ul
-</> className="text-sm text-slate-300 space-y-1">
+</>
+className="text-sm text-slate-300 space-y-1">
                             {prediction.suggestedActions.map((action, i) => (
                               <li key={i} className="flex items-start gap-2">
                                 <ChevronRight className="text-blue-400 mt-0.5" size={14} />

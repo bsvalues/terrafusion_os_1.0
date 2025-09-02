@@ -24,7 +24,8 @@ export function ArizonaCountyGrid() {
 
                 <div className="font-semibold text-tf-light">{county.name}</div>
                 <div
-</> className="text-sm text-tf-light/70">{county.population}</div>
+</>
+className="text-sm text-tf-light/70">{county.population}</div>
                 <Badge variant="secondary" className="mt-2">
                   {county.status}
                 </Badge>

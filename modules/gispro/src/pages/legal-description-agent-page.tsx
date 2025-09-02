@@ -40,7 +40,8 @@ const LegalDescriptionAgentPage: React.FC = () => {
 
           <h1 className="text-2xl font-bold">Legal Description Agent</h1>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             Convert legal descriptions into property boundaries.
           </p>
         </div>
@@ -52,7 +53,8 @@ const LegalDescriptionAgentPage: React.FC = () => {
 
                 <TabsTrigger value="agent">Legal Description Agent</TabsTrigger>
                 <TabsTrigger
-</> value="history">History</TabsTrigger>
+</>
+value="history">History</TabsTrigger>
                 <TabsTrigger value="help">Help & Guide</TabsTrigger>
               </TabsList>
             </div>
@@ -63,12 +65,14 @@ const LegalDescriptionAgentPage: React.FC = () => {
             </TabsContent>
             
             <TabsContent
-</> value="history" className="flex-1 p-4">
+</>
+value="history" className="flex-1 p-4">
               <div className="rounded-lg border p-4 h-full overflow-auto"><>
 
                 <h3 className="text-lg font-medium mb-2">History</h3>
                 <p
-</> className="text-muted-foreground mb-4">
+</>
+className="text-muted-foreground mb-4">
                   Your recently processed legal descriptions will appear here.
                 </p>
                 <div className="divide-y">
@@ -85,12 +89,14 @@ const LegalDescriptionAgentPage: React.FC = () => {
 
                 <h3 className="text-lg font-medium mb-2">Help & Guide</h3>
                 <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                   <div><>
 
                     <h4 className="font-medium">What is the Legal Description Agent?</h4>
                     <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
                       The Legal Description Agent helps you convert legal property descriptions
                       into visual map boundaries. It supports various formats including metes and bounds,
                       township/range descriptions, lot/block references, and more.
@@ -101,14 +107,17 @@ const LegalDescriptionAgentPage: React.FC = () => {
 
                     <h4 className="font-medium">How to use:</h4>
                     <ol
-</> className="list-decimal list-inside space-y-2 text-muted-foreground"><>
+</>
+className="list-decimal list-inside space-y-2 text-muted-foreground"><>
 
                       <li>Paste a legal description into the text area.</li>
                             <li
+</>
 </>>Click "Parse Description" to analyze the text.</li><>
 
                       <li>Review the detected boundaries on the map.</li>
                             <li
+</>
 </>>Adjust points if needed using the editing tools.</li>
                       <li>Save the parcel to the database when ready.</li>
                     </ol>
@@ -118,14 +127,17 @@ const LegalDescriptionAgentPage: React.FC = () => {
 
                     <h4 className="font-medium">Supported Formats:</h4>
                     <ul
-</> className="list-disc list-inside space-y-1 text-muted-foreground"><>
+</>
+className="list-disc list-inside space-y-1 text-muted-foreground"><>
 
                       <li>Metes and Bounds descriptions</li>
                             <li
+</>
 </>>Township, Range, and Section references</li><>
 
                       <li>Lot and Block references</li>
                             <li
+</>
 </>>Informal property descriptions</li>
                     </ul>
                   </div>
@@ -134,14 +146,17 @@ const LegalDescriptionAgentPage: React.FC = () => {
 
                     <h4 className="font-medium">Tips:</h4>
                     <ul
-</> className="list-disc list-inside space-y-1 text-muted-foreground"><>
+</>
+className="list-disc list-inside space-y-1 text-muted-foreground"><>
 
                       <li>Complete descriptions work better than partial ones.</li>
                             <li
+</>
 </>>Include a Point of Beginning for metes and bounds descriptions.</li><>
 
                       <li>Check the confidence score to gauge accuracy.</li>
                             <li
+</>
 </>>Use manual editing for low-confidence results.</li>
                     </ul>
                   </div>

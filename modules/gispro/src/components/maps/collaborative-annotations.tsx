@@ -420,7 +420,8 @@ export function CollaborativeAnnotations({ map, roomId, className = '' }: Collab
                   Cancel
                 </Button>
                 <Button
-</> 
+</>
+
                   disabled={!annotationText.trim()} 
                   size="sm"
                   className="flex items-center gap-1"
@@ -441,7 +442,8 @@ export function CollaborativeAnnotations({ map, roomId, className = '' }: Collab
 
               <span className="text-sm">Click on the map to place the annotation</span>
               <Button
-</> 
+</>
+
                 onClick={cancelCreatingAnnotation} 
                 variant="ghost" 
                 size="sm"
@@ -485,7 +487,8 @@ export function CollaborativeAnnotations({ map, roomId, className = '' }: Collab
                         Cancel
                       </Button>
                       <Button
-</> 
+</>
+
                         onClick={saveEditedAnnotation} 
                         variant="default" 
                         size="sm"
@@ -497,7 +500,6 @@ export function CollaborativeAnnotations({ map, roomId, className = '' }: Collab
                   </div>
                 ) : (
                   // View UI
-                  <>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-1 mb-1">
@@ -524,7 +526,8 @@ export function CollaborativeAnnotations({ map, roomId, className = '' }: Collab
                           <MapPin className="h-3 w-3" />
                         </Button>
                         <Button
-</> 
+</>
+
                           onClick={() => startEditingAnnotation(annotation.id)} 
                           variant="ghost" 
                           size="icon" 
@@ -535,7 +538,8 @@ export function CollaborativeAnnotations({ map, roomId, className = '' }: Collab
                           <Edit2 className="h-3 w-3" />
                         </Button>
                         <Button
-</> 
+</>
+
                           onClick={() => handleDeleteAnnotation(annotation.id)} 
                           variant="ghost" 
                           size="icon" 
@@ -546,7 +550,6 @@ export function CollaborativeAnnotations({ map, roomId, className = '' }: Collab
                         </Button>
                       </div>
                     </div>
-                  </>
                 )}
               </div>
             ))}

@@ -75,7 +75,8 @@ export function LiveCommandDashboard() {
               ⚡ TERRAFUSION COMMAND CENTER ⚡
             </h1>
             <p
-</> className="text-tf-light/80">Real-time nationwide conquest monitoring</p>
+</>
+className="text-tf-light/80">Real-time nationwide conquest monitoring</p>
           </div>
           <div className="text-right"><>
 
@@ -83,7 +84,8 @@ export function LiveCommandDashboard() {
               {currentTime.toLocaleTimeString()}
             </div>
             <div
-</> className="text-sm text-tf-accent">
+</>
+className="text-sm text-tf-accent">
               {currentTime.toLocaleDateString()}
             </div>
           </div>
@@ -98,7 +100,8 @@ export function LiveCommandDashboard() {
 
                 <div className="text-sm text-tf-success">System Status</div>
                 <div
-</> className="font-bold text-tf-light">OPERATIONAL</div>
+</>
+className="font-bold text-tf-light">OPERATIONAL</div>
               </div>
             </CardContent>
           </Card>
@@ -110,7 +113,8 @@ export function LiveCommandDashboard() {
 
                 <div className="text-sm text-tf-transcend">AI Swarm</div>
                 <div
-</> className="font-bold text-tf-light">1,008 ACTIVE</div>
+</>
+className="font-bold text-tf-light">1,008 ACTIVE</div>
               </div>
             </CardContent>
           </Card>
@@ -122,7 +126,8 @@ export function LiveCommandDashboard() {
 
                 <div className="text-sm text-tf-primary">Response Time</div>
                 <div
-</> className="font-bold text-tf-light">0.47ms</div>
+</>
+className="font-bold text-tf-light">0.47ms</div>
               </div>
             </CardContent>
           </Card>
@@ -134,7 +139,8 @@ export function LiveCommandDashboard() {
 
                 <div className="text-sm text-tf-accent">Conquest Rate</div>
                 <div
-</> className="font-bold text-tf-light">ACCELERATING</div>
+</>
+className="font-bold text-tf-light">ACCELERATING</div>
               </div>
             </CardContent>
           </Card>
@@ -180,23 +186,27 @@ export function LiveCommandDashboard() {
 
                   <div className="text-4xl font-black text-tf-transcend mb-2">3</div>
                   <div
-</> className="text-sm text-tf-light/70">Counties Active</div><>
+</>
+className="text-sm text-tf-light/70">Counties Active</div><>
 
                   <Progress value={0.095} className="mt-2" />
                 </div>
                 <div
-</> className="text-center"><>
+</>
+className="text-center"><>
 
                   <div className="text-4xl font-black text-tf-primary mb-2">3,142</div>
                   <div
-</> className="text-sm text-tf-light/70">Total Target</div>
+</>
+className="text-sm text-tf-light/70">Total Target</div>
                   <div className="text-xs text-tf-accent mt-1">0.095% Complete</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-4xl font-black text-tf-accent mb-2">$2.8M</div>
                   <div
-</> className="text-sm text-tf-light/70">Current ARR</div>
+</>
+className="text-sm text-tf-light/70">Current ARR</div>
                   <div className="text-xs text-tf-transcend mt-1">→ $1.2B Projected</div>
                 </div>
               </div>
@@ -217,25 +227,29 @@ export function LiveCommandDashboard() {
 
                   <div className="text-2xl font-bold text-tf-transcend">0.47ms</div>
                   <div
-</> className="text-xs text-tf-light/70">Avg Response</div>
+</>
+className="text-xs text-tf-light/70">Avg Response</div>
                 </div>
                 <div className="text-center p-4 bg-tf-dark/30 rounded-lg"><>
 
                   <div className="text-2xl font-bold text-tf-success">99.99%</div>
                   <div
-</> className="text-xs text-tf-light/70">Uptime</div>
+</>
+className="text-xs text-tf-light/70">Uptime</div>
                 </div>
                 <div className="text-center p-4 bg-tf-dark/30 rounded-lg"><>
 
                   <div className="text-2xl font-bold text-tf-accent">1,008</div>
                   <div
-</> className="text-xs text-tf-light/70">AI Agents</div>
+</>
+className="text-xs text-tf-light/70">AI Agents</div>
                 </div>
                 <div className="text-center p-4 bg-tf-dark/30 rounded-lg"><>
 
                   <div className="text-2xl font-bold text-tf-primary">94,149</div>
                   <div
-</> className="text-xs text-tf-light/70">Properties</div>
+</>
+className="text-xs text-tf-light/70">Properties</div>
                 </div>
               </div>
             </CardContent>
@@ -259,7 +273,8 @@ export function LiveCommandDashboard() {
 
                         <div className="font-semibold text-tf-light">{county.name}</div>
                         <div
-</> className="text-xs text-tf-light/70">{county.eta}</div>
+</>
+className="text-xs text-tf-light/70">{county.eta}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -267,7 +282,8 @@ export function LiveCommandDashboard() {
 
                         <div className="text-sm font-semibold text-tf-transcend">{county.value}</div>
                         <div
-</> className="text-xs text-tf-light/70">{county.probability}% prob</div>
+</>
+className="text-xs text-tf-light/70">{county.probability}% prob</div>
                       </div>
                       <Badge 
                         variant={county.status === "negotiation" ? "default" : "secondary"}
@@ -298,7 +314,8 @@ export function LiveCommandDashboard() {
 
                     <div className="text-sm text-tf-light">{alert.message}</div>
                     <div
-</> className="text-xs text-tf-light/50 mt-1">{alert.timestamp}</div>
+</>
+className="text-xs text-tf-light/50 mt-1">{alert.timestamp}</div>
                   </div>
                 ))}
               </div>
@@ -317,7 +334,8 @@ export function LiveCommandDashboard() {
                   🎯 Deploy Florida Blitz
                 </Button>
                 <Button
-</> variant="outline" className="w-full border-tf-accent text-tf-accent hover:bg-tf-accent/10">
+</>
+variant="outline" className="w-full border-tf-accent text-tf-accent hover:bg-tf-accent/10">
                   📊 Generate Revenue Report
                 </Button><>
 
@@ -325,7 +343,8 @@ export function LiveCommandDashboard() {
                   🤖 Scale AI Swarm
                 </Button>
                 <Button
-</> variant="outline" className="w-full border-tf-warning text-tf-warning hover:bg-tf-warning/10">
+</>
+variant="outline" className="w-full border-tf-warning text-tf-warning hover:bg-tf-warning/10">
                   🚨 Emergency Protocols
                 </Button>
               </div>
@@ -344,40 +363,47 @@ export function LiveCommandDashboard() {
 
                     <span className="text-tf-light/70">CPU Usage</span>
                     <span
-</> className="text-tf-transcend">23%</span>
+</>
+className="text-tf-transcend">23%</span>
                   </div><>
 
                   <Progress value={23} className="h-2" />
                 </div>
                 <div
+</>
 </>>
                   <div className="flex justify-between text-sm mb-1"><>
 
                     <span className="text-tf-light/70">Memory</span>
                     <span
-</> className="text-tf-primary">67%</span>
+</>
+className="text-tf-primary">67%</span>
                   </div><>
 
                   <Progress value={67} className="h-2" />
                 </div>
                 <div
+</>
 </>>
                   <div className="flex justify-between text-sm mb-1"><>
 
                     <span className="text-tf-light/70">Network I/O</span>
                     <span
-</> className="text-tf-accent">45%</span>
+</>
+className="text-tf-accent">45%</span>
                   </div><>
 
                   <Progress value={45} className="h-2" />
                 </div>
                 <div
+</>
 </>>
                   <div className="flex justify-between text-sm mb-1"><>
 
                     <span className="text-tf-light/70">AI Load</span>
                     <span
-</> className="text-tf-success">89%</span>
+</>
+className="text-tf-success">89%</span>
                   </div>
                   <Progress value={89} className="h-2" />
                 </div>

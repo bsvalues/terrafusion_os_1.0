@@ -193,6 +193,7 @@ const ExportResultsDialog: React.FC<ExportResultsDialogProps> = ({
 
           <DialogTitle>Export Analysis Results</DialogTitle>
           <DialogDescription
+</>
 </>>
             Choose a format and customize your export options
           </DialogDescription>
@@ -203,7 +204,8 @@ const ExportResultsDialog: React.FC<ExportResultsDialogProps> = ({
 
             <Label>Quick Export</Label>
             <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
               {Object.entries(formatDescriptions).map(([key, { label, icon }]) => (
                 <Button
                   key={key}
@@ -223,7 +225,8 @@ const ExportResultsDialog: React.FC<ExportResultsDialogProps> = ({
 
             <Label>Format</Label>
             <RadioGroup
-</> value={format} onValueChange={(value) => setFormat(value as ReportFormat)}>
+</>
+value={format} onValueChange={(value) => setFormat(value as ReportFormat)}>
               {Object.entries(formatDescriptions).map(([key, { label, icon, description }]) => (
                 <div className="flex items-center space-x-2" key={key}>
                   <RadioGroupItem 
@@ -248,7 +251,8 @@ const ExportResultsDialog: React.FC<ExportResultsDialogProps> = ({
 
             <Label htmlFor="report-title">Report Title</Label>
             <Input
-</> 
+</>
+
               id="report-title" 
               value={title} 
               onChange={(e) => setTitle(e.target.value)}
@@ -283,7 +287,8 @@ const ExportResultsDialog: React.FC<ExportResultsDialogProps> = ({
             Cancel
           </Button>
           <Button
-</> onClick={handleExport} disabled={isExporting}>
+</>
+onClick={handleExport} disabled={isExporting}>
             {isExporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             <Download className="mr-2 h-4 w-4" />
             Export

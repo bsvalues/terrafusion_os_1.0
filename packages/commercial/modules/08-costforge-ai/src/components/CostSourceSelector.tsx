@@ -60,6 +60,7 @@ export function CostSourceSelector({
           <SelectValue placeholder="Select cost data source" />
         </SelectTrigger>
         <SelectContent
+</>
 </>>
           {sourcesQuery.isLoading ? (
             <SelectItem value="loading" disabled>Loading sources...</SelectItem>

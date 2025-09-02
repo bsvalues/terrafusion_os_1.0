@@ -76,8 +76,11 @@ const DatabaseStatus: React.FC = () => {
         textAlign: 'center',
         color: '#00d2ff'
       }}>
+
+
         <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>🗄️</div>
         <div
+
 >Loading Database Status...</div>
       </div>
     );
@@ -93,8 +96,11 @@ const DatabaseStatus: React.FC = () => {
         textAlign: 'center',
         color: '#ff4444'
       }}>
+
+
         <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⚠️</div>
         <div
+
 >Database Connection Failed</div>
         <div style={{ fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.8 }}>
           {error}
@@ -120,6 +126,8 @@ const DatabaseStatus: React.FC = () => {
         justifyContent: 'space-between',
         marginBottom: '1rem'
       }}>
+
+
         <h3 style={{
           margin: 0,
           fontSize: '1.3rem',
@@ -131,6 +139,7 @@ const DatabaseStatus: React.FC = () => {
           🗄️ Database Status
         </h3>
         <div
+
 style={{
           background: status.isConnected ? 'rgba(0, 255, 170, 0.2)' : 'rgba(255, 68, 68, 0.2)',
           color: status.isConnected ? '#00ffaa' : '#ff4444',
@@ -151,6 +160,8 @@ style={{
         marginBottom: '1rem'
       }}>
         <div style={{ textAlign: 'center' }}>
+
+
           <div style={{
             fontSize: '1.5rem',
             fontWeight: 'bold',
@@ -160,6 +171,7 @@ style={{
             {status.totalModules}
           </div>
           <div
+
 style={{
             fontSize: '0.8rem',
             color: 'rgba(255, 255, 255, 0.7)'
@@ -169,6 +181,8 @@ style={{
         </div>
 
         <div style={{ textAlign: 'center' }}>
+
+
           <div style={{
             fontSize: '1.5rem',
             fontWeight: 'bold',
@@ -178,6 +192,7 @@ style={{
             {status.activeModules}
           </div>
           <div
+
 style={{
             fontSize: '0.8rem',
             color: 'rgba(255, 255, 255, 0.7)'
@@ -187,6 +202,8 @@ style={{
         </div>
 
         <div style={{ textAlign: 'center' }}>
+
+
           <div style={{
             fontSize: '1.5rem',
             fontWeight: 'bold',
@@ -196,6 +213,7 @@ style={{
             {status.harrisSync.parcels.toLocaleString()}
           </div>
           <div
+
 style={{
             fontSize: '0.8rem',
             color: 'rgba(255, 255, 255, 0.7)'
@@ -205,6 +223,8 @@ style={{
         </div>
 
         <div style={{ textAlign: 'center' }}>
+
+
           <div style={{
             fontSize: '1.5rem',
             fontWeight: 'bold',
@@ -214,6 +234,7 @@ style={{
             {status.performance.responseTime}ms
           </div>
           <div
+
 style={{
             fontSize: '0.8rem',
             color: 'rgba(255, 255, 255, 0.7)'
@@ -236,6 +257,8 @@ style={{
           justifyContent: 'space-between',
           marginBottom: '0.5rem'
         }}>
+
+
           <div style={{
             fontSize: '0.9rem',
             fontWeight: 'bold',
@@ -244,6 +267,7 @@ style={{
             🏛️ Harris PACS Integration
           </div>
           <div
+
 style={{
             fontSize: '0.8rem',
             color: status.harrisSync.status === 'active' ? '#00ffaa' : '#ffaa00'
@@ -270,26 +294,34 @@ style={{
           textAlign: 'center',
           color: 'rgba(255, 255, 255, 0.7)'
         }}>
+
+
           <div style={{ color: '#00d2ff', fontWeight: 'bold' }}>
             {status.performance.queries.toLocaleString()}
           </div>
           <div
+
 >Queries</div>
         </div>
         <div style={{
           textAlign: 'center',
           color: 'rgba(255, 255, 255, 0.7)'
         }}>
+
+
           <div style={{ color: '#00ffaa', fontWeight: 'bold' }}>
             {status.version}
           </div>
           <div
+
 >Version</div>
         </div>
         <div style={{
           textAlign: 'center',
           color: 'rgba(255, 255, 255, 0.7)'
         }}>
+
+
           <div style={{
             color: status.performance.errors === 0 ? '#00ffaa' : '#ff4444',
             fontWeight: 'bold'
@@ -297,6 +329,7 @@ style={{
             {status.performance.errors}
           </div>
           <div
+
 >Errors</div>
         </div>
       </div>

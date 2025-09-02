@@ -183,7 +183,8 @@ export const InstantSearch: React.FC<InstantSearchProps> = ({ onSearch, recordCo
             {searchTime.toFixed(1)}ms
           </span>
           <span
-</> className="text-purple-300">
+</>
+className="text-purple-300">
             {results.length} results from {recordCount.toLocaleString()} records
           </span>
           <span className="text-green-400 font-semibold">
@@ -244,7 +245,8 @@ export const InstantSearch: React.FC<InstantSearchProps> = ({ onSearch, recordCo
 
                     <h3 className="text-xl font-bold text-white mb-2">{result.title}</h3>
                     <p
-</> className="text-white/70 mb-3">{result.description}</p>
+</>
+className="text-white/70 mb-3">{result.description}</p>
                     
                     <div className="flex items-center gap-4 text-sm text-white/50">
                       <span className="flex items-center gap-1">

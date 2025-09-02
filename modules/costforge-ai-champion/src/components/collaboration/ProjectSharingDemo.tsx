@@ -53,8 +53,10 @@ const ProjectMembersTable = ({ projectId, currentUserId, isOwner, isAdmin, isLoa
   <Card>
     <CardHeader>
 <>
+
       <CardTitle>Team Members</CardTitle>
       <CardDescription
+</>
 </>>Current project collaborators and their roles</CardDescription>
     </CardHeader>
     <CardContent>
@@ -67,13 +69,16 @@ const ProjectMembersTable = ({ projectId, currentUserId, isOwner, isAdmin, isLoa
               </Avatar>
               <div>
 <>
+
                 <div className="font-medium">{member.user.name}</div>
                 <div
-</> className="text-sm text-muted-foreground">@{member.user.username}</div>
+</>
+className="text-sm text-muted-foreground">@{member.user.username}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
 <>
+
               <Badge variant={
                 member.role === 'owner' ? 'default' :
                 member.role === 'admin' ? 'secondary' :
@@ -82,7 +87,8 @@ const ProjectMembersTable = ({ projectId, currentUserId, isOwner, isAdmin, isLoa
                 {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
               </Badge>
               <span
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                 Joined {new Date(member.joinedAt).toLocaleDateString()}
               </span>
             </div>
@@ -97,8 +103,10 @@ const ProjectItemsTable = ({ projectId, isLoading, currentUserRole }: any) => (
   <Card>
     <CardHeader>
 <>
+
       <CardTitle>Shared Project Items</CardTitle>
       <CardDescription
+</>
 </>>Files and resources shared with this project</CardDescription>
     </CardHeader>
     <CardContent>
@@ -114,16 +122,20 @@ const ProjectItemsTable = ({ projectId, isLoading, currentUserRole }: any) => (
               </div>
               <div>
 <>
+
                 <div className="font-medium">{item.details.name}</div>
                 <div
-</> className="text-sm text-muted-foreground">{item.details.description}</div>
+</>
+className="text-sm text-muted-foreground">{item.details.description}</div>
                 <div className="flex items-center gap-2 mt-1">
 <>
+
                   <span className="text-xs text-muted-foreground">
                     Added by {item.addedByUser.name}
                   </span>
                   <span
-</> className="text-xs text-muted-foreground">•</span>
+</>
+className="text-xs text-muted-foreground">•</span>
                   <span className="text-xs text-muted-foreground">
                     {new Date(item.addedAt).toLocaleDateString()}
                   </span>
@@ -145,40 +157,50 @@ const ProjectSharingControls = ({ projectId, projectName, isPublic, isOwner, cur
     <CardHeader>
       <CardTitle className="flex items-center">
 <>
+
         <Share2 className="h-5 w-5 mr-2" />
         Project Sharing
       </CardTitle>
       <CardDescription
+</>
 </>>Control who can access this project</CardDescription>
     </CardHeader>
     <CardContent className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
 <>
+
           <div className="font-medium">Public Access</div>
           <div
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
             Anyone with the link can view this project
           </div>
         </div>
 <>
+
         <Switch checked={isPublic} disabled={!isOwner} />
       </div>
       
       <Separator
-</> />
+</>
+/>
       
       <div className="space-y-2">
 <>
+
         <div className="font-medium">Share Link</div>
         <div
-</> className="flex gap-2">
+</>
+className="flex gap-2">
 <>
+
           <div className="flex-1 p-2 bg-muted rounded-md text-sm">
             https://costforge.ai/projects/{projectId}
           </div>
           <Button
-</> variant="outline" size="sm">
+</>
+variant="outline" size="sm">
             <Link2 className="h-4 w-4" />
           </Button>
         </div>
@@ -192,10 +214,12 @@ const ProjectInvitations = ({ projectId }: any) => (
     <CardHeader>
       <CardTitle className="flex items-center">
 <>
+
         <Mail className="h-5 w-5 mr-2" />
         Pending Invitations
       </CardTitle>
       <CardDescription
+</>
 </>>Users who have been invited but haven't joined yet</CardDescription>
     </CardHeader>
     <CardContent>
@@ -215,16 +239,20 @@ const InviteUserDialog = ({ open, onOpenChange, projectId, isOwner }: any) => {
       <Card className="w-full max-w-md">
         <CardHeader>
 <>
+
           <CardTitle>Invite Team Members</CardTitle>
           <CardDescription
+</>
 </>>Add collaborators to this project</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
 <>
+
             <label className="text-sm font-medium">Email Address</label>
             <input
-</> 
+</>
+
               type="email" 
               placeholder="colleague@company.com"
               className="w-full mt-1 p-2 border rounded-md"
@@ -232,24 +260,30 @@ const InviteUserDialog = ({ open, onOpenChange, projectId, isOwner }: any) => {
           </div>
           <div>
 <>
+
             <label className="text-sm font-medium">Role</label>
             <select
-</> className="w-full mt-1 p-2 border rounded-md">
+</>
+className="w-full mt-1 p-2 border rounded-md">
 <>
+
               <option value="viewer">Viewer</option>
               <option
-</> value="editor">Editor</option>
+</>
+value="editor">Editor</option>
               <option value="admin">Admin</option>
             </select>
           </div>
         </CardContent>
         <CardFooter className="flex gap-2">
 <>
+
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button
-</> onClick={() => onOpenChange(false)}>
+</>
+onClick={() => onOpenChange(false)}>
             Send Invitation
           </Button>
         </CardFooter>
@@ -475,9 +509,11 @@ export default function ProjectSharingDemo() {
         <div>
           <div className="flex items-center gap-2 mb-2">
 <>
+
             <h1 className="text-3xl font-bold">{projectData.name}</h1>
             <Badge
-</> variant="secondary">RESTORED</Badge>
+</>
+variant="secondary">RESTORED</Badge>
           </div>
           <p className="text-muted-foreground">{projectData.description}</p>
         </div>
@@ -494,23 +530,29 @@ export default function ProjectSharingDemo() {
         <TabsList className="grid grid-cols-4 md:w-[600px]">
           <TabsTrigger value="overview">
 <>
+
             <Info className="h-4 w-4 mr-2" />
             Overview
           </TabsTrigger>
           <TabsTrigger
-</> value="members">
+</>
+value="members">
 <>
+
             <Users className="h-4 w-4 mr-2" />
             Members
           </TabsTrigger>
           <TabsTrigger
-</> value="items">
+</>
+value="items">
 <>
+
             <FolderOpen className="h-4 w-4 mr-2" />
             Items
           </TabsTrigger>
           <TabsTrigger
-</> value="sharing">
+</>
+value="sharing">
             <Share2 className="h-4 w-4 mr-2" />
             Sharing
           </TabsTrigger>
@@ -522,44 +564,54 @@ export default function ProjectSharingDemo() {
             <Card>
               <CardHeader>
 <>
+
                 <CardTitle>Project Details</CardTitle>
                 <CardDescription
+</>
 </>>Basic information about this project</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
 <>
+
                   <div className="text-sm font-medium">Created By</div>
                   <div
-</> className="text-sm">{projectData.createdBy}</div>
+</>
+className="text-sm">{projectData.createdBy}</div>
 <>
-                  
+
                   <div className="text-sm font-medium">Created Date</div>
                   <div
-</> className="text-sm">{new Date(projectData.createdAt).toLocaleDateString()}</div>
+</>
+className="text-sm">{new Date(projectData.createdAt).toLocaleDateString()}</div>
 <>
-                  
+
                   <div className="text-sm font-medium">Last Updated</div>
                   <div
-</> className="text-sm">{new Date(projectData.updatedAt).toLocaleDateString()}</div>
+</>
+className="text-sm">{new Date(projectData.updatedAt).toLocaleDateString()}</div>
 <>
-                  
+
                   <div className="text-sm font-medium">Status</div>
                   <div
+</>
 </>>
                     <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
                       Active
                     </Badge>
                   </div>
 <>
-                  
+
                   <div className="text-sm font-medium">Visibility</div>
                   <div
-</> className="flex items-center space-x-2">
+</>
+className="flex items-center space-x-2">
 <>
+
                     <div className="text-sm">{projectData.isPublic ? 'Public' : 'Private'}</div>
                     <Switch
 </>
+
                       checked={projectData.isPublic}
                       onCheckedChange={() => {}}
                       disabled={currentUser.role !== 'owner'}
@@ -572,8 +624,10 @@ export default function ProjectSharingDemo() {
             <Card>
               <CardHeader>
 <>
+
                 <CardTitle>Project Activity</CardTitle>
                 <CardDescription
+</>
 </>>Recent activity in this project</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -584,9 +638,11 @@ export default function ProjectSharingDemo() {
                     </Avatar>
                     <div>
 <>
+
                       <div className="text-sm font-medium">John Architect added a visualization</div>
                       <div
-</> className="text-xs text-muted-foreground">Apr 1, 2025 at 11:10 AM</div>
+</>
+className="text-xs text-muted-foreground">Apr 1, 2025 at 11:10 AM</div>
                     </div>
                   </div>
                   
@@ -596,9 +652,11 @@ export default function ProjectSharingDemo() {
                     </Avatar>
                     <div>
 <>
+
                       <div className="text-sm font-medium">Mike Project Manager added a report</div>
                       <div
-</> className="text-xs text-muted-foreground">Mar 30, 2025 at 4:45 PM</div>
+</>
+className="text-xs text-muted-foreground">Mar 30, 2025 at 4:45 PM</div>
                     </div>
                   </div>
                   
@@ -608,9 +666,11 @@ export default function ProjectSharingDemo() {
                     </Avatar>
                     <div>
 <>
+
                       <div className="text-sm font-medium">Sarah Engineer added a cost matrix</div>
                       <div
-</> className="text-xs text-muted-foreground">Mar 19, 2025 at 9:15 AM</div>
+</>
+className="text-xs text-muted-foreground">Mar 19, 2025 at 9:15 AM</div>
                     </div>
                   </div>
                 </div>
@@ -623,10 +683,12 @@ export default function ProjectSharingDemo() {
             <CardHeader>
               <CardTitle className="flex items-center">
 <>
+
                 <MessageSquare className="h-5 w-5 mr-2" />
                 Recent Comments
               </CardTitle>
               <CardDescription
+</>
 </>>Latest discussions about this project</CardDescription>
             </CardHeader>
             <CardContent>
@@ -640,9 +702,11 @@ export default function ProjectSharingDemo() {
                       <div className="flex-1">
                         <div className="flex justify-between">
 <>
+
                           <div className="font-medium">{comment.user.name}</div>
                           <div
-</> className="text-xs text-muted-foreground flex items-center gap-1">
+</>
+className="text-xs text-muted-foreground flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             {new Date(comment.createdAt).toLocaleString()}
                           </div>
@@ -662,9 +726,11 @@ export default function ProjectSharingDemo() {
                             <div className="flex-1">
                               <div className="flex justify-between">
 <>
+
                                 <div className="font-medium text-sm">{reply.user.name}</div>
                                 <div
-</> className="text-xs text-muted-foreground flex items-center gap-1">
+</>
+className="text-xs text-muted-foreground flex items-center gap-1">
                                   <Clock className="h-3 w-3" />
                                   {new Date(reply.createdAt).toLocaleString()}
                                 </div>
@@ -693,9 +759,11 @@ export default function ProjectSharingDemo() {
           <div className="flex justify-between items-center">
             <div>
 <>
+
               <h2 className="text-2xl font-bold">Project Members</h2>
               <p
-</> className="text-muted-foreground">Manage the team collaborating on this project</p>
+</>
+className="text-muted-foreground">Manage the team collaborating on this project</p>
             </div>
             <Button onClick={() => setShowInviteDialog(true)}>
               <Users className="mr-2 h-4 w-4" />
@@ -715,9 +783,11 @@ export default function ProjectSharingDemo() {
           <Alert>
             <Info className="h-4 w-4" />
 <>
+
             <AlertTitle>User Roles & Permissions</AlertTitle>
             <AlertDescription
-</> className="mt-2">
+</>
+className="mt-2">
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li><strong>Owner:</strong> Has full control over the project, including deleting it</li>
                 <li><strong>Admin:</strong> Can manage members and content, but cannot delete the project</li>
@@ -733,24 +803,30 @@ export default function ProjectSharingDemo() {
           <div className="flex justify-between items-center">
             <div>
 <>
+
               <h2 className="text-2xl font-bold">Shared Items</h2>
               <p
-</> className="text-muted-foreground">View all items shared with this project</p>
+</>
+className="text-muted-foreground">View all items shared with this project</p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline">
 <>
+
                 <Calculator className="mr-2 h-4 w-4" />
                 Add Calculation
               </Button>
               <Button
-</> variant="outline">
+</>
+variant="outline">
 <>
+
                 <FileBarChart2 className="mr-2 h-4 w-4" />
                 Add Visualization
               </Button>
               <Button
-</> variant="outline">
+</>
+variant="outline">
                 <FileText className="mr-2 h-4 w-4" />
                 Add Report
               </Button>
@@ -815,19 +891,22 @@ export default function ProjectSharingDemo() {
                 currentUserRole={currentUser.role}
               />
 <>
-              
+
               <ProjectInvitations projectId={projectData.id} />
             </div>
             
             <Card
+</>
 </>>
               <CardHeader>
                 <CardTitle className="flex items-center">
 <>
+
                   <Info className="h-5 w-5 mr-2" />
                   About Project Sharing
                 </CardTitle>
                 <CardDescription
+</>
 </>>
                   Learn how to share your project with others
                 </CardDescription>
@@ -835,36 +914,44 @@ export default function ProjectSharingDemo() {
               <CardContent className="space-y-4">
                 <div>
 <>
+
                   <h3 className="font-medium">Public vs. Private Projects</h3>
                   <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
                     Public projects can be viewed by anyone with the link, while private projects can only be accessed by invited members.
                   </p>
                 </div>
                 
                 <div>
 <>
+
                   <h3 className="font-medium">Shared Links</h3>
                   <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
                     Create shared links to give temporary access to specific people without adding them as members. You can set expiration dates and access levels for each link.
                   </p>
                 </div>
                 
                 <div>
 <>
+
                   <h3 className="font-medium">Project Members</h3>
                   <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
                     Add members to your project with different roles (Viewer, Editor, Admin) to control what they can do.
                   </p>
                 </div>
                 
                 <div>
 <>
+
                   <h3 className="font-medium">Shared Items</h3>
                   <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
                     Share calculations, cost matrices, reports, and visualizations with your project to make them available to all members.
                   </p>
                 </div>
@@ -872,8 +959,10 @@ export default function ProjectSharingDemo() {
                 <Alert className="bg-blue-50 border-blue-200 text-blue-800">
                   <Info className="h-4 w-4 text-blue-600" />
 <>
+
                   <AlertTitle>Pro Tip</AlertTitle>
                   <AlertDescription
+</>
 </>>
                     Use shared links with expiration dates for external stakeholders who need temporary access to your project.
                   </AlertDescription>

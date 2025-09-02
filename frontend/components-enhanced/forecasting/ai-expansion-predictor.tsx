@@ -117,7 +117,8 @@ export function AIExpansionPredictor() {
               🧠 AI EXPANSION PREDICTOR 🧠
             </h1>
             <p
-</> className="text-tf-light/80">Machine learning forecasts for Terrafusion conquest</p>
+</>
+className="text-tf-light/80">Machine learning forecasts for Terrafusion conquest</p>
           </div>
           <div className="text-right"><>
 
@@ -125,7 +126,8 @@ export function AIExpansionPredictor() {
               🎯 Confidence: {predictionConfidence.toFixed(1)}%
             </Badge>
             <div
-</> className="text-sm text-tf-light/60 mt-2">Updated 12 seconds ago</div>
+</>
+className="text-sm text-tf-light/60 mt-2">Updated 12 seconds ago</div>
           </div>
         </div>
 
@@ -138,7 +140,8 @@ export function AIExpansionPredictor() {
 
                 <div className="text-sm text-tf-transcend">AI Model Status</div>
                 <div
-</> className="font-bold text-tf-light">ACTIVE LEARNING</div>
+</>
+className="font-bold text-tf-light">ACTIVE LEARNING</div>
               </div>
             </CardContent>
           </Card>
@@ -150,7 +153,8 @@ export function AIExpansionPredictor() {
 
                 <div className="text-sm text-tf-primary">Trajectory</div>
                 <div
-</> className="font-bold text-tf-light">EXPONENTIAL</div>
+</>
+className="font-bold text-tf-light">EXPONENTIAL</div>
               </div>
             </CardContent>
           </Card>
@@ -162,7 +166,8 @@ export function AIExpansionPredictor() {
 
                 <div className="text-sm text-tf-accent">2025 Target</div>
                 <div
-</> className="font-bold text-tf-light">127 COUNTIES</div>
+</>
+className="font-bold text-tf-light">127 COUNTIES</div>
               </div>
             </CardContent>
           </Card>
@@ -174,7 +179,8 @@ export function AIExpansionPredictor() {
 
                 <div className="text-sm text-tf-success">Revenue Proj.</div>
                 <div
-</> className="font-bold text-tf-light">$385M ARR</div>
+</>
+className="font-bold text-tf-light">$385M ARR</div>
               </div>
             </CardContent>
           </Card>
@@ -204,7 +210,8 @@ export function AIExpansionPredictor() {
 
                         <h3 className="text-xl font-bold text-tf-light">{state.state}</h3>
                         <p
-</> className="text-sm text-tf-accent">{state.catalyst}</p>
+</>
+className="text-sm text-tf-accent">{state.catalyst}</p>
                       </div>
                       <div className="text-right">
                         <Badge className={`${state.probability > 85 ? 'bg-tf-success/20 text-tf-success' : 
@@ -220,25 +227,29 @@ export function AIExpansionPredictor() {
 
                         <div className="text-2xl font-bold text-tf-transcend">{state.currentCounties}</div>
                         <div
-</> className="text-xs text-tf-light/70">Current</div>
+</>
+className="text-xs text-tf-light/70">Current</div>
                       </div>
                       <div><>
 
                         <div className="text-2xl font-bold text-tf-primary">{state.projectedQ1}</div>
                         <div
-</> className="text-xs text-tf-light/70">Q1 2025</div>
+</>
+className="text-xs text-tf-light/70">Q1 2025</div>
                       </div>
                       <div><>
 
                         <div className="text-2xl font-bold text-tf-accent">{state.projectedQ2}</div>
                         <div
-</> className="text-xs text-tf-light/70">Q2 2025</div>
+</>
+className="text-xs text-tf-light/70">Q2 2025</div>
                       </div>
                       <div><>
 
                         <div className="text-2xl font-bold text-tf-success">{state.projectedEOY}</div>
                         <div
-</> className="text-xs text-tf-light/70">EOY 2025</div>
+</>
+className="text-xs text-tf-light/70">EOY 2025</div>
                       </div>
                     </div>
                     
@@ -246,7 +257,8 @@ export function AIExpansionPredictor() {
 
                       <span className="text-sm text-tf-light/70">Revenue Potential:</span>
                       <span
-</> className="text-lg font-bold text-tf-transcend">${state.revenue}</span>
+</>
+className="text-lg font-bold text-tf-transcend">${state.revenue}</span>
                     </div>
                     
                     <Progress 
@@ -273,19 +285,22 @@ export function AIExpansionPredictor() {
 
                   <div className="text-2xl font-bold text-tf-transcend">${marketIntelligence.totalAddressableMarket}</div>
                   <div
-</> className="text-sm text-tf-light/70">Total Addressable Market</div>
+</>
+className="text-sm text-tf-light/70">Total Addressable Market</div>
                 </div>
                 <div className="text-center p-4 bg-tf-dark/30 rounded-lg"><>
 
                   <div className="text-2xl font-bold text-tf-primary">${marketIntelligence.servicableMarket}</div>
                   <div
-</> className="text-sm text-tf-light/70">Serviceable Market</div>
+</>
+className="text-sm text-tf-light/70">Serviceable Market</div>
                 </div>
                 <div className="text-center p-4 bg-tf-dark/30 rounded-lg"><>
 
                   <div className="text-2xl font-bold text-tf-accent">${marketIntelligence.capturableMarket}</div>
                   <div
-</> className="text-sm text-tf-light/70">Capturable Market</div>
+</>
+className="text-sm text-tf-light/70">Capturable Market</div>
                 </div>
               </div>
               
@@ -297,7 +312,8 @@ export function AIExpansionPredictor() {
 
                       <div className="font-semibold text-tf-light capitalize">{company} Technologies</div>
                       <div
-</> className="text-sm text-tf-light/70">Time to match: {data.timeToMatch}</div>
+</>
+className="text-sm text-tf-light/70">Time to match: {data.timeToMatch}</div>
                     </div>
                     <div className="text-right"><>
 
@@ -309,7 +325,8 @@ export function AIExpansionPredictor() {
                         {data.threat} THREAT
                       </Badge>
                       <div
-</> className="text-sm text-tf-light/70 mt-1">{data.capability} capability</div>
+</>
+className="text-sm text-tf-light/70 mt-1">{data.capability} capability</div>
                     </div>
                   </div>
                 ))}
@@ -353,14 +370,16 @@ export function AIExpansionPredictor() {
 
                       <div className="text-sm font-semibold text-tf-light">{risk.factor}</div>
                       <Badge
-</> variant="secondary" className="text-xs">
+</>
+variant="secondary" className="text-xs">
                         {risk.probability}%
                       </Badge>
                     </div><>
 
                     <div className="text-xs text-tf-light/70 mb-2">Impact: {risk.impact}</div>
                     <div
-</> className="text-xs text-tf-accent">{risk.mitigation}</div>
+</>
+className="text-xs text-tf-accent">{risk.mitigation}</div>
                   </div>
                 ))}
               </div>
@@ -379,7 +398,8 @@ export function AIExpansionPredictor() {
                   🎯 Execute Florida Blitz
                 </Button>
                 <Button
-</> variant="outline" className="w-full border-tf-accent text-tf-accent hover:bg-tf-accent/10">
+</>
+variant="outline" className="w-full border-tf-accent text-tf-accent hover:bg-tf-accent/10">
                   📊 Update AI Models
                 </Button><>
 
@@ -387,7 +407,8 @@ export function AIExpansionPredictor() {
                   🚀 Accelerate Washington
                 </Button>
                 <Button
-</> variant="outline" className="w-full border-tf-transcend text-tf-transcend hover:bg-tf-transcend/10">
+</>
+variant="outline" className="w-full border-tf-transcend text-tf-transcend hover:bg-tf-transcend/10">
                   🧠 Deploy Reconnaissance
                 </Button>
               </div>
@@ -406,7 +427,8 @@ export function AIExpansionPredictor() {
                   {predictionConfidence.toFixed(1)}%
                 </div>
                 <div
-</> className="text-sm text-tf-light/70">Prediction Accuracy</div>
+</>
+className="text-sm text-tf-light/70">Prediction Accuracy</div>
               </div>
               <Progress value={predictionConfidence} className="mb-4" />
               <div className="text-xs text-tf-light/60 text-center">

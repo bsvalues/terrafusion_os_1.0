@@ -204,29 +204,34 @@ export default function PropertySearchPage() {
                 Parcel Information
               </h3>
               <div
-</> className="mt-2 space-y-2">
+</>
+className="mt-2 space-y-2">
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-neutral-500">Parcel Number:</span>
                   <span
-</> className="font-mono">{selectedProperty.parcelNumber}</span>
+</>
+className="font-mono">{selectedProperty.parcelNumber}</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-neutral-500">Property Type:</span>
                   <span
+</>
 </>>{selectedProperty.propertyType}</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-neutral-500">Acres:</span>
                   <span
+</>
 </>>{selectedProperty.acres}</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-neutral-500">Last Updated:</span>
                   <span
+</>
 </>>{selectedProperty.lastUpdated}</span>
                 </div>
               </div>
@@ -237,17 +242,20 @@ export default function PropertySearchPage() {
                 Owner Information
               </h3>
               <div
-</> className="mt-2 space-y-2">
+</>
+className="mt-2 space-y-2">
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-neutral-500">Owner Name:</span>
                   <span
+</>
 </>>{selectedProperty.ownerName}</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-neutral-500">Mailing Address:</span>
                   <span
+</>
 </>>Same as property</span>
                 </div>
               </div>
@@ -258,18 +266,21 @@ export default function PropertySearchPage() {
                 Location
               </h3>
               <div
-</> className="mt-2 space-y-2">
+</>
+className="mt-2 space-y-2">
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-neutral-500">Address:</span>
                   <span
+</>
 </>>{selectedProperty.address}</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span className="text-neutral-500">Legal Description:</span>
                   <span
-</> className="text-xs italic">Click 'View Records' for details</span>
+</>
+className="text-xs italic">Click 'View Records' for details</span>
                 </div>
               </div>
               
@@ -280,7 +291,8 @@ export default function PropertySearchPage() {
                   View Records
                 </Button>
                 <Button
-</> size="sm" variant="outline" className="flex-1">
+</>
+size="sm" variant="outline" className="flex-1">
                   <Map className="h-4 w-4 mr-1.5" />
                   Full Map
                 </Button>
@@ -309,7 +321,8 @@ export default function PropertySearchPage() {
 
             <h1 className="text-2xl font-bold text-neutral-800">Property Search</h1>
             <p
-</> className="text-sm text-neutral-500">Search for properties in Benton County by parcel number, owner name, or address</p>
+</>
+className="text-sm text-neutral-500">Search for properties in Benton County by parcel number, owner name, or address</p>
           </div>
           
           {/* Search Container */}
@@ -326,13 +339,15 @@ export default function PropertySearchPage() {
                     Parcel
                   </TabsTrigger>
                   <TabsTrigger
-</> value="owner" className="flex items-center"><>
+</>
+value="owner" className="flex items-center"><>
 
                     <Home className="h-4 w-4 mr-1.5" />
                     Owner
                   </TabsTrigger>
                   <TabsTrigger
-</> value="address" className="flex items-center">
+</>
+value="address" className="flex items-center">
                     <MapPin className="h-4 w-4 mr-1.5" />
                     Address
                   </TabsTrigger>
@@ -346,6 +361,7 @@ export default function PropertySearchPage() {
                       <Label htmlFor="parcelNumber">Parcel Number</Label>
                       <Input
 </>
+
                         id="parcelNumber"
                         placeholder="15-digit Parcel ID"
                         value={parcelNumber}
@@ -361,7 +377,8 @@ export default function PropertySearchPage() {
 
                       <Label>Search Type</Label>
                       <RadioGroup
-</> 
+</>
+
                         defaultValue="exact" 
                         value={searchType}
                         onValueChange={setSearchType}
@@ -388,7 +405,8 @@ export default function PropertySearchPage() {
 
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path
-</> className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</>
+className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                           Searching...
                         </span>
@@ -410,6 +428,7 @@ export default function PropertySearchPage() {
                       <Label htmlFor="ownerName">Owner Name</Label>
                       <Input
 </>
+
                         id="ownerName"
                         placeholder="Enter last name, first name"
                         value={ownerName}
@@ -435,7 +454,8 @@ export default function PropertySearchPage() {
 
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path
-</> className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</>
+className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                           Searching...
                         </span>
@@ -457,6 +477,7 @@ export default function PropertySearchPage() {
                       <Label htmlFor="address">Street Address</Label>
                       <Input
 </>
+
                         id="address"
                         placeholder="Enter street number and name"
                         value={address}
@@ -472,21 +493,25 @@ export default function PropertySearchPage() {
 
                       <Label htmlFor="city">City</Label>
                       <Select
-</> value={city} onValueChange={setCity}>
+</>
+value={city} onValueChange={setCity}>
                         <SelectTrigger><>
 
                           <SelectValue placeholder="Select city" />
                         </SelectTrigger>
                         <SelectContent
+</>
 </>><>
 
                           <SelectItem value="kennewick">Kennewick</SelectItem>
                           <SelectItem
-</> value="richland">Richland</SelectItem><>
+</>
+value="richland">Richland</SelectItem><>
 
                           <SelectItem value="prosser">Prosser</SelectItem>
                           <SelectItem
-</> value="benton_city">Benton City</SelectItem>
+</>
+value="benton_city">Benton City</SelectItem>
                           <SelectItem value="west_richland">West Richland</SelectItem>
                         </SelectContent>
                       </Select>
@@ -503,7 +528,8 @@ export default function PropertySearchPage() {
 
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path
-</> className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</>
+className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                           Searching...
                         </span>
@@ -533,10 +559,12 @@ export default function PropertySearchPage() {
 
                       <TableHead>Parcel Number</TableHead>
                       <TableHead
+</>
 </>>Address</TableHead><>
 
                       <TableHead>Owner</TableHead>
                       <TableHead
+</>
 </>>Type</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -547,10 +575,12 @@ export default function PropertySearchPage() {
 
                         <TableCell className="font-mono">{result.parcelNumber}</TableCell>
                         <TableCell
+</>
 </>>{result.address}</TableCell><>
 
                         <TableCell>{result.ownerName}</TableCell>
                         <TableCell
+</>
 </>>{result.propertyType}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
@@ -588,7 +618,8 @@ export default function PropertySearchPage() {
 
                   <span>Showing {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'}</span>
                   <Button
-</> variant="link" size="sm" className="h-auto p-0">
+</>
+variant="link" size="sm" className="h-auto p-0">
                     <Send className="h-4 w-4 mr-1.5" />
                     Export Results
                   </Button>

@@ -15,6 +15,7 @@ export default function CollaborativeFeaturesDemo() {
 
           <CardTitle className="text-2xl">Collaborative Features Demo</CardTitle>
           <CardDescription
+</>
 </>>
             Explore the real-time collaboration capabilities of BentonGeoPro
           </CardDescription>
@@ -27,7 +28,8 @@ export default function CollaborativeFeaturesDemo() {
 
               <div className="font-medium mb-1">How to use this demo</div>
               <div
-</> className="text-sm">
+</>
+className="text-sm">
                 Open this page in multiple browser windows to simulate multiple users collaborating in real-time.
                 Each window will need to join the same room ID for collaboration.
               </div>
@@ -43,6 +45,7 @@ export default function CollaborativeFeaturesDemo() {
 
               <CardTitle>Collaboration Workspace</CardTitle>
               <CardDescription
+</>
 </>>
                 A unified environment for map collaboration, chat, and user presence
               </CardDescription>
@@ -58,6 +61,7 @@ export default function CollaborativeFeaturesDemo() {
 
               <CardTitle>Technical Details</CardTitle>
               <CardDescription
+</>
 </>>
                 How the collaboration system is implemented
               </CardDescription>
@@ -72,13 +76,15 @@ export default function CollaborativeFeaturesDemo() {
                     Architecture
                   </TabsTrigger>
                   <TabsTrigger
-</> value="messaging"><>
+</>
+value="messaging"><>
 
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Messaging
                   </TabsTrigger>
                   <TabsTrigger
-</> value="syncing">
+</>
+value="syncing">
                     <Share2 className="h-4 w-4 mr-2" />
                     State Syncing
                   </TabsTrigger>
@@ -88,13 +94,13 @@ export default function CollaborativeFeaturesDemo() {
 
                   <h3 className="text-lg font-medium">WebSocket Architecture</h3>
                   <p
+</>
 </>>
                     The collaboration system uses a WebSocket server built with the native 'ws' library in Node.js.
                     The server maintains a list of collaboration rooms, each with its own set of connected clients,
                     features, and annotations.
                   </p><>
 
-                  
                   <p>
                     The server implements a room-based collaboration model, where users can join specific rooms
                     and only receive updates relevant to those rooms. This allows multiple collaboration sessions
@@ -102,6 +108,7 @@ export default function CollaborativeFeaturesDemo() {
                   </p>
                   
                   <p
+</>
 </>>
                     We use ping/pong heartbeat messages to maintain connection status, and include reconnection
                     logic on the client to handle temporary disconnections.
@@ -112,6 +119,7 @@ export default function CollaborativeFeaturesDemo() {
 
                   <h3 className="text-lg font-medium">Message Protocol</h3>
                   <p
+</>
 </>>
                     Messages between clients and server follow a standard JSON format with fields for:
                   </p>
@@ -134,6 +142,7 @@ export default function CollaborativeFeaturesDemo() {
 
                   <h3 className="text-lg font-medium">State Synchronization</h3>
                   <p
+</>
 </>>
                     When a user joins a collaboration room, they receive the current state including:
                   </p>
@@ -141,11 +150,11 @@ export default function CollaborativeFeaturesDemo() {
 
                     <li>All existing GeoJSON features</li>
                             <li
+</>
 </>>All text annotations and notes</li>
                     <li>List of currently connected users</li>
                   </ul><>
 
-                  
                   <p>
                     Changes to features and annotations are immediately broadcast to all connected clients in the room.
                     This includes add, update, and delete operations. The server maintains the authoritative state and
@@ -153,6 +162,7 @@ export default function CollaborativeFeaturesDemo() {
                   </p>
                   
                   <p
+</>
 </>>
                     We use WebSocket instead of HTTP polling to enable true real-time updates with minimal latency,
                     critical for collaborative mapping and drawing.
@@ -169,6 +179,7 @@ export default function CollaborativeFeaturesDemo() {
 
               <CardTitle>WebSocket Health</CardTitle>
               <CardDescription
+</>
 </>>
                 Check the status of the WebSocket server
               </CardDescription>
@@ -179,6 +190,7 @@ export default function CollaborativeFeaturesDemo() {
 
                 <div className="h-3 w-3 rounded-full bg-green-500"></div>
                 <span
+</>
 </>>Server Status: Online</span>
               </div>
               
@@ -186,7 +198,8 @@ export default function CollaborativeFeaturesDemo() {
 
                 <div className="text-sm text-muted-foreground mb-1">Connected to:</div>
                 <code
-</> className="text-xs bg-muted p-1 rounded">wss://[your-domain]/ws</code>
+</>
+className="text-xs bg-muted p-1 rounded">wss://[your-domain]/ws</code>
               </div>
               
               <Separator />
@@ -195,7 +208,8 @@ export default function CollaborativeFeaturesDemo() {
 
                 <div className="text-sm font-medium mb-1">Room Information</div>
                 <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                   Active Rooms: <span className="font-mono">2</span>
                 </p>
                 <p className="text-sm text-muted-foreground">
@@ -217,7 +231,8 @@ export default function CollaborativeFeaturesDemo() {
 
                 <h3 className="text-sm font-medium mb-1">Joining a Room</h3>
                 <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                   Enter a room ID and click "Join Room" to enter a collaboration space.
                   Share the room ID with others to collaborate together.
                 </p>
@@ -227,7 +242,8 @@ export default function CollaborativeFeaturesDemo() {
 
                 <h3 className="text-sm font-medium mb-1">Chat Features</h3>
                 <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                   The chat system allows real-time messaging between all users in the same room.
                   Messages include sender information and timestamps.
                 </p>
@@ -237,14 +253,17 @@ export default function CollaborativeFeaturesDemo() {
 
                 <h3 className="text-sm font-medium mb-1">Coming Soon</h3>
                 <ul
-</> className="text-sm text-muted-foreground list-disc list-inside pl-2 space-y-1"><>
+</>
+className="text-sm text-muted-foreground list-disc list-inside pl-2 space-y-1"><>
 
                   <li>User presence indicators</li>
                             <li
+</>
 </>>Real-time cursor position sharing</li><>
 
                   <li>Collaborative drawing and annotations</li>
                             <li
+</>
 </>>Feature editing history and undo/redo</li>
                 </ul>
               </div>

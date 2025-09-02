@@ -100,7 +100,8 @@ export default function CostFactorTablesPage() {
       </div>
 
       <Tabs
-</> value={activeTab} onValueChange={setActiveTab} className="w-full">
+</>
+value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-slate-800/50 border-slate-700/50">
           <TabsTrigger value="base-rates" className="flex items-center gap-2"><>
 
@@ -108,19 +109,22 @@ export default function CostFactorTablesPage() {
             Base Rates
           </TabsTrigger>
           <TabsTrigger
-</> value="quality-factors" className="flex items-center gap-2"><>
+</>
+value="quality-factors" className="flex items-center gap-2"><>
 
             <TrendingUp className="h-4 w-4" />
             Quality Factors
           </TabsTrigger>
           <TabsTrigger
-</> value="regional-factors" className="flex items-center gap-2"><>
+</>
+value="regional-factors" className="flex items-center gap-2"><>
 
             <MapPin className="h-4 w-4" />
             Regional Factors
           </TabsTrigger>
           <TabsTrigger
-</> value="construction-factors" className="flex items-center gap-2">
+</>
+value="construction-factors" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Construction Types
           </TabsTrigger>
@@ -138,10 +142,12 @@ export default function CostFactorTablesPage() {
 
                     <TableHead>Building Type</TableHead>
                     <TableHead
+</>
 </>>Base Rate ($/sq ft)</TableHead><>
 
                     <TableHead>Category</TableHead>
                     <TableHead
+</>
 </>>Status</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -150,6 +156,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Single Family Residential</TableCell>
                     <TableCell
+</>
 </>>$150.00</TableCell>
                     <TableCell><Badge variant="outline">Residential</Badge></TableCell>
                     <TableCell><Badge variant="default" className="bg-emerald-600"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge></TableCell>
@@ -158,6 +165,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Multi-Family Residential</TableCell>
                     <TableCell
+</>
 </>>$140.00</TableCell>
                     <TableCell><Badge variant="outline">Residential</Badge></TableCell>
                     <TableCell><Badge variant="default" className="bg-emerald-600"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge></TableCell>
@@ -166,6 +174,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Commercial Office</TableCell>
                     <TableCell
+</>
 </>>$180.00</TableCell>
                     <TableCell><Badge variant="outline">Commercial</Badge></TableCell>
                     <TableCell><Badge variant="default" className="bg-emerald-600"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge></TableCell>
@@ -174,6 +183,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Commercial Retail</TableCell>
                     <TableCell
+</>
 </>>$160.00</TableCell>
                     <TableCell><Badge variant="outline">Commercial</Badge></TableCell>
                     <TableCell><Badge variant="default" className="bg-emerald-600"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge></TableCell>
@@ -182,6 +192,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Industrial Warehouse</TableCell>
                     <TableCell
+</>
 </>>$120.00</TableCell>
                     <TableCell><Badge>Industrial</Badge></TableCell>
                     <TableCell><Badge variant="default" className="bg-emerald-600"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge></TableCell>
@@ -190,6 +201,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Educational Facility</TableCell>
                     <TableCell
+</>
 </>>$200.00</TableCell>
                     <TableCell><Badge variant="outline">Institutional</Badge></TableCell>
                     <TableCell><Badge variant="default" className="bg-emerald-600"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge></TableCell>
@@ -212,10 +224,12 @@ export default function CostFactorTablesPage() {
 
                     <TableHead>Quality Class</TableHead>
                     <TableHead
+</>
 </>>Multiplier</TableHead><>
 
                     <TableHead>Impact</TableHead>
                     <TableHead
+</>
 </>>Description</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -224,6 +238,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Economy</TableCell>
                     <TableCell
+</>
 </>>0.85</TableCell>
                     <TableCell><Badge variant="destructive">-15%</Badge></TableCell>
                     <TableCell>Basic materials and finishes</TableCell>
@@ -232,6 +247,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Standard</TableCell>
                     <TableCell
+</>
 </>>1.00</TableCell>
                     <TableCell><Badge variant="outline">Baseline</Badge></TableCell>
                     <TableCell>Standard construction materials</TableCell>
@@ -240,6 +256,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Good</TableCell>
                     <TableCell
+</>
 </>>1.15</TableCell>
                     <TableCell><Badge variant="default" className="bg-amber-600">+15%</Badge></TableCell>
                     <TableCell>Above-average materials and finishes</TableCell>
@@ -248,6 +265,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Excellent</TableCell>
                     <TableCell
+</>
 </>>1.35</TableCell>
                     <TableCell><Badge variant="default" className="bg-amber-600">+35%</Badge></TableCell>
                     <TableCell>Premium materials and custom finishes</TableCell>
@@ -270,10 +288,12 @@ export default function CostFactorTablesPage() {
 
                     <TableHead>Region</TableHead>
                     <TableHead
+</>
 </>>Factor</TableHead><>
 
                     <TableHead>Adjustment</TableHead>
                     <TableHead
+</>
 </>>Market Conditions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -282,6 +302,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Benton County (Base)</TableCell>
                     <TableCell
+</>
 </>>1.00</TableCell>
                     <TableCell><Badge variant="outline">Baseline</Badge></TableCell>
                     <TableCell>Standard market rates</TableCell>
@@ -290,6 +311,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Corvallis</TableCell>
                     <TableCell
+</>
 </>>1.05</TableCell>
                     <TableCell><Badge variant="default" className="bg-amber-600">+5%</Badge></TableCell>
                     <TableCell>Higher demand, university town</TableCell>
@@ -298,6 +320,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Albany</TableCell>
                     <TableCell
+</>
 </>>1.02</TableCell>
                     <TableCell><Badge variant="default" className="bg-amber-600">+2%</Badge></TableCell>
                     <TableCell>Slightly elevated costs</TableCell>
@@ -306,6 +329,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Philomath</TableCell>
                     <TableCell
+</>
 </>>0.98</TableCell>
                     <TableCell><Badge variant="destructive">-2%</Badge></TableCell>
                     <TableCell>Lower cost area</TableCell>
@@ -328,10 +352,12 @@ export default function CostFactorTablesPage() {
 
                     <TableHead>Construction Type</TableHead>
                     <TableHead
+</>
 </>>Multiplier</TableHead><>
 
                     <TableHead>Cost Impact</TableHead>
                     <TableHead
+</>
 </>>Typical Use</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -340,6 +366,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Wood Frame</TableCell>
                     <TableCell
+</>
 </>>1.00</TableCell>
                     <TableCell><Badge variant="outline">Baseline</Badge></TableCell>
                     <TableCell>Most residential construction</TableCell>
@@ -348,6 +375,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Masonry</TableCell>
                     <TableCell
+</>
 </>>1.20</TableCell>
                     <TableCell><Badge variant="default" className="bg-amber-600">+20%</Badge></TableCell>
                     <TableCell>Commercial buildings, fire resistance</TableCell>
@@ -356,6 +384,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Steel Frame</TableCell>
                     <TableCell
+</>
 </>>1.30</TableCell>
                     <TableCell><Badge variant="default" className="bg-amber-600">+30%</Badge></TableCell>
                     <TableCell>Large commercial, industrial</TableCell>
@@ -364,6 +393,7 @@ export default function CostFactorTablesPage() {
 
                     <TableCell className="font-medium">Concrete</TableCell>
                     <TableCell
+</>
 </>>1.40</TableCell>
                     <TableCell><Badge variant="default" className="bg-amber-600">+40%</Badge></TableCell>
                     <TableCell>High-rise, institutional buildings</TableCell>

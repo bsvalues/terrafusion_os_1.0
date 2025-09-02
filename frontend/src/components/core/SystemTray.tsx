@@ -256,11 +256,14 @@ export const SystemTray: React.FC = () => {
             gutterBottom
             sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
           >
+
+
             <SpeedIcon />
             System Metrics
           </Typography>
 
           <List
+
 dense>
             {metrics.map((metric) => (
               <ListItem key={metric.id} sx={{ px: 0 }}>
@@ -275,10 +278,13 @@ dense>
                   primary={metric.name}
                   secondary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+
+
                       <Typography variant='body2' component='span'>
                         {formatValue(metric)}
                       </Typography>
                       <Chip
+
 label={metric.status}
                         size='small'
                         color={getStatusColor(metric.status) as any}
@@ -293,10 +299,13 @@ label={metric.status}
           <Divider sx={{ my: 1 }} />
 
           <Box sx={{ mt: 2 }}>
+
+
             <Typography variant='body2' color='text.secondary' gutterBottom>
               Terrafusion OS Status: All Systems Operational
             </Typography>
             <LinearProgress
+
 variant='determinate'
               value={95}
               color='success'
@@ -347,8 +356,11 @@ variant='determinate'
                     '&:hover': { bgcolor: 'action.selected' },
                   }}
                 >
+
+
                   <ListItemIcon>{getNotificationIcon(notification.type)}</ListItemIcon>
                   <ListItemText
+
 primary={
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant='subtitle2'>{notification.title}</Typography>
@@ -366,10 +378,13 @@ primary={
                     }
                     secondary={
                       <Box>
+
+
                         <Typography variant='body2' sx={{ mb: 0.5 }}>
                           {notification.message}
                         </Typography>
                         <Typography
+
 variant='caption' color='text.secondary'>
                           {notification.timestamp.toLocaleTimeString()}
                         </Typography>

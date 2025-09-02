@@ -129,6 +129,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
             <h2 className="text-2xl font-bold">Apply for Permit</h2>
             <button
 </>
+
               onClick={onClose}
               className="p-2 hover:bg-white/20 rounded-lg transition-colors"
             >
@@ -154,7 +155,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                       )}
                     </div>
                     <span
-</> className="text-sm hidden md:block">{step.label}</span>
+</>
+className="text-sm hidden md:block">{step.label}</span>
                   </div>
                   {index < steps.length - 1 && (
                     <div className={`w-8 md:w-16 h-0.5 mx-2 ${
@@ -182,7 +184,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                   <h3 className="text-xl font-semibold text-gray-900 mb-6">What type of permit do you need?</h3>
                   <div
-</> className="grid grid-cols-1 md:grid-cols-2 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {permitTypes.map((permit) => (
                       <motion.button
                         key={permit.id}
@@ -202,13 +205,15 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                             <h4 className="font-semibold text-gray-900">{permit.name}</h4>
                             <p
-</> className="text-sm text-gray-600 mt-1">Processing: {permit.processing}</p>
+</>
+className="text-sm text-gray-600 mt-1">Processing: {permit.processing}</p>
                           </div>
                           <div className="text-right"><>
 
                             <div className="text-lg font-bold text-gray-900">${permit.fee}</div>
                             <div
-</> className="text-xs text-gray-500">Base fee</div>
+</>
+className="text-xs text-gray-500">Base fee</div>
                           </div>
                         </div>
                       </motion.button>
@@ -223,14 +228,16 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                   <h3 className="text-xl font-semibold text-gray-900 mb-6">Property Information</h3>
                   <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                     <div><>
 
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Property Address *
                       </label>
                       <div
-</> className="relative">
+</>
+className="relative">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
                           type="text"
@@ -250,6 +257,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                       </label>
                       <input
 </>
+
                         type="text"
                         value={formData.parcelNumber}
                         onChange={(e) => setFormData(prev => ({ ...prev, parcelNumber: e.target.value }))}
@@ -266,6 +274,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                         </label>
                         <input
 </>
+
                           type="text"
                           value={formData.ownerName}
                           onChange={(e) => setFormData(prev => ({ ...prev, ownerName: e.target.value }))}
@@ -280,6 +289,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                         </label>
                         <input
 </>
+
                           type="tel"
                           value={formData.ownerPhone}
                           onChange={(e) => setFormData(prev => ({ ...prev, ownerPhone: e.target.value }))}
@@ -297,6 +307,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                           <p className="font-medium mb-1">Property Verification</p>
                           <p
+</>
 </>>We'll automatically verify this property information against county records. If you're not the owner, you'll need to provide authorization.</p>
                         </div>
                       </div>
@@ -311,7 +322,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                   <h3 className="text-xl font-semibold text-gray-900 mb-6">Project Details</h3>
                   <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                     <div><>
 
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -319,6 +331,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                       </label>
                       <textarea
 </>
+
                         value={formData.projectDescription}
                         onChange={(e) => setFormData(prev => ({ ...prev, projectDescription: e.target.value }))}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -335,7 +348,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                           Estimated Project Cost *
                         </label>
                         <div
-</> className="relative">
+</>
+className="relative">
                           <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                           <input
                             type="number"
@@ -354,6 +368,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                         </label>
                         <select
 </>
+
                           value={formData.projectType}
                           onChange={(e) => setFormData(prev => ({ ...prev, projectType: e.target.value }))}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -361,15 +376,18 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                           <option value="">Select type...</option>
                           <option
-</> value="new">New Construction</option><>
+</>
+value="new">New Construction</option><>
 
                           <option value="addition">Addition</option>
                           <option
-</> value="alteration">Alteration</option><>
+</>
+value="alteration">Alteration</option><>
 
                           <option value="repair">Repair</option>
                           <option
-</> value="replacement">Replacement</option>
+</>
+value="replacement">Replacement</option>
                         </select>
                       </div>
                     </div>
@@ -382,6 +400,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                         </label>
                         <input
 </>
+
                           type="date"
                           value={formData.startDate}
                           onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
@@ -395,6 +414,7 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                         </label>
                         <input
 </>
+
                           type="date"
                           value={formData.endDate}
                           onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
@@ -409,7 +429,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                         Contractor Information (if applicable)
                       </label>
                       <div
-</> className="grid grid-cols-1 md:grid-cols-2 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input
                           type="text"
                           value={formData.contractorName}
@@ -437,30 +458,35 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
                   <h3 className="text-xl font-semibold text-gray-900 mb-6">Upload Documents</h3>
                   
                   <div
-</> className="mb-6"><>
+</>
+className="mb-6"><>
 
                     <p className="text-gray-600 mb-4">Please upload the following required documents:</p>
                     <ul
-</> className="space-y-2 text-sm text-gray-700">
+</>
+className="space-y-2 text-sm text-gray-700">
                       <li className="flex items-center gap-2"><>
 
                         <CheckCircle className="w-4 h-4 text-green-500" />
                         Site plan or plot plan
                       </li>
                       <li
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                         <CheckCircle className="w-4 h-4 text-green-500" />
                         Construction drawings/blueprints
                       </li>
                       <li
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                         <AlertCircle className="w-4 h-4 text-yellow-500" />
                         Contractor license (if applicable)
                       </li>
                       <li
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                         <AlertCircle className="w-4 h-4 text-yellow-500" />
                         Property deed or authorization letter
                       </li>
@@ -473,7 +499,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                     <p className="text-gray-600 mb-2">Drag and drop files here, or click to browse</p>
                     <p
-</> className="text-sm text-gray-500 mb-4">PDF, JPG, PNG up to 10MB each</p>
+</>
+className="text-sm text-gray-500 mb-4">PDF, JPG, PNG up to 10MB each</p>
                     <input
                       type="file"
                       multiple
@@ -496,7 +523,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                       <h4 className="font-medium text-gray-900 mb-3">Uploaded Documents</h4>
                       <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                         {formData.documents.map((doc /* , index */) => (
                           <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-center gap-3">
@@ -504,7 +532,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                               <span className="text-sm text-gray-700">{doc.name}</span>
                               <span
-</> className="text-xs text-gray-500">
+</>
+className="text-xs text-gray-500">
                                 ({(doc.size / 1024).toFixed(1)} KB)
                               </span>
                             </div>
@@ -532,12 +561,14 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                     <h4 className="font-semibold text-gray-900 mb-4">Application Summary</h4>
                     <dl
-</> className="space-y-3 text-sm">
+</>
+className="space-y-3 text-sm">
                       <div className="flex justify-between"><>
 
                         <dt className="text-gray-600">Permit Type:</dt>
                         <dd
-</> className="font-medium text-gray-900">
+</>
+className="font-medium text-gray-900">
                           {permitTypes.find(p => p.id === formData.permitType)?.name}
                         </dd>
                       </div>
@@ -545,19 +576,22 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                         <dt className="text-gray-600">Property:</dt>
                         <dd
-</> className="font-medium text-gray-900">{formData.propertyAddress}</dd>
+</>
+className="font-medium text-gray-900">{formData.propertyAddress}</dd>
                       </div>
                       <div className="flex justify-between"><>
 
                         <dt className="text-gray-600">Project Cost:</dt>
                         <dd
-</> className="font-medium text-gray-900">${formData.estimatedCost}</dd>
+</>
+className="font-medium text-gray-900">${formData.estimatedCost}</dd>
                       </div>
                       <div className="flex justify-between"><>
 
                         <dt className="text-gray-600">Documents:</dt>
                         <dd
-</> className="font-medium text-gray-900">{formData.documents.length} files</dd>
+</>
+className="font-medium text-gray-900">{formData.documents.length} files</dd>
                       </div>
                     </dl>
                   </div>
@@ -567,12 +601,14 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                     <h4 className="font-semibold text-gray-900 mb-4">Fee Breakdown</h4>
                     <dl
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                       <div className="flex justify-between"><>
 
                         <dt className="text-gray-600">Base Permit Fee:</dt>
                         <dd
-</> className="font-medium text-gray-900">
+</>
+className="font-medium text-gray-900">
                           ${permitTypes.find(p => p.id === formData.permitType)?.fee || 0}
                         </dd>
                       </div>
@@ -581,7 +617,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                           <dt className="text-gray-600">Valuation Fee (1% of project cost):</dt>
                           <dd
-</> className="font-medium text-gray-900">
+</>
+className="font-medium text-gray-900">
                             ${(parseFloat(formData.estimatedCost) * 0.01).toFixed(2)}
                           </dd>
                         </div>
@@ -590,7 +627,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
 
                         <dt className="font-semibold text-gray-900">Total Due:</dt>
                         <dd
-</> className="font-bold text-lg text-gray-900">
+</>
+className="font-bold text-lg text-gray-900">
                           ${calculateFee().toFixed(2)}
                         </dd>
                       </div>
@@ -680,7 +718,8 @@ export const PermitApplication: React.FC<PermitApplicationProps> = ({ user, onCl
             </button>
 
             <div
-</> className="flex items-center gap-3">
+</>
+className="flex items-center gap-3">
               <button
                 onClick={onClose}
                 className="px-4 py-2 text-gray-600 hover:text-gray-900"

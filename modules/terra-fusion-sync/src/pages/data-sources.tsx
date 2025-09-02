@@ -15,11 +15,13 @@ export default function DataSources() {
       <h1 className="text-3xl font-bold mb-8">Data Sources</h1>
 
       <div
-</> className="grid gap-6 md:grid-cols-2">
+</>
+className="grid gap-6 md:grid-cols-2">
         <div><>
 
           <h2 className="text-xl font-semibold mb-4">Add Data Source</h2>
           <Card
+</>
 </>>
             <CardContent className="pt-6">
               <DataSourceForm />
@@ -42,6 +44,7 @@ export default function DataSources() {
 
                       <CardTitle>{source.name}</CardTitle>
                       <Badge
+</>
 </>>{source.type}</Badge>
                     </div>
                   </CardHeader>

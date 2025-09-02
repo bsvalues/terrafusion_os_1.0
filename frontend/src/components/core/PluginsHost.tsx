@@ -134,8 +134,11 @@ const PluginsHost: React.FC = () => {
   return (
     <section className={styles.container} aria-label='Terrafusion Plugins Host'>
       <header className={styles.header}>
+
+
         <h3 className={styles.title}>Kernel Modules</h3>
         <div
+
 className={styles.status} data-status={state.status}>
           Status: {state.status}
         </div>
@@ -152,8 +155,11 @@ className={styles.status} data-status={state.status}>
         {mods.map((m) => (
           <div key={m} className={styles.card} id={`plugin-${m}`}>
             <div className={styles.cardHeader}>
+
+
               <span className={styles.moduleIcon}>🧩</span>
               <span
+
 className={styles.moduleName}>{m}</span>
               {statuses[m] === 'loading' && <span title='Loading'>⏳</span>}
               {statuses[m] === 'loaded' && <span title='Loaded'>✅</span>}

@@ -56,11 +56,13 @@ export function Header({ className, notificationCount = 0 }: HeaderProps) {
               BC
             </div>
             <div
+</>
 </>><>
 
               <h1 className="text-xl font-bold">Benton County GIS</h1>
               <p
-</> className="text-xs text-gray-500">Assessor's Office</p>
+</>
+className="text-xs text-gray-500">Assessor's Office</p>
             </div>
           </div>
         </Link>
@@ -97,7 +99,8 @@ export function Header({ className, notificationCount = 0 }: HeaderProps) {
 
             <DropdownMenuLabel>Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator
-</> />
+</>
+/>
             <div className="max-h-[300px] overflow-y-auto p-1">
               <NotificationItem 
                 title="New Workflow Assignment" 
@@ -117,7 +120,8 @@ export function Header({ className, notificationCount = 0 }: HeaderProps) {
               />
             </div>
             <DropdownMenuSeparator
-</> />
+</>
+/>
             <div className="py-2 px-3">
               <Link href="/workflow-dashboard">
                 <Button variant="link" size="sm" className="w-full justify-center">
@@ -137,7 +141,8 @@ export function Header({ className, notificationCount = 0 }: HeaderProps) {
                 {user?.username?.charAt(0).toUpperCase() || 'U'}
               </div>
               <span
-</> className="font-medium max-w-[100px] truncate hidden sm:block">
+</>
+className="font-medium max-w-[100px] truncate hidden sm:block">
                 {user?.username || 'User'}
               </span>
               <ChevronDown size={16} />
@@ -147,7 +152,8 @@ export function Header({ className, notificationCount = 0 }: HeaderProps) {
 
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator
-</> />
+</>
+/>
             <DropdownMenuItem className="flex items-center gap-2">
               <User size={16} />
               <span>Profile</span>
@@ -217,7 +223,8 @@ function NotificationItem({ title, message, time }: NotificationItemProps) {
 
         <h4 className="text-sm font-medium">{title}</h4>
         <span
-</> className="text-xs text-gray-500">{time}</span>
+</>
+className="text-xs text-gray-500">{time}</span>
       </div>
       <p className="text-xs text-gray-600 mt-1">{message}</p>
     </div>

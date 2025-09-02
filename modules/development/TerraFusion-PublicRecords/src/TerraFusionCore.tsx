@@ -415,13 +415,15 @@ const TerraFusionCore: React.FC = () => {
               <Brain className="text-white" size={32} />
             </div>
             <div
+</>
 </>><>
 
               <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 Terrafusion Core
               </h1>
               <p
-</> className="text-slate-400">Government Intelligence Platform • Version 4.1.0</p>
+</>
+className="text-slate-400">Government Intelligence Platform • Version 4.1.0</p>
             </div>
           </div>
           <div className="flex items-center gap-6">
@@ -429,13 +431,15 @@ const TerraFusionCore: React.FC = () => {
 
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               <span
-</> className="text-green-400 font-medium">All Systems Operational</span>
+</>
+className="text-green-400 font-medium">All Systems Operational</span>
             </div>
             <div className="px-4 py-2 bg-slate-800/50 rounded-lg border border-slate-700"><>
 
               <span className="text-sm text-slate-400">Uptime: </span>
               <span
-</> className="font-mono text-green-400">{systemStatus.uptime}</span>
+</>
+className="font-mono text-green-400">{systemStatus.uptime}</span>
             </div>
           </div>
         </div>
@@ -450,7 +454,8 @@ const TerraFusionCore: React.FC = () => {
 
             <div className="text-2xl font-bold">{systemStatus.counties}</div>
             <div
-</> className="text-xs text-slate-400">Counties Live</div>
+</>
+className="text-xs text-slate-400">Counties Live</div>
           </div>
           <div className="bg-slate-800/30 backdrop-blur-xl rounded-xl border border-slate-700/50 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -460,7 +465,8 @@ const TerraFusionCore: React.FC = () => {
 
             <div className="text-2xl font-bold">{(systemStatus.activeUsers / 1000).toFixed(1)}K</div>
             <div
-</> className="text-xs text-slate-400">Users Now</div>
+</>
+className="text-xs text-slate-400">Users Now</div>
           </div>
           <div className="bg-slate-800/30 backdrop-blur-xl rounded-xl border border-slate-700/50 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -470,7 +476,8 @@ const TerraFusionCore: React.FC = () => {
 
             <div className="text-2xl font-bold">{(systemStatus.totalRequests / 1000000).toFixed(1)}M</div>
             <div
-</> className="text-xs text-slate-400">Requests</div>
+</>
+className="text-xs text-slate-400">Requests</div>
           </div>
           <div className="bg-slate-800/30 backdrop-blur-xl rounded-xl border border-slate-700/50 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -480,7 +487,8 @@ const TerraFusionCore: React.FC = () => {
 
             <div className="text-2xl font-bold">{systemStatus.aiModels}</div>
             <div
-</> className="text-xs text-slate-400">Models Active</div>
+</>
+className="text-xs text-slate-400">Models Active</div>
           </div>
           <div className="bg-slate-800/30 backdrop-blur-xl rounded-xl border border-slate-700/50 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -490,7 +498,8 @@ const TerraFusionCore: React.FC = () => {
 
             <div className="text-2xl font-bold">{systemStatus.dataProcessed}</div>
             <div
-</> className="text-xs text-slate-400">Processed</div>
+</>
+className="text-xs text-slate-400">Processed</div>
           </div>
           <div className="bg-slate-800/30 backdrop-blur-xl rounded-xl border border-slate-700/50 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -500,7 +509,8 @@ const TerraFusionCore: React.FC = () => {
 
             <div className="text-2xl font-bold">${(systemStatus.costSavings / 1000000).toFixed(1)}M</div>
             <div
-</> className="text-xs text-slate-400">This Year</div>
+</>
+className="text-xs text-slate-400">This Year</div>
           </div>
         </div>
       </div>
@@ -513,7 +523,8 @@ const TerraFusionCore: React.FC = () => {
           Active Modules
         </h2>
         <div
-</> className="grid grid-cols-5 gap-3">
+</>
+className="grid grid-cols-5 gap-3">
           {modules.map(module => (
             <div key={module.id} className="bg-slate-800/30 backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 hover:bg-slate-800/50 transition-all">
               <div className="flex items-start justify-between mb-3">
@@ -522,7 +533,8 @@ const TerraFusionCore: React.FC = () => {
                   <module.icon className="text-white" size={20} />
                 </div>
                 <div
-</> className="flex items-center gap-1"><>
+</>
+className="flex items-center gap-1"><>
 
                   <div className={`w-1.5 h-1.5 rounded-full ${
                     module.status === 'online' ? 'bg-green-500' :
@@ -530,13 +542,15 @@ const TerraFusionCore: React.FC = () => {
                     'bg-red-500'
                   }`}></div>
                   <span
-</> className="text-xs capitalize">{module.status}</span>
+</>
+className="text-xs capitalize">{module.status}</span>
                 </div>
               </div><>
 
               <h3 className="font-semibold text-sm mb-1">{module.name}</h3>
               <p
-</> className="text-xs text-slate-400 mb-3">{module.description}</p>
+</>
+className="text-xs text-slate-400 mb-3">{module.description}</p>
               {module.aiPowered && (
                 <div className="flex items-center gap-1 mb-2">
                   <Sparkles className="text-purple-400" size={12} />
@@ -548,7 +562,8 @@ const TerraFusionCore: React.FC = () => {
 
                   <span className="text-slate-400">Performance</span>
                   <span
-</> className="text-green-400">{module.performance}%</span>
+</>
+className="text-green-400">{module.performance}%</span>
                 </div>
                 <div className="h-1 bg-slate-700 rounded-full overflow-hidden"><>
 
@@ -558,11 +573,13 @@ const TerraFusionCore: React.FC = () => {
                   />
                 </div>
                 <div
-</> className="flex justify-between text-xs"><>
+</>
+className="flex justify-between text-xs"><>
 
                   <span className="text-slate-400">Requests</span>
                   <span
-</> className="font-mono">{(module.requests / 1000).toFixed(0)}K</span>
+</>
+className="font-mono">{(module.requests / 1000).toFixed(0)}K</span>
                 </div>
               </div>
             </div>
@@ -579,7 +596,8 @@ const TerraFusionCore: React.FC = () => {
             Network Infrastructure
           </h3>
           <div
-</> className="space-y-2">
+</>
+className="space-y-2">
             {networkNodes.slice(0, 5).map(node => (
               <div key={node.id} className="flex items-center justify-between p-2 hover:bg-slate-700/30 rounded-lg transition-all">
                 <div className="flex items-center gap-3"><>
@@ -590,18 +608,21 @@ const TerraFusionCore: React.FC = () => {
                     'bg-red-500'
                   }`}></div>
                   <div
+</>
 </>><>
 
                     <p className="text-sm font-medium">{node.location}</p>
                     <p
-</> className="text-xs text-slate-400">{node.type} • {node.connections.toLocaleString()} connections</p>
+</>
+className="text-xs text-slate-400">{node.type} • {node.connections.toLocaleString()} connections</p>
                   </div>
                 </div>
                 <div className="text-right"><>
 
                   <div className="text-sm font-mono">{node.latency}ms</div>
                   <div
-</> className="text-xs text-slate-400">{node.load}% load</div>
+</>
+className="text-xs text-slate-400">{node.load}% load</div>
                 </div>
               </div>
             ))}
@@ -615,7 +636,8 @@ const TerraFusionCore: React.FC = () => {
             AI Model Performance
           </h3>
           <div
-</> className="space-y-2">
+</>
+className="space-y-2">
             {aiModels.map(model => (
               <div key={model.id} className="flex items-center justify-between p-2 hover:bg-slate-700/30 rounded-lg transition-all">
                 <div className="flex items-center gap-3"><>
@@ -626,18 +648,21 @@ const TerraFusionCore: React.FC = () => {
                     'bg-gray-500'
                   }`}></div>
                   <div
+</>
 </>><>
 
                     <p className="text-sm font-medium">{model.name}</p>
                     <p
-</> className="text-xs text-slate-400">{model.type} • v{model.version}</p>
+</>
+className="text-xs text-slate-400">{model.type} • v{model.version}</p>
                   </div>
                 </div>
                 <div className="text-right"><>
 
                   <div className="text-sm font-mono text-green-400">{model.accuracy}%</div>
                   <div
-</> className="text-xs text-slate-400">{(model.predictions / 1000000).toFixed(1)}M predictions</div>
+</>
+className="text-xs text-slate-400">{(model.predictions / 1000000).toFixed(1)}M predictions</div>
                 </div>
               </div>
             ))}
@@ -652,7 +677,8 @@ const TerraFusionCore: React.FC = () => {
           Government. Transcended.
         </h2>
         <p
-</> className="text-slate-400 mb-4">
+</>
+className="text-slate-400 mb-4">
           379,000,000× faster than legacy systems • 94% citizen satisfaction • $47M saved annually
         </p>
         <div className="flex justify-center gap-8">
@@ -660,25 +686,29 @@ const TerraFusionCore: React.FC = () => {
 
             <div className="text-2xl font-bold text-green-400">{(systemStatus.citizensServed / 1000000).toFixed(1)}M</div>
             <div
-</> className="text-sm text-slate-400">Citizens Served</div>
+</>
+className="text-sm text-slate-400">Citizens Served</div>
           </div>
           <div><>
 
             <div className="text-2xl font-bold text-blue-400">{systemStatus.accuracy}%</div>
             <div
-</> className="text-sm text-slate-400">AI Accuracy</div>
+</>
+className="text-sm text-slate-400">AI Accuracy</div>
           </div>
           <div><>
 
             <div className="text-2xl font-bold text-purple-400">{systemStatus.states}</div>
             <div
-</> className="text-sm text-slate-400">States Live</div>
+</>
+className="text-sm text-slate-400">States Live</div>
           </div>
           <div><>
 
             <div className="text-2xl font-bold text-yellow-400">{systemStatus.federalAgencies}</div>
             <div
-</> className="text-sm text-slate-400">Federal Agencies</div>
+</>
+className="text-sm text-slate-400">Federal Agencies</div>
           </div>
         </div>
       </div>

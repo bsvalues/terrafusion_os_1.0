@@ -179,7 +179,8 @@ export const ProactiveNotifications: React.FC = () => {
             Proactive Notifications
           </h2>
           <p
-</> className="text-gray-600 mt-1">
+</>
+className="text-gray-600 mt-1">
             AI monitors your county 24/7 and alerts you to what matters
           </p>
         </div>
@@ -203,13 +204,15 @@ export const ProactiveNotifications: React.FC = () => {
             <Sparkles className="w-6 h-6" />
           </div>
           <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
             <h3 className="text-xl font-bold mb-2">
               AI is actively monitoring for you
             </h3>
             <p
-</> className="text-white/90 mb-4">
+</>
+className="text-white/90 mb-4">
               Our AI agents are watching 47,892,341 records for patterns that affect you.
               You'll be notified instantly when something important happens.
             </p>
@@ -218,19 +221,22 @@ export const ProactiveNotifications: React.FC = () => {
 
                 <div className="text-2xl font-bold">1,247</div>
                 <div
-</> className="text-sm text-white/70">Active monitors</div>
+</>
+className="text-sm text-white/70">Active monitors</div>
               </div>
               <div><>
 
                 <div className="text-2xl font-bold">$4.2K</div>
                 <div
-</> className="text-sm text-white/70">Savings found</div>
+</>
+className="text-sm text-white/70">Savings found</div>
               </div>
               <div><>
 
                 <div className="text-2xl font-bold">0.3s</div>
                 <div
-</> className="text-sm text-white/70">Alert speed</div>
+</>
+className="text-sm text-white/70">Alert speed</div>
               </div>
             </div>
           </div>
@@ -255,7 +261,8 @@ export const ProactiveNotifications: React.FC = () => {
 
             <div className="text-sm font-medium text-gray-900">{category.label}</div>
             <div
-</> className="text-xs text-gray-500">{category.count} active</div>
+</>
+className="text-xs text-gray-500">{category.count} active</div>
           </motion.button>
         ))}
       </div>
@@ -286,7 +293,8 @@ export const ProactiveNotifications: React.FC = () => {
                         {notification.title}
                       </h3>
                       <p
-</> className="text-sm text-gray-600 mt-1">
+</>
+className="text-sm text-gray-600 mt-1">
                         {notification.message}
                       </p>
                     </div>
@@ -333,7 +341,8 @@ export const ProactiveNotifications: React.FC = () => {
                       {showDetail.title}
                     </h3>
                     <p
-</> className="text-sm text-gray-500 mt-1">
+</>
+className="text-sm text-gray-500 mt-1">
                       {getTimeAgo(showDetail.timestamp)}
                     </p>
                   </div>
@@ -357,7 +366,8 @@ export const ProactiveNotifications: React.FC = () => {
                         {key.replace(/_/g, ' ')}:
                       </span>
                       <span
-</> className="text-sm font-medium text-gray-900">
+</>
+className="text-sm font-medium text-gray-900">
                         {value as string}
                       </span>
                     </div>
