@@ -1,0 +1,7 @@
+Test: file_permissions_check
+Command: test -r '/c/Users/bsval/terrafusion-ops-tools/scripts' && test -x '/c/Users/bsval/terrafusion-ops-tools/scripts'
+Expected: 0
+Actual: 0
+Output:
+
+Timestamp: Thu, Jul 24, 2025  5:26:26 PM

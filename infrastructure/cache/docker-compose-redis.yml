@@ -1,0 +1,488 @@
+# TerraFusion OS Redis Cluster Docker Compose Configuration
+# PhD-Level Caching Infrastructure with Negative Caching Optimization
+# Production-Ready Redis Setup for Government Property Assessment Systems
+
+version: '3.8'
+
+services:
+  # ===========================================================================
+  # REDIS MASTER - PRIMARY CACHE NODE
+  # ===========================================================================
+  terrafusion-redis-master:
+    image: redis:7.2-alpine
+    container_name: terrafusion-redis-master
+    restart: unless-stopped
+    
+    command: >
+      redis-server 
+      /etc/redis/redis.conf
+      --save 60 1000
+      --loglevel notice
+      --maxmemory 4gb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --requirepass TF_Redis_Master_2025_Secure!
+      
+    volumes:
+      # Redis configuration
+      - ./config/redis/redis-master.conf:/etc/redis/redis.conf:ro
+      
+      # Lua scripts for negative caching
+      - ./config/redis/lua-scripts:/opt/redis-lua:ro
+      
+      # Data persistence
+      - redis_master_data:/data
+      - redis_master_logs:/var/log/redis
+      
+      # SSL certificates for government compliance
+      - ./ssl/certs/redis-master.crt:/etc/ssl/certs/redis-master.crt:ro
+      - ./ssl/private/redis-master.key:/etc/ssl/private/redis-master.key:ro
+      - ./ssl/certs/redis-ca.crt:/etc/ssl/certs/redis-ca.crt:ro
+      - ./ssl/certs/redis-dhparams.pem:/etc/ssl/certs/redis-dhparams.pem:ro
+      
+    ports:
+      - "6379:6379"    # Standard Redis port
+      - "6380:6380"    # TLS Redis port
+      
+    networks:
+      - terrafusion-network
+      
+    healthcheck:
+      test: ["CMD", "redis-cli", "--tls", "--cert", "/etc/ssl/certs/redis-master.crt", "--key", "/etc/ssl/private/redis-master.key", "--cacert", "/etc/ssl/certs/redis-ca.crt", "-a", "TF_Redis_Master_2025_Secure!", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 6G
+        reservations:
+          cpus: '2.0'
+          memory: 4G
+          
+    security_opt:
+      - no-new-privileges:true
+      
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=TF_Redis_Master_2025_Secure!
+      
+    labels:
+      - "component=cache"
+      - "role=master"
+      - "environment=production"
+      - "compliance=government-grade"
+
+  # ===========================================================================
+  # REDIS REPLICA 1 - READ REPLICA FOR NEGATIVE CACHE QUERIES
+  # ===========================================================================
+  terrafusion-redis-replica1:
+    image: redis:7.2-alpine
+    container_name: terrafusion-redis-replica1
+    restart: unless-stopped
+    
+    command: >
+      redis-server 
+      /etc/redis/redis.conf
+      --save 3600 1
+      --loglevel notice
+      --maxmemory 3gb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --requirepass TF_Redis_Replica_2025_Secure!
+      --masterauth TF_Redis_Master_2025_Secure!
+      --slaveof terrafusion-redis-master 6379
+      --slave-read-only yes
+      
+    volumes:
+      - ./config/redis/redis-replica.conf:/etc/redis/redis.conf:ro
+      - ./config/redis/lua-scripts:/opt/redis-lua:ro
+      - redis_replica1_data:/data
+      - redis_replica1_logs:/var/log/redis
+      - ./ssl/certs/redis-replica.crt:/etc/ssl/certs/redis-replica.crt:ro
+      - ./ssl/private/redis-replica.key:/etc/ssl/private/redis-replica.key:ro
+      - ./ssl/certs/redis-ca.crt:/etc/ssl/certs/redis-ca.crt:ro
+      - ./ssl/certs/redis-dhparams.pem:/etc/ssl/certs/redis-dhparams.pem:ro
+      
+    ports:
+      - "6381:6379"
+      - "6382:6380"
+      
+    networks:
+      - terrafusion-network
+      
+    depends_on:
+      - terrafusion-redis-master
+      
+    healthcheck:
+      test: ["CMD", "redis-cli", "--tls", "--cert", "/etc/ssl/certs/redis-replica.crt", "--key", "/etc/ssl/private/redis-replica.key", "--cacert", "/etc/ssl/certs/redis-ca.crt", "-a", "TF_Redis_Replica_2025_Secure!", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+          
+    security_opt:
+      - no-new-privileges:true
+      
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=terrafusion-redis-master
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - REDIS_MASTER_PASSWORD=TF_Redis_Master_2025_Secure!
+      - REDIS_PASSWORD=TF_Redis_Replica_2025_Secure!
+      
+    labels:
+      - "component=cache"
+      - "role=replica"
+      - "replica-id=1"
+      - "purpose=read-queries"
+      - "environment=production"
+
+  # ===========================================================================
+  # REDIS REPLICA 2 - ANALYTICS AND REPORTING REPLICA
+  # ===========================================================================
+  terrafusion-redis-replica2:
+    image: redis:7.2-alpine
+    container_name: terrafusion-redis-replica2
+    restart: unless-stopped
+    
+    command: >
+      redis-server 
+      /etc/redis/redis.conf
+      --save 3600 1
+      --loglevel notice
+      --maxmemory 3gb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --requirepass TF_Redis_Analytics_2025_Secure!
+      --masterauth TF_Redis_Master_2025_Secure!
+      --slaveof terrafusion-redis-master 6379
+      --slave-read-only yes
+      
+    volumes:
+      - ./config/redis/redis-replica.conf:/etc/redis/redis.conf:ro
+      - ./config/redis/lua-scripts:/opt/redis-lua:ro
+      - redis_replica2_data:/data
+      - redis_replica2_logs:/var/log/redis
+      - ./ssl/certs/redis-replica.crt:/etc/ssl/certs/redis-replica.crt:ro
+      - ./ssl/private/redis-replica.key:/etc/ssl/private/redis-replica.key:ro
+      - ./ssl/certs/redis-ca.crt:/etc/ssl/certs/redis-ca.crt:ro
+      
+    ports:
+      - "6383:6379"
+      - "6384:6380"
+      
+    networks:
+      - terrafusion-network
+      
+    depends_on:
+      - terrafusion-redis-master
+      
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "TF_Redis_Analytics_2025_Secure!", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '3.0'
+          memory: 5G
+        reservations:
+          cpus: '1.5'
+          memory: 3G
+          
+    security_opt:
+      - no-new-privileges:true
+      
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=terrafusion-redis-master
+      - REDIS_PASSWORD=TF_Redis_Analytics_2025_Secure!
+      
+    labels:
+      - "component=cache"
+      - "role=replica"
+      - "replica-id=2" 
+      - "purpose=analytics"
+      - "environment=production"
+
+  # ===========================================================================
+  # REDIS SENTINEL - HIGH AVAILABILITY MONITORING
+  # ===========================================================================
+  terrafusion-redis-sentinel1:
+    image: redis:7.2-alpine
+    container_name: terrafusion-redis-sentinel1
+    restart: unless-stopped
+    
+    command: >
+      redis-sentinel /etc/redis-sentinel/sentinel.conf
+      
+    volumes:
+      - ./config/redis/sentinel.conf:/etc/redis-sentinel/sentinel.conf:ro
+      - ./scripts/redis-sentinel:/opt/redis-sentinel:ro
+      - redis_sentinel1_data:/data
+      - redis_sentinel1_logs:/var/log/redis
+      - ./ssl/certs/sentinel.crt:/etc/ssl/certs/sentinel.crt:ro
+      - ./ssl/private/sentinel.key:/etc/ssl/private/sentinel.key:ro
+      - ./ssl/certs/redis-ca.crt:/etc/ssl/certs/redis-ca.crt:ro
+      
+    ports:
+      - "26379:26379"
+      - "26380:26380"
+      
+    networks:
+      - terrafusion-network
+      
+    depends_on:
+      - terrafusion-redis-master
+      
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "26379", "-a", "TF_Sentinel_2025_Secure!", "sentinel", "masters"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+          
+    environment:
+      - SENTINEL_MASTER_NAME=terrafusion-master
+      - SENTINEL_MASTER_HOST=terrafusion-redis-master
+      - SENTINEL_MASTER_PORT=6379
+      - SENTINEL_QUORUM=2
+      
+    labels:
+      - "component=cache"
+      - "role=sentinel"
+      - "sentinel-id=1"
+      - "environment=production"
+
+  # ===========================================================================
+  # REDIS EXPORTER - PROMETHEUS MONITORING
+  # ===========================================================================
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.55.0
+    container_name: terrafusion-redis-exporter
+    restart: unless-stopped
+    
+    environment:
+      REDIS_ADDR: "redis://terrafusion-redis-master:6379"
+      REDIS_PASSWORD: "TF_Redis_Master_2025_Secure!"
+      REDIS_EXPORTER_INCLUDE_SYSTEM_METRICS: "true"
+      REDIS_EXPORTER_INCL_CONFIG_METRICS: "true"
+      REDIS_EXPORTER_LOG_FORMAT: "json"
+      REDIS_EXPORTER_DEBUG: "false"
+      REDIS_EXPORTER_CHECK_KEYS: "tf_stats:*,tf_miss:*,tf_cache:*"
+      REDIS_EXPORTER_CHECK_SINGLE_KEYS: "tf_stats:cache_performance,tf_stats:negative_cache_performance"
+      
+    ports:
+      - "9121:9121"
+      
+    networks:
+      - terrafusion-network
+      
+    depends_on:
+      - terrafusion-redis-master
+      
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9121/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+          
+    labels:
+      - "component=monitoring"
+      - "role=cache-exporter"
+      - "environment=production"
+
+  # ===========================================================================
+  # REDIS COMMANDER - WEB UI (DEVELOPMENT ONLY)
+  # ===========================================================================
+  redis-commander:
+    image: ghcr.io/joeferner/redis-commander:latest
+    container_name: terrafusion-redis-commander
+    restart: unless-stopped
+    
+    environment:
+      REDIS_HOSTS: |
+        master:terrafusion-redis-master:6379:0:TF_Redis_Master_2025_Secure!,
+        replica1:terrafusion-redis-replica1:6379:0:TF_Redis_Replica_2025_Secure!,
+        replica2:terrafusion-redis-replica2:6379:0:TF_Redis_Analytics_2025_Secure!
+      HTTP_USER: admin
+      HTTP_PASSWORD: TF_RedisUI_2025_Secure!
+      
+    ports:
+      - "8081:8081"
+      
+    networks:
+      - terrafusion-network
+      
+    depends_on:
+      - terrafusion-redis-master
+      
+    profiles:
+      - development  # Only run in development profile
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+          
+    labels:
+      - "component=cache"
+      - "role=management-ui"
+      - "environment=development"
+
+  # ===========================================================================
+  # REDIS BACKUP SERVICE
+  # ===========================================================================
+  redis-backup:
+    image: redis:7.2-alpine
+    container_name: terrafusion-redis-backup
+    restart: "no"  # Run as scheduled job
+    
+    environment:
+      REDIS_HOST: terrafusion-redis-master
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: TF_Redis_Master_2025_Secure!
+      BACKUP_SCHEDULE: "0 3 * * *"  # Daily at 3 AM
+      BACKUP_RETENTION_DAYS: 30
+      
+    volumes:
+      - redis_backups:/backups
+      - ./scripts/backup-redis.sh:/usr/local/bin/backup-redis.sh:ro
+      
+    networks:
+      - terrafusion-network
+      
+    depends_on:
+      - terrafusion-redis-master
+      
+    command: >
+      sh -c "
+        apk add --no-cache dcron
+        echo '0 3 * * * /usr/local/bin/backup-redis.sh' | crontab -
+        crond -f -l 2
+      "
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+          
+    labels:
+      - "component=cache"
+      - "role=backup"
+      - "environment=production"
+
+# ===========================================================================
+# PERSISTENT VOLUMES
+# ===========================================================================
+volumes:
+  redis_master_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/redis/master/data
+      
+  redis_replica1_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/redis/replica1/data
+      
+  redis_replica2_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/redis/replica2/data
+      
+  redis_sentinel1_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/redis/sentinel1/data
+      
+  redis_master_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/logs/redis/master
+      
+  redis_replica1_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/logs/redis/replica1
+      
+  redis_replica2_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/logs/redis/replica2
+      
+  redis_sentinel1_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/logs/redis/sentinel1
+      
+  redis_backups:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/terrafusion/backups/redis
+
+# ===========================================================================
+# NETWORK CONFIGURATION
+# ===========================================================================
+networks:
+  terrafusion-network:
+    external: true

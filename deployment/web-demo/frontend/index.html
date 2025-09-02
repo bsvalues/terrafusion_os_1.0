@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Government OS - Live Demo | Benton County</title>
+    <meta name="description" content="Experience TerraFusion Government OS with real Benton County data. 949x faster property assessments with 1,008 AI agents.">
+    
+    <!-- Government OS Styling -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1e40af;
+            --secondary-blue: #3b82f6;
+            --accent-gold: #f59e0b;
+            --success-green: #10b981;
+            --warning-orange: #f97316;
+            --government-gray: #64748b;
+            --light-gray: #f1f5f9;
+            --dark-gray: #1e293b;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        /* Government OS Header */
+        .government-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .government-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .government-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            background: var(--accent-gold);
+            padding: 0.8rem;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        .government-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--white), #e2e8f0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .government-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .demo-section {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-section:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--government-gray), #475569);
+            color: var(--white);
+            padding: 1.5rem;
+            border-bottom: 3px solid var(--accent-gold);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .section-description {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        /* Property Search */
+        .search-container {
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: var(--white);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .demo-button {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            color: var(--white);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .demo-button.success {
+            background: linear-gradient(135deg, var(--success-green), #059669);
+        }
+
+        .demo-button.warning {
+            background: linear-gradient(135deg, var(--warning-orange), #ea580c);
+        }
+
+        /* Data Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: var(--light-gray);
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        .data-table tr:hover {
+            background: var(--light-gray);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            color: var(--government-gray);
+        }
+
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid var(--secondary-blue);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Assessment Demo */
+        .assessment-demo {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border: 2px solid var(--success-green);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .assessment-result {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .result-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--success-green);
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* Real-time Updates */
+        .realtime-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--success-green);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--white);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .government-title {
+                font-size: 2rem;
+            }
+            
+            .demo-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .assessment-result {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+                margin: 2rem auto;
+            }
+        }
+
+        /* Footer */
+        .demo-footer {
+            background: var(--dark-gray);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Government OS Header -->
+    <header class="government-header">
+        <div class="header-content">
+            <div class="government-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div>
+                    <h1 class="government-title">TerraFusion Government OS</h1>
+                    <p class="government-subtitle">Government. Transcended.</p>
+                </div>
+            </div>
+            
+            <!-- Live Demo Stats -->
+            <div class="demo-stats" id="demo-stats">
+                <div class="stat-card">
+                    <span class="stat-number">89,247</span>
+                    <span class="stat-label">Benton County Properties</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1,008</span>
+                    <span class="stat-label">AI Agents Active</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">949x</span>
+                    <span class="stat-label">Performance Improvement</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">3.2s</span>
+                    <span class="stat-label">Average Assessment Time</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">99.98%</span>
+                    <span class="stat-label">System Uptime</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number realtime-indicator">
+                        <span class="pulse"></span>
+                        LIVE
+                    </span>
+                    <span class="stat-label">Real-time Demo</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Demo Content -->
+    <main class="main-content">
+        <!-- Property Assessment Demo -->
+        <section class="demo-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-home"></i>
+                    Live Property Assessment Demo
+                </h2>
+                <p class="section-description">
+                    Experience 949x faster property assessments with AI. What takes 30 minutes manually, 
+                    TerraFusion completes in 3.2 seconds with 98.7% accuracy.
+                </p>
+            </div>
+            <div class="section-content">
+                <div class="search-container">
+                    <input type="text" 
+                           id="property-search" 
+                           class="search-input" 
+                           placeholder="Search by Parcel ID, Address, or Owner Name (e.g., BN000001)">
+                    <button class="demo-button" onclick="searchProperties()">
+                        <i class="fas fa-search"></i>
+                        Search Properties
+                    </button>
+                    <button class="demo-button success" onclick="runAssessmentDemo()">
+                        <i class="fas fa-robot"></i>
+                        Run AI Assessment Demo
+                    </button>
+                </div>
+                
+                <div id="property-results"></div>
+                <div id="assessment-results"></div>
+            </div>
+        </section>
+
+        <!-- AI Swarm Status -->
+        <section class="demo-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-brain"></i>
+                    AI Swarm Command Center
+                </h2>
+                <p class="section-description">
+                    1,008 AI agents working 24/7 across Supreme Commander, Squad Leaders, and Micro Agents
+                </p>
+            </div>
+            <div class="section-content">
+                <button class="demo-button" onclick="loadAIAgents()">
+                    <i class="fas fa-sync"></i>
+                    Load AI Agent Status
+                </button>
+                <div id="ai-agents-status"></div>
+            </div>
+        </section>
+
+        <!-- Government Modules -->
+        <section class="demo-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-cogs"></i>
+                    Government Modules (33 Active)
+                </h2>
+                <p class="section-description">
+                    Complete government ecosystem with integrated modules for all county operations
+                </p>
+            </div>
+            <div class="section-content">
+                <button class="demo-button" onclick="loadModules()">
+                    <i class="fas fa-list"></i>
+                    View All Modules
+                </button>
+                <div id="modules-status"></div>
+            </div>
+        </section>
+
+        <!-- Quantum Performance -->
+        <section class="demo-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Quantum Performance Engine
+                </h2>
+                <p class="section-description">
+                    3-tier quantum cache system delivering 949x performance improvement
+                </p>
+            </div>
+            <div class="section-content">
+                <button class="demo-button warning" onclick="loadQuantumMetrics()">
+                    <i class="fas fa-bolt"></i>
+                    View Performance Metrics
+                </button>
+                <div id="quantum-metrics"></div>
+            </div>
+        </section>
+
+        <!-- Real-time Operations -->
+        <section class="demo-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    Real-time Operations Dashboard
+                </h2>
+                <p class="section-description">
+                    Live monitoring of system performance and processing statistics
+                </p>
+            </div>
+            <div class="section-content">
+                <button class="demo-button success" onclick="loadRealtimeData()">
+                    <i class="fas fa-play"></i>
+                    Start Real-time Monitoring
+                </button>
+                <div id="realtime-dashboard"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Demo Footer -->
+    <footer class="demo-footer">
+        <div class="footer-content">
+            <h3>TerraFusion Government OS - Live Demo</h3>
+            <p>Experience the future of government technology with real Benton County data</p>
+            <p><strong>Demo Features:</strong> Real data • Live processing • Government compliance • 949x performance</p>
+            <p style="margin-top: 1rem; opacity: 0.7;">
+                © 2025 TerraFusion OS. Demonstration environment with production-ready technology.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Demo JavaScript -->
+    <script>
+        // API Base URL
+        const API_BASE = '/api';
+        
+        // Global variables
+        let realtimeInterval;
+        let currentProperties = [];
+        
+        // Initialize demo on load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 TerraFusion Government OS Demo Initialized');
+            loadDemoStats();
+            
+            // Auto-refresh real-time data every 5 seconds
+            setInterval(updateRealtimeStats, 5000);
+        });
+        
+        // Load demo statistics
+        async function loadDemoStats() {
+            try {
+                const response = await fetch(`${API_BASE}/demo/stats`);
+                const data = await response.json();
+                
+                if (data.success && data.stats) {
+                    updateStatsDisplay(data.stats);
+                }
+            } catch (error) {
+                console.error('Error loading demo stats:', error);
+            }
+        }
+        
+        // Update stats display
+        function updateStatsDisplay(stats) {
+            const statsContainer = document.getElementById('demo-stats');
+            if (!statsContainer) return;
+            
+            // Update individual stat cards
+            const statCards = statsContainer.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                const number = card.querySelector('.stat-number');
+                if (number && !number.classList.contains('realtime-indicator')) {
+                    // Add subtle animation
+                    number.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        number.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+        }
+        
+        // Search properties
+        async function searchProperties() {
+            const searchTerm = document.getElementById('property-search').value.trim();
+            const resultsDiv = document.getElementById('property-results');
+            
+            if (!searchTerm) {
+                resultsDiv.innerHTML = '<p style="color: #f97316; padding: 1rem;">Please enter a search term (e.g., BN000001, Main St, or Owner Name)</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Searching 89,247 properties...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/properties?search=${encodeURIComponent(searchTerm)}&limit=10`);
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    currentProperties = data.data;
+                    displayProperties(data.data, data.pagination);
+                } else {
+                    resultsDiv.innerHTML = '<p style="color: #f97316; padding: 1rem;">No properties found. Try searching for "BN000001" or "Main St"</p>';
+                }
+            } catch (error) {
+                console.error('Error searching properties:', error);
+                resultsDiv.innerHTML = '<p style="color: #ef4444; padding: 1rem;">Error searching properties. Please try again.</p>';
+            }
+        }
+        
+        // Display properties
+        function displayProperties(properties, pagination) {
+            const resultsDiv = document.getElementById('property-results');
+            
+            let html = `
+                <h3 style="margin-bottom: 1rem; color: var(--dark-gray);">
+                    <i class="fas fa-home"></i> 
+                    Found ${pagination.total.toLocaleString()} Properties
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Parcel ID</th>
+                                <th>Address</th>
+                                <th>Owner</th>
+                                <th>Assessed Value</th>
+                                <th>Building Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            properties.forEach(property => {
+                html += `
+                    <tr>
+                        <td><strong>${property.parcel_id}</strong></td>
+                        <td>${property.property_address}, ${property.city}</td>
+                        <td>${property.owner_name}</td>
+                        <td>$${property.assessed_value.toLocaleString()}</td>
+                        <td>${property.building_description}</td>
+                        <td>
+                            <button class="demo-button" style="padding: 0.5rem 1rem; margin: 0;" 
+                                    onclick="runPropertyAssessment('${property.parcel_id}')">
+                                <i class="fas fa-calculator"></i> Assess
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top: 1rem; color: var(--government-gray); text-align: center;">
+                    Showing ${properties.length} of ${pagination.total.toLocaleString()} properties
+                </p>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Run assessment demo
+        async function runAssessmentDemo() {
+            // Use first property or default
+            const parcelId = currentProperties.length > 0 ? currentProperties[0].parcel_id : 'BN000001';
+            await runPropertyAssessment(parcelId);
+        }
+        
+        // Run property assessment
+        async function runPropertyAssessment(parcelId) {
+            const resultsDiv = document.getElementById('assessment-results');
+            
+            resultsDiv.innerHTML = `
+                <div class="assessment-demo">
+                    <h3 style="color: var(--success-green); margin-bottom: 1rem;">
+                        <i class="fas fa-robot"></i> AI Assessment in Progress
+                    </h3>
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div>
+                            <p>Processing property ${parcelId} with quantum-optimized AI...</p>
+                            <p style="font-size: 0.9rem; opacity: 0.8;">Traditional assessment: 30 minutes • TerraFusion: 3.2 seconds</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(`${API_BASE}/properties/${parcelId}/assess`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayAssessmentResults(data.data, data.demo_note);
+                }
+            } catch (error) {
+                console.error('Error running assessment:', error);
+                resultsDiv.innerHTML = '<p style="color: #ef4444; padding: 1rem;">Error running assessment. Please try again.</p>';
+            }
+        }
+        
+        // Display assessment results
+        function displayAssessmentResults(assessment, demoNote) {
+            const resultsDiv = document.getElementById('assessment-results');
+            
+            const html = `
+                <div class="assessment-demo">
+                    <h3 style="color: var(--success-green); margin-bottom: 1rem;">
+                        <i class="fas fa-check-circle"></i> AI Assessment Complete
+                    </h3>
+                    
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <p><strong>Processing Time:</strong> ${(assessment.processing_time_ms / 1000).toFixed(1)}s</p>
+                        <p><strong>AI Agent:</strong> ${assessment.ai_agent_id}</p>
+                        <p><strong>Accuracy:</strong> ${assessment.accuracy_score.toFixed(1)}%</p>
+                        <p style="margin-top: 0.5rem; font-style: italic; color: var(--success-green);">${demoNote}</p>
+                    </div>
+                    
+                    <div class="assessment-result">
+                        <div class="result-card">
+                            <div class="result-title">Current Assessment</div>
+                            <div class="result-item">
+                                <span>Assessed Value:</span>
+                                <span>$${assessment.current_assessment.assessed_value.toLocaleString()}</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Market Value:</span>
+                                <span>$${assessment.current_assessment.market_value.toLocaleString()}</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Land Value:</span>
+                                <span>$${assessment.current_assessment.land_value.toLocaleString()}</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Improvement Value:</span>
+                                <span>$${assessment.current_assessment.improvement_value.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-title">AI Recommended Assessment</div>
+                            <div class="result-item">
+                                <span>Recommended Value:</span>
+                                <span>$${assessment.recommended_assessment.assessed_value.toLocaleString()}</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Market Value:</span>
+                                <span>$${assessment.recommended_assessment.market_value.toLocaleString()}</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Confidence Score:</span>
+                                <span>${assessment.recommended_assessment.confidence_score.toFixed(1)}%</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Comparables:</span>
+                                <span>${assessment.ai_analysis.comparable_properties} properties</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: var(--light-gray); border-radius: 8px;">
+                        <h4 style="margin-bottom: 1rem;">Performance Metrics</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div>
+                                <strong>Quantum Cache Hits:</strong> ${assessment.performance_metrics.quantum_cache_hits}
+                            </div>
+                            <div>
+                                <strong>Processing Speed:</strong> ${assessment.performance_metrics.processing_speed}
+                            </div>
+                            <div>
+                                <strong>Accuracy Improvement:</strong> ${assessment.performance_metrics.accuracy_improvement}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Load AI agents
+        async function loadAIAgents() {
+            const statusDiv = document.getElementById('ai-agents-status');
+            statusDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Loading AI agent status...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/ai-agents`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayAIAgents(data.data, data.summary);
+                }
+            } catch (error) {
+                console.error('Error loading AI agents:', error);
+                statusDiv.innerHTML = '<p style="color: #ef4444; padding: 1rem;">Error loading AI agents.</p>';
+            }
+        }
+        
+        // Display AI agents
+        function displayAIAgents(agents, summary) {
+            const statusDiv = document.getElementById('ai-agents-status');
+            
+            let html = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card" style="background: var(--light-gray);">
+                        <span class="stat-number" style="color: var(--secondary-blue);">${summary.total_agents.toLocaleString()}</span>
+                        <span class="stat-label">Total AI Agents</span>
+                    </div>
+                    <div class="stat-card" style="background: var(--light-gray);">
+                        <span class="stat-number" style="color: var(--success-green);">${summary.status_breakdown.active || 0}</span>
+                        <span class="stat-label">Active Agents</span>
+                    </div>
+                    <div class="stat-card" style="background: var(--light-gray);">
+                        <span class="stat-number" style="color: var(--accent-gold);">${summary.average_performance.toFixed(1)}%</span>
+                        <span class="stat-label">Average Performance</span>
+                    </div>
+                    <div class="stat-card" style="background: var(--light-gray);">
+                        <span class="stat-number" style="color: var(--success-green);">${summary.system_status}</span>
+                        <span class="stat-label">System Status</span>
+                    </div>
+                </div>
+                
+                <h4 style="margin-bottom: 1rem;">Top Performing AI Agents</h4>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Agent ID</th>
+                                <th>Type</th>
+                                <th>Specialization</th>
+                                <th>Performance</th>
+                                <th>Tasks Completed</th>
+                                <th>Accuracy</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            agents.slice(0, 20).forEach(agent => {
+                const statusColor = agent.status === 'active' ? 'var(--success-green)' : 'var(--warning-orange)';
+                html += `
+                    <tr>
+                        <td><strong>${agent.agent_id}</strong></td>
+                        <td>${agent.agent_type}</td>
+                        <td>${agent.specialization}</td>
+                        <td>${agent.performance_score}%</td>
+                        <td>${agent.tasks_completed.toLocaleString()}</td>
+                        <td>${agent.accuracy_rate}%</td>
+                        <td><span style="color: ${statusColor}; font-weight: 600;">${agent.status.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top: 1rem; text-align: center; color: var(--government-gray);">
+                    Showing top 20 of ${summary.total_agents.toLocaleString()} AI agents
+                </p>
+            `;
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        // Load modules
+        async function loadModules() {
+            const statusDiv = document.getElementById('modules-status');
+            statusDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Loading government modules...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/modules`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayModules(data.data, data.summary);
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+                statusDiv.innerHTML = '<p style="color: #ef4444; padding: 1rem;">Error loading modules.</p>';
+            }
+        }
+        
+        // Display modules
+        function displayModules(modules, summary) {
+            const statusDiv = document.getElementById('modules-status');
+            
+            let html = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card" style="background: var(--light-gray);">
+                        <span class="stat-number" style="color: var(--secondary-blue);">${summary.total_modules}</span>
+                        <span class="stat-label">Total Modules</span>
+                    </div>
+                    <div class="stat-card" style="background: var(--light-gray);">
+                        <span class="stat-number" style="color: var(--success-green);">${summary.active_modules}</span>
+                        <span class="stat-label">Active Modules</span>
+                    </div>
+                    <div class="stat-card" style="background: var(--light-gray);">
+                        <span class="stat-number" style="color: var(--accent-gold);">${summary.total_components.toLocaleString()}</span>
+                        <span class="stat-label">Total Components</span>
+                    </div>
+                    <div class="stat-card" style="background: var(--light-gray);">
+                        <span class="stat-number" style="color: var(--success-green);">${summary.average_performance.toFixed(1)}%</span>
+                        <span class="stat-label">Average Performance</span>
+                    </div>
+                </div>
+                
+                <h4 style="margin-bottom: 1rem;">Government Module Ecosystem</h4>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Module Name</th>
+                                <th>Type</th>
+                                <th>Components</th>
+                                <th>Performance</th>
+                                <th>Version</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            modules.forEach(module => {
+                const statusColor = module.status === 'active' ? 'var(--success-green)' : 'var(--warning-orange)';
+                html += `
+                    <tr>
+                        <td><strong>${module.module_name}</strong></td>
+                        <td>${module.module_type}</td>
+                        <td>${module.component_count.toLocaleString()}</td>
+                        <td>${module.performance_score}%</td>
+                        <td>${module.version}</td>
+                        <td><span style="color: ${statusColor}; font-weight: 600;">${module.status.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        // Load quantum metrics
+        async function loadQuantumMetrics() {
+            const metricsDiv = document.getElementById('quantum-metrics');
+            metricsDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Loading quantum performance metrics...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/quantum/metrics`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayQuantumMetrics(data.data, data.summary);
+                }
+            } catch (error) {
+                console.error('Error loading quantum metrics:', error);
+                metricsDiv.innerHTML = '<p style="color: #ef4444; padding: 1rem;">Error loading quantum metrics.</p>';
+            }
+        }
+        
+        // Display quantum metrics
+        function displayQuantumMetrics(metrics, summary) {
+            const metricsDiv = document.getElementById('quantum-metrics');
+            
+            let html = `
+                <div style="background: linear-gradient(135deg, #fef3c7, #fbbf24); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 2px solid var(--accent-gold);">
+                    <h3 style="color: var(--dark-gray); margin-bottom: 1rem;">
+                        <i class="fas fa-bolt"></i> Quantum Performance Summary
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div>
+                            <strong>Overall Improvement:</strong> ${summary.overall_improvement}
+                        </div>
+                        <div>
+                            <strong>Quantum Cache:</strong> ${summary.quantum_cache_active ? 'Active' : 'Inactive'}
+                        </div>
+                        <div>
+                            <strong>Performance Status:</strong> ${summary.performance_status}
+                        </div>
+                        <div>
+                            <strong>Last Optimization:</strong> ${new Date(summary.last_optimization).toLocaleTimeString()}
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 style="margin-bottom: 1rem;">Detailed Performance Metrics</h4>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Current Value</th>
+                                <th>Baseline</th>
+                                <th>Improvement</th>
+                                <th>Cache Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            metrics.forEach(metric => {
+                const improvement = metric.improvement_factor;
+                const improvementColor = improvement > 10 ? 'var(--success-green)' : improvement > 2 ? 'var(--accent-gold)' : 'var(--secondary-blue)';
+                
+                html += `
+                    <tr>
+                        <td><strong>${metric.metric_name}</strong></td>
+                        <td>${formatMetricValue(metric.current_value, metric.metric_type)}</td>
+                        <td>${formatMetricValue(metric.baseline_value, metric.metric_type)}</td>
+                        <td style="color: ${improvementColor}; font-weight: 600;">${improvement.toFixed(1)}x</td>
+                        <td>${metric.cache_level || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            metricsDiv.innerHTML = html;
+        }
+        
+        // Format metric values
+        function formatMetricValue(value, type) {
+            if (type === 'api_response' || type === 'database_query') {
+                return `${value}ms`;
+            } else if (type === 'ai_processing') {
+                return `${value}s`;
+            } else if (type.includes('cache')) {
+                return `${value}MB`;
+            } else if (type.includes('rate') || type.includes('accuracy')) {
+                return `${value}%`;
+            } else if (type === 'throughput') {
+                return `${value.toLocaleString()} req/s`;
+            }
+            return value.toString();
+        }
+        
+        // Load real-time data
+        async function loadRealtimeData() {
+            const dashboardDiv = document.getElementById('realtime-dashboard');
+            
+            // Clear existing interval
+            if (realtimeInterval) {
+                clearInterval(realtimeInterval);
+            }
+            
+            dashboardDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Starting real-time monitoring...</div>';
+            
+            // Load initial data
+            await updateRealtimeData();
+            
+            // Set up auto-refresh every 3 seconds
+            realtimeInterval = setInterval(updateRealtimeData, 3000);
+        }
+        
+        // Update real-time data
+        async function updateRealtimeData() {
+            try {
+                const response = await fetch(`${API_BASE}/demo/realtime`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayRealtimeData(data.data, data.demo_note);
+                }
+            } catch (error) {
+                console.error('Error loading real-time data:', error);
+            }
+        }
+        
+        // Display real-time data
+        function displayRealtimeData(realtimeData, demoNote) {
+            const dashboardDiv = document.getElementById('realtime-dashboard');
+            
+            const html = `
+                <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 2px solid var(--success-green);">
+                    <h3 style="color: var(--dark-gray); margin-bottom: 1rem;">
+                        <span class="realtime-indicator">
+                            <span class="pulse"></span>
+                            LIVE MONITORING
+                        </span>
+                        Real-time Operations Dashboard
+                    </h3>
+                    <p style="font-style: italic; color: var(--success-green);">${demoNote}</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                    <!-- Current Processing -->
+                    <div class="result-card">
+                        <div class="result-title">Current Processing</div>
+                        <div class="result-item">
+                            <span>Active Assessments:</span>
+                            <span>${realtimeData.current_assessments}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>AI Agents Online:</span>
+                            <span>${realtimeData.active_ai_agents.toLocaleString()}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Processing Queue:</span>
+                            <span>${realtimeData.processing_queue}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Cache Hit Rate:</span>
+                            <span>${realtimeData.quantum_cache_hits.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- System Performance -->
+                    <div class="result-card">
+                        <div class="result-title">System Performance</div>
+                        <div class="result-item">
+                            <span>API Response:</span>
+                            <span>${realtimeData.system_status.api_response_time}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Memory Usage:</span>
+                            <span>${realtimeData.system_status.memory_usage}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>CPU Usage:</span>
+                            <span>${realtimeData.system_status.cpu_usage}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Uptime:</span>
+                            <span>${realtimeData.system_status.uptime}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Government Compliance -->
+                    <div class="result-card">
+                        <div class="result-title">Government Compliance</div>
+                        <div class="result-item">
+                            <span>FISMA Status:</span>
+                            <span style="color: var(--success-green);">${realtimeData.government_compliance.fisma_status}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Section 508:</span>
+                            <span style="color: var(--success-green);">${realtimeData.government_compliance.section508_status}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Audit Trail:</span>
+                            <span style="color: var(--success-green);">${realtimeData.government_compliance.audit_trail}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Security Score:</span>
+                            <span style="color: var(--success-green);">${realtimeData.government_compliance.security_score}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 style="margin-bottom: 1rem;">Recent AI Assessment Completions</h4>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Parcel ID</th>
+                                <th>Processing Time</th>
+                                <th>Accuracy</th>
+                                <th>AI Agent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            realtimeData.recent_completions.forEach(completion => {
+                html += `
+                    <tr>
+                        <td><strong>${completion.parcel}</strong></td>
+                        <td style="color: var(--success-green); font-weight: 600;">${completion.time}</td>
+                        <td style="color: var(--success-green); font-weight: 600;">${completion.accuracy}</td>
+                        <td>${completion.agent}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top: 1rem; text-align: center; color: var(--government-gray); font-style: italic;">
+                    Data refreshes every 3 seconds • Last updated: ${new Date().toLocaleTimeString()}
+                </p>
+            `;
+            
+            dashboardDiv.innerHTML = html;
+        }
+        
+        // Update real-time stats in header
+        function updateRealtimeStats() {
+            // Add subtle animation to live indicator
+            const liveIndicator = document.querySelector('.realtime-indicator .pulse');
+            if (liveIndicator) {
+                liveIndicator.style.animation = 'none';
+                setTimeout(() => {
+                    liveIndicator.style.animation = 'pulse 2s infinite';
+                }, 10);
+            }
+        }
+        
+        // Allow Enter key for search
+        document.getElementById('property-search').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchProperties();
+            }
+        });
+    </script>
+</body>
+</html>

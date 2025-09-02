@@ -1,0 +1,33 @@
+{
+  "demo_accounts": [
+    {
+      "username": "demo_admin",
+      "password": "ViewOnly2024!",
+      "role": "administrator",
+      "county": "Demo County",
+      "features": "all"
+    },
+    {
+      "username": "demo_user",
+      "password": "TryTerraFusion!",
+      "role": "standard",
+      "county": "Sample Township",
+      "features": "basic"
+    }
+  ],
+  "sample_data": {
+    "properties": 10000,
+    "tax_records": 50000,
+    "workflows": 150,
+    "documents": 5000,
+    "gis_layers": 25,
+    "ai_insights": 100
+  },
+  "demo_scenarios": [
+    "Property Tax Assessment Workflow",
+    "Building Permit Processing",
+    "Code Violation Tracking",
+    "Budget Analysis Dashboard",
+    "Citizen Service Portal"
+  ]
+}

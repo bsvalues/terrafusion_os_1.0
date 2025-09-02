@@ -1,0 +1,535 @@
+/**
+ * TERRAFUSION UNIFIED DESIGN SYSTEM
+ * Government. Transcended.
+ * 
+ * This CSS file unifies all 14 applications into ONE cohesive OS experience
+ */
+
+/* ============================================
+   BRAND FOUNDATION
+   ============================================ */
+
+:root {
+  /* Primary Palette */
+  --terra-primary: #0A2540;
+  --terra-fusion: #00D4FF;
+  --terra-accent: #FF6B35;
+  
+  /* Secondary Palette */
+  --terra-wisdom: #6366F1;
+  --terra-growth: #10B981;
+  --terra-clarity: #F59E0B;
+  --terra-danger: #EF4444;
+  
+  /* Neutral Palette */
+  --terra-void: #0F172A;
+  --terra-slate: #475569;
+  --terra-silver: #94A3B8;
+  --terra-cloud: #F8FAFC;
+  --terra-white: #FFFFFF;
+  
+  /* Gradients */
+  --terra-gradient-transcendence: linear-gradient(135deg, #0A2540 0%, #00D4FF 100%);
+  --terra-gradient-empire: linear-gradient(135deg, #6366F1 0%, #FF6B35 100%);
+  --terra-gradient-dynasty: linear-gradient(135deg, #10B981 0%, #00D4FF 100%);
+  --terra-gradient-dark: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+  
+  /* Typography */
+  --terra-font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --terra-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --terra-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* Type Scale */
+  --terra-text-hero: clamp(2.5rem, 5vw, 4rem);
+  --terra-text-h1: 2.5rem;
+  --terra-text-h2: 2rem;
+  --terra-text-h3: 1.5rem;
+  --terra-text-h4: 1.25rem;
+  --terra-text-body: 1rem;
+  --terra-text-small: 0.875rem;
+  --terra-text-micro: 0.75rem;
+  
+  /* Spacing */
+  --terra-space-micro: 0.25rem;
+  --terra-space-tight: 0.5rem;
+  --terra-space-base: 1rem;
+  --terra-space-loose: 1.5rem;
+  --terra-space-section: 3rem;
+  --terra-space-hero: 6rem;
+  
+  /* Animation */
+  --terra-transition-instant: 50ms;
+  --terra-transition-fast: 150ms;
+  --terra-transition-smooth: 300ms;
+  --terra-transition-dramatic: 600ms;
+  --terra-easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --terra-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Elevation */
+  --terra-shadow-subtle: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  --terra-shadow-raised: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --terra-shadow-floating: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --terra-shadow-hovering: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --terra-shadow-orbiting: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  
+  /* Border Radius */
+  --terra-radius-sharp: 0;
+  --terra-radius-subtle: 0.25rem;
+  --terra-radius-smooth: 0.5rem;
+  --terra-radius-rounded: 1rem;
+  --terra-radius-pill: 9999px;
+}
+
+/* ============================================
+   GLOBAL RESET & BASE
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--terra-font-body);
+  font-size: var(--terra-text-body);
+  line-height: 1.6;
+  color: var(--terra-void);
+  background: var(--terra-cloud);
+  min-height: 100vh;
+}
+
+/* ============================================
+   UNIFIED APP SHELL
+   ============================================ */
+
+.terrafusion-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--terra-gradient-dark);
+}
+
+.terrafusion-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--terra-void);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: var(--terra-space-base) var(--terra-space-loose);
+}
+
+.terrafusion-header-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.terrafusion-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--terra-space-tight);
+  text-decoration: none;
+  color: var(--terra-white);
+  font-weight: 700;
+  font-size: var(--terra-text-h4);
+  transition: all var(--terra-transition-fast) var(--terra-easing-smooth);
+}
+
+.terrafusion-logo:hover {
+  color: var(--terra-fusion);
+}
+
+.terrafusion-nav {
+  display: flex;
+  gap: var(--terra-space-loose);
+  align-items: center;
+}
+
+.terrafusion-nav-item {
+  color: var(--terra-silver);
+  text-decoration: none;
+  font-weight: 500;
+  padding: var(--terra-space-tight) var(--terra-space-base);
+  border-radius: var(--terra-radius-smooth);
+  transition: all var(--terra-transition-smooth) var(--terra-easing-smooth);
+  position: relative;
+}
+
+.terrafusion-nav-item:hover {
+  color: var(--terra-fusion);
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.terrafusion-nav-item.active {
+  color: var(--terra-fusion);
+}
+
+.terrafusion-nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: var(--terra-space-base);
+  right: var(--terra-space-base);
+  height: 2px;
+  background: var(--terra-fusion);
+}
+
+/* ============================================
+   MODULE CONTAINER
+   ============================================ */
+
+.terrafusion-module {
+  flex: 1;
+  display: flex;
+  background: var(--terra-white);
+  border-radius: var(--terra-radius-rounded) var(--terra-radius-rounded) 0 0;
+  margin-top: var(--terra-space-loose);
+  overflow: hidden;
+}
+
+.terrafusion-sidebar {
+  width: 280px;
+  background: var(--terra-cloud);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  padding: var(--terra-space-loose);
+  overflow-y: auto;
+}
+
+.terrafusion-content {
+  flex: 1;
+  padding: var(--terra-space-section);
+  overflow-y: auto;
+}
+
+/* ============================================
+   UNIFIED COMPONENTS
+   ============================================ */
+
+/* Buttons */
+.terra-btn {
+  font-family: var(--terra-font-body);
+  font-weight: 600;
+  padding: var(--terra-space-tight) var(--terra-space-loose);
+  border-radius: var(--terra-radius-smooth);
+  border: none;
+  cursor: pointer;
+  transition: all var(--terra-transition-fast) var(--terra-easing-smooth);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--terra-space-tight);
+  font-size: var(--terra-text-body);
+  position: relative;
+  overflow: hidden;
+}
+
+.terra-btn-primary {
+  background: var(--terra-gradient-transcendence);
+  color: var(--terra-white);
+  box-shadow: var(--terra-shadow-raised);
+}
+
+.terra-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--terra-shadow-hovering);
+}
+
+.terra-btn-secondary {
+  background: var(--terra-white);
+  color: var(--terra-primary);
+  border: 2px solid var(--terra-primary);
+}
+
+.terra-btn-secondary:hover {
+  background: var(--terra-primary);
+  color: var(--terra-white);
+}
+
+.terra-btn-ghost {
+  background: transparent;
+  color: var(--terra-fusion);
+  border: 2px solid transparent;
+}
+
+.terra-btn-ghost:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--terra-fusion);
+}
+
+/* Cards */
+.terra-card {
+  background: var(--terra-white);
+  border-radius: var(--terra-radius-rounded);
+  padding: var(--terra-space-loose);
+  box-shadow: var(--terra-shadow-subtle);
+  transition: all var(--terra-transition-smooth) var(--terra-easing-smooth);
+}
+
+.terra-card:hover {
+  box-shadow: var(--terra-shadow-floating);
+  transform: translateY(-4px);
+}
+
+.terra-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--terra-space-base);
+  padding-bottom: var(--terra-space-base);
+  border-bottom: 1px solid var(--terra-cloud);
+}
+
+.terra-card-title {
+  font-size: var(--terra-text-h3);
+  font-weight: 700;
+  color: var(--terra-void);
+}
+
+.terra-card-subtitle {
+  font-size: var(--terra-text-small);
+  color: var(--terra-slate);
+  margin-top: var(--terra-space-micro);
+}
+
+/* Forms */
+.terra-form-group {
+  margin-bottom: var(--terra-space-loose);
+}
+
+.terra-label {
+  display: block;
+  font-weight: 600;
+  color: var(--terra-void);
+  margin-bottom: var(--terra-space-tight);
+  font-size: var(--terra-text-small);
+}
+
+.terra-input,
+.terra-select,
+.terra-textarea {
+  width: 100%;
+  padding: var(--terra-space-tight) var(--terra-space-base);
+  border: 2px solid var(--terra-silver);
+  border-radius: var(--terra-radius-smooth);
+  font-family: var(--terra-font-body);
+  font-size: var(--terra-text-body);
+  transition: all var(--terra-transition-fast) var(--terra-easing-smooth);
+  background: var(--terra-white);
+}
+
+.terra-input:focus,
+.terra-select:focus,
+.terra-textarea:focus {
+  outline: none;
+  border-color: var(--terra-fusion);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+/* Alerts */
+.terra-alert {
+  padding: var(--terra-space-base) var(--terra-space-loose);
+  border-radius: var(--terra-radius-smooth);
+  margin-bottom: var(--terra-space-base);
+  display: flex;
+  align-items: center;
+  gap: var(--terra-space-base);
+  animation: slideIn var(--terra-transition-smooth) var(--terra-easing-bounce);
+}
+
+.terra-alert-success {
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 4px solid var(--terra-growth);
+  color: var(--terra-growth);
+}
+
+.terra-alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 4px solid var(--terra-clarity);
+  color: var(--terra-clarity);
+}
+
+.terra-alert-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid var(--terra-danger);
+  color: var(--terra-danger);
+}
+
+.terra-alert-info {
+  background: rgba(0, 212, 255, 0.1);
+  border-left: 4px solid var(--terra-fusion);
+  color: var(--terra-fusion);
+}
+
+/* Loading States */
+.terra-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--terra-space-hero);
+  gap: var(--terra-space-loose);
+}
+
+.terra-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--terra-cloud);
+  border-top-color: var(--terra-fusion);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.terra-loading-text {
+  color: var(--terra-slate);
+  font-size: var(--terra-text-small);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Empty States */
+.terra-empty {
+  text-align: center;
+  padding: var(--terra-space-hero);
+  color: var(--terra-slate);
+}
+
+.terra-empty-icon {
+  font-size: 4rem;
+  opacity: 0.2;
+  margin-bottom: var(--terra-space-loose);
+}
+
+.terra-empty-title {
+  font-size: var(--terra-text-h3);
+  color: var(--terra-void);
+  margin-bottom: var(--terra-space-tight);
+}
+
+.terra-empty-message {
+  font-size: var(--terra-text-body);
+  margin-bottom: var(--terra-space-loose);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============================================
+   MODULE-SPECIFIC THEMES
+   ============================================ */
+
+.module-costforge {
+  --module-accent: var(--terra-accent);
+}
+
+.module-gispro {
+  --module-accent: var(--terra-growth);
+}
+
+.module-marketplace {
+  --module-accent: var(--terra-wisdom);
+}
+
+.module-terraflow {
+  --module-accent: var(--terra-fusion);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .terrafusion-sidebar {
+    display: none;
+  }
+  
+  .terrafusion-content {
+    padding: var(--terra-space-loose);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --terra-text-hero: 2rem;
+    --terra-text-h1: 1.75rem;
+    --terra-text-h2: 1.5rem;
+    --terra-text-h3: 1.25rem;
+  }
+  
+  .terrafusion-nav {
+    display: none;
+  }
+}
+
+/* ============================================
+   TRANSCENDENCE EFFECTS
+   ============================================ */
+
+.terra-transcend {
+  animation: transcend 2s ease-in-out infinite;
+  background: var(--terra-gradient-transcendence);
+  background-size: 200% 200%;
+}
+
+@keyframes transcend {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.terra-glow {
+  box-shadow: 
+    0 0 20px rgba(0, 212, 255, 0.5),
+    0 0 40px rgba(0, 212, 255, 0.3),
+    0 0 60px rgba(0, 212, 255, 0.1);
+}
+
+.terra-championship {
+  background: var(--terra-gradient-empire);
+  color: var(--terra-white);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: var(--terra-space-base) var(--terra-space-loose);
+  text-align: center;
+  animation: championship 3s ease-in-out infinite;
+}
+
+@keyframes championship {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}

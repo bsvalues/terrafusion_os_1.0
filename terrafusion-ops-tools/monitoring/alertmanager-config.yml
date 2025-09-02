@@ -1,0 +1,323 @@
+global:
+  # Default SMTP configuration
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@terrafusion.com'
+  smtp_auth_username: 'alerts@terrafusion.com'
+  smtp_auth_password: 'your-smtp-password'
+  smtp_require_tls: true
+
+  # Default notification timeouts
+  resolve_timeout: 5m
+
+# Template files
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route tree for routing alerts
+route:
+  # Default receiver for all alerts
+  receiver: 'default-notifications'
+  
+  # Group alerts by these labels
+  group_by: ['alertname', 'cluster', 'service']
+  
+  # Wait time before sending a group of alerts
+  group_wait: 10s
+  
+  # Wait time before sending an alert again for the same group
+  group_interval: 10s
+  
+  # Wait time before sending an alert again
+  repeat_interval: 12h
+
+  # Child routes
+  routes:
+    # Critical alerts go to PagerDuty and Slack
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 0s
+      group_interval: 5m
+      repeat_interval: 5m
+      continue: true
+
+    # Platform team alerts
+    - match:
+        team: platform
+      receiver: 'platform-team'
+      group_interval: 5m
+      continue: true
+
+    # Backend team alerts
+    - match:
+        team: backend
+      receiver: 'backend-team'
+      continue: true
+
+    # AI team alerts
+    - match:
+        team: ai
+      receiver: 'ai-team'
+      continue: true
+
+    # Security team alerts
+    - match:
+        team: security
+      receiver: 'security-team'
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 30m
+      continue: true
+
+    # Database specific alerts
+    - match:
+        component: database
+      receiver: 'database-team'
+      continue: true
+
+    # Business/Product alerts (lower priority)
+    - match:
+        team: product
+      receiver: 'product-team'
+      group_interval: 30m
+      repeat_interval: 4h
+
+    # Maintenance window - suppress all alerts
+    - match:
+        maintenance: 'true'
+      receiver: 'null'
+
+# Inhibition rules to prevent alert spam
+inhibit_rules:
+  # Inhibit any warning if the same alert is already critical
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+
+  # If service is down, don't alert on high error rates
+  - source_match:
+      alertname: 'ServiceDown'
+    target_match_re:
+      alertname: 'HighErrorRate|SlowAPIResponse'
+    equal: ['service']
+
+  # If database is down, don't alert on connection issues
+  - source_match:
+      alertname: 'DatabaseDown'
+    target_match_re:
+      alertname: 'DatabaseConnectionPoolExhausted|DatabaseSlowQueries'
+
+# Receivers define how to send notifications
+receivers:
+  - name: 'default-notifications'
+    email_configs:
+      - to: 'ops-team@terrafusion.com'
+        subject: 'TerraFusion Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Labels: {{ range .Labels.SortedPairs }}{{ .Name }}={{ .Value }} {{ end }}
+          
+          {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
+          {{ end }}
+
+  - name: 'critical-alerts'
+    pagerduty_configs:
+      - service_key: 'your-pagerduty-service-key'
+        description: 'TerraFusion Critical Alert'
+        details:
+          alert_name: '{{ .GroupLabels.alertname }}'
+          instance: '{{ .CommonLabels.instance }}'
+          service: '{{ .CommonLabels.service }}'
+          team: '{{ .CommonLabels.team }}'
+        links:
+          - href: '{{ .CommonAnnotations.runbook_url }}'
+            text: 'Runbook'
+          - href: 'https://grafana.terrafusion.com'
+            text: 'Grafana Dashboard'
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#terrafusion-critical'
+        color: 'danger'
+        title: 'CRITICAL: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          🚨 *{{ .Annotations.summary }}*
+          
+          *Description:* {{ .Annotations.description }}
+          *Service:* {{ .Labels.service }}
+          *Instance:* {{ .Labels.instance }}
+          {{ if .Annotations.runbook_url }}*Runbook:* {{ .Annotations.runbook_url }}{{ end }}
+          {{ end }}
+        actions:
+          - type: button
+            text: 'View Grafana Dashboard'
+            url: 'https://grafana.terrafusion.com'
+          - type: button
+            text: 'Acknowledge in PagerDuty'
+            url: 'https://terrafusion.pagerduty.com'
+
+  - name: 'platform-team'
+    email_configs:
+      - to: 'platform-team@terrafusion.com'
+        subject: 'Platform Alert: {{ .GroupLabels.alertname }}'
+        headers:
+          Priority: 'high'
+        body: |
+          Platform team alert triggered:
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Instance: {{ .Labels.instance }}
+          Severity: {{ .Labels.severity }}
+          {{ if .Annotations.runbook_url }}
+          Runbook: {{ .Annotations.runbook_url }}
+          {{ end }}
+          {{ end }}
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/PLATFORM/WEBHOOK'
+        channel: '#platform-alerts'
+        color: '{{ if eq .Status "firing" }}warning{{ else }}good{{ end }}'
+        title: 'Platform Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          *{{ .Annotations.summary }}*
+          {{ .Annotations.description }}
+          {{ end }}
+
+  - name: 'backend-team'
+    email_configs:
+      - to: 'backend-team@terrafusion.com'
+        subject: 'Backend Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          Backend service alert:
+          
+          {{ range .Alerts }}
+          Service: {{ .Labels.service }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
+          {{ end }}
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/BACKEND/WEBHOOK'
+        channel: '#backend-alerts'
+        color: '{{ if eq .Status "firing" }}warning{{ else }}good{{ end }}'
+        title: 'Backend Alert: {{ .GroupLabels.alertname }}'
+
+  - name: 'ai-team'
+    email_configs:
+      - to: 'ai-team@terrafusion.com'
+        subject: 'AI Engine Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          AI Engine alert:
+          
+          {{ range .Alerts }}
+          Model: {{ .Labels.model }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
+          {{ end }}
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/AI/WEBHOOK'
+        channel: '#ai-alerts'
+        color: '{{ if eq .Status "firing" }}warning{{ else }}good{{ end }}'
+        title: 'AI Engine Alert: {{ .GroupLabels.alertname }}'
+
+  - name: 'security-team'
+    email_configs:
+      - to: 'security-team@terrafusion.com'
+        subject: '🔒 SECURITY ALERT: {{ .GroupLabels.alertname }}'
+        headers:
+          Priority: 'urgent'
+        body: |
+          SECURITY ALERT TRIGGERED:
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Instance: {{ .Labels.instance }}
+          Time: {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+          
+          IMMEDIATE ACTION REQUIRED
+          {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
+          {{ end }}
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SECURITY/WEBHOOK'
+        channel: '#security-alerts'
+        color: 'danger'
+        title: '🔒 SECURITY ALERT: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          🚨 *SECURITY INCIDENT*: {{ .Annotations.summary }}
+          
+          *Description:* {{ .Annotations.description }}
+          *Instance:* {{ .Labels.instance }}
+          *Time:* {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+          
+          *IMMEDIATE ACTION REQUIRED*
+          {{ end }}
+
+    pagerduty_configs:
+      - service_key: 'your-security-pagerduty-key'
+        severity: 'critical'
+        description: 'Security Alert: {{ .GroupLabels.alertname }}'
+
+  - name: 'database-team'
+    email_configs:
+      - to: 'database-team@terrafusion.com'
+        subject: 'Database Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          Database alert:
+          
+          {{ range .Alerts }}
+          Database: {{ .Labels.datname }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
+          {{ end }}
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/DATABASE/WEBHOOK'
+        channel: '#database-alerts'
+        color: '{{ if eq .Status "firing" }}warning{{ else }}good{{ end }}'
+        title: 'Database Alert: {{ .GroupLabels.alertname }}'
+
+  - name: 'product-team'
+    email_configs:
+      - to: 'product-team@terrafusion.com'
+        subject: 'Product Metrics Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          Product/Business metrics alert:
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          {{ end }}
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/PRODUCT/WEBHOOK'
+        channel: '#product-metrics'
+        color: '{{ if eq .Status "firing" }}warning{{ else }}good{{ end }}'
+        title: 'Product Alert: {{ .GroupLabels.alertname }}'
+
+  # Null receiver for suppressed alerts
+  - name: 'null'
+
+# Time intervals for silencing alerts during maintenance
+time_intervals:
+  - name: 'maintenance-window'
+    time_intervals:
+      - times:
+          - start_time: '02:00'
+            end_time: '04:00'
+        weekdays: ['sunday']
+        location: 'UTC'

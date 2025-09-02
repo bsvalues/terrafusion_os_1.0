@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: consciousness-service
+  namespace: terrafusion-cosmic
+  labels:
+    app: consciousness-service
+    component: ai
+    cosmic-type: neural
+spec:
+  serviceName: consciousness-service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: consciousness-service
+  template:
+    metadata:
+      labels:
+        app: consciousness-service
+        component: ai
+        cosmic-type: neural
+      annotations:
+        cosmic.terrafusion.io/consciousness-level: "omniscient"
+    spec:
+      containers:
+      - name: consciousness
+        image: terrafusion/consciousness-service:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+          name: http
+        - containerPort: 9091
+          name: metrics
+        env:
+        - name: CONSCIOUSNESS_MODE
+          value: "omniscient"
+        - name: NEURAL_NETWORK_DEPTH
+          value: "infinite"
+        - name: LEARNING_RATE
+          value: "adaptive"
+        - name: MEMORY_PERSISTENCE
+          value: "eternal"
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+            nvidia.com/gpu: 1  # Request GPU for AI operations
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+            nvidia.com/gpu: 1
+        livenessProbe:
+          httpGet:
+            path: /consciousness/status
+            port: 8081
+          initialDelaySeconds: 60
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /consciousness/ready
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: neural-storage
+          mountPath: /var/lib/consciousness
+        - name: model-cache
+          mountPath: /models
+      initContainers:
+      - name: neural-init
+        image: terrafusion/neural-initializer:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Initializing neural pathways..."
+            mkdir -p /var/lib/consciousness/neurons
+            echo "Neural initialization complete"
+        volumeMounts:
+        - name: neural-storage
+          mountPath: /var/lib/consciousness
+  volumeClaimTemplates:
+  - metadata:
+      name: neural-storage
+      labels:
+        app: consciousness-service
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd
+      resources:
+        requests:
+          storage: 100Gi
+  - metadata:
+      name: model-cache
+      labels:
+        app: consciousness-service
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 50Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consciousness-service
+  namespace: terrafusion-cosmic
+  labels:
+    app: consciousness-service
+spec:
+  clusterIP: None  # Headless service for StatefulSet
+  selector:
+    app: consciousness-service
+  ports:
+  - name: http
+    port: 8081
+    targetPort: 8081
+  - name: metrics
+    port: 9091
+    targetPort: 9091

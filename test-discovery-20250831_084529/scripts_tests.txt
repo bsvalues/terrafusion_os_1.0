@@ -1,0 +1,2 @@
+/mnt/c/Users/bsval/terrafusion_os_1.0/scripts/complete_ecosystem_test.py
+/mnt/c/Users/bsval/terrafusion_os_1.0/scripts/terrafusion_ecosystem_integration_test.py

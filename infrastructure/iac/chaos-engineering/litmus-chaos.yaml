@@ -1,0 +1,345 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: litmus
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: litmus
+  namespace: litmus
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: litmus
+rules:
+- apiGroups: [""]
+  resources: ["pods","events","persistentvolumeclaims","services","configmaps","secrets","pods/log","pods/exec","pods/eviction"]
+  verbs: ["create","delete","get","list","patch","update","deletecollection"]
+- apiGroups: ["extensions","apps"]
+  resources: ["deployments","statefulsets","replicasets","daemonsets"]
+  verbs: ["create","delete","get","list","patch","update"]
+- apiGroups: ["batch"]
+  resources: ["jobs","cronjobs"]
+  verbs: ["create","delete","get","list","patch","update"]
+- apiGroups: ["litmuschaos.io"]
+  resources: ["chaosengines","chaosexperiments","chaosresults"]
+  verbs: ["create","delete","get","list","patch","update","deletecollection"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies"]
+  verbs: ["create","delete","get","list","patch","update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: litmus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: litmus
+subjects:
+- kind: ServiceAccount
+  name: litmus
+  namespace: litmus
+
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: terrafusion-backend-chaos
+  namespace: terrafusion
+spec:
+  annotationCheck: 'false'
+  engineState: 'active'
+  appinfo:
+    appns: 'terrafusion'
+    applabel: 'app=terrafusion-backend'
+    appkind: 'deployment'
+  chaosServiceAccount: litmus
+  experiments:
+  - name: pod-delete
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: '30'
+        - name: CHAOS_INTERVAL
+          value: '15'
+        - name: FORCE
+          value: 'false'
+        - name: PODS_AFFECTED_PERC
+          value: '25'
+      probe:
+      - name: healthcheck
+        type: httpProbe
+        httpProbe/inputs:
+          url: http://terrafusion-backend:8080/health
+          insecureSkipTLS: false
+          method:
+            get:
+              criteria: ==
+              responseCode: "200"
+        mode: Continuous
+        runProperties:
+          probeTimeout: 5s
+          interval: 2s
+          retry: 3
+  - name: container-kill
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: '20'
+        - name: CHAOS_INTERVAL
+          value: '10'
+        - name: CONTAINER_RUNTIME
+          value: 'containerd'
+        - name: SOCKET_PATH
+          value: '/run/containerd/containerd.sock'
+        - name: PODS_AFFECTED_PERC
+          value: '25'
+      probe:
+      - name: backend-availability
+        type: httpProbe
+        httpProbe/inputs:
+          url: http://terrafusion-backend:8080/api/status
+          insecureSkipTLS: false
+          method:
+            get:
+              criteria: ==
+              responseCode: "200"
+        mode: Continuous
+        runProperties:
+          probeTimeout: 5s
+          interval: 3s
+          retry: 2
+
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: terrafusion-database-chaos
+  namespace: terrafusion
+spec:
+  annotationCheck: 'false'
+  engineState: 'active'
+  appinfo:
+    appns: 'terrafusion'
+    applabel: 'app=terrafusion-postgres'
+    appkind: 'statefulset'
+  chaosServiceAccount: litmus
+  experiments:
+  - name: pod-network-latency
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: '60'
+        - name: NETWORK_LATENCY
+          value: '2000'
+        - name: CONTAINER_RUNTIME
+          value: 'containerd'
+        - name: SOCKET_PATH
+          value: '/run/containerd/containerd.sock'
+        - name: PODS_AFFECTED_PERC
+          value: '50'
+      probe:
+      - name: database-connection
+        type: cmdProbe
+        cmdProbe/inputs:
+          command: pg_isready -h terrafusion-postgres -p 5432 -U terrafusion
+          source:
+            image: postgres:15-alpine
+            inheritInputs: true
+        mode: Continuous
+        runProperties:
+          probeTimeout: 10s
+          interval: 5s
+          retry: 3
+  - name: pod-memory-hog
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: '90'
+        - name: MEMORY_CONSUMPTION
+          value: '80'
+        - name: PODS_AFFECTED_PERC
+          value: '25'
+      probe:
+      - name: postgres-health
+        type: httpProbe
+        httpProbe/inputs:
+          url: http://terrafusion-backend:8080/api/db/health
+          insecureSkipTLS: false
+          method:
+            get:
+              criteria: ==
+              responseCode: "200"
+        mode: Continuous
+        runProperties:
+          probeTimeout: 10s
+          interval: 5s
+          retry: 2
+
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: terrafusion-frontend-chaos
+  namespace: terrafusion
+spec:
+  annotationCheck: 'false'
+  engineState: 'active'
+  appinfo:
+    appns: 'terrafusion'
+    applabel: 'app in (terrafusion-costforge,terrafusion-propertyworkbench,terrafusion-terrainsight)'
+    appkind: 'deployment'
+  chaosServiceAccount: litmus
+  experiments:
+  - name: pod-cpu-hog
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: '60'
+        - name: CPU_CORES
+          value: '2'
+        - name: PODS_AFFECTED_PERC
+          value: '50'
+      probe:
+      - name: frontend-availability
+        type: httpProbe
+        httpProbe/inputs:
+          url: http://terrafusion-nginx/health
+          insecureSkipTLS: false
+          method:
+            get:
+              criteria: ==
+              responseCode: "200"
+        mode: Continuous
+        runProperties:
+          probeTimeout: 5s
+          interval: 3s
+          retry: 3
+
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosSchedule
+metadata:
+  name: terrafusion-daily-chaos
+  namespace: terrafusion
+spec:
+  schedule:
+    now: false
+    repeat:
+      timeRange:
+        startTime: "02:00"
+        endTime: "04:00"
+      includedDays: "mon,tue,wed,thu,fri"
+  engineTemplateSpec:
+    annotationCheck: 'false'
+    engineState: 'active'
+    appinfo:
+      appns: 'terrafusion'
+      applabel: 'chaos.alpha.kubernetes.io/enabled=true'
+      appkind: 'deployment'
+    chaosServiceAccount: litmus
+    experiments:
+    - name: pod-delete
+      spec:
+        components:
+          env:
+          - name: TOTAL_CHAOS_DURATION
+            value: '30'
+          - name: CHAOS_INTERVAL
+            value: '10'
+          - name: PODS_AFFECTED_PERC
+            value: '25'
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chaos-experiments
+  namespace: litmus
+data:
+  pod-delete.yaml: |
+    apiVersion: litmuschaos.io/v1alpha1
+    kind: ChaosExperiment
+    metadata:
+      name: pod-delete
+      labels:
+        name: pod-delete
+        app.kubernetes.io/part-of: litmus
+        app.kubernetes.io/component: chaosexperiment
+        app.kubernetes.io/version: 2.14.0
+    spec:
+      definition:
+        scope: Namespaced
+        permissions:
+        - apiGroups: [""]
+          resources: ["pods"]
+          verbs: ["create","delete","get","list","patch","update","deletecollection"]
+        - apiGroups: [""]
+          resources: ["events"]
+          verbs: ["create","get","list","patch","update"]
+        - apiGroups: [""]
+          resources: ["configmaps"]
+          verbs: ["get","list"]
+        - apiGroups: [""]
+          resources: ["pods/log"]
+          verbs: ["get","list","watch"]
+        - apiGroups: [""]
+          resources: ["pods/exec"]
+          verbs: ["get","list","create"]
+        - apiGroups: ["apps"]
+          resources: ["deployments","statefulsets","replicasets","daemonsets"]
+          verbs: ["list","get"]
+        - apiGroups: ["apps"]
+          resources: ["deployments/status","statefulsets/status","replicasets/status","daemonsets/status"]
+          verbs: ["get"]
+        - apiGroups: [""]
+          resources: ["replicationcontrollers","replicationcontrollers/status"]
+          verbs: ["get","list"]
+        - apiGroups: ["argoproj.io"]
+          resources: ["rollouts"]
+          verbs: ["list","get"]
+        - apiGroups: ["batch"]
+          resources: ["jobs"]
+          verbs: ["create","list","get","delete","deletecollection"]
+        - apiGroups: ["litmuschaos.io"]
+          resources: ["chaosengines","chaosexperiments","chaosresults"]
+          verbs: ["create","list","get","patch","update","delete"]
+        image: "litmuschaos/go-runner:2.14.0"
+        imagePullPolicy: Always
+        args:
+        - -c
+        - ./experiments -name pod-delete
+        command:
+        - /bin/bash
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: '15'
+        - name: RAMP_TIME
+          value: ''
+        - name: FORCE
+          value: 'true'
+        - name: CHAOS_INTERVAL
+          value: '5'
+        - name: PODS_AFFECTED_PERC
+          value: ''
+        - name: LIB
+          value: 'litmus'
+        - name: TARGET_PODS
+          value: ''
+        - name: SEQUENCE
+          value: 'parallel'
+        labels:
+          name: pod-delete
+          app.kubernetes.io/part-of: litmus
+          app.kubernetes.io/component: experiment-job
+          app.kubernetes.io/runtime-api-usage: true
+          app.kubernetes.io/version: 2.14.0

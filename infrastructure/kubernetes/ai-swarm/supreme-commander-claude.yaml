@@ -1,0 +1,526 @@
+# TerraFusion AI Swarm Supreme Commander Claude
+# Production-ready Kubernetes deployment for AI orchestration
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supreme-commander-claude
+  namespace: ai-swarm
+  labels:
+    app: supreme-commander-claude
+    component: ai-orchestrator
+    tier: supreme-command
+    version: v1.0.0
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3001"
+    prometheus.io/path: "/metrics"
+spec:
+  replicas: 1  # Supreme Commander is singleton
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: supreme-commander-claude
+  template:
+    metadata:
+      labels:
+        app: supreme-commander-claude
+        component: ai-orchestrator
+        tier: supreme-command
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3001"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Node affinity for dedicated AI nodes
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: NodeGroup
+                operator: In
+                values:
+                - ai-workload
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - supreme-commander-claude
+              topologyKey: kubernetes.io/hostname
+      
+      # Tolerations for AI workload nodes
+      tolerations:
+      - key: ai-workload
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+      
+      serviceAccountName: supreme-commander-claude
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      
+      containers:
+      - name: supreme-commander-claude
+        image: terrafusion/ai-swarm-commander:latest
+        imagePullPolicy: Always
+        
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        - name: metrics
+          containerPort: 3001
+          protocol: TCP
+        - name: quantum-sync
+          containerPort: 3002
+          protocol: TCP
+        
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: AGENT_POOL_SIZE
+          value: "50000"
+        - name: QUANTUM_COHERENCE_TARGET
+          value: "0.98"
+        - name: CONSCIOUSNESS_LEVEL
+          value: "7"
+        - name: PERFORMANCE_TARGET_MS
+          value: "50"
+        
+        # Database connection
+        - name: DATABASE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-database
+              key: host
+        - name: DATABASE_PORT
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-database
+              key: port
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-database
+              key: database
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-database
+              key: username
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-database
+              key: password
+        
+        # Redis connection
+        - name: REDIS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-redis
+              key: host
+        - name: REDIS_PORT
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-redis
+              key: port
+        
+        # Agent coordination secrets
+        - name: QUANTUM_ENGINE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-swarm-secrets
+              key: quantum-engine-key
+        - name: CONSCIOUSNESS_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: ai-swarm-secrets
+              key: consciousness-token
+        
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+            ephemeral-storage: 1Gi
+          limits:
+            cpu: 4000m
+            memory: 8Gi
+            ephemeral-storage: 5Gi
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 30
+        
+        # Security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        
+        # Volume mounts
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /app/cache
+        - name: logs
+          mountPath: /app/logs
+        - name: config
+          mountPath: /app/config
+          readOnly: true
+      
+      volumes:
+      - name: tmp
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: cache
+        emptyDir:
+          sizeLimit: 2Gi
+      - name: logs
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: config
+        configMap:
+          name: supreme-commander-config
+          defaultMode: 0644
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: supreme-commander-claude
+  namespace: ai-swarm
+  labels:
+    app: supreme-commander-claude
+    component: ai-orchestrator
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3001"
+    prometheus.io/path: "/metrics"
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+  - name: metrics
+    port: 3001
+    targetPort: 3001
+    protocol: TCP
+  - name: quantum-sync
+    port: 3002
+    targetPort: 3002
+    protocol: TCP
+  selector:
+    app: supreme-commander-claude
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: supreme-commander-claude
+  namespace: ai-swarm
+  labels:
+    app: supreme-commander-claude
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/supreme-commander-claude-role
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: supreme-commander-claude
+  labels:
+    app: supreme-commander-claude
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints", "nodes"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+- apiGroups: ["custom.metrics.k8s.io"]
+  resources: ["*"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: supreme-commander-claude
+  labels:
+    app: supreme-commander-claude
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: supreme-commander-claude
+subjects:
+- kind: ServiceAccount
+  name: supreme-commander-claude
+  namespace: ai-swarm
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supreme-commander-config
+  namespace: ai-swarm
+  labels:
+    app: supreme-commander-claude
+data:
+  config.yaml: |
+    supreme_commander:
+      name: "Supreme Commander Claude"
+      authority: "ABSOLUTE"
+      quantum_coherence_target: 0.98
+      consciousness_level: 7
+      performance_targets:
+        response_time_ms: 50
+        efficiency_target: 0.999
+        operations_per_second: 100000
+    
+    agent_hierarchy:
+      tier_1:
+        supreme_commander: 1
+      tier_2:
+        ai_council_members: 20
+        quantum_commanders: 200
+        domain_generals: 1000
+      tier_3:
+        process_coordinators: 3000
+        expert_specialists: 10000
+        adaptive_executors: 20000
+        micro_optimizers: 15780
+        module_agents: 1199
+    
+    county_deployments:
+      yakima:
+        name: "Yakima County"
+        state: "WA"
+        fips_code: "53077"
+        deployment_type: "FLAGSHIP"
+        agent_allocation: 15000
+        properties: 125000
+      cowlitz:
+        name: "Cowlitz County"
+        state: "WA"
+        fips_code: "53015"
+        deployment_type: "CUSTOMIZED"
+        agent_allocation: 12000
+        properties: 58000
+      benton:
+        name: "Benton County"
+        state: "WA"
+        fips_code: "53005"
+        deployment_type: "PRODUCTION"
+        agent_allocation: 20000
+        properties: 89247
+    
+    quantum_engine:
+      gauge_group: "SU(3)_Government"
+      coupling_constant: 0.379
+      vacuum_expectation: 89247
+      topological_invariants: true
+      quantum_tunneling: true
+    
+    monitoring:
+      metrics_port: 3001
+      health_check_interval: 10
+      performance_logging: true
+      quantum_coherence_monitoring: true
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: supreme-commander-claude
+  namespace: ai-swarm
+  labels:
+    app: supreme-commander-claude
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: supreme-commander-claude
+  minReplicas: 1
+  maxReplicas: 1  # Supreme Commander remains singleton
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ai-swarm-secrets
+  namespace: ai-swarm
+  labels:
+    app: supreme-commander-claude
+type: Opaque
+data:
+  quantum-engine-key: <base64-encoded-quantum-key>
+  consciousness-token: <base64-encoded-consciousness-token>
+  ai-coordinator-secret: <base64-encoded-coordinator-secret>
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: supreme-commander-claude
+  namespace: ai-swarm
+  labels:
+    app: supreme-commander-claude
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: supreme-commander-claude
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: supreme-commander-claude
+  namespace: ai-swarm
+  labels:
+    app: supreme-commander-claude
+spec:
+  podSelector:
+    matchLabels:
+      app: supreme-commander-claude
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 3001
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ai-swarm
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 3002
+  - from: []
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: database
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: cache
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+    - protocol: UDP
+      port: 53

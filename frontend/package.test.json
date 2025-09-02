@@ -1,0 +1,42 @@
+{
+  "name": "terrafusion-frontend-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "test:ci": "react-scripts test --coverage --watchAll=false --ci",
+    "test:error-boundaries": "react-scripts test --testPathPattern=ErrorBoundary.test.tsx --watchAll=false",
+    "test:performance": "react-scripts test --testPathPattern=Performance.test.tsx --watchAll=false",
+    "test:integration": "react-scripts test --testPathPattern=Integration.test.tsx --watchAll=false",
+    "test:all": "npm run test:error-boundaries && npm run test:performance && npm run test:integration"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^29.5.8",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/index.tsx",
+      "!src/reportWebVitals.ts",
+      "!src/**/*.d.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.(test|spec).{js,jsx,ts,tsx}",
+      "<rootDir>/src/tests/**/*.{js,jsx,ts,tsx}"
+    ]
+  }
+}

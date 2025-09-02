@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Arizona Conquest Command</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a0033, #4a0066);
+            color: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Desert Theme Variables */
+        :root {
+            --desert-sunrise: #ff6b35;
+            --desert-sunset: #f77737;
+            --arizona-copper: #b87333;
+            --phoenix-purple: #4a0066;
+            --canyon-red: #cc5500;
+            --cactus-green: #00aa55;
+            --sky-blue: #00aaff;
+            --transcendence: #00ffee;
+            --success: #00ffaa;
+        }
+
+        /* Animated Desert Background */
+        .desert-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .sun {
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--desert-sunrise), var(--desert-sunset));
+            border-radius: 50%;
+            box-shadow: 0 0 100px var(--desert-sunrise);
+            animation: pulseSun 4s infinite;
+        }
+
+        @keyframes pulseSun {
+            0%, 100% { box-shadow: 0 0 100px var(--desert-sunrise); }
+            50% { box-shadow: 0 0 150px var(--desert-sunset); }
+        }
+
+        .heat-wave {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(0deg, 
+                rgba(255, 107, 53, 0.1) 0%, 
+                transparent 100%);
+            animation: heatShimmer 3s infinite;
+        }
+
+        @keyframes heatShimmer {
+            0%, 100% { transform: translateY(0) scaleY(1); }
+            50% { transform: translateY(-10px) scaleY(0.95); }
+        }
+
+        /* Cactus Silhouettes */
+        .cactus {
+            position: absolute;
+            bottom: 10%;
+            width: 40px;
+            height: 100px;
+            background: var(--cactus-green);
+            opacity: 0.3;
+            clip-path: polygon(40% 0%, 60% 0%, 55% 30%, 70% 35%, 65% 50%, 55% 45%, 60% 100%, 40% 100%, 45% 45%, 35% 50%, 30% 35%, 45% 30%);
+        }
+
+        .cactus:nth-child(2) { left: 5%; height: 80px; }
+        .cactus:nth-child(3) { left: 15%; height: 120px; }
+        .cactus:nth-child(4) { right: 8%; height: 90px; }
+        .cactus:nth-child(5) { right: 20%; height: 110px; }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, 
+                rgba(74, 0, 102, 0.9), 
+                rgba(255, 107, 53, 0.3));
+            border: 2px solid var(--desert-sunrise);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, 
+                var(--desert-sunrise), 
+                var(--desert-sunset), 
+                var(--transcendence));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: var(--transcendence);
+            font-size: 1.3rem;
+            font-weight: 300;
+        }
+
+        /* Arizona Map Visualization */
+        .arizona-map {
+            width: 100%;
+            max-width: 500px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .arizona-shape {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, 
+                rgba(255, 107, 53, 0.2), 
+                rgba(74, 0, 102, 0.3));
+            border: 2px solid var(--desert-sunrise);
+            border-radius: 8px;
+            position: relative;
+            clip-path: polygon(
+                15% 10%, 85% 10%, 90% 20%, 95% 35%,
+                95% 80%, 85% 90%, 70% 95%, 30% 95%,
+                15% 90%, 5% 75%, 5% 30%, 10% 20%
+            );
+            animation: glow 4s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 107, 53, 0.5); }
+            50% { box-shadow: 0 0 50px rgba(255, 107, 53, 0.8); }
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, 
+                rgba(74, 0, 102, 0.6), 
+                rgba(184, 115, 51, 0.2));
+            border: 1px solid var(--arizona-copper);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                var(--desert-sunrise), 
+                var(--arizona-copper), 
+                var(--desert-sunset));
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.4);
+        }
+
+        .metric-label {
+            color: var(--desert-sunrise);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--transcendence), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-detail {
+            color: #ffffff;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+
+        /* County Cards */
+        .county-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            background: linear-gradient(90deg, 
+                rgba(255, 107, 53, 0.3), 
+                rgba(74, 0, 102, 0.3));
+            border-left: 4px solid var(--desert-sunrise);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--desert-sunrise);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .county-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+
+        .county-card {
+            background: rgba(74, 0, 102, 0.4);
+            border: 1px solid var(--arizona-copper);
+            border-radius: 8px;
+            padding: 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .county-card:hover {
+            background: rgba(255, 107, 53, 0.1);
+            border-color: var(--desert-sunrise);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        .county-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .county-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-item {
+            color: var(--transcendence);
+        }
+
+        .stat-value {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .status-ready {
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 170, 0.3), 
+                rgba(0, 255, 238, 0.2));
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-strategic {
+            background: linear-gradient(135deg, 
+                rgba(255, 107, 53, 0.3), 
+                rgba(247, 119, 55, 0.2));
+            color: var(--desert-sunrise);
+            border: 1px solid var(--desert-sunrise);
+        }
+
+        .status-growth {
+            background: linear-gradient(135deg, 
+                rgba(184, 115, 51, 0.3), 
+                rgba(204, 85, 0, 0.2));
+            color: var(--arizona-copper);
+            border: 1px solid var(--arizona-copper);
+        }
+
+        /* Action Timeline */
+        .timeline-section {
+            background: linear-gradient(135deg, 
+                rgba(74, 0, 102, 0.8), 
+                rgba(255, 107, 53, 0.2));
+            border: 2px solid var(--desert-sunrise);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .timeline-header {
+            font-size: 1.5rem;
+            color: var(--desert-sunrise);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, 
+                var(--desert-sunrise), 
+                var(--arizona-copper), 
+                var(--transcendence));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0;
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, var(--desert-sunrise), var(--desert-sunset));
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.6);
+            animation: pulseDot 2s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 107, 53, 1); }
+        }
+
+        .timeline-date {
+            color: var(--desert-sunrise);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-content {
+            background: rgba(184, 115, 51, 0.1);
+            border: 1px solid var(--arizona-copper);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ffffff;
+        }
+
+        /* CTA Buttons */
+        .cta-section {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, var(--desert-sunrise), var(--desert-sunset));
+            color: var(--phoenix-purple);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.5);
+        }
+
+        .cta-btn.secondary {
+            background: transparent;
+            color: var(--desert-sunrise);
+            border: 2px solid var(--desert-sunrise);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in {
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="desert-animation">
+        <div class="sun"></div>
+        <div class="heat-wave"></div>
+        <div class="cactus"></div>
+        <div class="cactus"></div>
+        <div class="cactus"></div>
+        <div class="cactus"></div>
+        <div class="cactus"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header fade-in">
+            <h1 class="title">ARIZONA DESERT DOMINANCE</h1>
+            <p class="subtitle">15 Counties • 7.3M Citizens • $187M Opportunity • 113,990 sq mi Territory</p>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Market Value</div>
+                <div class="metric-value">$187M</div>
+                <div class="metric-detail">5-year projected revenue</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Population Growth</div>
+                <div class="metric-value">+12%</div>
+                <div class="metric-detail">Fastest growing state 2020-2025</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">GIS Readiness</div>
+                <div class="metric-value">94%</div>
+                <div class="metric-detail">Modern systems deployed</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Migration Time</div>
+                <div class="metric-value">30 Days</div>
+                <div class="metric-detail">Full state transformation</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Parcels</div>
+                <div class="metric-value">2.8M</div>
+                <div class="metric-detail">Properties to modernize</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Expected ROI</div>
+                <div class="metric-value">847%</div>
+                <div class="metric-detail">First year return</div>
+            </div>
+        </div>
+
+        <!-- Phoenix Metro Dominance -->
+        <div class="county-section">
+            <div class="section-header">PHOENIX METRO: THE VALLEY OF THE SUN (Week 1)</div>
+            <div class="county-grid">
+                <div class="county-card">
+                    <div class="county-name">Maricopa County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">4.5M</span></div>
+                        <div class="stat-item">Parcels: <span class="stat-value">1.6M</span></div>
+                        <div class="stat-item">Value: <span class="stat-value">$487B</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$9.2M/yr</span></div>
+                    </div>
+                    <div class="status-badge status-ready">GIS OPEN DATA READY</div>
+                </div>
+                <div class="county-card">
+                    <div class="county-name">MAG Integration</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Coverage: <span class="stat-value">8 Cities</span></div>
+                        <div class="stat-item">Phoenix: <span class="stat-value">1.7M pop</span></div>
+                        <div class="stat-item">Scottsdale: <span class="stat-value">260K</span></div>
+                        <div class="stat-item">Value: <span class="stat-value">$18M/yr</span></div>
+                    </div>
+                    <div class="status-badge status-strategic">REGIONAL POWER</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Southern Arizona -->
+        <div class="county-section">
+            <div class="section-header">SOUTHERN CORRIDOR: TUCSON & BORDER (Week 2)</div>
+            <div class="county-grid">
+                <div class="county-card">
+                    <div class="county-name">Pima County (Tucson)</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">1.05M</span></div>
+                        <div class="stat-item">Parcels: <span class="stat-value">420K</span></div>
+                        <div class="stat-item">Value: <span class="stat-value">$124B</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$2.8M/yr</span></div>
+                    </div>
+                    <div class="status-badge status-ready">OPEN DATA PORTAL</div>
+                </div>
+                <div class="county-card">
+                    <div class="county-name">Pinal County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">480K</span></div>
+                        <div class="stat-item">Parcels: <span class="stat-value">180K</span></div>
+                        <div class="stat-item">Growth: <span class="stat-value">+25%</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$1.8M/yr</span></div>
+                    </div>
+                    <div class="status-badge status-growth">EXPLOSIVE GROWTH</div>
+                </div>
+                <div class="county-card">
+                    <div class="county-name">Santa Cruz County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">47K</span></div>
+                        <div class="stat-item">Border: <span class="stat-value">Yes</span></div>
+                        <div class="stat-item">Special: <span class="stat-value">Trade Hub</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$420K/yr</span></div>
+                    </div>
+                    <div class="status-badge status-strategic">BORDER ADVANTAGE</div>
+                </div>
+                <div class="county-card">
+                    <div class="county-name">Cochise County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">125K</span></div>
+                        <div class="stat-item">Military: <span class="stat-value">Fort Huachuca</span></div>
+                        <div class="stat-item">Tech: <span class="stat-value">Cyber Command</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$680K/yr</span></div>
+                    </div>
+                    <div class="status-badge status-strategic">DEFENSE PRIORITY</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Northern Arizona -->
+        <div class="county-section">
+            <div class="section-header">NORTHERN HIGHLANDS: FLAGSTAFF & SEDONA (Week 3)</div>
+            <div class="county-grid">
+                <div class="county-card">
+                    <div class="county-name">Coconino County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">145K</span></div>
+                        <div class="stat-item">Area: <span class="stat-value">Largest in AZ</span></div>
+                        <div class="stat-item">Tourism: <span class="stat-value">Grand Canyon</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$980K/yr</span></div>
+                    </div>
+                    <div class="status-badge status-ready">OPEN DATA HUB</div>
+                </div>
+                <div class="county-card">
+                    <div class="county-name">Yavapai County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">242K</span></div>
+                        <div class="stat-item">Cities: <span class="stat-value">Prescott/Sedona</span></div>
+                        <div class="stat-item">Retirees: <span class="stat-value">High %</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$1.4M/yr</span></div>
+                    </div>
+                    <div class="status-badge status-ready">OPEN DATA PORTAL</div>
+                </div>
+                <div class="county-card">
+                    <div class="county-name">Navajo County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">106K</span></div>
+                        <div class="stat-item">Tribal: <span class="stat-value">Large %</span></div>
+                        <div class="stat-item">Special: <span class="stat-value">Sovereign Integration</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$620K/yr</span></div>
+                    </div>
+                    <div class="status-badge status-strategic">TRIBAL PARTNERSHIP</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Western Arizona -->
+        <div class="county-section">
+            <div class="section-header">WESTERN FRONTIER: COLORADO RIVER REGION (Week 4)</div>
+            <div class="county-grid">
+                <div class="county-card">
+                    <div class="county-name">Mohave County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">213K</span></div>
+                        <div class="stat-item">Tourism: <span class="stat-value">Lake Havasu</span></div>
+                        <div class="stat-item">Growth: <span class="stat-value">+18%</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$1.1M/yr</span></div>
+                    </div>
+                    <div class="status-badge status-ready">GIS MAPS READY</div>
+                </div>
+                <div class="county-card">
+                    <div class="county-name">Yuma County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">204K</span></div>
+                        <div class="stat-item">Agriculture: <span class="stat-value">#1 in AZ</span></div>
+                        <div class="stat-item">Border: <span class="stat-value">CA/Mexico</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$980K/yr</span></div>
+                    </div>
+                    <div class="status-badge status-strategic">AG POWERHOUSE</div>
+                </div>
+                <div class="county-card">
+                    <div class="county-name">La Paz County</div>
+                    <div class="county-stats">
+                        <div class="stat-item">Population: <span class="stat-value">16K</span></div>
+                        <div class="stat-item">River: <span class="stat-value">Colorado</span></div>
+                        <div class="stat-item">Pioneer: <span class="stat-value">Program</span></div>
+                        <div class="stat-item">Revenue: <span class="stat-value">$180K/yr</span></div>
+                    </div>
+                    <div class="status-badge status-growth">PIONEER READY</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategic Timeline -->
+        <div class="timeline-section">
+            <div class="timeline-header">30-Day Arizona Conquest Timeline</div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Week 1: Phoenix Rising</div>
+                    <div class="timeline-content">
+                        • Monday: Maricopa County executive briefing downtown Phoenix<br>
+                        • Tuesday: MAG partnership announcement (8 city coverage)<br>
+                        • Wednesday: Begin Maricopa Open Data integration<br>
+                        • Thursday: Phoenix, Scottsdale, Mesa demos<br>
+                        • Friday: Maricopa goes live - 4.5M citizens served
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Week 2: Southern Expansion</div>
+                    <div class="timeline-content">
+                        • Pima County (Tucson) 24-hour migration<br>
+                        • University of Arizona research partnership<br>
+                        • Pinal County growth corridor activation<br>
+                        • Border counties security showcase<br>
+                        • Fort Huachuca cyber command integration
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Week 3: Northern Territories</div>
+                    <div class="timeline-content">
+                        • Coconino County Grand Canyon showcase<br>
+                        • Flagstaff NAU university partnership<br>
+                        • Yavapai County retiree optimization<br>
+                        • Sedona tourism analytics launch<br>
+                        • Tribal sovereignty integration protocols
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Week 4: Western Completion</div>
+                    <div class="timeline-content">
+                        • Mohave County Lake Havasu deployment<br>
+                        • Yuma agricultural optimization system<br>
+                        • Colorado River management integration<br>
+                        • Small county consortium activation<br>
+                        • Statewide celebration: "Arizona Transcended"
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <button class="cta-btn" onclick="alert('ARIZONA CONQUEST INITIATED\n\n🌵 Maricopa County integration starting\n☀️ MAG partnership activated\n🏜️ 15 counties targeted\n💰 $187M opportunity captured\n🚀 Desert Transcended!')">
+                INITIATE DESERT CONQUEST
+            </button>
+            <button class="cta-btn secondary" onclick="alert('DOWNLOADING ARIZONA PLAYBOOK\n\n📊 County-by-county strategy\n🔧 Technical specifications\n💬 Desert-specific messaging\n📈 Growth projections\n\nArizona_Conquest_Plan.pdf (3.2MB)')">
+                DOWNLOAD BATTLE PLAN
+            </button>
+            <button class="cta-btn secondary" onclick="alert('SCHEDULING DEMOS\n\n📅 Maricopa County: Monday 10 AM\n📅 Pima County: Tuesday 2 PM\n📅 MAG Council: Wednesday 9 AM\n\n✅ Calendar invites sent!')">
+                SCHEDULE PHOENIX DEMOS
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Animate metrics on load
+        window.addEventListener('load', () => {
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics.forEach((metric, index) => {
+                setTimeout(() => {
+                    metric.style.animation = 'fadeIn 1s ease-in';
+                }, index * 100);
+            });
+        });
+
+        // Add desert heat shimmer effect
+        function createHeatShimmer() {
+            const counties = document.querySelectorAll('.county-card');
+            counties.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.filter = 'brightness(1.1)';
+                    card.style.background = 'linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(74, 0, 102, 0.4))';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.filter = 'brightness(1)';
+                    card.style.background = 'rgba(74, 0, 102, 0.4)';
+                });
+            });
+        }
+        createHeatShimmer();
+
+        // Pulse sun animation trigger
+        setInterval(() => {
+            const sun = document.querySelector('.sun');
+            sun.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                sun.style.transform = 'scale(1)';
+            }, 500);
+        }, 5000);
+    </script>
+</body>
+</html>

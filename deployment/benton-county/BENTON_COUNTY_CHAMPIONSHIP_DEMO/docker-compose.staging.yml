@@ -1,0 +1,32 @@
+# 🧪 Staging Environment Overrides
+version: '3.8'
+
+services:
+  benton-county-demo:
+    environment:
+      - NODE_ENV=staging
+      - DEMO_MODE=staging
+    ports:
+      - "3000:3000"
+    labels:
+      - "traefik.http.routers.benton-demo.rule=Host(`staging-demo.terrafusion.local`)"
+
+  postgres:
+    environment:
+      POSTGRES_DB: terrafusion_benton_staging
+    ports:
+      - "5433:5432"  # Different port for staging
+
+  redis:
+    ports:
+      - "6380:6379"  # Different port for staging
+
+  grafana:
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=staging2025
+    ports:
+      - "3002:3000"  # Different port for staging
+
+  prometheus:
+    ports:
+      - "9091:9090"  # Different port for staging

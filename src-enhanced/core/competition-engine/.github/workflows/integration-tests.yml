@@ -1,0 +1,436 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run integration tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Specific test suite to run (optional)'
+        required: false
+        default: 'all'
+      performance_threshold:
+        description: 'Performance threshold in milliseconds'
+        required: false
+        default: '10000'
+
+env:
+  NODE_VERSION: '18'
+  RUST_VERSION: 'stable'
+  COVERAGE_THRESHOLD: 80
+  PERFORMANCE_THRESHOLD: ${{ github.event.inputs.performance_threshold || '10000' }}
+
+jobs:
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    strategy:
+      matrix:
+        test-suite: 
+          - ipc-communication
+          - database-integration
+          - message-queue
+          - workflow-coordination
+          - user-workflows
+      fail-fast: false
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          components: rustfmt, clippy
+      
+      - name: Cache Rust dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libwebkit2gtk-4.0-dev \
+            libxdo-dev \
+            pkg-config
+      
+      - name: Install Node.js dependencies
+        run: npm ci
+      
+      - name: Build shared libraries
+        run: |
+          npm run build:shared
+          cd shared/rust-services/placeholder && cargo build --release
+      
+      - name: Setup test environment
+        run: |
+          mkdir -p test-results/{integration,coverage,performance}
+          mkdir -p logs/integration
+          mkdir -p reports/{html,json,junit}
+      
+      - name: Run specific test suite
+        if: github.event.inputs.test_suite != 'all' && github.event.inputs.test_suite != ''
+        run: |
+          npm test -- --testPathPattern="tests/integration/${{ github.event.inputs.test_suite }}.spec.ts" \
+            --json --outputFile="test-results/${{ github.event.inputs.test_suite }}-results.json" \
+            --coverage --coverageDirectory="test-results/coverage/${{ github.event.inputs.test_suite }}" \
+            --maxWorkers=2 \
+            --timeout=60000
+      
+      - name: Run matrix test suite
+        if: github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == ''
+        run: |
+          npm test -- --testPathPattern="tests/integration/${{ matrix.test-suite }}.spec.ts" \
+            --json --outputFile="test-results/${{ matrix.test-suite }}-results.json" \
+            --coverage --coverageDirectory="test-results/coverage/${{ matrix.test-suite }}" \
+            --maxWorkers=2 \
+            --timeout=60000
+        env:
+          JEST_TIMEOUT: 60000
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results-${{ matrix.test-suite || github.event.inputs.test_suite }}
+          path: |
+            test-results/
+            logs/
+          retention-days: 30
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          directory: test-results/coverage
+          flags: integration-tests,${{ matrix.test-suite || github.event.inputs.test_suite }}
+          name: ${{ matrix.test-suite || github.event.inputs.test_suite }}-coverage
+          fail_ci_if_error: false
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: success() || failure()
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd shared/rust-services/placeholder && cargo build --release
+      
+      - name: Run performance tests
+        run: |
+          npm test -- --testPathPattern="tests/integration/(ipc-communication|message-queue).spec.ts" \
+            --testNamePattern="Performance|performance|throughput|latency" \
+            --json --outputFile="test-results/performance-results.json" \
+            --maxWorkers=1 \
+            --timeout=120000
+        env:
+          PERFORMANCE_THRESHOLD: ${{ env.PERFORMANCE_THRESHOLD }}
+      
+      - name: Analyze performance results
+        run: |
+          if [ -f "test-results/performance-results.json" ]; then
+            echo "## Performance Test Results" >> $GITHUB_STEP_SUMMARY
+            
+            # Extract performance metrics (if available in test results)
+            if command -v jq >/dev/null 2>&1; then
+              echo "Performance analysis completed - see artifacts for details" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "jq not available for performance analysis" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+      
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-results
+          path: test-results/performance-results.json
+          retention-days: 90
+
+  full-integration-suite:
+    name: Full Integration Suite
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 60
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+      
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libwebkit2gtk-4.0-dev \
+            libxdo-dev \
+            pkg-config \
+            jq \
+            bc
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run full integration test suite
+        run: |
+          chmod +x scripts/run-integration-tests.sh
+          ./scripts/run-integration-tests.sh \
+            --timeout 300 \
+            --parallel 2 \
+            --coverage-threshold ${{ env.COVERAGE_THRESHOLD }} \
+            --performance-threshold ${{ env.PERFORMANCE_THRESHOLD }}
+      
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## Integration Test Suite Summary" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "test-results/integration-summary.json" ]; then
+            # Parse and display summary
+            if command -v jq >/dev/null 2>&1; then
+              total_suites=$(jq -r '.testSuites | length' test-results/integration-summary.json)
+              passed_suites=$(jq -r '[.testSuites[] | select(.status == "passed")] | length' test-results/integration-summary.json)
+              failed_suites=$(jq -r '[.testSuites[] | select(.status == "failed")] | length' test-results/integration-summary.json)
+              total_duration=$(jq -r '.totalDuration // 0' test-results/integration-summary.json)
+              
+              echo "- **Total Suites**: $total_suites" >> $GITHUB_STEP_SUMMARY
+              echo "- **Passed**: $passed_suites" >> $GITHUB_STEP_SUMMARY
+              echo "- **Failed**: $failed_suites" >> $GITHUB_STEP_SUMMARY
+              echo "- **Duration**: ${total_duration}s" >> $GITHUB_STEP_SUMMARY
+              
+              if [ "$failed_suites" -gt 0 ]; then
+                echo "" >> $GITHUB_STEP_SUMMARY
+                echo "### Failed Test Suites" >> $GITHUB_STEP_SUMMARY
+                jq -r '.testSuites[] | select(.status == "failed") | "- " + .name + " (" + (.duration | tostring) + "s)"' test-results/integration-summary.json >> $GITHUB_STEP_SUMMARY
+              fi
+            fi
+          else
+            echo "No test summary available" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Upload comprehensive results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: full-integration-results
+          path: |
+            test-results/
+            logs/
+            reports/
+          retention-days: 90
+      
+      - name: Notify on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: 'Integration tests failed in TerraFusion'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  e2e-workflow-tests:
+    name: End-to-End Workflow Tests
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: success()
+    timeout-minutes: 45
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Setup Playwright
+        uses: microsoft/playwright-github-action@v1
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+      
+      - name: Build applications
+        run: |
+          npm run build:shared
+          # Build select apps for E2E testing
+          cd apps/11-terra-fusion-dashboard && npm run build
+          cd ../08-costforge-ai && npm run build
+      
+      - name: Run E2E workflow tests
+        run: |
+          npx playwright test \
+            --config=playwright.config.ts \
+            --project=chromium \
+            --reporter=html,json \
+            tests/e2e/
+      
+      - name: Upload E2E results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-results
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 30
+
+  security-tests:
+    name: Security Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run security audit
+        run: |
+          npm audit --audit-level=moderate
+          
+          # Check for known vulnerabilities in Rust dependencies
+          if command -v cargo-audit >/dev/null 2>&1; then
+            cd shared/rust-services/placeholder
+            cargo audit
+          fi
+      
+      - name: Run IPC security tests
+        run: |
+          npm test -- --testPathPattern="tests/integration/ipc-communication.spec.ts" \
+            --testNamePattern="security|Security|auth|Auth" \
+            --json --outputFile="test-results/security-results.json"
+      
+      - name: Upload security results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-results
+          path: test-results/security-results.json
+          retention-days: 90
+
+  notification:
+    name: Test Results Notification
+    runs-on: ubuntu-latest
+    needs: [integration-tests, performance-tests, full-integration-suite, e2e-workflow-tests]
+    if: always()
+    
+    steps:
+      - name: Determine overall status
+        id: status
+        run: |
+          if [[ "${{ needs.integration-tests.result }}" == "success" && 
+                "${{ needs.performance-tests.result }}" == "success" ]]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=All integration tests passed! 🏆" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=Some integration tests failed. Check the results." >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create status badge
+        run: |
+          if [[ "${{ steps.status.outputs.status }}" == "success" ]]; then
+            echo "![Integration Tests](https://img.shields.io/badge/Integration_Tests-PASSING-brightgreen)" > integration-status.md
+          else
+            echo "![Integration Tests](https://img.shields.io/badge/Integration_Tests-FAILING-red)" > integration-status.md
+          fi
+      
+      - name: Update commit status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const status = '${{ steps.status.outputs.status }}';
+            const message = '${{ steps.status.outputs.message }}';
+            
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: status === 'success' ? 'success' : 'failure',
+              target_url: `${context.payload.repository.html_url}/actions/runs/${context.runId}`,
+              description: message,
+              context: 'Integration Tests'
+            });

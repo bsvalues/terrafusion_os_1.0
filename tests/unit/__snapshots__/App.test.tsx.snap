@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`App Component > Core Rendering > renders as expected 1`] = `
+<div
+  data-testid="app"
+>
+  TerraFusion OS
+</div>
+`;

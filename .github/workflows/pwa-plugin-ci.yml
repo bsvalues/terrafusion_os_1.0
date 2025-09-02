@@ -1,0 +1,103 @@
+name: PWA Plugin CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_name: pwa-core-${{ github.sha }}.tar.gz
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build PWA
+        run: npm run build
+        working-directory: ./modules/government-edition/PWA
+
+      - name: Run PWA tests
+        run: npm test
+        working-directory: ./modules/government-edition/PWA
+
+      - name: Validate plugin manifest
+        run: npm run validate:plugin
+
+      - name: Block if permissions unsupported
+        run: |
+          node -e "const m=require('fs').readFileSync('modules/government-edition/PWA/plugin.json','utf8'); const j=JSON.parse(m); const allowed=new Set(['read:properties','read:valuations','write:reports','os.invoke','os.emit','property.valuation.read','parcel.search','gis.map.view']); const bad=(j.permissions||[]).filter(p=>!allowed.has(p)); if(bad.length){console.error('Unsupported permissions:',bad); process.exit(1)}"
+
+      - name: Security scan
+        run: npm run lint && npm audit --production
+
+      - name: Sign plugin
+        env:
+          COUNTY_SECRET_KEY: ${{ secrets.COUNTY_SECRET_KEY }}
+        run: |
+          node ./scripts/sign-plugin.mjs --source modules/government-edition/PWA --privateKey $COUNTY_SECRET_KEY
+
+      - name: Package plugin
+        run: |
+          mkdir -p ./modules/government-edition/PWA/build
+          tar -czf ./modules/government-edition/PWA/build/pwa-core-${{ github.sha }}.tar.gz -C ./modules/government-edition/PWA dist plugin.json
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pwa-plugin
+          path: modules/government-edition/PWA/build/pwa-core-${{ github.sha }}.tar.gz
+
+  deploy-to-staging:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging-market.terrafusion.local
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pwa-plugin
+
+      - name: Upload to Staging Marketplace
+        env:
+          MARKETPLACE_TOKEN: ${{ secrets.STAGING_MARKETPLACE_TOKEN }}
+        run: |
+          curl -X POST https://staging-market.terrafusion.local/api/plugins \
+            -H "Authorization: Bearer $MARKETPLACE_TOKEN" \
+            -F "file=@${{ needs.build-and-test.outputs.artifact_name }}"
+
+  deploy-to-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: deploy-to-staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://market.terrafusion.local
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pwa-plugin
+
+      - name: Upload to Production Marketplace
+        env:
+          MARKETPLACE_TOKEN: ${{ secrets.PRODUCTION_MARKETPLACE_TOKEN }}
+        run: |
+          curl -X POST https://market.terrafusion.local/api/plugins \
+            -H "Authorization: Bearer $MARKETPLACE_TOKEN" \
+            -F "file=@${{ needs.build-and-test.outputs.artifact_name }}"

@@ -1,0 +1,148 @@
+{
+  "timestamp": "2025-08-29T07:01:13.585664",
+  "system_status": {
+    "timestamp": "2025-08-29T07:01:13.585664",
+    "system_status": "operational",
+    "active_counties": 2,
+    "county_statuses": {
+      "Benton County": {
+        "status": "initialized",
+        "last_optimization": "2025-08-29T07:01:13.555035",
+        "performance_metrics": {
+          "optimization_type": "compliance",
+          "fisma_compliance": true,
+          "budget_compliance": true,
+          "policy_compliance": true,
+          "overall_compliance_score": 1.0,
+          "recommendations": [
+            "Maintain FISMA compliance standards",
+            "Monitor budget constraint adherence",
+            "Ensure policy compliance across departments"
+          ]
+        }
+      },
+      "Franklin County": {
+        "status": "initialized",
+        "last_optimization": "2025-08-29T07:01:13.561655",
+        "performance_metrics": {
+          "optimization_type": "compliance",
+          "fisma_compliance": true,
+          "budget_compliance": true,
+          "policy_compliance": true,
+          "overall_compliance_score": 1.0,
+          "recommendations": [
+            "Maintain FISMA compliance standards",
+            "Monitor budget constraint adherence",
+            "Ensure policy compliance across departments"
+          ]
+        }
+      }
+    },
+    "optimization_history": 6,
+    "gauge_theory_status": "active",
+    "cama_instanton_status": "active",
+    "lattice_gauge_status": "active"
+  },
+  "optimization_history": [
+    {
+      "county": "Benton County",
+      "target": "efficiency",
+      "timestamp": "2025-08-29T07:01:13.550839",
+      "results": {
+        "optimization_type": "efficiency",
+        "original_friction": 0.0,
+        "optimized_friction": 0.0,
+        "efficiency_gain": NaN,
+        "recommendations": [
+          "Reduce interdepartmental dependencies",
+          "Streamline API connections",
+          "Optimize parallel transport paths"
+        ]
+      }
+    },
+    {
+      "county": "Benton County",
+      "target": "cost",
+      "timestamp": "2025-08-29T07:01:13.553348",
+      "results": {
+        "optimization_type": "cost",
+        "original_cost": 1.2500000000000002e+16,
+        "optimized_cost": 1.0625000000000002e+16,
+        "cost_savings": 0.14999999999999997,
+        "recommendations": [
+          "Optimize citizen interaction energy",
+          "Reduce regulatory constraint penalties",
+          "Streamline procurement processes"
+        ]
+      }
+    },
+    {
+      "county": "Benton County",
+      "target": "compliance",
+      "timestamp": "2025-08-29T07:01:13.555035",
+      "results": {
+        "optimization_type": "compliance",
+        "fisma_compliance": true,
+        "budget_compliance": true,
+        "policy_compliance": true,
+        "overall_compliance_score": 1.0,
+        "recommendations": [
+          "Maintain FISMA compliance standards",
+          "Monitor budget constraint adherence",
+          "Ensure policy compliance across departments"
+        ]
+      }
+    },
+    {
+      "county": "Franklin County",
+      "target": "efficiency",
+      "timestamp": "2025-08-29T07:01:13.557343",
+      "results": {
+        "optimization_type": "efficiency",
+        "original_friction": 0.0,
+        "optimized_friction": 0.0,
+        "efficiency_gain": NaN,
+        "recommendations": [
+          "Reduce interdepartmental dependencies",
+          "Streamline API connections",
+          "Optimize parallel transport paths"
+        ]
+      }
+    },
+    {
+      "county": "Franklin County",
+      "target": "cost",
+      "timestamp": "2025-08-29T07:01:13.558548",
+      "results": {
+        "optimization_type": "cost",
+        "original_cost": 4.21875e+16,
+        "optimized_cost": 3.5859375e+16,
+        "cost_savings": 0.15,
+        "recommendations": [
+          "Optimize citizen interaction energy",
+          "Reduce regulatory constraint penalties",
+          "Streamline procurement processes"
+        ]
+      }
+    },
+    {
+      "county": "Franklin County",
+      "target": "compliance",
+      "timestamp": "2025-08-29T07:01:13.561655",
+      "results": {
+        "optimization_type": "compliance",
+        "fisma_compliance": true,
+        "budget_compliance": true,
+        "policy_compliance": true,
+        "overall_compliance_score": 1.0,
+        "recommendations": [
+          "Maintain FISMA compliance standards",
+          "Monitor budget constraint adherence",
+          "Ensure policy compliance across departments"
+        ]
+      }
+    }
+  ],
+  "active_counties": {
+    "Benton County": {
+      "gauge_theory": 

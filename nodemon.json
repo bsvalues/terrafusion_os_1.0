@@ -1,0 +1,22 @@
+{
+  "watch": [
+    "backend/**/*.ts",
+    "frontend/**/*.tsx",
+    "modules/**/*.ts"
+  ],
+  "ext": "ts,tsx,js,jsx,json",
+  "ignore": [
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "**/bin/**",
+    "**/obj/**"
+  ],
+  "exec": "npm run build && npm run start:dev",
+  "env": {
+    "NODE_ENV": "development",
+    "ASPNETCORE_ENVIRONMENT": "Development"
+  },
+  "delay": 1000,
+  "verbose": true
+}

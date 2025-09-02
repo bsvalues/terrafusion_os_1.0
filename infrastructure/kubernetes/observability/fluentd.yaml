@@ -1,0 +1,372 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluentd
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fluentd
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  - namespaces
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: fluentd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: fluentd
+subjects:
+- kind: ServiceAccount
+  name: fluentd
+  namespace: monitoring
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: monitoring
+data:
+  fluent.conf: |
+    @include "#{ENV['FLUENTD_SYSTEMD_CONF'] || 'systemd'}.conf"
+    @include "#{ENV['FLUENTD_PROMETHEUS_CONF'] || 'prometheus'}.conf"
+    @include kubernetes.conf
+    @include cosmic.conf
+    @include conf.d/*.conf
+    
+    <match **>
+      @type copy
+      
+      # Send to Elasticsearch
+      <store>
+        @type elasticsearch
+        @id out_es
+        @log_level info
+        include_tag_key true
+        scheme https
+        ssl_verify false
+        host elasticsearch-lb.monitoring.svc.cluster.local
+        port 9200
+        user elastic
+        password "#{ENV['ELASTICSEARCH_PASSWORD']}"
+        logstash_format true
+        logstash_prefix cosmic-logs
+        logstash_dateformat %Y.%m.%d
+        include_timestamp true
+        type_name _doc
+        
+        <buffer>
+          @type file
+          path /var/log/fluentd-buffers/kubernetes.system.buffer
+          flush_mode interval
+          retry_type exponential_backoff
+          flush_thread_count 2
+          flush_interval 5s
+          retry_forever
+          retry_max_interval 30
+          chunk_limit_size 2M
+          queue_limit_length 8
+          overflow_action block
+        </buffer>
+      </store>
+      
+      # Send to Loki
+      <store>
+        @type loki
+        @id out_loki
+        url http://loki.monitoring.svc.cluster.local:3100
+        
+        <label>
+          job fluentd
+          namespace $.kubernetes.namespace_name
+          pod $.kubernetes.pod_name
+          container $.kubernetes.container_name
+          stream stdout
+          cosmic_level $.cosmic_level
+        </label>
+        
+        <buffer>
+          @type file
+          path /var/log/fluentd-buffers/loki.buffer
+          flush_mode interval
+          flush_interval 10s
+          chunk_limit_size 1M
+        </buffer>
+      </store>
+    </match>
+    
+  kubernetes.conf: |
+    <source>
+      @type tail
+      @id in_tail_container_logs
+      path /var/log/containers/*.log
+      pos_file /var/log/fluentd-containers.log.pos
+      tag kubernetes.*
+      exclude_path ["/var/log/containers/fluentd*"]
+      read_from_head true
+      <parse>
+        @type multi_format
+        <pattern>
+          format json
+          time_key time
+          time_format %Y-%m-%dT%H:%M:%S.%N%z
+        </pattern>
+        <pattern>
+          format /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
+          time_format %Y-%m-%dT%H:%M:%S.%N%:z
+        </pattern>
+      </parse>
+    </source>
+    
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+      @id filter_kube_metadata
+      kubernetes_url "#{ENV['FLUENT_FILTER_KUBERNETES_URL'] || 'https://' + ENV.fetch('KUBERNETES_SERVICE_HOST') + ':' + ENV.fetch('KUBERNETES_SERVICE_PORT') + '/api'}"
+      verify_ssl "#{ENV['KUBERNETES_VERIFY_SSL'] || true}"
+      ca_file "#{ENV['KUBERNETES_CA_FILE'] || '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'}"
+      skip_labels false
+      skip_container_metadata false
+      skip_master_url false
+      skip_namespace_metadata false
+    </filter>
+    
+  cosmic.conf: |
+    # Add cosmic platform specific fields
+    <filter kubernetes.**>
+      @type record_transformer
+      <record>
+        cosmic_level ${record["kubernetes"]["labels"]["cosmic-level"] || "material"}
+        service_mesh ${record["kubernetes"]["labels"]["istio"] || "false"}
+        neural_network ${record["kubernetes"]["labels"]["neural-network"] || "inactive"}
+        quantum_state ${record["kubernetes"]["labels"]["quantum-state"] || "collapsed"}
+      </record>
+    </filter>
+    
+    # Parse cosmic consciousness logs
+    <filter kubernetes.var.log.containers.consciousness-service**>
+      @type parser
+      key_name log
+      reserve_data true
+      <parse>
+        @type json
+        json_parser oj
+      </parse>
+    </filter>
+    
+    # Parse cosmic orchestrator logs
+    <filter kubernetes.var.log.containers.cosmic-orchestrator**>
+      @type parser
+      key_name log
+      reserve_data true
+      <parse>
+        @type json
+        json_parser oj
+      </parse>
+    </filter>
+    
+    # Enrich with trace information
+    <filter kubernetes.**>
+      @type grep
+      <regexp>
+        key log
+        pattern /trace_id|span_id|parent_span_id/
+      </regexp>
+    </filter>
+    
+  prometheus.conf: |
+    # Prometheus metrics
+    <source>
+      @type prometheus
+      bind 0.0.0.0
+      port 24231
+      metrics_path /metrics
+    </source>
+    
+    <source>
+      @type prometheus_output_monitor
+      interval 10
+      <labels>
+        hostname ${hostname}
+      </labels>
+    </source>
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd
+  namespace: monitoring
+  labels:
+    app: fluentd
+spec:
+  selector:
+    matchLabels:
+      app: fluentd
+  template:
+    metadata:
+      labels:
+        app: fluentd
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "24231"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: fluentd
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      containers:
+      - name: fluentd
+        image: fluent/fluentd-kubernetes-daemonset:v1.15-debian-elasticsearch8-1
+        env:
+        - name: FLUENT_ELASTICSEARCH_HOST
+          value: "elasticsearch-lb.monitoring.svc.cluster.local"
+        - name: FLUENT_ELASTICSEARCH_PORT
+          value: "9200"
+        - name: FLUENT_ELASTICSEARCH_SCHEME
+          value: "https"
+        - name: FLUENT_ELASTICSEARCH_SSL_VERIFY
+          value: "false"
+        - name: FLUENT_ELASTICSEARCH_USER
+          value: "elastic"
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: password
+        - name: FLUENTD_SYSTEMD_CONF
+          value: "disable"
+        - name: FLUENT_CONTAINER_TAIL_PARSER_TYPE
+          value: "multi_format"
+        - name: FLUENT_CONTAINER_TAIL_PARSER_TIME_FORMAT
+          value: "%Y-%m-%dT%H:%M:%S.%N%z"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+        volumeMounts:
+        - name: config
+          mountPath: /fluentd/etc
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: buffer
+          mountPath: /var/log/fluentd-buffers
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: config
+        configMap:
+          name: fluentd-config
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: buffer
+        emptyDir: {}
+---
+# Fluent Bit alternative configuration (lighter weight)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: monitoring
+data:
+  fluent-bit.conf: |
+    [SERVICE]
+        Daemon Off
+        Flush 5
+        Log_Level info
+        Parsers_File parsers.conf
+        Parsers_File custom_parsers.conf
+        HTTP_Server On
+        HTTP_Listen 0.0.0.0
+        HTTP_Port 2020
+        Health_Check On
+        HC_Errors_Count 5
+        HC_Retry_Failure_Count 5
+        HC_Period 60
+        
+    [INPUT]
+        Name tail
+        Path /var/log/containers/*.log
+        Exclude_Path *fluent-bit*
+        Parser cri
+        Tag kube.*
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
+        Refresh_Interval 10
+        
+    [FILTER]
+        Name kubernetes
+        Match kube.*
+        Kube_URL https://kubernetes.default.svc:443
+        Kube_CA_File /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        Kube_Token_File /var/run/secrets/kubernetes.io/serviceaccount/token
+        Kube_Tag_Prefix kube.var.log.containers.
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+        
+    [FILTER]
+        Name record_modifier
+        Match *
+        Record hostname ${HOSTNAME}
+        Record cosmic_cluster terrafusion
+        
+    [OUTPUT]
+        Name es
+        Match *
+        Host elasticsearch-lb.monitoring.svc.cluster.local
+        Port 9200
+        HTTP_User elastic
+        HTTP_Passwd ${ELASTICSEARCH_PASSWORD}
+        Logstash_Format On
+        Logstash_Prefix cosmic-logs
+        Retry_Limit 5
+        TLS On
+        TLS.Verify Off
+        
+    [OUTPUT]
+        Name loki
+        Match *
+        Host loki.monitoring.svc.cluster.local
+        Port 3100
+        Labels job=fluent-bit, cosmic=true
+        
+  parsers.conf: |
+    [PARSER]
+        Name cri
+        Format regex
+        Regex ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<message>.*)$
+        Time_Key time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+        
+    [PARSER]
+        Name json
+        Format json
+        Time_Key time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+        
+  custom_parsers.conf: |
+    [PARSER]
+        Name cosmic_json
+        Format json
+        Time_Key timestamp
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+        Decode_Field_As json log

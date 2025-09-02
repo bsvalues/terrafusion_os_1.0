@@ -1,0 +1,29 @@
+agent_host: localhost
+agent_port: 6831
+collector_endpoint: http://localhost:14268/api/traces
+sampler:
+  param: 0.1
+  type: probabilistic
+service_name: terrafusion
+services:
+  v1_foundation:
+    spans:
+      - api_request
+      - database_query
+      - cache_lookup
+      - authentication
+      - plugin_execution
+  v2_project_reflex:
+    spans:
+      - ai_workflow
+      - quantum_sync
+      - edge_federation
+      - policy_evaluation
+      - state_machine_transition
+  v3_cosmic_governance:
+    spans:
+      - quantum_computation
+      - consciousness_sync
+      - galactic_mesh_update
+      - species_accord_check
+      - harmonic_field_calculation

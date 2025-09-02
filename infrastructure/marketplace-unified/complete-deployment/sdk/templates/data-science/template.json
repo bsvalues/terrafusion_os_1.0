@@ -1,0 +1,45 @@
+{
+  "id": "data-science",
+  "metadata": {
+    "name": "Data Science Workspace",
+    "description": "Complete data science environment with Jupyter, Python, and analysis tools",
+    "category": "Data Science",
+    "tags": ["jupyter", "python", "pandas", "matplotlib", "data-analysis"],
+    "dependencies": {
+      "python": ">=3.9.0",
+      "jupyter": ">=1.0.0"
+    },
+    "requirements": ["Python 3.9+", "Jupyter Lab", "Git"],
+    "author": "Terrafusion Team",
+    "version": "1.0.0",
+    "icon": "bar-chart"
+  },
+  "variables": [
+    {
+      "name": "PROJECT_NAME",
+      "description": "Name of your data science project",
+      "default_value": "my-data-science-project",
+      "required": true,
+      "validation_pattern": "^[a-z][a-z0-9-_]*$"
+    },
+    {
+      "name": "AUTHOR_NAME",
+      "description": "Author name",
+      "default_value": "Your Name",
+      "required": true
+    },
+    {
+      "name": "DESCRIPTION",
+      "description": "Project description",
+      "default_value": "A data science project for analysis and insights",
+      "required": false
+    }
+  ],
+  "file_mappings": {},
+  "post_install_commands": [
+    "python -m venv venv",
+    "source venv/bin/activate && pip install -r requirements.txt",
+    "echo 'Data science workspace created successfully!'",
+    "echo 'Start Jupyter: jupyter lab'"
+  ]
+}

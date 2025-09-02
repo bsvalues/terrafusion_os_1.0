@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <h1>If you see this, HTML is loading</h1>
+    <div id="root"></div>
+    <script type="module">
+        console.log("JavaScript is running");
+        document.getElementById('root').innerHTML = '<h2>JavaScript can modify the DOM</h2>';
+    </script>
+</body>
+</html>

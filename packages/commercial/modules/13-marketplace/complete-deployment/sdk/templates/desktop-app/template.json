@@ -1,0 +1,49 @@
+{
+  "id": "desktop-app",
+  "metadata": {
+    "name": "Desktop Application",
+    "description": "Cross-platform desktop app with Tauri and React",
+    "category": "Desktop Development",
+    "tags": ["tauri", "react", "rust", "typescript", "desktop"],
+    "dependencies": {
+      "node": ">=18.0.0",
+      "rust": ">=1.70.0"
+    },
+    "requirements": [
+      "Node.js 18+",
+      "Rust 1.70+",
+      "System dependencies for Tauri"
+    ],
+    "author": "Terrafusion Team",
+    "version": "1.0.0",
+    "icon": "monitor"
+  },
+  "variables": [
+    {
+      "name": "PROJECT_NAME",
+      "description": "Name of your desktop app",
+      "default_value": "my-desktop-app",
+      "required": true,
+      "validation_pattern": "^[a-z][a-z0-9-]*$"
+    },
+    {
+      "name": "APP_TITLE",
+      "description": "Application display title",
+      "default_value": "My Desktop App",
+      "required": true
+    },
+    {
+      "name": "AUTHOR_NAME",
+      "description": "Author name",
+      "default_value": "Your Name",
+      "required": true
+    }
+  ],
+  "file_mappings": {},
+  "post_install_commands": [
+    "npm install",
+    "cargo install tauri-cli",
+    "echo 'Desktop app created successfully!'",
+    "echo 'Run: npm run tauri dev'"
+  ]
+}

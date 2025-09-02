@@ -1,0 +1,13 @@
+node_modules
+dist
+target
+build
+coverage
+.next
+.nuxt
+.vuepress
+.serverless
+.git
+*.md
+package-lock.json
+yarn.lock

@@ -1,0 +1,33 @@
+{
+  "cookies": [
+    {
+      "name": "auth_token",
+      "value": "assessor_test_token_456",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 9999999999,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "user",
+          "value": "{\"id\":\"u-assessor\",\"name\":\"County Assessor\",\"role\":\"assessor\",\"permissions\":[\"read\",\"write\",\"approve\"],\"email\":\"assessor@bentoncounty.gov\"}"
+        },
+        {
+          "name": "auth_expires",
+          "value": "9999999999999"
+        },
+        {
+          "name": "role",
+          "value": "assessor"
+        }
+      ]
+    }
+  ]
+}

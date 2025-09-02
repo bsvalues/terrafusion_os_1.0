@@ -1,0 +1,7 @@
+{
+	"folders": [],
+	"settings": {
+		"git.ignoreLimitWarning": true,
+		"powershell.cwd": "TerraFusion_Tauri_Master_Workspace"
+	}
+}

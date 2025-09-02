@@ -1,0 +1,301 @@
+groups:
+  - name: terrafusion.infrastructure
+    interval: 30s
+    rules:
+      - alert: HighCPUUsage
+        expr: (100 - (avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+          runbook_url: "https://terrafusion.com/runbooks/high-cpu"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+          runbook_url: "https://terrafusion.com/runbooks/high-memory"
+
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: "{{ $labels.job }}"
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute"
+          runbook_url: "https://terrafusion.com/runbooks/service-down"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_size_bytes - node_filesystem_avail_bytes) / node_filesystem_size_bytes * 100 > 90
+        for: 10m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "Disk space is running low"
+          description: "Disk usage is {{ $value }}% on {{ $labels.mountpoint }} at {{ $labels.instance }}"
+          runbook_url: "https://terrafusion.com/runbooks/disk-space"
+
+  - name: terrafusion.application
+    interval: 30s
+    rules:
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, http_request_duration_seconds_bucket) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s for {{ $labels.job }}"
+          runbook_url: "https://terrafusion.com/runbooks/high-latency"
+
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          component: application
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }}% for {{ $labels.job }}"
+          runbook_url: "https://terrafusion.com/runbooks/high-error-rate"
+
+      - alert: LowAPDEXScore
+        expr: apdex_score < 0.8
+        for: 10m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "APDEX score is low"
+          description: "APDEX score is {{ $value }} for {{ $labels.service }}"
+          runbook_url: "https://terrafusion.com/runbooks/low-apdex"
+
+      - alert: DatabaseConnectionFailure
+        expr: database_connections_failed_total > 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection failures detected"
+          description: "{{ $value }} database connection failures in the last minute"
+          runbook_url: "https://terrafusion.com/runbooks/db-connection-failure"
+
+  - name: terrafusion.security
+    interval: 30s
+    rules:
+      - alert: CriticalSecurityThreat
+        expr: security_threats_total{severity="critical"} > 0
+        for: 0s
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Critical security threat detected"
+          description: "{{ $value }} critical security threats detected"
+          runbook_url: "https://terrafusion.com/runbooks/critical-threat"
+
+      - alert: HighFailedLoginAttempts
+        expr: increase(failed_login_attempts_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High number of failed login attempts"
+          description: "{{ $value }} failed login attempts in the last 5 minutes from {{ $labels.source_ip }}"
+          runbook_url: "https://terrafusion.com/runbooks/brute-force"
+
+      - alert: ComplianceViolation
+        expr: compliance_score < 80
+        for: 30m
+        labels:
+          severity: warning
+          component: compliance
+        annotations:
+          summary: "Compliance score below threshold"
+          description: "{{ $labels.framework }} compliance score is {{ $value }}%"
+          runbook_url: "https://terrafusion.com/runbooks/compliance-violation"
+
+      - alert: UnauthorizedAccess
+        expr: unauthorized_access_attempts_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Unauthorized access attempt detected"
+          description: "{{ $value }} unauthorized access attempts detected"
+          runbook_url: "https://terrafusion.com/runbooks/unauthorized-access"
+
+      - alert: DataExfiltrationSuspected
+        expr: data_transfer_bytes{destination="external"} > 100000000
+        for: 5m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Suspected data exfiltration"
+          description: "{{ $value }} bytes transferred to external destination"
+          runbook_url: "https://terrafusion.com/runbooks/data-exfiltration"
+
+  - name: terrafusion.quantum
+    interval: 10s
+    rules:
+      - alert: QuantumCoherenceDegradation
+        expr: quantum_coherence_t1 < 80e-6
+        for: 1m
+        labels:
+          severity: high
+          component: quantum
+        annotations:
+          summary: "Quantum coherence degradation detected"
+          description: "T1 coherence time is {{ $value }}s on {{ $labels.processor }} qubit {{ $labels.qubit }}"
+          runbook_url: "https://terrafusion.com/runbooks/coherence-degradation"
+
+      - alert: LowGateFidelity
+        expr: quantum_gate_fidelity < 0.98
+        for: 2m
+        labels:
+          severity: critical
+          component: quantum
+        annotations:
+          summary: "Low gate fidelity detected"
+          description: "{{ $labels.gate_type }} gate fidelity is {{ $value }} on {{ $labels.processor }}"
+          runbook_url: "https://terrafusion.com/runbooks/low-fidelity"
+
+      - alert: QuantumStateDecoherence
+        expr: quantum_processor_state == "decoherent"
+        for: 0s
+        labels:
+          severity: critical
+          component: quantum
+        annotations:
+          summary: "Quantum processor decoherence detected"
+          description: "Processor {{ $labels.processor }} has entered decoherent state"
+          runbook_url: "https://terrafusion.com/runbooks/decoherence"
+
+      - alert: EntanglementLoss
+        expr: quantum_entanglement_fidelity{state="bell"} < 0.9
+        for: 30s
+        labels:
+          severity: high
+          component: quantum
+        annotations:
+          summary: "Entanglement fidelity loss"
+          description: "Bell state fidelity is {{ $value }} on {{ $labels.processor }}"
+          runbook_url: "https://terrafusion.com/runbooks/entanglement-loss"
+
+      - alert: QuantumVolumeDecline
+        expr: quantum_volume < 32
+        for: 5m
+        labels:
+          severity: warning
+          component: quantum
+        annotations:
+          summary: "Quantum volume below threshold"
+          description: "Quantum volume is {{ $value }} on {{ $labels.processor }}"
+          runbook_url: "https://terrafusion.com/runbooks/low-quantum-volume"
+
+      - alert: EnvironmentalDisruption
+        expr: quantum_environment_temperature{sensor="mixing_chamber"} > 0.020
+        for: 1m
+        labels:
+          severity: critical
+          component: quantum
+        annotations:
+          summary: "Critical temperature excursion"
+          description: "Mixing chamber temperature is {{ $value }}K"
+          runbook_url: "https://terrafusion.com/runbooks/temperature-excursion"
+
+      - alert: ExcessiveVibration
+        expr: quantum_environment_vibration{axis="rms"} > 1e-6
+        for: 5m
+        labels:
+          severity: warning
+          component: quantum
+        annotations:
+          summary: "Excessive vibration detected"
+          description: "RMS vibration is {{ $value }} m/s²"
+          runbook_url: "https://terrafusion.com/runbooks/excessive-vibration"
+
+      - alert: QuantumErrorCorrectionFailure
+        expr: quantum_error_correction_success_rate < 0.9
+        for: 2m
+        labels:
+          severity: critical
+          component: quantum
+        annotations:
+          summary: "Quantum error correction failure"
+          description: "Error correction success rate is {{ $value }} on {{ $labels.processor }}"
+          runbook_url: "https://terrafusion.com/runbooks/qec-failure"
+
+  - name: terrafusion.slos
+    interval: 60s
+    rules:
+      # Availability SLO: 99.9% uptime
+      - alert: AvailabilitySLOBreach
+        expr: (avg_over_time(up[30d]) * 100) < 99.9
+        for: 1m
+        labels:
+          severity: critical
+          slo: availability
+        annotations:
+          summary: "Availability SLO breached"
+          description: "Service availability is {{ $value }}% over the last 30 days"
+
+      # Latency SLO: 95% of requests under 300ms
+      - alert: LatencySLOBreach
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[7d])) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+          slo: latency
+        annotations:
+          summary: "Latency SLO breached"
+          description: "95th percentile latency is {{ $value }}s over the last 7 days"
+
+      # Error Rate SLO: 99% success rate
+      - alert: ErrorRateSLOBreach
+        expr: (1 - (sum(rate(http_requests_total{status!~"5.."}[24h])) / sum(rate(http_requests_total[24h])))) * 100 > 1
+        for: 10m
+        labels:
+          severity: warning
+          slo: error_rate
+        annotations:
+          summary: "Error rate SLO breached"
+          description: "Error rate is {{ $value }}% over the last 24 hours"
+
+      # Quantum Fidelity SLO: Average gate fidelity > 99%
+      - alert: QuantumFidelitySLOBreach
+        expr: avg(quantum_gate_fidelity) < 0.99
+        for: 30m
+        labels:
+          severity: warning
+          slo: quantum_fidelity
+        annotations:
+          summary: "Quantum fidelity SLO breached"
+          description: "Average gate fidelity is {{ $value }}"
+
+      # Security SLO: Zero critical threats
+      - alert: SecuritySLOBreach
+        expr: sum(security_threats_total{severity="critical"}) > 0
+        for: 0s
+        labels:
+          severity: critical
+          slo: security
+        annotations:
+          summary: "Security SLO breached"
+          description: "{{ $value }} critical security threats detected"

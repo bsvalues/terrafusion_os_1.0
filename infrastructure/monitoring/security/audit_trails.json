@@ -1,0 +1,74 @@
+[
+  {
+    "event_id": "b2808234",
+    "category": "authentication",
+    "type": "suspicious_login",
+    "severity": "high",
+    "details": {
+      "user": "admin_user",
+      "source_ip": "203.0.113.42",
+      "location": "Unknown Country",
+      "timestamp": "2025-07-30T01:26:54.216865"
+    }
+  },
+  {
+    "event_id": "6e1d5a5e",
+    "category": "data_access",
+    "type": "bulk_data_export",
+    "severity": "medium",
+    "details": {
+      "user": "analyst_user",
+      "records_exported": 50000,
+      "destination": "external_api",
+      "timestamp": "2025-07-30T01:26:54.216870"
+    }
+  },
+  {
+    "event_id": "01c36315",
+    "category": "quantum_security",
+    "type": "quantum_key_compromise",
+    "severity": "critical",
+    "details": {
+      "key_id": "QK-2024-0730-001",
+      "affected_channels": 3,
+      "detection_method": "bell_inequality_violation",
+      "timestamp": "2025-07-30T01:26:54.216875"
+    }
+  },
+  {
+    "event_id": "2f1ac3ee",
+    "category": "authentication",
+    "type": "suspicious_login",
+    "severity": "high",
+    "details": {
+      "user": "admin_user",
+      "source_ip": "203.0.113.42",
+      "location": "Unknown Country",
+      "timestamp": "2025-07-30T01:26:54.217116"
+    }
+  },
+  {
+    "event_id": "ee74810e",
+    "category": "data_access",
+    "type": "bulk_data_export",
+    "severity": "medium",
+    "details": {
+      "user": "analyst_user",
+      "records_exported": 50000,
+      "destination": "external_api",
+      "timestamp": "2025-07-30T01:26:54.217120"
+    }
+  },
+  {
+    "event_id": "30bfab6e",
+    "category": "quantum_security",
+    "type": "quantum_key_compromise",
+    "severity": "critical",
+    "details": {
+      "key_id": "QK-2024-0730-001",
+      "affected_channels": 3,
+      "detection_method": "bell_inequality_violation",
+      "timestamp": "2025-07-30T01:26:54.217124"
+    }
+  }
+]

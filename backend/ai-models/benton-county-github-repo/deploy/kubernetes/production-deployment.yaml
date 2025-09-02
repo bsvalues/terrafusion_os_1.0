@@ -1,0 +1,375 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: benton-county-prod
+  labels:
+    name: benton-county-prod
+    environment: production
+    client: benton-county
+---
+# ConfigMap for Benton County specific configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: benton-config
+  namespace: benton-county-prod
+data:
+  county.yaml: |
+    county:
+      name: "Benton County"
+      state: "Washington"
+      fips: "53005"
+      parcels: 99347
+      jurisdictions:
+        - Kennewick
+        - Richland
+        - West Richland
+        - Prosser
+        - Benton City
+        - Unincorporated
+      special_features:
+        - wine_country_module
+        - hanford_reach
+        - columbia_river
+---
+# CostForgeAI Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: costforge-ai
+  namespace: benton-county-prod
+  labels:
+    app: costforge
+    tier: enterprise-core
+    component: valuation
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: costforge
+  template:
+    metadata:
+      labels:
+        app: costforge
+        version: green
+    spec:
+      containers:
+      - name: costforge
+        image: ghcr.io/terrafusion/benton-county/costforge:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: COUNTY_NAME
+          value: "Benton County"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: url
+        - name: AI_MODEL
+          value: "benton_res_2024_v2"
+        - name: CONFIDENCE_THRESHOLD
+          value: "0.85"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# GISPRO Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gispro
+  namespace: benton-county-prod
+  labels:
+    app: gispro
+    tier: advanced-solutions
+    component: mapping
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gispro
+  template:
+    metadata:
+      labels:
+        app: gispro
+        version: green
+    spec:
+      containers:
+      - name: gispro
+        image: ghcr.io/terrafusion/benton-county/gispro:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: ESRI_SERVER
+          value: "https://gis.co.benton.wa.us/arcgis"
+        - name: CRS
+          value: "EPSG:2927"
+        - name: PARCEL_COUNT
+          value: "99347"
+        volumeMounts:
+        - name: gis-data
+          mountPath: /data/gis
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+      volumes:
+      - name: gis-data
+        persistentVolumeClaim:
+          claimName: gis-data-pvc
+---
+# PropertyWorkbench Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: propertyworkbench
+  namespace: benton-county-prod
+  labels:
+    app: propertyworkbench
+    tier: advanced-solutions
+    component: management
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: propertyworkbench
+  template:
+    metadata:
+      labels:
+        app: propertyworkbench
+        version: green
+    spec:
+      containers:
+      - name: propertyworkbench
+        image: ghcr.io/terrafusion/benton-county/propertyworkbench:latest
+        ports:
+        - containerPort: 8082
+        env:
+        - name: PUBLIC_PORTAL
+          value: "true"
+        - name: PAYMENT_GATEWAY
+          value: "stripe"
+        - name: STRIPE_PUBLIC_KEY
+          valueFrom:
+            secretKeyRef:
+              name: stripe-credentials
+              key: public_key
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+# Service definitions
+apiVersion: v1
+kind: Service
+metadata:
+  name: costforge-service
+  namespace: benton-county-prod
+spec:
+  selector:
+    app: costforge
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gispro-service
+  namespace: benton-county-prod
+spec:
+  selector:
+    app: gispro
+  ports:
+  - protocol: TCP
+    port: 8081
+    targetPort: 8081
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: propertyworkbench-service
+  namespace: benton-county-prod
+spec:
+  selector:
+    app: propertyworkbench
+  ports:
+  - protocol: TCP
+    port: 8082
+    targetPort: 8082
+  type: ClusterIP
+---
+# Ingress configuration
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: benton-county-ingress
+  namespace: benton-county-prod
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+spec:
+  tls:
+  - hosts:
+    - terrafusion.co.benton.wa.us
+    - assess.co.benton.wa.us
+    - api.co.benton.wa.us
+    secretName: benton-county-tls
+  rules:
+  - host: terrafusion.co.benton.wa.us
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: propertyworkbench-service
+            port:
+              number: 8082
+  - host: assess.co.benton.wa.us
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: propertyworkbench-service
+            port:
+              number: 8082
+  - host: api.co.benton.wa.us
+    http:
+      paths:
+      - path: /costforge
+        pathType: Prefix
+        backend:
+          service:
+            name: costforge-service
+            port:
+              number: 8080
+      - path: /gis
+        pathType: Prefix
+        backend:
+          service:
+            name: gispro-service
+            port:
+              number: 8081
+---
+# HorizontalPodAutoscaler for CostForgeAI
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: costforge-hpa
+  namespace: benton-county-prod
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: costforge-ai
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+---
+# PersistentVolumeClaim for GIS data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gis-data-pvc
+  namespace: benton-county-prod
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 100Gi
+---
+# Database credentials secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+  namespace: benton-county-prod
+type: Opaque
+stringData:
+  url: "postgresql://benton_user:CHANGE_ME@postgres.benton-county-prod.svc.cluster.local:5432/benton_prod?sslmode=require"
+  username: "benton_user"
+  password: "CHANGE_ME_SECURE_PASSWORD"
+---
+# Stripe credentials secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: stripe-credentials
+  namespace: benton-county-prod
+type: Opaque
+stringData:
+  public_key: "pk_live_CHANGE_ME"
+  secret_key: "sk_live_CHANGE_ME"
+---
+# NetworkPolicy for production security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: benton-prod-network-policy
+  namespace: benton-county-prod
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - podSelector: {}
+  egress:
+  - to:
+    - podSelector: {}
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53

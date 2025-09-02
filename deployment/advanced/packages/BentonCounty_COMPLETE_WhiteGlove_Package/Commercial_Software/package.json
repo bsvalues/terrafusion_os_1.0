@@ -1,0 +1,82 @@
+{
+  "name": "@terrafusion/commercial-platform",
+  "version": "3.0.0",
+  "description": "Terrafusion Commercial Platform - Enterprise Real Estate Valuation & Analytics",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && cargo run",
+    "build": "npm run build:frontend && npm run build:backend && npm run package",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && cargo build --release",
+    "package": "node scripts/package-platform.js",
+    "deploy": "node scripts/deploy-commercial.js",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && cargo test",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "start": "node dist/launcher.js"
+  },
+  "dependencies": {
+    "@terrafusion/core": "^2.0.0",
+    "@terrafusion/costforge-engine": "^1.0.0",
+    "@terrafusion/marketplace-launcher": "^1.0.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "typescript": "^5.3.0",
+    "nodemon": "^3.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "terrafusion": {
+    "platform": "commercial",
+    "features": [
+      "costforge-ai",
+      "marketplace",
+      "appraisal-engine",
+      "uspap-compliance",
+      "comparable-analysis",
+      "market-analytics",
+      "enterprise-auth",
+      "multi-tenant",
+      "subscription-billing"
+    ],
+    "branding": {
+      "theme": "championship",
+      "colors": {
+        "primary": "#00e5ff",
+        "secondary": "#006064",
+        "accent": "#f59e0b"
+      },
+      "tagline": "Government. Transcended."
+    },
+    "revenue": {
+      "model": "SaaS + Marketplace",
+      "commission": "30%",
+      "tiers": [
+        {
+          "name": "Individual Appraiser",
+          "price": 99,
+          "features": ["1 User", "100 Valuations/mo", "Basic Support"]
+        },
+        {
+          "name": "Small Firm",
+          "price": 399,
+          "features": ["5 Users", "1,000 Valuations/mo", "Priority Support"]
+        },
+        {
+          "name": "Enterprise",
+          "price": 1999,
+          "features": ["50 Users", "Unlimited Valuations", "24/7 Support", "Custom Training"]
+        }
+      ]
+    }
+  }
+}

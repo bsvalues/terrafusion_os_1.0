@@ -1,0 +1,32 @@
+name: Preflight Sanity Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  sanity-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.16.0'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Node.js execution
+        run: node -e "console.log('node-ok')"
+
+      - name: Validate plugin manifest
+        run: node scripts/validate-manifest.mjs modules/government-edition/PWA/plugin.json
+
+      - name: Run signing script self-test
+        run: node scripts/sign-plugin.mjs --self-test
+
+      - name: Run AI smoke test (sovereign-by-default)
+        run: npx ts-node --transpile-only scripts/ai-smoke.ts

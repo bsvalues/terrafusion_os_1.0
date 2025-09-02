@@ -1,0 +1,173 @@
+replicaCount: 3
+
+image:
+  repository: terrafusion/terrafusion-api
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: api.terrafusion.ai
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-api-tls
+      hosts:
+        - api.terrafusion.ai
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - terrafusion-api
+        topologyKey: kubernetes.io/hostname
+
+env:
+  - name: ASPNETCORE_ENVIRONMENT
+    value: "Production"
+  - name: ASPNETCORE_URLS
+    value: "http://+:5000"
+  - name: DATABASE_CONNECTION_STRING
+    valueFrom:
+      secretKeyRef:
+        name: terrafusion-db-secret
+        key: connection-string
+  - name: REDIS_CONNECTION_STRING
+    valueFrom:
+      secretKeyRef:
+        name: terrafusion-redis-secret
+        key: connection-string
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: terrafusion-jwt-secret
+        key: jwt-secret
+  - name: AI_SWARM_ENDPOINT
+    value: "http://terrafusion-ai-swarm:5003"
+  - name: QUANTUM_PERFORMANCE_ENDPOINT
+    value: "http://terrafusion-quantum:5004"
+
+configMaps:
+  appsettings:
+    data:
+      appsettings.Production.json: |
+        {
+          "Logging": {
+            "LogLevel": {
+              "Default": "Information",
+              "Microsoft.AspNetCore": "Warning"
+            }
+          },
+          "AllowedHosts": "*",
+          "ConnectionStrings": {
+            "DefaultConnection": "Server=${DATABASE_HOST};Database=terrafusion;User Id=${DATABASE_USER};Password=${DATABASE_PASSWORD};TrustServerCertificate=true"
+          },
+          "Redis": {
+            "ConnectionString": "${REDIS_CONNECTION_STRING}"
+          },
+          "JwtSettings": {
+            "SecretKey": "${JWT_SECRET}",
+            "Issuer": "TerraFusion",
+            "Audience": "TerraFusion-Users",
+            "ExpirationMinutes": 60
+          },
+          "AI": {
+            "SwarmEndpoint": "${AI_SWARM_ENDPOINT}",
+            "QuantumEndpoint": "${QUANTUM_PERFORMANCE_ENDPOINT}",
+            "MaxConcurrentRequests": 100
+          }
+        }
+
+secrets:
+  database:
+    data:
+      connection-string: "Server=${DATABASE_HOST};Database=terrafusion;User Id=${DATABASE_USER};Password=${DATABASE_PASSWORD};TrustServerCertificate=true"
+  redis:
+    data:
+      connection-string: "${REDIS_CONNECTION_STRING}"
+  jwt:
+    data:
+      jwt-secret: "${JWT_SECRET}"
+
+volumes:
+  - name: app-logs
+    emptyDir: {}
+
+volumeMounts:
+  - name: app-logs
+    mountPath: /app/logs
+
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: 5000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: 5000
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+startupProbe:
+  httpGet:
+    path: /health/startup
+    port: 5000
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  failureThreshold: 30

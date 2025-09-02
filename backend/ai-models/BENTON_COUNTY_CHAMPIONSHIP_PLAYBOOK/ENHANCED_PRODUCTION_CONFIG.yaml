@@ -1,0 +1,828 @@
+# 🏆 ENHANCED HYBRID PRODUCTION CONFIGURATION
+# Local + Cloud OpenAI OSS Integration - Championship Edition
+
+# System Information
+system:
+  name: "Benton County Enhanced Hybrid OpenAI OSS"
+  version: "2.0.0"
+  architecture: "Local + Cloud OpenAI OSS"
+  environment: "production"
+  deployment_date: "2025-01-08"
+  log_level: "INFO"
+  timezone: "America/Los_Angeles"
+
+# Local OpenAI OSS Configuration
+local_openai_oss:
+  # Model Storage
+  models_directory: "/opt/models/openai-oss"
+  cache_directory: "/opt/benton-county-ai/enhanced-hybrid/cache"
+  
+  # Model Configurations
+  models:
+    gpt-oss-20b-local:
+      display_name: "OpenAI OSS 20B Local"
+      model_path: "/opt/models/openai-oss/gpt-oss-20b"
+      parameters: "20 billion"
+      context_window: 32000
+      max_tokens: 4000
+      temperature: 0.7
+      top_p: 0.9
+      device: "cuda:0"
+      memory_limit: "16GB"
+      load_in_8bit: true
+      torch_dtype: "float16"
+      specialties:
+        - "sensitive_property_analysis"
+        - "owner_information_processing"
+        - "confidential_tax_calculations"
+        - "secure_document_analysis"
+        - "pii_data_processing"
+        - "local_secure_operations"
+      security_level: "MAXIMUM"
+      
+    gpt-oss-120b-local:
+      display_name: "OpenAI OSS 120B Local"
+      model_path: "/opt/models/openai-oss/gpt-oss-120b"
+      parameters: "120 billion"
+      context_window: 128000
+      max_tokens: 8000
+      temperature: 0.5
+      top_p: 0.95
+      device: "cuda:1"
+      memory_limit: "32GB"
+      load_in_8bit: true
+      torch_dtype: "float16"
+      specialties:
+        - "comprehensive_property_valuations"
+        - "complex_financial_analysis"
+        - "multi_factor_assessments"
+        - "advanced_legal_document_processing"
+        - "predictive_modeling"
+        - "comprehensive_reporting"
+      security_level: "MAXIMUM"
+  
+  # Hardware Configuration
+  hardware:
+    gpu_devices: ["cuda:0", "cuda:1"]
+    cpu_threads: 16
+    memory_management:
+      max_memory: "48GB"
+      memory_fraction: 0.8
+      gradient_checkpointing: true
+    
+  # Performance Optimization
+  optimization:
+    batch_size: 1
+    max_concurrent_requests: 4
+    model_parallel: true
+    pipeline_parallel: false
+    quantization: "8bit"
+    attention_optimization: "flash_attention_2"
+
+# Cloud OpenAI OSS Configuration
+cloud_openai_oss:
+  # API Configuration
+  api_base: "https://api.openai.com/v1/oss"
+  api_version: "2024-01-01"
+  timeout: 30
+  max_retries: 3
+  retry_delay: 1.0
+  
+  # Model Specifications
+  models:
+    gpt-oss-20b:
+      display_name: "OpenAI OSS 20B Cloud"
+      parameters: "20 billion"
+      context_window: 32000
+      max_tokens: 4000
+      temperature: 0.7
+      top_p: 0.9
+      specialties:
+        - "fast_calculations"
+        - "market_analysis"
+        - "general_queries"
+        - "basic_financial_modeling"
+        - "trend_analysis"
+        - "comparative_analysis"
+      cost_per_token: 0.0
+      rate_limit: 1000  # requests per minute
+      concurrent_requests: 20
+      
+    gpt-oss-120b:
+      display_name: "OpenAI OSS 120B Cloud"
+      parameters: "120 billion"
+      context_window: 128000
+      max_tokens: 8000
+      temperature: 0.5
+      top_p: 0.95
+      specialties:
+        - "complex_analysis"
+        - "comprehensive_research"
+        - "advanced_modeling"
+        - "predictive_analytics"
+        - "multi_variable_analysis"
+        - "strategic_planning"
+      cost_per_token: 0.0
+      rate_limit: 500   # requests per minute
+      concurrent_requests: 10
+
+# Enhanced Hybrid Routing Configuration
+enhanced_routing:
+  # Default Strategy
+  default_strategy: "enhanced_intelligent"
+  
+  # Enhanced Sensitivity Detection
+  sensitivity_detection:
+    enabled: true
+    confidence_threshold: 0.85
+    multi_pattern_analysis: true
+    context_aware: true
+    
+    # Enhanced Classification Patterns
+    patterns:
+      red_zone:  # Maximum security - local only
+        pii_patterns:
+          - pattern: '\b\d{3}-?\d{2}-?\d{4}\b'
+            type: "ssn"
+            weight: 1.0
+          - pattern: '\b\d{2}-?\d{7}\b'
+            type: "ein"
+            weight: 1.0
+          - pattern: '\b[A-Z0-9]{8,15}\b'
+            type: "parcel_id"
+            weight: 0.9
+          - pattern: '\d+\s+[A-Za-z\s]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Circle|Cir|Plaza|Pl)\b'
+            type: "street_address"
+            weight: 0.8
+        
+        sensitive_keywords:
+          - keywords: ["owner", "proprietor", "taxpayer", "applicant"]
+            type: "person_identifiers"
+            weight: 0.9
+          - keywords: ["mortgage", "lien", "foreclosure", "bankruptcy"]
+            type: "financial_sensitive"
+            weight: 0.8
+          - keywords: ["violation", "citation", "penalty", "fine"]
+            type: "legal_sensitive"
+            weight: 0.8
+          - keywords: ["personal", "private", "confidential", "restricted"]
+            type: "privacy_indicators"
+            weight: 0.7
+          
+      yellow_zone:  # Semi-sensitive - anonymize first
+        location_patterns:
+          - pattern: '\b\d{5}(?:-\d{4})?\b'
+            type: "zip_code"
+            weight: 0.6
+          - pattern: '\$[\d,]+(?:\.\d{2})?'
+            type: "currency"
+            weight: 0.5
+        
+        property_keywords:
+          - keywords: ["property", "assessment", "valuation", "comparable"]
+            type: "property_terms"
+            weight: 0.6
+          - keywords: ["market", "sale", "price", "value"]
+            type: "market_terms"
+            weight: 0.5
+          
+      green_zone:  # Safe for cloud
+        safe_keywords:
+          - keywords: ["calculate", "formula", "percentage", "roi", "cap rate"]
+            type: "calculation_terms"
+            weight: 0.8
+          - keywords: ["trend", "analysis", "forecast", "statistics"]
+            type: "analysis_terms"
+            weight: 0.7
+          - keywords: ["definition", "explanation", "how to", "what is"]
+            type: "educational_terms"
+            weight: 0.9
+  
+  # Enhanced Model Selection
+  model_selection:
+    # Task-Based Routing with Enhanced Logic
+    task_routing:
+      sensitive_data_analysis:
+        primary_model: "gpt-oss-120b-local"
+        fallback_model: "gpt-oss-20b-local"
+        deployment: "local_only"
+        criteria: ["pii", "confidential", "restricted", "sensitive"]
+        complexity_threshold: 0.3
+        
+      property_valuation:
+        primary_model: "gpt-oss-120b-local"
+        fallback_model: "gpt-oss-20b-local"
+        deployment: "local_preferred"
+        criteria: ["valuation", "assessment", "appraisal", "market_value"]
+        complexity_threshold: 0.5
+        
+      financial_calculations:
+        primary_model: "gpt-oss-120b"
+        fallback_model: "gpt-oss-20b"
+        deployment: "cloud_preferred"
+        criteria: ["roi", "npv", "irr", "cash_flow", "investment"]
+        complexity_threshold: 0.4
+        
+      market_analysis:
+        primary_model: "gpt-oss-120b"
+        fallback_model: "gpt-oss-20b"
+        deployment: "cloud_preferred"
+        criteria: ["market", "trend", "forecast", "analysis"]
+        complexity_threshold: 0.6
+        
+      simple_calculations:
+        primary_model: "gpt-oss-20b"
+        fallback_model: "gpt-oss-20b-local"
+        deployment: "cloud_first"
+        criteria: ["calculate", "math", "percentage", "ratio"]
+        complexity_threshold: 0.2
+        
+      general_queries:
+        primary_model: "gpt-oss-20b"
+        fallback_model: "gpt-oss-20b-local"
+        deployment: "cloud_first"
+        criteria: ["general", "definition", "explanation", "help"]
+        complexity_threshold: 0.3
+    
+    # Enhanced Complexity Analysis
+    complexity_scoring:
+      indicators:
+        high_complexity: 
+          keywords: ["comprehensive", "detailed", "complex", "advanced", "multi-factor", "predictive"]
+          weight: 1.0
+          threshold: 3
+        
+        moderate_complexity:
+          keywords: ["analyze", "compare", "evaluate", "assess", "examine"]
+          weight: 0.7
+          threshold: 2
+          
+        low_complexity:
+          keywords: ["what", "how", "calculate", "simple", "basic"]
+          weight: 0.3
+          threshold: 1
+      
+      # Query Length Analysis
+      length_scoring:
+        short: 
+          max_chars: 100
+          complexity_modifier: -0.2
+        medium:
+          max_chars: 500
+          complexity_modifier: 0.0
+        long:
+          max_chars: 1000
+          complexity_modifier: 0.3
+        very_long:
+          min_chars: 1000
+          complexity_modifier: 0.5
+  
+  # Enhanced Anonymization
+  anonymization:
+    enabled: true
+    preserve_context: true
+    maintain_relationships: true
+    
+    # Advanced Anonymization Methods
+    methods:
+      addresses:
+        strategy: "geographic_generalization"
+        levels:
+          - "exact_address" # Remove completely
+          - "street_level"  # Keep street, remove number
+          - "neighborhood"  # General area only
+          - "zip_code"     # ZIP code only
+          - "city_level"   # City only
+        default_level: "zip_code"
+        
+      personal_identifiers:
+        strategy: "role_based_replacement"
+        replacements:
+          names: "[PROPERTY_OWNER]"
+          ssn: "[SSN_REDACTED]"
+          ein: "[EIN_REDACTED]"
+          phone: "[PHONE_REDACTED]"
+          email: "[EMAIL_REDACTED]"
+        
+      financial_data:
+        strategy: "range_based_approximation"
+        rounding_rules:
+          small_amounts: 1000    # <$100K
+          medium_amounts: 5000   # $100K-$1M
+          large_amounts: 10000   # >$1M
+        preserve_ratios: true
+        
+      temporal_data:
+        strategy: "temporal_generalization"
+        levels:
+          - "exact_date"    # Remove completely
+          - "month_year"    # Keep month/year only
+          - "year_only"     # Year only
+          - "decade"        # Decade approximation
+        default_level: "year_only"
+        
+      identifiers:
+        strategy: "consistent_hashing"
+        algorithm: "sha256"
+        salt: "benton_county_secure_salt_2024"
+        truncate_length: 12
+        preserve_format: true
+
+# Enhanced Performance Configuration
+enhanced_performance:
+  # Advanced Caching
+  caching:
+    enabled: true
+    backend: "redis_cluster"
+    
+    # Multi-tier Caching
+    tiers:
+      l1_memory:
+        size: "2GB"
+        ttl: 300  # 5 minutes
+        items: 10000
+        
+      l2_redis:
+        size: "8GB" 
+        ttl: 3600  # 1 hour
+        items: 100000
+        
+      l3_disk:
+        size: "50GB"
+        ttl: 86400  # 24 hours
+        items: 1000000
+    
+    # Intelligent Cache Policies
+    policies:
+      sensitive_queries: 0        # No caching
+      calculations: 7200          # 2 hours
+      definitions: 86400          # 24 hours
+      market_data: 1800           # 30 minutes
+      property_data: 900          # 15 minutes
+      complex_analysis: 3600      # 1 hour
+  
+  # Enhanced Rate Limiting
+  rate_limiting:
+    enabled: true
+    algorithm: "token_bucket"
+    
+    # User-based Limits
+    user_limits:
+      guest: 10          # per minute
+      standard: 100      # per minute
+      power_user: 500    # per minute
+      admin: 1000        # per minute
+      system: 10000      # per minute
+    
+    # Model-specific Limits
+    model_limits:
+      local_models: 50    # per minute (hardware limited)
+      cloud_models: 1000  # per minute (API limited)
+    
+    # Burst Handling
+    burst_config:
+      allow_burst: true
+      burst_size: 50
+      burst_refill_rate: 10  # per second
+  
+  # Load Balancing
+  load_balancing:
+    enabled: true
+    strategy: "intelligent_routing"
+    
+    # Local Model Load Balancing
+    local_balancing:
+      algorithm: "least_connections"
+      health_checks: true
+      failover_enabled: true
+      
+    # Cloud API Load Balancing  
+    cloud_balancing:
+      algorithm: "round_robin"
+      retry_failed_requests: true
+      circuit_breaker: true
+  
+  # Connection Management
+  connection_management:
+    local_connections:
+      max_concurrent: 8
+      timeout: 120
+      keepalive: true
+      
+    cloud_connections:
+      max_concurrent: 50
+      timeout: 30
+      keepalive: true
+      connection_pool_size: 20
+
+# Enhanced Security Configuration
+enhanced_security:
+  # Multi-layer Authentication
+  authentication:
+    primary_method: "jwt_with_mfa"
+    backup_method: "api_key"
+    
+    jwt_config:
+      algorithm: "RS256"
+      access_token_expire: 900    # 15 minutes
+      refresh_token_expire: 86400 # 24 hours
+      require_mfa: true
+      
+    mfa_config:
+      methods: ["totp", "sms", "email"]
+      backup_codes: 10
+      rate_limit: 5  # attempts per hour
+  
+  # Enhanced Authorization
+  authorization:
+    model: "rbac_with_abac"
+    
+    roles:
+      guest:
+        permissions: ["query_general"]
+        rate_limit: 10
+        models_allowed: ["gpt-oss-20b"]
+        data_access: ["green_zone"]
+        
+      citizen:
+        permissions: ["query_general", "property_lookup"]
+        rate_limit: 50
+        models_allowed: ["gpt-oss-20b", "gpt-oss-120b"]
+        data_access: ["green_zone", "yellow_zone_anonymized"]
+        
+      staff:
+        permissions: ["query_all", "property_analysis"]
+        rate_limit: 200
+        models_allowed: ["all_cloud"]
+        data_access: ["green_zone", "yellow_zone"]
+        
+      assessor:
+        permissions: ["query_all", "sensitive_analysis", "admin_functions"]
+        rate_limit: 500
+        models_allowed: ["all_models"]
+        data_access: ["all_zones"]
+        
+      admin:
+        permissions: ["all"]
+        rate_limit: 1000
+        models_allowed: ["all_models"]
+        data_access: ["all_zones"]
+    
+    # Attribute-based Access Control
+    abac_rules:
+      - condition: "user.department == 'assessor' AND data.sensitivity == 'red'"
+        action: "allow_local_only"
+        
+      - condition: "user.role == 'citizen' AND data.contains_pii == true"
+        action: "deny"
+        
+      - condition: "time.hour >= 22 OR time.hour <= 6"
+        action: "require_admin_approval"
+  
+  # Data Protection Enhancement
+  data_protection:
+    encryption:
+      at_rest:
+        algorithm: "AES-256-GCM"
+        key_rotation: 90  # days
+        
+      in_transit:
+        tls_version: "1.3"
+        cipher_suites: ["TLS_AES_256_GCM_SHA384"]
+        
+      in_memory:
+        secure_memory: true
+        memory_encryption: true
+    
+    # Advanced PII Detection
+    pii_detection:
+      enabled: true
+      confidence_threshold: 0.9
+      real_time_scanning: true
+      
+      detectors:
+        - type: "regex_based"
+          patterns: ["ssn", "ein", "credit_card", "phone", "email"]
+          
+        - type: "ml_based"
+          model: "spacy_en_core_web_sm"
+          entities: ["PERSON", "ORG", "GPE", "MONEY"]
+          
+        - type: "context_based"
+          keywords: ["owner", "taxpayer", "applicant"]
+          proximity: 50  # characters
+    
+    # Data Loss Prevention
+    dlp:
+      enabled: true
+      block_sensitive_outputs: true
+      quarantine_violations: true
+      alert_threshold: 1
+
+# Enhanced Database Configuration
+enhanced_database:
+  # Primary Database (PostgreSQL)
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "benton_county_enhanced"
+    username: "benton_ai"
+    password_env: "ENHANCED_DB_PASSWORD"
+    
+    # Enhanced Connection Pooling
+    pool_config:
+      pool_size: 30
+      max_overflow: 50
+      pool_timeout: 60
+      pool_recycle: 7200
+      pool_pre_ping: true
+    
+    # Performance Optimization
+    performance:
+      shared_preload_libraries: ["pg_stat_statements", "auto_explain"]
+      max_connections: 200
+      shared_buffers: "2GB"
+      effective_cache_size: "6GB"
+      work_mem: "64MB"
+      maintenance_work_mem: "512MB"
+    
+    # Backup Configuration
+    backup:
+      enabled: true
+      schedule: "0 2 * * *"
+      retention_days: 30
+      compression: true
+      encryption: true
+  
+  # Cache Database (Redis Cluster)
+  redis_cluster:
+    nodes:
+      - host: "localhost"
+        port: 7000
+      - host: "localhost" 
+        port: 7001
+      - host: "localhost"
+        port: 7002
+    
+    password_env: "REDIS_CLUSTER_PASSWORD"
+    
+    # Cluster Configuration
+    cluster_config:
+      max_connections_per_node: 50
+      health_check_interval: 30
+      retry_on_failure: true
+      failover_timeout: 5000
+
+# Enhanced Monitoring Configuration
+enhanced_monitoring:
+  # Comprehensive Metrics
+  metrics:
+    prometheus:
+      enabled: true
+      port: 9092
+      path: "/metrics"
+      scrape_interval: 15
+      
+    custom_metrics:
+      - name: "model_inference_time"
+        type: "histogram"
+        labels: ["model", "deployment", "complexity"]
+        
+      - name: "security_violations"
+        type: "counter" 
+        labels: ["violation_type", "user", "severity"]
+        
+      - name: "cache_hit_ratio"
+        type: "gauge"
+        labels: ["cache_tier", "query_type"]
+        
+      - name: "gpu_utilization"
+        type: "gauge"
+        labels: ["gpu_id", "memory_used"]
+  
+  # Advanced Health Checks
+  health_checks:
+    comprehensive: true
+    interval: 15  # seconds
+    timeout: 10
+    
+    endpoints:
+      local_models:
+        - endpoint: "gpt-oss-20b-local"
+          check: "model_loaded_and_responsive"
+          
+        - endpoint: "gpt-oss-120b-local"
+          check: "model_loaded_and_responsive"
+          
+      cloud_apis:
+        - endpoint: "openai_oss_api"
+          check: "api_connectivity_and_auth"
+          
+      infrastructure:
+        - endpoint: "database"
+          check: "connection_and_query"
+          
+        - endpoint: "cache"
+          check: "read_write_operations"
+          
+        - endpoint: "gpu"
+          check: "availability_and_memory"
+  
+  # Enhanced Alerting
+  alerting:
+    channels:
+      email:
+        enabled: true
+        smtp_server: "smtp.bentoncounty.gov"
+        smtp_port: 587
+        encryption: "starttls"
+        recipients:
+          - "ai-team@bentoncounty.gov"
+          - "it-alerts@bentoncounty.gov"
+          - "security@bentoncounty.gov"
+      
+      slack:
+        enabled: true
+        webhook_url_env: "SLACK_WEBHOOK_URL"
+        channels:
+          critical: "#ai-critical-alerts"
+          warning: "#ai-warnings"
+          info: "#ai-notifications"
+      
+      pagerduty:
+        enabled: false
+        integration_key_env: "PAGERDUTY_INTEGRATION_KEY"
+    
+    # Alert Rules
+    rules:
+      critical:
+        - condition: "model_inference_failure_rate > 0.1"
+          description: "High model inference failure rate"
+          
+        - condition: "security_violation_count > 5 in 5m"
+          description: "Multiple security violations detected"
+          
+        - condition: "gpu_memory_usage > 0.95"
+          description: "GPU memory critically low"
+          
+      warning:
+        - condition: "response_time_p95 > 5000ms"
+          description: "High response times detected"
+          
+        - condition: "cache_hit_ratio < 0.7"
+          description: "Low cache hit ratio"
+          
+        - condition: "concurrent_requests > 80% of limit"
+          description: "High concurrent request load"
+
+# Enhanced Backup and Disaster Recovery
+enhanced_backup:
+  # Multi-tier Backup Strategy
+  strategy: "3-2-1"  # 3 copies, 2 different media, 1 offsite
+  
+  backup_tiers:
+    local_backup:
+      enabled: true
+      schedule: "0 */6 * * *"  # Every 6 hours
+      retention: 7  # days
+      location: "/var/backups/benton-county-ai/enhanced"
+      
+    network_backup:
+      enabled: true
+      schedule: "0 2 * * *"   # Daily at 2 AM
+      retention: 30  # days
+      location: "nfs://backup-server/benton-county-ai"
+      
+    cloud_backup:
+      enabled: true
+      schedule: "0 3 * * 0"   # Weekly on Sunday
+      retention: 365  # days
+      provider: "aws_s3"
+      bucket: "benton-county-ai-backups"
+      encryption: true
+  
+  # What to Backup
+  backup_components:
+    configuration: true
+    model_checkpoints: true
+    user_data: true
+    logs: true
+    cache_metadata: true
+    security_keys: true
+    monitoring_data: true
+  
+  # Disaster Recovery
+  disaster_recovery:
+    rpo: 30    # Recovery Point Objective (minutes)
+    rto: 15    # Recovery Time Objective (minutes)
+    
+    recovery_procedures:
+      automated:
+        triggers: ["service_down", "data_corruption", "security_breach"]
+        actions: ["failover", "restore_from_backup", "notify_team"]
+        
+      manual:
+        escalation_time: 15  # minutes
+        contact_list: ["admin@bentoncounty.gov", "emergency@bentoncounty.gov"]
+
+# Enhanced Integration Configuration
+enhanced_integration:
+  # Championship System Integration
+  championship_system:
+    enabled: true
+    base_url: "http://localhost:8000"
+    api_key_env: "CHAMPIONSHIP_API_KEY"
+    sync_interval: 300  # 5 minutes
+    
+  # External System Integrations
+  external_systems:
+    assessor_database:
+      enabled: true
+      connection_string_env: "ASSESSOR_DB_CONNECTION"
+      sync_schedule: "0 1 * * *"  # Daily at 1 AM
+      
+    gis_system:
+      enabled: false
+      base_url: ""
+      api_key_env: "GIS_API_KEY"
+      
+    state_reporting:
+      enabled: true
+      endpoint: "https://state.wa.gov/api/property-data"
+      schedule: "0 0 1 * *"  # Monthly on 1st
+
+# Feature Flags and Experimental Features
+feature_flags:
+  # Production Features
+  production:
+    enhanced_routing: true
+    local_oss_models: true
+    cloud_oss_integration: true
+    advanced_caching: true
+    comprehensive_monitoring: true
+    
+  # Beta Features
+  beta:
+    multi_modal_processing: false
+    federated_learning: false
+    quantum_optimization: false
+    advanced_anonymization: true
+    
+  # Experimental Features
+  experimental:
+    auto_model_selection: true
+    predictive_caching: false
+    neural_architecture_search: false
+    automated_fine_tuning: false
+
+# Maintenance and Updates
+maintenance:
+  # Scheduled Maintenance
+  windows:
+    - day: "Sunday"
+      start: "02:00"
+      duration: 3  # hours
+      operations: ["model_updates", "cache_cleanup", "log_rotation", "backup_verification"]
+      
+    - day: "Wednesday"
+      start: "01:00"
+      duration: 1  # hour
+      operations: ["health_checks", "performance_optimization", "security_scans"]
+  
+  # Automated Updates
+  auto_updates:
+    security_patches: true
+    model_updates: false  # Manual approval required
+    configuration_updates: false
+    dependency_updates: true
+  
+  # Update Policies
+  update_policies:
+    testing_required: true
+    rollback_plan_required: true
+    approval_workflow: true
+    notification_required: true
+
+# Documentation and Compliance
+documentation:
+  # Auto-generated Documentation
+  auto_generation:
+    enabled: true
+    formats: ["html", "pdf", "markdown"]
+    include_examples: true
+    include_schemas: true
+    update_frequency: "daily"
+    
+  # Compliance Documentation
+  compliance:
+    gdpr_documentation: true
+    ccpa_documentation: true
+    audit_trail_documentation: true
+    security_documentation: true
+    
+  # User Documentation
+  user_guides:
+    api_documentation: "/opt/benton-county-ai/docs/api"
+    user_manual: "/opt/benton-county-ai/docs/user-guide"
+    admin_guide: "/opt/benton-county-ai/docs/admin-guide"
+    troubleshooting: "/opt/benton-county-ai/docs/troubleshooting"

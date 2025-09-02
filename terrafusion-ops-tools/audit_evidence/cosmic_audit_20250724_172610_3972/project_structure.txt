@@ -1,0 +1,57 @@
+=== PROJECT STRUCTURE ===
+/c/Users/bsval/terrafusion-ops-tools/checklists/api-contract-validation.md
+/c/Users/bsval/terrafusion-ops-tools/checklists/production-hardening.md
+/c/Users/bsval/terrafusion-ops-tools/config/config-manager.sh
+/c/Users/bsval/terrafusion-ops-tools/cosmic_status.json
+/c/Users/bsval/terrafusion-ops-tools/docker/README.md
+/c/Users/bsval/terrafusion-ops-tools/guides/developer-onboarding.md
+/c/Users/bsval/terrafusion-ops-tools/guides/incident-response-runbooks.md
+/c/Users/bsval/terrafusion-ops-tools/guides/monitoring-alerting-setup.md
+/c/Users/bsval/terrafusion-ops-tools/guides/rollback-recovery-procedures.md
+/c/Users/bsval/terrafusion-ops-tools/guides/user-acceptance-testing.md
+/c/Users/bsval/terrafusion-ops-tools/infrastructure/terraform/README.md
+/c/Users/bsval/terrafusion-ops-tools/monitoring/grafana-dashboards.json
+/c/Users/bsval/terrafusion-ops-tools/README.md
+/c/Users/bsval/terrafusion-ops-tools/reports/cosmic_audit_report_20250724_172610.json
+/c/Users/bsval/terrafusion-ops-tools/scripts/ab-testing-feature-flags.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/ai-code-review-security.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/ai-root-cause-analysis.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/api-documentation-generator.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/api-gateway.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/audit-logging.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/backup-recovery.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/blockchain-audit-trail.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/canary-deployment.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/capacity-planning.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/chaos-engineering.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/compliance-as-code.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/comprehensive-audit-system.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/cosmic_audit.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/cosmic_deployment.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/cosmic_test_suite.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/cost-optimization-report.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/cost-optimization.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/data-pipeline-monitoring.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/database-performance-tuning.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/db_backup.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/db_restore.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/deploy.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/disaster-recovery-test.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/distributed-tracing.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/edge-computing-management.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/health-check.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/incident-management.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/intelligent-alerting.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/intelligent-workload-placement.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/log-analyzer.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/migration/data-migration.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/migration/schema-migration.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/multi-cloud-orchestration.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/performance-test.sh
+/c/Users/bsval/terrafusion-ops-tools/scripts/predictive-failure-detection.sh
+
+=== FILE COUNTS ===
+JavaScript files: 1
+Shell scripts: 46
+JSON files: 3
+Documentation: 12

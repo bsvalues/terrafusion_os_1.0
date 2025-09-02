@@ -1,0 +1,381 @@
+/* WebAuditTracker - TerraFusion Championship Edition with Jobs/Ives Polish */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* TerraFusion Brand Variables */
+:root {
+  --terra-primary: #1f4e79;
+  --terra-secondary: #00a86b;
+  --terra-accent: #4f46e5;
+  --terra-gradient: linear-gradient(135deg, #1f4e79 0%, #00a86b 100%);
+  --terra-glass: rgba(255, 255, 255, 0.1);
+  --terra-glass-border: rgba(255, 255, 255, 0.2);
+  --terra-shadow: 0 8px 32px rgba(31, 78, 121, 0.15);
+  --terra-shadow-hover: 0 12px 48px rgba(31, 78, 121, 0.25);
+  --terra-success: #10b981;
+  --terra-warning: #f59e0b;
+  --terra-error: #ef4444;
+}
+
+/* Enhanced Typography */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+/* Magical Micro-Interactions */
+@keyframes magicalEntry {
+  0% { 
+    opacity: 0; 
+    transform: translateY(20px) scale(0.95);
+    filter: blur(5px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-2px) scale(1.02);
+    filter: blur(2px);
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes statsCountUp {
+  0% { 
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmerGlow {
+  0% { 
+    background-position: -200% 0;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% { 
+    background-position: 200% 0;
+    opacity: 0;
+  }
+}
+
+.audit-item {
+  animation: magicalEntry 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stats-card {
+  animation: statsCountUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.stats-card:hover::before {
+  left: 100%;
+}
+
+/* Enhanced Glass Morphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--terra-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--terra-shadow-hover);
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Status Indicators with Animations */
+.status-passed {
+  background: linear-gradient(135deg, var(--terra-success), #059669);
+  position: relative;
+  overflow: hidden;
+}
+
+.status-failed {
+  background: linear-gradient(135deg, var(--terra-error), #dc2626);
+  position: relative;
+  overflow: hidden;
+}
+
+.status-warning {
+  background: linear-gradient(135deg, var(--terra-warning), #d97706);
+  position: relative;
+  overflow: hidden;
+}
+
+.status-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-indicator.passed::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+  animation: shimmerGlow 2s infinite;
+}
+
+/* TerraFusion Championship Branding */
+.bg-terra-gradient {
+  background: var(--terra-gradient);
+}
+
+.terra-glow {
+  box-shadow: 0 0 30px rgba(31, 78, 121, 0.3);
+  transition: all 0.3s ease;
+}
+
+.terra-glow:hover {
+  box-shadow: 0 0 50px rgba(31, 78, 121, 0.5);
+}
+
+/* Enhanced Loading States */
+.loading-spinner {
+  border: 2px solid rgba(31, 78, 121, 0.1);
+  border-top: 2px solid var(--terra-primary);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spinMagical 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes spinMagical {
+  0% { 
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    opacity: 0.8;
+  }
+  100% { 
+    transform: rotate(360deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Magical Score Animation */
+.score-excellent {
+  color: var(--terra-success);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--terra-success), #059669);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: scoreGlow 2s ease-in-out infinite alternate;
+}
+
+.score-good {
+  color: var(--terra-warning);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--terra-warning), #d97706);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.score-poor {
+  color: var(--terra-error);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--terra-error), #dc2626);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes scoreGlow {
+  0% { filter: brightness(1) saturate(1); }
+  100% { filter: brightness(1.2) saturate(1.3); }
+}
+
+/* Magical Card Hover Effects */
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(31, 78, 121, 0.2);
+}
+
+.card-hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(31, 78, 121, 0.05), rgba(0, 168, 107, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-hover:hover::after {
+  opacity: 1;
+}
+
+/* Enhanced Button Styles */
+.btn-terra-primary {
+  background: var(--terra-gradient);
+  color: white;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+}
+
+.btn-terra-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.btn-terra-primary:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(31, 78, 121, 0.3);
+}
+
+.btn-terra-primary:hover::before {
+  left: 100%;
+}
+
+.btn-terra-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Custom Scrollbar with TerraFusion Branding */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(31, 78, 121, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--terra-gradient);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563eb, #059669);
+  box-shadow: 0 0 10px rgba(31, 78, 121, 0.3);
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .card-hover {
+    border: 2px solid var(--terra-primary);
+  }
+  
+  .btn-terra-primary {
+    border: 2px solid white;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --terra-glass: rgba(0, 0, 0, 0.3);
+    --terra-glass-border: rgba(255, 255, 255, 0.1);
+    --terra-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --terra-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.6);
+  }
+  
+  .glass-panel {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Championship Effects */
+.championship-sparkle {
+  position: relative;
+}
+
+.championship-sparkle::before {
+  content: '✨';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  animation: sparkle 2s ease-in-out infinite;
+  font-size: 12px;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+}
+
+/* Focus States for Accessibility */
+.focus-enhanced:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.1), 0 0 0 6px rgba(31, 78, 121, 0.05);
+  border-color: var(--terra-primary);
+}

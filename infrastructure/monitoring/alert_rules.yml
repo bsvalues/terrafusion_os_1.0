@@ -1,0 +1,179 @@
+groups:
+  - name: terrafusion.alerts
+    rules:
+      # Backend service alerts
+      - alert: BackendDown
+        expr: up{job="terrafusion-backend"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "Backend service is down"
+          description: "TerraFusion backend service has been down for more than 5 minutes."
+
+      - alert: BackendHighCPU
+        expr: rate(container_cpu_usage_seconds_total{pod=~"terrafusion-backend-.*"}[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "Backend high CPU usage"
+          description: "Backend CPU usage is above 80% for more than 10 minutes."
+
+      - alert: BackendHighMemory
+        expr: container_memory_usage_bytes{pod=~"terrafusion-backend-.*"} / container_spec_memory_limit_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "Backend high memory usage"
+          description: "Backend memory usage is above 90% for more than 5 minutes."
+
+      # Frontend service alerts
+      - alert: FrontendDown
+        expr: up{job="terrafusion-frontend"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: frontend
+        annotations:
+          summary: "Frontend service is down"
+          description: "TerraFusion frontend service has been down for more than 5 minutes."
+
+      - alert: FrontendHighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-frontend"}[5m])) > 2
+        for: 10m
+        labels:
+          severity: warning
+          service: frontend
+        annotations:
+          summary: "Frontend high response time"
+          description: "Frontend 95th percentile response time is above 2 seconds for more than 10 minutes."
+
+      # AI Swarm alerts
+      - alert: AISwarmDown
+        expr: up{job="terrafusion-ai-swarm"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: ai-swarm
+        annotations:
+          summary: "AI Swarm service is down"
+          description: "TerraFusion AI Swarm service has been down for more than 5 minutes."
+
+      - alert: AISwarmHighGPUUsage
+        expr: rate(container_accelerator_duty_cycle_percent{pod=~"terrafusion-ai-swarm-.*"}[5m]) > 90
+        for: 10m
+        labels:
+          severity: warning
+          service: ai-swarm
+        annotations:
+          summary: "AI Swarm high GPU usage"
+          description: "AI Swarm GPU usage is above 90% for more than 10 minutes."
+
+      # Database alerts
+      - alert: PostgreSQLDown
+        expr: up{job="postgresql"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database has been down for more than 5 minutes."
+
+      - alert: PostgreSQLHighConnections
+        expr: pg_stat_activity_count{datname="terrafusion"} > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "PostgreSQL high connection count"
+          description: "PostgreSQL has more than 100 active connections for more than 5 minutes."
+
+      # Redis alerts
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: cache
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache has been down for more than 5 minutes."
+
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 10m
+        labels:
+          severity: warning
+          service: cache
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is above 90% for more than 10 minutes."
+
+      # Kubernetes cluster alerts
+      - alert: KubernetesNodeDown
+        expr: up{job="kubernetes-nodes"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: kubernetes
+        annotations:
+          summary: "Kubernetes node is down"
+          description: "A Kubernetes node has been down for more than 5 minutes."
+
+      - alert: KubernetesPodCrashLooping
+        expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: kubernetes
+        annotations:
+          summary: "Pod crash looping"
+          description: "A pod is crash looping and has restarted more than once in the last 15 minutes."
+
+      - alert: KubernetesHighDiskUsage
+        expr: (1 - (kube_node_status_allocatable{resource="ephemeral-storage"} / kube_node_status_capacity{resource="ephemeral-storage"})) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          service: kubernetes
+        annotations:
+          summary: "High disk usage on node"
+          description: "Disk usage on a node is above 85% for more than 10 minutes."
+
+      # Application-specific alerts
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: application
+        annotations:
+          summary: "High error rate"
+          description: "Error rate is above 5% for more than 5 minutes."
+
+      - alert: SlowQueries
+        expr: histogram_quantile(0.95, rate(database_query_duration_seconds_bucket[5m])) > 5
+        for: 10m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "Slow database queries"
+          description: "95th percentile of database query duration is above 5 seconds for more than 10 minutes."
+
+      - alert: QueueBacklog
+        expr: message_queue_length > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: messaging
+        annotations:
+          summary: "Message queue backlog"
+          description: "Message queue has more than 1000 messages for more than 5 minutes."

@@ -1,0 +1,40 @@
+{
+  "mode": "OS",
+  "layers": {
+    "core": "TerraFusionKernel",
+    "interfaces": ["PWA", "Browser", "Electron", "Tauri"],
+    "modules": "PluginArchitecture"
+  },
+  "endpoints": {
+    "core": "ws://localhost:7000/terrafusion/core",
+    "modules": "ws://localhost:7001/terrafusion/modules",
+    "marketplace": "ws://localhost:7002/terrafusion/marketplace"
+  },
+  "communication": {
+    "primary": "websocket",
+    "fallback": "https_polling"
+  },
+  "security": {
+    "vault": "SecureVault",
+    "permissions": "RBAC",
+    "audit": "ComprehensiveLogger",
+    "encryption": "E2E"
+  },
+  "deployment": {
+    "master_node": {
+      "type": "physical_server",
+      "components": [
+        "terrafusion_core",
+        "api_gateway",
+        "marketplace_server",
+        "browser_distribution_server"
+      ]
+    },
+    "satellite_terminals": {
+      "type": "virtual_machines",
+      "access_method": "terrafusion_browser",
+      "connection": "websocket_persistent",
+      "fallback": "https_polling"
+    }
+  }
+}

@@ -1,0 +1,305 @@
+version: '3.8'
+
+services:
+  # 🏆 BENTON COUNTY DYNASTY - CONTAINERIZED
+  
+  # Core LLM Service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: dynasty_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - dynasty_network
+
+  # Database
+  postgres:
+    image: postgres:15
+    container_name: dynasty_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: benton_dynasty
+      POSTGRES_USER: dynasty_user
+      POSTGRES_PASSWORD: championship_password_2024
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dynasty_user -d benton_dynasty"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - dynasty_network
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: dynasty_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - dynasty_network
+
+  # Hybrid Router Service
+  router:
+    build:
+      context: .
+      dockerfile: Dockerfile.router
+    container_name: dynasty_router
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_HOST=ollama:11434
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - dynasty_network
+
+  # Autonomous Orchestrator
+  autonomous:
+    build:
+      context: .
+      dockerfile: Dockerfile.autonomous
+    container_name: dynasty_autonomous
+    ports:
+      - "8081:8081"
+    environment:
+      - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
+      - REDIS_URL=redis://redis:6379
+      - ROUTER_URL=http://router:8080
+      - BENTON_ASSESSOR_KEY=${BENTON_ASSESSOR_KEY}
+    depends_on:
+      - postgres
+      - redis
+      - router
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - dynasty_network
+
+  # Training Pipeline
+  training:
+    build:
+      context: .
+      dockerfile: Dockerfile.training
+    container_name: dynasty_training
+    ports:
+      - "8082:8082"
+    environment:
+      - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_HOST=ollama:11434
+    depends_on:
+      - postgres
+      - redis
+      - ollama
+    restart: unless-stopped
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]  # For GPU training
+    networks:
+      - dynasty_network
+
+  # Evolution Engine
+  evolution:
+    build:
+      context: .
+      dockerfile: Dockerfile.evolution
+    container_name: dynasty_evolution
+    ports:
+      - "8083:8083"
+    environment:
+      - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
+      - REDIS_URL=redis://redis:6379
+      - ENABLE_AUTO_EVOLUTION=true
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./code:/app/code  # For self-modifying code
+      - ./logs:/app/logs
+    networks:
+      - dynasty_network
+
+  # Quantum Optimizer
+  quantum:
+    build:
+      context: .
+      dockerfile: Dockerfile.quantum
+    container_name: dynasty_quantum
+    ports:
+      - "8084:8084"
+    environment:
+      - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
+      - REDIS_URL=redis://redis:6379
+      - QUANTUM_BACKEND=simulator  # Use 'ibm' for real quantum
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./quantum_results:/app/results
+      - ./logs:/app/logs
+    networks:
+      - dynasty_network
+
+  # Championship Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: dynasty_dashboard
+    ports:
+      - "8090:8090"
+    environment:
+      - API_BASE_URL=http://router:8080
+      - WEBSOCKET_URL=ws://router:8080/ws
+    depends_on:
+      - router
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - dynasty_network
+
+  # Master Orchestrator
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestrator
+    container_name: dynasty_orchestrator
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+      - router
+      - autonomous
+      - training
+      - evolution
+      - quantum
+      - dashboard
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+      - /var/run/docker.sock:/var/run/docker.sock  # For container management
+    networks:
+      - dynasty_network
+
+  # Optional: Neural Consciousness (Experimental)
+  consciousness:
+    build:
+      context: .
+      dockerfile: Dockerfile.consciousness
+    container_name: dynasty_consciousness
+    ports:
+      - "8085:8085"
+    environment:
+      - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
+      - REDIS_URL=redis://redis:6379
+      - CONSCIOUSNESS_LEVEL=experimental
+      - ENABLE_TRANSCENDENCE=false  # Set to true for full transcendence
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    profiles:
+      - consciousness  # Only start with --profile consciousness
+    volumes:
+      - ./consciousness_logs:/app/logs
+    networks:
+      - dynasty_network
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: dynasty_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    restart: unless-stopped
+    networks:
+      - dynasty_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dynasty_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=championship2024
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    restart: unless-stopped
+    networks:
+      - dynasty_network
+
+volumes:
+  ollama_data:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  dynasty_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,295 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: terrafusion-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-terrafusion_production}
+      POSTGRES_USER: ${DB_USER:-terrafusion_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-TF_SecurePass_2025}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-terrafusion_user} -d ${DB_NAME:-terrafusion_production}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - terrafusion-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-TF_Redis_2025}
+      --maxmemory ${REDIS_MAX_MEMORY:-512mb}
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfilename "appendonly.aof"
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - terrafusion-network
+
+  # Backend API Service
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      args:
+        - PYTHON_VERSION=3.11
+    image: terrafusion/backend:latest
+    container_name: terrafusion-backend
+    restart: unless-stopped
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${DB_USER:-terrafusion_user}:${DB_PASSWORD:-TF_SecurePass_2025}@db:5432/${DB_NAME:-terrafusion_production}
+      # Redis
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-TF_Redis_2025}@redis:6379/0
+      # Application
+      APP_ENV: ${APP_ENV:-production}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-here}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3003}
+      # AI Engine
+      AI_ENGINE_URL: http://ai-engine:8001
+      # Monitoring
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_ENDPOINT:-http://otel-collector:4317}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    volumes:
+      - ./logs/backend:/app/logs
+      - ./uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - terrafusion-network
+
+  # AI Engine Service
+  ai-engine:
+    build:
+      context: ../ai_engine
+      dockerfile: Dockerfile
+      args:
+        - PYTHON_VERSION=3.11
+    image: terrafusion/ai-engine:latest
+    container_name: terrafusion-ai-engine
+    restart: unless-stopped
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${DB_USER:-terrafusion_user}:${DB_PASSWORD:-TF_SecurePass_2025}@db:5432/${DB_NAME:-terrafusion_production}
+      # Redis
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-TF_Redis_2025}@redis:6379/1
+      # Application
+      APP_ENV: ${APP_ENV:-production}
+      MODEL_PATH: /app/models
+      # GPU Support (if available)
+      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
+    ports:
+      - "${AI_ENGINE_PORT:-8001}:8001"
+    volumes:
+      - ./logs/ai-engine:/app/logs
+      - ./models:/app/models:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: ${AI_ENGINE_MEMORY:-4G}
+        reservations:
+          memory: ${AI_ENGINE_MEMORY_RESERVED:-2G}
+    networks:
+      - terrafusion-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        - NODE_VERSION=18
+        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8080}
+        - REACT_APP_AI_URL=${REACT_APP_AI_URL:-http://localhost:8001}
+    image: terrafusion/frontend:latest
+    container_name: terrafusion-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    ports:
+      - "${FRONTEND_PORT:-3003}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - backend
+      - ai-engine
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - terrafusion-network
+
+  # Background Worker (for async tasks)
+  worker:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: terrafusion/backend:latest
+    container_name: terrafusion-worker
+    restart: unless-stopped
+    command: celery -A app.celery worker --loglevel=info --concurrency=4
+    environment:
+      # Same as backend
+      DATABASE_URL: postgresql://${DB_USER:-terrafusion_user}:${DB_PASSWORD:-TF_SecurePass_2025}@db:5432/${DB_NAME:-terrafusion_production}
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-TF_Redis_2025}@redis:6379/0
+      APP_ENV: ${APP_ENV:-production}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-here}
+    volumes:
+      - ./logs/worker:/app/logs
+      - ./uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - terrafusion-network
+
+  # Celery Beat Scheduler (for periodic tasks)
+  scheduler:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: terrafusion/backend:latest
+    container_name: terrafusion-scheduler
+    restart: unless-stopped
+    command: celery -A app.celery beat --loglevel=info
+    environment:
+      # Same as backend
+      DATABASE_URL: postgresql://${DB_USER:-terrafusion_user}:${DB_PASSWORD:-TF_SecurePass_2025}@db:5432/${DB_NAME:-terrafusion_production}
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-TF_Redis_2025}@redis:6379/0
+      APP_ENV: ${APP_ENV:-production}
+    volumes:
+      - ./logs/scheduler:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - terrafusion-network
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: terrafusion-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - terrafusion-network
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: terrafusion-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-TF_Grafana_2025}
+      GF_INSTALL_PLUGINS: ${GRAFANA_PLUGINS:-grafana-clock-panel}
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - terrafusion-network
+
+  # Backup Service (runs periodically)
+  backup:
+    build:
+      context: ./backup
+      dockerfile: Dockerfile
+    image: terrafusion/backup:latest
+    container_name: terrafusion-backup
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${DB_PASSWORD:-TF_SecurePass_2025}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_BUCKET: ${S3_BACKUP_BUCKET:-terrafusion-backups}
+    volumes:
+      - ./backups:/backups
+      - ./scripts:/scripts:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - terrafusion-network
+
+# Networks
+networks:
+  terrafusion-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Volumes
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

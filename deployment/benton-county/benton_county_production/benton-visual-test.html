@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Benton County TerraFusion - Visual Test</title>
+    <style>
+        :root {
+            --primary: #FFD700;
+            --secondary: #FFA500;
+            --dark: #1a1a2e;
+            --light: #eee;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .demo-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .demo-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: var(--primary);
+        }
+
+        .demo-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255,215,0,0.5);
+        }
+
+        .api-test {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 0.5rem;
+        }
+
+        .status.live {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .status.ready {
+            background: var(--primary);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🏆 Benton County TerraFusion</h1>
+        <p>Production Visual Test Dashboard</p>
+    </header>
+
+    <div class="container">
+        <div class="demo-section">
+            <h2>🎯 Live API Endpoints</h2>
+            <p>Click any endpoint to test the live API response:</p>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>📊 Demo Overview</h3>
+                    <p>Get complete Benton County data overview</p>
+                    <div class="api-test">
+                        GET /api/demo/overview
+                    </div>
+                    <a href="http://localhost:3000/api/demo/overview" target="_blank" class="btn">Test API</a>
+                </div>
+
+                <div class="demo-card">
+                    <h3>🏪 Marketplace</h3>
+                    <p>View all available TerraFusion applications</p>
+                    <div class="api-test">
+                        GET /api/demo/marketplace
+                    </div>
+                    <a href="http://localhost:3000/api/demo/marketplace" target="_blank" class="btn">Test API</a>
+                </div>
+
+                <div class="demo-card">
+                    <h3>📈 Live Metrics</h3>
+                    <p>Real-time performance and health metrics</p>
+                    <div class="api-test">
+                        GET /api/demo/metrics
+                    </div>
+                    <a href="http://localhost:3000/api/demo/metrics" target="_blank" class="btn">Test API</a>
+                </div>
+
+                <div class="demo-card">
+                    <h3>🎭 Demo Scenarios</h3>
+                    <p>Pre-built demonstration scenarios</p>
+                    <div class="api-test">
+                        GET /api/demo/scenarios
+                    </div>
+                    <a href="http://localhost:3000/api/demo/scenarios" target="_blank" class="btn">Test API</a>
+                </div>
+
+                <div class="demo-card">
+                    <h3>🏠 Properties</h3>
+                    <p>Browse Benton County properties</p>
+                    <div class="api-test">
+                        GET /api/demo/properties
+                    </div>
+                    <a href="http://localhost:3000/api/demo/properties" target="_blank" class="btn">Test API</a>
+                </div>
+
+                <div class="demo-card">
+                    <h3>💰 Tax Calculator</h3>
+                    <p>Calculate property taxes</p>
+                    <div class="api-test">
+                        POST /api/demo/calculate-tax
+                    </div>
+                    <a href="http://localhost:3000/api/demo/calculate-tax?propertyId=123456&assessedValue=350000" target="_blank" class="btn">Test API</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🌟 Visual Components Test</h2>
+            <p>The complete TerraFusion ecosystem with championship-level design:</p>
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                <span class="status live">System Live</span>
+                <span class="status ready">Production Ready</span>
+                <span class="status" style="background: #667eea; color: white;">14 Apps Active</span>
+                <span class="status" style="background: #764ba2; color: white;">45,234 Properties</span>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>📱 What You Should See</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin: 0.5rem 0;">✅ Beautiful gradient backgrounds with blur effects</li>
+                <li style="margin: 0.5rem 0;">✅ Gold championship branding throughout</li>
+                <li style="margin: 0.5rem 0;">✅ Smooth hover animations on cards</li>
+                <li style="margin: 0.5rem 0;">✅ Responsive design that works on all devices</li>
+                <li style="margin: 0.5rem 0;">✅ Live API responses with real Benton County data</li>
+                <li style="margin: 0.5rem 0;">✅ Professional typography and spacing</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Add live timestamp
+        document.addEventListener('DOMContentLoaded', () => {
+            const updateTime = () => {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString();
+                document.querySelector('.header p').innerHTML = `Production Visual Test Dashboard - Live at ${timeStr}`;
+            };
+            
+            updateTime();
+            setInterval(updateTime, 1000);
+        });
+    </script>
+</body>
+</html>

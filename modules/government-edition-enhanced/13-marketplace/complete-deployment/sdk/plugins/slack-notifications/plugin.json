@@ -1,0 +1,60 @@
+{
+  "id": "slack-notifications",
+  "name": "Slack Notifications",
+  "version": "1.0.0",
+  "description": "Send notifications to Slack channels when phases complete",
+  "author": "Terrafusion Team",
+  "license": "MIT",
+  "homepage": "https://github.com/terrafusion/plugins/slack-notifications",
+  "keywords": ["slack", "notifications", "integration"],
+  "categories": ["communication", "integration"],
+  "plugin_type": "integration",
+  "entry_point": "plugin.rhai",
+  "permissions": [
+    {
+      "resource": "network",
+      "actions": ["http_post"]
+    },
+    {
+      "resource": "config",
+      "actions": ["read"]
+    }
+  ],
+  "dependencies": [],
+  "min_launcher_version": "3.1.0",
+  "configuration_schema": {
+    "type": "object",
+    "properties": {
+      "webhook_url": {
+        "type": "string",
+        "title": "Slack Webhook URL",
+        "description": "Your Slack webhook URL for sending messages"
+      },
+      "channel": {
+        "type": "string",
+        "title": "Default Channel",
+        "description": "Default channel to send notifications to",
+        "default": "#general"
+      },
+      "username": {
+        "type": "string",
+        "title": "Bot Username",
+        "description": "Username to display for the bot",
+        "default": "Terrafusion Launcher"
+      },
+      "notify_on_success": {
+        "type": "boolean",
+        "title": "Notify on Success",
+        "description": "Send notifications when phases complete successfully",
+        "default": true
+      },
+      "notify_on_error": {
+        "type": "boolean",
+        "title": "Notify on Error",
+        "description": "Send notifications when phases fail",
+        "default": true
+      }
+    },
+    "required": ["webhook_url"]
+  }
+}

@@ -1,0 +1,494 @@
+version: '3.8'
+
+# TerraFusion OS Harris PACS Integration Testing Stack
+# Automated testing for 90 specialized Harris PACS agents and Benton County integration
+
+networks:
+  harris-pacs-test:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+  terrafusion-internal:
+    external: true
+
+volumes:
+  harris-pacs-test-data:
+    driver: local
+  harris-pacs-mock-data:
+    driver: local
+  test-results-data:
+    driver: local
+  benton-county-test-data:
+    driver: local
+
+services:
+  # =============================================================================
+  # HARRIS PACS MOCK SERVER
+  # =============================================================================
+  
+  harris-pacs-mock:
+    build:
+      context: ./mock-services/harris-pacs/
+      dockerfile: Dockerfile
+    container_name: harris-pacs-mock-server
+    restart: unless-stopped
+    ports:
+      - "8180:8080"
+      - "8181:8081"  # Administrative interface
+    volumes:
+      - harris-pacs-mock-data:/app/data
+      - ./mock-services/harris-pacs/config:/app/config:ro
+      - ./mock-services/harris-pacs/test-datasets:/app/test-datasets:ro
+    environment:
+      - HARRIS_PACS_MOCK_MODE=comprehensive
+      - BENTON_COUNTY_SIMULATION=true
+      - GOVERNMENT_COMPLIANCE_MODE=true
+      - CAMA_MODULE_ENABLED=true
+      - REAL_ESTATE_MODULE_ENABLED=true
+      - ASSESSMENT_MODULE_ENABLED=true
+      - MOCK_DATA_SEED=benton-county-2024
+      - API_RESPONSE_DELAY_MS=100
+      - FAILURE_INJECTION_RATE=0.02
+      - LOG_LEVEL=DEBUG
+    networks:
+      - harris-pacs-test
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=harris-pacs-mock"
+      - "terrafusion.county=benton"
+
+  # Government Database Mock (for compliance testing)
+  government-db-mock:
+    image: postgres:15
+    container_name: government-db-mock
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    volumes:
+      - benton-county-test-data:/var/lib/postgresql/data
+      - ./mock-services/government-db/init-scripts:/docker-entrypoint-initdb.d:ro
+    environment:
+      - POSTGRES_DB=benton_county_test
+      - POSTGRES_USER=benton_assessor
+      - POSTGRES_PASSWORD=test_assessor_2024
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    networks:
+      - harris-pacs-test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U benton_assessor -d benton_county_test"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=government-db-mock"
+      - "terrafusion.compliance=fisma"
+
+  # =============================================================================
+  # HARRIS PACS INTEGRATION TESTING SERVICES
+  # =============================================================================
+
+  # Main Harris PACS Integration Tester
+  harris-pacs-integration-tester:
+    build:
+      context: ./integration-testers/harris-pacs/
+      dockerfile: Dockerfile
+    container_name: harris-pacs-integration-tester
+    restart: unless-stopped
+    ports:
+      - "9500:9500"  # Test results API
+      - "9501:9501"  # Test execution control
+    volumes:
+      - test-results-data:/app/test-results
+      - ./integration-testers/harris-pacs/test-suites:/app/test-suites:ro
+      - ./integration-testers/harris-pacs/config:/app/config:ro
+    environment:
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
+      - BENTON_COUNTY_TEST_MODE=true
+      - AI_AGENT_COUNT=90
+      - TEST_EXECUTION_PARALLEL_LIMIT=10
+      - FISMA_COMPLIANCE_VALIDATION=true
+      - REAL_TIME_MONITORING=true
+      - AUTOMATED_ROLLBACK_TESTING=true
+      - LOG_LEVEL=INFO
+    networks:
+      - harris-pacs-test
+      - terrafusion-internal
+    depends_on:
+      - harris-pacs-mock
+      - government-db-mock
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9500/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=harris-pacs-integration-tester"
+      - "terrafusion.agents=90"
+
+  # Connectivity Specialist Agents Tester (15 agents)
+  connectivity-agents-tester:
+    build:
+      context: ./agent-testers/connectivity/
+      dockerfile: Dockerfile
+    container_name: connectivity-agents-tester
+    restart: unless-stopped
+    ports:
+      - "9510:9500"
+    volumes:
+      - test-results-data:/app/test-results
+    environment:
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - AGENT_COUNT=15
+      - SPECIALIZATION=connectivity
+      - TEST_SCENARIOS=endpoint_health,connection_timeout,ssl_validation,authentication_flow
+      - GOVERNMENT_NETWORK_SIMULATION=true
+      - FIREWALL_TESTING=true
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-mock
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=connectivity-agents-tester"
+      - "terrafusion.specialization=connectivity"
+
+  # Data Sync Expert Agents Tester (20 agents)
+  data-sync-agents-tester:
+    build:
+      context: ./agent-testers/data-sync/
+      dockerfile: Dockerfile
+    container_name: data-sync-agents-tester
+    restart: unless-stopped
+    ports:
+      - "9520:9500"
+    volumes:
+      - test-results-data:/app/test-results
+    environment:
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
+      - AGENT_COUNT=20
+      - SPECIALIZATION=data-sync
+      - TEST_SCENARIOS=bidirectional_sync,data_integrity,conflict_resolution,batch_processing
+      - PROPERTY_RECORD_COUNT=10000
+      - SYNC_ACCURACY_THRESHOLD=99.5
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-mock
+      - government-db-mock
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=data-sync-agents-tester"
+      - "terrafusion.specialization=data-sync"
+
+  # Performance Analysis Agents Tester (15 agents)
+  performance-agents-tester:
+    build:
+      context: ./agent-testers/performance/
+      dockerfile: Dockerfile
+    container_name: performance-agents-tester
+    restart: unless-stopped
+    ports:
+      - "9530:9500"
+    volumes:
+      - test-results-data:/app/test-results
+    environment:
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - AGENT_COUNT=15
+      - SPECIALIZATION=performance-analysis
+      - TEST_SCENARIOS=load_testing,stress_testing,throughput_analysis,latency_measurement
+      - MAX_CONCURRENT_REQUESTS=1000
+      - PERFORMANCE_BASELINE_MS=50
+      - QUANTUM_OPTIMIZATION_TARGET=379
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-mock
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=performance-agents-tester"
+      - "terrafusion.specialization=performance-analysis"
+
+  # Compliance Validation Agents Tester (12 agents)
+  compliance-agents-tester:
+    build:
+      context: ./agent-testers/compliance/
+      dockerfile: Dockerfile
+    container_name: compliance-agents-tester
+    restart: unless-stopped
+    ports:
+      - "9540:9500"
+    volumes:
+      - test-results-data:/app/test-results
+    environment:
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
+      - AGENT_COUNT=12
+      - SPECIALIZATION=compliance-validation
+      - TEST_SCENARIOS=fisma_controls,audit_logging,data_encryption,access_control
+      - GOVERNMENT_STANDARDS=FISMA,NIST,FIPS-140-2
+      - COMPLIANCE_THRESHOLD=95
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-mock
+      - government-db-mock
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=compliance-agents-tester"
+      - "terrafusion.specialization=compliance-validation"
+
+  # Integration Testing Agents (15 agents)
+  integration-testing-agents:
+    build:
+      context: ./agent-testers/integration/
+      dockerfile: Dockerfile
+    container_name: integration-testing-agents
+    restart: unless-stopped
+    ports:
+      - "9550:9500"
+    volumes:
+      - test-results-data:/app/test-results
+    environment:
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
+      - AGENT_COUNT=15
+      - SPECIALIZATION=integration-testing
+      - TEST_SCENARIOS=end_to_end_workflows,error_handling,rollback_procedures,disaster_recovery
+      - BENTON_COUNTY_SCENARIOS=property_assessment,tax_calculation,ownership_transfer
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-mock
+      - government-db-mock
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=integration-testing-agents"
+      - "terrafusion.specialization=integration-testing"
+
+  # Monitoring Surveillance Agents (8 agents)
+  monitoring-agents-tester:
+    build:
+      context: ./agent-testers/monitoring/
+      dockerfile: Dockerfile
+    container_name: monitoring-agents-tester
+    restart: unless-stopped
+    ports:
+      - "9560:9500"
+    volumes:
+      - test-results-data:/app/test-results
+    environment:
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - AGENT_COUNT=8
+      - SPECIALIZATION=monitoring-surveillance
+      - TEST_SCENARIOS=real_time_monitoring,alert_generation,anomaly_detection,health_checks
+      - MONITORING_INTERVAL_MS=1000
+      - ALERT_THRESHOLD_VIOLATIONS=3
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-mock
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=monitoring-agents-tester"
+      - "terrafusion.specialization=monitoring-surveillance"
+
+  # Security Audit Agents (5 agents)
+  security-audit-agents:
+    build:
+      context: ./agent-testers/security/
+      dockerfile: Dockerfile
+    container_name: security-audit-agents
+    restart: unless-stopped
+    ports:
+      - "9570:9500"
+    volumes:
+      - test-results-data:/app/test-results
+    environment:
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - AGENT_COUNT=5
+      - SPECIALIZATION=security-audit
+      - TEST_SCENARIOS=penetration_testing,vulnerability_scanning,access_control_validation,encryption_verification
+      - GOVERNMENT_SECURITY_STANDARDS=true
+      - THREAT_SIMULATION=true
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-mock
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=security-audit-agents"
+      - "terrafusion.specialization=security-audit"
+
+  # =============================================================================
+  # TEST ORCHESTRATION AND REPORTING
+  # =============================================================================
+
+  # Test Orchestrator (coordinates all 90 agents)
+  harris-pacs-test-orchestrator:
+    build:
+      context: ./orchestration/
+      dockerfile: Dockerfile
+    container_name: harris-pacs-test-orchestrator
+    restart: unless-stopped
+    ports:
+      - "9000:9000"  # Main orchestration API
+      - "9001:9001"  # Real-time test monitoring
+    volumes:
+      - test-results-data:/app/test-results
+      - ./orchestration/test-plans:/app/test-plans:ro
+      - ./orchestration/config:/app/config:ro
+    environment:
+      - TOTAL_HARRIS_PACS_AGENTS=90
+      - BENTON_COUNTY_TEST_SUITE=comprehensive
+      - GOVERNMENT_COMPLIANCE_TESTING=true
+      - PARALLEL_TEST_EXECUTION=true
+      - AUTOMATED_REPORTING=true
+      - TEST_RESULT_RETENTION_DAYS=30
+      - REAL_TIME_DASHBOARD=true
+      - QUANTUM_PERFORMANCE_VALIDATION=true
+      - FISMA_COMPLIANCE_REPORTING=true
+    networks:
+      - harris-pacs-test
+      - terrafusion-internal
+    depends_on:
+      - harris-pacs-integration-tester
+      - connectivity-agents-tester
+      - data-sync-agents-tester
+      - performance-agents-tester
+      - compliance-agents-tester
+      - integration-testing-agents
+      - monitoring-agents-tester
+      - security-audit-agents
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=harris-pacs-test-orchestrator"
+      - "terrafusion.orchestration=true"
+
+  # Test Results Dashboard
+  harris-pacs-test-dashboard:
+    build:
+      context: ./dashboard/
+      dockerfile: Dockerfile
+    container_name: harris-pacs-test-dashboard
+    restart: unless-stopped
+    ports:
+      - "3050:3000"
+    volumes:
+      - test-results-data:/app/test-results:ro
+    environment:
+      - DASHBOARD_TITLE="Harris PACS Integration Testing - Benton County"
+      - REAL_TIME_UPDATES=true
+      - GOVERNMENT_BRANDING=true
+      - TEST_ORCHESTRATOR_URL=http://harris-pacs-test-orchestrator:9000
+      - AUTO_REFRESH_INTERVAL=30000
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-test-orchestrator
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=harris-pacs-test-dashboard"
+      - "terrafusion.ui=dashboard"
+
+  # =============================================================================
+  # MONITORING AND METRICS FOR TESTING
+  # =============================================================================
+
+  # Test Metrics Collector
+  harris-pacs-test-metrics:
+    build:
+      context: ./metrics/
+      dockerfile: Dockerfile
+    container_name: harris-pacs-test-metrics
+    restart: unless-stopped
+    ports:
+      - "9600:9600"  # Prometheus metrics
+    volumes:
+      - test-results-data:/app/test-results:ro
+    environment:
+      - METRICS_COLLECTION_INTERVAL=15s
+      - PROMETHEUS_METRICS_PORT=9600
+      - TEST_RESULT_AGGREGATION=true
+      - GOVERNMENT_METRICS_COMPLIANCE=true
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-test-orchestrator
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=harris-pacs-test-metrics"
+      - "terrafusion.metrics=prometheus"
+
+  # Government Compliance Reporter
+  government-compliance-reporter:
+    build:
+      context: ./compliance-reporting/
+      dockerfile: Dockerfile
+    container_name: government-compliance-reporter
+    restart: unless-stopped
+    ports:
+      - "8200:8200"
+    volumes:
+      - test-results-data:/app/test-results:ro
+      - ./compliance-reporting/templates:/app/templates:ro
+    environment:
+      - COMPLIANCE_FRAMEWORKS=FISMA,NIST,FIPS-140-2
+      - BENTON_COUNTY_REPORTING=true
+      - AUTOMATED_COMPLIANCE_SCORING=true
+      - REPORT_GENERATION_SCHEDULE="0 */6 * * *"  # Every 6 hours
+      - GOVERNMENT_FORMAT_COMPLIANCE=true
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-test-orchestrator
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=government-compliance-reporter"
+      - "terrafusion.compliance=reporting"
+
+  # =============================================================================
+  # BACKUP AND DISASTER RECOVERY TESTING
+  # =============================================================================
+
+  # Disaster Recovery Tester
+  disaster-recovery-tester:
+    build:
+      context: ./disaster-recovery/
+      dockerfile: Dockerfile
+    container_name: disaster-recovery-tester
+    restart: unless-stopped
+    ports:
+      - "9700:9700"
+    volumes:
+      - test-results-data:/app/test-results
+      - harris-pacs-test-data:/app/backup-test-data
+    environment:
+      - DISASTER_SCENARIOS=network_failure,database_corruption,service_outage,cyber_attack
+      - BENTON_COUNTY_DR_PROTOCOLS=true
+      - GOVERNMENT_CONTINUITY_TESTING=true
+      - RTO_TARGET_MINUTES=15  # Recovery Time Objective
+      - RPO_TARGET_MINUTES=5   # Recovery Point Objective
+    networks:
+      - harris-pacs-test
+    depends_on:
+      - harris-pacs-mock
+      - government-db-mock
+    labels:
+      - "terrafusion.component=testing"
+      - "terrafusion.service=disaster-recovery-tester"
+      - "terrafusion.disaster-recovery=true"

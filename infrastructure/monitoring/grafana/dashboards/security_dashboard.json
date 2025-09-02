@@ -1,0 +1,406 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "terrafusion-security",
+    "title": "Terrafusion Security Monitoring",
+    "tags": ["security", "threats", "compliance", "terrafusion"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+        "type": "graph",
+        "title": "Threat Detection Rate",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(rate(security_threats_detected_total[5m])) by (severity)",
+            "legendFormat": "{{severity}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [{ "format": "short", "min": 0 }, { "format": "short" }],
+        "colors": ["#FF0000", "#FF8800", "#FFAA00", "#00AA00"]
+      },
+      {
+        "id": 2,
+        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+        "type": "graph",
+        "title": "Authentication Events",
+        "datasource": "Elasticsearch",
+        "targets": [
+          {
+            "query": "index=\"terrafusion-logs-*\" AND category:authentication | timechart count by event_type",
+            "refId": "A",
+            "timeField": "@timestamp"
+          }
+        ],
+        "yaxes": [{ "format": "short" }, { "format": "short" }]
+      },
+      {
+        "id": 3,
+        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+        "type": "piechart",
+        "title": "Security Alerts by Category",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(security_alerts_total) by (category)",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "pieType": "pie",
+          "tooltip": {
+            "mode": "single"
+          },
+          "legend": {
+            "displayMode": "table",
+            "placement": "right"
+          }
+        }
+      },
+      {
+        "id": 4,
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "type": "worldmap",
+        "title": "Attack Origins",
+        "datasource": "Elasticsearch",
+        "targets": [
+          {
+            "query": "index=\"terrafusion-logs-*\" AND threat_type:* | stats count by source_country",
+            "refId": "A",
+            "timeField": "@timestamp"
+          }
+        ],
+        "options": {
+          "showTooltip": true,
+          "showLegend": true,
+          "colorMode": "spectrum",
+          "colorScale": "linear"
+        }
+      },
+      {
+        "id": 5,
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+        "type": "graph",
+        "title": "Failed Login Attempts",
+        "datasource": "Elasticsearch",
+        "targets": [
+          {
+            "query": "index=\"terrafusion-logs-*\" AND event_type:login_failure | timechart count by source_ip",
+            "refId": "A",
+            "timeField": "@timestamp"
+          }
+        ],
+        "yaxes": [{ "format": "short", "min": 0 }, { "format": "short" }],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [10],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "model": {
+                  "refId": "A"
+                },
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "10s",
+          "handler": 1,
+          "name": "High Failed Login Rate",
+          "noDataState": "no_data",
+          "notifications": []
+        }
+      },
+      {
+        "id": 6,
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+        "type": "table",
+        "title": "Active Security Incidents",
+        "datasource": "Elasticsearch",
+        "targets": [
+          {
+            "query": "index=\"terrafusion-security-*\" AND status:active | table timestamp, incident_id, threat_type, severity, affected_systems",
+            "refId": "A",
+            "timeField": "@timestamp"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true
+              },
+              "renameByName": {
+                "incident_id": "Incident ID",
+                "threat_type": "Threat Type",
+                "severity": "Severity",
+                "affected_systems": "Affected Systems"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+        "type": "graph",
+        "title": "Compliance Score Trend",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "compliance_score{framework=\"SOC2\"}",
+            "legendFormat": "SOC2",
+            "refId": "A"
+          },
+          {
+            "expr": "compliance_score{framework=\"GDPR\"}",
+            "legendFormat": "GDPR",
+            "refId": "B"
+          },
+          {
+            "expr": "compliance_score{framework=\"ISO27001\"}",
+            "legendFormat": "ISO27001",
+            "refId": "C"
+          }
+        ],
+        "yaxes": [
+          { "format": "percent", "min": 0, "max": 100 },
+          { "format": "short" }
+        ],
+        "thresholds": [{ "value": 80, "colorMode": "critical" }]
+      },
+      {
+        "id": 8,
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+        "type": "graph",
+        "title": "Vulnerability Scan Results",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(vulnerability_count) by (severity)",
+            "legendFormat": "{{severity}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [{ "format": "short", "min": 0 }, { "format": "short" }]
+      },
+      {
+        "id": 9,
+        "gridPos": { "h": 4, "w": 4, "x": 0, "y": 32 },
+        "type": "stat",
+        "title": "Active Threats",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(security_threats_active)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "center",
+          "textMode": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 1 },
+                { "color": "red", "value": 5 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 10,
+        "gridPos": { "h": 4, "w": 4, "x": 4, "y": 32 },
+        "type": "stat",
+        "title": "Blocked IPs",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "count(blocked_ips)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "center"
+        }
+      },
+      {
+        "id": 11,
+        "gridPos": { "h": 4, "w": 4, "x": 8, "y": 32 },
+        "type": "stat",
+        "title": "Security Score",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "security_posture_score",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "center"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 70 },
+                { "color": "green", "value": 90 }
+              ]
+            },
+            "unit": "percent"
+          }
+        }
+      },
+      {
+        "id": 12,
+        "gridPos": { "h": 4, "w": 4, "x": 12, "y": 32 },
+        "type": "stat",
+        "title": "Audit Events",
+        "datasource": "Elasticsearch",
+        "targets": [
+          {
+            "query": "index=\"terrafusion-audit-*\" | stats count",
+            "refId": "A",
+            "timeField": "@timestamp"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "center"
+        }
+      },
+      {
+        "id": 13,
+        "gridPos": { "h": 4, "w": 4, "x": 16, "y": 32 },
+        "type": "stat",
+        "title": "Compliance Issues",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(compliance_violations)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "center"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 1 },
+                { "color": "red", "value": 5 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 14,
+        "gridPos": { "h": 4, "w": 4, "x": 20, "y": 32 },
+        "type": "stat",
+        "title": "Quantum Attacks",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(quantum_security_events)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "center"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "red", "value": 1 }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "timeframe",
+          "type": "interval",
+          "query": "1m,5m,15m,30m,1h,6h,12h,1d",
+          "current": {
+            "text": "5m",
+            "value": "5m"
+          }
+        },
+        {
+          "name": "severity",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(security_threats_total, severity)",
+          "multi": true,
+          "includeAll": true,
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "datasource": "Elasticsearch",
+          "enable": true,
+          "index": "terrafusion-security-*",
+          "query": "severity:critical",
+          "name": "Critical Security Events",
+          "tagsField": "threat_type",
+          "textField": "description",
+          "timeField": "@timestamp"
+        }
+      ]
+    }
+  }
+}

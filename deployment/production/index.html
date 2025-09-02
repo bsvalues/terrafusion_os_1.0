@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TerraFusion - Infrastructure Intelligence, Infinite Scale. The operating system for modern county government. Government. Simplified.">
+    <meta name="keywords" content="county software, government technology, infrastructure intelligence, municipal excellence, property assessment, tax management, GIS mapping">
+    <title>TerraFusion | Infrastructure Intelligence, Infinite Scale | Government. Simplified.</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://terrafusionmarket.io/">
+    <meta property="og:title" content="TerraFusion - Infrastructure Intelligence, Infinite Scale">
+    <meta property="og:description" content="The operating system for modern county government. Government. Simplified. Government. Transcended.">
+    <meta property="og:image" content="https://terrafusionmarket.io/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://terrafusionmarket.io/">
+    <meta property="twitter:title" content="TerraFusion - Infrastructure Intelligence">
+    <meta property="twitter:description" content="Government. Simplified. Government. Transcended.">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            /* Official TerraFusion Brand Colors */
+            --cosmic-blue: #0891b2;
+            --quantum-teal: #00d2ff;
+            --neural-purple: #667eea;
+            --stellar-white: #ffffff;
+            --deep-space: #0a0f1c;
+            --dark-teal: #1a2f3a;
+            --accent-cyan: #22d3ee;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(0, 210, 255, 0.2);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--deep-space) 0%, var(--dark-teal) 100%);
+            color: var(--stellar-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Marketplace Launcher Button */
+        .marketplace-launcher-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.4);
+            cursor: pointer;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .marketplace-launcher-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0, 229, 255, 0.6);
+        }
+        
+        /* Glass morphism effects */
+        .glass {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(10px);
+                    backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+        }
+        
+        /* Header */
+        header {
+            background: rgba(10, 15, 28, 0.8);
+            -webkit-backdrop-filter: blur(20px);
+                    backdrop-filter: blur(20px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--quantum-teal), var(--cosmic-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--stellar-white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            color: var(--quantum-teal);
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 120px 20px 100px;
+            text-align: center;
+            position: relative;
+        }
+        
+        /* Animated background orbs */
+        .hero::before,
+        .hero::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .hero::before {
+            width: 500px;
+            height: 500px;
+            background: var(--quantum-teal);
+            top: -100px;
+            left: -100px;
+        }
+        
+        .hero::after {
+            width: 400px;
+            height: 400px;
+            background: var(--neural-purple);
+            bottom: -100px;
+            right: -100px;
+            animation-delay: 10s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        
+        h1 {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--quantum-teal), var(--cosmic-blue), var(--neural-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            line-height: 1.1;
+        }
+        
+        .tagline {
+            font-size: 2rem;
+            color: var(--accent-cyan);
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-shadow: 0 0 30px rgba(34, 211, 238, 0.5);
+        }
+        
+        .subtagline {
+            font-size: 1.5rem;
+            color: var(--stellar-white);
+            opacity: 0.9;
+            margin-bottom: 50px;
+        }
+        
+        .vision {
+            font-size: 1.3rem;
+            color: var(--quantum-teal);
+            font-style: italic;
+            margin: 30px 0;
+        }
+        
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-card {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(10px);
+                    backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 210, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 210, 255, 0.3);
+            border-color: var(--quantum-teal);
+        }
+        
+        .stat-card:hover::before {
+            animation: shine 0.5s ease;
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(45deg) translateY(-200%); opacity: 1; }
+            100% { transform: rotate(45deg) translateY(200%); opacity: 0; }
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--quantum-teal), var(--cosmic-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .stat-label {
+            color: var(--stellar-white);
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Modules Section */
+        .modules {
+            padding: 100px 20px;
+            background: linear-gradient(180deg, transparent, rgba(102, 126, 234, 0.05));
+        }
+        
+        .section-title {
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--quantum-teal), var(--neural-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--stellar-white);
+            opacity: 0.8;
+            margin-bottom: 60px;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .module-card {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(10px);
+                    backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+            border-color: var(--neural-purple);
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .module-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.5));
+        }
+        
+        .module-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--quantum-teal);
+        }
+        
+        .module-tagline {
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .module-desc {
+            color: var(--stellar-white);
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        /* About Section */
+        .about {
+            max-width: 900px;
+            margin: 100px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        
+        .about-blurb {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            color: var(--stellar-white);
+            margin-bottom: 40px;
+        }
+        
+        .about-expanded {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--stellar-white);
+            opacity: 0.9;
+        }
+        
+        /* CTA Section */
+        .cta {
+            text-align: center;
+            padding: 120px 20px;
+            background: linear-gradient(180deg, transparent, rgba(0, 210, 255, 0.05));
+            position: relative;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 20px 50px;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--quantum-teal), var(--cosmic-blue));
+            color: var(--deep-space);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 210, 255, 0.4);
+        }
+        
+        .cta-button-secondary {
+            background: transparent;
+            border: 2px solid var(--quantum-teal);
+            color: var(--quantum-teal);
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(10, 15, 28, 0.9);
+            padding: 60px 20px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-motto {
+            font-size: 1.5rem;
+            color: var(--quantum-teal);
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .footer-vision {
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            margin: 30px 0;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            h1 { font-size: 2.5rem; }
+            .tagline { font-size: 1.5rem; }
+            .section-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">TerraFusion</div>
+            <ul class="nav-links">
+                <li><a href="#intelligence">Platform</a></li>
+                <li><a href="#modules">Modules</a></li>
+                <li><a href="#excellence">Excellence</a></li>
+                <li><a href="#contact">Deploy</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Infrastructure Intelligence,<br>Infinite Scale</h1>
+        <p class="tagline">Government. Simplified.</p>
+        <p class="subtagline">The Operating System for Modern County Government</p>
+        <p class="vision">Government. Transcended.</p>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stat-card">
+            <div class="stat-value">247%</div>
+            <div class="stat-label">Efficiency Gains</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">94K+</div>
+            <div class="stat-label">Properties Managed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">∞</div>
+            <div class="stat-label">Infinite Scalability</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">24/7</div>
+            <div class="stat-label">Citizen Services</div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <p class="about-blurb">
+            TerraFusion is the operating system for modern county government. We unite property, permit, tax, GIS, and workflow into one intelligent platform—engineered for infinite scale, seamless simplicity, and championship-level performance.
+        </p>
+        <p class="about-expanded">
+            TerraFusion delivers Infrastructure Intelligence at Infinite Scale, empowering county governments to achieve Tactical Municipal Excellence. From AI-driven property assessment to automated compliance, quantum-speed tax optimization, and real-time GIS, TerraFusion transcends the limits of traditional software.
+        </p>
+    </section>
+
+    <!-- Modules Section -->
+    <section class="modules" id="modules">
+        <h2 class="section-title">Tactical Municipal Excellence</h2>
+        <p class="section-subtitle">Every Module. Every Workflow. Every Day.</p>
+        
+        <div class="modules-grid">
+            <div class="module-card">
+                <div class="module-icon">🏠</div>
+                <div class="module-name">Property Assessment</div>
+                <div class="module-tagline">Intelligent Property Intelligence</div>
+                <div class="module-desc">AI-powered property assessment with quantum-speed calculations. Transform months of work into minutes of insight.</div>
+            </div>
+            
+            <div class="module-card">
+                <div class="module-icon">💰</div>
+                <div class="module-name">Tax Management</div>
+                <div class="module-tagline">Tactical Tax Excellence</div>
+                <div class="module-desc">Automated tax calculation and levy optimization. Achieve perfect compliance with zero manual errors.</div>
+            </div>
+            
+            <div class="module-card">
+                <div class="module-icon">🗺️</div>
+                <div class="module-name">GIS Mapping</div>
+                <div class="module-tagline">Geographic Intelligence, Infinite Insight</div>
+                <div class="module-desc">Real-time mapping with predictive analytics. See your county's future, not just its present.</div>
+            </div>
+            
+            <div class="module-card">
+                <div class="module-icon">📋</div>
+                <div class="module-name">Permit Workflow</div>
+                <div class="module-tagline">Streamlined Permit Mastery</div>
+                <div class="module-desc">Automated permit processing with compliance tracking. Turn permit delays into permit victories.</div>
+            </div>
+            
+            <div class="module-card">
+                <div class="module-icon">👥</div>
+                <div class="module-name">Citizen Portal</div>
+                <div class="module-tagline">Citizen Excellence Gateway</div>
+                <div class="module-desc">Self-service portal for transparent government access. Government that works around your schedule.</div>
+            </div>
+            
+            <div class="module-card">
+                <div class="module-icon">📊</div>
+                <div class="module-name">Intelligence Reports</div>
+                <div class="module-tagline">Data-Driven Municipal Insights</div>
+                <div class="module-desc">Transform raw data into actionable intelligence. Make decisions with confidence and clarity.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="contact">
+        <h2 class="section-title">Ready for Tactical Municipal Excellence?</h2>
+        <p class="section-subtitle">Experience Infrastructure Intelligence at Infinite Scale</p>
+        
+        <div class="cta-buttons">
+            <a href="mailto:sales@terrafusionmarket.io" class="cta-button">Deploy Excellence</a>
+            <a href="#demo" class="cta-button cta-button-secondary">See Intelligence in Action</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p class="footer-motto">Tactical Municipal Excellence. Every Workflow. Every Day.</p>
+            <p style="margin: 20px 0; opacity: 0.8;">
+                &copy; 2025 TerraFusion. All rights reserved.
+            </p>
+            <p class="footer-vision">Government. Transcended.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Animate stats on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        document.querySelectorAll('.stat-card, .module-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Add fade in animation
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+    <!-- Marketplace Launcher Button -->
+    <a href="marketplace-launcher.html" class="marketplace-launcher-btn" title="Open TerraFusion Marketplace">
+        🏆
+    </a>
+</body>
+</html>

@@ -1,0 +1,83 @@
+# TerraFusion OS - Docker Ignore File
+
+# Version control
+.git
+.gitignore
+
+# Documentation
+*.md
+docs/
+README.md
+LICENSE
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+*.cache
+.vs/
+
+# Test files
+**/test/
+**/tests/
+**/*.test.js
+**/*.spec.js
+coverage/
+.nyc_output/
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Docker files (don't copy these into the image)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+azure-pipelines.yml
+
+# Database files (will be mounted as volume)
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.backup
+*.bak
+*.old

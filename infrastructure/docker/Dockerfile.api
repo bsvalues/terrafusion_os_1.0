@@ -1,0 +1,91 @@
+# TerraFusion API Production Dockerfile
+# Multi-stage build for optimized .NET 8 container
+
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+WORKDIR /src
+
+# Copy project files for dependency resolution
+COPY backend/TerraFusion.API/TerraFusion.API.csproj backend/TerraFusion.API/
+COPY backend/TerraFusion.Core/TerraFusion.Core.csproj backend/TerraFusion.Core/
+COPY backend/TerraFusion.Data/TerraFusion.Data.csproj backend/TerraFusion.Data/
+COPY backend/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj backend/TerraFusion.Abstractions/
+
+# Restore dependencies
+RUN dotnet restore backend/TerraFusion.API/TerraFusion.API.csproj
+
+# Copy source code
+COPY backend/ backend/
+
+# Build and publish
+WORKDIR /src/backend/TerraFusion.API
+RUN dotnet publish -c Release -o /app/publish --no-restore \
+    --runtime linux-x64 \
+    --self-contained false \
+    /p:PublishTrimmed=false \
+    /p:PublishSingleFile=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
+
+# Install security updates and required packages
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache \
+        ca-certificates \
+        tzdata \
+        curl \
+        dumb-init && \
+    rm -rf /var/cache/apk/*
+
+# Create non-root user for security
+RUN addgroup -g 1000 terrafusion && \
+    adduser -D -s /bin/sh -u 1000 -G terrafusion terrafusion
+
+# Set timezone
+ENV TZ=UTC
+
+# Set working directory
+WORKDIR /app
+
+# Copy published application
+COPY --from=build /app/publish .
+COPY --chown=terrafusion:terrafusion --from=build /app/publish .
+
+# Create directories for logs and temp files
+RUN mkdir -p /app/logs /app/temp && \
+    chown -R terrafusion:terrafusion /app
+
+# Switch to non-root user
+USER terrafusion
+
+# Expose ports
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Environment variables
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_URLS=http://+:8080 \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true \
+    ASPNETCORE_HTTP_PORTS=8080
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["dotnet", "TerraFusion.API.dll"]
+
+# Metadata labels
+LABEL maintainer="TerraFusion DevOps Team <devops@terrafusion.com>" \
+      org.opencontainers.image.title="TerraFusion API" \
+      org.opencontainers.image.description="TerraFusion OS Government AI Platform API" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.vendor="TerraFusion" \
+      org.opencontainers.image.licenses="Proprietary" \
+      org.opencontainers.image.source="https://github.com/terrafusion/terrafusion-os" \
+      security.compliance="FISMA" \
+      security.scan-date="2025-08-31"

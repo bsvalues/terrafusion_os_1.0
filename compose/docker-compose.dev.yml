@@ -1,0 +1,68 @@
+# TerraFusion OS - Development Docker Compose
+# Hot-reload enabled for development
+
+version: '3.8'
+
+services:
+  terrafusion-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/app/backend
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_WATCH=true
+    command: ["dotnet", "watch", "run", "--project", "/app/backend/TerraFusion.API/TerraFusion.API.csproj"]
+    ports:
+      - "5000:5000"
+      - "5001:5001" # HTTPS port for development
+
+  terrafusion-frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Prevent overwriting node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["npm", "run", "dev", "--", "--host"]
+    ports:
+      - "3000:3000"
+      - "3001:3001" # Vite HMR port
+
+  ai-command-brain:
+    volumes:
+      - ./compose/ai-services:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["npx", "nodemon", "ai-command-brain.js"]
+
+  ai-swarm:
+    volumes:
+      - ./compose/ai-services:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["npx", "nodemon", "ai-swarm.js"]
+
+  ai-advanced:
+    volumes:
+      - ./compose/ai-services:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["npx", "nodemon", "ai-advanced.js"]
+
+  # Development tools
+  adminer:
+    image: adminer
+    container_name: terrafusion-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - terrafusion-network

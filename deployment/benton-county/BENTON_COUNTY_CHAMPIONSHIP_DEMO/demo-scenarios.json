@@ -1,0 +1,34 @@
+[
+  {
+    "id": "property-assessment",
+    "name": "Property Assessment Workflow",
+    "duration": "15 minutes",
+    "audience": "County Assessors, Property Managers",
+    "description": "Complete property assessment workflow from search to reporting",
+    "steps": 6
+  },
+  {
+    "id": "tax-calculation",
+    "name": "Tax Levy Calculation",
+    "duration": "10 minutes",
+    "audience": "Tax Administrators, Finance Officers",
+    "description": "Tax levy calculation and distribution process",
+    "steps": 6
+  },
+  {
+    "id": "workflow-automation",
+    "name": "Workflow Automation",
+    "duration": "8 minutes",
+    "audience": "Operations Managers, Process Owners",
+    "description": "Automated workflow design and execution",
+    "steps": 6
+  },
+  {
+    "id": "ai-analysis",
+    "name": "AI-Powered Analysis",
+    "duration": "12 minutes",
+    "audience": "Technology Officers, Innovation Teams",
+    "description": "AI-powered property and market analysis",
+    "steps": 6
+  }
+]

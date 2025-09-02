@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: istio-system
+  labels:
+    istio-injection: disabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-cosmic
+  labels:
+    istio-injection: enabled
+    cosmic-mesh: enabled

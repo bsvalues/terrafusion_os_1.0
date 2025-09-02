@@ -1,0 +1,54 @@
+@echo off
+echo ========================================
+echo Terrafusion OS - Government Edition
+echo ========================================
+echo.
+
+REM Check if .NET 8 is installed
+dotnet --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERROR: .NET 8 SDK is not installed
+    echo Please install from: https://dotnet.microsoft.com/download/dotnet/8.0
+    pause
+    exit /b 1
+)
+
+REM Build if needed
+if not exist "Terrafusion.API\bin\Debug\net8.0\Terrafusion.API.exe" (
+    echo Building API...
+    cd Terrafusion.API
+    dotnet build
+    cd ..
+)
+
+if not exist "Terrafusion.Shell\bin\Debug\net8.0-windows\Terrafusion.Shell.exe" (
+    echo Building Shell...
+    cd Terrafusion.Shell
+    dotnet build
+    cd ..
+)
+
+REM Copy modules if needed
+if not exist "Terrafusion.API\wwwroot\modules" (
+    echo Copying modules...
+    xcopy /E /I /Y "..\championship\modules\*" "Terrafusion.API\wwwroot\modules\"
+)
+
+REM Launch Terrafusion
+echo.
+echo Launching Terrafusion OS...
+echo ----------------------------------------
+
+REM Start API in background
+start /B "" "Terrafusion.API\bin\Debug\net8.0\Terrafusion.API.exe" --environment Production
+
+REM Wait for API to start
+timeout /t 3 /nobreak >nul
+
+REM Launch Shell
+start "" "Terrafusion.Shell\bin\Debug\net8.0-windows\Terrafusion.Shell.exe"
+
+echo.
+echo Terrafusion OS is running!
+echo Close this window to continue using Terrafusion.
+echo.

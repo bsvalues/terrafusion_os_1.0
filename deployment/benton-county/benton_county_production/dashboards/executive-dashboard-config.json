@@ -1,0 +1,313 @@
+{
+  "dashboard": {
+    "title": "Benton County Assessor Executive Dashboard",
+    "theme": "professional-dark",
+    "refresh_interval": 30,
+    "layout": "executive"
+  },
+  "widgets": [
+    {
+      "id": "kpi-overview",
+      "type": "kpi-grid",
+      "position": { "x": 0, "y": 0, "w": 12, "h": 3 },
+      "config": {
+        "title": "Key Performance Indicators",
+        "metrics": [
+          {
+            "label": "Total Assessed Value",
+            "query": "SELECT SUM(total_assessed_value) FROM current_assessments",
+            "format": "currency",
+            "trend": true,
+            "target": 45000000000,
+            "icon": "trending_up"
+          },
+          {
+            "label": "Parcels Assessed",
+            "query": "SELECT COUNT(*) FROM assessment_history WHERE tax_year = 2024",
+            "format": "number",
+            "total": 99347,
+            "percentage": true,
+            "icon": "home"
+          },
+          {
+            "label": "Today's Collections",
+            "query": "SELECT SUM(amount) FROM payments WHERE date = CURRENT_DATE",
+            "format": "currency",
+            "real_time": true,
+            "icon": "payments"
+          },
+          {
+            "label": "Appeals Pending",
+            "query": "SELECT COUNT(*) FROM appeals WHERE status = 'pending'",
+            "format": "number",
+            "alert_threshold": 50,
+            "icon": "gavel"
+          },
+          {
+            "label": "Online Adoption",
+            "query": "SELECT (online_users / total_users) * 100 FROM user_stats",
+            "format": "percentage",
+            "target": 75,
+            "icon": "public"
+          },
+          {
+            "label": "System Health",
+            "query": "SELECT system_health_score FROM monitoring",
+            "format": "percentage",
+            "good_threshold": 98,
+            "icon": "monitor_heart"
+          }
+        ]
+      }
+    },
+    {
+      "id": "revenue-chart",
+      "type": "area-chart",
+      "position": { "x": 0, "y": 3, "w": 8, "h": 4 },
+      "config": {
+        "title": "Revenue Collection Trend",
+        "subtitle": "Daily collections vs projections",
+        "query": "SELECT date, actual_revenue, projected_revenue FROM revenue_daily ORDER BY date DESC LIMIT 30",
+        "x_axis": "date",
+        "y_axis": ["actual_revenue", "projected_revenue"],
+        "colors": ["#2196F3", "#FFC107"],
+        "show_forecast": true
+      }
+    },
+    {
+      "id": "quick-actions",
+      "type": "action-panel",
+      "position": { "x": 8, "y": 3, "w": 4, "h": 4 },
+      "config": {
+        "title": "Quick Actions",
+        "actions": [
+          {
+            "label": "Sign Value Notices",
+            "icon": "edit_document",
+            "action": "open_signature_queue",
+            "badge_query": "SELECT COUNT(*) FROM documents WHERE status = 'awaiting_signature'"
+          },
+          {
+            "label": "Review Appeals",
+            "icon": "rate_review",
+            "action": "open_appeals_queue",
+            "badge_query": "SELECT COUNT(*) FROM appeals WHERE status = 'new'"
+          },
+          {
+            "label": "Generate Reports",
+            "icon": "analytics",
+            "action": "open_report_builder",
+            "color": "primary"
+          },
+          {
+            "label": "Staff Message",
+            "icon": "campaign",
+            "action": "broadcast_message",
+            "color": "success"
+          },
+          {
+            "label": "Emergency Alert",
+            "icon": "warning",
+            "action": "emergency_broadcast",
+            "color": "error",
+            "confirm": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "assessment-progress",
+      "type": "progress-rings",
+      "position": { "x": 0, "y": 7, "w": 6, "h": 4 },
+      "config": {
+        "title": "2024 Assessment Progress",
+        "rings": [
+          {
+            "label": "Residential",
+            "value_query": "SELECT COUNT(*) FROM assessments WHERE property_class = 'R' AND year = 2024",
+            "total_query": "SELECT COUNT(*) FROM parcels WHERE property_class = 'R'",
+            "color": "#4CAF50"
+          },
+          {
+            "label": "Commercial",
+            "value_query": "SELECT COUNT(*) FROM assessments WHERE property_class = 'C' AND year = 2024",
+            "total_query": "SELECT COUNT(*) FROM parcels WHERE property_class = 'C'",
+            "color": "#2196F3"
+          },
+          {
+            "label": "Agricultural",
+            "value_query": "SELECT COUNT(*) FROM assessments WHERE property_class = 'A' AND year = 2024",
+            "total_query": "SELECT COUNT(*) FROM parcels WHERE property_class = 'A'",
+            "color": "#FF9800"
+          }
+        ]
+      }
+    },
+    {
+      "id": "staff-performance",
+      "type": "team-metrics",
+      "position": { "x": 6, "y": 7, "w": 6, "h": 4 },
+      "config": {
+        "title": "Team Performance",
+        "show_photos": true,
+        "metrics": [
+          "daily_completions",
+          "quality_score",
+          "response_time",
+          "customer_satisfaction"
+        ],
+        "highlight_top_performer": true
+      }
+    },
+    {
+      "id": "ai-insights",
+      "type": "ai-recommendations",
+      "position": { "x": 0, "y": 11, "w": 6, "h": 3 },
+      "config": {
+        "title": "AI Insights & Recommendations",
+        "max_items": 5,
+        "categories": [
+          "revenue_optimization",
+          "process_improvement",
+          "risk_alerts",
+          "opportunity_identification"
+        ],
+        "priority": "high"
+      }
+    },
+    {
+      "id": "upcoming-events",
+      "type": "calendar-widget",
+      "position": { "x": 6, "y": 11, "w": 6, "h": 3 },
+      "config": {
+        "title": "Upcoming Events",
+        "show_items": 5,
+        "calendars": [
+          "board_meetings",
+          "filing_deadlines",
+          "training_sessions",
+          "system_maintenance"
+        ],
+        "highlight_urgent": true
+      }
+    },
+    {
+      "id": "public-portal-metrics",
+      "type": "real-time-counter",
+      "position": { "x": 0, "y": 14, "w": 4, "h": 2 },
+      "config": {
+        "title": "Public Portal Activity",
+        "metrics": [
+          {
+            "label": "Active Users",
+            "query": "SELECT COUNT(*) FROM sessions WHERE last_activity > NOW() - INTERVAL '5 minutes'",
+            "icon": "people",
+            "real_time": true
+          },
+          {
+            "label": "Searches Today",
+            "query": "SELECT COUNT(*) FROM search_log WHERE date = CURRENT_DATE",
+            "icon": "search"
+          },
+          {
+            "label": "Documents Downloaded",
+            "query": "SELECT COUNT(*) FROM downloads WHERE date = CURRENT_DATE",
+            "icon": "download"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ratio-study",
+      "type": "statistical-summary",
+      "position": { "x": 4, "y": 14, "w": 4, "h": 2 },
+      "config": {
+        "title": "Current Ratio Study",
+        "metrics": [
+          {
+            "label": "Median Ratio",
+            "value": 0.97,
+            "target": 1.00,
+            "format": "decimal"
+          },
+          {
+            "label": "COD",
+            "value": 12.3,
+            "target": 15.0,
+            "format": "percentage",
+            "inverse": true
+          },
+          {
+            "label": "PRD",
+            "value": 1.02,
+            "target": 1.00,
+            "format": "decimal"
+          }
+        ],
+        "iaao_compliant": true
+      }
+    },
+    {
+      "id": "alerts-panel",
+      "type": "alert-feed",
+      "position": { "x": 8, "y": 14, "w": 4, "h": 2 },
+      "config": {
+        "title": "System Alerts",
+        "max_items": 5,
+        "severity_filter": ["critical", "warning"],
+        "categories": [
+          "system_health",
+          "compliance",
+          "security",
+          "data_quality"
+        ],
+        "auto_dismiss": false
+      }
+    }
+  ],
+  "data_sources": {
+    "primary_db": {
+      "type": "postgresql",
+      "connection": "postgresql://readonly@db.benton.wa.us/terrafusion",
+      "pool_size": 10
+    },
+    "real_time": {
+      "type": "websocket",
+      "endpoint": "wss://api.co.benton.wa.us/metrics"
+    },
+    "cache": {
+      "type": "redis",
+      "connection": "redis://cache.benton.wa.us:6379"
+    }
+  },
+  "alerts": {
+    "thresholds": {
+      "revenue_shortfall": {
+        "condition": "daily_revenue < daily_target * 0.95",
+        "severity": "warning",
+        "notification": ["email", "dashboard"]
+      },
+      "system_health": {
+        "condition": "health_score < 95",
+        "severity": "critical",
+        "notification": ["email", "sms", "dashboard"]
+      },
+      "appeals_backlog": {
+        "condition": "pending_appeals > 100",
+        "severity": "warning",
+        "notification": ["email", "dashboard"]
+      }
+    }
+  },
+  "personalization": {
+    "allow_customization": true,
+    "save_layout": true,
+    "theme_options": ["professional-dark", "professional-light", "high-contrast"],
+    "export_options": ["pdf", "excel", "powerpoint"],
+    "sharing": {
+      "allow_screenshot": true,
+      "allow_export": true,
+      "watermark": "Benton County Confidential"
+    }
+  }
+}

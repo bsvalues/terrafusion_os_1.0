@@ -1,0 +1,287 @@
+{
+  "deployment_result": {
+    "total_agents": 120,
+    "field_generals": 3,
+    "total_squads": 6,
+    "deployment_status": "success"
+  },
+  "operation_result": {
+    "operation_type": "county_optimization",
+    "task_id": "global_county_optimization_20250829_070907",
+    "distribution_results": [
+      {
+        "general_id": "general_property_operations",
+        "status": "task_queued"
+      },
+      {
+        "general_id": "general_compliance_operations",
+        "status": "task_queued"
+      },
+      {
+        "general_id": "general_analytics_operations",
+        "status": "task_distributed"
+      }
+    ],
+    "completion_status": "completed",
+    "timestamp": "2025-08-29T07:09:09.517241"
+  },
+  "system_status": {
+    "timestamp": "2025-08-29T07:09:09.517808",
+    "system_status": "operational",
+    "supreme_commander": "active",
+    "field_generals": 3,
+    "total_agents": 120,
+    "active_agents": 0,
+    "agent_utilization": 0.0,
+    "overall_success_rate": 1.0,
+    "field_general_statuses": {
+      "property_operations": {
+        "general_id": "general_property_operations",
+        "operational_area": "property_operations",
+        "total_squads": 2,
+        "squad_statuses": {
+          "squad_revenue hunter": {
+            "squad_id": "squad_revenue hunter",
+            "agent_type": "Revenue Hunter",
+            "total_agents": 20,
+            "active_agents": 0,
+            "idle_agents": 20,
+            "queued_tasks": 0,
+            "active_tasks": 0,
+            "overall_success_rate": 1.0
+          },
+          "squad_property assessor": {
+            "squad_id": "squad_property assessor",
+            "agent_type": "Property Assessor",
+            "total_agents": 20,
+            "active_agents": 0,
+            "idle_agents": 20,
+            "queued_tasks": 0,
+            "active_tasks": 0,
+            "overall_success_rate": 1.0
+          }
+        },
+        "overall_metrics": {
+          "total_agents": 40,
+          "active_agents": 0,
+          "agent_utilization": 0.0,
+          "total_tasks": 0,
+          "overall_success_rate": 1.0
+        }
+      },
+      "compliance_operations": {
+        "general_id": "general_compliance_operations",
+        "operational_area": "compliance_operations",
+        "total_squads": 2,
+        "squad_statuses": {
+          "squad_compliance monitor": {
+            "squad_id": "squad_compliance monitor",
+            "agent_type": "Compliance Monitor",
+            "total_agents": 20,
+            "active_agents": 0,
+            "idle_agents": 20,
+            "queued_tasks": 0,
+            "active_tasks": 0,
+            "overall_success_rate": 1.0
+          },
+          "squad_data processor": {
+            "squad_id": "squad_data processor",
+            "agent_type": "Data Processor",
+            "total_agents": 20,
+            "active_agents": 0,
+            "idle_agents": 20,
+            "queued_tasks": 0,
+            "active_tasks": 0,
+            "overall_success_rate": 1.0
+          }
+        },
+        "overall_metrics": {
+          "total_agents": 40,
+          "active_agents": 0,
+          "agent_utilization": 0.0,
+          "total_tasks": 0,
+          "overall_success_rate": 1.0
+        }
+      },
+      "analytics_operations": {
+        "general_id": "general_analytics_operations",
+        "operational_area": "analytics_operations",
+        "total_squads": 2,
+        "squad_statuses": {
+          "squad_analyst": {
+            "squad_id": "squad_analyst",
+            "agent_type": "Analyst",
+            "total_agents": 20,
+            "active_agents": 0,
+            "idle_agents": 20,
+            "queued_tasks": 0,
+            "active_tasks": 0,
+            "overall_success_rate": 1.0
+          },
+          "squad_coordinator": {
+            "squad_id": "squad_coordinator",
+            "agent_type": "Coordinator",
+            "total_agents": 20,
+            "active_agents": 0,
+            "idle_agents": 20,
+            "queued_tasks": 0,
+            "active_tasks": 0,
+            "overall_success_rate": 1.0
+          }
+        },
+        "overall_metrics": {
+          "total_agents": 40,
+          "active_agents": 0,
+          "agent_utilization": 0.0,
+          "total_tasks": 0,
+          "overall_success_rate": 1.0
+        }
+      }
+    },
+    "global_task_queue": 0
+  },
+  "swarm_report": {
+    "timestamp": "2025-08-29T07:09:09.517808",
+    "swarm_status": "fully_operational",
+    "system_overview": {
+      "timestamp": "2025-08-29T07:09:09.517808",
+      "system_status": "operational",
+      "supreme_commander": "active",
+      "field_generals": 3,
+      "total_agents": 120,
+      "active_agents": 0,
+      "agent_utilization": 0.0,
+      "overall_success_rate": 1.0,
+      "field_general_statuses": {
+        "property_operations": {
+          "general_id": "general_property_operations",
+          "operational_area": "property_operations",
+          "total_squads": 2,
+          "squad_statuses": {
+            "squad_revenue hunter": {
+              "squad_id": "squad_revenue hunter",
+              "agent_type": "Revenue Hunter",
+              "total_agents": 20,
+              "active_agents": 0,
+              "idle_agents": 20,
+              "queued_tasks": 0,
+              "active_tasks": 0,
+              "overall_success_rate": 1.0
+            },
+            "squad_property assessor": {
+              "squad_id": "squad_property assessor",
+              "agent_type": "Property Assessor",
+              "total_agents": 20,
+              "active_agents": 0,
+              "idle_agents": 20,
+              "queued_tasks": 0,
+              "active_tasks": 0,
+              "overall_success_rate": 1.0
+            }
+          },
+          "overall_metrics": {
+            "total_agents": 40,
+            "active_agents": 0,
+            "agent_utilization": 0.0,
+            "total_tasks": 0,
+            "overall_success_rate": 1.0
+          }
+        },
+        "compliance_operations": {
+          "general_id": "general_compliance_operations",
+          "operational_area": "compliance_operations",
+          "total_squads": 2,
+          "squad_statuses": {
+            "squad_compliance monitor": {
+              "squad_id": "squad_compliance monitor",
+              "agent_type": "Compliance Monitor",
+              "total_agents": 20,
+              "active_agents": 0,
+              "idle_agents": 20,
+              "queued_tasks": 0,
+              "active_tasks": 0,
+              "overall_success_rate": 1.0
+            },
+            "squad_data processor": {
+              "squad_id": "squad_data processor",
+              "agent_type": "Data Processor",
+              "total_agents": 20,
+              "active_agents": 0,
+              "idle_agents": 20,
+              "queued_tasks": 0,
+              "active_tasks": 0,
+              "overall_success_rate": 1.0
+            }
+          },
+          "overall_metrics": {
+            "total_agents": 40,
+            "active_agents": 0,
+            "agent_utilization": 0.0,
+            "total_tasks": 0,
+            "overall_success_rate": 1.0
+          }
+        },
+        "analytics_operations": {
+          "general_id": "general_analytics_operations",
+          "operational_area": "analytics_operations",
+          "total_squads": 2,
+          "squad_statuses": {
+            "squad_analyst": {
+              "squad_id": "squad_analyst",
+              "agent_type": "Analyst",
+              "total_agents": 20,
+              "active_agents": 0,
+              "idle_agents": 20,
+              "queued_tasks": 0,
+              "active_tasks": 0,
+              "overall_success_rate": 1.0
+            },
+            "squad_coordinator": {
+              "squad_id": "squad_coordinator",
+              "agent_type": "Coordinator",
+              "total_agents": 20,
+              "active_agents": 0,
+              "idle_agents": 20,
+              "queued_tasks": 0,
+              "active_tasks": 0,
+              "overall_success_rate": 1.0
+            }
+          },
+          "overall_metrics": {
+            "total_agents": 40,
+            "active_agents": 0,
+            "agent_utilization": 0.0,
+            "total_tasks": 0,
+            "overall_success_rate": 1.0
+          }
+        }
+      },
+      "global_task_queue": 0
+    },
+    "performance_metrics": {
+      "total_agents": 120,
+      "agent_utilization": 0.0,
+      "overall_success_rate": 1.0,
+      "system_health": "excellent"
+    },
+    "operational_areas": [
+      "property_operations",
+      "compliance_operations",
+      "analytics_operations"
+    ],
+    "agent_distribution": {
+      "property_operations": {
+        "total_agents": 40,
+        "squads": 2
+      },
+      "compliance_operations": {
+        "total_agents": 40,
+        "squads": 2
+      },
+      "analytics_operations": {
+        "total_agents": 40,
+        "squads": 2
+      }
+    }
+  }
+}

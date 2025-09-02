@@ -1,0 +1,58 @@
+{
+  "timestamp": "2025-08-18T21:37:58.027Z",
+  "totalTests": 716,
+  "passed": 658,
+  "failed": 10,
+  "skipped": 48,
+  "modules": {},
+  "performance": {
+    "passed": 31,
+    "failed": 0,
+    "skipped": 3,
+    "duration": 5011,
+    "details": []
+  },
+  "summary": "658/716 tests passed (91.9%) in 18.56s across 0 modules",
+  "unit": {
+    "passed": 234,
+    "failed": 4,
+    "skipped": 9,
+    "duration": 501,
+    "details": []
+  },
+  "integration": {
+    "passed": 81,
+    "failed": 1,
+    "skipped": 7,
+    "duration": 1502,
+    "details": []
+  },
+  "e2e": {
+    "passed": 137,
+    "failed": 3,
+    "skipped": 16,
+    "duration": 3002,
+    "details": []
+  },
+  "visual": {
+    "passed": 70,
+    "failed": 1,
+    "skipped": 7,
+    "duration": 2002,
+    "details": []
+  },
+  "security": {
+    "passed": 43,
+    "failed": 0,
+    "skipped": 2,
+    "duration": 2517,
+    "details": []
+  },
+  "aiSwarm": {
+    "passed": 62,
+    "failed": 1,
+    "skipped": 4,
+    "duration": 4020,
+    "details": []
+  }
+}

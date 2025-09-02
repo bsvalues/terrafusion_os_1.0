@@ -1,0 +1,115 @@
+# TerraFusion OS - Critical Security Enhancements
+# CTO Review: Immediate Production Security Requirements
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: security-enhancements-plan
+data:
+  security_improvements: |
+    CRITICAL SECURITY GAPS IDENTIFIED:
+    
+    1. SECRETS MANAGEMENT
+    - Current: Environment variables in plain text
+    - Required: HashiCorp Vault or AWS Secrets Manager
+    - Risk Level: HIGH
+    - Impact: Credentials exposed in container configs
+    
+    2. TLS TERMINATION
+    - Current: HTTP only on port 80
+    - Required: Let's Encrypt or proper SSL certificates
+    - Risk Level: CRITICAL
+    - Impact: All traffic unencrypted
+    
+    3. CONTAINER SECURITY
+    - Current: Root user containers
+    - Required: Non-root security contexts
+    - Risk Level: HIGH
+    - Impact: Container escape vulnerabilities
+    
+    4. NETWORK ISOLATION
+    - Current: Basic Docker networks
+    - Required: Network policies, microsegmentation
+    - Risk Level: MEDIUM
+    - Impact: Lateral movement possible
+    
+    5. IMAGE SECURITY SCANNING
+    - Current: No vulnerability scanning
+    - Required: Snyk, Trivy, or Twistlock integration
+    - Risk Level: MEDIUM
+    - Impact: Vulnerable base images in production
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secure-config-template
+type: Opaque
+stringData:
+  # Template for proper secrets management
+  database-url: "PLACEHOLDER_FOR_VAULT_REFERENCE"
+  jwt-secret: "PLACEHOLDER_FOR_VAULT_REFERENCE"
+  encryption-key: "PLACEHOLDER_FOR_VAULT_REFERENCE"
+  grafana-admin-password: "PLACEHOLDER_FOR_VAULT_REFERENCE"
+
+---
+# Network Security Policy Template
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: terrafusion-network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: terrafusion
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: frontend
+    ports:
+    - protocol: TCP
+      port: 5000
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          role: database
+    ports:
+    - protocol: TCP
+      port: 5432
+
+---
+# Security Context Template
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-api-secure
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+      - name: api
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: var-run
+          mountPath: /var/run
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: var-run
+        emptyDir: {}

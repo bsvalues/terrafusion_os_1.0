@@ -1,0 +1,182 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: multi-region
+  labels:
+    cosmic-platform: terrafusion
+    component: multi-region
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-regions
+  namespace: multi-region
+data:
+  regions.yaml: |
+    regions:
+      primary:
+        name: us-east-1
+        endpoint: https://api-us-east-1.terrafusion.cosmic
+        priority: 100
+        capacity: high
+        features:
+          - neural-compute
+          - quantum-storage
+          - consciousness-service
+        kubernetes:
+          context: eks-us-east-1
+          cluster: arn:aws:eks:us-east-1:123456789012:cluster/cosmic-us-east-1
+      
+      secondary:
+        - name: us-west-2
+          endpoint: https://api-us-west-2.terrafusion.cosmic
+          priority: 90
+          capacity: high
+          features:
+            - neural-compute
+            - quantum-storage
+            - consciousness-service
+          kubernetes:
+            context: eks-us-west-2
+            cluster: arn:aws:eks:us-west-2:123456789012:cluster/cosmic-us-west-2
+        
+        - name: eu-west-1
+          endpoint: https://api-eu-west-1.terrafusion.cosmic
+          priority: 80
+          capacity: medium
+          features:
+            - neural-compute
+            - quantum-storage
+          kubernetes:
+            context: eks-eu-west-1
+            cluster: arn:aws:eks:eu-west-1:123456789012:cluster/cosmic-eu-west-1
+        
+        - name: ap-southeast-1
+          endpoint: https://api-ap-southeast-1.terrafusion.cosmic
+          priority: 70
+          capacity: medium
+          features:
+            - neural-compute
+            - quantum-storage
+          kubernetes:
+            context: eks-ap-southeast-1
+            cluster: arn:aws:eks:ap-southeast-1:123456789012:cluster/cosmic-ap-southeast-1
+      
+      edge:
+        - name: mars-relay
+          endpoint: https://mars.terrafusion.cosmic
+          priority: 50
+          capacity: low
+          latency: 14m
+          features:
+            - quantum-relay
+            - data-cache
+          type: interplanetary
+        
+        - name: moon-base
+          endpoint: https://moon.terrafusion.cosmic
+          priority: 60
+          capacity: medium
+          latency: 1.3s
+          features:
+            - neural-edge
+            - quantum-cache
+          type: lunar
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: federation-config
+  namespace: multi-region
+data:
+  federation.yaml: |
+    federation:
+      mode: active-active
+      sync_interval: 30s
+      conflict_resolution: last-write-wins
+      
+      data_replication:
+        strategy: eventual-consistency
+        replication_factor: 3
+        cross_region_bandwidth: 10Gbps
+        compression: enabled
+        encryption: quantum-aes-256
+      
+      service_mesh:
+        provider: istio
+        mtls: required
+        circuit_breaker:
+          consecutive_errors: 5
+          interval: 30s
+          base_ejection_time: 30s
+          max_ejection_percent: 50
+      
+      load_balancing:
+        algorithm: geo-proximity
+        health_check_interval: 10s
+        failover_threshold: 3
+        sticky_sessions: enabled
+        session_affinity_timeout: 3600s
+      
+      disaster_recovery:
+        rpo: 5m  # Recovery Point Objective
+        rto: 15m # Recovery Time Objective
+        backup_regions:
+          - us-west-2
+          - eu-west-1
+        automated_failover: true
+        
+      quantum_sync:
+        entanglement_pairs: 1000
+        coherence_check_interval: 100ms
+        dimension_mapping:
+          us-east-1: [1, 2, 3]
+          us-west-2: [4, 5, 6]
+          eu-west-1: [7, 8, 9]
+          ap-southeast-1: [10, 11]
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: region-credentials
+  namespace: multi-region
+type: Opaque
+stringData:
+  aws-credentials: |
+    [default]
+    aws_access_key_id = ${AWS_ACCESS_KEY_ID}
+    aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
+    
+    [us-east-1]
+    aws_access_key_id = ${AWS_ACCESS_KEY_ID_US_EAST_1}
+    aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY_US_EAST_1}
+    
+    [us-west-2]
+    aws_access_key_id = ${AWS_ACCESS_KEY_ID_US_WEST_2}
+    aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY_US_WEST_2}
+    
+    [eu-west-1]
+    aws_access_key_id = ${AWS_ACCESS_KEY_ID_EU_WEST_1}
+    aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY_EU_WEST_1}
+    
+    [ap-southeast-1]
+    aws_access_key_id = ${AWS_ACCESS_KEY_ID_AP_SOUTHEAST_1}
+    aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY_AP_SOUTHEAST_1}
+  
+  gcp-credentials: |
+    {
+      "type": "service_account",
+      "project_id": "terrafusion-cosmic",
+      "private_key_id": "${GCP_PRIVATE_KEY_ID}",
+      "private_key": "${GCP_PRIVATE_KEY}",
+      "client_email": "multi-region@terrafusion-cosmic.iam.gserviceaccount.com",
+      "client_id": "${GCP_CLIENT_ID}"
+    }
+  
+  azure-credentials: |
+    {
+      "subscriptionId": "${AZURE_SUBSCRIPTION_ID}",
+      "tenantId": "${AZURE_TENANT_ID}",
+      "clientId": "${AZURE_CLIENT_ID}",
+      "clientSecret": "${AZURE_CLIENT_SECRET}"
+    }

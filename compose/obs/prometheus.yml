@@ -1,0 +1,80 @@
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+  external_labels:
+    monitor: 'terrafusion-os'
+    environment: 'production'
+
+scrape_configs:
+  # TerraFusion API metrics
+  - job_name: 'terrafusion-api'
+    static_configs:
+      - targets: ['host.docker.internal:5000']
+        labels:
+          service: 'api'
+          tier: 'backend'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    
+  # AI Orchestrator metrics
+  - job_name: 'ai-orchestrator'
+    static_configs:
+      - targets: ['host.docker.internal:3001']
+        labels:
+          service: 'ai-orchestrator'
+          tier: 'ai'
+    metrics_path: '/metrics'
+    
+  # Claude Flow metrics
+  - job_name: 'claude-flow'
+    static_configs:
+      - targets: ['host.docker.internal:3002']
+        labels:
+          service: 'claude-flow'
+          tier: 'ai'
+    metrics_path: '/metrics'
+    
+  # AI Tools metrics
+  - job_name: 'ai-tools'
+    static_configs:
+      - targets: ['host.docker.internal:3003']
+        labels:
+          service: 'ai-tools'
+          tier: 'ai'
+    metrics_path: '/metrics'
+    
+  # Health checks endpoint
+  - job_name: 'health'
+    static_configs:
+      - targets: ['host.docker.internal:5000']
+        labels:
+          service: 'health-checks'
+          tier: 'monitoring'
+    metrics_path: '/health'
+    scrape_interval: 30s
+    
+  # Module status endpoint
+  - job_name: 'modules'
+    static_configs:
+      - targets: ['host.docker.internal:5000']
+        labels:
+          service: 'modules'
+          tier: 'system'
+    metrics_path: '/api/modules/metrics'
+    scrape_interval: 30s
+    
+  # Node exporter for system metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+          tier: 'infrastructure'
+    
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          tier: 'monitoring'

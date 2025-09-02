@@ -1,0 +1,51 @@
+name: terrafusion_benton_minimal
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: terrafusion_benton-db-minimal
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-terrafusion}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-terrafusion_password}
+      POSTGRES_DB: ${POSTGRES_DB:-terrafusion}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - terrafusion_demo
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-terrafusion}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:alpine
+    container_name: terrafusion_benton-redis-minimal
+    command: ["redis-server", "--appendonly", "no"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - terrafusion_demo
+
+  # Mock API service using nginx to serve static responses
+  mock-api:
+    image: nginx:alpine
+    container_name: terrafusion_benton-api-minimal
+    ports:
+      - "${MOCK_API_PORT:-8080}:80"
+    networks:
+      - terrafusion_demo
+    volumes:
+      - ./mock-api:/usr/share/nginx/html:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  terrafusion_demo:
+    external: true
+    name: ${DOCKER_NETWORK_NAME:-terrafusion_demo}
+
+volumes:
+  postgres_data:

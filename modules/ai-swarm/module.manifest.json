@@ -1,0 +1,48 @@
+{
+  "name": "ai-swarm",
+  "version": "1.0.0",
+  "description": "AI agent swarm orchestration system coordinating 1,008 intelligent agents for government operations",
+  "tier": "Tier 1 (Core Government)",
+  "category": "ai-coordination",
+  "author": "Terrafusion OS Team",
+  "license": "MIT",
+  "dependencies": ["government-edition", "ai-advanced"],
+  "capabilities": [
+    "swarm-orchestration",
+    "agent-coordination",
+    "distributed-processing",
+    "load-balancing",
+    "failure-recovery",
+    "performance-optimization"
+  ],
+  "requirements": {
+    "node": ">=18.0.0",
+    "memory": "8GB",
+    "storage": "2GB",
+    "cpu": "multi-core",
+    "network": "high-bandwidth"
+  },
+  "configuration": {
+    "configurable": true,
+    "hot-swappable": false,
+    "scalable": true,
+    "performance-critical": true
+  },
+  "swarm-config": {
+    "max-agents": 1008,
+    "dev-agents": 41,
+    "coordination-protocol": "websocket",
+    "failover-enabled": true
+  },
+  "integrations": [
+    "redis",
+    "websockets",
+    "tensorflow",
+    "message-queues"
+  ],
+  "status": "active",
+  "health": "healthy",
+  "itemCount": 15,
+  "lastTested": "2025-08-18T20:00:00.000Z",
+  "migratedAt": "2025-08-18T20:00:00.000Z"
+}

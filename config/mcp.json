@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "playwright-server": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-playwright"],
+      "env": {
+        "PLAYWRIGHT_BROWSERS_PATH": "${HOME}/.cache/playwright",
+        "NODE_ENV": "development"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "--allowed-directories", "./frontend/src", "./frontend/tests", "./deployment/advanced/packages", "./modules"],
+      "description": "Filesystem access for frontend source and test files"
+    },
+    "git": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-git"],
+      "description": "Version control integration"
+    },
+    "terrafusion-enhanced": {
+      "command": "node",
+      "args": ["./mcp-terrafusion-extension.js"],
+      "env": {
+        "PROJECT_ROOT": "/mnt/e/TerraFusion_OS_1.0",
+        "FRONTEND_PATH": "./frontend",
+        "MODULES_PATH": "./modules"
+      },
+      "description": "Terrafusion-specific MCP enhancements for government modules"
+    }
+  }
+}

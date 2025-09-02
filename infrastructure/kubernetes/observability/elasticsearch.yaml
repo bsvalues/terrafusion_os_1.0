@@ -1,0 +1,334 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+  namespace: monitoring
+data:
+  elasticsearch.yml: |
+    cluster.name: "terrafusion-cosmic-logs"
+    node.name: "${NODE_NAME}"
+    network.host: "0.0.0.0"
+    
+    # Discovery settings
+    discovery.seed_hosts:
+      - elasticsearch-0.elasticsearch.monitoring.svc.cluster.local
+      - elasticsearch-1.elasticsearch.monitoring.svc.cluster.local
+      - elasticsearch-2.elasticsearch.monitoring.svc.cluster.local
+    
+    cluster.initial_master_nodes:
+      - elasticsearch-0
+      - elasticsearch-1
+      - elasticsearch-2
+    
+    # Security settings
+    xpack.security.enabled: true
+    xpack.security.transport.ssl.enabled: true
+    xpack.security.transport.ssl.verification_mode: certificate
+    xpack.security.transport.ssl.keystore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+    xpack.security.transport.ssl.truststore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+    xpack.security.http.ssl.enabled: true
+    xpack.security.http.ssl.keystore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+    xpack.security.http.ssl.truststore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+    
+    # Memory settings
+    bootstrap.memory_lock: true
+    
+    # Index lifecycle management
+    xpack.ilm.enabled: true
+    
+    # Machine learning
+    xpack.ml.enabled: false
+    
+    # Monitoring
+    xpack.monitoring.enabled: true
+    xpack.monitoring.collection.enabled: true
+    
+    # Custom settings for cosmic platform
+    indices.query.bool.max_clause_count: 8192
+    search.max_buckets: 100000
+    
+    # Thread pools
+    thread_pool:
+      search:
+        size: 50
+        queue_size: 1000
+      write:
+        size: 10
+        queue_size: 500
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: monitoring
+  labels:
+    app: elasticsearch
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app: elasticsearch
+  ports:
+  - name: http
+    port: 9200
+    targetPort: 9200
+  - name: transport
+    port: 9300
+    targetPort: 9300
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-lb
+  namespace: monitoring
+  labels:
+    app: elasticsearch
+spec:
+  type: ClusterIP
+  selector:
+    app: elasticsearch
+  ports:
+  - name: http
+    port: 9200
+    targetPort: 9200
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  namespace: monitoring
+  labels:
+    app: elasticsearch
+spec:
+  serviceName: elasticsearch
+  replicas: 3
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      initContainers:
+      - name: increase-vm-max-map
+        image: busybox
+        command: ["sysctl", "-w", "vm.max_map_count=262144"]
+        securityContext:
+          privileged: true
+      - name: increase-fd-ulimit
+        image: busybox
+        command: ["sh", "-c", "ulimit -n 65536"]
+        securityContext:
+          privileged: true
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ES_JAVA_OPTS
+          value: "-Xms4g -Xmx4g"
+        - name: ELASTIC_USERNAME
+          value: "elastic"
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: password
+        - name: xpack.security.enabled
+          value: "true"
+        - name: xpack.security.transport.ssl.enabled
+          value: "true"
+        - name: xpack.security.http.ssl.enabled
+          value: "true"
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 8Gi
+          limits:
+            cpu: 2000m
+            memory: 8Gi
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: transport
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          subPath: elasticsearch.yml
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+        - name: certs
+          mountPath: /usr/share/elasticsearch/config/certs
+        livenessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+            scheme: HTTPS
+            httpHeaders:
+            - name: Authorization
+              value: Basic ZWxhc3RpYzpjaGFuZ2VtZQ==  # elastic:changeme base64
+          initialDelaySeconds: 120
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+            scheme: HTTPS
+            httpHeaders:
+            - name: Authorization
+              value: Basic ZWxhc3RpYzpjaGFuZ2VtZQ==
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: config
+        configMap:
+          name: elasticsearch-config
+      - name: certs
+        secret:
+          secretName: elasticsearch-certificates
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd
+      resources:
+        requests:
+          storage: 100Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elasticsearch-credentials
+  namespace: monitoring
+type: Opaque
+stringData:
+  username: elastic
+  password: ${ELASTICSEARCH_PASSWORD}  # Replace with strong password
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-index-templates
+  namespace: monitoring
+data:
+  cosmic-logs-template.json: |
+    {
+      "index_patterns": ["cosmic-logs-*"],
+      "priority": 100,
+      "template": {
+        "settings": {
+          "number_of_shards": 3,
+          "number_of_replicas": 1,
+          "index.lifecycle.name": "cosmic-logs-policy",
+          "index.lifecycle.rollover_alias": "cosmic-logs"
+        },
+        "mappings": {
+          "properties": {
+            "@timestamp": {
+              "type": "date"
+            },
+            "service": {
+              "type": "keyword"
+            },
+            "level": {
+              "type": "keyword"
+            },
+            "cosmic_level": {
+              "type": "keyword"
+            },
+            "neural_activity": {
+              "type": "float"
+            },
+            "quantum_state": {
+              "type": "keyword"
+            },
+            "message": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "trace_id": {
+              "type": "keyword"
+            },
+            "span_id": {
+              "type": "keyword"
+            },
+            "kubernetes": {
+              "properties": {
+                "namespace": {
+                  "type": "keyword"
+                },
+                "pod": {
+                  "type": "keyword"
+                },
+                "container": {
+                  "type": "keyword"
+                },
+                "labels": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  cosmic-logs-policy.json: |
+    {
+      "policy": {
+        "phases": {
+          "hot": {
+            "min_age": "0ms",
+            "actions": {
+              "rollover": {
+                "max_age": "1d",
+                "max_size": "50GB"
+              },
+              "set_priority": {
+                "priority": 100
+              }
+            }
+          },
+          "warm": {
+            "min_age": "7d",
+            "actions": {
+              "shrink": {
+                "number_of_shards": 1
+              },
+              "forcemerge": {
+                "max_num_segments": 1
+              },
+              "set_priority": {
+                "priority": 50
+              }
+            }
+          },
+          "cold": {
+            "min_age": "30d",
+            "actions": {
+              "set_priority": {
+                "priority": 0
+              },
+              "freeze": {}
+            }
+          },
+          "delete": {
+            "min_age": "90d",
+            "actions": {
+              "delete": {}
+            }
+          }
+        }
+      }
+    }

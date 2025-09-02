@@ -1,0 +1,23 @@
+{{ define "terrafusion.title" }}TerraFusion Alert: {{ .GroupLabels.alertname }}{{ end }}
+
+{{ define "terrafusion.message" }}
+{{ range .Alerts }}
+Alert: {{ .Annotations.summary }}
+Description: {{ .Annotations.description }}
+Service: {{ .Labels.job }}
+Instance: {{ .Labels.instance }}
+Severity: {{ .Labels.severity }}
+{{ if .Labels.runbook_url }}Runbook: {{ .Labels.runbook_url }}{{ end }}
+{{ end }}
+{{ end }}
+
+{{ define "terrafusion.slack.message" }}
+{{ range .Alerts }}
+*Alert:* {{ .Annotations.summary }}
+*Service:* {{ .Labels.job }}
+*Instance:* {{ .Labels.instance }}
+*Severity:* {{ .Labels.severity }}
+*Description:* {{ .Annotations.description }}
+{{ if .Labels.runbook_url }}*Runbook:* {{ .Labels.runbook_url }}{{ end }}
+{{ end }}
+{{ end }}

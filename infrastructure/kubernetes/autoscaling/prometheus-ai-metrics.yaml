@@ -1,0 +1,160 @@
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: terrafusion-ai-metrics
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-ai
+    component: metrics
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-ai
+  endpoints:
+  - port: metrics
+    interval: 15s
+    path: /metrics
+    honorLabels: true
+  - port: ai-metrics
+    interval: 10s
+    path: /ai-metrics
+    honorLabels: true
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: terrafusion-ai-scaling-rules
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-ai
+    component: scaling-rules
+spec:
+  groups:
+  - name: terrafusion.ai.scaling
+    interval: 15s
+    rules:
+    - record: terrafusion:ai_agent_queue_length
+      expr: sum(ai_agent_queue_length) by (namespace, pod)
+      labels:
+        component: "swarm-intelligence"
+    
+    - record: terrafusion:revenue_optimization_rps
+      expr: sum(rate(revenue_optimization_requests_total[2m])) by (namespace, service)
+      labels:
+        component: "revenue-optimization"
+    
+    - record: terrafusion:quantum_computation_queue
+      expr: avg(quantum_computation_queue_depth) by (namespace, pod)
+      labels:
+        component: "quantum-engine"
+    
+    - record: terrafusion:quantum_speedup_current
+      expr: max(quantum_speedup_factor) by (namespace)
+      labels:
+        component: "quantum-accelerator"
+    
+    - record: terrafusion:pbit_computation_rate
+      expr: sum(rate(pbit_computations_total[1m])) by (namespace, pod)
+      labels:
+        component: "probabilistic-engine"
+    
+    - record: terrafusion:uncertainty_quantification_rate
+      expr: sum(rate(uncertainty_quantification_requests_total[1m])) by (namespace, pod)
+      labels:
+        component: "probabilistic-engine"
+    
+    - record: terrafusion:government_workload_complexity
+      expr: avg(government_workload_complexity_score) by (namespace, pod)
+      labels:
+        component: "government-workload"
+    
+    - record: terrafusion:ai_inference_latency
+      expr: avg(ai_model_inference_duration_seconds) by (namespace, pod)
+      labels:
+        component: "ai-inference"
+
+  - name: terrafusion.ai.alerts
+    rules:
+    - alert: AISwarmOverloaded
+      expr: terrafusion:ai_agent_queue_length > 200
+      for: 2m
+      labels:
+        severity: warning
+        component: swarm-intelligence
+      annotations:
+        summary: "AI Swarm queue length is high"
+        description: "AI agent queue length is {{ $value }} for {{ $labels.pod }}"
+    
+    - alert: QuantumEngineBottleneck
+      expr: terrafusion:quantum_computation_queue > 100
+      for: 1m
+      labels:
+        severity: critical
+        component: quantum-engine
+      annotations:
+        summary: "Quantum computation queue is backing up"
+        description: "Quantum queue depth is {{ $value }} for {{ $labels.pod }}"
+    
+    - alert: QuantumSpeedupDegraded
+      expr: terrafusion:quantum_speedup_current < 300000000
+      for: 5m
+      labels:
+        severity: warning
+        component: quantum-accelerator
+      annotations:
+        summary: "Quantum speedup factor has degraded"
+        description: "Current speedup is {{ $value }}, expected 379M×"
+    
+    - alert: ProbabilisticEngineSlowdown
+      expr: terrafusion:pbit_computation_rate < 500
+      for: 3m
+      labels:
+        severity: warning
+        component: probabilistic-engine
+      annotations:
+        summary: "P-bit computation rate is low"
+        description: "P-bit rate is {{ $value }}/sec for {{ $labels.pod }}"
+    
+    - alert: GovernmentWorkloadComplexityHigh
+      expr: terrafusion:government_workload_complexity > 90
+      for: 2m
+      labels:
+        severity: warning
+        component: government-workload
+      annotations:
+        summary: "Government workload complexity is very high"
+        description: "Complexity score is {{ $value }} for {{ $labels.pod }}"
+    
+    - alert: AIInferenceLatencyHigh
+      expr: terrafusion:ai_inference_latency > 0.2
+      for: 1m
+      labels:
+        severity: critical
+        component: ai-inference
+      annotations:
+        summary: "AI model inference latency is high"
+        description: "Inference latency is {{ $value }}s for {{ $labels.pod }}"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-ai-metrics-service
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-ai
+    component: metrics-service
+spec:
+  selector:
+    app: terrafusion-ai
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  - name: ai-metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  type: ClusterIP

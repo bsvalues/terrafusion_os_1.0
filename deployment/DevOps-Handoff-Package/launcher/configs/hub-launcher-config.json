@@ -1,0 +1,245 @@
+{
+  "launcher": {
+    "name": "Terrafusion Hub Launcher",
+    "version": "3.0.0",
+    "brand": {
+      "primaryColor": "#1f4e79",
+      "secondaryColor": "#00a86b",
+      "accentColor": "#ffd700",
+      "fontFamily": "Poppins, Inter, sans-serif",
+      "logoPath": "../branding/logos/terrafusion-logo.svg"
+    },
+    "window": {
+      "width": 1400,
+      "height": 900,
+      "minWidth": 1200,
+      "minHeight": 700,
+      "title": "Terrafusion Championship Hub",
+      "icon": "../branding/logos/terrafusion-icon.ico"
+    }
+  },
+  "applications": [
+    {
+      "id": "costforgeai",
+      "name": "CostForgeAI",
+      "category": "Enterprise Core",
+      "description": "Advanced property valuation with quantum features",
+      "icon": "icons/costforgeai.svg",
+      "url": "http://localhost:8080",
+      "port": 8080,
+      "healthCheck": "/health",
+      "features": ["AI-Powered", "Quantum-Enhanced", "Real-Time"]
+    },
+    {
+      "id": "propertyworkbench",
+      "name": "PropertyWorkbench",
+      "category": "Enterprise Core",
+      "description": "Comprehensive property management platform",
+      "icon": "icons/propertyworkbench.svg",
+      "url": "http://localhost:8082",
+      "port": 8082,
+      "healthCheck": "/health"
+    },
+    {
+      "id": "gispro",
+      "name": "GISPRO",
+      "category": "Enterprise Core",
+      "description": "Advanced GIS analytics with GPU acceleration",
+      "icon": "icons/gispro.svg",
+      "url": "http://localhost:8081",
+      "port": 8081,
+      "healthCheck": "/health",
+      "features": ["GPU-Accelerated", "3D Visualization", "Real-Time"]
+    },
+    {
+      "id": "terrainsight",
+      "name": "TerraInsight",
+      "category": "Enterprise Core",
+      "description": "Business intelligence & analytics platform",
+      "icon": "icons/terrainsight.svg",
+      "url": "http://localhost:8083",
+      "port": 8083,
+      "healthCheck": "/health"
+    },
+    {
+      "id": "terraform",
+      "name": "TerraFlow",
+      "category": "Advanced Solutions",
+      "description": "Workflow automation platform",
+      "icon": "icons/terraform.svg",
+      "url": "http://localhost:8084",
+      "port": 8084,
+      "healthCheck": "/health"
+    },
+    {
+      "id": "terraminer",
+      "name": "TerraMiner",
+      "category": "Advanced Solutions",
+      "description": "Data mining with GPU acceleration",
+      "icon": "icons/terraminer.svg",
+      "url": "http://localhost:8085",
+      "port": 8085,
+      "healthCheck": "/health",
+      "features": ["GPU-Mining", "ML-Powered", "Big Data"]
+    },
+    {
+      "id": "terrafusionsync",
+      "name": "TerraFusionSync",
+      "category": "Advanced Solutions",
+      "description": "Multi-system synchronization",
+      "icon": "icons/terrafusionsync.svg",
+      "url": "http://localhost:8086",
+      "port": 8086,
+      "healthCheck": "/health"
+    },
+    {
+      "id": "terralevy",
+      "name": "TerraLevy",
+      "category": "Advanced Solutions",
+      "description": "Tax levy management system",
+      "icon": "icons/terralevy.svg",
+      "url": "http://localhost:8087",
+      "port": 8087,
+      "healthCheck": "/health"
+    },
+    {
+      "id": "terraagent",
+      "name": "TerraAgent",
+      "category": "Advanced Solutions",
+      "description": "Autonomous agent platform",
+      "icon": "icons/terraagent.svg",
+      "url": "http://localhost:8088",
+      "port": 8088,
+      "healthCheck": "/health",
+      "features": ["AI Agents", "Autonomous", "Self-Learning"]
+    },
+    {
+      "id": "terrafusionassessor",
+      "name": "TerraFusionAssessor",
+      "category": "Advanced Solutions",
+      "description": "AI-powered assessment suite",
+      "icon": "icons/terrafusionassessor.svg",
+      "url": "http://localhost:8089",
+      "port": 8089,
+      "healthCheck": "/health",
+      "features": ["AI-Powered", "ML Models", "Predictive"]
+    },
+    {
+      "id": "piltsystem",
+      "name": "PILT System",
+      "category": "Innovation Lab",
+      "description": "Payment in Lieu of Taxes (586K acres)",
+      "icon": "icons/piltsystem.svg",
+      "url": "http://localhost:8090",
+      "port": 8090,
+      "healthCheck": "/health",
+      "features": ["Federal Integration", "Large Scale"]
+    },
+    {
+      "id": "terrafusionpermit",
+      "name": "TerraFusionPermit",
+      "category": "Innovation Lab",
+      "description": "Permit management system",
+      "icon": "icons/terrafusionpermit.svg",
+      "url": "http://localhost:8091",
+      "port": 8091,
+      "healthCheck": "/health"
+    },
+    {
+      "id": "terrafusiondashboard",
+      "name": "Terrafusion Dashboard",
+      "category": "Innovation Lab",
+      "description": "Executive dashboard with AI insights",
+      "icon": "icons/terrafusiondashboard.svg",
+      "url": "http://localhost:8092",
+      "port": 8092,
+      "healthCheck": "/health",
+      "features": ["Executive View", "AI Insights", "Real-Time"]
+    },
+    {
+      "id": "marketplace",
+      "name": "Marketplace",
+      "category": "Innovation Lab",
+      "description": "Government services marketplace",
+      "icon": "icons/marketplace.svg",
+      "url": "http://localhost:8093",
+      "port": 8093,
+      "healthCheck": "/health"
+    }
+  ],
+  "monitoring": {
+    "grafana": {
+      "url": "http://localhost:3000",
+      "dashboards": [
+        "executive-overview",
+        "application-health",
+        "ai-performance",
+        "infrastructure"
+      ]
+    },
+    "prometheus": {
+      "url": "http://localhost:9090"
+    }
+  },
+  "aiAssistant": {
+    "enabled": true,
+    "name": "Terrafusion AI DevOps Assistant",
+    "endpoint": "http://localhost:8888/ai/assist",
+    "features": [
+      "Deployment assistance",
+      "Troubleshooting help",
+      "Performance optimization",
+      "Security recommendations"
+    ]
+  },
+  "themes": {
+    "default": "championship",
+    "available": [
+      {
+        "id": "championship",
+        "name": "Championship Blue",
+        "primary": "#1f4e79",
+        "secondary": "#00a86b"
+      },
+      {
+        "id": "dark",
+        "name": "Dark Mode",
+        "primary": "#0a192f",
+        "secondary": "#64ffda"
+      },
+      {
+        "id": "light",
+        "name": "Light Mode",
+        "primary": "#ffffff",
+        "secondary": "#1f4e79"
+      }
+    ]
+  },
+  "quickActions": [
+    {
+      "name": "Deploy All",
+      "icon": "rocket",
+      "command": "tfusion deploy --all"
+    },
+    {
+      "name": "Health Check",
+      "icon": "heart",
+      "command": "tfusion health --all"
+    },
+    {
+      "name": "View Logs",
+      "icon": "document",
+      "command": "tfusion logs --tail"
+    },
+    {
+      "name": "AI Assistant",
+      "icon": "brain",
+      "command": "tfusion ai --interactive"
+    }
+  ],
+  "updates": {
+    "checkOnStartup": true,
+    "channel": "stable",
+    "autoUpdate": false
+  }
+}

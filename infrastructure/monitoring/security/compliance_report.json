@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-07-30T01:26:54.217127",
+  "frameworks_assessed": ["SOC2", "GDPR", "ISO27001", "QUANTUM_SAFE"],
+  "total_controls": 4,
+  "compliant_controls": 3,
+  "non_compliant_controls": 1,
+  "findings": [
+    {
+      "framework": "SOC2",
+      "control": "Security Principle",
+      "requirement": "Vulnerability scanning",
+      "status": "compliant",
+      "evidence": "Weekly scans performed"
+    },
+    {
+      "framework": "SOC2",
+      "control": "Availability Principle",
+      "requirement": "99.9% uptime SLA",
+      "status": "non_compliant",
+      "gap": "Current uptime: 99.7%",
+      "remediation": "Implement additional redundancy"
+    },
+    {
+      "framework": "GDPR",
+      "control": "Data Protection",
+      "requirement": "Encryption of personal data",
+      "status": "compliant",
+      "evidence": "AES-256 encryption implemented"
+    },
+    {
+      "framework": "GDPR",
+      "control": "Consent Management",
+      "requirement": "Explicit consent for data processing",
+      "status": "compliant",
+      "evidence": "Consent management system active"
+    }
+  ],
+  "compliance_percentage": 75.0
+}

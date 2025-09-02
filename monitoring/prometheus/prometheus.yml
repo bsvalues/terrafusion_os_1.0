@@ -1,0 +1,73 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # TerraFusion Backend API
+  - job_name: 'terrafusion-backend'
+    static_configs:
+      - targets: ['backend:5000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # TerraFusion Frontend
+  - job_name: 'terrafusion-frontend'
+    static_configs:
+      - targets: ['frontend:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # AI Services
+  - job_name: 'ai-command-brain'
+    static_configs:
+      - targets: ['ai-command-brain:3001']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'ai-swarm'
+    static_configs:
+      - targets: ['ai-swarm:3002']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'ai-advanced'
+    static_configs:
+      - targets: ['ai-advanced:3003']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Database
+  - job_name: 'sqlite-database'
+    static_configs:
+      - targets: ['backend:5000']
+    metrics_path: '/api/health/database-metrics'
+    scrape_interval: 30s
+
+  # System Metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:9113']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s

@@ -1,0 +1,286 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cosmic-platform-routes
+  namespace: terrafusion-cosmic
+  annotations:
+    kubernetes.io/ingress.class: kong
+    konghq.com/strip-path: "false"
+    konghq.com/preserve-host: "true"
+    konghq.com/plugins: cosmic-rate-limiting,cosmic-cors,cosmic-prometheus
+spec:
+  tls:
+  - hosts:
+    - api.terrafusion.cosmic
+    secretName: cosmic-platform-tls
+  rules:
+  - host: api.terrafusion.cosmic
+    http:
+      paths:
+      # Cosmic Orchestrator Routes
+      - path: /api/v1/cosmic
+        pathType: Prefix
+        backend:
+          service:
+            name: cosmic-orchestrator
+            port:
+              number: 8080
+      - path: /api/v1/cosmic/health
+        pathType: Exact
+        backend:
+          service:
+            name: cosmic-orchestrator
+            port:
+              number: 8080
+      
+      # Consciousness Service Routes
+      - path: /api/v1/consciousness
+        pathType: Prefix
+        backend:
+          service:
+            name: consciousness-service
+            port:
+              number: 8081
+      - path: /api/v1/neural
+        pathType: Prefix
+        backend:
+          service:
+            name: consciousness-service
+            port:
+              number: 8081
+      
+      # Quantum Storage Routes
+      - path: /api/v1/quantum
+        pathType: Prefix
+        backend:
+          service:
+            name: holographic-storage
+            port:
+              number: 8082
+      - path: /api/v1/storage
+        pathType: Prefix
+        backend:
+          service:
+            name: holographic-storage
+            port:
+              number: 8082
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongIngress
+metadata:
+  name: cosmic-upstream-config
+  namespace: terrafusion-cosmic
+proxy:
+  protocol: http
+  path: /
+  connect_timeout: 60000
+  retries: 5
+  read_timeout: 60000
+  write_timeout: 60000
+upstream:
+  algorithm: consistent-hashing
+  hash_on: header
+  hash_on_header: X-Request-ID
+  hash_on_cookie_path: /
+  hash_fallback: none
+  hash_on_query_arg: cosmic_session
+  healthchecks:
+    active:
+      concurrency: 10
+      healthy:
+        http_statuses: [200, 302]
+        interval: 10
+        successes: 2
+      unhealthy:
+        http_failures: 5
+        http_statuses: [429, 500, 503]
+        interval: 5
+        tcp_failures: 2
+        timeouts: 3
+    passive:
+      healthy:
+        http_statuses: [200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308]
+        successes: 5
+      unhealthy:
+        http_failures: 5
+        http_statuses: [429, 500, 503]
+        tcp_failures: 2
+        timeouts: 3
+---
+# Virtual Service Routes for specific cosmic operations
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kong-custom-routes
+  namespace: kong
+data:
+  routes.lua: |
+    -- Custom routing logic for cosmic platform
+    local cosmic_routes = {
+      {
+        name = "neural-compute-route",
+        paths = {"/api/v1/neural/compute"},
+        methods = {"POST"},
+        service = "neural-compute-service",
+        plugins = {
+          "cosmic-neural-router",
+          "quantum-cache"
+        }
+      },
+      {
+        name = "quantum-entanglement-route",
+        paths = {"/api/v1/quantum/entangle"},
+        methods = {"POST", "PUT"},
+        service = "quantum-entanglement-service",
+        plugins = {
+          "cosmic-jwt",
+          "cosmic-opa"
+        }
+      },
+      {
+        name = "consciousness-stream-route",
+        paths = {"/api/v1/consciousness/stream"},
+        methods = {"GET"},
+        service = "consciousness-stream-service",
+        plugins = {
+          "cosmic-rate-limiting",
+          "cosmic-cors"
+        },
+        websocket = true
+      },
+      {
+        name = "holographic-projection-route",
+        paths = {"/api/v1/holographic/project"},
+        methods = {"POST"},
+        service = "holographic-projection-service",
+        plugins = {
+          "cosmic-request-transformer",
+          "cosmic-prometheus"
+        }
+      },
+      {
+        name = "interplanetary-sync-route",
+        paths = {"/api/v1/interplanetary/sync"},
+        methods = {"POST", "GET"},
+        service = "interplanetary-sync-service",
+        plugins = {
+          "cosmic-jwt",
+          "cosmic-rate-limiting"
+        }
+      }
+    }
+    
+    return cosmic_routes
+---
+# Consumer definitions for API access
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: cosmic-admin
+  namespace: kong
+username: cosmic-admin
+custom_id: admin-001
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: neural-network-alpha
+  namespace: kong
+username: neural-network-alpha
+custom_id: neural-001
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: quantum-service
+  namespace: kong
+username: quantum-service
+custom_id: quantum-001
+---
+# JWT Credentials for consumers
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cosmic-admin-jwt
+  namespace: kong
+type: Opaque
+stringData:
+  kongCredType: jwt
+  key: cosmic-admin-key
+  secret: ${COSMIC_ADMIN_JWT_SECRET}
+  algorithm: HS256
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: neural-network-jwt
+  namespace: kong
+type: Opaque
+stringData:
+  kongCredType: jwt
+  key: neural-network-key
+  secret: ${NEURAL_NETWORK_JWT_SECRET}
+  algorithm: RS256
+  rsa_public_key: |
+    -----BEGIN PUBLIC KEY-----
+    ${NEURAL_NETWORK_PUBLIC_KEY}
+    -----END PUBLIC KEY-----
+---
+# ACL Group definitions
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: cosmic-acl
+  namespace: kong
+config:
+  allow:
+    - cosmic-admins
+    - neural-operators
+    - quantum-engineers
+  deny:
+    - blocked-users
+  hide_groups_header: false
+plugin: acl
+---
+# Response transformation for cosmic headers
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: cosmic-response-transformer
+  namespace: kong
+config:
+  add:
+    headers:
+      - X-Cosmic-Response-Time:$(latency)
+      - X-Neural-Processing-Unit:$(upstream_name)
+      - X-Quantum-Cache-Status:$(cache_status)
+    json:
+      - cosmic_metadata.processed_at:$(now)
+      - cosmic_metadata.dimension:11
+  remove:
+    headers:
+      - X-Internal-Debug
+      - Server
+  replace:
+    headers:
+      - X-Powered-By:TerraFusion-Cosmic-Gateway
+plugin: response-transformer
+---
+# Circuit breaker for service protection
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: cosmic-circuit-breaker
+  namespace: kong
+config:
+  error_threshold_percentage: 50
+  volume_threshold: 100
+  timeout: 30
+  recovery_timeout: 60
+  half_open_max_requests: 10
+  error_status_codes:
+    - 500
+    - 502
+    - 503
+    - 504
+plugin: circuit-breaker

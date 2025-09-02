@@ -1,0 +1,77 @@
+# TerraFusion Government OS - Demo Backend Dockerfile
+# .NET API with real Benton County data for terrafusionmarket.io demo
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project files
+COPY ["TerraFusion.API/TerraFusion.API.csproj", "TerraFusion.API/"]
+COPY ["TerraFusion.Core/TerraFusion.Core.csproj", "TerraFusion.Core/"]
+COPY ["TerraFusion.Data/TerraFusion.Data.csproj", "TerraFusion.Data/"]
+
+# Restore dependencies
+RUN dotnet restore "TerraFusion.API/TerraFusion.API.csproj"
+
+# Copy all source code
+COPY . .
+
+# Build the application
+WORKDIR "/src/TerraFusion.API"
+RUN dotnet build "TerraFusion.API.csproj" -c Release -o /app/build
+
+# Publish the application
+FROM build AS publish
+RUN dotnet publish "TerraFusion.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Final runtime image
+FROM base AS final
+WORKDIR /app
+
+# Copy published application
+COPY --from=publish /app/publish .
+
+# Copy demo data and AI models
+COPY data/ /app/data/
+COPY ai-models/ /app/ai-models/
+
+# Set demo environment variables
+ENV ASPNETCORE_ENVIRONMENT=Demo
+ENV ASPNETCORE_URLS=http://+:80
+ENV TerraFusion__DemoMode=true
+ENV TerraFusion__CountyName="Benton County"
+ENV TerraFusion__PropertyCount=89247
+ENV TerraFusion__AIAgents=1008
+ENV TerraFusion__PerformanceMultiplier=949
+ENV TerraFusion__QuantumOptimization=true
+ENV TerraFusion__BrandTitle="TerraFusion Government OS"
+ENV TerraFusion__BrandSubtitle="Government. Transcended."
+ENV ConnectionStrings__DefaultConnection="Data Source=/app/data/benton-county-demo.db"
+
+# Add demo metadata labels
+LABEL org.terrafusion.service="government-os-api" \
+      org.terrafusion.version="1.0.0" \
+      org.terrafusion.county="Benton County" \
+      org.terrafusion.demo="true" \
+      org.terrafusion.properties="89247" \
+      org.terrafusion.ai-agents="1008" \
+      org.terrafusion.performance="949x"
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
+
+# Create demo user for database seeding
+RUN useradd -m -s /bin/bash terrafusion
+
+# Set permissions for data directory
+RUN chown -R terrafusion:terrafusion /app/data
+RUN chmod -R 755 /app/data
+
+# Switch to demo user
+USER terrafusion
+
+ENTRYPOINT ["dotnet", "TerraFusion.API.dll"]

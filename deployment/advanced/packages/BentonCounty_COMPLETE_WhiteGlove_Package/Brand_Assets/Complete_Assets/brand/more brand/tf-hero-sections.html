@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion OS - Hero Sections</title>
+    <style>
+        :root {
+            --tf-primary: #0099ff;
+            --tf-accent: #00ffaa;
+            --tf-transcend: #00ffee;
+            --tf-dark: #0b1020;
+            --tf-dark-lighter: #1a1f3a;
+            --tf-clarity: #e0f7ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+            background: var(--tf-dark);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Hero Container */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at top right, rgba(0, 255, 238, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom left, rgba(0, 153, 255, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, var(--tf-dark) 0%, var(--tf-dark-lighter) 100%);
+            overflow: hidden;
+        }
+
+        /* Animated Background Particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--tf-transcend);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float-up 20s infinite linear;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Hero Content */
+        .hero-content {
+            max-width: 1200px;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            animation: transcendenceReveal 1.2s ease-out;
+        }
+
+        @keyframes transcendenceReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+                filter: blur(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        /* Headlines */
+        .hero-headline {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 300;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            background: linear-gradient(135deg, 
+                var(--tf-primary) 0%, 
+                var(--tf-transcend) 50%, 
+                var(--tf-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: clarityPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes clarityPulse {
+            0%, 100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.2);
+            }
+        }
+
+        /* Subheadlines */
+        .hero-subhead {
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 48px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+        }
+
+        /* CTA Container */
+        .hero-ctas {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Primary CTA Button */
+        .btn-primary {
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--tf-primary) 0%, var(--tf-transcend) 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 153, 255, 0.3);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 10px 30px rgba(0, 255, 238, 0.4),
+                0 0 60px rgba(0, 153, 255, 0.2);
+        }
+
+        .btn-primary:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Secondary CTA Button */
+        .btn-secondary {
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: transparent;
+            color: var(--tf-transcend);
+            border: 2px solid var(--tf-transcend);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 238, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 238, 0.2);
+        }
+
+        /* Navigation for Demo */
+        .hero-nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--tf-transcend);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--tf-transcend);
+            box-shadow: 0 0 20px var(--tf-transcend);
+        }
+
+        /* Hero Variations */
+        .hero-section.hidden {
+            display: none;
+        }
+
+        /* Transcendence Badge */
+        .transcendence-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: rgba(0, 255, 238, 0.1);
+            border: 1px solid var(--tf-transcend);
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--tf-transcend);
+            margin-bottom: 24px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(0, 255, 238, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(0, 255, 238, 0.5);
+            }
+        }
+
+        /* Grid Animation Background */
+        .grid-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 238, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 238, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Dots -->
+    <div class="hero-nav">
+        <div class="nav-dot active" onclick="showHero(1)"></div>
+        <div class="nav-dot" onclick="showHero(2)"></div>
+        <div class="nav-dot" onclick="showHero(3)"></div>
+        <div class="nav-dot" onclick="showHero(4)"></div>
+        <div class="nav-dot" onclick="showHero(5)"></div>
+        <div class="nav-dot" onclick="showHero(6)"></div>
+    </div>
+
+    <!-- Hero 1: Main Brand -->
+    <section class="hero-section" id="hero1">
+        <div class="grid-bg"></div>
+        <div class="particles" id="particles1"></div>
+        <div class="hero-content">
+            <div class="transcendence-badge">✨ Transcendence Ready</div>
+            <h1 class="hero-headline">Government. Transcended.</h1>
+            <p class="hero-subhead">
+                Turn complexity into clarity across every department—so teams move faster, 
+                make better calls, and never second-guess the next step.
+            </p>
+            <div class="hero-ctas">
+                <button class="btn-primary">Begin Transcendence</button>
+                <button class="btn-secondary">Discover Clarity</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero 2: Clarity Focus -->
+    <section class="hero-section hidden" id="hero2">
+        <div class="grid-bg"></div>
+        <div class="particles" id="particles2"></div>
+        <div class="hero-content">
+            <div class="transcendence-badge">🎯 Clarity Achieved</div>
+            <h1 class="hero-headline">Where Complexity Becomes Clarity</h1>
+            <p class="hero-subhead">
+                TerraFusion OS gives counties a unified, modern workspace that's simple, 
+                secure, and built to do it right the first time.
+            </p>
+            <div class="hero-ctas">
+                <button class="btn-primary">See It In Action</button>
+                <button class="btn-secondary">Explore Modules</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero 3: User Empowerment -->
+    <section class="hero-section hidden" id="hero3">
+        <div class="grid-bg"></div>
+        <div class="particles" id="particles3"></div>
+        <div class="hero-content">
+            <div class="transcendence-badge">🚀 Path Illuminated</div>
+            <h1 class="hero-headline">Your Path Is Clear</h1>
+            <p class="hero-subhead">
+                From valuations to permits, orchestrate work with confidence. 
+                One platform. Zero friction. Real results.
+            </p>
+            <div class="hero-ctas">
+                <button class="btn-primary">Start Now</button>
+                <button class="btn-secondary">View Success Stories</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero 4: Operational Excellence -->
+    <section class="hero-section hidden" id="hero4">
+        <div class="grid-bg"></div>
+        <div class="particles" id="particles4"></div>
+        <div class="hero-content">
+            <div class="transcendence-badge">⚡ Excellence Enabled</div>
+            <h1 class="hero-headline">Elevate County Operations</h1>
+            <p class="hero-subhead">
+                Empower every user—new hire to power user—with tools that make 
+                progress feel inevitable.
+            </p>
+            <div class="hero-ctas">
+                <button class="btn-primary">Try TerraFusion</button>
+                <button class="btn-secondary">Take the Product Tour</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero 5: Quick Win -->
+    <section class="hero-section hidden" id="hero5">
+        <div class="grid-bg"></div>
+        <div class="particles" id="particles5"></div>
+        <div class="hero-content">
+            <div class="transcendence-badge">💎 Day One Ready</div>
+            <h1 class="hero-headline">Clarity, On Day One</h1>
+            <p class="hero-subhead">
+                Deploy a secure, unified OS for government that cuts through the noise 
+                and delivers excellence—every action, every day.
+            </p>
+            <div class="hero-ctas">
+                <button class="btn-primary">Begin Transcendence</button>
+                <button class="btn-secondary">See How It Works</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero 6: IT-Focused -->
+    <section class="hero-section hidden" id="hero6">
+        <div class="grid-bg"></div>
+        <div class="particles" id="particles6"></div>
+        <div class="hero-content">
+            <div class="transcendence-badge">🔒 Enterprise Ready</div>
+            <h1 class="hero-headline">Enterprise-Grade. Effortless to Run.</h1>
+            <p class="hero-subhead">
+                Local-first, secure by design, and built for rapid rollout—without 
+                the admin headaches.
+            </p>
+            <div class="hero-ctas">
+                <button class="btn-primary">Review Architecture</button>
+                <button class="btn-secondary">Deploy a Pilot</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Create floating particles
+        function createParticles(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize particles for all sections
+        for (let i = 1; i <= 6; i++) {
+            createParticles('particles' + i);
+        }
+
+        // Hero navigation
+        function showHero(num) {
+            // Hide all heroes
+            document.querySelectorAll('.hero-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected hero
+            document.getElementById('hero' + num).classList.remove('hidden');
+            
+            // Update nav dots
+            document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === num - 1);
+            });
+        }
+
+        // Auto-rotate heroes every 8 seconds (optional)
+        let currentHero = 1;
+        setInterval(() => {
+            currentHero = currentHero % 6 + 1;
+            // Uncomment to enable auto-rotation
+            // showHero(currentHero);
+        }, 8000);
+
+        // Button click handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('btn-primary') || 
+                e.target.classList.contains('btn-secondary')) {
+                // Add ripple effect
+                const ripple = document.createElement('span');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.5)';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.left = e.offsetX + 'px';
+                ripple.style.top = e.offsetY + 'px';
+                ripple.style.animation = 'ripple 0.6s ease-out';
+                e.target.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            }
+        });
+    </script>
+</body>
+</html>

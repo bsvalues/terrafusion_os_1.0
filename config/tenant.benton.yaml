@@ -1,0 +1,59 @@
+county:
+  name: "Benton County"
+  state: "Washington"
+  fips_code: "53005"
+  timezone: "America/Los_Angeles"
+  fiscal_year_start: "January 1"
+
+deployment:
+  environment: "production"
+  domain: "assessor.bentoncounty.gov"
+  ssl_enabled: true
+  high_availability: true
+
+features:
+  ai_swarm_enabled: true
+  quantum_optimization: true
+  harris_pacs_integration: true
+  real_time_sync: true
+  advanced_analytics: true
+  compliance_monitoring: true
+
+slo_targets:
+  api_availability: 99.9
+  p95_latency_ms: 150
+  sync_lag_minutes: 10
+  error_rate_percent: 0.1
+
+rate_limits:
+  public: 50
+  user: 100
+  assessor: 500
+  admin: 1000
+
+harris_pacs:
+  connection_string: "${HARRIS_PACS_CONNECTION}"
+  api_endpoint: "${HARRIS_PACS_API_ENDPOINT}"
+  api_key: "${HARRIS_PACS_API_KEY}"
+  sync_interval: "15 minutes"
+  batch_size: 1000
+  timeout: 300
+
+validation:
+  property_count: 89447
+  sync_lag_threshold: "10 minutes"
+  data_integrity_checks: true
+  reconciliation_reports: true
+
+monitoring:
+  prometheus_enabled: true
+  grafana_enabled: true
+  alerting_enabled: true
+  log_aggregation: true
+
+security:
+  sso_provider: "azure_ad"
+  mfa_required: true
+  audit_logging: true
+  encryption_at_rest: true
+  encryption_in_transit: true

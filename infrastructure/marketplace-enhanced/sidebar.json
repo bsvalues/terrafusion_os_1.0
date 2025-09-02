@@ -1,0 +1,222 @@
+{
+  "plugins": [
+    {
+      "id": "leafscope",
+      "name": "LeafScope Viewer",
+      "description": "Interactive property map visualization with real-time data overlay",
+      "version": "1.0.0",
+      "icon": "🍃",
+      "tags": ["maps", "visualization", "property", "geospatial"],
+      "category": "Visualization",
+      "api": "/apps/leafscope/backend/main.py",
+      "k8s": "/apps/leafscope/k8s",
+      "enabled": true,
+      "launchModes": {
+        "codespaces": {
+          "url": "https://github.com/your-org/terrafusion/codespaces/new?service=leafscope",
+          "label": "Open in GitHub Codespaces",
+          "icon": "🌐"
+        },
+        "electron": {
+          "url": "electron://leafscope",
+          "label": "Launch Desktop App",
+          "icon": "🖥️"
+        },
+        "docker": {
+          "command": "docker-compose -f apps/leafscope/docker-compose.yml up",
+          "label": "Run with Docker",
+          "icon": "🐳"
+        },
+        "kubernetes": {
+          "command": "bash scripts/deploy_leafscope.sh",
+          "label": "Deploy to K8s",
+          "icon": "☸️"
+        }
+      },
+      "permissions": [
+        "property:read",
+        "map:view",
+        "export:image"
+      ],
+      "config": {
+        "defaultZoom": 13,
+        "maxZoom": 18,
+        "tileProvider": "openstreetmap"
+      }
+    },
+    {
+      "id": "geoanalytics",
+      "name": "GeoAnalytics",
+      "description": "Advanced geospatial analytics for property data with ML insights",
+      "version": "1.0.0",
+      "icon": "📊",
+      "tags": ["analytics", "geospatial", "visualization", "machine-learning"],
+      "category": "Analytics",
+      "api": "/apps/geoanalytics/backend/main.py",
+      "k8s": "/apps/geoanalytics/k8s",
+      "enabled": true,
+      "launchModes": {
+        "codespaces": {
+          "url": "https://github.com/your-org/terrafusion/codespaces/new?service=geoanalytics",
+          "label": "Open in GitHub Codespaces",
+          "icon": "🌐"
+        },
+        "electron": {
+          "url": "electron://geoanalytics",
+          "label": "Launch Desktop App",
+          "icon": "🖥️"
+        },
+        "docker": {
+          "command": "docker-compose -f apps/geoanalytics/docker-compose.yml up",
+          "label": "Run with Docker",
+          "icon": "🐳"
+        },
+        "kubernetes": {
+          "command": "bash scripts/deploy_geoanalytics.sh",
+          "label": "Deploy to K8s",
+          "icon": "☸️"
+        }
+      },
+      "permissions": [
+        "property:read",
+        "analytics:execute",
+        "export:data"
+      ],
+      "config": {
+        "defaultRadius": 1000,
+        "maxRadius": 10000,
+        "cacheTTL": 3600
+      }
+    },
+    {
+      "id": "quantum-valuation",
+      "name": "Quantum Valuation",
+      "description": "Quantum-enhanced property valuation with multi-dimensional analysis",
+      "version": "2.0.0",
+      "icon": "⚛️",
+      "tags": ["quantum", "valuation", "ai", "advanced"],
+      "category": "Advanced Analytics",
+      "api": "/apps/quantum-valuation/backend/main.py",
+      "k8s": "/apps/quantum-valuation/k8s",
+      "enabled": true,
+      "launchModes": {
+        "codespaces": {
+          "url": "https://github.com/your-org/terrafusion/codespaces/new?service=quantum-valuation",
+          "label": "Open in GitHub Codespaces",
+          "icon": "🌐"
+        },
+        "electron": {
+          "url": "electron://quantum-valuation",
+          "label": "Launch Desktop App",
+          "icon": "🖥️"
+        }
+      },
+      "permissions": [
+        "property:read",
+        "quantum:compute",
+        "valuation:write"
+      ],
+      "config": {
+        "quantumDepth": 5,
+        "iterations": 1000
+      }
+    },
+    {
+      "id": "market-predictor",
+      "name": "Market Predictor",
+      "description": "AI-powered market trend prediction and forecasting",
+      "version": "1.2.0",
+      "icon": "📈",
+      "tags": ["prediction", "ai", "market", "trends"],
+      "category": "Forecasting",
+      "api": "/apps/market-predictor/backend/main.py",
+      "k8s": "/apps/market-predictor/k8s",
+      "enabled": true,
+      "launchModes": {
+        "codespaces": {
+          "url": "https://github.com/your-org/terrafusion/codespaces/new?service=market-predictor",
+          "label": "Open in GitHub Codespaces",
+          "icon": "🌐"
+        },
+        "electron": {
+          "url": "electron://market-predictor",
+          "label": "Launch Desktop App",
+          "icon": "🖥️"
+        }
+      },
+      "permissions": [
+        "market:read",
+        "prediction:execute",
+        "export:report"
+      ],
+      "config": {
+        "predictionWindow": 90,
+        "confidenceThreshold": 0.85
+      }
+    },
+    {
+      "id": "property-compare",
+      "name": "Property Compare",
+      "description": "Side-by-side property comparison with detailed metrics",
+      "version": "1.0.0",
+      "icon": "🔍",
+      "tags": ["comparison", "analysis", "property"],
+      "category": "Tools",
+      "api": "/apps/property-compare/backend/main.py",
+      "k8s": "/apps/property-compare/k8s",
+      "enabled": true,
+      "launchModes": {
+        "codespaces": {
+          "url": "https://github.com/your-org/terrafusion/codespaces/new?service=property-compare",
+          "label": "Open in GitHub Codespaces",
+          "icon": "🌐"
+        },
+        "electron": {
+          "url": "electron://property-compare",
+          "label": "Launch Desktop App",
+          "icon": "🖥️"
+        }
+      },
+      "permissions": [
+        "property:read",
+        "comparison:create"
+      ],
+      "config": {
+        "maxCompareItems": 5
+      }
+    },
+    {
+      "id": "roi-calculator",
+      "name": "ROI Calculator",
+      "description": "Advanced ROI calculations with multiple investment scenarios",
+      "version": "1.1.0",
+      "icon": "💰",
+      "tags": ["roi", "calculator", "investment", "finance"],
+      "category": "Financial",
+      "api": "/apps/roi-calculator/backend/main.py",
+      "k8s": "/apps/roi-calculator/k8s",
+      "enabled": false,
+      "launchModes": {
+        "codespaces": {
+          "url": "https://github.com/your-org/terrafusion/codespaces/new?service=roi-calculator",
+          "label": "Open in GitHub Codespaces",
+          "icon": "🌐"
+        },
+        "electron": {
+          "url": "electron://roi-calculator",
+          "label": "Launch Desktop App",
+          "icon": "🖥️"
+        }
+      },
+      "permissions": [
+        "property:read",
+        "calculation:execute",
+        "export:pdf"
+      ],
+      "config": {
+        "defaultHoldingPeriod": 5,
+        "taxRate": 0.28
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "TestSecurityPlugin",
+  "version": "1.0.0",
+  "description": "Test plugin for validating enhanced security framework",
+  "author": "Terrafusion Security Team",
+  "packageData": "UEsDBAoAAAAAAKZJKVEAAAAAAAAAAAAAAAAJAAAAdGVzdC50eHRIZWxsbyBUZXJyYUZ1c2lvbiBPUyEKUEsBAioACgAAAAAApkkpUQAAAAAAAAAAAAAAAAkAAAAAAAAAAAAgALSBAAAAAHRlc3QudHh0UEsFBgAAAAABAAEANwAAAB8AAAAAAA==",
+  "signature": "3d4aa89f312aca44625b458a3a43f515154ffd46abd13fcd5b18a3a65e581e0e5b6c3a8e5c1b7b6f2d6e7d4c3b2a1a0b9c8d7e6f5e4d3c2b1a0a9b8c7d6e5f4e3d2c1",
+  "kid": "terrafusion-security-key-001"
+}

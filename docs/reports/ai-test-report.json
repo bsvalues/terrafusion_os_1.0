@@ -1,0 +1,22 @@
+{
+  "test_date": "2025-08-25T14:58:03.931769",
+  "overall_status": "failed",
+  "results": {
+    "ollama": {
+      "status": "failed",
+      "tests": []
+    },
+    "rag": {
+      "status": "failed",
+      "tests": []
+    },
+    "mcp": {
+      "status": "failed",
+      "tests": []
+    },
+    "agents": {
+      "status": "failed",
+      "tests": []
+    }
+  }
+}

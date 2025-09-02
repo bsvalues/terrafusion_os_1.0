@@ -1,0 +1,51 @@
+# TerraFusion OS 1.0 - Code Ownership and Review Requirements
+
+# Global ownership - all files require review
+* @bsvalues/terrafusion-core-team
+
+# Backend components
+/backend/ @bsvalues/backend-team @bsvalues/security-team
+/backend/TerraFusion.Core/ @bsvalues/core-architects
+/backend/TerraFusion.AI/ @bsvalues/ai-team
+
+# Frontend components
+/frontend/ @bsvalues/frontend-team @bsvalues/ux-team
+/frontend/components-enhanced/ @bsvalues/ai-team
+
+# AI and ML components
+/.ai/ @bsvalues/ai-team @bsvalues/ml-engineers
+/modules/ai-advanced/ @bsvalues/ai-team
+**/quantum*.ts @bsvalues/quantum-team
+**/probabilistic*.ts @bsvalues/ai-team
+**/swarm*.ts @bsvalues/ai-team
+
+# Infrastructure and DevOps
+/infrastructure/ @bsvalues/devops-team @bsvalues/security-team
+/deployment/ @bsvalues/devops-team
+/.github/ @bsvalues/devops-team
+/ops/ @bsvalues/devops-team
+/compose/ @bsvalues/devops-team
+Dockerfile @bsvalues/devops-team
+docker-compose*.yml @bsvalues/devops-team
+
+# Security-sensitive files
+/.env* @bsvalues/security-team
+/config/ @bsvalues/security-team
+**/security*.* @bsvalues/security-team
+**/auth*.* @bsvalues/security-team
+
+# Documentation
+/docs/ @bsvalues/documentation-team
+README.md @bsvalues/documentation-team
+*.md @bsvalues/documentation-team
+
+# Performance and testing
+/tests/ @bsvalues/qa-team
+**/performance*.* @bsvalues/performance-team
+**/benchmark*.* @bsvalues/performance-team
+championship*.* @bsvalues/performance-team
+
+# Database and data
+/data/ @bsvalues/data-team @bsvalues/security-team
+**/migration*.* @bsvalues/data-team
+**/schema*.* @bsvalues/data-team
