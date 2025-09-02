@@ -135,7 +135,8 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
               Legacy System Migration Wizard
             </h2>
             <p
-</> className="text-purple-200">
+</>
+className="text-purple-200">
               Complete migration in 60 seconds. While legacy vendors are still loading.
             </p>
           </div>
@@ -148,7 +149,6 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
         </div>
 
         {!migrationStarted ? (
-          <>
             {/* Competitor Selection */}
             <div className="mb-8"><>
 
@@ -156,7 +156,8 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
                 Which inferior system are you escaping from?
               </h3>
               <div
-</> className="grid grid-cols-1 md:grid-cols-2 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {competitors.map((competitor) => (
                   <motion.div
                     key={competitor.name}
@@ -173,7 +174,8 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
                       {competitor.name}
                     </h4>
                     <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                       <div className="flex items-center gap-2 text-red-400">
                         <Clock className="w-4 h-4" />
                         <span>Their timeline: {competitor.time}</span>
@@ -209,24 +211,28 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
                 What happens when you press the button:
               </h3>
               <div
-</> className="grid grid-cols-1 md:grid-cols-3 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center"><>
 
                   <div className="text-4xl font-bold text-green-400 mb-2">60s</div>
                   <div
-</> className="text-white/80">Complete Migration</div>
+</>
+className="text-white/80">Complete Migration</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-4xl font-bold text-blue-400 mb-2">$0</div>
                   <div
-</> className="text-white/80">Migration Cost</div>
+</>
+className="text-white/80">Migration Cost</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-4xl font-bold text-purple-400 mb-2">100%</div>
                   <div
-</> className="text-white/80">Data Integrity</div>
+</>
+className="text-white/80">Data Integrity</div>
                 </div>
               </div>
             </div>
@@ -246,9 +252,7 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
                 : 'Select a competitor to migrate from'
               }
             </button>
-          </>
         ) : (
-          <>
             {/* Migration Progress */}
             <div className="mb-8">
               <h3 className="text-xl font-bold text-white mb-4">
@@ -319,7 +323,8 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
                       {recordsMigrated.toLocaleString()}
                     </div>
                     <div
-</> className="text-purple-200">Records migrated</div>
+</>
+className="text-purple-200">Records migrated</div>
                     <div className="text-sm text-purple-300 mt-2">
                       Speed: 379,000,000× faster than legacy systems
                     </div>
@@ -346,7 +351,8 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
                   Migration Complete!
                 </h3>
                 <p
-</> className="text-xl text-purple-200 mb-6">
+</>
+className="text-xl text-purple-200 mb-6">
                   Migrated {recordsMigrated.toLocaleString()} records in {totalTime.toFixed(1)} seconds
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -354,19 +360,22 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
 
                     <div className="text-2xl font-bold text-white">$2.3M</div>
                     <div
-</> className="text-sm text-green-400">Savings identified by AI</div>
+</>
+className="text-sm text-green-400">Savings identified by AI</div>
                   </div>
                   <div className="bg-blue-900/30 rounded-lg p-4 border border-blue-500/30"><>
 
                     <div className="text-2xl font-bold text-white">147</div>
                     <div
-</> className="text-sm text-blue-400">Compliance issues found</div>
+</>
+className="text-sm text-blue-400">Compliance issues found</div>
                   </div>
                   <div className="bg-purple-900/30 rounded-lg p-4 border border-purple-500/30"><>
 
                     <div className="text-2xl font-bold text-white">94%</div>
                     <div
-</> className="text-sm text-purple-400">Efficiency improvement</div>
+</>
+className="text-sm text-purple-400">Efficiency improvement</div>
                   </div>
                 </div><>
 
@@ -377,12 +386,12 @@ export const CompetitorMigration: React.FC<CompetitorMigrationProps> = ({ onClos
                   Start Using Terrafusion Now
                 </button>
                 <p
-</> className="text-sm text-white/40 mt-4">
+</>
+className="text-sm text-white/40 mt-4">
                   {selectedCompetitor} is still loading their login screen
                 </p>
               </motion.div>
             )}
-          </>
         )}
       </motion.div>
     </motion.div>

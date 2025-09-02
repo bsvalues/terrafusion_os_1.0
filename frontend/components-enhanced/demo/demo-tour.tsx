@@ -57,7 +57,8 @@ export function DemoTour({ steps, currentStep, onStepChange, isActive }: DemoTou
 
             <h3 className="font-heading font-semibold text-lg text-tf-transcend">{currentStepData.title}</h3>
             <p
-</> className="text-sm text-tf-light/80">{currentStepData.description}</p>
+</>
+className="text-sm text-tf-light/80">{currentStepData.description}</p>
           </div>
 
           <div className="flex items-center justify-between mt-6">
@@ -74,7 +75,8 @@ export function DemoTour({ steps, currentStep, onStepChange, isActive }: DemoTou
             </Button>
 
             <div
-</> className="flex gap-1">
+</>
+className="flex gap-1">
               {steps.map((_ /* , index */) => (<>
 
                 <div
@@ -88,6 +90,7 @@ export function DemoTour({ steps, currentStep, onStepChange, isActive }: DemoTou
 
             <Button
 </>
+
               variant="ghost"
               size="sm"
               onClick={() => onStepChange(Math.min(steps.length - 1, currentStep + 1))}

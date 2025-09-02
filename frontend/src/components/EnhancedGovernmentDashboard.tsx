@@ -28,8 +28,11 @@ const EnhancedGovernmentDashboard: React.FC = () => {
             <Box display="flex" alignItems="center" gap={2}>
               <Memory color="primary" />
               <Box>
+
+
                 <Typography variant="h6" color="primary">39</Typography>
-                <Typography variant="body2" color="textSecondary">Active Modules</Typography>
+                <Typography
+ variant="body2" color="textSecondary">Active Modules</Typography>
               </Box>
             </Box>
           </CardContent>
@@ -46,8 +49,11 @@ const EnhancedGovernmentDashboard: React.FC = () => {
             <Box display="flex" alignItems="center" gap={2}>
               <Group color="secondary" />
               <Box>
+
+
                 <Typography variant="h6" color="secondary">1,008</Typography>
-                <Typography variant="body2" color="textSecondary">AI Agents</Typography>
+                <Typography
+ variant="body2" color="textSecondary">AI Agents</Typography>
               </Box>
             </Box>
           </CardContent>
@@ -64,8 +70,11 @@ const EnhancedGovernmentDashboard: React.FC = () => {
             <Box display="flex" alignItems="center" gap={2}>
               <Speed color="warning" />
               <Box>
+
+
                 <Typography variant="h6" color="warning.main">97.2%</Typography>
-                <Typography variant="body2" color="textSecondary">Performance</Typography>
+                <Typography
+ variant="body2" color="textSecondary">Performance</Typography>
               </Box>
             </Box>
           </CardContent>
@@ -82,8 +91,11 @@ const EnhancedGovernmentDashboard: React.FC = () => {
             <Box display="flex" alignItems="center" gap={2}>
               <CloudQueue color="success" />
               <Box>
+
+
                 <Typography variant="h6" color="success.main">Operational</Typography>
-                <Typography variant="body2" color="textSecondary">System Status</Typography>
+                <Typography
+ variant="body2" color="textSecondary">System Status</Typography>
               </Box>
             </Box>
           </CardContent>
@@ -99,17 +111,23 @@ const EnhancedGovernmentDashboard: React.FC = () => {
           minHeight: '400px'
         }}>
           <CardContent>
+
+
             <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
               🏛️ Government Services Command Center
             </Typography>
-            <Typography variant="body1" color="textSecondary" paragraph>
+            <Typography
+ variant="body1" color="textSecondary" paragraph>
               Real-time monitoring and management of all government services across departments.
             </Typography>
             
             <Grid container spacing={2} sx={{ mt: 2 }}>
               <Grid item xs={12} md={6}>
+
+
                 <Typography variant="h6" color="primary">📊 Department Analytics</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography
+ variant="body2" color="textSecondary">
                   • Tax Collection: 98.7% efficiency<br/>
                   • Public Safety: 45 active units<br/>
                   • Infrastructure: 12 projects monitored<br/>
@@ -117,8 +135,11 @@ const EnhancedGovernmentDashboard: React.FC = () => {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
+
+
                 <Typography variant="h6" color="secondary">🔒 Security & Compliance</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography
+ variant="body2" color="textSecondary">
                   • Security Alerts: 0 critical<br/>
                   • Compliance Score: 99.2%<br/>
                   • Data Protection: Active<br/>
@@ -142,17 +163,23 @@ const EnhancedGovernmentDashboard: React.FC = () => {
           minHeight: '500px'
         }}>
           <CardContent>
+
+
             <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
               🧠 AI Analytics Command Center
             </Typography>
-            <Typography variant="body1" color="textSecondary" paragraph>
+            <Typography
+ variant="body1" color="textSecondary" paragraph>
               Advanced analytics powered by 1,008 AI agents providing real-time insights.
             </Typography>
             
             <Grid container spacing={3} sx={{ mt: 2 }}>
               <Grid item xs={12} md={4}>
+
+
                 <Typography variant="h6" color="primary">🎯 Predictive Insights</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography
+ variant="body2" color="textSecondary">
                   • Budget Optimization: $2.3M savings identified<br/>
                   • Service Demand: 18% increase predicted<br/>
                   • Resource Allocation: 94% optimized<br/>
@@ -160,8 +187,11 @@ const EnhancedGovernmentDashboard: React.FC = () => {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={4}>
+
+
                 <Typography variant="h6" color="secondary">⚡ Real-time Processing</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography
+ variant="body2" color="textSecondary">
                   • Data Throughput: 15.7GB/s<br/>
                   • API Requests: 847,291 today<br/>
                   • Response Time: 12ms average<br/>
@@ -169,8 +199,11 @@ const EnhancedGovernmentDashboard: React.FC = () => {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={4}>
+
+
                 <Typography variant="h6" color="warning.main">🚀 Performance Metrics</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography
+ variant="body2" color="textSecondary">
                   • Neural Network Efficiency: 98.1%<br/>
                   • Quantum Coherence: 97.2%<br/>
                   • AI Agent Coordination: 99.4%<br/>
@@ -203,7 +236,7 @@ const EnhancedGovernmentDashboard: React.FC = () => {
       }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-            🚀 TerraFusion OS - Government. Transcended. • Benton County, Washington
+            🚀 Terrafusion OS - Government. Transcended. • Benton County, Washington
           </Typography>
           
           {/* Navigation Pills */}
@@ -213,16 +246,22 @@ const EnhancedGovernmentDashboard: React.FC = () => {
               onClick={() => setCurrentView('overview')}
               title="System Overview"
             >
+
+
               <DashboardIcon />
             </IconButton>
-            <IconButton 
+            <IconButton
+ 
               color={currentView === 'analytics' ? 'secondary' : 'inherit'}
               onClick={() => setCurrentView('analytics')}
               title="AI Analytics"
             >
+
+
               <Analytics />
             </IconButton>
-            <IconButton 
+            <IconButton
+ 
               color={currentView === 'security' ? 'secondary' : 'inherit'}
               onClick={() => setCurrentView('security')}
               title="Security Dashboard"

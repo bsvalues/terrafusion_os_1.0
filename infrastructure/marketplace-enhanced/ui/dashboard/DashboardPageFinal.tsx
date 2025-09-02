@@ -953,6 +953,7 @@ export function DashboardPage() {
 
         <h2>Error Loading Dashboard</h2>
         <p
+</>
 </>>{error}</p>
         <Button onClick={fetchDashboardData}>Retry</Button>
       </div>
@@ -976,7 +977,8 @@ export function DashboardPage() {
 
           <h1>🧠 Terrafusion Plugin Dashboard</h1>
           <div
-</> className="dashboard-stats">
+</>
+className="dashboard-stats">
             <span className="stat-pill">
               <strong>{dashboardStats.totalPlugins}</strong> Plugins
             </span>
@@ -1003,7 +1005,8 @@ export function DashboardPage() {
 
           <label htmlFor="filter">Filter:</label>
           <select
-</> 
+</>
+
             id="filter"
             value={filter} 
             onChange={(e) => setFilter(e.target.value as FilterType)}
@@ -1011,7 +1014,8 @@ export function DashboardPage() {
 
             <option value="all">All ({data.plugins.length})</option>
             <option
-</> value="unhealthy">
+</>
+value="unhealthy">
               Unhealthy ({data.plugins.filter(p => !p.healthy).length})
             </option><>
 
@@ -1019,7 +1023,8 @@ export function DashboardPage() {
               Launched ({data.plugins.filter(p => p.launchCount > 0).length})
             </option>
             <option
-</> value="low-uptime">
+</>
+value="low-uptime">
               Low Uptime ({data.plugins.filter(p => {
                 const uptime = getCurrentUptime(p.id);
                 return uptime !== null && uptime < LOW_UPTIME_THRESHOLD;
@@ -1037,10 +1042,10 @@ export function DashboardPage() {
             </option>
           </select><>
 
-
           <label htmlFor="sort">Sort:</label>
           <select
 </>
+
             id="sort"
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
@@ -1048,15 +1053,18 @@ export function DashboardPage() {
 
             <option value="name">Name</option>
             <option
-</> value="healthy">Status</option><>
+</>
+value="healthy">Status</option><>
 
             <option value="launchCount">Launches</option>
             <option
-</> value="uptime">Uptime</option><>
+</>
+value="uptime">Uptime</option><>
 
             <option value="errors">Errors</option>
             <option
-</> value="lastDeployment">Last Deployment</option>
+</>
+value="lastDeployment">Last Deployment</option>
             <option value="version">Version</option>
           </select>
 
@@ -1085,13 +1093,13 @@ export function DashboardPage() {
           
           <Button
 </>
+
             size="sm"
             variant="outline"
             onClick={() => setShowLogs(!showLogs)}
           >
             📋 {showLogs ? 'Hide' : 'Show'} Logs ({logs.length})
           </Button><>
-
 
           <Button
             size="sm"
@@ -1103,6 +1111,7 @@ export function DashboardPage() {
 
           <Button
 </>
+
             size="sm"
             variant="outline"
             onClick={() => handleExport('csv')}
@@ -1128,7 +1137,8 @@ export function DashboardPage() {
 
           <h3>Plugin Health Distribution</h3>
           <ResponsiveContainer
-</> width="100%" height={200}>
+</>
+width="100%" height={200}>
             <PieChart>
               <Pie
                 data={[
@@ -1148,7 +1158,8 @@ export function DashboardPage() {
                 ))}
               </Pie>
               <Tooltip
-</> />
+</>
+/>
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -1157,7 +1168,8 @@ export function DashboardPage() {
 
           <h3>Top 5 Most Launched</h3>
           <ResponsiveContainer
-</> width="100%" height={200}>
+</>
+width="100%" height={200}>
             <BarChart
               data={data.plugins
                 .sort((a, b) => b.launchCount - a.launchCount)
@@ -1181,7 +1193,8 @@ export function DashboardPage() {
 
           <h3>System Logs</h3>
           <div
-</> className="log-entries">
+</>
+className="log-entries">
             {logs.length === 0 ? (
               <div className="log-empty">No logs yet...</div>
             ) : (
@@ -1226,7 +1239,8 @@ export function DashboardPage() {
 
                   <h2>{plugin.name}</h2>
                   <span
-</> className="plugin-version">v{plugin.version}</span>
+</>
+className="plugin-version">v{plugin.version}</span>
                   <span 
                     className={`health-badge ${plugin.healthy ? 'healthy' : 'unhealthy'}`}
                     title={plugin.healthy ? 'Healthy' : 'Unhealthy'}
@@ -1247,6 +1261,7 @@ export function DashboardPage() {
                   
                   <Button
 </>
+
                     size="sm"
                     disabled={adminLoading === `${plugin.id}-restart`}
                     onClick={() => handleAdminAction(plugin.id, 'restart')}
@@ -1255,7 +1270,6 @@ export function DashboardPage() {
                     {adminLoading === `${plugin.id}-restart` ? '...' : '🔄'}
                   </Button><>
 
-                  
                   <Button
                     size="sm"
                     disabled={adminLoading === `${plugin.id}-scale`}
@@ -1266,11 +1280,13 @@ export function DashboardPage() {
                   </Button>
 
                   <label
-</> className="deploy-button" title="Deploy new version"><>
+</>
+className="deploy-button" title="Deploy new version"><>
 
                     <span className="deploy-icon">📦</span>
                     <input
 </>
+
                       ref={(el) => {
                         if (el) fileInputRefs.current.set(plugin.id, el);
                       }}
@@ -1300,13 +1316,15 @@ export function DashboardPage() {
 
                   <span className="stat-label">Launches</span>
                   <span
-</> className="stat-value">{plugin.launchCount}</span>
+</>
+className="stat-value">{plugin.launchCount}</span>
                 </div>
                 <div className="stat"><>
 
                   <span className="stat-label">Uptime</span>
                   <span
-</> 
+</>
+
                     className="stat-value"
                     style={{ color: getUptimeColor(currentUptime) }}
                   >
@@ -1317,7 +1335,8 @@ export function DashboardPage() {
 
                   <span className="stat-label">Errors</span>
                   <span
-</> className="stat-value error-count">
+</>
+className="stat-value error-count">
                     {plugin.errors.length}
                   </span>
                 </div>
@@ -1325,7 +1344,8 @@ export function DashboardPage() {
 
                   <span className="stat-label">Deployments</span>
                   <span
-</> className="stat-value">
+</>
+className="stat-value">
                     {plugin.deploymentCount || 0}
                   </span>
                 </div>
@@ -1337,7 +1357,8 @@ export function DashboardPage() {
 
                   <label>Select Version to Rollback:</label>
                   <select
-</> onChange={(e) => handleRollback(plugin.id, e.target.value)}>
+</>
+onChange={(e) => handleRollback(plugin.id, e.target.value)}>
                     <option value="">-- Choose Version --</option>
                     {versions.map(v => (
                       <option key={v.version} value={v.version}>
@@ -1359,7 +1380,8 @@ export function DashboardPage() {
                     />
                   </div>
                   <span
-</> className="progress-text">
+</>
+className="progress-text">
                     Uploading: {Math.round(uploadState.progress)}%
                   </span>
                 </div>
@@ -1418,6 +1440,7 @@ export function DashboardPage() {
 
                     <strong>Deployment Info</strong>
                     <p
+</>
 </>>Last Deployed: {formatDate(plugin.lastDeployment)}</p>
                     <p>Total Deployments: {plugin.deploymentCount || 0}</p>
                   </div>
@@ -1427,7 +1450,8 @@ export function DashboardPage() {
 
                       <strong>Recent Actions</strong>
                       <ul
-</> className="action-list">
+</>
+className="action-list">
                         {recentActions.map((action, i) => (
                           <li key={i}>
                             {action.action} - {formatDate(new Date(action.timestamp).toISOString())}
@@ -1443,7 +1467,8 @@ export function DashboardPage() {
 
                       <strong>Tags:</strong>
                       <div
-</> className="tag-list">
+</>
+className="tag-list">
                         {plugin.tags.map((tag, i) => (
                           <span key={i} className="tag">{tag}</span>
                         ))}
@@ -1456,7 +1481,8 @@ export function DashboardPage() {
 
                       <strong>Recent Errors:</strong>
                       <ul
-</> className="error-list">
+</>
+className="error-list">
                         {plugin.errors.slice(0, 3).map((error, i) => (
                           <li key={i}>{error}</li>
                         ))}
@@ -1483,7 +1509,8 @@ export function DashboardPage() {
                       View Full Details
                     </Button>
                     <a
-</> 
+</>
+
                       href={`/admin/plugin/${plugin.id}`}
                       className="admin-link"
                     >
@@ -1505,7 +1532,8 @@ export function DashboardPage() {
             <h2>{modalPlugin.name} - Full Details</h2>
             
             <div
-</> className="modal-section">
+</>
+className="modal-section">
               <p><strong>Version:</strong> {modalPlugin.version}</p>
               <p><strong>Owner:</strong> {modalPlugin.owner}</p>
               <p><strong>Current Uptime:</strong> {formatUptime(getCurrentUptime(modalPlugin.id))}</p>
@@ -1519,13 +1547,15 @@ export function DashboardPage() {
 
                 <h3>Version History</h3>
                 <div
-</> className="version-timeline">
+</>
+className="version-timeline">
                   {data.pluginVersions[modalPlugin.id].map((version, i) => (
                     <div key={i} className="version-entry"><>
 
                       <span className="version-number">{version.version}</span>
                       <span
-</> className="version-date">{formatDate(version.deployedAt)}</span>
+</>
+className="version-date">{formatDate(version.deployedAt)}</span>
                       {version.deployedBy && <span className="version-user">by {version.deployedBy}</span>}
                     </div>
                   ))}
@@ -1539,13 +1569,15 @@ export function DashboardPage() {
 
                 <h3>Admin Actions History</h3>
                 <div
-</> className="actions-timeline">
+</>
+className="actions-timeline">
                   {data.adminActions[modalPlugin.id].slice(-10).reverse().map((action, i) => (
                     <div key={i} className="action-entry"><>
 
                       <span className="action-type">{action.action}</span>
                       <span
-</> className="action-time">{formatDate(new Date(action.timestamp).toISOString())}</span>
+</>
+className="action-time">{formatDate(new Date(action.timestamp).toISOString())}</span>
                       {action.status && <span className={`action-status ${action.status}`}>{action.status}</span>}
                     </div>
                   ))}
@@ -1558,7 +1590,8 @@ export function DashboardPage() {
 
                 <h3>All Errors ({modalPlugin.errors.length})</h3>
                 <ul
-</> className="error-list-full">
+</>
+className="error-list-full">
                   {modalPlugin.errors.map((error, i) => (
                     <li key={i}>{error}</li>
                   ))}
@@ -1571,7 +1604,8 @@ export function DashboardPage() {
 
                 <h3>Error Trend</h3>
                 <ResponsiveContainer
-</> width="100%" height={200}>
+</>
+width="100%" height={200}>
                   <LineChart data={modalPlugin.errorTrend}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
@@ -1596,6 +1630,7 @@ export function DashboardPage() {
               <Button onClick={() => setModalPlugin(null)}>Close</Button>
               <Button
 </>
+
                 variant="outline"
                 onClick={() => window.open(`/admin/plugin/${modalPlugin.id}`, '_blank')}
               >

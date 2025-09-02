@@ -224,7 +224,8 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
         <Typography variant="h4" gutterBottom>Harris PACS Integration</Typography>
         <LinearProgress
-</> />
+</>
+/>
       </Box>
     );
   }
@@ -235,6 +236,7 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
         <Typography variant="h4">Harris PACS Integration</Typography>
         <Box
+</>
 </>><>
 
           <Button
@@ -246,6 +248,7 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
           </Button>
           <Button
 </>
+
             startIcon={<Sync />}
             onClick={() => setSyncDialogOpen(true)}
             variant="contained"
@@ -276,7 +279,8 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
                   {systemStatus.isOnline ? 'Online' : 'Offline'}
                 </Typography>
                 <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                   Version {systemStatus.version}
                 </Typography>
               </CardContent>
@@ -295,7 +299,8 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
                   {systemStatus.activeConnections}
                 </Typography>
                 <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                   Current Sessions
                 </Typography>
               </CardContent>
@@ -314,7 +319,8 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
                   {systemStatus.responseTime}ms
                 </Typography>
                 <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                   Average Response
                 </Typography>
               </CardContent>
@@ -333,7 +339,8 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
                   {jurisdictions.filter(j => j.isActive).length}
                 </Typography>
                 <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                   Active Jurisdictions
                 </Typography>
               </CardContent>
@@ -348,6 +355,7 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
           <Typography variant="h6" gutterBottom>Jurisdictions & Sync Status</Typography>
           <TableContainer
+</>
 </>>
             <Table>
               <TableHead>
@@ -355,14 +363,17 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
                   <TableCell>Jurisdiction</TableCell>
                   <TableCell
+</>
 </>>Location</TableCell><>
 
                   <TableCell>Status</TableCell>
                   <TableCell
+</>
 </>>Last Sync</TableCell><>
 
                   <TableCell>Records Processed</TableCell>
                   <TableCell
+</>
 </>>Sync Status</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
@@ -375,6 +386,7 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
                       <TableCell>{jurisdiction.name}</TableCell>
                       <TableCell
+</>
 </>>{jurisdiction.county}, {jurisdiction.state}</TableCell>
                       <TableCell><>
 
@@ -385,6 +397,7 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
                         />
                       </TableCell>
                       <TableCell
+</>
 </>>
                         {syncStatus ? new Date(syncStatus.lastSync).toLocaleString() : 'Never'}
                       </TableCell><>
@@ -393,6 +406,7 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
                         {syncStatus ? syncStatus.recordsProcessed.toLocaleString() : 'N/A'}
                       </TableCell>
                       <TableCell
+</>
 </>>
                         {syncStatus && (<>
 
@@ -407,6 +421,7 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
                         )}
                       </TableCell>
                       <TableCell
+</>
 </>>
                         <Tooltip title="View Properties">
                           <IconButton
@@ -446,17 +461,20 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
                 <Typography variant="h6" gutterBottom>Recent Properties</Typography>
                 <TableContainer
-</> sx={{ maxHeight: 400 }}>
+</>
+sx={{ maxHeight: 400 }}>
                   <Table stickyHeader>
                     <TableHead>
                       <TableRow><>
 
                         <TableCell>Parcel ID</TableCell>
                         <TableCell
+</>
 </>>Address</TableCell><>
 
                         <TableCell>Type</TableCell>
                         <TableCell
+</>
 </>>Value</TableCell>
                         <TableCell>Year Built</TableCell>
                       </TableRow>
@@ -467,10 +485,12 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
                           <TableCell>{property.parcelId}</TableCell>
                           <TableCell
+</>
 </>>{property.address}</TableCell><>
 
                           <TableCell>{property.propertyType}</TableCell>
                           <TableCell
+</>
 </>>{formatCurrency(property.totalValue)}</TableCell>
                           <TableCell>{property.yearBuilt}</TableCell>
                         </TableRow>
@@ -488,7 +508,8 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
                 <Typography variant="h6" gutterBottom>Property Types</Typography>
                 <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                   <PieChart>
                     <Pie
                       data={Object.entries(
@@ -511,7 +532,8 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
                       ))}
                     </Pie>
                     <RechartsTooltip
-</> />
+</>
+/>
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -526,12 +548,14 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
         <DialogTitle>Sync Jurisdiction Data</DialogTitle>
         <DialogContent
+</>
 </>>
           <FormControl fullWidth sx={{ mt: 1 }}><>
 
             <InputLabel>Select Jurisdiction</InputLabel>
             <Select
 </>
+
               value={selectedJurisdiction}
               onChange={(e) => setSelectedJurisdiction(e.target.value)}
             >
@@ -547,7 +571,8 @@ const HarrisPacsIntegrationDashboard: React.FC = () => {
 
           <Button onClick={() => setSyncDialogOpen(false)}>Cancel</Button>
           <Button
-</> 
+</>
+
             onClick={() => handleSyncJurisdiction(selectedJurisdiction)} 
             variant="contained"
             disabled={!selectedJurisdiction}

@@ -336,17 +336,18 @@ export function CartographerMap({
 
             <DialogTitle>Legal Description</DialogTitle>
             <DialogDescription
+</>
 </>>
               The following is a legal description of the selected parcel.
             </DialogDescription>
           </DialogHeader><>
 
-          
           <div className="max-h-[400px] overflow-y-auto border rounded p-3 whitespace-pre-wrap font-mono text-sm">
             {legalDescription}
           </div>
           
           <DialogFooter
+</>
 </>><>
 
             <Button 
@@ -363,7 +364,8 @@ export function CartographerMap({
               Copy to Clipboard
             </Button>
             <Button
-</> onClick={() => setIsLegalDescriptionOpen(false)}>Close</Button>
+</>
+onClick={() => setIsLegalDescriptionOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

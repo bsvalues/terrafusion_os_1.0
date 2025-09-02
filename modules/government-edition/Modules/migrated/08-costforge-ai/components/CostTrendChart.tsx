@@ -185,6 +185,7 @@ export function CostTrendChart({
           <Skeleton className="h-4 w-1/2" />
         </CardHeader>
         <CardContent
+</>
 </>>
           <Skeleton className="h-[300px] w-full" />
         </CardContent>
@@ -200,6 +201,7 @@ export function CostTrendChart({
 
           <CardTitle>{title}</CardTitle>
           <CardDescription
+</>
 </>>{description}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -208,6 +210,7 @@ export function CostTrendChart({
 
             <AlertTitle>Error</AlertTitle>
             <AlertDescription
+</>
 </>>
               Failed to load cost trend data. Please try again later.
             </AlertDescription>
@@ -225,6 +228,7 @@ export function CostTrendChart({
 
           <CardTitle>{title}</CardTitle>
           <CardDescription
+</>
 </>>{description}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center min-h-[300px]">
@@ -243,6 +247,7 @@ export function CostTrendChart({
 
             <CardTitle>{title}</CardTitle>
             <CardDescription
+</>
 </>>{description}</CardDescription>
           </div>
           {showControls && (
@@ -256,6 +261,7 @@ export function CostTrendChart({
                   <SelectValue placeholder="All Regions" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   <SelectItem value="all">All Regions</SelectItem>
                   {getUniqueRegions(data).map((region) => (
@@ -275,6 +281,7 @@ export function CostTrendChart({
                   <SelectValue placeholder="All Building Types" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   <SelectItem value="all">All Building Types</SelectItem>
                   {getUniqueBuildingTypes(data).map((type) => (

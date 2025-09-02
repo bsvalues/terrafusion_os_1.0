@@ -231,6 +231,7 @@ export const ReportGenerator = () => {
 
                   <FormLabel>{param.label}</FormLabel>
                   <FormControl
+</>
 </>>
                     <Input {...field} />
                   </FormControl>
@@ -254,6 +255,7 @@ export const ReportGenerator = () => {
 
                   <FormLabel>{param.label}</FormLabel>
                   <FormControl
+</>
 </>>
                     <Input 
                       {...field} 
@@ -286,7 +288,8 @@ export const ReportGenerator = () => {
                     />
                   </FormControl>
                   <div
-</> className="space-y-1 leading-none">
+</>
+className="space-y-1 leading-none">
                     <FormLabel>{param.label}</FormLabel>
                     {param.description && (
                       <FormDescription>{param.description}</FormDescription>
@@ -308,6 +311,7 @@ export const ReportGenerator = () => {
 
                   <FormLabel>{param.label}</FormLabel>
                   <Popover
+</>
 </>>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -357,6 +361,7 @@ export const ReportGenerator = () => {
                   <FormLabel>{param.label}</FormLabel>
                   <Select
 </>
+
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                     value={field.value}
@@ -407,7 +412,8 @@ export const ReportGenerator = () => {
 
         <h3 className="text-lg font-medium mb-2">Preview Results</h3>
         <div
-</> className="text-sm text-muted-foreground mb-4">
+</>
+className="text-sm text-muted-foreground mb-4">
           This is a sample of the data that will be included in your full report.
         </div>
         
@@ -447,6 +453,7 @@ export const ReportGenerator = () => {
 
             <AlertTitle>No Preview Data</AlertTitle>
             <AlertDescription
+</>
 </>>
               No data was returned for the parameters you provided. The report may still generate 
               if you proceed, but you may want to adjust your parameters.
@@ -470,10 +477,12 @@ export const ReportGenerator = () => {
 
                 <p className="mb-1">• Create custom reports from templates</p>
                 <p
-</> className="mb-1">• Configure parameters for data selection</p><>
+</>
+className="mb-1">• Configure parameters for data selection</p><>
 
                 <p className="mb-1">• Preview report data before generation</p>
                 <p
+</>
 </>>• Queue reports for background processing</p>
               </div>
             }
@@ -496,12 +505,12 @@ export const ReportGenerator = () => {
 
             <AlertTitle>Error</AlertTitle>
             <AlertDescription
+</>
 </>>
               Failed to load report templates. Please try again later.
             </AlertDescription>
           </Alert>
         ) : (
-          <>
             <div className="mb-6"><>
 
               <label className="block text-sm font-medium text-muted-foreground mb-2">
@@ -509,6 +518,7 @@ export const ReportGenerator = () => {
               </label>
               <Select
 </>
+
                 onValueChange={handleTemplateChange}
                 value={selectedTemplate ? String(selectedTemplate.id) : undefined}
               >
@@ -517,6 +527,7 @@ export const ReportGenerator = () => {
                   <SelectValue placeholder="Select a template" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   {templatesQuery.data?.map((template: ReportTemplate) => (
                     <SelectItem key={template.id} value={String(template.id)}>
@@ -543,6 +554,7 @@ export const ReportGenerator = () => {
 
                         <FormLabel>Report Name</FormLabel>
                         <FormControl
+</>
 </>><>
 
                           <Input 
@@ -551,6 +563,7 @@ export const ReportGenerator = () => {
                           />
                         </FormControl>
                         <FormDescription
+</>
 </>>
                           This name will help you identify the report later
                         </FormDescription>
@@ -590,6 +603,7 @@ export const ReportGenerator = () => {
 
                       <AlertTitle>Success</AlertTitle>
                       <AlertDescription
+</>
 </>>
                         Your report has been queued for generation. You can view its status in the Reports Dashboard.
                       </AlertDescription>
@@ -600,7 +614,6 @@ export const ReportGenerator = () => {
                 </form>
               </Form>
             )}
-          </>
         )}
       </CardContent>
     </Card>

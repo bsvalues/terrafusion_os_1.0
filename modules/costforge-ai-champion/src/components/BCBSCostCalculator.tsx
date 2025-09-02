@@ -798,7 +798,8 @@ const BCBSCostCalculator = () => {
                 Calculator
               </TabsTrigger>
               <TabsTrigger
-</> 
+</>
+
                 value="materials" 
                 className="data-[state=active]:bg-[#243E4D] data-[state=active]:text-white"
               >
@@ -812,7 +813,8 @@ const BCBSCostCalculator = () => {
                 Results
               </TabsTrigger>
               <TabsTrigger
-</> 
+</>
+
                 value="scenarios" 
                 className="data-[state=active]:bg-[#243E4D] data-[state=active]:text-white"
                 disabled={scenarios.length === 0}
@@ -837,7 +839,8 @@ const BCBSCostCalculator = () => {
                         Building Specifications
                       </h3>
                       <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                         {/* Show square footage for building types only */}
                         {(watchBuildingType === 'RESIDENTIAL' || 
                           watchBuildingType === 'COMMERCIAL' || 
@@ -863,6 +866,7 @@ const BCBSCostCalculator = () => {
                                   <Input type="number" {...field} className="border-gray-200" />
                                 </FormControl>
                                 <FormDescription
+</>
 </>>
                                   Enter the total square footage of the building
                                 </FormDescription>
@@ -874,7 +878,6 @@ const BCBSCostCalculator = () => {
                         
                         {/* Show vehicle value field for vehicle type */}
                         {watchBuildingType === 'VEHICLE' && (
-                          <>
                             <FormField
                               control={form.control}
                               name="vehicleValue"
@@ -883,11 +886,13 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Vehicle Value ($)</FormLabel>
                                   <FormControl
+</>
 </>><>
 
                                     <Input type="number" {...field} className="border-gray-200" />
                                   </FormControl>
                                   <FormDescription
+</>
 </>>
                                     Enter the current market value of the vehicle
                                   </FormDescription>
@@ -903,12 +908,14 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Make</FormLabel>
                                   <FormControl
+</>
 </>><>
 
                                     <Input {...field} className="border-gray-200" />
                                   </FormControl>
                                   <FormMessage
-</> />
+</>
+/>
                                 </FormItem>
                               )}
                             />
@@ -920,12 +927,14 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Model</FormLabel>
                                   <FormControl
+</>
 </>><>
 
                                     <Input {...field} className="border-gray-200" />
                                   </FormControl>
                                   <FormMessage
-</> />
+</>
+/>
                                 </FormItem>
                               )}
                             />
@@ -937,21 +946,21 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Year</FormLabel>
                                   <FormControl
+</>
 </>><>
 
                                     <Input type="number" {...field} className="border-gray-200" />
                                   </FormControl>
                                   <FormMessage
-</> />
+</>
+/>
                                 </FormItem>
                               )}
                             />
-                          </>
                         )}
                         
                         {/* Show boat value field for boat type */}
                         {watchBuildingType === 'BOAT' && (
-                          <>
                             <FormField
                               control={form.control}
                               name="boatValue"
@@ -960,11 +969,13 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Boat Value ($)</FormLabel>
                                   <FormControl
+</>
 </>><>
 
                                     <Input type="number" {...field} className="border-gray-200" />
                                   </FormControl>
                                   <FormDescription
+</>
 </>>
                                     Enter the current market value of the boat
                                   </FormDescription>
@@ -980,12 +991,14 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Length (ft)</FormLabel>
                                   <FormControl
+</>
 </>><>
 
                                     <Input type="number" {...field} className="border-gray-200" />
                                   </FormControl>
                                   <FormMessage
-</> />
+</>
+/>
                                 </FormItem>
                               )}
                             />
@@ -997,7 +1010,8 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Boat Type</FormLabel>
                                   <Select
-</> 
+</>
+
                                     onValueChange={field.onChange} 
                                     defaultValue={field.value}
                                   >
@@ -1010,11 +1024,13 @@ const BCBSCostCalculator = () => {
 
                                       <SelectItem value="POWER">Power Boat</SelectItem>
                                       <SelectItem
-</> value="SAIL">Sail Boat</SelectItem><>
+</>
+value="SAIL">Sail Boat</SelectItem><>
 
                                       <SelectItem value="PWC">Personal Watercraft</SelectItem>
                                       <SelectItem
-</> value="HOUSE">House Boat</SelectItem>
+</>
+value="HOUSE">House Boat</SelectItem>
                                       <SelectItem value="OTHER">Other</SelectItem>
                                     </SelectContent>
                                   </Select>
@@ -1022,12 +1038,10 @@ const BCBSCostCalculator = () => {
                                 </FormItem>
                               )}
                             />
-                          </>
                         )}
                         
                         {/* Show business property value field for business property type */}
                         {watchBuildingType === 'BUSINESS_PROPERTY' && (
-                          <>
                             <FormField
                               control={form.control}
                               name="businessPropertyValue"
@@ -1036,11 +1050,13 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Property Value ($)</FormLabel>
                                   <FormControl
+</>
 </>><>
 
                                     <Input type="number" {...field} className="border-gray-200" />
                                   </FormControl>
                                   <FormDescription
+</>
 </>>
                                     Enter the current market value of the business property
                                   </FormDescription>
@@ -1056,7 +1072,8 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Property Type</FormLabel>
                                   <Select
-</> 
+</>
+
                                     onValueChange={field.onChange} 
                                     defaultValue={field.value}
                                   >
@@ -1069,11 +1086,13 @@ const BCBSCostCalculator = () => {
 
                                       <SelectItem value="EQUIPMENT">Equipment</SelectItem>
                                       <SelectItem
-</> value="FURNITURE">Furniture</SelectItem><>
+</>
+value="FURNITURE">Furniture</SelectItem><>
 
                                       <SelectItem value="INVENTORY">Inventory</SelectItem>
                                       <SelectItem
-</> value="COMPUTER">Computer/IT</SelectItem>
+</>
+value="COMPUTER">Computer/IT</SelectItem>
                                       <SelectItem value="OTHER">Other</SelectItem>
                                     </SelectContent>
                                   </Select>
@@ -1089,7 +1108,8 @@ const BCBSCostCalculator = () => {
 
                                   <FormLabel>Category</FormLabel>
                                   <Select
-</> 
+</>
+
                                     onValueChange={field.onChange} 
                                     defaultValue={field.value}
                                   >
@@ -1102,22 +1122,24 @@ const BCBSCostCalculator = () => {
 
                                       <SelectItem value="RETAIL">Retail</SelectItem>
                                       <SelectItem
-</> value="RESTAURANT">Restaurant</SelectItem><>
+</>
+value="RESTAURANT">Restaurant</SelectItem><>
 
                                       <SelectItem value="OFFICE">Office</SelectItem>
                                       <SelectItem
-</> value="INDUSTRIAL">Industrial</SelectItem><>
+</>
+value="INDUSTRIAL">Industrial</SelectItem><>
 
                                       <SelectItem value="MEDICAL">Medical</SelectItem>
                                       <SelectItem
-</> value="OTHER">Other</SelectItem>
+</>
+value="OTHER">Other</SelectItem>
                                     </SelectContent>
                                   </Select>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
-                          </>
                         )}
                         
                         <FormField
@@ -1189,7 +1211,8 @@ const BCBSCostCalculator = () => {
                                 Select the type of building
                               </FormDescription>
                               <FormMessage
-</> />
+</>
+/>
                             </FormItem>
                           )}
                         />
@@ -1203,7 +1226,8 @@ const BCBSCostCalculator = () => {
                         Quality & Location
                       </h3>
                       <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                         <FormField
                           control={form.control}
                           name="quality"
@@ -1273,7 +1297,8 @@ const BCBSCostCalculator = () => {
                                 Select the quality level of construction
                               </FormDescription>
                               <FormMessage
-</> />
+</>
+/>
                             </FormItem>
                           )}
                         />
@@ -1339,7 +1364,8 @@ const BCBSCostCalculator = () => {
                                 Select the region where the building is located
                               </FormDescription>
                               <FormMessage
-</> />
+</>
+/>
                             </FormItem>
                           )}
                         />
@@ -1355,7 +1381,8 @@ const BCBSCostCalculator = () => {
                     </h3>
                     
                     <div
-</> className="grid grid-cols-1 md:grid-cols-2 gap-6">
+</>
+className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Show complexity factor only for building types */}
                       {(watchBuildingType === 'RESIDENTIAL' || 
                         watchBuildingType === 'COMMERCIAL' || 
@@ -1391,10 +1418,12 @@ const BCBSCostCalculator = () => {
                                 />
                               </FormControl>
                               <div
-</> className="flex justify-between text-xs text-gray-500 mt-1"><>
+</>
+className="flex justify-between text-xs text-gray-500 mt-1"><>
 
                                 <span>Simple: 0.5</span>
                                 <span
+</>
 </>>Standard: 1.0</span>
                                 <span>Complex: 2.0</span>
                               </div><>
@@ -1403,7 +1432,8 @@ const BCBSCostCalculator = () => {
                                 Adjust for building complexity
                               </FormDescription>
                               <FormMessage
-</> />
+</>
+/>
                             </FormItem>
                           )}
                         />
@@ -1439,10 +1469,12 @@ const BCBSCostCalculator = () => {
                               />
                             </FormControl>
                             <div
-</> className="flex justify-between text-xs text-gray-500 mt-1"><>
+</>
+className="flex justify-between text-xs text-gray-500 mt-1"><>
 
                               <span>Poor: 0.5</span>
                               <span
+</>
 </>>Average: 1.0</span>
                               <span>Excellent: 1.5</span>
                             </div><>
@@ -1451,7 +1483,8 @@ const BCBSCostCalculator = () => {
                               Adjust for building condition
                             </FormDescription>
                             <FormMessage
-</> />
+</>
+/>
                           </FormItem>
                         )}
                       />
@@ -1508,6 +1541,7 @@ const BCBSCostCalculator = () => {
                                         <Info className="h-4 w-4 text-[#29B7D3] cursor-help" />
                                       </TooltipTrigger>
                                       <TooltipContent
+</>
 </>>
                                         <div className="w-80">
                                           <p className="text-xs mb-2">
@@ -1518,23 +1552,27 @@ const BCBSCostCalculator = () => {
 
                                             <h5 className="text-xs font-medium mb-1">Depreciation Rates by Building Type:</h5>
                                             <ul
-</> className="text-xs space-y-1">
+</>
+className="text-xs space-y-1">
                                               <li className="flex items-center"><>
 
                                                 <div className="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
                                                 <span
+</>
 </>>Residential: 1.333% per year (min. value: 30%)</span>
                                               </li>
                                               <li className="flex items-center"><>
 
                                                 <div className="w-2 h-2 rounded-full bg-amber-500 mr-1"></div>
                                                 <span
+</>
 </>>Commercial: 1% per year (min. value: 25%)</span>
                                               </li>
                                               <li className="flex items-center"><>
 
                                                 <div className="w-2 h-2 rounded-full bg-green-500 mr-1"></div>
                                                 <span
+</>
 </>>Industrial: 0.889% per year (min. value: 20%)</span>
                                               </li>
                                             </ul>
@@ -1562,7 +1600,8 @@ const BCBSCostCalculator = () => {
                                     />
                                   </div>
                                   <FormDescription
-</> className="mt-1">
+</>
+className="mt-1">
                                     Building has lost {deprecationPercentage}% of its value due to age
                                   </FormDescription>
                                 </div>
@@ -1589,6 +1628,7 @@ const BCBSCostCalculator = () => {
 
                       <span>Next: Add Materials</span>
                       <span
+</>
 </>>→</span>
                     </Button>
                     
@@ -1618,7 +1658,8 @@ const BCBSCostCalculator = () => {
 
                           <span>Add Material</span>
                           <span
-</> className="ml-1">+</span>
+</>
+className="ml-1">+</span>
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -1641,10 +1682,12 @@ const BCBSCostCalculator = () => {
 
                           <TableHead>Material Name</TableHead>
                           <TableHead
+</>
 </>>Quantity</TableHead><>
 
                           <TableHead>Unit Price ($)</TableHead>
                           <TableHead
+</>
 </>>Subtotal</TableHead>
                           <TableHead className="w-[80px]">Actions</TableHead>
                         </TableRow>
@@ -1663,6 +1706,7 @@ const BCBSCostCalculator = () => {
                               />
                             </TableCell>
                             <TableCell
+</>
 </>><>
 
                               <Input
@@ -1674,6 +1718,7 @@ const BCBSCostCalculator = () => {
                               />
                             </TableCell>
                             <TableCell
+</>
 </>><>
 
                               <Input
@@ -1685,7 +1730,8 @@ const BCBSCostCalculator = () => {
                               />
                             </TableCell>
                             <TableCell
-</> className="font-medium">
+</>
+className="font-medium">
                               ${(material.quantity * material.unitPrice).toLocaleString()}
                             </TableCell>
                             <TableCell>
@@ -1711,7 +1757,8 @@ const BCBSCostCalculator = () => {
 
                       <p className="text-[#243E4D]">No materials added yet.</p>
                       <Button
-</> onClick={addMaterial} variant="outline" size="sm" className="mt-2 border-[#29B7D3]/30 hover:bg-[#e8f8fb] hover:text-[#29B7D3]">
+</>
+onClick={addMaterial} variant="outline" size="sm" className="mt-2 border-[#29B7D3]/30 hover:bg-[#e8f8fb] hover:text-[#29B7D3]">
                         Add Your First Material
                       </Button>
                     </div>
@@ -1723,7 +1770,8 @@ const BCBSCostCalculator = () => {
 
                     <span className="font-medium text-[#243E4D]">Total Materials Cost:</span>
                     <span
-</> className="font-bold text-[#243E4D]">
+</>
+className="font-bold text-[#243E4D]">
                       ${materials.reduce((total, material) => total + (material.quantity * material.unitPrice), 0).toLocaleString()}
                     </span>
                   </div>
@@ -1739,6 +1787,7 @@ const BCBSCostCalculator = () => {
 
                     <span>←</span>
                     <span
+</>
 </>>Back to Calculator</span>
                   </Button>
                   
@@ -1753,6 +1802,7 @@ const BCBSCostCalculator = () => {
 
                     <span>View Results</span>
                     <span
+</>
 </>>→</span>
                   </Button>
                 </div>
@@ -1803,7 +1853,8 @@ const BCBSCostCalculator = () => {
                     ${totalCost.toLocaleString()}
                   </p>
                   <p
-</> className="text-center text-sm text-[#243E4D]/70">
+</>
+className="text-center text-sm text-[#243E4D]/70">
                     Based on {form.getValues().squareFootage.toLocaleString()} sq ft {regions.find(r => r.value === form.getValues().region)?.label} {form.getValues().buildingType.toLowerCase()} building
                   </p>
                 </div>
@@ -1835,7 +1886,8 @@ const BCBSCostCalculator = () => {
 
                           <div className="text-sm text-gray-600 mb-1">Depreciation Rate</div>
                           <div
-</> className="text-xl font-medium" style={{ color: getDepreciationColor(getDepreciationPercentage(form.getValues().buildingAge, form.getValues().buildingType)) }}>
+</>
+className="text-xl font-medium" style={{ color: getDepreciationColor(getDepreciationPercentage(form.getValues().buildingAge, form.getValues().buildingType)) }}>
                             {getDepreciationPercentage(form.getValues().buildingAge, form.getValues().buildingType)}%
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
@@ -1847,7 +1899,8 @@ const BCBSCostCalculator = () => {
 
                           <div className="text-sm text-gray-600 mb-1">Cost Impact</div>
                           <div
-</> className="text-xl font-medium">
+</>
+className="text-xl font-medium">
                             -${(costBreakdown.find(c => c.category === 'Age Depreciation')?.cost || 0).toLocaleString()}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
@@ -1859,7 +1912,8 @@ const BCBSCostCalculator = () => {
 
                           <div className="text-sm text-gray-600 mb-1">Retained Value</div>
                           <div
-</> className="text-xl font-medium text-[#3CAB36]">
+</>
+className="text-xl font-medium text-[#3CAB36]">
                             {(100 - getDepreciationPercentage(form.getValues().buildingAge, form.getValues().buildingType))}%
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
@@ -1876,18 +1930,21 @@ const BCBSCostCalculator = () => {
                           Depreciation Formula Details
                         </h5>
                         <div
-</> className="text-sm space-y-2">
+</>
+className="text-sm space-y-2">
                           <div className="flex justify-between items-center border-b border-gray-200 pb-1"><>
 
                             <span className="text-gray-600">Building Type:</span>
                             <span
-</> className="font-medium">{buildingTypes.find(t => t.value === form.getValues().buildingType)?.label}</span>
+</>
+className="font-medium">{buildingTypes.find(t => t.value === form.getValues().buildingType)?.label}</span>
                           </div>
                           <div className="flex justify-between items-center border-b border-gray-200 pb-1"><>
 
                             <span className="text-gray-600">Annual Depreciation Rate:</span>
                             <span
-</> className="font-medium">
+</>
+className="font-medium">
                               {form.getValues().buildingType === 'RESIDENTIAL' ? '1.333' : 
                                form.getValues().buildingType === 'COMMERCIAL' ? '1.000' : 
                                form.getValues().buildingType === 'INDUSTRIAL' ? '0.889' : '1.000'}% per year
@@ -1897,7 +1954,8 @@ const BCBSCostCalculator = () => {
 
                             <span className="text-gray-600">Minimum Retained Value:</span>
                             <span
-</> className="font-medium">
+</>
+className="font-medium">
                               {form.getValues().buildingType === 'RESIDENTIAL' ? '30' : 
                                form.getValues().buildingType === 'COMMERCIAL' ? '25' : 
                                form.getValues().buildingType === 'INDUSTRIAL' ? '20' : '25'}%
@@ -1907,7 +1965,8 @@ const BCBSCostCalculator = () => {
 
                             <span className="text-gray-600">Formula Applied:</span>
                             <span
-</> className="font-medium">Max(Minimum Value, 1.0 - (Age × Annual Rate))</span>
+</>
+className="font-medium">Max(Minimum Value, 1.0 - (Age × Annual Rate))</span>
                           </div>
                         </div>
                       </div>
@@ -1922,7 +1981,8 @@ const BCBSCostCalculator = () => {
 
                           <div className="text-sm font-medium">Cost Comparison</div>
                           <div
-</> className="text-xs text-gray-500">Impact of building age on total cost</div>
+</>
+className="text-xs text-gray-500">Impact of building age on total cost</div>
                         </div>
                         
                         <div className="grid grid-cols-2 gap-3">
@@ -1930,7 +1990,8 @@ const BCBSCostCalculator = () => {
 
                             <div className="text-sm text-gray-500">If New Building</div>
                             <div
-</> className="text-lg font-medium">
+</>
+className="text-lg font-medium">
                               ${(totalCost + (costBreakdown.find(c => c.category === 'Age Depreciation')?.cost || 0)).toLocaleString()}
                             </div>
                             <div className="mt-1">
@@ -1942,7 +2003,8 @@ const BCBSCostCalculator = () => {
 
                             <div className="text-sm text-gray-500">Current Estimate</div>
                             <div
-</> className="text-lg font-medium" style={{ color: getDepreciationColor(getDepreciationPercentage(form.getValues().buildingAge, form.getValues().buildingType)) }}>
+</>
+className="text-lg font-medium" style={{ color: getDepreciationColor(getDepreciationPercentage(form.getValues().buildingAge, form.getValues().buildingType)) }}>
                               ${totalCost.toLocaleString()}
                             </div>
                             <div className="mt-1">
@@ -1966,10 +2028,12 @@ const BCBSCostCalculator = () => {
                         />
                       </div>
                       <div
-</> className="flex justify-between mt-1 text-xs text-gray-500"><>
+</>
+className="flex justify-between mt-1 text-xs text-gray-500"><>
 
                         <span>Depreciated: {getDepreciationPercentage(form.getValues().buildingAge, form.getValues().buildingType)}%</span>
                         <span
+</>
 </>>Retained: {100 - getDepreciationPercentage(form.getValues().buildingAge, form.getValues().buildingType)}%</span>
                       </div>
                     </div>
@@ -2005,6 +2069,7 @@ const BCBSCostCalculator = () => {
 
                             <TableHead>Category</TableHead>
                             <TableHead
+</>
 </>>Amount</TableHead>
                             <TableHead>Percentage</TableHead>
                           </TableRow>
@@ -2115,6 +2180,7 @@ const BCBSCostCalculator = () => {
                                   </text>
                                   <Sector
 </>
+
                                     cx={cx}
                                     cy={cy}
                                     innerRadius={innerRadius}
@@ -2156,7 +2222,8 @@ const BCBSCostCalculator = () => {
                             ))}
                           </Pie>
                           <Tooltip
-</> 
+</>
+
                             formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Cost']}
                             contentStyle={{
                               backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -2274,7 +2341,8 @@ const BCBSCostCalculator = () => {
 
                                 <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: barColor }}></div>
                                 <span
-</> className="font-medium text-sm">
+</>
+className="font-medium text-sm">
                                   {item.category}
                                   {isDepreciation && buildingAge > 0 && (
                                     <span className="ml-2 px-1.5 py-0.5 text-xs rounded text-white" style={{ backgroundColor: depreciationColor }}>
@@ -2353,11 +2421,13 @@ const BCBSCostCalculator = () => {
 
                                 <span className="font-bold mb-1">{item.category}</span>
                                 <div
-</> className="flex justify-between gap-3"><>
+</>
+className="flex justify-between gap-3"><>
 
                                   <span>${item.cost.toLocaleString()}</span>
                                   <span
-</> className="opacity-80">({percentage}%)</span>
+</>
+className="opacity-80">({percentage}%)</span>
                                 </div>
                               </div>
                               <div className="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-t-black border-l-transparent border-r-transparent"></div>
@@ -2455,13 +2525,15 @@ const BCBSCostCalculator = () => {
 
                             <div className="w-4 h-4 rounded-sm bg-[#243E4D] mr-1"></div>
                             <span
-</> className="text-xs">Building Costs</span>
+</>
+className="text-xs">Building Costs</span>
                           </div>
                           <div className="flex items-center"><>
 
                             <div className="w-4 h-4 rounded-sm bg-[#3CAB36] mr-1"></div>
                             <span
-</> className="text-xs">Materials</span>
+</>
+className="text-xs">Materials</span>
                           </div>
                           {form.getValues().buildingAge > 0 && (
                             <div className="flex items-center"><>
@@ -2478,7 +2550,8 @@ const BCBSCostCalculator = () => {
                                 }}
                               ></div>
                               <span
-</> className="text-xs">Age Depreciation</span>
+</>
+className="text-xs">Age Depreciation</span>
                             </div>
                           )}
                         </div>
@@ -2510,7 +2583,8 @@ const BCBSCostCalculator = () => {
                     Interactive Cost Explainer
                   </h3>
                   <div
-</> className="p-2 bg-white border rounded-lg mb-6">
+</>
+className="p-2 bg-white border rounded-lg mb-6">
                     <div className="flex items-center mb-2">
                       <p className="text-sm text-gray-600">Watch how different factors impact your building cost estimate:</p>
                     </div>
@@ -2538,7 +2612,8 @@ const BCBSCostCalculator = () => {
                   </h3>
                   
                   <div
-</> className="mb-4"><>
+</>
+className="mb-4"><>
 
                     <QuickExportButton 
                       calculation={{
@@ -2565,7 +2640,8 @@ const BCBSCostCalculator = () => {
                   </div>
                   
                   <h4
-</> className="text-sm font-medium mb-2 text-gray-600">Advanced Export Options</h4>
+</>
+className="text-sm font-medium mb-2 text-gray-600">Advanced Export Options</h4>
                   <div className="flex flex-wrap gap-2">
                     <ExportPdfDialog 
                       calculation={{
@@ -2648,6 +2724,7 @@ const BCBSCostCalculator = () => {
 
                     <span>←</span>
                     <span
+</>
 </>>Back to Materials</span>
                   </Button>
                   
@@ -2659,6 +2736,7 @@ const BCBSCostCalculator = () => {
 
                     <span>Start New Calculation</span>
                     <span
+</>
 </>>↺</span>
                   </Button>
                 </div>
@@ -2671,7 +2749,8 @@ const BCBSCostCalculator = () => {
                     Advanced Cost Prediction
                   </h3>
                   <PredictiveCostAnalysis
-</> 
+</>
+
                     buildingType={form.getValues().buildingType}
                     squareFeet={form.getValues().squareFootage}
                     quality={form.getValues().quality}
@@ -2690,7 +2769,8 @@ const BCBSCostCalculator = () => {
                     Material Substitution Recommendations
                   </h3>
                   <MaterialSubstitutionEngine
-</> 
+</>
+
                     buildingType={form.getValues().buildingType}
                     region={form.getValues().region}
                     quality={form.getValues().quality}
@@ -2719,7 +2799,8 @@ const BCBSCostCalculator = () => {
 
                     <p className="text-lg text-gray-500">No scenarios saved yet.</p>
                     <p
-</> className="text-sm text-gray-400 mt-1">
+</>
+className="text-sm text-gray-400 mt-1">
                       Create a scenario from the Results tab to compare different building options.
                     </p>
                   </div>
@@ -2733,18 +2814,21 @@ const BCBSCostCalculator = () => {
                           Saved Scenarios
                         </h3>
                         <div
-</> className="border rounded-md overflow-hidden">
+</>
+className="border rounded-md overflow-hidden">
                           <Table>
                             <TableHeader className="bg-gray-100">
                               <TableRow><>
 
                                 <TableHead>Name</TableHead>
                                 <TableHead
+</>
 </>>Cost</TableHead><>
 
                                 <TableHead>Region</TableHead>
                                 <TableHead
-</> className="w-[120px]">Actions</TableHead>
+</>
+className="w-[120px]">Actions</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -2759,6 +2843,7 @@ const BCBSCostCalculator = () => {
 
                                   <TableCell>${scenario.totalCost.toLocaleString()}</TableCell>
                                   <TableCell
+</>
 </>>
                                     {regions.find(r => r.value === scenario.formValues.region)?.label}
                                   </TableCell>
@@ -2785,6 +2870,7 @@ const BCBSCostCalculator = () => {
                                       </Button>
                                       <Button
 </>
+
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => deleteScenario(scenario.id)}
@@ -2818,13 +2904,15 @@ const BCBSCostCalculator = () => {
                           Scenario Comparison
                         </h3>
                         <div
-</> className="bg-white border rounded-md p-4">
+</>
+className="bg-white border rounded-md p-4">
                           <div className="grid grid-cols-2 gap-4 mb-4">
                             <div><>
 
                               <label className="text-sm font-medium text-gray-700">Baseline Scenario</label>
                               <Select
 </>
+
                                 onValueChange={(value) => {
                                   const scenario = scenarios.find(s => s.id === value);
                                   setComparisonScenarios('baseline', scenario || null);
@@ -2836,6 +2924,7 @@ const BCBSCostCalculator = () => {
                                   <SelectValue placeholder="Select baseline" />
                                 </SelectTrigger>
                                 <SelectContent
+</>
 </>>
                                   {scenarios.map((scenario) => (
                                     <SelectItem key={`baseline-${scenario.id}`} value={scenario.id}>
@@ -2850,6 +2939,7 @@ const BCBSCostCalculator = () => {
                               <label className="text-sm font-medium text-gray-700">Comparison Scenario</label>
                               <Select
 </>
+
                                 onValueChange={(value) => {
                                   const scenario = scenarios.find(s => s.id === value);
                                   setComparisonScenarios('comparison', scenario || null);
@@ -2861,6 +2951,7 @@ const BCBSCostCalculator = () => {
                                   <SelectValue placeholder="Select comparison" />
                                 </SelectTrigger>
                                 <SelectContent
+</>
 </>>
                                   {scenarios.map((scenario) => (
                                     <SelectItem key={`comparison-${scenario.id}`} value={scenario.id}>
@@ -2879,13 +2970,15 @@ const BCBSCostCalculator = () => {
 
                                   <h4 className="font-medium">{scenarioComparison.baseline.name}</h4>
                                   <p
-</> className="text-sm text-gray-600">${scenarioComparison.baseline.totalCost.toLocaleString()}</p>
+</>
+className="text-sm text-gray-600">${scenarioComparison.baseline.totalCost.toLocaleString()}</p>
                                 </div>
                                 <div><>
 
                                   <h4 className="font-medium text-right">{scenarioComparison.comparison.name}</h4>
                                   <p
-</> className="text-sm text-gray-600 text-right">${scenarioComparison.comparison.totalCost.toLocaleString()}</p>
+</>
+className="text-sm text-gray-600 text-right">${scenarioComparison.comparison.totalCost.toLocaleString()}</p>
                                 </div>
                               </div>
                               
@@ -2909,17 +3002,20 @@ const BCBSCostCalculator = () => {
 
                                 <h4 className="font-medium mb-2">Key Differences</h4>
                                 <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                                   {scenarioComparison.baseline.formValues.buildingType !== scenarioComparison.comparison.formValues.buildingType && (
                                     <div className="flex justify-between border-b pb-1"><>
 
                                       <span>Building Type:</span>
                                       <div
-</> className="flex items-center"><>
+</>
+className="flex items-center"><>
 
                                         <span>{buildingTypes.find(t => t.value === scenarioComparison.baseline?.formValues.buildingType)?.label}</span>
                                         <ArrowRightLeft
-</> className="mx-2 h-3 w-3" />
+</>
+className="mx-2 h-3 w-3" />
                                         <span>{buildingTypes.find(t => t.value === scenarioComparison.comparison?.formValues.buildingType)?.label}</span>
                                       </div>
                                     </div>
@@ -2929,11 +3025,13 @@ const BCBSCostCalculator = () => {
 
                                       <span>Quality:</span>
                                       <div
-</> className="flex items-center"><>
+</>
+className="flex items-center"><>
 
                                         <span>{qualityLevels.find(q => q.value === scenarioComparison.baseline?.formValues.quality)?.label}</span>
                                         <ArrowRightLeft
-</> className="mx-2 h-3 w-3" />
+</>
+className="mx-2 h-3 w-3" />
                                         <span>{qualityLevels.find(q => q.value === scenarioComparison.comparison?.formValues.quality)?.label}</span>
                                       </div>
                                     </div>
@@ -2943,11 +3041,13 @@ const BCBSCostCalculator = () => {
 
                                       <span>Region:</span>
                                       <div
-</> className="flex items-center"><>
+</>
+className="flex items-center"><>
 
                                         <span>{regions.find(r => r.value === scenarioComparison.baseline?.formValues.region)?.label}</span>
                                         <ArrowRightLeft
-</> className="mx-2 h-3 w-3" />
+</>
+className="mx-2 h-3 w-3" />
                                         <span>{regions.find(r => r.value === scenarioComparison.comparison?.formValues.region)?.label}</span>
                                       </div>
                                     </div>
@@ -2957,11 +3057,13 @@ const BCBSCostCalculator = () => {
 
                                       <span>Square Footage:</span>
                                       <div
-</> className="flex items-center"><>
+</>
+className="flex items-center"><>
 
                                         <span>{scenarioComparison.baseline.formValues.squareFootage.toLocaleString()}</span>
                                         <ArrowRightLeft
-</> className="mx-2 h-3 w-3" />
+</>
+className="mx-2 h-3 w-3" />
                                         <span>{scenarioComparison.comparison.formValues.squareFootage.toLocaleString()}</span>
                                       </div>
                                     </div>
@@ -2971,11 +3073,13 @@ const BCBSCostCalculator = () => {
 
                                       <span>Materials:</span>
                                       <div
-</> className="flex items-center"><>
+</>
+className="flex items-center"><>
 
                                         <span>{scenarioComparison.baseline.materials.length} items</span>
                                         <ArrowRightLeft
-</> className="mx-2 h-3 w-3" />
+</>
+className="mx-2 h-3 w-3" />
                                         <span>{scenarioComparison.comparison.materials.length} items</span>
                                       </div>
                                     </div>
@@ -2989,7 +3093,8 @@ const BCBSCostCalculator = () => {
 
                                   <h4 className="font-medium mb-2">Visual Comparison</h4>
                                   <div
-</> className="h-64 border rounded-md overflow-hidden">
+</>
+className="h-64 border rounded-md overflow-hidden">
                                     <ResponsiveContainer width="100%" height="100%">
                                       <BarChart
                                         data={[
@@ -3069,19 +3174,22 @@ const BCBSCostCalculator = () => {
                       <h3 className="text-lg font-medium text-[#243E4D] mb-4">Scenario Analytics Dashboard</h3>
                       
                       <div
-</> className="grid grid-cols-1 md:grid-cols-4 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="bg-[#e6eef2] p-3 rounded-lg"><>
 
                           <h4 className="text-sm font-medium text-[#243E4D] mb-1">Total Scenarios</h4>
                           <p
-</> className="text-2xl font-bold text-[#243E4D]">{scenarios.length}</p>
+</>
+className="text-2xl font-bold text-[#243E4D]">{scenarios.length}</p>
                         </div>
                         
                         <div className="bg-[#e8f8fb] p-3 rounded-lg"><>
 
                           <h4 className="text-sm font-medium text-[#243E4D] mb-1">Avg. Building Cost</h4>
                           <p
-</> className="text-2xl font-bold text-[#29B7D3]">
+</>
+className="text-2xl font-bold text-[#29B7D3]">
                             ${Math.round(scenarios.reduce((sum, scenario) => sum + scenario.totalCost, 0) / Math.max(1, scenarios.length)).toLocaleString()}
                           </p>
                         </div>
@@ -3090,7 +3198,8 @@ const BCBSCostCalculator = () => {
 
                           <h4 className="text-sm font-medium text-[#243E4D] mb-1">Lowest Cost Option</h4>
                           <p
-</> className="text-2xl font-bold text-[#3CAB36]">
+</>
+className="text-2xl font-bold text-[#3CAB36]">
                             ${scenarios.length > 0 
                               ? Math.min(...scenarios.map(s => s.totalCost)).toLocaleString()
                               : "0"}
@@ -3101,7 +3210,8 @@ const BCBSCostCalculator = () => {
 
                           <h4 className="text-sm font-medium text-[#243E4D] mb-1">Highest Cost Option</h4>
                           <p
-</> className="text-2xl font-bold text-[#243E4D]">
+</>
+className="text-2xl font-bold text-[#243E4D]">
                             ${scenarios.length > 0
                               ? Math.max(...scenarios.map(s => s.totalCost)).toLocaleString()
                               : "0"}
@@ -3132,6 +3242,7 @@ const BCBSCostCalculator = () => {
 
             <DialogTitle>Save Scenario</DialogTitle>
             <DialogDescription
+</>
 </>>
               Save your current calculation as a scenario for future reference and comparison.
             </DialogDescription>
@@ -3143,7 +3254,8 @@ const BCBSCostCalculator = () => {
                 Scenario Name
               </label>
               <Input
-</> 
+</>
+
                 id="scenario-name" 
                 placeholder="Enter a name for this scenario"
                 autoFocus
@@ -3163,20 +3275,24 @@ const BCBSCostCalculator = () => {
                 Description (Optional)
               </label>
               <Input
-</> id="scenario-description" placeholder="Brief description of this scenario" />
+</>
+id="scenario-description" placeholder="Brief description of this scenario" />
             </div>
             <div className="bg-gray-50 rounded-md p-3 text-sm"><>
 
               <p className="font-medium">Scenario will include:</p>
               <ul
-</> className="list-disc list-inside text-gray-600 mt-1 space-y-1"><>
+</>
+className="list-disc list-inside text-gray-600 mt-1 space-y-1"><>
 
                 <li>Building specifications (type, size, quality)</li>
                             <li
+</>
 </>>Materials and quantities</li><>
 
                 <li>Location and adjustment factors</li>
                             <li
+</>
 </>>Total cost calculation</li>
               </ul>
             </div>
@@ -3187,7 +3303,8 @@ const BCBSCostCalculator = () => {
               Cancel
             </Button>
             <Button
-</> 
+</>
+
               onClick={() => {
                 const nameInput = document.getElementById('scenario-name') as HTMLInputElement;
                 const descInput = document.getElementById('scenario-description') as HTMLInputElement;

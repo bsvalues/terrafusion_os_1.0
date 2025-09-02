@@ -158,7 +158,6 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
   };
   
   return (
-    <>
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -166,7 +165,8 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
 
               <CardTitle className="text-lg font-semibold text-neutral-800">Required Documents</CardTitle>
               <CardDescription
-</> className="text-sm text-neutral-500">
+</>
+className="text-sm text-neutral-500">
                 Upload and manage workflow documents
               </CardDescription>
             </div>
@@ -177,7 +177,8 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
                 Auto-classify
               </Label>
               <Switch
-</> 
+</>
+
                 id="auto-classify" 
                 checked={useClassification}
                 onCheckedChange={setUseClassification} 
@@ -194,7 +195,8 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
 
                 <p className="text-sm font-medium text-primary-800">{doc.name}</p>
                 <p
-</> className="text-xs text-neutral-500">Uploaded {formatDate(doc.uploadedAt)}</p>
+</>
+className="text-xs text-neutral-500">Uploaded {formatDate(doc.uploadedAt)}</p>
               </div>
               <Button
                 variant="ghost" 
@@ -255,6 +257,7 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
 
             <DialogTitle>Document Classification</DialogTitle>
             <DialogDescription
+</>
 </>>
               Machine learning has analyzed your document
             </DialogDescription>
@@ -267,7 +270,8 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
 
                   <TabsTrigger value="result">Classification</TabsTrigger>
                   <TabsTrigger
-</> value="document">Document</TabsTrigger>
+</>
+value="document">Document</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="result" className="mt-4"><>
@@ -279,12 +283,14 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
                 </TabsContent>
                 
                 <TabsContent
-</> value="document" className="mt-4">
+</>
+value="document" className="mt-4">
                   <div className="bg-slate-50 dark:bg-slate-900 p-3 rounded-md"><>
 
                     <p className="text-sm font-medium">{selectedFile?.name}</p>
                     <p
-</> className="text-xs text-slate-500 mt-1">
+</>
+className="text-xs text-slate-500 mt-1">
                       Document will be classified as: <span className="font-semibold">{classificationResult.documentTypeLabel}</span>
                     </p>
                   </div>
@@ -302,7 +308,8 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
               Cancel
             </Button>
             <Button
-</> 
+</>
+
               onClick={handleClassifiedUpload}
               disabled={isUploading}
               className="flex items-center gap-1.5"
@@ -313,6 +320,5 @@ export function DocumentUploader({ workflowId, documents, onViewDocument }: Docu
           </div>
         </DialogContent>
       </Dialog>
-    </>
   );
 }

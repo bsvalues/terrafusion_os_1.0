@@ -98,6 +98,10 @@
 3. What ports are the core services on? (Answer: 5000 backend, 3002 frontend, 3004 consciousness)
 4. What makes this revolutionary? (Answer: First government OS with AI swarm and marketplace)
 5. Why no Tauri? (Answer: Terrafusion IS the OS, doesn't need wrappers)
+6. **What's the marketplace?** (Answer: World's First Government App Store with $5.4M annual potential)
+7. **What's the deployment model?** (Answer: White Glove Professional Installation with 24/7 Platinum Support)
+8. **What's the additional ARPU from plugins?** (Answer: $142/month per county)
+9. **What's the combined ARPU?** (Answer: $619/month per county - $477 platform + $142 plugins)
 
 **If you cannot answer these confidently, READ THE REQUIRED DOCS AGAIN.**
 

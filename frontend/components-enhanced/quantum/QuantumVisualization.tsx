@@ -70,7 +70,8 @@ export const QuantumVisualization: React.FC = () => {
 
         <h3 className="text-lg font-semibold">Quantum State Visualization</h3>
         <Badge
-</> variant={isConnected ? 'default' : 'secondary'}>
+</>
+variant={isConnected ? 'default' : 'secondary'}>
           {isConnected ? 'Connected' : 'Offline'}
         </Badge>
       </div>
@@ -81,6 +82,7 @@ export const QuantumVisualization: React.FC = () => {
 
           <CardTitle>Qubit States</CardTitle>
           <CardDescription
+</>
 </>>
             Real-time quantum bit visualization
           </CardDescription>
@@ -103,7 +105,8 @@ export const QuantumVisualization: React.FC = () => {
                   {getQubitSymbol(qubit.state)}
                 </div>
                 <div
-</> className="absolute bottom-1 text-xs text-muted-foreground">
+</>
+className="absolute bottom-1 text-xs text-muted-foreground">
                   Q{qubit.id}
                 </div>
                 <div className="absolute top-1 right-1">
@@ -164,6 +167,7 @@ export const QuantumVisualization: React.FC = () => {
 
           <CardTitle>Quantum Circuit</CardTitle>
           <CardDescription
+</>
 </>>
             Active quantum circuit for property assessment
           </CardDescription>

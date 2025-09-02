@@ -4,8 +4,11 @@ import { Routes, Route } from 'react-router-dom';
 // Simple placeholder component since we've excluded components-enhanced for now
 const DocumentationHub = () => (
   <div style={{ padding: '2rem', textAlign: 'center' }}>
+
+
     <h1>Documentation Hub</h1>
-    <p>Terrafusion OS Documentation - Coming Soon</p>
+    <p
+>Terrafusion OS Documentation - Coming Soon</p>
   </div>
 );
 

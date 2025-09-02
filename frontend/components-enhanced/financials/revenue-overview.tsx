@@ -44,13 +44,15 @@ export function RevenueOverview() {
 
             <CardTitle className="text-sm font-medium text-gray-300">{metric.title}</CardTitle>
             <metric
+</>
 </>.icon className={`h-4 w-4 ${metric.color}`} />
           </CardHeader>
           <CardContent><>
 
             <div className="text-2xl font-bold text-white mb-1">{metric.value}</div>
             <p
-</> className="text-xs text-accent">{metric.change} from last year</p>
+</>
+className="text-xs text-accent">{metric.change} from last year</p>
           </CardContent>
         </Card>
       ))}

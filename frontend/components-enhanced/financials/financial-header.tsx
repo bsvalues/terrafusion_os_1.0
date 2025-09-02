@@ -9,7 +9,8 @@ export function FinancialHeader() {
 
             <h1 className="text-3xl font-bold text-white mb-2">Financial Projections</h1>
             <p
-</> className="text-gray-300">Path to $1B ARR across 1000+ counties</p>
+</>
+className="text-gray-300">Path to $1B ARR across 1000+ counties</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20">

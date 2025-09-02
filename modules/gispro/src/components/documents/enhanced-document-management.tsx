@@ -132,7 +132,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
         <h3 className="text-lg font-medium mb-2">Error Loading Documents</h3>
         <p
-</> className="text-slate-500">
+</>
+className="text-slate-500">
           There was a problem fetching documents for this workflow
         </p>
         <Button 
@@ -154,7 +155,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
             <h2 className="text-2xl font-bold tracking-tight mb-1">Document Management</h2>
             <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
               Manage documents for {workflow.title}
             </p>
           </div>
@@ -166,10 +168,12 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                 <p className="mb-1">• View and organize documents by type</p>
                 <p
-</> className="mb-1">• Track document versions with the version history feature</p><>
+</>
+className="mb-1">• Track document versions with the version history feature</p><>
 
                 <p className="mb-1">• Associate parcels with documents for easy cross-referencing</p>
                 <p
+</>
 </>>• Batch upload multiple documents for automatic classification</p>
               </div>
             }
@@ -194,6 +198,7 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
               Workflow Documents
             </CardTitle>
             <CardDescription
+</>
 </>>
               {filteredDocuments.length} of {documents.length} document{documents.length !== 1 ? 's' : ''} {searchQuery || filterType ? 'matching your filters' : 'in this workflow'}
             </CardDescription>
@@ -213,7 +218,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
             </div>
             
             <div
-</> className="relative">
+</>
+className="relative">
               <select
                 className="h-9 pl-3 pr-8 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-1 focus:ring-primary focus:border-primary appearance-none"
                 value={filterType || ""}
@@ -222,25 +228,30 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                 <option value="">All Types</option>
                 <option
-</> value="deed">Deed</option><>
+</>
+value="deed">Deed</option><>
 
                 <option value="plat">Plat</option>
                 <option
-</> value="survey">Survey</option><>
+</>
+value="survey">Survey</option><>
 
                 <option value="boundary_line_adjustment">Boundary Line Adjustment</option>
                 <option
-</> value="legal_document">Legal Document</option><>
+</>
+value="legal_document">Legal Document</option><>
 
                 <option value="report">Report</option>
                 <option
-</> value="image">Image</option>
+</>
+value="image">Image</option>
               </select><>
 
               <Tag className="h-4 w-4 absolute right-2.5 top-2.5 text-slate-500 pointer-events-none" />
             </div>
             
             <motion
+</>
 </>.div
               className="bg-slate-100 dark:bg-slate-800 rounded-md p-1 flex"
               initial={{ opacity: 0, y: -10 }}
@@ -258,6 +269,7 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
               </Button>
               <Button
 </>
+
                 variant={viewMode === 'table' ? 'secondary' : 'ghost'}
                 size="sm"
                 className="h-8"
@@ -277,7 +289,6 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
               transition={{ duration: 0.5 }}
             >
               {filteredDocuments.length > 0 ? (
-                <>
                   {viewMode === 'table' ? (
                     <div className="border rounded-md overflow-hidden">
                       <Table>
@@ -286,11 +297,13 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                             <TableHead>Name</TableHead>
                             <TableHead
+</>
 </>>Type</TableHead><>
 
                             <TableHead>Uploaded</TableHead>
                             <TableHead
-</> className="w-24 text-right">Actions</TableHead>
+</>
+className="w-24 text-right">Actions</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -304,6 +317,7 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
                                 {document.name}
                               </TableCell>
                               <TableCell
+</>
 </>>
                                 <Badge variant="outline" className="capitalize">
                                   {document.type.replace(/_/g, ' ')}
@@ -337,14 +351,14 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
                       onViewDocument={handleViewDocument}
                     />
                   )}
-                </>
               ) : (
                 <div className="text-center py-12 border rounded-md">
                   <Search className="h-12 w-12 mx-auto text-slate-300 dark:text-slate-600 mb-4" /><>
 
                   <h3 className="text-lg font-medium mb-2">No Matching Documents</h3>
                   <p
-</> className="text-slate-500 mb-6">
+</>
+className="text-slate-500 mb-6">
                     No documents match your search criteria
                   </p>
                   <Button 
@@ -365,7 +379,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
               <h3 className="text-lg font-medium mb-2">No Documents Found</h3>
               <p
-</> className="text-slate-500 mb-6">
+</>
+className="text-slate-500 mb-6">
                 This workflow doesn't have any documents yet
               </p>
               <Button onClick={() => setShowBatchUploader(true)}>
@@ -387,6 +402,7 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
             <DialogTitle>Batch Document Upload</DialogTitle>
             <DialogDescription
+</>
 </>>
               Upload and classify multiple documents at once
             </DialogDescription>
@@ -409,6 +425,7 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
             <DialogTitle>Document Details</DialogTitle>
             <DialogDescription
+</>
 </>>
               {selectedDocument?.name}
             </DialogDescription>
@@ -445,7 +462,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                         <h4 className="text-sm font-medium mb-1">Name</h4>
                         <p
-</> className="text-slate-800 dark:text-slate-200">
+</>
+className="text-slate-800 dark:text-slate-200">
                           {selectedDocument.name}
                         </p>
                       </div>
@@ -455,7 +473,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                           <h4 className="text-sm font-medium mb-1">Type</h4>
                           <Badge
-</> className="capitalize">
+</>
+className="capitalize">
                             {getDocumentTypeLabel(selectedDocument.type)}
                           </Badge>
                         </div>
@@ -464,7 +483,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                           <h4 className="text-sm font-medium mb-1">Content Type</h4>
                           <p
-</> className="text-slate-600 dark:text-slate-400 text-sm">
+</>
+className="text-slate-600 dark:text-slate-400 text-sm">
                             {selectedDocument.contentType}
                           </p>
                         </div>
@@ -475,7 +495,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                           <h4 className="text-sm font-medium mb-1">Uploaded</h4>
                           <p
-</> className="text-slate-600 dark:text-slate-400 text-sm">
+</>
+className="text-slate-600 dark:text-slate-400 text-sm">
                             {new Date(selectedDocument.uploadedAt).toLocaleString()}
                           </p>
                         </div>
@@ -484,7 +505,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                           <h4 className="text-sm font-medium mb-1">Last Updated</h4>
                           <p
-</> className="text-slate-600 dark:text-slate-400 text-sm">
+</>
+className="text-slate-600 dark:text-slate-400 text-sm">
                             {selectedDocument.updatedAt 
                               ? new Date(selectedDocument.updatedAt).toLocaleString() 
                               : 'Not updated'}
@@ -517,7 +539,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
 
                           <h3 className="text-base font-medium mb-1">Not Classified</h3>
                           <p
-</> className="text-sm text-slate-500">
+</>
+className="text-sm text-slate-500">
                             This document hasn't been classified yet
                           </p>
                         </div>
@@ -552,7 +575,8 @@ export function EnhancedDocumentManagement({ workflow }: EnhancedDocumentManagem
               </TabsContent>
               
               <TabsContent
-</> value="parcels">
+</>
+value="parcels">
                 <DocumentParcelManager document={selectedDocument} />
               </TabsContent>
             </Tabs>

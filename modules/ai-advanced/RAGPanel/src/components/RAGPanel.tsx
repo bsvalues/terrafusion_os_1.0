@@ -157,7 +157,8 @@ export const RAGPanel: React.FC = () => {
             System Health
           </h3>
           <div
-</> className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+</>
+className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
             health?.status === 'healthy' 
               ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
               : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
@@ -177,7 +178,8 @@ export const RAGPanel: React.FC = () => {
 
               <span className="text-gray-600 dark:text-gray-400">Ollama:</span>
               <span
-</> className={`ml-2 font-medium ${
+</>
+className={`ml-2 font-medium ${
                 health.ollama_healthy ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               }`}>
                 {health.ollama_healthy ? 'Connected' : 'Disconnected'}
@@ -187,7 +189,8 @@ export const RAGPanel: React.FC = () => {
 
               <span className="text-gray-600 dark:text-gray-400">Embeddings:</span>
               <span
-</> className={`ml-2 font-medium ${
+</>
+className={`ml-2 font-medium ${
                 health.embedding_healthy ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               }`}>
                 {health.embedding_healthy ? 'Ready' : 'Not Ready'}
@@ -197,7 +200,8 @@ export const RAGPanel: React.FC = () => {
 
               <span className="text-gray-600 dark:text-gray-400">Storage:</span>
               <span
-</> className="ml-2 font-medium text-gray-800 dark:text-gray-200">
+</>
+className="ml-2 font-medium text-gray-800 dark:text-gray-200">
                 {health.storage_type}
               </span>
             </div>
@@ -205,7 +209,8 @@ export const RAGPanel: React.FC = () => {
 
               <span className="text-gray-600 dark:text-gray-400">Documents:</span>
               <span
-</> className="ml-2 font-medium text-gray-800 dark:text-gray-200">
+</>
+className="ml-2 font-medium text-gray-800 dark:text-gray-200">
                 {stats?.document_count || 0}
               </span>
             </div>
@@ -222,7 +227,8 @@ export const RAGPanel: React.FC = () => {
         </h3>
         
         <div
-</> className="flex items-center space-x-4">
+</>
+className="flex items-center space-x-4">
           <input
             type="file"
             accept=".txt,.md,.json,.csv"
@@ -258,7 +264,8 @@ export const RAGPanel: React.FC = () => {
         </h3>
         
         <div
-</> className="flex space-x-4">
+</>
+className="flex space-x-4">
           <input
             type="text"
             value={query}
@@ -287,12 +294,14 @@ export const RAGPanel: React.FC = () => {
           </h3>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             <div><>
 
               <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Answer:</h4>
               <p
-</> className="text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 p-3 rounded">
+</>
+className="text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 p-3 rounded">
                 {queryResult.answer}
               </p>
             </div>
@@ -301,6 +310,7 @@ export const RAGPanel: React.FC = () => {
 
               <span>Confidence: {(queryResult.confidence * 100).toFixed(1)}%</span>
               <span
+</>
 </>>Query time: {queryResult.query_time_ms}ms</span>
               <span>Sources: {queryResult.sources.length}</span>
             </div>
@@ -310,7 +320,8 @@ export const RAGPanel: React.FC = () => {
 
                 <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Sources:</h4>
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   {queryResult.sources.map((source, idx) => (
                     <div key={idx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded text-sm">
                       <p className="text-gray-700 dark:text-gray-300">{source.content_preview}</p>

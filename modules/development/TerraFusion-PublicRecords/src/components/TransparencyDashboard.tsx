@@ -92,7 +92,8 @@ export const TransparencyDashboard: React.FC = () => {
             Benton County in Real-Time
           </h1>
           <p
-</> className="text-xl text-gray-600">
+</>
+className="text-xl text-gray-600">
             {BentonCountyData.statistics.totalParcels.toLocaleString()} parcels • {BentonCountyData.county.population.toLocaleString()} citizens • Complete transparency
           </p>
         </motion.div>
@@ -133,7 +134,8 @@ export const TransparencyDashboard: React.FC = () => {
 
                 <span className="text-sm text-gray-600">{metric.label}</span>
                 <span
-</> className={`text-xs font-bold ${
+</>
+className={`text-xs font-bold ${
                   metric.trend === 'up' ? 'text-green-500' : 
                   metric.trend === 'down' ? 'text-red-500' : 
                   'text-gray-500'
@@ -165,7 +167,8 @@ export const TransparencyDashboard: React.FC = () => {
 
             <h2 className="text-xl font-bold text-gray-900">Live Activity</h2>
             <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-sm text-gray-500">Live</span>
             </div>
@@ -189,13 +192,15 @@ export const TransparencyDashboard: React.FC = () => {
                         {activity.action}
                       </p>
                       <div
-</> className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+</>
+className="flex items-center gap-3 mt-1 text-xs text-gray-500">
                         <span className="flex items-center gap-1"><>
 
                           <MapPin className="w-3 h-3" />
                           {activity.location}
                         </span>
                         <span
+</>
 </>>
                           {new Date(activity.timestamp).toLocaleTimeString()}
                         </span>
@@ -225,7 +230,8 @@ export const TransparencyDashboard: React.FC = () => {
           </h2>
           
           <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
             <LineChart data={performanceData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="hour" stroke="#9ca3af" fontSize={12} />
@@ -272,14 +278,16 @@ export const TransparencyDashboard: React.FC = () => {
           </h2>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             {departmentEfficiency.map((dept) => (
               <div key={dept.name}>
                 <div className="flex justify-between text-sm mb-1"><>
 
                   <span className="font-medium text-gray-700">{dept.name}</span>
                   <span
-</> className="text-gray-900 font-bold">{dept.efficiency}%</span>
+</>
+className="text-gray-900 font-bold">{dept.efficiency}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <motion.div
@@ -317,7 +325,8 @@ export const TransparencyDashboard: React.FC = () => {
           </h2>
           
           <ResponsiveContainer
-</> width="100%" height={250}>
+</>
+width="100%" height={250}>
             <PieChart>
               <Pie
                 data={permitStats}
@@ -334,7 +343,8 @@ export const TransparencyDashboard: React.FC = () => {
                 ))}
               </Pie>
               <Tooltip
-</> />
+</>
+/>
             </PieChart>
           </ResponsiveContainer>
           
@@ -366,7 +376,8 @@ export const TransparencyDashboard: React.FC = () => {
           </h2>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             {[
               { service: 'Permit Approval', ours: 3, industry: 14, unit: 'days' },
               { service: 'License Renewal', ours: 1, industry: 7, unit: 'days' },
@@ -379,7 +390,8 @@ export const TransparencyDashboard: React.FC = () => {
                   {item.service}
                 </p>
                 <div
-</> className="flex items-center gap-4">
+</>
+className="flex items-center gap-4">
                   <div className="flex-1">
                     <div className="flex justify-between text-xs mb-1"><>
 
@@ -387,7 +399,8 @@ export const TransparencyDashboard: React.FC = () => {
                         Us: {item.ours} {item.unit}
                       </span>
                       <span
-</> className="text-gray-500">
+</>
+className="text-gray-500">
                         Industry: {item.industry} {item.unit}
                       </span>
                     </div>
@@ -424,7 +437,8 @@ export const TransparencyDashboard: React.FC = () => {
               379,000,000× Faster Than Legacy Systems
             </h3>
             <p
-</> className="text-white/90">
+</>
+className="text-white/90">
               Every metric, every transaction, every decision - transparent and instant.
             </p>
           </div>
@@ -432,7 +446,8 @@ export const TransparencyDashboard: React.FC = () => {
 
             <div className="text-3xl font-bold">$2.3M</div>
             <div
-</> className="text-sm text-white/70">Saved this year through AI efficiency</div>
+</>
+className="text-sm text-white/70">Saved this year through AI efficiency</div>
           </div>
         </div>
       </motion.div>

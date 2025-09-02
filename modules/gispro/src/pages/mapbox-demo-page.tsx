@@ -223,11 +223,13 @@ export function MapboxDemoPage() {
       <h1 className="text-2xl font-bold mb-4">Mapbox Demo</h1>
       
       <Card
-</> className="flex-grow overflow-hidden">
+</>
+className="flex-grow overflow-hidden">
         <CardHeader className="pb-2"><>
 
           <CardTitle>Mapbox GL JS Map</CardTitle>
           <CardDescription
+</>
 </>>
             Interactive map with drawing capabilities.
           </CardDescription>
@@ -236,11 +238,13 @@ export function MapboxDemoPage() {
 
               <TabsTrigger value="view" onClick={() => setDrawMode('view')}>View</TabsTrigger>
               <TabsTrigger
-</> value="draw_polygon" onClick={() => setDrawMode('draw_polygon')}>Draw Polygon</TabsTrigger><>
+</>
+value="draw_polygon" onClick={() => setDrawMode('draw_polygon')}>Draw Polygon</TabsTrigger><>
 
               <TabsTrigger value="draw_line_string" onClick={() => setDrawMode('draw_line_string')}>Draw Line</TabsTrigger>
               <TabsTrigger
-</> value="draw_point" onClick={() => setDrawMode('draw_point')}>Draw Point</TabsTrigger>
+</>
+value="draw_point" onClick={() => setDrawMode('draw_point')}>Draw Point</TabsTrigger>
             </TabsList>
           </Tabs>
         </CardHeader>
@@ -251,6 +255,7 @@ export function MapboxDemoPage() {
 
                 <h3 className="text-lg font-semibold mb-2">Error Loading Map</h3>
                 <p
+</>
 </>>{error}</p>
               </div>
             </div>
@@ -275,7 +280,8 @@ export function MapboxDemoPage() {
 
                         <div className="font-medium">{formatFeatureType(feature.geometry.type)} #{index + 1}</div>
                         <div
-</> className="text-xs text-gray-500 mt-1">
+</>
+className="text-xs text-gray-500 mt-1">
                           ID: {String(feature.id).substring(0, 8)}...
                         </div>
                         <Button 

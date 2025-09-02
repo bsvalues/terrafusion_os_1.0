@@ -22,8 +22,11 @@ export const CountyModulesCard: React.FC = () => {
   return (
     <div className='tf-card'>
       <div className='tf-card-header'>
+
+
         <h3 className={styles.headerTitle}>County Configuration</h3>
         <small
+
 className={styles.headerSubtle}>
           County: {config.countyId || 'benton'} — Legacy: {config.legacySystem || 'PACS_9.0'}
         </small>

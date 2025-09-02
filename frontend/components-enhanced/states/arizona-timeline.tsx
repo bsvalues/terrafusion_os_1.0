@@ -24,7 +24,8 @@ export function ArizonaTimeline() {
 
                 <div className="text-sm text-tf-accent font-mono">{milestone.date}</div>
                 <div
-</> className="flex-1 text-tf-light">{milestone.event}</div>
+</>
+className="flex-1 text-tf-light">{milestone.event}</div>
                 <Badge variant="secondary">{milestone.status}</Badge>
               </div>
             ))}

@@ -396,7 +396,8 @@ export function FileUpload() {
                     <InfoIcon className="h-4 w-4 ml-1.5 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent
-</> className="max-w-xs">
+</>
+className="max-w-xs">
                     <p>
                       RAG (Retrieval-Augmented Generation) processing creates embeddings from your document, 
                       enabling semantic search and AI-powered question answering based on your file content.
@@ -423,6 +424,7 @@ export function FileUpload() {
 
                 <DialogTitle>FTP Configuration</DialogTitle>
                 <DialogDescription
+</>
 </>>
                   Configure your FTP connection settings for secure file transfers.
                 </DialogDescription>
@@ -433,6 +435,7 @@ export function FileUpload() {
                   <Label>Host</Label>
                   <Input
 </>
+
                     value={ftpConfig.host}
                     onChange={(e) => setFtpConfig(prev => ({
                       ...prev,
@@ -447,6 +450,7 @@ export function FileUpload() {
                   <Label>Port</Label>
                   <Input
 </>
+
                     type="number"
                     value={ftpConfig.port}
                     onChange={(e) => setFtpConfig(prev => ({
@@ -464,6 +468,7 @@ export function FileUpload() {
                   <Label>Username</Label>
                   <Input
 </>
+
                     value={ftpConfig.user}
                     onChange={(e) => setFtpConfig(prev => ({
                       ...prev,
@@ -478,6 +483,7 @@ export function FileUpload() {
                   <Label>Password</Label>
                   <Input
 </>
+
                     type="password"
                     value={ftpConfig.password}
                     onChange={(e) => setFtpConfig(prev => ({
@@ -527,7 +533,8 @@ export function FileUpload() {
 
             <h3 className="text-lg font-medium mb-1">Upload Successful</h3>
             <p
-</> className="text-sm text-muted-foreground mb-4">
+</>
+className="text-sm text-muted-foreground mb-4">
               Your file "{uploadedFile.name}" has been successfully uploaded and processed.
             </p>
             <Button onClick={resetUpload}>Upload Another File</Button>
@@ -556,7 +563,8 @@ export function FileUpload() {
 
               <h3 className="font-medium">Uploading{useFtp ? " via FTP" : ""}...</h3>
               <Progress
-</> value={uploadProgress} className="w-full h-2" />
+</>
+value={uploadProgress} className="w-full h-2" />
               <p className="text-sm text-muted-foreground">
                 {uploadProgress < 100 
                   ? `${uploadProgress}% complete`
@@ -578,7 +586,8 @@ export function FileUpload() {
 
               <h3 className="font-medium">Processing file...</h3>
               <div
-</> className="flex justify-center">
+</>
+className="flex justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -590,10 +599,12 @@ export function FileUpload() {
 
               <p className="font-medium">Drag & drop a file here, or click to select</p>
               <div
-</> className="text-sm text-muted-foreground space-y-1"><>
+</>
+className="text-sm text-muted-foreground space-y-1"><>
 
                 <p>Maximum file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
                 <p
+</>
 </>>Supported formats: {supportedFileTypes}</p>
                 {useFtp && (
                   <p className="text-primary-600 font-medium mt-2">

@@ -213,7 +213,8 @@ export default function NaturalLanguageQuery() {
 
                       <p className="text-xs font-medium text-muted-foreground">Suggested Actions:</p>
                       <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                         {message.suggestedActions.map((action /* , index */) => (
                           <Button
                             key={index}
@@ -236,7 +237,8 @@ export default function NaturalLanguageQuery() {
 
                       <p className="text-xs font-medium text-muted-foreground">Related Questions:</p>
                       <div
-</> className="space-y-1">
+</>
+className="space-y-1">
                         {message.relatedQueries.map((relatedQuery /* , index */) => (
                           <Button
                             key={index}
@@ -271,7 +273,8 @@ export default function NaturalLanguageQuery() {
                   <Bot className="h-4 w-4 text-white" />
                 </div>
                 <div
-</> className="bg-white border border-gray-200 rounded-lg p-3">
+</>
+className="bg-white border border-gray-200 rounded-lg p-3">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     AI is analyzing your query...
@@ -287,7 +290,8 @@ export default function NaturalLanguageQuery() {
 
           <p className="text-sm font-medium text-muted-foreground">Quick Start Questions:</p>
           <div
-</> className="grid grid-cols-1 md:grid-cols-2 gap-2">
+</>
+className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {predefinedQuestions.slice(0, 4).map((question /* , index */) => (
               <Button
                 key={index}

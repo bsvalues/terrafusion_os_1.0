@@ -588,7 +588,8 @@ export function CollaborativeMap({
 
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
           <p
-</> className="text-sm text-gray-500">Loading map...</p>
+</>
+className="text-sm text-gray-500">Loading map...</p>
         </div>
       </div>
     );
@@ -608,11 +609,13 @@ export function CollaborativeMap({
 
           <div className="text-red-500 text-4xl mb-2">⚠️</div>
           <h3
-</> className="font-semibold text-lg mb-2">Could not load map</h3><>
+</>
+className="font-semibold text-lg mb-2">Could not load map</h3><>
 
           <p className="text-sm text-gray-600 mb-4">{errorMessage}</p>
           <p
-</> className="text-xs text-gray-500">
+</>
+className="text-xs text-gray-500">
             Please check your internet connection and try again. If the problem persists, ensure you have a valid Mapbox access token.
           </p>
         </div>

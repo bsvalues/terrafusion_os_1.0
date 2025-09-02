@@ -117,6 +117,7 @@ export const CostMatrixManager: React.FC = () => {
 
         <CardTitle>Cost Matrix Manager</CardTitle>
         <CardDescription
+</>
 </>>Upload and manage cost matrices for building cost calculations</CardDescription>
       </CardHeader>
       <CardContent>
@@ -125,11 +126,13 @@ export const CostMatrixManager: React.FC = () => {
 
             <TabsTrigger value="upload">Upload Matrix</TabsTrigger>
             <TabsTrigger
-</> value="batch">Batch Import</TabsTrigger><>
+</>
+value="batch">Batch Import</TabsTrigger><>
 
             <TabsTrigger value="history">Upload History</TabsTrigger>
             <TabsTrigger
-</> value="matrices">Cost Matrices</TabsTrigger>
+</>
+value="matrices">Cost Matrices</TabsTrigger>
           </TabsList>
           
           <TabsContent value="upload" className="pt-4">
@@ -138,6 +141,7 @@ export const CostMatrixManager: React.FC = () => {
 
                 <CardTitle>Upload Excel Cost Matrix</CardTitle>
                 <CardDescription
+</>
 </>>
                   Upload Benton County cost matrix Excel files to import into the system
                 </CardDescription>
@@ -154,7 +158,8 @@ export const CostMatrixManager: React.FC = () => {
                       {selectedFile ? selectedFile.name : "Click to select or drag & drop Excel file"}
                     </p>
                     <p
-</> className="text-xs text-gray-500 mt-1">
+</>
+className="text-xs text-gray-500 mt-1">
                       Supports .xlsx and .xls files
                     </p>
                     <input 
@@ -173,7 +178,8 @@ export const CostMatrixManager: React.FC = () => {
 
                         <span className="ml-2 text-sm">{selectedFile.name}</span>
                         <span
-</> className="ml-2 text-xs text-gray-500">({(selectedFile.size / 1024).toFixed(2)} KB)</span>
+</>
+className="ml-2 text-xs text-gray-500">({(selectedFile.size / 1024).toFixed(2)} KB)</span>
                       </div>
                       <Button variant="ghost" size="sm" onClick={() => setSelectedFile(null)}>
                         <XIcon className="h-4 w-4" />
@@ -188,15 +194,11 @@ export const CostMatrixManager: React.FC = () => {
                   disabled={!selectedFile || isUploading}
                 >
                   {isUploading ? (
-                    <>
                       <RefreshIcon className="h-4 w-4 mr-2 animate-spin" />
                       Uploading...
-                    </>
                   ) : (
-                    <>
                       <DownloadIcon className="h-4 w-4 mr-2" />
                       Upload Matrix
-                    </>
                   )}
                 </Button>
               </CardFooter>
@@ -209,12 +211,14 @@ export const CostMatrixManager: React.FC = () => {
           </TabsContent>
           
           <TabsContent
-</> value="history" className="pt-4">
+</>
+value="history" className="pt-4">
             <Card>
               <CardHeader><>
 
                 <CardTitle>File Upload History</CardTitle>
                 <CardDescription
+</>
 </>>
                   View all cost matrix file uploads and their status
                 </CardDescription>
@@ -230,15 +234,18 @@ export const CostMatrixManager: React.FC = () => {
 
                     <TableCaption>List of uploaded cost matrix files</TableCaption>
                     <TableHeader
+</>
 </>>
                       <TableRow><>
 
                         <TableHead>Filename</TableHead>
                         <TableHead
+</>
 </>>Upload Date</TableHead><>
 
                         <TableHead>Status</TableHead>
                         <TableHead
+</>
 </>>Progress</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -251,6 +258,7 @@ export const CostMatrixManager: React.FC = () => {
                             {file.filename}
                           </TableCell>
                           <TableCell
+</>
 </>>
                             {format(new Date(file.createdAt), 'MMM d, yyyy h:mm a')}
                           </TableCell><>
@@ -259,6 +267,7 @@ export const CostMatrixManager: React.FC = () => {
                             {getStatusBadge(file.status)}
                           </TableCell>
                           <TableCell
+</>
 </>>
                             <div className="w-full max-w-[120px]">
                               {file.status === 'processing' && file.totalItems ? (
@@ -293,6 +302,7 @@ export const CostMatrixManager: React.FC = () => {
 
                 <CardTitle>Cost Matrices</CardTitle>
                 <CardDescription
+</>
 </>>
                   View all imported cost matrices in the system
                 </CardDescription>
@@ -308,15 +318,18 @@ export const CostMatrixManager: React.FC = () => {
 
                     <TableCaption>List of cost matrices in the system</TableCaption>
                     <TableHeader
+</>
 </>>
                       <TableRow><>
 
                         <TableHead>Region</TableHead>
                         <TableHead
+</>
 </>>Building Type</TableHead><>
 
                         <TableHead>Base Cost</TableHead>
                         <TableHead
+</>
 </>>Matrix Year</TableHead>
                         <TableHead>Data Points</TableHead>
                       </TableRow>
@@ -327,10 +340,12 @@ export const CostMatrixManager: React.FC = () => {
 
                           <TableCell className="font-medium">{matrix.region}</TableCell>
                           <TableCell
+</>
 </>>{matrix.buildingType}</TableCell><>
 
                           <TableCell>${parseFloat(matrix.baseCost).toFixed(2)}</TableCell>
                           <TableCell
+</>
 </>>{matrix.matrixYear}</TableCell>
                           <TableCell>{matrix.dataPoints || 'N/A'}</TableCell>
                         </TableRow>

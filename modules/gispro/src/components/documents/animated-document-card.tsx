@@ -82,14 +82,16 @@ export function AnimatedDocumentCard({ document, onView }: AnimatedDocumentCardP
           <h3 className="font-medium text-lg mb-1 line-clamp-1">{document.name}</h3>
           
           <div
-</> className="flex items-center justify-between mt-2"><>
+</>
+className="flex items-center justify-between mt-2"><>
 
             <Badge variant="outline" className="capitalize">
               {getDocumentTypeLabel(document.type)}
             </Badge>
             
             <div
-</> className="flex items-center text-xs text-slate-500">
+</>
+className="flex items-center text-xs text-slate-500">
               <Clock className="h-3 w-3 mr-1" />
               {formatDistanceToNow(new Date(document.uploadedAt))} ago
             </div>

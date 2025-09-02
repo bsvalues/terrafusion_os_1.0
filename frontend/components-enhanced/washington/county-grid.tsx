@@ -230,7 +230,8 @@ export function CountyGrid() {
 
                 <h3 className="text-xl font-bold text-white">{county.name}</h3>
                 <Badge
-</> className={`bg-gradient-to-r ${county.color} text-white`}>{county.priority}</Badge>
+</>
+className={`bg-gradient-to-r ${county.color} text-white`}>{county.priority}</Badge>
               </div>
 
               <div className="space-y-2 mb-4 text-sm">
@@ -238,19 +239,22 @@ export function CountyGrid() {
 
                   <span className="text-white/60">Population</span>
                   <span
-</> className="text-white">{county.population}</span>
+</>
+className="text-white">{county.population}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span className="text-white/60">Parcels</span>
                   <span
-</> className="text-white">{county.parcels}</span>
+</>
+className="text-white">{county.parcels}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span className="text-white/60">Budget</span>
                   <span
-</> className="text-white">{county.budget}</span>
+</>
+className="text-white">{county.budget}</span>
                 </div>
               </div>
 
@@ -259,24 +263,28 @@ export function CountyGrid() {
 
                   <span className="text-sm text-white/60">Integration Score</span>
                   <span
-</> className="text-sm font-semibold text-transcend">{county.integrationScore}%</span>
+</>
+className="text-sm font-semibold text-transcend">{county.integrationScore}%</span>
                 </div><>
 
                 <Progress value={county.integrationScore} className="h-2" />
               </div>
 
               <div
-</> className="bg-black/30 rounded-lg p-3 mb-4"><>
+</>
+className="bg-black/30 rounded-lg p-3 mb-4"><>
 
                 <div className="text-sm font-semibold text-transcend mb-1">{county.message}</div>
                 <div
-</> className="text-xs text-white/70 italic">"{county.hook}"</div>
+</>
+className="text-xs text-white/70 italic">"{county.hook}"</div>
               </div>
 
               <div className="flex justify-between text-xs text-white/60 mb-4"><>
 
                 <span>Savings: {county.savings}</span>
                 <span
+</>
 </>>Timeline: {county.timeline}</span>
               </div>
 
@@ -291,6 +299,7 @@ export function CountyGrid() {
                 </Button>
                 <Button
 </>
+
                   size="sm"
                   variant="outline"
                   className="border-transcend/30 text-transcend hover:bg-transcend/10 bg-transparent"

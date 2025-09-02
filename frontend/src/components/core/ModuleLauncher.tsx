@@ -207,11 +207,14 @@ export const ModuleLauncher: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
+
+
       <Typography variant='h4' gutterBottom sx={{ mb: 3 }}>
         Terrafusion Module Launcher
       </Typography>
 
       <Typography
+
 variant='body1' color='text.secondary' sx={{ mb: 4 }}>
         Launch and manage your government AI modules with quantum-grade performance
       </Typography>
@@ -233,19 +236,27 @@ variant='body1' color='text.secondary' sx={{ mb: 4 }}>
             >
               <CardContent sx={{ flexGrow: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+
+
                   <Avatar sx={{ mr: 2, bgcolor: getCategoryColor(module.category) }}>
                     {module.icon}
                   </Avatar>
                   <Box
+
 sx={{ flexGrow: 1 }}>
+
+
                     <Typography variant='h6' component='div'>
                       {module.name}
                     </Typography>
                     <Typography
+
 variant='body2' color='text.secondary'>
                       v{module.version}
                     </Typography>
                   </Box>
+
+
                   <Chip
                     label={module.status}
                     color={getStatusColor(module.status) as any}
@@ -254,6 +265,7 @@ variant='body2' color='text.secondary'>
                 </Box>
 
                 <Typography
+
 variant='body2' color='text.secondary' sx={{ mb: 2 }}>
                   {module.description}
                 </Typography>
@@ -269,6 +281,8 @@ variant='body2' color='text.secondary' sx={{ mb: 2 }}>
                       mb: 1,
                     }}
                   />
+
+
                   <Chip
                     icon={<SpeedIcon />}
                     label={module.performance.optimization}
@@ -279,6 +293,7 @@ variant='body2' color='text.secondary' sx={{ mb: 2 }}>
                 </Box>
 
                 <Box
+
 sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                   {module.permissions.slice(0, 2).map((permission) => (
                     <Chip
@@ -290,6 +305,8 @@ sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                     />
                   ))}
                   {module.permissions.length > 2 && (
+
+
                     <Chip
                       label={`+${module.permissions.length - 2} more`}
                       size='small'
@@ -300,6 +317,7 @@ sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                 </Box>
 
                 <Box
+
 sx={{ display: 'flex', gap: 1, mt: 'auto' }}>
                   <Button
                     variant='contained'
@@ -307,6 +325,8 @@ sx={{ display: 'flex', gap: 1, mt: 'auto' }}>
                       launchingModule === module.id ? (
                         <CircularProgress size={16} />
                       ) : (
+
+
                         <LaunchIcon />
                       )
                     }
@@ -318,6 +338,7 @@ sx={{ display: 'flex', gap: 1, mt: 'auto' }}>
                   </Button>
 
                   <Tooltip
+
 title='Module Details'>
                     <Button
                       variant='outlined'
@@ -337,13 +358,19 @@ title='Module Details'>
       {/* Module Details Dialog */}
       <Dialog open={detailsOpen} onClose={() => setDetailsOpen(false)} maxWidth='md' fullWidth>
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
+
           <Avatar sx={{ bgcolor: getCategoryColor(selectedModule?.category || '') }}>
             {selectedModule?.icon}
           </Avatar>
           <Box
+
 >
+
+
             <Typography variant='h6'>{selectedModule?.name}</Typography>
             <Typography
+
 variant='body2' color='text.secondary'>
               Version {selectedModule?.version} • {selectedModule?.category}
             </Typography>
@@ -351,9 +378,12 @@ variant='body2' color='text.secondary'>
         </DialogTitle>
 
         <DialogContent>
+
+
           <Typography paragraph>{selectedModule?.description}</Typography>
 
           <Typography
+
 variant='h6' gutterBottom sx={{ mt: 3 }}>
             Performance Metrics
           </Typography>
@@ -362,10 +392,13 @@ variant='h6' gutterBottom sx={{ mt: 3 }}>
             <Grid item xs={4}>
               <Card variant='outlined'>
                 <CardContent sx={{ textAlign: 'center' }}>
+
+
                   <Typography variant='h4' color='primary'>
                     {selectedModule?.performance.responseTime}ms
                   </Typography>
                   <Typography
+
 variant='body2' color='text.secondary'>
                     Response Time
                   </Typography>
@@ -375,10 +408,13 @@ variant='body2' color='text.secondary'>
             <Grid item xs={4}>
               <Card variant='outlined'>
                 <CardContent sx={{ textAlign: 'center' }}>
+
+
                   <Typography variant='h4' color='primary'>
                     {selectedModule?.performance.throughput.toLocaleString()}
                   </Typography>
                   <Typography
+
 variant='body2' color='text.secondary'>
                     Requests/sec
                   </Typography>
@@ -388,10 +424,13 @@ variant='body2' color='text.secondary'>
             <Grid item xs={4}>
               <Card variant='outlined'>
                 <CardContent sx={{ textAlign: 'center' }}>
+
+
                   <Typography variant='h4' color='primary'>
                     {selectedModule?.performance.optimization}
                   </Typography>
                   <Typography
+
 variant='body2' color='text.secondary'>
                     Optimization
                   </Typography>
@@ -399,11 +438,14 @@ variant='body2' color='text.secondary'>
               </Card>
             </Grid>
           </Grid>
+
+
           <Typography variant='h6' gutterBottom>
             Required Permissions
           </Typography>
 
           <Box
+
 sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
             {selectedModule?.permissions.map((permission) => (
               <Chip
@@ -423,8 +465,11 @@ sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
         </DialogContent>
 
         <DialogActions>
+
+
           <Button onClick={() => setDetailsOpen(false)}>Close</Button>
           <Button
+
 variant='contained'
             startIcon={<LaunchIcon />}
             onClick={() => {

@@ -129,7 +129,8 @@ export default function CollaborativeDocumentParcelMapPage() {
 
         <h1 className="text-3xl font-bold mb-2">Collaborative Document-Parcel Map</h1>
         <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
           Work collaboratively on maps and link documents to parcels in real-time
         </p>
       </header>
@@ -140,6 +141,7 @@ export default function CollaborativeDocumentParcelMapPage() {
 
             <CardTitle>Join a Collaborative Session</CardTitle>
             <CardDescription
+</>
 </>>
               Enter your name and a room ID to join, or create a new room
             </CardDescription>
@@ -153,6 +155,7 @@ export default function CollaborativeDocumentParcelMapPage() {
                 </label>
                 <Input
 </>
+
                   id="username"
                   placeholder="Enter your name"
                   value={username}
@@ -166,7 +169,8 @@ export default function CollaborativeDocumentParcelMapPage() {
                   Room ID
                 </label>
                 <div
-</> className="flex space-x-2">
+</>
+className="flex space-x-2">
                   <Input
                     id="roomId"
                     placeholder="Enter room ID"
@@ -206,6 +210,7 @@ export default function CollaborativeDocumentParcelMapPage() {
                 <span>Room: {roomId}</span>
                 <Button
 </>
+
                   variant="ghost"
                   size="icon"
                   className="h-4 w-4 ml-2"
@@ -229,7 +234,8 @@ export default function CollaborativeDocumentParcelMapPage() {
                 Map
               </TabsTrigger>
               <TabsTrigger
-</> value="links">
+</>
+value="links">
                 <LinkIcon className="mr-2 h-4 w-4" />
                 Document-Parcel Links
               </TabsTrigger>
@@ -253,6 +259,7 @@ export default function CollaborativeDocumentParcelMapPage() {
 
                   <CardTitle>Document-Parcel Linking</CardTitle>
                   <CardDescription
+</>
 </>>
                     {selectedParcelId 
                       ? `Manage document links for Parcel #${selectedParcelId}`
@@ -269,6 +276,7 @@ export default function CollaborativeDocumentParcelMapPage() {
                   />
                 </CardContent>
                 <CardFooter
+</>
 </>>
                   <Button variant="outline" onClick={() => setActiveTab('map')}>
                     <MapPin className="mr-2 h-4 w-4" />

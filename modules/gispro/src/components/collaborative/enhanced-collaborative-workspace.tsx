@@ -65,7 +65,8 @@ export function EnhancedCollaborativeWorkspace({
             </TabsContent>
             
             <TabsContent
-</> value="annotations" className="h-full m-0 p-3">
+</>
+value="annotations" className="h-full m-0 p-3">
               {mapInstance && (
                 <Card className="h-full">
                   <CardContent className="p-3">

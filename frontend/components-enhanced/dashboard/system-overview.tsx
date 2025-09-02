@@ -70,7 +70,8 @@ export function SystemOverview() {
 
                     <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
                     <div
-</> className="flex items-baseline gap-2">
+</>
+className="flex items-baseline gap-2">
                       <p className="text-2xl font-bold">
                         {typeof stat.value === "number" && "total" in stat ? `${stat.value}/${stat.total}` : stat.value}
                       </p>
@@ -107,7 +108,8 @@ export function SystemOverview() {
 
                   <span className="text-sm font-medium">{metric.name}</span>
                   <span
-</> className="text-sm text-muted-foreground">{metric.value}%</span>
+</>
+className="text-sm text-muted-foreground">{metric.value}%</span>
                 </div>
                 <Progress value={metric.value} className="h-2" />
                 <div className="flex items-center gap-1">

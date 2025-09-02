@@ -88,7 +88,8 @@ export const MarketplaceDashboard: React.FC<DashboardProps> = ({
              'Developer Dashboard'}
           </h1>
           <p
-</> className="text-gray-600 mt-1">
+</>
+className="text-gray-600 mt-1">
             {userRole === 'admin' ? 'Monitor marketplace performance and growth' :
              userRole === 'county' ? 'Track your plugin usage and insights' :
              'Manage your plugins and track performance'}
@@ -104,11 +105,13 @@ export const MarketplaceDashboard: React.FC<DashboardProps> = ({
 
             <option value="7d">Last 7 days</option>
             <option
-</> value="30d">Last 30 days</option><>
+</>
+value="30d">Last 30 days</option><>
 
             <option value="90d">Last 90 days</option>
             <option
-</> value="1y">Last year</option>
+</>
+value="1y">Last year</option>
           </select>
           
           <button
@@ -150,7 +153,8 @@ export const MarketplaceDashboard: React.FC<DashboardProps> = ({
         </div>
         
         <div
-</> className="space-y-6">
+</>
+className="space-y-6">
           <CategoryDistribution plugins={dashboardData?.topPlugins || []} />
           <TierAdoption plugins={dashboardData?.topPlugins || []} />
         </div>
@@ -249,7 +253,8 @@ const MetricCard: React.FC<{
 
         <p className="text-sm font-medium text-gray-600">{title}</p>
         <p
-</> className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+</>
+className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
       </div>
       <div className="p-3 bg-gray-50 rounded-lg">
         {icon}
@@ -265,7 +270,8 @@ const MetricCard: React.FC<{
         {change}
       </span>
       <span
-</> className="text-sm text-gray-500 ml-2">vs last period</span>
+</>
+className="text-sm text-gray-500 ml-2">vs last period</span>
     </div>
   </div>
 );
@@ -283,6 +289,7 @@ const PerformanceChart: React.FC<{
       <h3 className="text-lg font-semibold text-gray-900">Performance Trends</h3>
       <select
 </>
+
         value={selectedMetric}
         onChange={(e) => onMetricChange(e.target.value)}
         className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
@@ -290,7 +297,8 @@ const PerformanceChart: React.FC<{
 
         <option value="downloads">Downloads</option>
         <option
-</> value="revenue">Revenue</option>
+</>
+value="revenue">Revenue</option>
         <option value="adoption">Adoption Rate</option>
       </select>
     </div>
@@ -301,7 +309,8 @@ const PerformanceChart: React.FC<{
 
         <p className="text-gray-600">Chart visualization would be rendered here</p>
         <p
-</> className="text-sm text-gray-500">Integration with Chart.js or D3.js</p>
+</>
+className="text-sm text-gray-500">Integration with Chart.js or D3.js</p>
       </div>
     </div>
   </div>
@@ -314,7 +323,8 @@ const SystemHealthPanel: React.FC<{ performance: any }> = ({ performance }) => (
     <h3 className="text-lg font-semibold text-gray-900 mb-6">System Health</h3>
     
     <div
-</> className="space-y-4">
+</>
+className="space-y-4">
       <HealthMetric
         label="Overall Health"
         value={performance?.overall_health || 95}
@@ -341,11 +351,13 @@ const SystemHealthPanel: React.FC<{ performance: any }> = ({ performance }) => (
     </div>
 
     <div
-</> className="mt-6 pt-6 border-t border-gray-200"><>
+</>
+className="mt-6 pt-6 border-t border-gray-200"><>
 
       <h4 className="font-medium text-gray-900 mb-3">Recent Alerts</h4>
       <div
-</> className="space-y-2">
+</>
+className="space-y-2">
         <div className="flex items-center space-x-2 text-sm">
           <Warning className="w-4 h-4 text-yellow-500" />
           <span className="text-gray-600">High memory usage on TerraFlow plugin</span>
@@ -380,7 +392,8 @@ const HealthMetric: React.FC<{
 
       <span className="text-sm text-gray-600">{label}</span>
       <span
-</> className={`text-sm font-medium px-2 py-1 rounded-full ${getStatusColor()}`}>
+</>
+className={`text-sm font-medium px-2 py-1 rounded-full ${getStatusColor()}`}>
         {value}{unit}
       </span>
     </div>
@@ -394,7 +407,8 @@ const TopPluginsTable: React.FC<{ plugins: any[]; userRole: string }> = ({ plugi
 
       <h3 className="text-lg font-semibold text-gray-900">Top Performing Plugins</h3>
       <button
-</> className="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
+</>
+className="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
         View All
       </button>
     </div>
@@ -406,15 +420,18 @@ const TopPluginsTable: React.FC<{ plugins: any[]; userRole: string }> = ({ plugi
 
             <th className="text-left py-3 px-4 font-medium text-gray-600">Plugin</th>
             <th
-</> className="text-left py-3 px-4 font-medium text-gray-600">Tier</th><>
+</>
+className="text-left py-3 px-4 font-medium text-gray-600">Tier</th><>
 
             <th className="text-left py-3 px-4 font-medium text-gray-600">Downloads</th>
             <th
-</> className="text-left py-3 px-4 font-medium text-gray-600">Rating</th><>
+</>
+className="text-left py-3 px-4 font-medium text-gray-600">Rating</th><>
 
             <th className="text-left py-3 px-4 font-medium text-gray-600">Compliance</th>
             <th
-</> className="text-left py-3 px-4 font-medium text-gray-600">Actions</th>
+</>
+className="text-left py-3 px-4 font-medium text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -431,7 +448,8 @@ const TopPluginsTable: React.FC<{ plugins: any[]; userRole: string }> = ({ plugi
 
                     <p className="font-medium text-gray-900">{plugin.name}</p>
                     <p
-</> className="text-sm text-gray-500">{plugin.category}</p>
+</>
+className="text-sm text-gray-500">{plugin.category}</p>
                   </div>
                 </div>
               </td>
@@ -449,7 +467,8 @@ const TopPluginsTable: React.FC<{ plugins: any[]; userRole: string }> = ({ plugi
 
               <td className="py-3 px-4 text-gray-900">{plugin.downloads.toLocaleString()}</td>
               <td
-</> className="py-3 px-4">
+</>
+className="py-3 px-4">
                 <div className="flex items-center space-x-1">
                   <Star className="w-4 h-4 text-yellow-400 fill-current" />
                   <span className="text-gray-900">{plugin.rating}</span>
@@ -477,7 +496,8 @@ const CategoryDistribution: React.FC<{ plugins: any[] }> = ({ plugins }) => (
 
     <h3 className="text-lg font-semibold text-gray-900 mb-6">Category Distribution</h3>
     <div
-</> className="h-48 flex items-center justify-center bg-gray-50 rounded-lg">
+</>
+className="h-48 flex items-center justify-center bg-gray-50 rounded-lg">
       <div className="text-center">
         <PieChart className="w-12 h-12 text-gray-400 mx-auto mb-2" />
         <p className="text-gray-600">Pie chart would be rendered here</p>
@@ -492,12 +512,14 @@ const TierAdoption: React.FC<{ plugins: any[] }> = ({ plugins }) => (
 
     <h3 className="text-lg font-semibold text-gray-900 mb-6">Tier Adoption</h3>
     <div
-</> className="space-y-4">
+</>
+className="space-y-4">
       <div className="flex items-center justify-between"><>
 
         <span className="text-sm text-gray-600">Foundation</span>
         <span
-</> className="text-sm font-medium text-gray-900">45%</span>
+</>
+className="text-sm font-medium text-gray-900">45%</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div className="bg-green-500 h-2 rounded-full" style={{ width: '45%' }}></div>
@@ -507,7 +529,8 @@ const TierAdoption: React.FC<{ plugins: any[] }> = ({ plugins }) => (
 
         <span className="text-sm text-gray-600">Professional</span>
         <span
-</> className="text-sm font-medium text-gray-900">35%</span>
+</>
+className="text-sm font-medium text-gray-900">35%</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div className="bg-blue-500 h-2 rounded-full" style={{ width: '35%' }}></div>
@@ -517,7 +540,8 @@ const TierAdoption: React.FC<{ plugins: any[] }> = ({ plugins }) => (
 
         <span className="text-sm text-gray-600">Enterprise</span>
         <span
-</> className="text-sm font-medium text-gray-900">20%</span>
+</>
+className="text-sm font-medium text-gray-900">20%</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div className="bg-purple-500 h-2 rounded-full" style={{ width: '20%' }}></div>
@@ -533,18 +557,21 @@ const CountyInsightsPanel: React.FC<{ insights: CountyInsights }> = ({ insights 
     <h3 className="text-lg font-semibold text-gray-900 mb-6">Your County Insights</h3>
     
     <div
-</> className="grid grid-cols-1 md:grid-cols-2 gap-6">
+</>
+className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div><>
 
         <h4 className="font-medium text-gray-900 mb-3">Efficiency Gains</h4>
         <div
-</> className="space-y-2">
+</>
+className="space-y-2">
           {Object.entries(insights.efficiency_gains).slice(0, 3).map(([plugin, gain]) => (
             <div key={plugin} className="flex items-center justify-between"><>
 
               <span className="text-sm text-gray-600">{plugin}</span>
               <span
-</> className="text-sm font-medium text-green-600">+{gain.toFixed(1)}%</span>
+</>
+className="text-sm font-medium text-green-600">+{gain.toFixed(1)}%</span>
             </div>
           ))}
         </div>
@@ -554,13 +581,15 @@ const CountyInsightsPanel: React.FC<{ insights: CountyInsights }> = ({ insights 
 
         <h4 className="font-medium text-gray-900 mb-3">Recommended Plugins</h4>
         <div
-</> className="space-y-2">
+</>
+className="space-y-2">
           {insights.recommended_plugins.slice(0, 3).map((pluginId) => (
             <div key={pluginId} className="flex items-center justify-between"><>
 
               <span className="text-sm text-gray-600">{pluginId}</span>
               <button
-</> className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full hover:bg-indigo-200">
+</>
+className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full hover:bg-indigo-200">
                 Install
               </button>
             </div>
@@ -578,7 +607,8 @@ const RecentActivityFeed: React.FC<{ userRole: string; countyId?: string }> = ({
     <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h3>
     
     <div
-</> className="space-y-4">
+</>
+className="space-y-4">
       <ActivityItem
         icon={<Download className="w-4 h-4 text-green-600" />}
         title="CostForgeAI installed"
@@ -620,11 +650,13 @@ const ActivityItem: React.FC<{
       {icon}
     </div>
     <div
-</> className="flex-1 min-w-0"><>
+</>
+className="flex-1 min-w-0"><>
 
       <p className="text-sm font-medium text-gray-900">{title}</p>
       <p
-</> className="text-sm text-gray-600">{description}</p>
+</>
+className="text-sm text-gray-600">{description}</p>
     </div>
     <div className="flex-shrink-0">
       <span className="text-xs text-gray-500">{timestamp}</span>

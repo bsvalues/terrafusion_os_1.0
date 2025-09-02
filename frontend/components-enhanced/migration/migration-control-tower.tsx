@@ -166,13 +166,15 @@ export function MigrationControlTower() {
                   <Globe className="w-6 h-6 text-white" />
                 </div>
                 <div
+</>
 </>><>
 
                   <CardTitle className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                     MIGRATION CONTROL TOWER
                   </CardTitle>
                   <p
-</> className="text-slate-400">Real-time county migration monitoring</p>
+</>
+className="text-slate-400">Real-time county migration monitoring</p>
                 </div>
               </div>
               <div className="flex items-center gap-6">
@@ -180,19 +182,22 @@ export function MigrationControlTower() {
 
                   <div className="text-xs text-cyan-400 uppercase tracking-wider">System Status</div>
                   <div
-</> className="text-lg font-bold text-emerald-400">{systemStatus}</div>
+</>
+className="text-lg font-bold text-emerald-400">{systemStatus}</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-xs text-cyan-400 uppercase tracking-wider">Speed</div>
                   <div
-</> className="text-lg font-bold text-emerald-400">379M×</div>
+</>
+className="text-lg font-bold text-emerald-400">379M×</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-xs text-cyan-400 uppercase tracking-wider">Uptime</div>
                   <div
-</> className="text-lg font-bold text-emerald-400">99.99%</div>
+</>
+className="text-lg font-bold text-emerald-400">99.99%</div>
                 </div>
               </div>
             </div>
@@ -206,7 +211,8 @@ export function MigrationControlTower() {
 
               <div className="text-2xl font-bold text-emerald-400">{totalMigrated}</div>
               <div
-</> className="text-xs text-slate-400 uppercase tracking-wider">Counties Migrated</div>
+</>
+className="text-xs text-slate-400 uppercase tracking-wider">Counties Migrated</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
@@ -214,7 +220,8 @@ export function MigrationControlTower() {
 
               <div className="text-2xl font-bold text-cyan-400">{inProgress}</div>
               <div
-</> className="text-xs text-slate-400 uppercase tracking-wider">In Progress</div>
+</>
+className="text-xs text-slate-400 uppercase tracking-wider">In Progress</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
@@ -222,7 +229,8 @@ export function MigrationControlTower() {
 
               <div className="text-2xl font-bold text-blue-400">2.3M</div>
               <div
-</> className="text-xs text-slate-400 uppercase tracking-wider">Parcels Processed</div>
+</>
+className="text-xs text-slate-400 uppercase tracking-wider">Parcels Processed</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
@@ -230,7 +238,8 @@ export function MigrationControlTower() {
 
               <div className="text-2xl font-bold text-purple-400">28hrs</div>
               <div
-</> className="text-xs text-slate-400 uppercase tracking-wider">Avg Migration Time</div>
+</>
+className="text-xs text-slate-400 uppercase tracking-wider">Avg Migration Time</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
@@ -238,7 +247,8 @@ export function MigrationControlTower() {
 
               <div className="text-2xl font-bold text-emerald-400">$24.6M</div>
               <div
-</> className="text-xs text-slate-400 uppercase tracking-wider">Revenue Captured</div>
+</>
+className="text-xs text-slate-400 uppercase tracking-wider">Revenue Captured</div>
             </CardContent>
           </Card>
         </div>
@@ -259,25 +269,29 @@ export function MigrationControlTower() {
                 START BATCH MIGRATION
               </Button>
               <Button
-</> className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white"><>
+</>
+className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white"><>
 
                 <CheckCircle className="w-4 h-4 mr-2" />
                 VALIDATE ALL SYSTEMS
               </Button>
               <Button
-</> variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"><>
+</>
+variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"><>
 
                 <TrendingUp className="w-4 h-4 mr-2" />
                 GENERATE REPORT
               </Button>
               <Button
-</> variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"><>
+</>
+variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"><>
 
                 <Clock className="w-4 h-4 mr-2" />
                 SCHEDULE NEXT WAVE
               </Button>
               <Button
-</> variant="destructive" className="bg-red-600 hover:bg-red-700">
+</>
+variant="destructive" className="bg-red-600 hover:bg-red-700">
                 <Square className="w-4 h-4 mr-2" />
                 EMERGENCY STOP
               </Button>
@@ -302,7 +316,8 @@ export function MigrationControlTower() {
 
                     <CardTitle className="text-lg text-white">{migration.name}</CardTitle>
                     <p
-</> className="text-cyan-400 text-sm">{migration.state}</p>
+</>
+className="text-cyan-400 text-sm">{migration.state}</p>
                   </div>
                   <Badge className={`${getStatusColor(migration.status)} flex items-center gap-1`}>
                     {getStatusIcon(migration.status)}
@@ -316,25 +331,29 @@ export function MigrationControlTower() {
 
                     <div className="text-cyan-400">Parcels</div>
                     <div
-</> className="text-white font-semibold">{migration.parcels}</div>
+</>
+className="text-white font-semibold">{migration.parcels}</div>
                   </div>
                   <div><>
 
                     <div className="text-cyan-400">Value</div>
                     <div
-</> className="text-white font-semibold">{migration.value}</div>
+</>
+className="text-white font-semibold">{migration.value}</div>
                   </div>
                   <div><>
 
                     <div className="text-cyan-400">System</div>
                     <div
-</> className="text-white font-semibold">{migration.system}</div>
+</>
+className="text-white font-semibold">{migration.system}</div>
                   </div>
                   <div><>
 
                     <div className="text-cyan-400">Started</div>
                     <div
-</> className="text-white font-semibold">{migration.started}</div>
+</>
+className="text-white font-semibold">{migration.started}</div>
                   </div>
                 </div>
 
@@ -345,6 +364,7 @@ export function MigrationControlTower() {
 
                       <span>Progress</span>
                       <span
+</>
 </>>
                         {migration.progress}% • ETA: {migration.eta}
                       </span>
@@ -379,6 +399,7 @@ export function MigrationControlTower() {
                   <span className="text-cyan-400 font-semibold">{entry.time}</span>
                   <span
 </>
+
                     className={`${
                       entry.type === "success"
                         ? "text-emerald-400"

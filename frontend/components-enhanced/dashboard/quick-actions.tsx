@@ -77,11 +77,13 @@ export function QuickActions() {
                 <Icon className={`w-4 h-4 text-${action.color}`} />
               </div>
               <div
-</> className="text-left"><>
+</>
+className="text-left"><>
 
                 <p className="font-medium text-sm">{action.title}</p>
                 <p
-</> className="text-xs text-muted-foreground">{action.description}</p>
+</>
+className="text-xs text-muted-foreground">{action.description}</p>
               </div>
             </Button>
           )

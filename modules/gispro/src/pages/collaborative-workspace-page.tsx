@@ -155,7 +155,8 @@ export function CollaborativeWorkspacePage() {
 
         <h1 className="text-3xl font-bold tracking-tight">Collaborative Workspace</h1>
         <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
           Create or join a room to collaborate with others in real-time
         </p>
       </div>
@@ -171,6 +172,7 @@ export function CollaborativeWorkspacePage() {
                 Create New Room
               </CardTitle>
               <CardDescription
+</>
 </>>
                 Start a new collaborative mapping session
               </CardDescription>
@@ -185,6 +187,7 @@ export function CollaborativeWorkspacePage() {
 
                     <DialogTitle>Create a new room</DialogTitle>
                     <DialogDescription
+</>
 </>>
                       Enter a custom room ID or leave blank to generate one automatically
                     </DialogDescription>
@@ -198,6 +201,7 @@ export function CollaborativeWorkspacePage() {
                     />
                   </div>
                   <DialogFooter
+</>
 </>>
                     <Button onClick={handleCreateRoom}>
                       Create & Join
@@ -217,6 +221,7 @@ export function CollaborativeWorkspacePage() {
                 Join Existing Room
               </CardTitle>
               <CardDescription
+</>
 </>>
                 Join an ongoing collaborative session
               </CardDescription>
@@ -231,6 +236,7 @@ export function CollaborativeWorkspacePage() {
 
                     <DialogTitle>Join an existing room</DialogTitle>
                     <DialogDescription
+</>
 </>>
                       Enter the room ID to join an existing collaborative session
                     </DialogDescription>
@@ -244,6 +250,7 @@ export function CollaborativeWorkspacePage() {
                     />
                   </div>
                   <DialogFooter
+</>
 </>>
                     <Button onClick={handleJoinRoom}>
                       Join Room
@@ -260,6 +267,7 @@ export function CollaborativeWorkspacePage() {
 
               <CardTitle>Recent Rooms</CardTitle>
               <CardDescription
+</>
 </>>
                 Quickly rejoin your recent collaborative sessions
               </CardDescription>
@@ -273,6 +281,7 @@ export function CollaborativeWorkspacePage() {
                       <span className="text-sm font-medium">{room}</span>
                       <Button
 </>
+
                         variant="ghost"
                         size="sm"
                         onClick={() => handleJoinRecentRoom(room)}
@@ -299,7 +308,8 @@ export function CollaborativeWorkspacePage() {
                 Leave Room
               </Button>
               <h2
-</> className="text-xl font-semibold">
+</>
+className="text-xl font-semibold">
                 Room: {activeRoomId}
               </h2>
             </div>
@@ -319,7 +329,8 @@ export function CollaborativeWorkspacePage() {
               />
             </CardContent>
             <CardFooter
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
               All changes are synchronized in real-time with other collaborators
             </CardFooter>
           </Card>

@@ -128,7 +128,8 @@ export default function MapViewerPage() {
 
               <h1 className="text-2xl font-bold">Map Viewer</h1>
               <p
-</> className="text-gray-500">View and analyze geographical data</p>
+</>
+className="text-gray-500">View and analyze geographical data</p>
             </div>
             
             <div className="flex items-center space-x-2">
@@ -141,12 +142,14 @@ export default function MapViewerPage() {
                 />
               </div>
               <Button
-</> variant="outline" className="gap-1" onClick={handleExportShapefile}><>
+</>
+variant="outline" className="gap-1" onClick={handleExportShapefile}><>
 
                 <FileDown size={18} /> Export
               </Button>
               <Button
-</> variant="outline" className="gap-1" onClick={handleImportShapefile}>
+</>
+variant="outline" className="gap-1" onClick={handleImportShapefile}>
                 <FileUp size={18} /> Import
               </Button>
             </div>
@@ -222,17 +225,20 @@ export default function MapViewerPage() {
                     <MapPin size={16} /> Property
                   </TabsTrigger>
                   <TabsTrigger
-</> value="layers" className="flex items-center gap-1"><>
+</>
+value="layers" className="flex items-center gap-1"><>
 
                     <LayersIcon size={16} /> Layers
                   </TabsTrigger>
                   <TabsTrigger
-</> value="tools" className="flex items-center gap-1"><>
+</>
+value="tools" className="flex items-center gap-1"><>
 
                     <Ruler size={16} /> Tools
                   </TabsTrigger>
                   <TabsTrigger
-</> value="info" className="flex items-center gap-1">
+</>
+value="info" className="flex items-center gap-1">
                     <Info size={16} /> Info
                   </TabsTrigger>
                 </TabsList>
@@ -241,11 +247,11 @@ export default function MapViewerPage() {
                 <TabsContent value="property" className="h-[calc(100%-40px)] overflow-y-auto">
                   <Card>
                     {selectedParcelId ? (
-                      <>
                         <CardHeader><>
 
                           <CardTitle>Parcel Details</CardTitle>
                           <CardDescription
+</>
 </>>
                             Parcel ID: {selectedParcelId}
                           </CardDescription>
@@ -256,37 +262,43 @@ export default function MapViewerPage() {
 
                               <Label className="text-xs font-medium text-gray-500">Owner</Label>
                               <p
-</> className="text-sm font-medium">John Smith</p>
+</>
+className="text-sm font-medium">John Smith</p>
                             </div>
                             <div><>
 
                               <Label className="text-xs font-medium text-gray-500">Address</Label>
                               <p
-</> className="text-sm font-medium">123 Main St, Kennewick, WA 99336</p>
+</>
+className="text-sm font-medium">123 Main St, Kennewick, WA 99336</p>
                             </div>
                             <div><>
 
                               <Label className="text-xs font-medium text-gray-500">Area</Label>
                               <p
-</> className="text-sm font-medium">2.45 acres (10,724 sq ft)</p>
+</>
+className="text-sm font-medium">2.45 acres (10,724 sq ft)</p>
                             </div>
                             <div><>
 
                               <Label className="text-xs font-medium text-gray-500">Zoning</Label>
                               <p
-</> className="text-sm font-medium">Residential (R-1)</p>
+</>
+className="text-sm font-medium">Residential (R-1)</p>
                             </div>
                             <div><>
 
                               <Label className="text-xs font-medium text-gray-500">Assessed Value</Label>
                               <p
-</> className="text-sm font-medium">$245,000</p>
+</>
+className="text-sm font-medium">$245,000</p>
                             </div>
                             <div><>
 
                               <Label className="text-xs font-medium text-gray-500">Last Updated</Label>
                               <p
-</> className="text-sm font-medium">Jan 15, 2024</p>
+</>
+className="text-sm font-medium">Jan 15, 2024</p>
                             </div>
                             
                             <Separator />
@@ -297,20 +309,21 @@ export default function MapViewerPage() {
                                 <Map size={16} /> View Details
                               </Button>
                               <Button
-</> variant="secondary" className="w-full gap-1">
+</>
+variant="secondary" className="w-full gap-1">
                                 <FileDown size={16} /> Export
                               </Button>
                             </div>
                           </div>
                         </CardContent>
-                      </>
                     ) : (
                       <CardContent className="flex flex-col items-center justify-center h-64 text-center p-6">
                         <MapPin className="text-gray-400 mb-2" size={40} /><>
 
                         <p className="text-gray-500 mb-1">No parcel selected</p>
                         <p
-</> className="text-xs text-gray-400">Click on a parcel on the map to see its details</p>
+</>
+className="text-xs text-gray-400">Click on a parcel on the map to see its details</p>
                       </CardContent>
                     )}
                   </Card>
@@ -328,6 +341,7 @@ export default function MapViewerPage() {
 
                       <CardTitle>Measurement Tools</CardTitle>
                       <CardDescription
+</>
 </>>
                         Measure distances, areas, and perimeters on the map
                       </CardDescription>
@@ -339,6 +353,7 @@ export default function MapViewerPage() {
                           <Label className="text-sm font-medium">Measurement Type</Label>
                           <RadioGroup
 </>
+
                             value={measurementType || ''}
                             onValueChange={(value) => {
                               if (value === '') {
@@ -401,6 +416,7 @@ export default function MapViewerPage() {
                           <Label className="text-sm font-medium">Measurement Units</Label>
                           <RadioGroup
 </>
+
                             value={measurementUnit}
                             onValueChange={(value) => {
                               setMeasurementUnit(value as MeasurementUnit);
@@ -408,7 +424,6 @@ export default function MapViewerPage() {
                             className="grid grid-cols-2 gap-2 mt-2"
                           >
                             {measurementType === MeasurementType.AREA ? (
-                              <>
                                 <div>
                                   <RadioGroupItem
                                     value={MeasurementUnit.ACRES}
@@ -461,9 +476,7 @@ export default function MapViewerPage() {
                                     <span className="text-xs">Square Feet</span>
                                   </Label>
                                 </div>
-                              </>
                             ) : (
-                              <>
                                 <div>
                                   <RadioGroupItem
                                     value={MeasurementUnit.FEET}
@@ -516,7 +529,6 @@ export default function MapViewerPage() {
                                     <span className="text-xs">Kilometers</span>
                                   </Label>
                                 </div>
-                              </>
                             )}
                           </RadioGroup>
                         </div>
@@ -526,37 +538,26 @@ export default function MapViewerPage() {
 
                             <h4 className="font-medium mb-1">Measurement Result</h4>
                             <div
-</> className="text-lg font-semibold">
+</>
+className="text-lg font-semibold">
                               {measurementType === MeasurementType.AREA ? (
-                                <>
                                   {measurementUnit === MeasurementUnit.ACRES && (
-                                    <>{(measurementValue * 0.000247105).toFixed(2)} acres</>
-                                  )}
+                                    <>{(measurementValue * 0.000247105).toFixed(2)} acres<div )}
                                   {measurementUnit === MeasurementUnit.HECTARES && (
-                                    <>{(measurementValue / 10000).toFixed(2)} ha</>
-                                  )}
+                                    <>{(measurementValue / 10000).toFixed(2)} ha<div )}
                                   {measurementUnit === MeasurementUnit.SQUARE_METERS && (
-                                    <>{Math.round(measurementValue)} m²</>
-                                  )}
+                                    <>{Math.round(measurementValue)} m²<div )}
                                   {measurementUnit === MeasurementUnit.SQUARE_FEET && (
-                                    <>{Math.round(measurementValue * 10.7639)} ft²</>
-                                  )}
-                                </>
+                                    <>{Math.round(measurementValue * 10.7639)} ft²<div )}
                               ) : (
-                                <>
                                   {measurementUnit === MeasurementUnit.FEET && (
-                                    <>{Math.round(measurementValue * 3.28084)} ft</>
-                                  )}
+                                    <>{Math.round(measurementValue * 3.28084)} ft<div )}
                                   {measurementUnit === MeasurementUnit.METERS && (
-                                    <>{Math.round(measurementValue)} m</>
-                                  )}
+                                    <>{Math.round(measurementValue)} m<div )}
                                   {measurementUnit === MeasurementUnit.MILES && (
-                                    <>{(measurementValue * 0.000621371).toFixed(2)} mi</>
-                                  )}
+                                    <>{(measurementValue * 0.000621371).toFixed(2)} mi<div )}
                                   {measurementUnit === MeasurementUnit.KILOMETERS && (
-                                    <>{(measurementValue / 1000).toFixed(2)} km</>
-                                  )}
-                                </>
+                                    <>{(measurementValue / 1000).toFixed(2)} km<div )}
                               )}
                             </div>
                           </div>
@@ -581,14 +582,17 @@ export default function MapViewerPage() {
 
                             <p className="font-medium">How to use:</p>
                             <ol
-</> className="list-decimal pl-4 mt-1 space-y-1"><>
+</>
+className="list-decimal pl-4 mt-1 space-y-1"><>
 
                               <li>Click on the map to start measuring</li>
                             <li
+</>
 </>>Click multiple points to continue the measurement</li><>
 
                               <li>For area measurements, create at least three points to form a polygon</li>
                             <li
+</>
 </>>Change units at any time to see different measurement formats</li>
                               <li>Use Clear Measurements to start over</li>
                             </ol>
@@ -606,6 +610,7 @@ export default function MapViewerPage() {
 
                       <CardTitle>Map Information</CardTitle>
                       <CardDescription
+</>
 </>>
                         Map status and statistics
                       </CardDescription>
@@ -616,31 +621,36 @@ export default function MapViewerPage() {
 
                           <Label className="text-xs font-medium text-gray-500">Current Features</Label>
                           <p
-</> className="text-sm font-medium">{mapFeatures.length} features</p>
+</>
+className="text-sm font-medium">{mapFeatures.length} features</p>
                         </div>
                         
                         <div><>
 
                           <Label className="text-xs font-medium text-gray-500">Map View</Label>
                           <p
-</> className="text-sm font-medium">Benton County, WA</p>
+</>
+className="text-sm font-medium">Benton County, WA</p>
                         </div>
                         
                         <div><>
 
                           <Label className="text-xs font-medium text-gray-500">Data Updated</Label>
                           <p
-</> className="text-sm font-medium">January 15, 2025</p>
+</>
+className="text-sm font-medium">January 15, 2025</p>
                         </div>
                         
                         <div><>
 
                           <Label className="text-xs font-medium text-gray-500">Sources</Label>
                           <ul
-</> className="text-sm pl-5 mt-1 list-disc space-y-1"><>
+</>
+className="text-sm pl-5 mt-1 list-disc space-y-1"><>
 
                             <li>Benton County GIS</li>
                             <li
+</>
 </>>USGS Topographic Data</li>
                             <li>WA State Department of Transportation</li>
                           </ul>
@@ -652,30 +662,35 @@ export default function MapViewerPage() {
 
                           <Label className="text-xs font-medium text-gray-500">Legend</Label>
                           <div
-</> className="mt-2 space-y-2">
+</>
+className="mt-2 space-y-2">
                             <div className="flex items-center gap-2"><>
 
                               <div className="w-4 h-4 bg-[#3B82F6] opacity-50"></div>
                               <span
-</> className="text-xs">Parcels</span>
+</>
+className="text-xs">Parcels</span>
                             </div>
                             <div className="flex items-center gap-2"><>
 
                               <div className="w-4 h-4 bg-[#10B981] opacity-50"></div>
                               <span
-</> className="text-xs">Zoning Districts</span>
+</>
+className="text-xs">Zoning Districts</span>
                             </div>
                             <div className="flex items-center gap-2"><>
 
                               <div className="w-4 h-4 bg-[#6B7280] opacity-80"></div>
                               <span
-</> className="text-xs">Streets</span>
+</>
+className="text-xs">Streets</span>
                             </div>
                             <div className="flex items-center gap-2"><>
 
                               <div className="w-4 h-4 bg-[#2563EB] opacity-50"></div>
                               <span
-</> className="text-xs">Hydrology</span>
+</>
+className="text-xs">Hydrology</span>
                             </div>
                           </div>
                         </div>

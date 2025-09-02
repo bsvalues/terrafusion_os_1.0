@@ -139,10 +139,13 @@ export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModul
 
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5, mb: 1 }}>
             <Chip label={module.tier} size='small' color={getTierColor(module.tier)} />
+
+
             <Chip label={module.status} size='small' color={getStatusColor(module.status)} />
           </Box>
 
           <Typography
+
 variant='caption' sx={{ color: 'rgba(255,255,255,0.5)' }}>
             v{module.version}
           </Typography>
@@ -156,10 +159,13 @@ variant='caption' sx={{ color: 'rgba(255,255,255,0.5)' }}>
       {/* Tier 1 - Core Government */}
       {tier1Modules.length > 0 && (
         <Box sx={{ mb: 4 }}>
+
+
           <Typography variant='h5' gutterBottom sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
             Core Government Applications
           </Typography>
-          <Grid container spacing={2}>
+          <Grid
+ container spacing={2}>
             {tier1Modules.map((module) => (
               <ModuleCard key={module.id} module={module} />
             ))}
@@ -170,10 +176,13 @@ variant='caption' sx={{ color: 'rgba(255,255,255,0.5)' }}>
       {/* Tier 2 - Essential Operations */}
       {tier2Modules.length > 0 && (
         <Box sx={{ mb: 4 }}>
+
+
           <Typography variant='h5' gutterBottom sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
             Essential Operations
           </Typography>
-          <Grid container spacing={2}>
+          <Grid
+ container spacing={2}>
             {tier2Modules.map((module) => (
               <ModuleCard key={module.id} module={module} />
             ))}
@@ -184,10 +193,13 @@ variant='caption' sx={{ color: 'rgba(255,255,255,0.5)' }}>
       {/* Tier 3 - Extended Features */}
       {tier3Modules.length > 0 && (
         <Box sx={{ mb: 4 }}>
+
+
           <Typography variant='h5' gutterBottom sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
             Extended Features
           </Typography>
-          <Grid container spacing={2}>
+          <Grid
+ container spacing={2}>
             {tier3Modules.map((module) => (
               <ModuleCard key={module.id} module={module} />
             ))}

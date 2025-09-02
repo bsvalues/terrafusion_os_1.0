@@ -103,7 +103,8 @@ export function StateConquestGrid() {
             🎯 STATE CONQUEST TARGETS
           </Badge>
           <h2
-</> className="text-5xl font-black mb-6 bg-gradient-to-r from-accent via-transcend to-primary bg-clip-text text-transparent">
+</>
+className="text-5xl font-black mb-6 bg-gradient-to-r from-accent via-transcend to-primary bg-clip-text text-transparent">
             NEXT BATTLEGROUNDS
           </h2>
           <p className="text-xl text-white/70 max-w-3xl mx-auto">
@@ -124,11 +125,13 @@ export function StateConquestGrid() {
 
                     <span className="text-4xl">{state.emoji}</span>
                     <div
+</>
 </>><>
 
                       <CardTitle className="text-2xl font-black text-white">{state.name}</CardTitle>
                       <Badge
-</> className={getPriorityColor(state.priority)}>{state.priority} PRIORITY</Badge>
+</>
+className={getPriorityColor(state.priority)}>{state.priority} PRIORITY</Badge>
                     </div>
                   </div>
                   <Badge className={`bg-gradient-to-r ${state.color} text-black font-bold`}>{state.status}</Badge>
@@ -144,7 +147,8 @@ export function StateConquestGrid() {
                       {state.population}
                     </div>
                     <div
-</> className="text-xs text-white/60">Population</div>
+</>
+className="text-xs text-white/60">Population</div>
                   </div>
                   <div className="text-center p-3 bg-black/40 rounded-lg"><>
 
@@ -152,7 +156,8 @@ export function StateConquestGrid() {
                       {state.revenue}
                     </div>
                     <div
-</> className="text-xs text-white/60">Revenue</div>
+</>
+className="text-xs text-white/60">Revenue</div>
                   </div>
                 </div>
 
@@ -161,7 +166,8 @@ export function StateConquestGrid() {
 
                   <h4 className="text-sm font-bold text-white/80 uppercase tracking-wide mb-3">Target Counties:</h4>
                   <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                     {state.counties.map((county, countyIndex) => (
                       <div
                         key={countyIndex}
@@ -170,7 +176,8 @@ export function StateConquestGrid() {
 
                         <span>{county}</span>
                         <span
-</> className="text-xs text-white/50">County</span>
+</>
+className="text-xs text-white/50">County</span>
                       </div>
                     ))}
                   </div>
@@ -181,7 +188,8 @@ export function StateConquestGrid() {
 
                   <div className="text-sm text-white/60 mb-1">Target Timeline</div>
                   <div
-</> className={`text-lg font-bold bg-gradient-to-r ${state.color} bg-clip-text text-transparent`}>
+</>
+className={`text-lg font-bold bg-gradient-to-r ${state.color} bg-clip-text text-transparent`}>
                     {state.timeline}
                   </div>
                 </div>
@@ -211,12 +219,14 @@ export function StateConquestGrid() {
 
           <h3 className="text-3xl font-black text-center mb-8 text-transcend">The Conquest Strategy</h3>
           <div
-</> className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+</>
+className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="p-6 bg-black/40 rounded-xl"><>
 
               <div className="text-4xl mb-4">🎯</div>
               <h4
-</> className="text-xl font-bold text-primary mb-2">Target Selection</h4>
+</>
+className="text-xl font-bold text-primary mb-2">Target Selection</h4>
               <p className="text-white/70">
                 High-population counties with modern GIS systems and tech-forward leadership
               </p>
@@ -225,14 +235,16 @@ export function StateConquestGrid() {
 
               <div className="text-4xl mb-4">⚡</div>
               <h4
-</> className="text-xl font-bold text-accent mb-2">Rapid Deployment</h4>
+</>
+className="text-xl font-bold text-accent mb-2">Rapid Deployment</h4>
               <p className="text-white/70">48-72 hour migrations with zero downtime and complete staff training</p>
             </div>
             <div className="p-6 bg-black/40 rounded-xl"><>
 
               <div className="text-4xl mb-4">🏆</div>
               <h4
-</> className="text-xl font-bold text-transcend mb-2">Proven Success</h4>
+</>
+className="text-xl font-bold text-transcend mb-2">Proven Success</h4>
               <p className="text-white/70">379,000,000× performance improvement with guaranteed ROI</p>
             </div>
           </div>

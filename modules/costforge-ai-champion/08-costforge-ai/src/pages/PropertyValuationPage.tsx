@@ -15,7 +15,8 @@ export default function PropertyValuationPage() {
 
           <h1 className="text-3xl font-bold text-gray-900">Property Valuation</h1>
           <p
-</> className="text-gray-600 mt-2">AI-powered property assessment and valuation tools</p>
+</>
+className="text-gray-600 mt-2">AI-powered property assessment and valuation tools</p>
         </div>
         <Badge variant="secondary" className="bg-green-100 text-green-800">
           AI Enhanced
@@ -31,6 +32,7 @@ export default function PropertyValuationPage() {
             Property Information
           </CardTitle>
           <CardDescription
+</>
 </>>
             Enter property details for AI-powered valuation analysis
           </CardDescription>
@@ -41,27 +43,32 @@ export default function PropertyValuationPage() {
 
               <label className="text-sm font-medium">Property Address</label>
               <Input
-</> placeholder="123 Main Street, City, State" />
+</>
+placeholder="123 Main Street, City, State" />
             </div>
             <div className="space-y-2"><>
 
               <label className="text-sm font-medium">Property Type</label>
               <Select
+</>
 </>>
                 <SelectTrigger><>
 
                   <SelectValue placeholder="Select property type" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="residential">Residential</SelectItem>
                   <SelectItem
-</> value="commercial">Commercial</SelectItem><>
+</>
+value="commercial">Commercial</SelectItem><>
 
                   <SelectItem value="industrial">Industrial</SelectItem>
                   <SelectItem
-</> value="mixed-use">Mixed-Use</SelectItem>
+</>
+value="mixed-use">Mixed-Use</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -69,13 +76,15 @@ export default function PropertyValuationPage() {
 
               <label className="text-sm font-medium">Square Footage</label>
               <Input
-</> type="number" placeholder="2,500" />
+</>
+type="number" placeholder="2,500" />
             </div>
             <div className="space-y-2"><>
 
               <label className="text-sm font-medium">Year Built</label>
               <Input
-</> type="number" placeholder="1995" />
+</>
+type="number" placeholder="1995" />
             </div>
           </div>
           <Button className="w-full md:w-auto">
@@ -93,13 +102,15 @@ export default function PropertyValuationPage() {
               Estimated Value
             </CardTitle>
             <DollarSign
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent><>
 
             <div className="text-2xl font-bold">$485,000</div>
             <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
               +12% from last assessment
             </p>
           </CardContent>
@@ -112,13 +123,15 @@ export default function PropertyValuationPage() {
               Price per Sq Ft
             </CardTitle>
             <MapPin
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent><>
 
             <div className="text-2xl font-bold">$194</div>
             <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
               Market average: $187
             </p>
           </CardContent>
@@ -131,13 +144,15 @@ export default function PropertyValuationPage() {
               Market Trend
             </CardTitle>
             <TrendingUp
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent><>
 
             <div className="text-2xl font-bold text-green-600">+8.5%</div>
             <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
               12-month growth
             </p>
           </CardContent>
@@ -150,6 +165,7 @@ export default function PropertyValuationPage() {
 
           <CardTitle>Valuation Analysis</CardTitle>
           <CardDescription
+</>
 </>>
             Comprehensive AI-driven property assessment
           </CardDescription>
@@ -160,7 +176,8 @@ export default function PropertyValuationPage() {
 
               <h4 className="font-semibold text-blue-900">Location Score: 8.5/10</h4>
               <p
-</> className="text-sm text-gray-600">
+</>
+className="text-sm text-gray-600">
                 Excellent neighborhood with strong appreciation potential
               </p>
             </div>
@@ -168,7 +185,8 @@ export default function PropertyValuationPage() {
 
               <h4 className="font-semibold text-green-900">Condition Score: 7.8/10</h4>
               <p
-</> className="text-sm text-gray-600">
+</>
+className="text-sm text-gray-600">
                 Well-maintained property with minor updates needed
               </p>
             </div>
@@ -176,7 +194,8 @@ export default function PropertyValuationPage() {
 
               <h4 className="font-semibold text-yellow-900">Market Score: 9.2/10</h4>
               <p
-</> className="text-sm text-gray-600">
+</>
+className="text-sm text-gray-600">
                 High demand area with limited inventory
               </p>
             </div>

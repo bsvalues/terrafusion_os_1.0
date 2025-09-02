@@ -80,7 +80,8 @@ const UserStatsSummary = ({ user, workflowStats }: { user: User | null, workflow
 
               <p className="text-sm font-medium text-muted-foreground">Total Workflows</p>
               <h3
-</> className="text-2xl font-bold mt-1">{workflowStats.total || 0}</h3>
+</>
+className="text-2xl font-bold mt-1">{workflowStats.total || 0}</h3>
             </div>
             <div className="bg-primary/10 p-2 rounded-full">
               <ClipboardCheck className="h-5 w-5 text-primary" />
@@ -96,7 +97,8 @@ const UserStatsSummary = ({ user, workflowStats }: { user: User | null, workflow
 
               <p className="text-sm font-medium text-muted-foreground">In Progress</p>
               <h3
-</> className="text-2xl font-bold mt-1">{workflowStats.inProgress || 0}</h3>
+</>
+className="text-2xl font-bold mt-1">{workflowStats.inProgress || 0}</h3>
             </div>
             <div className="bg-blue-100 p-2 rounded-full">
               <Clock className="h-5 w-5 text-blue-600" />
@@ -112,7 +114,8 @@ const UserStatsSummary = ({ user, workflowStats }: { user: User | null, workflow
 
               <p className="text-sm font-medium text-muted-foreground">Completed</p>
               <h3
-</> className="text-2xl font-bold mt-1">{workflowStats.completed || 0}</h3>
+</>
+className="text-2xl font-bold mt-1">{workflowStats.completed || 0}</h3>
             </div>
             <div className="bg-green-100 p-2 rounded-full">
               <CheckCircle className="h-5 w-5 text-green-600" />
@@ -128,7 +131,8 @@ const UserStatsSummary = ({ user, workflowStats }: { user: User | null, workflow
 
               <p className="text-sm font-medium text-muted-foreground">High Priority</p>
               <h3
-</> className="text-2xl font-bold mt-1">{workflowStats.highPriority || 0}</h3>
+</>
+className="text-2xl font-bold mt-1">{workflowStats.highPriority || 0}</h3>
             </div>
             <div className="bg-amber-100 p-2 rounded-full">
               <Zap className="h-5 w-5 text-amber-600" />
@@ -174,6 +178,7 @@ const WorkflowStatusChart = ({ workflows }: { workflows: Workflow[] }) => {
 
         <CardTitle className="text-lg">Workflow Status Distribution</CardTitle>
         <CardDescription
+</>
 </>>
           Overview of your workflows by status
         </CardDescription>
@@ -199,7 +204,8 @@ const WorkflowStatusChart = ({ workflows }: { workflows: Workflow[] }) => {
                 ))}
               </Pie>
               <Tooltip
-</> formatter={(value: number) => [value, 'Count']} />
+</>
+formatter={(value: number) => [value, 'Count']} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
@@ -236,6 +242,7 @@ const WorkflowTypeChart = ({ workflows }: { workflows: Workflow[] }) => {
 
         <CardTitle className="text-lg">Workflow Type Distribution</CardTitle>
         <CardDescription
+</>
 </>>
           Breakdown by workflow type
         </CardDescription>
@@ -300,6 +307,7 @@ const PriorityTasks = ({ workflows, checklists }: { workflows: Workflow[], check
 
             <CardTitle className="text-lg">Priority Tasks</CardTitle>
             <CardDescription
+</>
 </>>
               Your high priority incomplete tasks
             </CardDescription>
@@ -320,12 +328,14 @@ const PriorityTasks = ({ workflows, checklists }: { workflows: Workflow[], check
                     <Pin className="h-4 w-4 text-red-600" />
                   </div>
                   <div
-</> className="flex-1">
+</>
+className="flex-1">
                     <div className="flex justify-between"><>
 
                       <h4 className="text-sm font-medium">{task.itemTitle}</h4>
                       <Badge
-</> variant="outline" className="text-xs">
+</>
+variant="outline" className="text-xs">
                         {workflowTypeLabels[task.workflowType as WorkflowType]}
                       </Badge>
                     </div>
@@ -343,7 +353,8 @@ const PriorityTasks = ({ workflows, checklists }: { workflows: Workflow[], check
 
             <h3 className="text-base font-medium text-neutral-600">No Priority Tasks</h3>
             <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
               You're all caught up with high priority items!
             </p>
           </div>
@@ -445,6 +456,7 @@ const UserEfficiencyMetrics = ({ workflows, events }: { workflows: Workflow[], e
 
             <CardTitle className="text-lg">Your Efficiency Metrics</CardTitle>
             <CardDescription
+</>
 </>>
               Personalized workflow completion insights
             </CardDescription>
@@ -465,7 +477,8 @@ const UserEfficiencyMetrics = ({ workflows, events }: { workflows: Workflow[], e
 
               <span className="text-2xl font-bold text-blue-700">{averageCompletionTime}</span>
               <span
-</> className="text-sm text-blue-600 mb-0.5">days</span>
+</>
+className="text-sm text-blue-600 mb-0.5">days</span>
             </div>
           </div>
           
@@ -478,7 +491,8 @@ const UserEfficiencyMetrics = ({ workflows, events }: { workflows: Workflow[], e
 
               <span className="text-2xl font-bold text-green-700">{weeklyCompletionRate}</span>
               <span
-</> className="text-sm text-green-600 mb-0.5">workflows</span>
+</>
+className="text-sm text-green-600 mb-0.5">workflows</span>
             </div>
           </div>
         </div>
@@ -562,6 +576,7 @@ const DocumentClassificationSummary = ({ documents }: { documents: Document[] })
 
             <CardTitle className="text-lg">Document Classification</CardTitle>
             <CardDescription
+</>
 </>>
               Breakdown of your document library
             </CardDescription>
@@ -573,19 +588,20 @@ const DocumentClassificationSummary = ({ documents }: { documents: Document[] })
       </CardHeader>
       <CardContent>
         {documents.length > 0 ? (
-          <>
             <div className="mb-4">
               <div className="flex justify-between items-center mb-2"><>
 
                 <span className="text-sm font-medium">Classification Progress</span>
                 <span
-</> className="text-sm text-muted-foreground">{classificationStats.percentage}%</span>
+</>
+className="text-sm text-muted-foreground">{classificationStats.percentage}%</span>
               </div>
               <Progress value={classificationStats.percentage} className="h-2" />
               <div className="flex justify-between text-xs text-muted-foreground mt-1"><>
 
                 <span>{classificationStats.classified} classified</span>
                 <span
+</>
 </>>{classificationStats.unclassified} unclassified</span>
               </div>
             </div>
@@ -608,19 +624,20 @@ const DocumentClassificationSummary = ({ documents }: { documents: Document[] })
                     ))}
                   </Pie>
                   <Tooltip
-</> formatter={(value) => [`${value} documents`, 'Documents']} />
+</>
+formatter={(value) => [`${value} documents`, 'Documents']} />
                   <Legend formatter={(value) => value} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
-          </>
         ) : (
           <div className="flex flex-col items-center justify-center h-[250px] text-center">
             <File className="h-12 w-12 text-gray-100 mb-3" /><>
 
             <h3 className="text-base font-medium text-neutral-600">No Documents</h3>
             <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
               Your document library is empty
             </p>
           </div>
@@ -667,6 +684,7 @@ const RecentActivity = ({ events }: { events: WorkflowEvent[] }) => {
 
         <CardTitle className="text-lg">Recent Activity</CardTitle>
         <CardDescription
+</>
 </>>
           Latest updates on your workflows
         </CardDescription>
@@ -682,17 +700,20 @@ const RecentActivity = ({ events }: { events: WorkflowEvent[] }) => {
                     {getEventIcon(event.eventType)}
                   </div>
                   <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
                     <p className="text-sm font-medium">{event.description}</p>
                     <div
-</> className="flex justify-between items-center mt-1"><>
+</>
+className="flex justify-between items-center mt-1"><>
 
                       <span className="text-xs text-muted-foreground">
                         {formatDistance(new Date(event.createdAt), new Date(), { addSuffix: true })}
                       </span>
                       <Badge
-</> variant="outline" className="text-xs">
+</>
+variant="outline" className="text-xs">
                         {event.eventType.replace('_', ' ')}
                       </Badge>
                     </div>
@@ -707,7 +728,8 @@ const RecentActivity = ({ events }: { events: WorkflowEvent[] }) => {
 
             <h3 className="text-base font-medium text-neutral-600">No Recent Activity</h3>
             <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
               Your activity feed will appear here
             </p>
           </div>
@@ -766,6 +788,7 @@ const WorkflowProgress = ({ workflows, states }: { workflows: Workflow[], states
 
         <CardTitle className="text-lg">Workflow Progress</CardTitle>
         <CardDescription
+</>
 </>>
           Track your active workflows
         </CardDescription>
@@ -792,6 +815,7 @@ const WorkflowProgress = ({ workflows, states }: { workflows: Workflow[], states
                       Step {workflow.currentStep} of {workflow.totalSteps}
                     </span>
                     <span
+</>
 </>>{workflow.progress}% complete</span>
                   </div>
                 </div>
@@ -804,7 +828,8 @@ const WorkflowProgress = ({ workflows, states }: { workflows: Workflow[], states
 
             <h3 className="text-base font-medium text-neutral-600">No Active Workflows</h3>
             <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
               Start a workflow to track progress here
             </p>
           </div>
@@ -847,6 +872,7 @@ const TaskBreakdown = ({ workflows }: { workflows: Workflow[] }) => {
 
             <CardTitle className="text-lg">Task Distribution</CardTitle>
             <CardDescription
+</>
 </>>
               Personal vs. team workload
             </CardDescription>
@@ -877,7 +903,8 @@ const TaskBreakdown = ({ workflows }: { workflows: Workflow[] }) => {
                   ))}
                 </Pie>
                 <Tooltip
-</> formatter={(value: number) => [`${value} tasks`, 'Count']} />
+</>
+formatter={(value: number) => [`${value} tasks`, 'Count']} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
@@ -887,7 +914,8 @@ const TaskBreakdown = ({ workflows }: { workflows: Workflow[] }) => {
 
               <h3 className="text-base font-medium text-neutral-600">No Tasks Assigned</h3>
               <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
                 Tasks will appear here once assigned
               </p>
             </div>
@@ -941,6 +969,7 @@ const UpcomingDeadlines = ({ workflows }: { workflows: Workflow[] }) => {
 
             <CardTitle className="text-lg">Upcoming Deadlines</CardTitle>
             <CardDescription
+</>
 </>>
               Tasks requiring your attention soon
             </CardDescription>
@@ -967,17 +996,20 @@ const UpcomingDeadlines = ({ workflows }: { workflows: Workflow[] }) => {
                     }`} />
                   </div>
                   <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
                     <h4 className="text-sm font-medium truncate max-w-[200px]">{item.workflowTitle}</h4>
                     <div
-</> className="flex justify-between items-center mt-1"><>
+</>
+className="flex justify-between items-center mt-1"><>
 
                       <span className="text-xs text-muted-foreground">
                         Due {format(item.deadline, 'MMM d')}
                       </span>
                       <Badge
-</> 
+</>
+
                         variant={
                           item.daysRemaining <= 2 ? 'destructive' : 
                           item.daysRemaining <= 5 ? 'default' : 'outline'
@@ -1000,7 +1032,8 @@ const UpcomingDeadlines = ({ workflows }: { workflows: Workflow[] }) => {
 
             <h3 className="text-base font-medium text-neutral-600">No Upcoming Deadlines</h3>
             <p
-</> className="text-sm text-muted-foreground mt-1">
+</>
+className="text-sm text-muted-foreground mt-1">
               You're all caught up!
             </p>
           </div>
@@ -1052,6 +1085,7 @@ const QuickActions = () => {
 
         <CardTitle className="text-lg">Quick Actions</CardTitle>
         <CardDescription
+</>
 </>>Common tasks and shortcuts</CardDescription>
       </CardHeader>
       <CardContent>
@@ -1068,11 +1102,13 @@ const QuickActions = () => {
                 {action.icon}
               </div>
               <div
-</> className="text-left"><>
+</>
+className="text-left"><>
 
                 <h4 className="text-sm font-medium">{action.name}</h4>
                 <p
-</> className="text-xs text-muted-foreground">{action.description}</p>
+</>
+className="text-xs text-muted-foreground">{action.description}</p>
               </div>
             </Button>
           ))}
@@ -1171,7 +1207,8 @@ export default function DashboardPage() {
                   Dashboard
                 </h1>
                 <p
-</> className="text-neutral-600">
+</>
+className="text-neutral-600">
                   Welcome back, {isUserLoading ? 'Loading...' : ((user as any)?.fullName || user?.username || 'User')}
                 </p>
               </div>
@@ -1188,7 +1225,8 @@ export default function DashboardPage() {
 
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger
-</> value="personal">Personal Insights</TabsTrigger>
+</>
+value="personal">Personal Insights</TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -1202,7 +1240,8 @@ export default function DashboardPage() {
               </div>
               
               <div
-</> className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+</>
+className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {Array(2).fill(0).map((_, i) => (<>
 
                   <Skeleton key={i} className="h-96 w-full" />
@@ -1210,14 +1249,14 @@ export default function DashboardPage() {
               </div>
               
               <div
-</> className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+</>
+className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {Array(3).fill(0).map((_, i) => (
                   <Skeleton key={i} className="h-80 w-full" />
                 ))}
               </div>
             </div>
           ) : (
-            <>
               {/* Stats Cards (common to both tabs) */}
               <UserStatsSummary user={user || null} workflowStats={workflowStats} />
               
@@ -1248,7 +1287,8 @@ export default function DashboardPage() {
               </TabsContent>
               
               <TabsContent
-</> value="personal" className="mt-0">
+</>
+value="personal" className="mt-0">
                 {/* Personalized Insights Tab Content */}
                 {/* Personal Metrics Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -1272,7 +1312,6 @@ export default function DashboardPage() {
                 {/* Quick Actions */}
                 <QuickActions />
               </TabsContent>
-            </>
           )}
         </main>
       </div>

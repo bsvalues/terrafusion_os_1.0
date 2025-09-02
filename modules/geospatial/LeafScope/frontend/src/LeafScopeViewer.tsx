@@ -57,7 +57,8 @@ const LeafScopeViewer: React.FC = () => {
 
         <h1 className="text-2xl font-bold">🗺️ LeafScope Viewer</h1>
         <div
-</> className="ml-auto">
+</>
+className="ml-auto">
           <span className="text-sm">{properties.length} properties loaded</span>
         </div>
       </div>
@@ -82,6 +83,7 @@ const LeafScopeViewer: React.FC = () => {
 
                 <h3 className="font-bold">{property.address}</h3>
                 <p
+</>
 </>>Type: {property.type}</p>
                 <p>Value: ${property.value.toLocaleString()}</p>
               </div>

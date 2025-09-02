@@ -69,10 +69,13 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
           sx={{ width: sizeStyles.width, height: sizeStyles.height }}
         >
           <Box className="tf-seal-text">
+
+
             <Typography variant="caption" sx={{ fontSize: '8px', fontWeight: 700 }}>
               TERRA
             </Typography>
             <br
+
 />
             <Typography variant="caption" sx={{ fontSize: '8px', fontWeight: 700 }}>
               FUSION
@@ -103,9 +106,12 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
           <Box className="tf-browser-dots">
             <Box className="tf-browser-dot close" />
             <Box className="tf-browser-dot minimize" />
+
+
             <Box className="tf-browser-dot maximize" />
           </Box>
           <Typography
+
 variant="body2"
             className="tf-logo-monogram"
             sx={{ ml: 2, fontSize: '14px', fontWeight: 700 }}

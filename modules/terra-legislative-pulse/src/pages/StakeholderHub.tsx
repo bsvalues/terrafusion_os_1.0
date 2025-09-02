@@ -9,7 +9,8 @@ const StakeholderHub = () => {
 
           <h1 className="legislative-title">Stakeholder Hub</h1>
           <p
-</> className="legislative-body mt-1">Manage relationships with legislators, officials, and community stakeholders</p>
+</>
+className="legislative-body mt-1">Manage relationships with legislators, officials, and community stakeholders</p>
         </div>
         <div className="flex space-x-3">
           <button className="legislative-button"><>
@@ -18,7 +19,8 @@ const StakeholderHub = () => {
             New Message
           </button>
           <button
-</> className="legislative-button">
+</>
+className="legislative-button">
             <Users className="w-4 h-4 mr-2 inline" />
             Add Contact
           </button>
@@ -30,7 +32,8 @@ const StakeholderHub = () => {
 
         <h2 className="legislative-subtitle mb-4">Key Stakeholders</h2>
         <div
-</> className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             {
               name: 'Rep. Sarah Johnson',
@@ -72,7 +75,8 @@ const StakeholderHub = () => {
 
                   <h3 className="font-semibold text-gray-900">{stakeholder.name}</h3>
                   <p
-</> className="text-sm text-gray-600">{stakeholder.title}</p>
+</>
+className="text-sm text-gray-600">{stakeholder.title}</p>
                   <div className="flex items-center mt-1 text-xs text-gray-500">
                     <MapPin className="w-3 h-3 mr-1" />
                     {stakeholder.district}
@@ -95,7 +99,8 @@ const StakeholderHub = () => {
                   {stakeholder.contact}
                 </div>
                 <div
-</> className="flex items-center text-gray-600">
+</>
+className="flex items-center text-gray-600">
                   <Mail className="w-4 h-4 mr-2" />
                   {stakeholder.email}
                 </div>
@@ -105,7 +110,8 @@ const StakeholderHub = () => {
 
                 <p className="text-xs text-gray-500 mb-2">Last contact: {stakeholder.lastContact}</p>
                 <div
-</> className="flex flex-wrap gap-1">
+</>
+className="flex flex-wrap gap-1">
                   {stakeholder.interests.map((interest, i) => (
                     <span key={i} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
                       {interest}
@@ -120,7 +126,8 @@ const StakeholderHub = () => {
                   Contact
                 </button>
                 <button
-</> className="flex-1 text-xs border border-gray-300 py-1 px-2 rounded hover:bg-gray-50">
+</>
+className="flex-1 text-xs border border-gray-300 py-1 px-2 rounded hover:bg-gray-50">
                   Schedule
                 </button>
               </div>
@@ -134,7 +141,8 @@ const StakeholderHub = () => {
 
         <h2 className="legislative-subtitle mb-4">Recent Communications</h2>
         <div
-</> className="space-y-4">
+</>
+className="space-y-4">
           {[
             {
               type: 'email',
@@ -176,21 +184,25 @@ const StakeholderHub = () => {
                        <Phone className="w-4 h-4 text-purple-600" />}
                     </div>
                     <div
+</>
 </>><>
 
                       <h3 className="font-medium text-gray-900">{comm.subject}</h3>
                       <p
-</> className="text-sm text-gray-600">{comm.stakeholder}</p>
+</>
+className="text-sm text-gray-600">{comm.stakeholder}</p>
                     </div>
                   </div><>
 
                   <p className="text-sm text-gray-700 mb-2">{comm.content}</p>
                   <div
-</> className="flex items-center space-x-4 text-xs text-gray-500"><>
+</>
+className="flex items-center space-x-4 text-xs text-gray-500"><>
 
                     <span>{comm.date}</span>
                     <span
-</> className={`px-2 py-1 rounded ${
+</>
+className={`px-2 py-1 rounded ${
                       comm.status === 'sent' ? 'bg-blue-100 text-blue-800' :
                       comm.status === 'completed' ? 'bg-green-100 text-green-800' :
                       'bg-yellow-100 text-yellow-800'
@@ -213,7 +225,8 @@ const StakeholderHub = () => {
 
         <h2 className="legislative-subtitle mb-4">Upcoming Meetings & Events</h2>
         <div
-</> className="space-y-3">
+</>
+className="space-y-3">
           {[
             {
               title: 'House Finance Committee Hearing',
@@ -253,13 +266,15 @@ const StakeholderHub = () => {
 
                       <h3 className="font-medium text-gray-900">{event.title}</h3>
                       <p
-</> className="text-sm text-gray-600">{event.location}</p>
+</>
+className="text-sm text-gray-600">{event.location}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2"><>
 
                     <span>{new Date(event.date).toLocaleDateString()}</span>
                     <span
+</>
 </>>{event.time}</span>
                   </div>
                   <p className="text-sm text-gray-600">

@@ -183,7 +183,8 @@ function App() {
 
         <h1>Terrafusion Property Assessor</h1>
         <div
-</> className="nav-tabs"><>
+</>
+className="nav-tabs"><>
 
           <button 
             className={currentView === 'search' ? 'tab-active' : 'tab'} 
@@ -192,7 +193,8 @@ function App() {
             Property Search
           </button>
           <button
-</> 
+</>
+
             className={currentView === 'assess' ? 'tab-active' : 'tab'} 
             onClick={() => setCurrentView('assess')}
           >
@@ -206,7 +208,8 @@ function App() {
             Results ({assessmentResults.length})
           </button>
           <button
-</> 
+</>
+
             className={currentView === 'reports' ? 'tab-active' : 'tab'} 
             onClick={() => setCurrentView('reports')}
           >
@@ -222,7 +225,8 @@ function App() {
 
               <h2>Property Search</h2>
               <div
-</> className="search-bar">
+</>
+className="search-bar">
                 <input
                   type="text"
                   placeholder="Enter address or parcel ID..."
@@ -243,7 +247,8 @@ function App() {
 
                     <h3>{property.address}</h3>
                     <span
-</> className="tax-status" style={{ color: getStatusColor(property.tax_status) }}>
+</>
+className="tax-status" style={{ color: getStatusColor(property.tax_status) }}>
                       {property.tax_status.toUpperCase()}
                     </span>
                   </div>
@@ -252,24 +257,28 @@ function App() {
 
                       <span>Parcel ID:</span>
                       <span
+</>
 </>>{property.parcel_id}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Current Value:</span>
                       <span
-</> className="value-highlight">{formatCurrency(property.current_value)}</span>
+</>
+className="value-highlight">{formatCurrency(property.current_value)}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Assessed Value:</span>
                       <span
+</>
 </>>{formatCurrency(property.assessed_value)}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Type:</span>
                       <span
+</>
 </>>{property.property_type}</span>
                     </div>
                   </div>
@@ -285,11 +294,13 @@ function App() {
 
               <h2>Assessment Tools - {selectedProperty.address}</h2>
               <div
-</> className="property-summary">
+</>
+className="property-summary">
                 <div className="summary-card"><>
 
                   <h4>Property Details</h4>
                   <div
+</>
 </>>Square Footage: {selectedProperty.square_footage.toLocaleString()} sq ft</div>
                   <div>Lot Size: {selectedProperty.lot_size} acres</div>
                   {selectedProperty.bedrooms && <div>Bedrooms: {selectedProperty.bedrooms}</div>}
@@ -300,10 +311,12 @@ function App() {
 
                   <h4>Current Valuation</h4>
                   <div
+</>
 </>>Current Value: {formatCurrency(selectedProperty.current_value)}</div><>
 
                   <div>Assessed Value: {formatCurrency(selectedProperty.assessed_value)}</div>
                   <div
+</>
 </>>Assessment Year: {selectedProperty.assessment_year}</div>
                   <div>Assessment Ratio: {((selectedProperty.assessed_value / selectedProperty.current_value) * 100).toFixed(1)}%</div>
                 </div>
@@ -314,11 +327,13 @@ function App() {
 
               <h3>Assessment Methods</h3>
               <div
-</> className="method-grid">
+</>
+className="method-grid">
                 <div className="method-card"><>
 
                   <h4>Market Value Assessment</h4>
                   <p
+</>
 </>>Based on recent comparable sales in the area</p>
                   <button 
                     className="assess-btn market" 
@@ -331,6 +346,7 @@ function App() {
 
                   <h4>Cost Approach</h4>
                   <p
+</>
 </>>Replacement cost minus depreciation</p>
                   <button 
                     className="assess-btn cost" 
@@ -343,6 +359,7 @@ function App() {
 
                   <h4>Income Approach</h4>
                   <p
+</>
 </>>Based on potential rental income (commercial/investment properties)</p>
                   <button 
                     className="assess-btn income" 
@@ -355,6 +372,7 @@ function App() {
 
                   <h4>AI/ML Assessment</h4>
                   <p
+</>
 </>>Advanced machine learning model analysis</p>
                   <button 
                     className="assess-btn ai" 
@@ -373,7 +391,8 @@ function App() {
 
             <h2>Assessment Results</h2>
             <div
-</> className="results-grid">
+</>
+className="results-grid">
               {assessmentResults.map((result /* , index */) => {
                 const property = properties.find(p => p.id === result.property_id);
                 return (
@@ -382,7 +401,8 @@ function App() {
 
                       <h3>{property?.address || result.property_id}</h3>
                       <div
-</> className="confidence-score">
+</>
+className="confidence-score">
                         Confidence: {result.confidence_score.toFixed(1)}%
                       </div>
                     </div>
@@ -391,18 +411,21 @@ function App() {
 
                         <span>Assessed Value:</span>
                         <span
-</> className="value-highlight">{formatCurrency(result.assessed_value)}</span>
+</>
+className="value-highlight">{formatCurrency(result.assessed_value)}</span>
                       </div>
                       <div className="detail-row"><>
 
                         <span>Methodology:</span>
                         <span
+</>
 </>>{result.methodology_used.replace('_', ' ')}</span>
                       </div>
                       <div className="detail-row"><>
 
                         <span>Assessment Date:</span>
                         <span
+</>
 </>>{result.assessment_date}</span>
                       </div>
                     </div>
@@ -413,6 +436,7 @@ function App() {
 
                           <span>{factor.replace('_', ' ')}:</span>
                           <span
+</>
 </>>{score}/10</span>
                         </div>
                       ))}
@@ -421,7 +445,8 @@ function App() {
 
                       <button className="action-btn">View Full Report</button>
                       <button
-</> className="action-btn">📧 Email Report</button>
+</>
+className="action-btn">📧 Email Report</button>
                       <button className="action-btn">Re-assess</button>
                     </div>
                   </div>
@@ -436,15 +461,18 @@ function App() {
 
             <h2>Assessment Reports</h2>
             <div
-</> className="reports-controls"><>
+</>
+className="reports-controls"><>
 
               <button className="report-btn">Generate Summary Report</button>
               <button
-</> className="report-btn">📈 Market Trend Report</button><>
+</>
+className="report-btn">📈 Market Trend Report</button><>
 
               <button className="report-btn">Neighborhood Analysis</button>
               <button
-</> className="report-btn">Assessment Queue</button>
+</>
+className="report-btn">Assessment Queue</button>
             </div>
             <div className="reports-list">
               <div className="report-item">
@@ -452,6 +480,7 @@ function App() {
 
                   <h4>Monthly Assessment Summary - November 2024</h4>
                   <p
+</>
 </>>Comprehensive report of all assessments completed this month</p>
                   <span className="report-date">Generated: Nov 30, 2024</span>
                 </div>
@@ -459,7 +488,8 @@ function App() {
 
                   <button className="action-btn">Download PDF</button>
                   <button
-</> className="action-btn">Preview</button>
+</>
+className="action-btn">Preview</button>
                 </div>
               </div>
               <div className="report-item">
@@ -467,6 +497,7 @@ function App() {
 
                   <h4>Market Trend Analysis - Q4 2024</h4>
                   <p
+</>
 </>>Quarterly market analysis with property value trends</p>
                   <span className="report-date">Generated: Dec 1, 2024</span>
                 </div>
@@ -474,7 +505,8 @@ function App() {
 
                   <button className="action-btn">Download PDF</button>
                   <button
-</> className="action-btn">Preview</button>
+</>
+className="action-btn">Preview</button>
                 </div>
               </div>
             </div>

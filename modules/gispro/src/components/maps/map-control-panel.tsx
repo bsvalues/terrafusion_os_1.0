@@ -118,7 +118,8 @@ export function MapControlPanel({
         <h3 className="text-sm font-medium truncate">{title}</h3>
         
         <div
-</> className="flex items-center space-x-1">
+</>
+className="flex items-center space-x-1">
           {/* Collapse button */}
           {collapsible && (
             <Button

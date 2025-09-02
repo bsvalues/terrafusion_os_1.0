@@ -37,6 +37,7 @@ export default function CostFactorTable({
 
         <AlertTitle>Error</AlertTitle>
         <AlertDescription
+</>
 </>>
           {error instanceof Error ? error.message : 'Failed to load cost factors'}
         </AlertDescription>
@@ -50,6 +51,7 @@ export default function CostFactorTable({
 
         <TableCaption>{caption}</TableCaption>
         <TableHeader
+</>
 </>>
           <TableRow>
             <TableHead colSpan={4} className="text-center text-lg font-bold">
@@ -60,6 +62,7 @@ export default function CostFactorTable({
 
             <TableHead>Category</TableHead>
             <TableHead
+</>
 </>>Name</TableHead>
             {showQualityGradeColumn && <TableHead>Quality Grade</TableHead>}
             <TableHead className="text-right">Value</TableHead>
@@ -75,6 +78,7 @@ export default function CostFactorTable({
                   <Skeleton className="h-4 w-24" />
                 </TableCell>
                 <TableCell
+</>
 </>>
                   <Skeleton className="h-4 w-32" />
                 </TableCell>
@@ -95,6 +99,7 @@ export default function CostFactorTable({
 
                 <TableCell className="font-medium">{factor.category}</TableCell>
                 <TableCell
+</>
 </>>{factor.name}</TableCell>
                 {showQualityGradeColumn && <TableCell>{factor.qualityGrade}</TableCell>}
                 <TableCell className="text-right">

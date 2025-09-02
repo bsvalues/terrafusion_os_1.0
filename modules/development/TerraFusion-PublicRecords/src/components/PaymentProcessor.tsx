@@ -160,7 +160,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
               <h2 className="text-2xl font-bold">Secure Payment</h2>
               <p
-</> className="text-white/90 mt-1">{description}</p>
+</>
+className="text-white/90 mt-1">{description}</p>
             </div>
             {step !== 'processing' && (
               <button
@@ -179,24 +180,28 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
                 <span>Subtotal</span>
                 <span
+</>
 </>>${amount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm"><>
 
                 <span>Processing Fee (2.9%)</span>
                 <span
+</>
 </>>${processingFee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm"><>
 
                 <span>Convenience Fee</span>
                 <span
+</>
 </>>${convenienceFee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold pt-2 border-t border-white/20"><>
 
                 <span>Total</span>
                 <span
+</>
 </>>${totalAmount.toFixed(2)}</span>
               </div>
             </div>
@@ -224,7 +229,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
                     <p className="text-sm text-gray-600 mb-3">Saved Payment Methods</p>
                     <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                       {savedMethods.map((method) => (
                         <button
                           key={method.id}
@@ -243,7 +249,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                                   {method.brand} •••• {method.last4}
                                 </p>
                                 <p
-</> className="text-sm text-gray-500">{method.name}</p>
+</>
+className="text-sm text-gray-500">{method.name}</p>
                               </div>
                             </div>
                             {method.isDefault && (
@@ -262,7 +269,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
                 <p className="text-sm text-gray-600 mb-3">New Payment Method</p>
                 <div
-</> className="grid grid-cols-1 md:grid-cols-3 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <button
                     onClick={() => {
                       setSelectedMethod('card');
@@ -274,7 +282,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
                     <p className="font-medium text-gray-900">Credit/Debit Card</p>
                     <p
-</> className="text-xs text-gray-500 mt-1">Instant processing</p>
+</>
+className="text-xs text-gray-500 mt-1">Instant processing</p>
                   </button>
 
                   <button
@@ -288,7 +297,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
                     <p className="font-medium text-gray-900">Bank Transfer</p>
                     <p
-</> className="text-xs text-gray-500 mt-1">Lower fees</p>
+</>
+className="text-xs text-gray-500 mt-1">Lower fees</p>
                   </button>
 
                   <button
@@ -302,7 +312,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
                     <p className="font-medium text-gray-900">Digital Wallet</p>
                     <p
-</> className="text-xs text-gray-500 mt-1">Apple/Google Pay</p>
+</>
+className="text-xs text-gray-500 mt-1">Apple/Google Pay</p>
                   </button>
                 </div>
 
@@ -314,7 +325,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
                       <p className="font-medium text-green-900">Bank-Level Security</p>
                       <p
-</> className="text-green-700">
+</>
+className="text-green-700">
                         Your payment information is encrypted and secure. We never store your full card details.
                       </p>
                     </div>
@@ -337,14 +349,16 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                 </h3>
 
                 <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                   <div><>
 
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Card Number
                     </label>
                     <div
-</> className="relative">
+</>
+className="relative">
                       <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         type="text"
@@ -369,6 +383,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                     </label>
                     <input
 </>
+
                       type="text"
                       value={cardName}
                       onChange={(e) => setCardName(e.target.value)}
@@ -385,6 +400,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                       </label>
                       <input
 </>
+
                         type="text"
                         value={expiryDate}
                         onChange={(e) => setExpiryDate(formatExpiryDate(e.target.value))}
@@ -400,6 +416,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                       </label>
                       <input
 </>
+
                         type="text"
                         value={cvv}
                         onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
@@ -415,6 +432,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                       </label>
                       <input
 </>
+
                         type="text"
                         value={zipCode}
                         onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5))}
@@ -449,6 +467,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                   </button>
                   <button
 </>
+
                     onClick={processPayment}
                     disabled={!cardNumber || !cardName || !expiryDate || !cvv}
                     className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
@@ -478,7 +497,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                   Processing Payment
                 </h3>
                 <p
-</> className="text-gray-600">
+</>
+className="text-gray-600">
                   Please wait while we securely process your payment...
                 </p>
                 <div className="mt-8 flex items-center justify-center gap-2">
@@ -508,12 +528,12 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                   </div>
                 </motion.div><>
 
-
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
                   Payment Successful!
                 </h3>
                 <p
-</> className="text-gray-600 mb-6">
+</>
+className="text-gray-600 mb-6">
                   Your payment of ${totalAmount.toFixed(2)} has been processed
                 </p>
 
@@ -521,31 +541,36 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
                   <h4 className="font-semibold text-gray-900 mb-3">Transaction Details</h4>
                   <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                     <div className="flex justify-between"><>
 
                       <span className="text-gray-600">Confirmation #</span>
                       <span
-</> className="font-mono font-medium">{paymentResult.confirmationNumber}</span>
+</>
+className="font-mono font-medium">{paymentResult.confirmationNumber}</span>
                     </div>
                     <div className="flex justify-between"><>
 
                       <span className="text-gray-600">Date</span>
                       <span
+</>
 </>>{new Date().toLocaleDateString()}</span>
                     </div>
                     <div className="flex justify-between"><>
 
                       <span className="text-gray-600">Amount Paid</span>
                       <span
-</> className="font-medium">${totalAmount.toFixed(2)}</span>
+</>
+className="font-medium">${totalAmount.toFixed(2)}</span>
                     </div>
                     {applicationId && (
                       <div className="flex justify-between"><>
 
                         <span className="text-gray-600">Application ID</span>
                         <span
-</> className="font-mono">{applicationId}</span>
+</>
+className="font-mono">{applicationId}</span>
                       </div>
                     )}
                   </div>
@@ -558,7 +583,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                     Download Receipt
                   </button>
                   <button
-</> className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:text-purple-700">
+</>
+className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:text-purple-700">
                     <DollarSign className="w-4 h-4" />
                     View Transaction
                   </button>

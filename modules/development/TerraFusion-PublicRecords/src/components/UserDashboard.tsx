@@ -139,11 +139,13 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
                 {user.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div
+</>
 </>><>
 
                 <h2 className="text-lg font-semibold text-gray-900">{user.name}</h2>
                 <p
-</> className="text-sm text-gray-500">{user.email}</p>
+</>
+className="text-sm text-gray-500">{user.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -217,7 +219,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                         <div className="text-2xl font-bold">{applications.length}</div>
                         <div
-</> className="text-sm opacity-90">Active Applications</div>
+</>
+className="text-sm opacity-90">Active Applications</div>
                       </motion.div>
                       
                       <motion.div
@@ -228,7 +231,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                         <div className="text-2xl font-bold">{savedSearches.length}</div>
                         <div
-</> className="text-sm opacity-90">Saved Searches</div>
+</>
+className="text-sm opacity-90">Saved Searches</div>
                       </motion.div>
                       
                       <motion.div
@@ -239,7 +243,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                         <div className="text-2xl font-bold">$1,825</div>
                         <div
-</> className="text-sm opacity-90">Total Paid</div>
+</>
+className="text-sm opacity-90">Total Paid</div>
                       </motion.div>
                       
                       <motion.div
@@ -250,7 +255,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                         <div className="text-2xl font-bold">{appointments.length}</div>
                         <div
-</> className="text-sm opacity-90">Upcoming</div>
+</>
+className="text-sm opacity-90">Upcoming</div>
                       </motion.div>
                     </div>
 
@@ -259,7 +265,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
                       <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                         {notifications.slice(0, 5).map((notif) => (
                           <div key={notif.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                             {notif.type === 'success' ? (
@@ -273,7 +280,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                               <p className="text-sm text-gray-900">{notif.message}</p>
                               <p
-</> className="text-xs text-gray-500 mt-1">
+</>
+className="text-xs text-gray-500 mt-1">
                                 {notif.date.toLocaleDateString()}
                               </p>
                             </div>
@@ -294,7 +302,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                       <h1 className="text-2xl font-bold text-gray-900">My Applications</h1>
                       <button
-</> className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
+</>
+className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
                         + New Application
                       </button>
                     </div>
@@ -312,7 +321,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                                 <h3 className="font-semibold text-gray-900">{app.type}</h3>
                                 <span
-</> className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`}>
+</>
+className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`}>
                                   {app.status.toUpperCase()}
                                 </span>
                               </div>
@@ -367,7 +377,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                       <h1 className="text-2xl font-bold text-gray-900">Saved Searches</h1>
                       <button
-</> className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
+</>
+className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
                         + New Search
                       </button>
                     </div>
@@ -405,7 +416,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
                                 <Eye className="w-4 h-4" />
                               </button>
                               <button
-</> className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+</>
+className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg">
                                 <Settings className="w-4 h-4" />
                               </button>
                             </div>
@@ -423,7 +435,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
                     <h1 className="text-2xl font-bold text-gray-900 mb-6">Payment History</h1>
                     
                     <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                       {payments.map((payment) => (
                         <motion.div
                           key={payment.id}
@@ -435,7 +448,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                               <h3 className="font-semibold text-gray-900">{payment.description}</h3>
                               <p
-</> className="text-sm text-gray-600 mt-1">
+</>
+className="text-sm text-gray-600 mt-1">
                                 {payment.status === 'paid' 
                                   ? `Paid on ${payment.date.toLocaleDateString()}`
                                   : `Due by ${payment.dueDate.toLocaleDateString()}`
@@ -466,7 +480,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                       <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
                       <button
-</> className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
+</>
+className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
                         + Schedule Appointment
                       </button>
                     </div>
@@ -483,20 +498,23 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ user, onLogout }) 
 
                               <h3 className="font-semibold text-gray-900">{apt.type}</h3>
                               <div
-</> className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+</>
+className="flex items-center gap-4 mt-2 text-sm text-gray-600">
                                 <span className="flex items-center gap-1"><>
 
                                   <Calendar className="w-3 h-3" />
                                   {apt.date.toLocaleDateString()}
                                 </span>
                                 <span
-</> className="flex items-center gap-1"><>
+</>
+className="flex items-center gap-1"><>
 
                                   <Clock className="w-3 h-3" />
                                   {apt.time}
                                 </span>
                                 <span
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                                   <MapPin className="w-3 h-3" />
                                   {apt.location}
                                 </span>

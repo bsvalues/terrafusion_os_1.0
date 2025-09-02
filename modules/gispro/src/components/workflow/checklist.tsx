@@ -118,7 +118,8 @@ export function WorkflowChecklist({ workflowId, items, showAll = false, editable
 
         <h2 className="text-lg font-semibold text-neutral-800">Workflow Checklist</h2>
         <span
-</> className="text-sm text-neutral-500">{getCompletedCount()} of {checklistItems.length} completed</span>
+</>
+className="text-sm text-neutral-500">{getCompletedCount()} of {checklistItems.length} completed</span>
       </div>
       
       <div className="space-y-2">
@@ -157,7 +158,8 @@ export function WorkflowChecklist({ workflowId, items, showAll = false, editable
 
             <h3 className="text-sm font-medium mb-2">Add New Item</h3>
             <div
-</> className="space-y-3">
+</>
+className="space-y-3">
               <div>
                 <label htmlFor="new-item-title" className="text-xs font-medium text-neutral-700 mb-1 block">
                   Title <span className="text-red-500">*</span>
@@ -173,6 +175,7 @@ export function WorkflowChecklist({ workflowId, items, showAll = false, editable
               </div>
               
               <div
+</>
 </>><>
 
                 <label htmlFor="new-item-description" className="text-xs font-medium text-neutral-700 mb-1 block">
@@ -180,6 +183,7 @@ export function WorkflowChecklist({ workflowId, items, showAll = false, editable
                 </label>
                 <Textarea
 </>
+
                   id="new-item-description"
                   placeholder="Enter description (optional)"
                   value={newItemDescription}
@@ -199,6 +203,7 @@ export function WorkflowChecklist({ workflowId, items, showAll = false, editable
                 </Button>
                 <Button
 </>
+
                   size="sm"
                   variant="outline"
                   onClick={() => {

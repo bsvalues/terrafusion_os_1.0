@@ -190,7 +190,8 @@ const ComplianceDashboard: React.FC = () => {
 
         <Typography variant="h4" gutterBottom>Compliance Dashboard</Typography>
         <LinearProgress
-</> />
+</>
+/>
       </Box>
     );
   }
@@ -201,7 +202,8 @@ const ComplianceDashboard: React.FC = () => {
 
         <Typography variant="h4" gutterBottom>Compliance Dashboard</Typography>
         <Alert
-</> severity="error">{error}</Alert>
+</>
+severity="error">{error}</Alert>
       </Box>
     );
   }
@@ -213,6 +215,7 @@ const ComplianceDashboard: React.FC = () => {
         <Typography variant="h4">Compliance Dashboard</Typography>
         <Button
 </>
+
           startIcon={<Download />}
           onClick={() => setReportDialogOpen(true)}
           variant="contained"
@@ -222,7 +225,6 @@ const ComplianceDashboard: React.FC = () => {
       </Box>
 
       {dashboardData && (
-        <>
           {/* Overall Compliance Score */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} md={3}>
@@ -237,7 +239,8 @@ const ComplianceDashboard: React.FC = () => {
                     {dashboardData.overallMetrics.complianceScore.toFixed(1)}%
                   </Typography>
                   <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                     Compliance Score
                   </Typography>
                 </CardContent>
@@ -256,7 +259,8 @@ const ComplianceDashboard: React.FC = () => {
                     {dashboardData.overallMetrics.totalAuditEvents.toLocaleString()}
                   </Typography>
                   <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                     Total Events
                   </Typography>
                 </CardContent>
@@ -275,7 +279,8 @@ const ComplianceDashboard: React.FC = () => {
                     {dashboardData.overallMetrics.securityIncidents}
                   </Typography>
                   <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                     This Period
                   </Typography>
                 </CardContent>
@@ -294,7 +299,8 @@ const ComplianceDashboard: React.FC = () => {
                     {dashboardData.recentViolations.filter(v => v.status !== 'Resolved').length}
                   </Typography>
                   <Typography
-</> variant="body2" color="text.secondary">
+</>
+variant="body2" color="text.secondary">
                     Require Attention
                   </Typography>
                 </CardContent>
@@ -310,6 +316,7 @@ const ComplianceDashboard: React.FC = () => {
 
                   <Typography variant="h6" gutterBottom>Framework Compliance Status</Typography>
                   <TableContainer
+</>
 </>>
                     <Table>
                       <TableHead>
@@ -317,10 +324,12 @@ const ComplianceDashboard: React.FC = () => {
 
                           <TableCell>Framework</TableCell>
                           <TableCell
+</>
 </>>Score</TableCell><>
 
                           <TableCell>Controls</TableCell>
                           <TableCell
+</>
 </>>Violations</TableCell>
                           <TableCell>Status</TableCell>
                         </TableRow>
@@ -331,6 +340,7 @@ const ComplianceDashboard: React.FC = () => {
 
                             <TableCell>{framework.framework}</TableCell>
                             <TableCell
+</>
 </>>
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <LinearProgress
@@ -348,6 +358,7 @@ const ComplianceDashboard: React.FC = () => {
                               {framework.implementedControls}/{framework.totalControls}
                             </TableCell>
                             <TableCell
+</>
 </>><>
 
                               <Chip
@@ -357,6 +368,7 @@ const ComplianceDashboard: React.FC = () => {
                               />
                             </TableCell>
                             <TableCell
+</>
 </>>
                               <Chip
                                 label={framework.status}
@@ -379,7 +391,8 @@ const ComplianceDashboard: React.FC = () => {
 
                   <Typography variant="h6" gutterBottom>Violations by Type</Typography>
                   <ResponsiveContainer
-</> width="100%" height={250}>
+</>
+width="100%" height={250}>
                     <PieChart>
                       <Pie
                         data={Object.entries(dashboardData.overallMetrics.violationsByType).map(([type, count]) => ({
@@ -397,7 +410,8 @@ const ComplianceDashboard: React.FC = () => {
                         ))}
                       </Pie>
                       <Tooltip
-</> />
+</>
+/>
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
@@ -412,6 +426,7 @@ const ComplianceDashboard: React.FC = () => {
 
               <Typography variant="h6" gutterBottom>Recent Compliance Violations</Typography>
               <TableContainer
+</>
 </>>
                 <Table>
                   <TableHead>
@@ -419,14 +434,17 @@ const ComplianceDashboard: React.FC = () => {
 
                       <TableCell>Control</TableCell>
                       <TableCell
+</>
 </>>Description</TableCell><>
 
                       <TableCell>Severity</TableCell>
                       <TableCell
+</>
 </>>Framework</TableCell><>
 
                       <TableCell>Detected</TableCell>
                       <TableCell
+</>
 </>>Status</TableCell>
                     </TableRow>
                   </TableHead>
@@ -436,6 +454,7 @@ const ComplianceDashboard: React.FC = () => {
 
                         <TableCell>{violation.controlId}</TableCell>
                         <TableCell
+</>
 </>>{violation.description}</TableCell>
                         <TableCell><>
 
@@ -446,12 +465,14 @@ const ComplianceDashboard: React.FC = () => {
                           />
                         </TableCell>
                         <TableCell
+</>
 </>>{violation.framework}</TableCell><>
 
                         <TableCell>
                           {new Date(violation.detectedAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell
+</>
 </>>
                           <Chip
                             label={violation.status}
@@ -466,7 +487,6 @@ const ComplianceDashboard: React.FC = () => {
               </TableContainer>
             </CardContent>
           </Card>
-        </>
       )}
 
       {/* Report Generation Dialog */}
@@ -474,23 +494,27 @@ const ComplianceDashboard: React.FC = () => {
 
         <DialogTitle>Generate Compliance Report</DialogTitle>
         <DialogContent
+</>
 </>>
           <FormControl fullWidth sx={{ mb: 2, mt: 1 }}><>
 
             <InputLabel>Framework</InputLabel>
             <Select
 </>
+
               value={selectedFramework}
               onChange={(e) => setSelectedFramework(e.target.value)}
             ><>
 
               <MenuItem value="FISMA">FISMA</MenuItem>
               <MenuItem
-</> value="NIST">NIST</MenuItem><>
+</>
+value="NIST">NIST</MenuItem><>
 
               <MenuItem value="SOC2">SOC 2</MenuItem>
               <MenuItem
-</> value="FedRAMP">FedRAMP</MenuItem>
+</>
+value="FedRAMP">FedRAMP</MenuItem>
             </Select>
           </FormControl>
 
@@ -504,7 +528,6 @@ const ComplianceDashboard: React.FC = () => {
             sx={{ mb: 2 }}
           /><>
 
-
           <TextField
             fullWidth
             label="End Date"
@@ -515,11 +538,13 @@ const ComplianceDashboard: React.FC = () => {
           />
         </DialogContent>
         <DialogActions
+</>
 </>><>
 
           <Button onClick={() => setReportDialogOpen(false)}>Cancel</Button>
           <Button
-</> onClick={generateReport} variant="contained">
+</>
+onClick={generateReport} variant="contained">
             Generate Report
           </Button>
         </DialogActions>

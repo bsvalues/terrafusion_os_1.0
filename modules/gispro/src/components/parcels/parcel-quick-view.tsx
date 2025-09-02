@@ -70,7 +70,8 @@ export function ParcelQuickView({
           {triggerElement}
         </PopoverTrigger>
         <PopoverContent
-</> side="right" className="w-[360px] p-0 shadow-lg">
+</>
+side="right" className="w-[360px] p-0 shadow-lg">
           <QuickParcelPreview
             parcelId={parcelId}
             mapLayers={mapLayers}
@@ -90,7 +91,8 @@ export function ParcelQuickView({
           {triggerElement}
         </DialogTrigger>
         <DialogContent
-</> className="p-0 max-w-md">
+</>
+className="p-0 max-w-md">
           <QuickParcelPreview
             parcelId={parcelId}
             mapLayers={mapLayers}
@@ -110,6 +112,7 @@ export function ParcelQuickView({
         {triggerElement}
       </DrawerTrigger>
       <DrawerContent
+</>
 </>>
         <div className="px-4 py-4 max-w-md mx-auto w-full">
           <QuickParcelPreview

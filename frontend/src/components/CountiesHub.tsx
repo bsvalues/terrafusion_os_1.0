@@ -179,6 +179,7 @@ const CountiesHub: React.FC = () => {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '3rem', position: 'relative' }}>
 
+
         <span style={{
           position: 'absolute',
           top: '-10px',
@@ -193,6 +194,7 @@ const CountiesHub: React.FC = () => {
           🌲 Washington State
         </span>
         <h1
+
 style={{
           fontSize: '2.5rem',
           fontWeight: 900,
@@ -222,7 +224,7 @@ style={{
           { value: '2.3M', label: 'Total Parcels' },
           { value: '$847B', label: 'Property Value' },
           { value: '92%', label: 'Integration Ready' }
-        ].map((stat , index) => (
+        ].map((stat, index) => (
           <div key={index} style={{
             textAlign: 'center',
             padding: '1.5rem 2rem',
@@ -231,6 +233,7 @@ style={{
             border: '1px solid rgba(0,255,238,0.2)',
             backdropFilter: 'blur(10px)'
           }}>
+
 
             <div style={{
               fontSize: '2.5rem',
@@ -243,6 +246,7 @@ style={{
               {stat.value}
             </div>
             <div
+
 style={{
               color: 'rgba(255,255,255,0.6)',
               fontSize: '0.9rem',
@@ -340,6 +344,7 @@ style={{
               marginBottom: '1rem'
             }}>
 
+
               <div style={{
                 fontSize: '1.4rem',
                 fontWeight: 700,
@@ -348,6 +353,7 @@ style={{
                 {county.name}
               </div>
               <div
+
 style={{
                 padding: '0.3rem 0.8rem',
                 borderRadius: '20px',
@@ -372,7 +378,7 @@ style={{
                 { label: 'Population', value: county.population },
                 { label: 'Parcels', value: county.parcels },
                 { label: 'Annual Budget', value: county.budget }
-              ].map((info , index) => (
+              ].map((info, index) => (
                 <div key={index} style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -381,8 +387,10 @@ style={{
                   fontSize: '0.9rem'
                 }}>
 
+
                   <span style={{ color: 'rgba(255,255,255,0.6)' }}>{info.label}</span>
                   <span
+
 style={{ color: '#00ffee', fontWeight: 600 }}>{info.value}</span>
                 </div>
               ))}
@@ -432,6 +440,7 @@ style={{ color: '#00ffee', fontWeight: 600 }}>{info.value}</span>
                 overflow: 'hidden'
               }}>
 
+
                 <div style={{
                   height: '100%',
                   width: `${county.integrationScore}%`,
@@ -440,6 +449,7 @@ style={{ color: '#00ffee', fontWeight: 600 }}>{info.value}</span>
                 }} />
               </div>
               <span
+
 style={{
                 fontWeight: 700,
                 color: '#00ffee',
@@ -452,6 +462,7 @@ style={{
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '0.5rem' }}>
+
 
               <button
                 onClick={() => initiateMigration(county.id)}
@@ -479,6 +490,7 @@ style={{
                 {county.status === 'ready' ? 'Start Migration' : 'Assess System'}
               </button>
               <button
+
 onClick={() => viewDetails(county.id)}
                 style={{
                   flex: 1,
@@ -516,6 +528,7 @@ onClick={() => viewDetails(county.id)}
         textAlign: 'center'
       }}>
 
+
         <h2 style={{
           fontSize: '1.8rem',
           fontWeight: 700,
@@ -528,6 +541,7 @@ onClick={() => viewDetails(county.id)}
           Washington State Migration Opportunity
         </h2>
         <div
+
 style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -539,13 +553,14 @@ style={{
             { value: '72hrs', label: 'Average Migration Time' },
             { value: '379M×', label: 'Speed Improvement' },
             { value: '98%', label: 'Projected Adoption' }
-          ].map((item , index) => (
+          ].map((item, index) => (
             <div key={index} style={{
               padding: '1rem',
               background: 'rgba(0,153,255,0.05)',
               borderRadius: '15px',
               border: '1px solid rgba(0,255,238,0.2)'
             }}>
+
 
               <div style={{
                 fontSize: '1.8rem',
@@ -556,6 +571,7 @@ style={{
                 {item.value}
               </div>
               <div
+
 style={{
                 color: 'rgba(255,255,255,0.7)',
                 fontSize: '0.9rem'

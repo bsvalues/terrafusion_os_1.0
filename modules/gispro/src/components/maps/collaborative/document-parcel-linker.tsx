@@ -280,6 +280,7 @@ export function DocumentParcelLinker({
 
                 <DialogTitle>Create Document-Parcel Link</DialogTitle>
                 <DialogDescription
+</>
 </>>
                   Link a document to a parcel to establish their relationship.
                 </DialogDescription>
@@ -303,6 +304,7 @@ export function DocumentParcelLinker({
                   <Label>Document</Label>
                   <Select
 </>
+
                     value={selectedDocumentId?.toString()}
                     onValueChange={(value) => setSelectedDocumentId(parseInt(value))}
                     disabled={isLoadingDocuments}
@@ -312,6 +314,7 @@ export function DocumentParcelLinker({
                       <SelectValue placeholder="Select a document" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>>
                       <ScrollArea className="h-[200px]">
                         {filteredDocuments?.map((doc: Document) => (
@@ -333,6 +336,7 @@ export function DocumentParcelLinker({
                   <Label>Parcel</Label>
                   <Select
 </>
+
                     value={selectedParcelId?.toString()}
                     onValueChange={(value) => setSelectedParcelId(parseInt(value))}
                     disabled={isLoadingParcels}
@@ -342,6 +346,7 @@ export function DocumentParcelLinker({
                       <SelectValue placeholder="Select a parcel" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>>
                       <ScrollArea className="h-[200px]">
                         {filteredParcels?.map((parcel: any) => (
@@ -368,6 +373,7 @@ export function DocumentParcelLinker({
                   <Label>Link Type</Label>
                   <Select
 </>
+
                     value={linkType}
                     onValueChange={setLinkType}
                   >
@@ -376,19 +382,23 @@ export function DocumentParcelLinker({
                       <SelectValue placeholder="Select link type" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>><>
 
                       <SelectItem value="reference">Reference</SelectItem>
                       <SelectItem
-</> value="related">Related</SelectItem><>
+</>
+value="related">Related</SelectItem><>
 
                       <SelectItem value="legal_description">Legal Description</SelectItem>
                       <SelectItem
-</> value="ownership">Ownership</SelectItem><>
+</>
+value="ownership">Ownership</SelectItem><>
 
                       <SelectItem value="subdivision">Subdivision</SelectItem>
                       <SelectItem
-</> value="transaction">Transaction</SelectItem>
+</>
+value="transaction">Transaction</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
@@ -400,6 +410,7 @@ export function DocumentParcelLinker({
                   <Label>Notes</Label>
                   <Input
 </>
+
                     placeholder="Optional notes about this relationship"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
@@ -417,6 +428,7 @@ export function DocumentParcelLinker({
                 </Button>
                 <Button
 </>
+
                   onClick={handleCreateLink}
                   disabled={!selectedDocumentId || !selectedParcelId || linkMutation.isPending}
                 >
@@ -434,6 +446,7 @@ export function DocumentParcelLinker({
 
           <CardTitle className="text-md">Linked Items</CardTitle>
           <CardDescription
+</>
 </>>
             {selectedParcelId 
               ? 'Documents linked to this parcel' 
@@ -453,7 +466,8 @@ export function DocumentParcelLinker({
 
               <p>No links found</p>
               <p
-</> className="text-sm">
+</>
+className="text-sm">
                 {selectedParcelId || selectedDocumentId 
                   ? 'Create a new link to connect documents and parcels' 
                   : 'Select a document or parcel to view its links'}
@@ -468,11 +482,13 @@ export function DocumentParcelLinker({
                     {selectedParcelId ? 'Document' : 'Parcel'}
                   </TableHead>
                   <TableHead
+</>
 </>>Type</TableHead><>
 
                   <TableHead>Notes</TableHead>
                   <TableHead
-</> className="w-[100px]">Actions</TableHead>
+</>
+className="w-[100px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

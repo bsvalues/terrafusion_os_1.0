@@ -388,6 +388,8 @@ const PWAShell: React.FC = () => {
               <text x="60" y="70" fontSize="36" fontWeight="bold" textAnchor="middle" fill="url(#gradient)">TF</text>
             </svg>
           </div>
+
+
           <h1 style={{
             fontSize: '2.5rem',
             fontWeight: 900,
@@ -400,6 +402,7 @@ const PWAShell: React.FC = () => {
             Terrafusion OS
           </h1>
           <p
+
 style={{
             color: 'rgba(255,255,255,0.8)',
             fontSize: '1.2rem',
@@ -407,6 +410,8 @@ style={{
           }}>
             Government. Transcended.
           </p>
+
+
           <p style={{
             color: 'rgba(255,255,255,0.6)',
             fontSize: '1rem',
@@ -415,6 +420,7 @@ style={{
             Turn Complexity into Clarity.
           </p>
           <div
+
 style={{
             width: '300px',
             height: '4px',
@@ -423,6 +429,8 @@ style={{
             margin: '0 auto',
             overflow: 'hidden'
           }}>
+
+
             <div style={{
               height: '100%',
               background: 'linear-gradient(90deg, #0099ff, #00ffee, #00ffaa)',
@@ -431,6 +439,7 @@ style={{
             }} />
           </div>
           <p
+
 style={{
             color: realDataConnected ? '#00ffaa' : '#00ffee',
             fontSize: '1rem',
@@ -480,6 +489,8 @@ style={{
           alignItems: 'center',
           gap: '1rem'
         }}>
+
+
           <button
             onClick={closeModule}
             style={{
@@ -496,6 +507,7 @@ style={{
             ← Back
           </button>
           <h2
+
 style={{
             color: '#fff',
             fontSize: '1.5rem',
@@ -536,6 +548,8 @@ style={{
         justifyContent: 'space-between'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+
+
           <div style={{
             width: '40px',
             height: '40px',
@@ -551,6 +565,7 @@ style={{
             TF
           </div>
           <h1
+
 style={{
             fontSize: '1.5rem',
             fontWeight: 700,
@@ -565,6 +580,8 @@ style={{
         </div>
         
         <div style={{ flex: 1, maxWidth: '500px', margin: '0 2rem' }}>
+
+
           <input
             type="text"
             placeholder="Search properties, modules, or commands..."
@@ -582,9 +599,13 @@ style={{
         </div>
         
         <div
+
 style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+
+
           <span style={{ color: 'rgba(255,255,255,0.8)' }}>{userName}</span>
           <div
+
 style={{
             width: '40px',
             height: '40px',
@@ -651,12 +672,17 @@ style={{
                 color: '#00ffee',
                 textAlign: 'right'
               }}>
+
+
                 <div>🔄 TerraFusionSync Active</div>
                 <div
+
 >📊 {_terraFusionSyncStatus.parcels || '89,247'} Parcels</div>
               </div>
             )}
           </div>
+
+
           <div style={{
             color: '#00ffaa',
             fontSize: '0.9rem',
@@ -665,6 +691,7 @@ style={{
             🏛️ Official ACTIVE_MODULES.md Registry v2.1 - 15 Production-Ready Government Modules
           </div>
           <div
+
 style={{
             color: 'rgba(255,255,255,0.7)',
             fontSize: '0.8rem',
@@ -727,6 +754,8 @@ style={{
                 gap: '1rem',
                 marginBottom: '1rem'
               }}>
+
+
                 <div style={{
                   fontSize: '2.5rem',
                   width: '60px',
@@ -740,6 +769,7 @@ style={{
                   {module.icon}
                 </div>
                 <div
+
 >
                   <h3 style={{
                     fontSize: '1.3rem',

@@ -129,17 +129,18 @@ export function AudienceSelector() {
               </div>
             </div><>
 
-
             <Badge variant="secondary" className="text-sm font-semibold">
               {currentAudience.badge}
             </Badge>
 
             <div
-</> className="space-y-4"><>
+</>
+className="space-y-4"><>
 
               <h3 className="text-3xl md:text-4xl font-heading font-bold">{currentAudience.headline}</h3>
               <p
-</> className="text-lg text-muted-foreground leading-relaxed">{currentAudience.subhead}</p>
+</>
+className="text-lg text-muted-foreground leading-relaxed">{currentAudience.subhead}</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center"><>
@@ -149,6 +150,7 @@ export function AudienceSelector() {
               </Button>
               <Button
 </>
+
                 variant="outline"
                 size="lg"
                 className="border-tf-primary text-tf-primary hover:bg-tf-primary/10 bg-transparent"

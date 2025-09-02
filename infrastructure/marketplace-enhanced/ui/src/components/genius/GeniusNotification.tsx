@@ -241,7 +241,8 @@ export const GeniusNotification: React.FC<GeniusNotificationProps> = ({
             {title}
           </h4>
           <p
-</> 
+</>
+
             id={`notification-message-${id}`}
             className="genius-notification__message"
           >

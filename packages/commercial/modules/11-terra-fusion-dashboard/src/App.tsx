@@ -99,7 +99,8 @@ function App() {
 
         <h1>Terrafusion Master Control Center</h1>
         <div
-</> className="system-health">
+</>
+className="system-health">
           <span className="health-indicator" style={{ color: systemHealth > 80 ? '#00ff00' : systemHealth > 60 ? '#ff9500' : '#ff0000' }}>
             System Health: {systemHealth}%
           </span>
@@ -111,12 +112,14 @@ function App() {
 
           <h2>System Metrics</h2>
           <div
-</> className="metrics-grid">
+</>
+className="metrics-grid">
             <div className="metric-card"><>
 
               <div className="metric-label">CPU Usage</div>
               <div
-</> className="metric-value">{systemMetrics.cpu_usage.toFixed(1)}%</div>
+</>
+className="metric-value">{systemMetrics.cpu_usage.toFixed(1)}%</div>
               <div className="metric-bar">
                 <div className="metric-fill" style={{ width: `${systemMetrics.cpu_usage}%` }}></div>
               </div>
@@ -125,7 +128,8 @@ function App() {
 
               <div className="metric-label">Memory Usage</div>
               <div
-</> className="metric-value">{systemMetrics.memory_usage.toFixed(1)}%</div>
+</>
+className="metric-value">{systemMetrics.memory_usage.toFixed(1)}%</div>
               <div className="metric-bar">
                 <div className="metric-fill" style={{ width: `${systemMetrics.memory_usage}%` }}></div>
               </div>
@@ -134,7 +138,8 @@ function App() {
 
               <div className="metric-label">Disk Usage</div>
               <div
-</> className="metric-value">{systemMetrics.disk_usage.toFixed(1)}%</div>
+</>
+className="metric-value">{systemMetrics.disk_usage.toFixed(1)}%</div>
               <div className="metric-bar">
                 <div className="metric-fill" style={{ width: `${systemMetrics.disk_usage}%` }}></div>
               </div>
@@ -143,7 +148,8 @@ function App() {
 
               <div className="metric-label">Network</div>
               <div
-</> className="metric-value network-status" style={{ color: systemMetrics.network_status === 'connected' ? '#00ff00' : '#ff0000' }}>
+</>
+className="metric-value network-status" style={{ color: systemMetrics.network_status === 'connected' ? '#00ff00' : '#ff0000' }}>
                 {systemMetrics.network_status}
               </div>
             </div>
@@ -154,7 +160,8 @@ function App() {
 
           <h2>Application Status ({runningApps}/{totalApps} Running)</h2>
           <div
-</> className="apps-grid">
+</>
+className="apps-grid">
             {appStatuses.map(app => (
               <div key={app.id} className={`app-card ${selectedApp === app.id ? 'selected' : ''}`} 
                    onClick={() => setSelectedApp(app.id)}>
@@ -162,7 +169,8 @@ function App() {
 
                   <span className="app-name">{app.name}</span>
                   <span
-</> className="app-status" style={{ color: getStatusColor(app.status) }}>
+</>
+className="app-status" style={{ color: getStatusColor(app.status) }}>
                     ●
                   </span>
                 </div>
@@ -192,13 +200,15 @@ function App() {
 
           <h2>Master Controls</h2>
           <div
-</> className="control-buttons"><>
+</>
+className="control-buttons"><>
 
             <button className="control-btn start-all" onClick={() => console.log('Start All')}>
               Start All Apps
             </button>
             <button
-</> className="control-btn stop-all" onClick={() => console.log('Stop All')}>
+</>
+className="control-btn stop-all" onClick={() => console.log('Stop All')}>
               Stop All Apps
             </button><>
 
@@ -206,7 +216,8 @@ function App() {
               Restart All Apps
             </button>
             <button
-</> className="control-btn backup" onClick={() => console.log('Backup')}>
+</>
+className="control-btn backup" onClick={() => console.log('Backup')}>
               Backup System
             </button>
           </div>
@@ -215,15 +226,18 @@ function App() {
 
             <h3>Recent Activity</h3>
             <div
-</> className="logs-container"><>
+</>
+className="logs-container"><>
 
               <div className="log-entry">TerraAgent: Health check passed</div>
               <div
-</> className="log-entry">PropertyWorkbench: Connection timeout</div><>
+</>
+className="log-entry">PropertyWorkbench: Connection timeout</div><>
 
               <div className="log-entry">CostForgeAI: Processing complete</div>
               <div
-</> className="log-entry">System: Memory optimization completed</div>
+</>
+className="log-entry">System: Memory optimization completed</div>
               <div className="log-entry">TerraMiner: Data sync successful</div>
             </div>
           </div>
@@ -234,36 +248,43 @@ function App() {
 
             <h2>{appStatuses.find(app => app.id === selectedApp)?.name} Details</h2>
             <div
-</> className="detailed-metrics">
+</>
+className="detailed-metrics">
               <div className="detail-card"><>
 
                 <h4>Performance Metrics</h4>
                 <div
+</>
 </>>Response Time: 45ms</div><>
 
                 <div>Throughput: 1,250 req/min</div>
                 <div
+</>
 </>>Error Rate: 0.02%</div>
               </div>
               <div className="detail-card"><>
 
                 <h4>Resource Usage</h4>
                 <div
+</>
 </>>CPU: 12.5%</div><>
 
                 <div>Memory: 256MB</div>
                 <div
+</>
 </>>Connections: 23</div>
               </div>
               <div className="detail-card"><>
 
                 <h4>Quick Actions</h4>
                 <button
-</> className="action-btn">Configure</button><>
+</>
+className="action-btn">Configure</button><>
 
                 <button className="action-btn">View Logs</button>
                 <button
-</> className="action-btn">Restart</button>
+</>
+className="action-btn">Restart</button>
               </div>
             </div>
           </section>

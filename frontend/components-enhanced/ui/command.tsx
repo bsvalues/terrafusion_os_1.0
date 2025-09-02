@@ -48,6 +48,7 @@ function CommandDialog({
 
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription
+</>
 </>>{description}</DialogDescription>
       </DialogHeader>
       <DialogContent

@@ -93,7 +93,8 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
           ML Optimization Dashboard
         </h2>
         <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
           <button
             onClick={handleAutoOptimizeAll}
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
@@ -112,7 +113,8 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
               <h3 className="text-lg font-semibold text-gray-800">{model.name}</h3>
               <span
-</> className={`px-2 py-1 text-xs rounded-full ${
+</>
+className={`px-2 py-1 text-xs rounded-full ${
                 model.type === 'classification' ? 'bg-green-100 text-green-800' :
                 model.type === 'regression' ? 'bg-blue-100 text-blue-800' :
                 'bg-purple-100 text-purple-800'
@@ -126,25 +128,29 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
                 <span className="text-sm text-gray-600">Accuracy:</span>
                 <span
-</> className="font-semibold text-gray-800">{formatAccuracy(model.accuracy)}</span>
+</>
+className="font-semibold text-gray-800">{formatAccuracy(model.accuracy)}</span>
               </div>
               <div className="flex justify-between items-center"><>
 
                 <span className="text-sm text-gray-600">Precision:</span>
                 <span
-</> className="font-semibold text-gray-800">{formatAccuracy(model.performance.precision)}</span>
+</>
+className="font-semibold text-gray-800">{formatAccuracy(model.performance.precision)}</span>
               </div>
               <div className="flex justify-between items-center"><>
 
                 <span className="text-sm text-gray-600">Recall:</span>
                 <span
-</> className="font-semibold text-gray-800">{formatAccuracy(model.performance.recall)}</span>
+</>
+className="font-semibold text-gray-800">{formatAccuracy(model.performance.recall)}</span>
               </div>
               <div className="flex justify-between items-center"><>
 
                 <span className="text-sm text-gray-600">Latency:</span>
                 <span
-</> className="font-semibold text-gray-800">{formatLatency(model.performance.latency)}</span>
+</>
+className="font-semibold text-gray-800">{formatLatency(model.performance.latency)}</span>
               </div>
             </div>
 
@@ -153,6 +159,7 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
                 <span>Training Data: {model.trainingDataSize.toLocaleString()}</span>
                 <span
+</>
 </>>Last: {model.lastTrained.toLocaleDateString()}</span>
               </div>
             </div>
@@ -169,12 +176,14 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
         </h3>
         
         <div
-</> className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+</>
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <div><>
 
             <label className="block text-sm font-medium text-gray-700 mb-2">Target Metric</label>
             <select
 </>
+
               value={optimizationConfig.targetMetric}
               onChange={(e) => setOptimizationConfig(prev => ({
                 ...prev,
@@ -186,11 +195,13 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
               <option value="accuracy">Accuracy</option>
               <option
-</> value="precision">Precision</option><>
+</>
+value="precision">Precision</option><>
 
               <option value="recall">Recall</option>
               <option
-</> value="f1">F1 Score</option>
+</>
+value="f1">F1 Score</option>
               <option value="latency">Latency</option>
             </select>
           </div>
@@ -200,6 +211,7 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
             <label className="block text-sm font-medium text-gray-700 mb-2">Optimization Type</label>
             <select
 </>
+
               value={optimizationConfig.optimizationType}
               onChange={(e) => setOptimizationConfig(prev => ({
                 ...prev,
@@ -211,7 +223,8 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
               <option value="hyperparameter">Hyperparameter</option>
               <option
-</> value="architecture">Architecture</option>
+</>
+value="architecture">Architecture</option>
               <option value="feature-selection">Feature Selection</option>
             </select>
           </div>
@@ -221,6 +234,7 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
             <label className="block text-sm font-medium text-gray-700 mb-2">Max Training Time (ms)</label>
             <input
 </>
+
               type="number"
               value={optimizationConfig.constraints.maxTrainingTime}
               onChange={(e) => setOptimizationConfig(prev => ({
@@ -241,6 +255,7 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
             <label className="block text-sm font-medium text-gray-700 mb-2">Min Accuracy</label>
             <input
 </>
+
               type="number"
               step="0.01"
               min="0"
@@ -294,7 +309,8 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
           </h3>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             {activeJobs.map(job => {
               const model = models.find(m => m.id === job.modelId);
               return (
@@ -306,7 +322,8 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
                         <h4 className="font-medium text-gray-800">{model?.name || 'Unknown Model'}</h4>
                         <p
-</> className="text-sm text-gray-500">Job ID: {job.id}</p>
+</>
+className="text-sm text-gray-500">Job ID: {job.id}</p>
                       </div>
                     </div>
                     <span className="text-sm text-gray-500">
@@ -319,6 +336,7 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
                       <span>Progress</span>
                       <span
+</>
 </>>{job.progress.toFixed(1)}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -335,13 +353,15 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
                         <span className="text-gray-600">Current Accuracy: </span>
                         <span
-</> className="font-medium">{formatAccuracy(job.metrics.accuracy[job.metrics.accuracy.length - 1])}</span>
+</>
+className="font-medium">{formatAccuracy(job.metrics.accuracy[job.metrics.accuracy.length - 1])}</span>
                       </div>
                       <div><>
 
                         <span className="text-gray-600">Current Loss: </span>
                         <span
-</> className="font-medium">{job.metrics.loss[job.metrics.loss.length - 1]?.toFixed(4)}</span>
+</>
+className="font-medium">{job.metrics.loss[job.metrics.loss.length - 1]?.toFixed(4)}</span>
                       </div>
                     </div>
                   )}
@@ -361,22 +381,26 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
         </h3>
         
         <div
-</> className="grid grid-cols-1 md:grid-cols-2 gap-6">
+</>
+className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg p-4 border border-gray-200"><>
 
             <h4 className="font-medium text-gray-800 mb-3">Model Comparison</h4>
             <div
-</> className="space-y-3">
+</>
+className="space-y-3">
               {models.map(model => (
                 <div key={model.id} className="flex items-center justify-between"><>
 
                   <span className="text-sm text-gray-600">{model.name}</span>
                   <div
-</> className="flex items-center gap-4"><>
+</>
+className="flex items-center gap-4"><>
 
                     <span className="text-sm font-medium">{formatAccuracy(model.accuracy)}</span>
                     <div
-</> className="w-20 bg-gray-200 rounded-full h-2">
+</>
+className="w-20 bg-gray-200 rounded-full h-2">
                       <div
                         className="bg-blue-600 h-2 rounded-full"
                         style={{ width: `${model.accuracy * 100}%` }}
@@ -392,17 +416,20 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
 
             <h4 className="font-medium text-gray-800 mb-3">Latency Analysis</h4>
             <div
-</> className="space-y-3">
+</>
+className="space-y-3">
               {models.map(model => (
                 <div key={model.id} className="flex items-center justify-between"><>
 
                   <span className="text-sm text-gray-600">{model.name}</span>
                   <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                     <span className="text-sm font-medium">{formatLatency(model.performance.latency)}</span>
                     <div
-</> className={`w-3 h-3 rounded-full ${
+</>
+className={`w-3 h-3 rounded-full ${
                       model.performance.latency < 30 ? 'bg-green-500' :
                       model.performance.latency < 60 ? 'bg-yellow-500' : 'bg-red-500'
                     }`}></div>

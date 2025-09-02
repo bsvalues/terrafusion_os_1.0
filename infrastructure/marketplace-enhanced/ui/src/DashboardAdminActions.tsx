@@ -43,7 +43,8 @@ export function DashboardAdminActions({ plugin, onAction }) {
 
           <button className="tf-btn tf-btn-confirm" onClick={handleConfirm} aria-label={`Confirm ${confirm} for ${plugin.name}`}>Yes</button>
           <button
-</> className="tf-btn tf-btn-cancel" onClick={()=>setConfirm(null)} aria-label="Cancel admin action">No</button>
+</>
+className="tf-btn tf-btn-cancel" onClick={()=>setConfirm(null)} aria-label="Cancel admin action">No</button>
         </div>
       )}
     </div>

@@ -22,11 +22,13 @@ export function RevenueForecasting() {
 
                 <th className="text-left py-3 text-gray-300">Year</th>
                 <th
-</> className="text-left py-3 text-gray-300">Counties</th><>
+</>
+className="text-left py-3 text-gray-300">Counties</th><>
 
                 <th className="text-left py-3 text-gray-300">ARR</th>
                 <th
-</> className="text-left py-3 text-gray-300">Growth</th>
+</>
+className="text-left py-3 text-gray-300">Growth</th>
               </tr>
             </thead>
             <tbody>
@@ -35,11 +37,13 @@ export function RevenueForecasting() {
 
                   <td className="py-4 text-white font-semibold">{item.year}</td>
                   <td
-</> className="py-4 text-gray-300">{item.counties}</td><>
+</>
+className="py-4 text-gray-300">{item.counties}</td><>
 
                   <td className="py-4 text-accent font-bold">{item.arr}</td>
                   <td
-</> className="py-4 text-transcend">+{item.growth}</td>
+</>
+className="py-4 text-transcend">+{item.growth}</td>
                 </tr>
               ))}
             </tbody>

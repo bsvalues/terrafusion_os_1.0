@@ -335,11 +335,11 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
   };
 
   return (
-    <>
       <DialogHeader><>
 
         <DialogTitle>Create New Project</DialogTitle>
         <DialogDescription
+</>
 </>>
           Set up a new government project with team collaboration, timeline, and compliance requirements.
         </DialogDescription>
@@ -352,11 +352,13 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger
-</> value="timeline">Timeline</TabsTrigger><>
+</>
+value="timeline">Timeline</TabsTrigger><>
 
               <TabsTrigger value="resources">Resources</TabsTrigger>
               <TabsTrigger
-</> value="compliance">Compliance</TabsTrigger>
+</>
+value="compliance">Compliance</TabsTrigger>
             </TabsList>
 
             <TabsContent value="basic" className="space-y-4">
@@ -370,12 +372,14 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                       <FormLabel>Project Name *</FormLabel>
                       <FormControl
+</>
 </>><>
 
                         <Input placeholder="Enter project name" {...field} />
                       </FormControl>
                       <FormMessage
-</> />
+</>
+/>
                     </FormItem>
                   )}
                 />
@@ -388,7 +392,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                       <FormLabel>Project Type</FormLabel>
                       <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select project type" />
@@ -401,7 +406,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                                 <div className="font-medium">{type.replace('_', ' ')}</div>
                                 <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                                   {getProjectTypeDescription(type)}
                                 </div>
                               </div>
@@ -424,6 +430,7 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                     <FormLabel>Description *</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Textarea
@@ -433,7 +440,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
                       />
                     </FormControl>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -447,7 +455,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                       <FormLabel>Priority</FormLabel>
                       <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select priority" />
@@ -457,11 +466,13 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                           <SelectItem value={ProjectPriority.LOW}>Low</SelectItem>
                           <SelectItem
-</> value={ProjectPriority.MEDIUM}>Medium</SelectItem><>
+</>
+value={ProjectPriority.MEDIUM}>Medium</SelectItem><>
 
                           <SelectItem value={ProjectPriority.HIGH}>High</SelectItem>
                           <SelectItem
-</> value={ProjectPriority.CRITICAL}>Critical</SelectItem>
+</>
+value={ProjectPriority.CRITICAL}>Critical</SelectItem>
                           <SelectItem value={ProjectPriority.EMERGENCY}>Emergency</SelectItem>
                         </SelectContent>
                       </Select>
@@ -479,7 +490,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                       <FormLabel>Assigned Team *</FormLabel>
                       <Popover
-</> open={teamComboboxOpen} onOpenChange={setTeamComboboxOpen}>
+</>
+open={teamComboboxOpen} onOpenChange={setTeamComboboxOpen}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -498,6 +510,7 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                             <CommandEmpty>No teams found.</CommandEmpty>
                             <CommandGroup
+</>
 </>>
                               {teams.map((team) => (
                                 <CommandItem
@@ -517,7 +530,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                                     <div className="font-medium">{team.name}</div>
                                     <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                                       {team.department} • {team.members.length} members
                                     </div>
                                   </div>
@@ -551,7 +565,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                           <span className="text-sm">{member.name}</span>
                           <Badge
-</> variant="outline" className="text-xs">
+</>
+variant="outline" className="text-xs">
                             {member.role}
                           </Badge>
                         </div>
@@ -572,6 +587,7 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                       <FormLabel>Start Date</FormLabel>
                       <Popover
+</>
 </>>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -613,6 +629,7 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                       <FormLabel>End Date</FormLabel>
                       <Popover
+</>
 </>>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -671,7 +688,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
                         />
                       </div>
                       <div
-</> className="w-40">
+</>
+className="w-40">
                         <Controller
                           control={control}
                           name={`milestones.${index}.targetDate`}
@@ -688,6 +706,7 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
                       </div>
                       <Button
 </>
+
                         type="button"
                         variant="ghost"
                         size="sm"
@@ -720,6 +739,7 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                     <FormLabel>Estimated Budget ($)</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input
@@ -731,7 +751,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
                       />
                     </FormControl>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -753,15 +774,18 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent
+</>
 </>><>
 
                               <SelectItem value={ResourceType.HUMAN}>Human</SelectItem>
                               <SelectItem
-</> value={ResourceType.HARDWARE}>Hardware</SelectItem><>
+</>
+value={ResourceType.HARDWARE}>Hardware</SelectItem><>
 
                               <SelectItem value={ResourceType.SOFTWARE}>Software</SelectItem>
                               <SelectItem
-</> value={ResourceType.EXTERNAL_SERVICE}>Service</SelectItem>
+</>
+value={ResourceType.EXTERNAL_SERVICE}>Service</SelectItem>
                             </SelectContent>
                           </Select>
                         )}
@@ -844,15 +868,18 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent
+</>
 </>><>
 
                                 <SelectItem value={RiskLevel.LOW}>Low</SelectItem>
                                 <SelectItem
-</> value={RiskLevel.MEDIUM}>Medium</SelectItem><>
+</>
+value={RiskLevel.MEDIUM}>Medium</SelectItem><>
 
                                 <SelectItem value={RiskLevel.HIGH}>High</SelectItem>
                                 <SelectItem
-</> value={RiskLevel.CRITICAL}>Critical</SelectItem>
+</>
+value={RiskLevel.CRITICAL}>Critical</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
@@ -901,7 +928,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                     <FormLabel>Security Clearance Required</FormLabel>
                     <Select
-</> onValueChange={field.onChange} defaultValue={field.value}>
+</>
+onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select clearance level" />
@@ -911,11 +939,13 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                         <SelectItem value={SecurityClearance.PUBLIC}>Public</SelectItem>
                         <SelectItem
-</> value={SecurityClearance.INTERNAL}>Internal</SelectItem><>
+</>
+value={SecurityClearance.INTERNAL}>Internal</SelectItem><>
 
                         <SelectItem value={SecurityClearance.CONFIDENTIAL}>Confidential</SelectItem>
                         <SelectItem
-</> value={SecurityClearance.SECRET}>Secret</SelectItem>
+</>
+value={SecurityClearance.SECRET}>Secret</SelectItem>
                         <SelectItem value={SecurityClearance.TOP_SECRET}>Top Secret</SelectItem>
                       </SelectContent>
                     </Select>
@@ -932,6 +962,7 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
 
                     <FormLabel>Compliance Requirements</FormLabel>
                     <FormControl
+</>
 </>>
                       <div className="space-y-2">
                         {complianceOptions.map((option) => (
@@ -986,7 +1017,8 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
               Cancel
             </Button>
             <div
-</> className="flex gap-2">
+</>
+className="flex gap-2">
               {activeTab !== 'basic' && (
                 <Button
                   type="button"
@@ -1024,7 +1056,6 @@ export const ProjectCreateDialog: React.FC<ProjectCreateDialogProps> = ({
           </div>
         </form>
       </Form>
-    </>
   );
 };
 

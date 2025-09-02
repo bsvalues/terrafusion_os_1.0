@@ -114,7 +114,8 @@ export function DocumentParcelRelationshipVisualization({
 
             <h3 className="text-lg font-semibold">Error Loading Relationships</h3>
             <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
               Failed to load relationship data. Please try again.
             </p>
           </div>
@@ -157,6 +158,7 @@ export function DocumentParcelRelationshipVisualization({
                   <Label htmlFor="link-type" className="whitespace-nowrap">Filter by relationship:</Label>
                   <Select
 </>
+
                     value={linkTypeFilter}
                     onValueChange={setLinkTypeFilter}
                   >
@@ -165,6 +167,7 @@ export function DocumentParcelRelationshipVisualization({
                       <SelectValue placeholder="All relationships" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>>
                       <SelectItem value={undefined}>All relationships</SelectItem>
                       {Object.entries(documentTypeLabels).map(([value, label]) => (
@@ -183,6 +186,7 @@ export function DocumentParcelRelationshipVisualization({
 
                       <TableHead>Parcel Number</TableHead>
                       <TableHead
+</>
 </>>Address</TableHead>
                       <TableHead>Relationship</TableHead>
                     </TableRow>
@@ -193,6 +197,7 @@ export function DocumentParcelRelationshipVisualization({
 
                         <TableCell className="font-medium">{parcel.parcelNumber}</TableCell>
                         <TableCell
+</>
 </>>{parcel.address || 'No address'}</TableCell>
                         <TableCell>
                           <Badge variant="secondary">
@@ -213,7 +218,8 @@ export function DocumentParcelRelationshipVisualization({
                 No linked parcels found
               </h3>
               <p
-</> className="text-sm text-slate-500 dark:text-slate-400">
+</>
+className="text-sm text-slate-500 dark:text-slate-400">
                 This document is not linked to any parcels
               </p>
             </div>
@@ -265,6 +271,7 @@ export function DocumentParcelRelationshipVisualization({
                   <Label htmlFor="document-type" className="whitespace-nowrap">Filter by type:</Label>
                   <Select
 </>
+
                     value={documentTypeFilter}
                     onValueChange={setDocumentTypeFilter}
                   >
@@ -273,19 +280,23 @@ export function DocumentParcelRelationshipVisualization({
                       <SelectValue placeholder="All documents" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>><>
 
                       <SelectItem value={undefined}>All documents</SelectItem>
                       <SelectItem
-</> value="plat_map">Plat Map</SelectItem><>
+</>
+value="plat_map">Plat Map</SelectItem><>
 
                       <SelectItem value="deed">Deed</SelectItem>
                       <SelectItem
-</> value="survey">Survey</SelectItem><>
+</>
+value="survey">Survey</SelectItem><>
 
                       <SelectItem value="legal_description">Legal Description</SelectItem>
                       <SelectItem
-</> value="boundary_line_adjustment">Boundary Line Adjustment</SelectItem>
+</>
+value="boundary_line_adjustment">Boundary Line Adjustment</SelectItem>
                       <SelectItem value="tax_form">Tax Form</SelectItem>
                     </SelectContent>
                   </Select>
@@ -296,6 +307,7 @@ export function DocumentParcelRelationshipVisualization({
                   <Label htmlFor="relationship-type" className="whitespace-nowrap">Filter by relationship:</Label>
                   <Select
 </>
+
                     value={linkTypeFilter}
                     onValueChange={setLinkTypeFilter}
                   >
@@ -304,6 +316,7 @@ export function DocumentParcelRelationshipVisualization({
                       <SelectValue placeholder="All relationships" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>>
                       <SelectItem value={undefined}>All relationships</SelectItem>
                       {Object.entries(documentTypeLabels).map(([value, label]) => (
@@ -322,10 +335,12 @@ export function DocumentParcelRelationshipVisualization({
 
                       <TableHead>Document Name</TableHead>
                       <TableHead
+</>
 </>>Type</TableHead><>
 
                       <TableHead>Relationship</TableHead>
                       <TableHead
+</>
 </>>Date</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -365,7 +380,8 @@ export function DocumentParcelRelationshipVisualization({
                 No linked documents found
               </h3>
               <p
-</> className="text-sm text-slate-500 dark:text-slate-400">
+</>
+className="text-sm text-slate-500 dark:text-slate-400">
                 This parcel is not linked to any documents
               </p>
             </div>
@@ -386,7 +402,8 @@ export function DocumentParcelRelationshipVisualization({
             No relationship data
           </h3>
           <p
-</> className="text-sm text-slate-500 dark:text-slate-400">
+</>
+className="text-sm text-slate-500 dark:text-slate-400">
             Please provide a document ID or parcel ID to view relationships
           </p>
         </div>

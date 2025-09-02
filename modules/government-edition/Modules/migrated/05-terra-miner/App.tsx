@@ -282,7 +282,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Data Mining Operations</h2>
         <p
-</> className="opacity-90">Advanced pattern recognition and machine learning insights</p>
+</>
+className="opacity-90">Advanced pattern recognition and machine learning insights</p>
       </div>
 
       {/* System Metrics */}
@@ -293,14 +294,16 @@ function App() {
 
               <span className="text-sm font-medium text-gray-600">CPU Usage</span>
               <Cpu
-</> className="h-4 w-4 text-blue-600" />
+</>
+className="h-4 w-4 text-blue-600" />
             </div><>
 
             <div className="text-2xl font-bold text-blue-600">
               {systemMetrics.cpu_usage.toFixed(1)}%
             </div>
             <div
-</> className="w-full bg-gray-200 rounded-full h-2 mt-2">
+</>
+className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
                 className="bg-blue-600 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${systemMetrics.cpu_usage}%` }}
@@ -313,14 +316,16 @@ function App() {
 
               <span className="text-sm font-medium text-gray-600">Memory</span>
               <HardDrive
-</> className="h-4 w-4 text-green-600" />
+</>
+className="h-4 w-4 text-green-600" />
             </div><>
 
             <div className="text-2xl font-bold text-green-600">
               {systemMetrics.memory_usage.toFixed(1)}%
             </div>
             <div
-</> className="w-full bg-gray-200 rounded-full h-2 mt-2">
+</>
+className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
                 className="bg-green-600 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${systemMetrics.memory_usage}%` }}
@@ -333,14 +338,16 @@ function App() {
 
               <span className="text-sm font-medium text-gray-600">Processing Rate</span>
               <Activity
-</> className="h-4 w-4 text-purple-600" />
+</>
+className="h-4 w-4 text-purple-600" />
             </div><>
 
             <div className="text-2xl font-bold text-purple-600">
               {systemMetrics.processing_rate.toFixed(0)}
             </div>
             <div
-</> className="text-xs text-gray-500">records/min</div>
+</>
+className="text-xs text-gray-500">records/min</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-4">
@@ -348,14 +355,16 @@ function App() {
 
               <span className="text-sm font-medium text-gray-600">Active Jobs</span>
               <Network
-</> className="h-4 w-4 text-orange-600" />
+</>
+className="h-4 w-4 text-orange-600" />
             </div><>
 
             <div className="text-2xl font-bold text-orange-600">
               {systemMetrics.active_jobs}
             </div>
             <div
-</> className="text-xs text-gray-500">running</div>
+</>
+className="text-xs text-gray-500">running</div>
           </div>
         </div>
       )}
@@ -370,6 +379,7 @@ function App() {
           </h3>
           <button
 </>
+
             onClick={() => startMiningJob('comprehensive', 'property_database')}
             disabled={loading}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
@@ -386,7 +396,8 @@ function App() {
 
                   <h4 className="font-semibold text-lg">{job.name}</h4>
                   <p
-</> className="text-sm text-gray-600 capitalize">{job.type.replace('-', ' ')}</p>
+</>
+className="text-sm text-gray-600 capitalize">{job.type.replace('-', ' ')}</p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
@@ -413,6 +424,7 @@ function App() {
                       </button>
                       <button
 </>
+
                         onClick={() => stopJob(job.id)}
                         className="p-1 text-red-600 hover:bg-red-100 rounded"
                       >
@@ -429,6 +441,7 @@ function App() {
 
                     <span>Progress</span>
                     <span
+</>
 </>>{job.progress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -445,13 +458,15 @@ function App() {
 
                   <span className="text-gray-600">Data Points:</span>
                   <div
-</> className="font-semibold">{job.data_points.toLocaleString()}</div>
+</>
+className="font-semibold">{job.data_points.toLocaleString()}</div>
                 </div>
                 <div><>
 
                   <span className="text-gray-600">Insights:</span>
                   <div
-</> className="font-semibold">{job.insights}</div>
+</>
+className="font-semibold">{job.insights}</div>
                 </div>
                 <div><>
 
@@ -459,7 +474,8 @@ function App() {
                     {job.completed_at ? 'Completed:' : job.started_at ? 'Started:' : 'Scheduled:'}
                   </span>
                   <div
-</> className="font-semibold text-xs">
+</>
+className="font-semibold text-xs">
                     {job.completed_at ? 
                       new Date(job.completed_at).toLocaleString() :
                       job.started_at ?
@@ -482,7 +498,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">AI-Generated Insights</h2>
         <p
-</> className="opacity-90">Machine learning insights and pattern discoveries</p>
+</>
+className="opacity-90">Machine learning insights and pattern discoveries</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -495,7 +512,8 @@ function App() {
 
                   <h3 className="font-semibold text-lg">{insight.title}</h3>
                   <p
-</> className="text-sm text-gray-600 capitalize">{insight.type.replace('-', ' ')}</p>
+</>
+className="text-sm text-gray-600 capitalize">{insight.type.replace('-', ' ')}</p>
                 </div>
               </div>
               <div className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -507,18 +525,19 @@ function App() {
               </div>
             </div><>
 
-
             <p className="text-gray-700 mb-4">{insight.description}</p>
 
             <div
-</> className="grid grid-cols-2 gap-4 mb-4">
+</>
+className="grid grid-cols-2 gap-4 mb-4">
               <div className="text-center p-3 bg-gray-50 rounded"><>
 
                 <div className="text-2xl font-bold text-blue-600">
                   {(insight.confidence * 100).toFixed(1)}%
                 </div>
                 <div
-</> className="text-sm text-gray-600">Confidence</div>
+</>
+className="text-sm text-gray-600">Confidence</div>
               </div>
               {insight.metrics && (
                 <div className="text-center p-3 bg-gray-50 rounded"><>
@@ -527,7 +546,8 @@ function App() {
                     {insight.metrics.sample_size.toLocaleString()}
                   </div>
                   <div
-</> className="text-sm text-gray-600">Sample Size</div>
+</>
+className="text-sm text-gray-600">Sample Size</div>
                 </div>
               )}
             </div>
@@ -538,13 +558,15 @@ function App() {
 
                   <span>Correlation:</span>
                   <span
-</> className="font-semibold">{(insight.metrics.correlation * 100).toFixed(1)}%</span>
+</>
+className="font-semibold">{(insight.metrics.correlation * 100).toFixed(1)}%</span>
                 </div>
                 <div className="flex justify-between text-sm"><>
 
                   <span>Statistical Significance:</span>
                   <span
-</> className="font-semibold">{(insight.metrics.significance * 100).toFixed(1)}%</span>
+</>
+className="font-semibold">{(insight.metrics.significance * 100).toFixed(1)}%</span>
                 </div>
               </div>
             )}
@@ -564,7 +586,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Pattern Analysis</h2>
         <p
-</> className="opacity-90">Advanced pattern recognition and trend analysis</p>
+</>
+className="opacity-90">Advanced pattern recognition and trend analysis</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -576,7 +599,8 @@ function App() {
           </h3>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             {patterns.map((pattern /* , index */) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2"><>
@@ -585,7 +609,8 @@ function App() {
                     {pattern.pattern_type.replace('_', ' ')}
                   </h4>
                   <div
-</> className={`px-2 py-1 rounded text-xs font-medium ${
+</>
+className={`px-2 py-1 rounded text-xs font-medium ${
                     pattern.trend === 'increasing' ? 'bg-green-100 text-green-800' :
                     pattern.trend === 'decreasing' ? 'bg-red-100 text-red-800' :
                     'bg-blue-100 text-blue-800'
@@ -599,13 +624,15 @@ function App() {
 
                     <span className="text-sm text-gray-600">Frequency:</span>
                     <div
-</> className="font-semibold">{pattern.frequency.toFixed(1)}%</div>
+</>
+className="font-semibold">{pattern.frequency.toFixed(1)}%</div>
                   </div>
                   <div><>
 
                     <span className="text-sm text-gray-600">Strength:</span>
                     <div
-</> className="font-semibold">{(pattern.strength * 100).toFixed(1)}%</div>
+</>
+className="font-semibold">{(pattern.strength * 100).toFixed(1)}%</div>
                   </div>
                 </div>
                 
@@ -630,7 +657,8 @@ function App() {
           </h3>
           
           <div
-</> className="h-64 mb-4">
+</>
+className="h-64 mb-4">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={performanceData.slice(-12)}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -662,7 +690,8 @@ function App() {
 
         <h2 className="text-2xl font-bold mb-2">Analytics Dashboard</h2>
         <p
-</> className="opacity-90">Comprehensive performance metrics and visualizations</p>
+</>
+className="opacity-90">Comprehensive performance metrics and visualizations</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -674,7 +703,8 @@ function App() {
           </h3>
           
           <div
-</> className="h-64">
+</>
+className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={performanceData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -707,7 +737,8 @@ function App() {
           </h3>
           
           <div
-</> className="h-64">
+</>
+className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -726,7 +757,8 @@ function App() {
                   ))}
                 </Pie>
                 <Tooltip
-</> />
+</>
+/>
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -740,7 +772,8 @@ function App() {
           </h3>
           
           <div
-</> className="h-64">
+</>
+className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={performanceData.slice(-8)}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -761,30 +794,35 @@ function App() {
           </h3>
           
           <div
-</> className="space-y-4">
+</>
+className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
               <span className="font-medium">Total Records Processed</span>
               <span
-</> className="text-xl font-bold text-blue-600">2.4M</span>
+</>
+className="text-xl font-bold text-blue-600">2.4M</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
               <span className="font-medium">Insights Generated</span>
               <span
-</> className="text-xl font-bold text-green-600">1,247</span>
+</>
+className="text-xl font-bold text-green-600">1,247</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
               <span className="font-medium">Pattern Accuracy</span>
               <span
-</> className="text-xl font-bold text-purple-600">94.2%</span>
+</>
+className="text-xl font-bold text-purple-600">94.2%</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
 
               <span className="font-medium">Processing Speed</span>
               <span
-</> className="text-xl font-bold text-orange-600">2.3k/min</span>
+</>
+className="text-xl font-bold text-orange-600">2.3k/min</span>
             </div>
           </div>
         </div>
@@ -804,7 +842,8 @@ function App() {
 
                 <h1 className="text-2xl font-bold text-gray-900">TerraMiner</h1>
                 <p
-</> className="text-sm text-gray-600">Advanced Data Mining & Analytics</p>
+</>
+className="text-sm text-gray-600">Advanced Data Mining & Analytics</p>
               </div>
             </div>
             <div className="flex items-center space-x-2"><>
@@ -813,7 +852,8 @@ function App() {
                 v1.8.0
               </div>
               <div
-</> className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+</>
+className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
                 Championship Edition
               </div>
             </div>

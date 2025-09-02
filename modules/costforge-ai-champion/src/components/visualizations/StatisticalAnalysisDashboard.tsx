@@ -341,6 +341,7 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
             MCP Statistical Analysis Dashboard
           </CardTitle>
           <CardDescription
+</>
 </>>Loading statistical analysis with AI coordination...</CardDescription>
         </CardHeader>
         <CardContent>
@@ -379,6 +380,7 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
 
                 <span className="text-2xl">{metricInfo.icon}</span>
                 <div
+</>
 </>>
                   <Select value={selectedMetric} onValueChange={(value) => setSelectedMetric(value as MetricType)}>
                     <SelectTrigger className="w-[200px]"><>
@@ -386,6 +388,7 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>>
                       {metricOptions.map(option => (
                         <SelectItem key={option.value} value={option.value}>
@@ -406,7 +409,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                 {filteredData.length} data points
               </Badge>
               <Button
-</> variant="outline" size="sm">
+</>
+variant="outline" size="sm">
                 <Download className="h-4 w-4 mr-2" />
                 Export Analysis
               </Button>
@@ -435,7 +439,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {isCurrencyMetric ? formatCurrency(stats.mean) : formatNumber(stats.mean, 3)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Mean</div>
+</>
+className="text-sm text-muted-foreground">Mean</div>
               </div>
               <div className="text-center p-3 bg-muted rounded-lg"><>
 
@@ -443,7 +448,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {isCurrencyMetric ? formatCurrency(stats.median) : formatNumber(stats.median, 3)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Median</div>
+</>
+className="text-sm text-muted-foreground">Median</div>
               </div>
               <div className="text-center p-3 bg-muted rounded-lg"><>
 
@@ -451,7 +457,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {isCurrencyMetric ? formatCurrency(stats.standardDeviation) : formatNumber(stats.standardDeviation, 3)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Std Dev</div>
+</>
+className="text-sm text-muted-foreground">Std Dev</div>
               </div>
               <div className="text-center p-3 bg-muted rounded-lg"><>
 
@@ -459,7 +466,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {isCurrencyMetric ? formatCurrency(stats.min) : formatNumber(stats.min, 2)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Minimum</div>
+</>
+className="text-sm text-muted-foreground">Minimum</div>
               </div>
               <div className="text-center p-3 bg-muted rounded-lg"><>
 
@@ -467,7 +475,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {isCurrencyMetric ? formatCurrency(stats.max) : formatNumber(stats.max, 2)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Maximum</div>
+</>
+className="text-sm text-muted-foreground">Maximum</div>
               </div>
               <div className="text-center p-3 bg-muted rounded-lg"><>
 
@@ -475,7 +484,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {formatNumber(stats.count)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Count</div>
+</>
+className="text-sm text-muted-foreground">Count</div>
               </div>
             </div>
             
@@ -488,7 +498,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {formatNumber(stats.skewness, 3)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Skewness</div>
+</>
+className="text-sm text-muted-foreground">Skewness</div>
               </div>
               <div className="text-center p-3 border rounded-lg"><>
 
@@ -496,7 +507,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {formatNumber(stats.kurtosis, 3)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Kurtosis</div>
+</>
+className="text-sm text-muted-foreground">Kurtosis</div>
               </div>
               <div className="text-center p-3 border rounded-lg"><>
 
@@ -504,7 +516,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {isCurrencyMetric ? formatCurrency(stats.iqr) : formatNumber(stats.iqr, 3)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">IQR</div>
+</>
+className="text-sm text-muted-foreground">IQR</div>
               </div>
               <div className="text-center p-3 border rounded-lg"><>
 
@@ -512,7 +525,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                   {isCurrencyMetric ? formatCurrency(stats.range) : formatNumber(stats.range, 2)}
                 </div>
                 <div
-</> className="text-sm text-muted-foreground">Range</div>
+</>
+className="text-sm text-muted-foreground">Range</div>
               </div>
             </div>
           </CardContent>
@@ -573,6 +587,7 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
 
                   <AlertTitle>Outlier Analysis Complete</AlertTitle>
                   <AlertDescription
+</>
 </>>
                     Found {outliers.length} data points with Z-scores above 2.0. 
                     {outliers.filter(o => o.governmentFlag).length > 0 && 
@@ -587,10 +602,12 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
 
                       <TableHead>Value</TableHead>
                       <TableHead
+</>
 </>>Z-Score</TableHead><>
 
                       <TableHead>Percentile</TableHead>
                       <TableHead
+</>
 </>>Status</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -602,10 +619,12 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                           {isCurrencyMetric ? formatCurrency(outlier.value) : formatNumber(outlier.value, 2)}
                         </TableCell>
                         <TableCell
+</>
 </>>{formatNumber(outlier.zscore, 2)}</TableCell><>
 
                         <TableCell>{formatPercentage(outlier.percentile)}</TableCell>
                         <TableCell
+</>
 </>>
                           <div className="flex items-center gap-2">
                             {outlier.isExtreme && (
@@ -643,25 +662,29 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
 
               <div className="text-lg font-bold text-green-700">87</div>
               <div
-</> className="text-sm text-green-600">MCP Tools Active</div>
+</>
+className="text-sm text-green-600">MCP Tools Active</div>
             </div>
             <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200"><>
 
               <div className="text-lg font-bold text-blue-700">1,008</div>
               <div
-</> className="text-sm text-blue-600">AI Agents Coordinating</div>
+</>
+className="text-sm text-blue-600">AI Agents Coordinating</div>
             </div>
             <div className="text-center p-3 bg-purple-50 rounded-lg border border-purple-200"><>
 
               <div className="text-lg font-bold text-purple-700">902x</div>
               <div
-</> className="text-sm text-purple-600">Quantum Multiplier</div>
+</>
+className="text-sm text-purple-600">Quantum Multiplier</div>
             </div>
             <div className="text-center p-3 bg-orange-50 rounded-lg border border-orange-200"><>
 
               <div className="text-lg font-bold text-orange-700">100%</div>
               <div
-</> className="text-sm text-orange-600">Government Compliant</div>
+</>
+className="text-sm text-orange-600">Government Compliant</div>
             </div>
           </div>
         </CardContent>

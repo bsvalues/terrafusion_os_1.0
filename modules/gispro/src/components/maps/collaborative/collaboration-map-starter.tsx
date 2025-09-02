@@ -84,6 +84,7 @@ export function CollaborationMapStarter() {
 
           <AlertTitle>Error</AlertTitle>
           <AlertDescription
+</>
 </>>{error}</AlertDescription>
         </Alert>
       </div>
@@ -98,6 +99,7 @@ export function CollaborationMapStarter() {
           <Label htmlFor="room-id">Room ID</Label>
           <Input
 </>
+
             id="room-id"
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}

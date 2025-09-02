@@ -65,7 +65,8 @@ export default function PublicPropertyPortal() {
 
               <h1 className="text-2xl font-bold">Benton County Property Portal</h1>
               <p
-</> className="text-primary-100">Find property information across Benton County, Washington</p>
+</>
+className="text-primary-100">Find property information across Benton County, Washington</p>
             </div>
             <a href="/auth" className="text-sm hover:underline">Staff Login</a>
           </div>
@@ -78,6 +79,7 @@ export default function PublicPropertyPortal() {
 
             <CardTitle>Search for Properties</CardTitle>
             <CardDescription
+</>
 </>>
               Search by address, owner name, or tax parcel ID
             </CardDescription>
@@ -105,7 +107,8 @@ export default function PublicPropertyPortal() {
 
                 <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
                 <p
-</> className="text-sm text-neutral-500 mt-2">Searching properties...</p>
+</>
+className="text-sm text-neutral-500 mt-2">Searching properties...</p>
               </div>
             )}
             
@@ -120,7 +123,8 @@ export default function PublicPropertyPortal() {
 
                 <h3 className="text-sm font-medium text-neutral-500 mb-2">Search Results</h3>
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   {searchResults.map((property) => (
                     <div 
                       key={property.id}
@@ -132,7 +136,8 @@ export default function PublicPropertyPortal() {
 
                           <h4 className="font-medium text-neutral-900">{property.address}</h4>
                           <p
-</> className="text-sm text-neutral-500">Owner: {property.owner}</p>
+</>
+className="text-sm text-neutral-500">Owner: {property.owner}</p>
                         </div>
                         <Badge variant="outline">{property.taxParcelId}</Badge>
                       </div>
@@ -152,6 +157,7 @@ export default function PublicPropertyPortal() {
 
                   <CardTitle>{propertyDetails?.address || "Property Details"}</CardTitle>
                   <CardDescription
+</>
 </>>
                     Parcel ID: {propertyDetails?.taxParcelId || selectedParcelId}
                   </CardDescription>
@@ -162,7 +168,8 @@ export default function PublicPropertyPortal() {
 
                       <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
                       <p
-</> className="text-sm text-neutral-500 mt-2">Loading property details...</p>
+</>
+className="text-sm text-neutral-500 mt-2">Loading property details...</p>
                     </div>
                   ) : propertyDetails ? (
                     <Tabs defaultValue="overview">
@@ -170,7 +177,8 @@ export default function PublicPropertyPortal() {
 
                         <TabsTrigger value="overview">Overview</TabsTrigger>
                         <TabsTrigger
-</> value="assessment">Assessment</TabsTrigger>
+</>
+value="assessment">Assessment</TabsTrigger>
                         <TabsTrigger value="zoning">Zoning</TabsTrigger>
                       </TabsList>
                       
@@ -181,24 +189,28 @@ export default function PublicPropertyPortal() {
 
                               <h3 className="text-sm font-medium text-neutral-500">Owner</h3>
                               <p
+</>
 </>>{propertyDetails.owner}</p>
                             </div>
                             <div><>
 
                               <h3 className="text-sm font-medium text-neutral-500">Tax Parcel ID</h3>
                               <p
+</>
 </>>{propertyDetails.taxParcelId}</p>
                             </div>
                             <div><>
 
                               <h3 className="text-sm font-medium text-neutral-500">Acreage</h3>
                               <p
+</>
 </>>{propertyDetails.acreage.toFixed(2)} acres</p>
                             </div>
                             <div><>
 
                               <h3 className="text-sm font-medium text-neutral-500">Year Built</h3>
                               <p
+</>
 </>>{propertyDetails.yearBuilt || "N/A"}</p>
                             </div>
                           </div>
@@ -209,7 +221,8 @@ export default function PublicPropertyPortal() {
 
                             <h3 className="text-sm font-medium text-neutral-500 mb-2">Location</h3>
                             <div
-</> className="flex items-start">
+</>
+className="flex items-start">
                               <MapPinIcon className="h-5 w-5 text-neutral-400 mr-2 mt-0.5" />
                               <p>{propertyDetails.address}</p>
                             </div>
@@ -223,7 +236,8 @@ export default function PublicPropertyPortal() {
 
                             <h3 className="text-sm font-medium text-neutral-500">Assessed Value</h3>
                             <p
-</> className="text-lg font-medium">${propertyDetails.assessedValue.toLocaleString()}</p>
+</>
+className="text-lg font-medium">${propertyDetails.assessedValue.toLocaleString()}</p>
                           </div>
                           
                           <Separator />
@@ -232,7 +246,8 @@ export default function PublicPropertyPortal() {
 
                             <h3 className="text-sm font-medium text-neutral-500 mb-2">Assessment Details</h3>
                             <p
-</> className="text-sm text-neutral-600">
+</>
+className="text-sm text-neutral-600">
                               Assessment information is updated annually. For the most current tax information,
                               please contact the Benton County Assessor's Office directly.
                             </p>
@@ -246,7 +261,8 @@ export default function PublicPropertyPortal() {
 
                             <h3 className="text-sm font-medium text-neutral-500">Zoning Classification</h3>
                             <p
-</> className="text-lg">{propertyDetails.zoning}</p>
+</>
+className="text-lg">{propertyDetails.zoning}</p>
                           </div>
                           
                           <Separator />
@@ -255,7 +271,8 @@ export default function PublicPropertyPortal() {
 
                             <h3 className="text-sm font-medium text-neutral-500 mb-2">Zoning Information</h3>
                             <p
-</> className="text-sm text-neutral-600">
+</>
+className="text-sm text-neutral-600">
                               Zoning information is provided as a general reference. For specific zoning requirements,
                               please consult the Benton County Planning Department.
                             </p>
@@ -284,7 +301,8 @@ export default function PublicPropertyPortal() {
                     />
                   </div>
                   <p
-</> className="text-xs text-neutral-500 mt-2">
+</>
+className="text-xs text-neutral-500 mt-2">
                     Map data is for reference only and may not represent exact property boundaries.
                   </p>
                 </CardContent>
@@ -300,7 +318,8 @@ export default function PublicPropertyPortal() {
 
             <p>© {new Date().getFullYear()} Benton County Assessor's Office</p>
             <p
-</> className="mt-1">This website provides public record information for reference purposes only.</p>
+</>
+className="mt-1">This website provides public record information for reference purposes only.</p>
           </div>
         </div>
       </footer>

@@ -92,13 +92,13 @@ export const KPICard: React.FC<KPICardProps> = ({
           )}
         </Box><>
 
-        
         <Typography variant="h4" sx={{ mb: 1, fontWeight: 'bold' }}>
           {formatValue(value)}
         </Typography>
         
         <Box
-</> sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+</>
+sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {change !== undefined && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {getTrendIcon()}
@@ -121,7 +121,8 @@ export const KPICard: React.FC<KPICardProps> = ({
                 Progress to Target
               </Typography>
               <Typography
-</> variant="caption" color="text.secondary">
+</>
+variant="caption" color="text.secondary">
                 {formatValue(target)}
               </Typography>
             </Box>

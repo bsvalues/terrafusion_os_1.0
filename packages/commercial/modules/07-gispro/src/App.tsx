@@ -104,6 +104,7 @@ function App() {
 
           <h3>Professional GIS Map View</h3>
           <p
+</>
 </>>Interactive mapping with advanced spatial analysis</p>
         </div>
       </div>
@@ -126,7 +127,8 @@ function App() {
               {layer.name}
             </span>
             <span
-</> className="layer-type">{layer.type}</span>
+</>
+className="layer-type">{layer.type}</span>
           </div>
           {layer.visible && (
             <div className="layer-controls"><>
@@ -134,6 +136,7 @@ function App() {
               <label>Opacity: {Math.round(layer.opacity * 100)}%</label>
               <input
 </>
+
                 type="range"
                 min="0"
                 max="1"
@@ -154,7 +157,8 @@ function App() {
 
       <h3>Spatial Analysis</h3>
       <div
-</> className="analysis-tools">
+</>
+className="analysis-tools">
         <button 
           className="analysis-btn"
           onClick={() => performSpatialAnalysis('buffer')}
@@ -165,7 +169,8 @@ function App() {
           Buffer Analysis
         </button>
         <button
-</> 
+</>
+
           className="analysis-btn"
           onClick={() => performSpatialAnalysis('intersection')}
           disabled={isProcessing}
@@ -175,7 +180,8 @@ function App() {
           Intersection
         </button>
         <button
-</> 
+</>
+
           className="analysis-btn"
           onClick={() => performSpatialAnalysis('proximity')}
           disabled={isProcessing}
@@ -188,7 +194,8 @@ function App() {
 
         <h4>Export Data</h4>
         <button
-</> onClick={() => exportData('geojson')} className="export-btn">
+</>
+onClick={() => exportData('geojson')} className="export-btn">
           Export as GeoJSON
         </button><>
 
@@ -196,7 +203,8 @@ function App() {
           Export as Shapefile
         </button>
         <button
-</> onClick={() => exportData('kml')} className="export-btn">
+</>
+onClick={() => exportData('kml')} className="export-btn">
           Export as KML
         </button>
       </div>
@@ -211,7 +219,8 @@ function App() {
 
           <h1>GISPRO</h1>
           <span
-</> className="app-subtitle">Professional GIS Suite</span>
+</>
+className="app-subtitle">Professional GIS Suite</span>
         </div>
         <div className="header-right">
           <button className="header-btn">
@@ -231,7 +240,8 @@ function App() {
             Map View
           </button>
           <button
-</> 
+</>
+
             className={`nav-btn ${activeView === 'layers' ? 'active' : ''}`}
             onClick={() => setActiveView('layers')}
           ><>
@@ -240,7 +250,8 @@ function App() {
             Layers
           </button>
           <button
-</> 
+</>
+
             className={`nav-btn ${activeView === 'analysis' ? 'active' : ''}`}
             onClick={() => setActiveView('analysis')}
           >
@@ -261,6 +272,7 @@ function App() {
 
           <div className="processing-spinner"></div>
           <p
+</>
 </>>Processing spatial analysis...</p>
         </div>
       )}

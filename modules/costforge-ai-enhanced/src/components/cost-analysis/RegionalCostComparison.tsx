@@ -470,7 +470,8 @@ const RegionalCostComparison: React.FC = () => {
 
             <p className="text-sm font-medium">{payload[0].name}</p>
             <p
-</> className="text-sm">Average Cost: {formatCurrency(payload[0].value)}</p>
+</>
+className="text-sm">Average Cost: {formatCurrency(payload[0].value)}</p>
             <p className="text-sm text-muted-foreground">Count: {payload[0].payload.count}</p>
           </div>
         );
@@ -480,11 +481,13 @@ const RegionalCostComparison: React.FC = () => {
 
             <p className="text-sm font-medium">{payload[0].payload.region}</p>
             <p
-</> className="text-sm">{payload[0].payload.buildingType} - {payload[0].payload.buildingTypeDescription}</p><>
+</>
+className="text-sm">{payload[0].payload.buildingType} - {payload[0].payload.buildingTypeDescription}</p><>
 
             <p className="text-sm">Cost: {formatCurrency(payload[0].value)}</p>
             <p
-</> className="text-xs text-muted-foreground">Complexity Factor: {formatNumber(payload[0].payload.complexityFactorBase)}</p>
+</>
+className="text-xs text-muted-foreground">Complexity Factor: {formatNumber(payload[0].payload.complexityFactorBase)}</p>
             <p className="text-xs text-muted-foreground">Quality Factor: {formatNumber(payload[0].payload.qualityFactorBase)}</p>
           </div>
         );
@@ -586,7 +589,8 @@ const RegionalCostComparison: React.FC = () => {
           <Skeleton className="h-10 w-[150px]" />
         </div>
         <Skeleton
-</> className="h-[400px] w-full" />
+</>
+className="h-[400px] w-full" />
       </div>
     );
   }
@@ -600,7 +604,8 @@ const RegionalCostComparison: React.FC = () => {
 
           <h3 className="text-lg font-medium text-red-800">Failed to load cost matrix data</h3>
           <p
-</> className="text-red-600">Please try again later or contact support.</p>
+</>
+className="text-red-600">Please try again later or contact support.</p>
         </div>
       </div>
     );
@@ -681,7 +686,8 @@ const RegionalCostComparison: React.FC = () => {
 
                 <label className="text-sm font-medium mb-1 block">Chart Type</label>
                 <div
-</> className="flex space-x-2">
+</>
+className="flex space-x-2">
                   <Button 
                     size="sm" 
                     variant={chartType === 'bar' ? "default" : "outline"}
@@ -691,7 +697,8 @@ const RegionalCostComparison: React.FC = () => {
                     <BarChartIcon className="h-4 w-4 mr-1" /> Bar
                   </Button>
                   <Button
-</> 
+</>
+
                     size="sm" 
                     variant={chartType === 'line' ? "default" : "outline"}
                     onClick={() => setChartType('line')}
@@ -700,7 +707,8 @@ const RegionalCostComparison: React.FC = () => {
                     <LineChartIcon className="h-4 w-4 mr-1" /> Line
                   </Button>
                   <Button
-</> 
+</>
+
                     size="sm" 
                     variant={chartType === 'pie' ? "default" : "outline"}
                     onClick={() => setChartType('pie')}
@@ -713,7 +721,8 @@ const RegionalCostComparison: React.FC = () => {
 
                 <label className="text-sm font-medium mb-1 block">Cost Type</label>
                 <div
-</> className="flex space-x-2"><>
+</>
+className="flex space-x-2"><>
 
                   <Button 
                     size="sm" 
@@ -723,7 +732,8 @@ const RegionalCostComparison: React.FC = () => {
                     Adjusted
                   </Button>
                   <Button
-</> 
+</>
+
                     size="sm" 
                     variant={!useAdjustedCosts ? "default" : "outline"}
                     onClick={() => setUseAdjustedCosts(false)}
@@ -747,6 +757,7 @@ const RegionalCostComparison: React.FC = () => {
                 Municipalities
               </CardTitle>
               <CardDescription
+</>
 </>>
                 {selectedRegionId ? 'Select municipalities from the chosen region' : 'Select a region first to see municipalities'}
               </CardDescription>
@@ -782,6 +793,7 @@ const RegionalCostComparison: React.FC = () => {
                 Neighborhoods
               </CardTitle>
               <CardDescription
+</>
 </>>
                 {selectedMunicipalityId ? 'Select neighborhoods from the chosen municipality' : 'Select a municipality first to see neighborhoods'}
               </CardDescription>
@@ -817,7 +829,8 @@ const RegionalCostComparison: React.FC = () => {
 
                 <span className="font-medium">Adjustment Factors</span>
                 <Badge
-</> variant="outline" className="ml-2">
+</>
+variant="outline" className="ml-2">
                   C: {formatNumber(complexityFactor, 2)} | Q: {formatNumber(qualityFactor, 2)} | Co: {formatNumber(conditionFactor, 2)}
                 </Badge>
               </div>
@@ -829,7 +842,8 @@ const RegionalCostComparison: React.FC = () => {
 
                     <label className="text-sm font-medium">Complexity Factor:</label>
                     <span
-</> className="text-sm">{formatNumber(complexityFactor, 2)}</span>
+</>
+className="text-sm">{formatNumber(complexityFactor, 2)}</span>
                   </div><>
 
                   <Slider
@@ -842,12 +856,14 @@ const RegionalCostComparison: React.FC = () => {
                 </div>
                 
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   <div className="flex justify-between items-center"><>
 
                     <label className="text-sm font-medium">Quality Factor:</label>
                     <span
-</> className="text-sm">{formatNumber(qualityFactor, 2)}</span>
+</>
+className="text-sm">{formatNumber(qualityFactor, 2)}</span>
                   </div><>
 
                   <Slider
@@ -860,12 +876,14 @@ const RegionalCostComparison: React.FC = () => {
                 </div>
                 
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   <div className="flex justify-between items-center"><>
 
                     <label className="text-sm font-medium">Condition Factor:</label>
                     <span
-</> className="text-sm">{formatNumber(conditionFactor, 2)}</span>
+</>
+className="text-sm">{formatNumber(conditionFactor, 2)}</span>
                   </div>
                   <Slider
                     value={[conditionFactor]}
@@ -890,7 +908,8 @@ const RegionalCostComparison: React.FC = () => {
 
                 <p className="text-sm text-muted-foreground">Average Cost</p>
                 <p
-</> className="text-2xl font-bold">{formatCurrency(statistics.averageCost)}</p>
+</>
+className="text-2xl font-bold">{formatCurrency(statistics.averageCost)}</p>
               </div>
               <div className="bg-blue-100 p-2 rounded-full">
                 <Info className="h-5 w-5 text-blue-600" />
@@ -906,7 +925,8 @@ const RegionalCostComparison: React.FC = () => {
 
                 <p className="text-sm text-muted-foreground">Min/Max Range</p>
                 <p
-</> className="text-2xl font-bold">{formatCurrency(statistics.minCost)} - {formatCurrency(statistics.maxCost)}</p>
+</>
+className="text-2xl font-bold">{formatCurrency(statistics.minCost)} - {formatCurrency(statistics.maxCost)}</p>
               </div>
               <div className="bg-amber-100 p-2 rounded-full">
                 <ArrowUpRight className="h-5 w-5 text-amber-600" />
@@ -922,7 +942,8 @@ const RegionalCostComparison: React.FC = () => {
 
                 <p className="text-sm text-muted-foreground">Median Cost</p>
                 <p
-</> className="text-2xl font-bold">{formatCurrency(statistics.median)}</p>
+</>
+className="text-2xl font-bold">{formatCurrency(statistics.median)}</p>
               </div>
               <div className="bg-green-100 p-2 rounded-full">
                 <ArrowDownRight className="h-5 w-5 text-green-600" />
@@ -938,7 +959,8 @@ const RegionalCostComparison: React.FC = () => {
 
                 <p className="text-sm text-muted-foreground">Total Data Points</p>
                 <p
-</> className="text-2xl font-bold">{statistics.totalItems}</p>
+</>
+className="text-2xl font-bold">{statistics.totalItems}</p>
               </div>
               <div className="bg-purple-100 p-2 rounded-full">
                 <BarChartIcon className="h-5 w-5 text-purple-600" />
@@ -954,7 +976,8 @@ const RegionalCostComparison: React.FC = () => {
 
           <TabsTrigger value="chart">Charts</TabsTrigger>
           <TabsTrigger
-</> value="table">Table</TabsTrigger>
+</>
+value="table">Table</TabsTrigger>
           <TabsTrigger value="comparison">Comparison</TabsTrigger>
         </TabsList>
         
@@ -965,7 +988,8 @@ const RegionalCostComparison: React.FC = () => {
             <h3 className="text-lg font-medium mb-4">Cost Analysis Visualization</h3>
             
             <div
-</> className="h-[400px]">
+</>
+className="h-[400px]">
               {chartType === 'bar' && (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData}>
@@ -1016,7 +1040,8 @@ const RegionalCostComparison: React.FC = () => {
                       ))}
                     </Pie>
                     <Tooltip
-</> content={<CustomTooltip />} />
+</>
+content={<CustomTooltip />} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -1034,14 +1059,17 @@ const RegionalCostComparison: React.FC = () => {
 
                   <TableHead>Region</TableHead>
                   <TableHead
+</>
 </>>Building Type</TableHead><>
 
                   <TableHead>Description</TableHead>
                   <TableHead
+</>
 </>>Base Cost</TableHead><>
 
                   <TableHead>Adjusted Cost</TableHead>
                   <TableHead
+</>
 </>>Factors (C/Q/Co)</TableHead>
                 </TableRow>
               </TableHeader>
@@ -1051,14 +1079,17 @@ const RegionalCostComparison: React.FC = () => {
 
                     <TableCell className="font-medium">{item.region}</TableCell>
                     <TableCell
+</>
 </>>{item.buildingType}</TableCell><>
 
                     <TableCell>{item.buildingTypeDescription}</TableCell>
                     <TableCell
+</>
 </>>{formatCurrency(item.baseCost)}</TableCell><>
 
                     <TableCell>{formatCurrency(item.adjustedBaseCost)}</TableCell>
                     <TableCell
+</>
 </>>
                       {formatNumber(item.complexityFactorBase * complexityFactor, 2)} / {formatNumber(item.qualityFactorBase * qualityFactor, 2)} / {formatNumber(item.conditionFactorBase * conditionFactor, 2)}
                     </TableCell>
@@ -1078,6 +1109,7 @@ const RegionalCostComparison: React.FC = () => {
 
                 <CardTitle>Region Comparison</CardTitle>
                 <CardDescription
+</>
 </>>Average costs by region</CardDescription>
               </CardHeader>
               <CardContent>
@@ -1101,6 +1133,7 @@ const RegionalCostComparison: React.FC = () => {
 
                 <CardTitle>Building Type Comparison</CardTitle>
                 <CardDescription
+</>
 </>>Average costs by building type</CardDescription>
               </CardHeader>
               <CardContent>
@@ -1125,7 +1158,8 @@ const RegionalCostComparison: React.FC = () => {
 
                 <span>Detailed Comparison</span>
                 <Button
-</> size="sm" variant="outline" onClick={handleExportData}>
+</>
+size="sm" variant="outline" onClick={handleExportData}>
                   Export Data
                 </Button>
               </CardTitle>
@@ -1137,12 +1171,14 @@ const RegionalCostComparison: React.FC = () => {
 
                   <h4 className="text-sm font-semibold mb-2">Regions</h4>
                   <Table
+</>
 </>>
                     <TableHeader>
                       <TableRow><>
 
                         <TableHead>Region</TableHead>
                         <TableHead
+</>
 </>>Avg. Cost</TableHead>
                         <TableHead>Count</TableHead>
                       </TableRow>
@@ -1153,6 +1189,7 @@ const RegionalCostComparison: React.FC = () => {
 
                           <TableCell className="font-medium">{region.region}</TableCell>
                           <TableCell
+</>
 </>>{formatCurrency(region.averageCost)}</TableCell>
                           <TableCell>{region.count}</TableCell>
                         </TableRow>
@@ -1166,12 +1203,14 @@ const RegionalCostComparison: React.FC = () => {
 
                   <h4 className="text-sm font-semibold mb-2">Building Types</h4>
                   <Table
+</>
 </>>
                     <TableHeader>
                       <TableRow><>
 
                         <TableHead>Type</TableHead>
                         <TableHead
+</>
 </>>Avg. Cost</TableHead>
                         <TableHead>Count</TableHead>
                       </TableRow>
@@ -1184,6 +1223,7 @@ const RegionalCostComparison: React.FC = () => {
                             {type.buildingType}
                           </TableCell>
                           <TableCell
+</>
 </>>{formatCurrency(type.averageCost)}</TableCell>
                           <TableCell>{type.count}</TableCell>
                         </TableRow>

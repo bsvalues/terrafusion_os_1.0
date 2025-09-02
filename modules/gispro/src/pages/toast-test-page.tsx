@@ -48,6 +48,7 @@ export default function ToastTestPage() {
 
           <CardTitle>Toast Notification Test</CardTitle>
           <CardDescription
+</>
 </>>Click the buttons below to test different toast notifications</CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,7 +59,8 @@ export default function ToastTestPage() {
                 Show Default Toast
               </Button>
               <Button
-</> onClick={() => showToast('success')} variant="outline" className="bg-green-50 hover:bg-green-100 text-green-600 border-green-200">
+</>
+onClick={() => showToast('success')} variant="outline" className="bg-green-50 hover:bg-green-100 text-green-600 border-green-200">
                 Show Success Toast
               </Button><>
 
@@ -66,7 +68,8 @@ export default function ToastTestPage() {
                 Show Error Toast
               </Button>
               <Button
-</> onClick={() => showToast('warning')} variant="outline" className="bg-yellow-50 hover:bg-yellow-100 text-yellow-600 border-yellow-200">
+</>
+onClick={() => showToast('warning')} variant="outline" className="bg-yellow-50 hover:bg-yellow-100 text-yellow-600 border-yellow-200">
                 Show Warning Toast
               </Button>
             </div>
@@ -75,7 +78,8 @@ export default function ToastTestPage() {
 
               <h3 className="text-sm font-medium mb-2">Testing Information</h3>
               <p
-</> className="text-sm text-slate-600">
+</>
+className="text-sm text-slate-600">
                 This page is isolated from map components to test the toast notification system directly.
                 Click the buttons above to verify that toast notifications are working correctly.
               </p>

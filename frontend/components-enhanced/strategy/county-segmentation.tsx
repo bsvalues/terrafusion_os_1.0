@@ -60,11 +60,13 @@ export function CountySegmentation() {
 
               <h3 className="text-white font-semibold mb-2">{segment.name}</h3>
               <p
-</> className="text-sm text-gray-400 mb-2">{segment.population}</p><>
+</>
+className="text-sm text-gray-400 mb-2">{segment.population}</p><>
 
               <p className="text-lg font-bold text-white mb-2">{segment.count.toLocaleString()}</p>
               <p
-</> className="text-sm text-gray-300">{segment.message}</p>
+</>
+className="text-sm text-gray-300">{segment.message}</p>
             </div>
           ))}
         </div>

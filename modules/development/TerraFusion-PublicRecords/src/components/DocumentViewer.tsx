@@ -236,26 +236,30 @@ The system can extract text, identify entities, and provide insights.`;
 
           <h2 className="text-xl font-bold text-gray-900 mb-2">Document Details</h2>
           <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-gray-400" /><>
 
               <span className="text-gray-600">Name:</span>
               <span
-</> className="font-medium text-gray-900">{document.name}</span>
+</>
+className="font-medium text-gray-900">{document.name}</span>
             </div>
             <div className="flex items-center gap-2">
               <Hash className="w-4 h-4 text-gray-400" /><>
 
               <span className="text-gray-600">ID:</span>
               <span
-</> className="font-mono text-xs">{document.id}</span>
+</>
+className="font-mono text-xs">{document.id}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-400" /><>
 
               <span className="text-gray-600">Modified:</span>
               <span
+</>
 </>>{new Date().toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -263,6 +267,7 @@ The system can extract text, identify entities, and provide insights.`;
 
               <span className="text-gray-600">Owner:</span>
               <span
+</>
 </>>{document.owner || 'You'}</span>
             </div>
           </div>
@@ -277,7 +282,8 @@ The system can extract text, identify entities, and provide insights.`;
               AI Insights
             </h3>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               {aiInsights.map((insight /* , index */) => (
                 <div
                   key={index}
@@ -312,14 +318,16 @@ The system can extract text, identify entities, and provide insights.`;
               Extracted Data
             </h3>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               {extractedData.entities.map((entity /* , index */) => (
                 <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                   <div><>
 
                     <span className="text-xs text-gray-500">{entity.type}</span>
                     <p
-</> className="font-medium text-gray-900">{entity.value}</p>
+</>
+className="font-medium text-gray-900">{entity.value}</p>
                   </div>
                   <span className="text-xs text-green-600">
                     {Math.round(entity.confidence * 100)}%
@@ -338,19 +346,15 @@ The system can extract text, identify entities, and provide insights.`;
             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isProcessing ? (
-              <>
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                 />
                 Processing...
-              </>
             ) : (
-              <>
                 <Scan className="w-5 h-5" />
                 Extract Text (OCR)
-              </>
             )}
           </button>
           
@@ -393,7 +397,8 @@ The system can extract text, identify entities, and provide insights.`;
                   <ZoomOut className="w-4 h-4" />
                 </button>
                 <span
-</> className="text-sm font-medium w-12 text-center">{zoom}%</span>
+</>
+className="text-sm font-medium w-12 text-center">{zoom}%</span>
                 <button
                   onClick={() => setZoom(Math.min(200, zoom + 25))}
                   className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
@@ -422,7 +427,8 @@ The system can extract text, identify entities, and provide insights.`;
                     ←
                   </button>
                   <span
-</> className="text-sm">
+</>
+className="text-sm">
                     Page {currentPage} / {extractedData?.metadata?.pages}
                   </span>
                   <button
@@ -448,6 +454,7 @@ The system can extract text, identify entities, and provide insights.`;
               </button>
               <button
 </>
+
                 onClick={handleDownload}
                 className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                 title="Download"
@@ -457,6 +464,7 @@ The system can extract text, identify entities, and provide insights.`;
               </button>
               <button
 </>
+
                 onClick={handleShare}
                 className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                 title="Share"
@@ -466,6 +474,7 @@ The system can extract text, identify entities, and provide insights.`;
               </button>
               <button
 </>
+
                 onClick={onClose}
                 className="p-2 hover:bg-gray-800 rounded-lg transition-colors ml-4"
               >
@@ -515,17 +524,17 @@ The system can extract text, identify entities, and provide insights.`;
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span>Ready</span>
-              {extractedData && (
-                <><>
+              {extractedData && (<>
 
                   <span>•</span>
                   <span
+</>
 </>>{extractedData.text.split(' ').length} words</span><>
 
                   <span>•</span>
                   <span
+</>
 </>>{extractedData.text.length} characters</span>
-                </>
               )}
             </div>
             <div className="flex items-center gap-2">

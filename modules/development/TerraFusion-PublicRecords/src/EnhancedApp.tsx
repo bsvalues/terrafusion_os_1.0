@@ -196,7 +196,8 @@ const EnhancedApp: React.FC = () => {
               Terrafusion
             </h1>
             <nav
-</> className="hidden md:flex gap-4"><>
+</>
+className="hidden md:flex gap-4"><>
 
               <button
                 onClick={() => setCurrentView('home')}
@@ -206,6 +207,7 @@ const EnhancedApp: React.FC = () => {
               </button>
               <button
 </>
+
                 onClick={() => setCurrentView('search')}
                 className={`px-3 py-1 rounded ${currentView === 'search' ? 'bg-white/20' : ''}`}
               >
@@ -229,7 +231,6 @@ const EnhancedApp: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             {user ? (
-              <>
                 <button className="relative p-2">
                   <Bell className="w-5 h-5" />
                   {notifications.filter(n => n.unread).length > 0 && (<>
@@ -238,7 +239,8 @@ const EnhancedApp: React.FC = () => {
                   )}
                 </button>
                 <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                   <User className="w-5 h-5" />
                   <span>{user.name}</span>
                 </div>
@@ -252,7 +254,6 @@ const EnhancedApp: React.FC = () => {
                 >
                   <LogOut className="w-5 h-5" />
                 </button>
-              </>
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
@@ -280,7 +281,8 @@ const EnhancedApp: React.FC = () => {
           Benton County Public Records
         </h1>
         <p
-</> className="text-xl text-gray-600">
+</>
+className="text-xl text-gray-600">
           94,149 parcels • 206,873 citizens • Everything indexed
         </p>
       </motion.div>
@@ -332,19 +334,22 @@ const EnhancedApp: React.FC = () => {
 
           <div className="text-3xl font-bold text-purple-600">0.001s</div>
           <div
-</> className="text-gray-600">Search Speed</div>
+</>
+className="text-gray-600">Search Speed</div>
         </div>
         <div className="text-center"><>
 
           <div className="text-3xl font-bold text-purple-600">379M×</div>
           <div
-</> className="text-gray-600">Faster</div>
+</>
+className="text-gray-600">Faster</div>
         </div>
         <div className="text-center"><>
 
           <div className="text-3xl font-bold text-purple-600">$0</div>
           <div
-</> className="text-gray-600">Setup Cost</div>
+</>
+className="text-gray-600">Setup Cost</div>
         </div>
       </div>
     </div>
@@ -366,7 +371,8 @@ const EnhancedApp: React.FC = () => {
 
             <p className={`text-${stat.color}-900 font-semibold`}>{stat.label}</p>
             <p
-</> className={`text-3xl font-bold text-${stat.color}-600 mt-2`}>{stat.value}</p>
+</>
+className={`text-3xl font-bold text-${stat.color}-600 mt-2`}>{stat.value}</p>
           </div>
         ))}
       </div>
@@ -376,7 +382,8 @@ const EnhancedApp: React.FC = () => {
 
         <h3 className="text-xl font-semibold text-gray-900 mb-4">My Applications</h3>
         <div
-</> className="space-y-4">
+</>
+className="space-y-4">
           {applications.map((app) => (
             <div key={app.id} className="border rounded-lg p-4">
               <div className="flex items-center justify-between">
@@ -384,7 +391,8 @@ const EnhancedApp: React.FC = () => {
 
                   <p className="font-semibold text-gray-900">{app.type}</p>
                   <p
-</> className="text-sm text-gray-600">
+</>
+className="text-sm text-gray-600">
                     {app.address} • {app.date.toLocaleDateString()}
                   </p>
                 </div>
@@ -399,7 +407,8 @@ const EnhancedApp: React.FC = () => {
                     {app.status.toUpperCase()}
                   </span>
                   <p
-</> className="text-sm text-gray-600 mt-1">${app.fee}</p>
+</>
+className="text-sm text-gray-600 mt-1">${app.fee}</p>
                 </div>
               </div>
             </div>
@@ -450,7 +459,8 @@ const EnhancedApp: React.FC = () => {
 
               <h3 className="text-xl font-semibold mb-6">Select Permit Type</h3>
               <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                 {permitTypes.map((permit) => (
                   <button
                     key={permit.id}
@@ -468,7 +478,8 @@ const EnhancedApp: React.FC = () => {
 
                       <span className="font-semibold">{permit.name}</span>
                       <span
-</> className="text-gray-600">${permit.fee}</span>
+</>
+className="text-gray-600">${permit.fee}</span>
                     </div>
                   </button>
                 ))}
@@ -488,7 +499,8 @@ const EnhancedApp: React.FC = () => {
 
               <h3 className="text-xl font-semibold mb-6">Property Information</h3>
               <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                 <div><>
 
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -496,6 +508,7 @@ const EnhancedApp: React.FC = () => {
                   </label>
                   <input
 </>
+
                     type="text"
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -510,6 +523,7 @@ const EnhancedApp: React.FC = () => {
                   </label>
                   <textarea
 </>
+
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -524,6 +538,7 @@ const EnhancedApp: React.FC = () => {
                   </label>
                   <input
 </>
+
                     type="number"
                     value={formData.value}
                     onChange={(e) => setFormData({ ...formData, value: e.target.value })}
@@ -542,6 +557,7 @@ const EnhancedApp: React.FC = () => {
                 </button>
                 <button
 </>
+
                   onClick={() => setStep(3)}
                   disabled={!formData.address || !formData.description}
                   className="flex-1 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300"
@@ -557,30 +573,35 @@ const EnhancedApp: React.FC = () => {
 
               <h3 className="text-xl font-semibold mb-6">Review & Submit</h3>
               <div
-</> className="bg-gray-50 rounded-lg p-6 space-y-3">
+</>
+className="bg-gray-50 rounded-lg p-6 space-y-3">
                 <div className="flex justify-between"><>
 
                   <span className="text-gray-600">Permit Type:</span>
                   <span
-</> className="font-semibold">{formData.permitType}</span>
+</>
+className="font-semibold">{formData.permitType}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span className="text-gray-600">Property:</span>
                   <span
-</> className="font-semibold">{formData.address}</span>
+</>
+className="font-semibold">{formData.address}</span>
                 </div>
                 <div className="flex justify-between"><>
 
                   <span className="text-gray-600">Project Value:</span>
                   <span
-</> className="font-semibold">${formData.value}</span>
+</>
+className="font-semibold">${formData.value}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t"><>
 
                   <span className="text-gray-600">Permit Fee:</span>
                   <span
-</> className="font-bold text-lg">${calculatePermitFee(formData.permitType)}</span>
+</>
+className="font-bold text-lg">${calculatePermitFee(formData.permitType)}</span>
                 </div>
               </div>
               <div className="flex gap-4 mt-6"><>
@@ -593,6 +614,7 @@ const EnhancedApp: React.FC = () => {
                 </button>
                 <button
 </>
+
                   onClick={() => {
                     submitPermitApplication(formData.permitType, formData);
                     alert('Application submitted! Redirecting to payment...');
@@ -627,7 +649,8 @@ const EnhancedApp: React.FC = () => {
 
                   <h3 className="text-xl font-semibold text-gray-900">{result.title}</h3>
                   <p
-</> className="text-gray-600 mt-1">{result.description}</p>
+</>
+className="text-gray-600 mt-1">{result.description}</p>
                   <p className="text-sm text-gray-500 mt-2">
                     {result.date.toLocaleDateString()} • Type: {result.type}
                   </p>
@@ -665,7 +688,8 @@ const EnhancedApp: React.FC = () => {
 
             <h2 className="text-2xl font-bold mb-6">Sign In</h2>
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               <input
                 type="email"
                 placeholder="Email"
@@ -696,6 +720,7 @@ const EnhancedApp: React.FC = () => {
               </button>
               <button
 </>
+
                 onClick={() => setShowLogin(false)}
                 className="w-full py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50"
               >
@@ -725,12 +750,14 @@ const EnhancedApp: React.FC = () => {
 
             <h2 className="text-2xl font-bold mb-6">Payment</h2>
             <div
-</> className="space-y-4">
+</>
+className="space-y-4">
               <div className="bg-gray-50 p-4 rounded-lg"><>
 
                 <p className="text-gray-600">Amount Due:</p>
                 <p
-</> className="text-3xl font-bold text-gray-900">
+</>
+className="text-3xl font-bold text-gray-900">
                   ${selectedPermit ? calculatePermitFee(selectedPermit) : 100}
                 </p>
               </div>
@@ -754,6 +781,7 @@ const EnhancedApp: React.FC = () => {
               </div>
               <button
 </>
+
                 onClick={() => {
                   processPayment(selectedPermit ? calculatePermitFee(selectedPermit) : 100);
                 }}
@@ -816,6 +844,7 @@ const EnhancedApp: React.FC = () => {
               <p className="text-sm">{notif.message}</p>
               <button
 </>
+
                 onClick={() => {
                   setNotifications(notifications.map(n => 
                     n.id === notif.id ? { ...n, unread: false } : n

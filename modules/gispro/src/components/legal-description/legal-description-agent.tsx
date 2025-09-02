@@ -291,6 +291,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
               <Label htmlFor="legalDescription">Legal Description</Label>
               <Textarea
 </>
+
                 id="legalDescription"
                 value={legalDescriptionText}
                 onChange={handleTextChange}
@@ -323,7 +324,8 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
 
                     <strong>Issues Found:</strong>
                     <ul
-</> className="list-disc list-inside">
+</>
+className="list-disc list-inside">
                       {parsedDescription.issues.map((issue: string, i: number) => (
                         <li key={i}>{issue}</li>
                       ))}
@@ -338,6 +340,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
 
                     <CardTitle>Parcel Details</CardTitle>
                     <CardDescription
+</>
 </>>
                       Enter information about this parcel
                     </CardDescription>
@@ -350,6 +353,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                           <Label htmlFor="parcelNumber">Parcel Number</Label>
                           <Input
 </>
+
                             id="parcelNumber"
                             name="parcelNumber"
                             value={parcelDetails.parcelNumber}
@@ -362,6 +366,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                           <Label htmlFor="acres">Acres</Label>
                           <Input
 </>
+
                             id="acres"
                             name="acres"
                             type="number"
@@ -378,6 +383,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                         <Label htmlFor="owner">Owner</Label>
                         <Input
 </>
+
                           id="owner"
                           name="owner"
                           value={parcelDetails.owner}
@@ -391,6 +397,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                         <Label htmlFor="address">Address</Label>
                         <Input
 </>
+
                           id="address"
                           name="address"
                           value={parcelDetails.address}
@@ -405,6 +412,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                           <Label htmlFor="city">City</Label>
                           <Input
 </>
+
                             id="city"
                             name="city"
                             value={parcelDetails.city}
@@ -417,6 +425,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                           <Label htmlFor="zip">ZIP Code</Label>
                           <Input
 </>
+
                             id="zip"
                             name="zip"
                             value={parcelDetails.zip}
@@ -432,6 +441,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                           <Label htmlFor="propertyType">Property Type</Label>
                           <Select
 </>
+
                             value={parcelDetails.propertyType}
                             onValueChange={handlePropertyTypeChange}
                           >
@@ -440,19 +450,23 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
                             <SelectContent
+</>
 </>><>
 
                               <SelectItem value="residential">Residential</SelectItem>
                               <SelectItem
-</> value="commercial">Commercial</SelectItem><>
+</>
+value="commercial">Commercial</SelectItem><>
 
                               <SelectItem value="industrial">Industrial</SelectItem>
                               <SelectItem
-</> value="agricultural">Agricultural</SelectItem><>
+</>
+value="agricultural">Agricultural</SelectItem><>
 
                               <SelectItem value="vacant">Vacant Land</SelectItem>
                               <SelectItem
-</> value="mixed">Mixed Use</SelectItem>
+</>
+value="mixed">Mixed Use</SelectItem>
                               <SelectItem value="other">Other</SelectItem>
                             </SelectContent>
                           </Select>
@@ -462,6 +476,7 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                           <Label htmlFor="assessedValue">Assessed Value</Label>
                           <Input
 </>
+
                             id="assessedValue"
                             name="assessedValue"
                             value={parcelDetails.assessedValue}
@@ -508,7 +523,6 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
               />
               
               {parsedDescription && parsedDescription.polygon && (
-                <>
                   <GeoJSON
                     data={parsedDescription.polygon as GeoJSON.GeoJsonObject}
                     style={() => ({
@@ -520,7 +534,6 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
                     })}
                   />
                   <MapBoundsUpdater geometry={parsedDescription.polygon} />
-                </>
               )}
             </MapContainer>
           ) : (
@@ -529,7 +542,8 @@ export const LegalDescriptionAgent: React.FC<LegalDescriptionAgentProps> = ({
 
                 <p className="text-lg font-medium mb-2">Map Loading...</p>
                 <p
-</> className="text-sm text-gray-500">
+</>
+className="text-sm text-gray-500">
                   Please wait while we initialize the map display.
                 </p>
               </div>

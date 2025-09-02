@@ -357,7 +357,8 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
               <p className="text-sm">No messages yet</p>
               <p
-</> className="text-xs">Start the conversation!</p>
+</>
+className="text-xs">Start the conversation!</p>
             </div>
           ) : (
             groupedMessages.map((group) => (
@@ -402,6 +403,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
                             <span className="font-medium">{message.user.name}</span>
                             <span
+</>
 </>>{format(new Date(message.timestamp), 'HH:mm')}</span>
                           </div>
                         )}
@@ -448,7 +450,8 @@ export const LiveChat: React.FC<LiveChatProps> = ({
                                     {attachment.name}
                                   </p>
                                   <p
-</> className="text-xs opacity-75">
+</>
+className="text-xs opacity-75">
                                     {formatFileSize(attachment.size)}
                                   </p>
                                 </div>
@@ -560,7 +563,8 @@ export const LiveChat: React.FC<LiveChatProps> = ({
 
                 <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
                 <div
-</> className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+</>
+className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                 <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
               <span>
@@ -633,6 +637,7 @@ export const LiveChat: React.FC<LiveChatProps> = ({
             
             <Input
 </>
+
               placeholder="Type a message..."
               value={newMessage}
               onChange={(e) => {

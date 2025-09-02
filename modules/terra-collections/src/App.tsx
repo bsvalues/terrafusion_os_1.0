@@ -212,12 +212,14 @@ function App() {
 
         <h1 className="tf-gradient-text">💰 Terrafusion Revenue Collections</h1>
         <div
-</> className="header-stats">
+</>
+className="header-stats">
           <div className="stat-card"><>
 
             <span className="stat-label">Collection Rate</span>
             <span
-</> className="stat-value" style={{ color: collectionStats.collection_rate > 70 ? '#00ff88' : '#ff9500' }}>
+</>
+className="stat-value" style={{ color: collectionStats.collection_rate > 70 ? '#00ff88' : '#ff9500' }}>
               {collectionStats.collection_rate.toFixed(1)}%
             </span>
           </div>
@@ -225,7 +227,8 @@ function App() {
 
             <span className="stat-label">Total Collected</span>
             <span
-</> className="stat-value">{formatCurrency(collectionStats.total_collected)}</span>
+</>
+className="stat-value">{formatCurrency(collectionStats.total_collected)}</span>
           </div>
         </div>
       </header>
@@ -239,7 +242,8 @@ function App() {
           📊 Overview
         </button>
         <button
-</> 
+</>
+
           className={activeTab === 'records' ? 'tab-active' : 'tab'}
           onClick={() => setActiveTab('records')}
         >
@@ -253,7 +257,8 @@ function App() {
           💸 Collections
         </button>
         <button
-</> 
+</>
+
           className={activeTab === 'payment-plans' ? 'tab-active' : 'tab'}
           onClick={() => setActiveTab('payment-plans')}
         >
@@ -267,7 +272,8 @@ function App() {
           📬 Notices
         </button>
         <button
-</> 
+</>
+
           className={activeTab === 'analytics' ? 'tab-active' : 'tab'}
           onClick={() => setActiveTab('analytics')}
         >
@@ -282,29 +288,34 @@ function App() {
             <h2>Revenue Collection Overview</h2>
             
             <div
-</> className="overview-grid">
+</>
+className="overview-grid">
               <div className="tf-card overview-card"><>
 
                 <h3>Collection Summary</h3>
                 <div
-</> className="summary-stats">
+</>
+className="summary-stats">
                   <div className="summary-row"><>
 
                     <span>Total Due:</span>
                     <span
-</> className="amount">{formatCurrency(collectionStats.total_due)}</span>
+</>
+className="amount">{formatCurrency(collectionStats.total_due)}</span>
                   </div>
                   <div className="summary-row"><>
 
                     <span>Total Collected:</span>
                     <span
-</> className="amount collected">{formatCurrency(collectionStats.total_collected)}</span>
+</>
+className="amount collected">{formatCurrency(collectionStats.total_collected)}</span>
                   </div>
                   <div className="summary-row"><>
 
                     <span>Outstanding:</span>
                     <span
-</> className="amount outstanding">
+</>
+className="amount outstanding">
                       {formatCurrency(collectionStats.total_due - collectionStats.total_collected)}
                     </span>
                   </div>
@@ -315,40 +326,47 @@ function App() {
 
                 <h3>Status Distribution</h3>
                 <div
-</> className="status-grid">
+</>
+className="status-grid">
                   <div className="status-item"><>
 
                     <div className="status-icon paid">✓</div>
                     <div
-</> className="status-info"><>
+</>
+className="status-info"><>
 
                       <span className="status-count">
                         {taxRecords.filter(r => r.status === 'paid').length}
                       </span>
                       <span
-</> className="status-label">Paid</span>
+</>
+className="status-label">Paid</span>
                     </div>
                   </div>
                   <div className="status-item"><>
 
                     <div className="status-icon pending">⏳</div>
                     <div
-</> className="status-info"><>
+</>
+className="status-info"><>
 
                       <span className="status-count">{collectionStats.pending_count}</span>
                       <span
-</> className="status-label">Pending</span>
+</>
+className="status-label">Pending</span>
                     </div>
                   </div>
                   <div className="status-item"><>
 
                     <div className="status-icon delinquent">!</div>
                     <div
-</> className="status-info"><>
+</>
+className="status-info"><>
 
                       <span className="status-count">{collectionStats.delinquent_count}</span>
                       <span
-</> className="status-label">Delinquent</span>
+</>
+className="status-label">Delinquent</span>
                     </div>
                   </div>
                 </div>
@@ -358,13 +376,15 @@ function App() {
 
                 <h3>Quick Actions</h3>
                 <div
-</> className="quick-actions"><>
+</>
+className="quick-actions"><>
 
                   <button className="tf-button-primary" onClick={() => setActiveTab('records')}>
                     🔍 Search Records
                   </button>
                   <button
-</> className="tf-button-primary" onClick={() => setActiveTab('collections')}>
+</>
+className="tf-button-primary" onClick={() => setActiveTab('collections')}>
                     💳 Process Payment
                   </button><>
 
@@ -372,7 +392,8 @@ function App() {
                     📧 Send Notices
                   </button>
                   <button
-</> className="tf-button-primary" onClick={() => setActiveTab('analytics')}>
+</>
+className="tf-button-primary" onClick={() => setActiveTab('analytics')}>
                     📊 View Reports
                   </button>
                 </div>
@@ -382,26 +403,30 @@ function App() {
 
                 <h3>Recent Activity</h3>
                 <div
-</> className="activity-list">
+</>
+className="activity-list">
                   <div className="activity-item"><>
 
                     <span className="activity-time">10:32 AM</span>
                     <span
-</> className="activity-text">Payment received - PROP-001</span>
+</>
+className="activity-text">Payment received - PROP-001</span>
                     <span className="activity-amount">+$5,250</span>
                   </div>
                   <div className="activity-item"><>
 
                     <span className="activity-time">9:15 AM</span>
                     <span
-</> className="activity-text">Notice sent - PROP-003</span>
+</>
+className="activity-text">Notice sent - PROP-003</span>
                     <span className="activity-type">Delinquent</span>
                   </div>
                   <div className="activity-item"><>
 
                     <span className="activity-time">Yesterday</span>
                     <span
-</> className="activity-text">Payment plan created - PROP-004</span>
+</>
+className="activity-text">Payment plan created - PROP-004</span>
                     <span className="activity-amount">$383/mo</span>
                   </div>
                 </div>
@@ -416,7 +441,8 @@ function App() {
             <h2>Tax Records Management</h2>
             
             <div
-</> className="search-controls">
+</>
+className="search-controls">
               <div className="search-bar">
                 <input
                   type="text"
@@ -434,11 +460,13 @@ function App() {
 
                   <option value="all">All Status</option>
                   <option
-</> value="paid">Paid</option><>
+</>
+value="paid">Paid</option><>
 
                   <option value="pending">Pending</option>
                   <option
-</> value="delinquent">Delinquent</option>
+</>
+value="delinquent">Delinquent</option>
                   <option value="partial">Partial</option>
                 </select>
                 <button className="search-btn" onClick={handleSearch}>
@@ -458,7 +486,8 @@ function App() {
 
                     <h3>{record.property_address}</h3>
                     <span
-</> 
+</>
+
                       className="status-badge"
                       style={{ backgroundColor: getStatusColor(record.status) }}
                     >
@@ -470,38 +499,44 @@ function App() {
 
                       <span>Owner:</span>
                       <span
+</>
 </>>{record.owner_name}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Property ID:</span>
                       <span
+</>
 </>>{record.property_id}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Tax Year:</span>
                       <span
+</>
 </>>{record.tax_year}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Amount Due:</span>
                       <span
-</> className="amount-due">{formatCurrency(record.amount_due)}</span>
+</>
+className="amount-due">{formatCurrency(record.amount_due)}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Amount Paid:</span>
                       <span
-</> className="amount-paid">{formatCurrency(record.amount_paid)}</span>
+</>
+className="amount-paid">{formatCurrency(record.amount_paid)}</span>
                     </div>
                     {record.penalty_amount && (
                       <div className="detail-row"><>
 
                         <span>Penalty:</span>
                         <span
-</> className="penalty">{formatCurrency(record.penalty_amount)}</span>
+</>
+className="penalty">{formatCurrency(record.penalty_amount)}</span>
                       </div>
                     )}
                   </div>
@@ -517,7 +552,8 @@ function App() {
                       💳 Process Payment
                     </button>
                     <button
-</> 
+</>
+
                       className="action-btn"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -542,30 +578,35 @@ function App() {
 
                 <h3>Process Payment for {selectedRecord.property_address}</h3>
                 <div
-</> className="payment-details">
+</>
+className="payment-details">
                   <div className="detail-row"><>
 
                     <span>Owner:</span>
                     <span
+</>
 </>>{selectedRecord.owner_name}</span>
                   </div>
                   <div className="detail-row"><>
 
                     <span>Total Due:</span>
                     <span
+</>
 </>>{formatCurrency(selectedRecord.amount_due)}</span>
                   </div>
                   <div className="detail-row"><>
 
                     <span>Already Paid:</span>
                     <span
+</>
 </>>{formatCurrency(selectedRecord.amount_paid)}</span>
                   </div>
                   <div className="detail-row"><>
 
                     <span>Balance:</span>
                     <span
-</> className="balance">
+</>
+className="balance">
                       {formatCurrency(selectedRecord.amount_due - selectedRecord.amount_paid)}
                     </span>
                   </div>
@@ -575,7 +616,8 @@ function App() {
 
                   <h4>Payment Options</h4>
                   <button
-</> className="tf-button-primary full-width">
+</>
+className="tf-button-primary full-width">
                     💳 Pay Full Balance
                   </button><>
 
@@ -583,7 +625,8 @@ function App() {
                     📅 Setup Payment Plan
                   </button>
                   <button
-</> className="tf-button-primary full-width">
+</>
+className="tf-button-primary full-width">
                     💰 Make Partial Payment
                   </button>
                 </div>
@@ -598,13 +641,15 @@ function App() {
 
               <h3>Recent Payments</h3>
               <div
-</> className="payments-list">
+</>
+className="payments-list">
                 <div className="payment-item">
                   <div className="payment-info"><>
 
                     <span className="payment-address">123 Main St</span>
                     <span
-</> className="payment-date">Nov 15, 2024</span>
+</>
+className="payment-date">Nov 15, 2024</span>
                   </div>
                   <span className="payment-amount">$5,250.00</span>
                 </div>
@@ -613,7 +658,8 @@ function App() {
 
                     <span className="payment-address">321 Elm St</span>
                     <span
-</> className="payment-date">Nov 10, 2024</span>
+</>
+className="payment-date">Nov 10, 2024</span>
                   </div>
                   <span className="payment-amount">$1,550.00</span>
                 </div>
@@ -628,7 +674,8 @@ function App() {
             <h2>Payment Plan Management</h2>
             
             <div
-</> className="plans-controls">
+</>
+className="plans-controls">
               <button className="tf-button-primary">
                 ➕ Create New Payment Plan
               </button>
@@ -641,7 +688,8 @@ function App() {
 
                     <h3>Plan {plan.id}</h3>
                     <span
-</> className={`status-badge ${plan.status}`}>
+</>
+className={`status-badge ${plan.status}`}>
                       {plan.status.toUpperCase()}
                     </span>
                   </div>
@@ -650,30 +698,35 @@ function App() {
 
                       <span>Property:</span>
                       <span
+</>
 </>>{plan.property_id}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Total Amount:</span>
                       <span
+</>
 </>>{formatCurrency(plan.total_amount)}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Down Payment:</span>
                       <span
+</>
 </>>{formatCurrency(plan.down_payment)}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Monthly Payment:</span>
                       <span
+</>
 </>>{formatCurrency(plan.monthly_payment)}</span>
                     </div>
                     <div className="detail-row"><>
 
                       <span>Duration:</span>
                       <span
+</>
 </>>{plan.duration_months} months</span>
                     </div>
                   </div>
@@ -698,15 +751,18 @@ function App() {
             <h2>Collection Notices</h2>
             
             <div
-</> className="notice-templates"><>
+</>
+className="notice-templates"><>
 
               <h3>Notice Templates</h3>
               <div
-</> className="templates-grid">
+</>
+className="templates-grid">
                 <div className="tf-card template-card"><>
 
                   <h4>📧 Friendly Reminder</h4>
                   <p
+</>
 </>>Send to properties with upcoming due dates</p>
                   <button className="tf-button-primary">Send Bulk</button>
                 </div>
@@ -714,6 +770,7 @@ function App() {
 
                   <h4>⚠️ Past Due Notice</h4>
                   <p
+</>
 </>>For properties 30+ days overdue</p>
                   <button className="tf-button-primary">Send Bulk</button>
                 </div>
@@ -721,6 +778,7 @@ function App() {
 
                   <h4>🚨 Final Notice</h4>
                   <p
+</>
 </>>For seriously delinquent accounts</p>
                   <button className="tf-button-primary">Send Bulk</button>
                 </div>
@@ -728,6 +786,7 @@ function App() {
 
                   <h4>⚖️ Legal Action Warning</h4>
                   <p
+</>
 </>>Pre-lien notification</p>
                   <button className="tf-button-primary">Send Bulk</button>
                 </div>
@@ -738,19 +797,22 @@ function App() {
 
               <h3>Recent Notices Sent</h3>
               <div
-</> className="notices-list">
+</>
+className="notices-list">
                 <div className="notice-item"><>
 
                   <span className="notice-type">Past Due Notice</span>
                   <span
-</> className="notice-property">789 Pine Rd</span>
+</>
+className="notice-property">789 Pine Rd</span>
                   <span className="notice-date">Nov 12, 2024</span>
                 </div>
                 <div className="notice-item"><>
 
                   <span className="notice-type">Friendly Reminder</span>
                   <span
-</> className="notice-property">456 Oak Ave</span>
+</>
+className="notice-property">456 Oak Ave</span>
                   <span className="notice-date">Nov 10, 2024</span>
                 </div>
               </div>
@@ -764,12 +826,14 @@ function App() {
             <h2>Collection Analytics</h2>
             
             <div
-</> className="analytics-grid">
+</>
+className="analytics-grid">
               <div className="tf-card analytics-card"><>
 
                 <h3>Collection Trends</h3>
                 <div
-</> className="trend-chart">
+</>
+className="trend-chart">
                   <div className="chart-placeholder">
                     📈 Monthly Collection Rate Chart
                   </div>
@@ -780,11 +844,13 @@ function App() {
 
                 <h3>Revenue by Category</h3>
                 <div
-</> className="category-breakdown">
+</>
+className="category-breakdown">
                   <div className="category-item"><>
 
                     <span>Residential</span>
                     <span
+</>
 </>>$280,000</span>
                     <div className="category-bar">
                       <div className="bar-fill" style={{ width: '75%' }}></div>
@@ -794,6 +860,7 @@ function App() {
 
                     <span>Commercial</span>
                     <span
+</>
 </>>$85,000</span>
                     <div className="category-bar">
                       <div className="bar-fill" style={{ width: '25%' }}></div>
@@ -803,6 +870,7 @@ function App() {
 
                     <span>Industrial</span>
                     <span
+</>
 </>>$15,000</span>
                     <div className="category-bar">
                       <div className="bar-fill" style={{ width: '5%' }}></div>
@@ -815,23 +883,27 @@ function App() {
 
                 <h3>Delinquency Analysis</h3>
                 <div
-</> className="delinquency-stats">
+</>
+className="delinquency-stats">
                   <div className="stat-row"><>
 
                     <span>30-60 days:</span>
                     <span
+</>
 </>>25 properties</span>
                   </div>
                   <div className="stat-row"><>
 
                     <span>60-90 days:</span>
                     <span
+</>
 </>>15 properties</span>
                   </div>
                   <div className="stat-row"><>
 
                     <span>90+ days:</span>
                     <span
+</>
 </>>5 properties</span>
                   </div>
                 </div>
@@ -841,24 +913,28 @@ function App() {
 
                 <h3>Performance Metrics</h3>
                 <div
-</> className="performance-metrics">
+</>
+className="performance-metrics">
                   <div className="metric-item"><>
 
                     <span className="metric-label">Avg Days to Payment</span>
                     <span
-</> className="metric-value">22</span>
+</>
+className="metric-value">22</span>
                   </div>
                   <div className="metric-item"><>
 
                     <span className="metric-label">Payment Plan Success</span>
                     <span
-</> className="metric-value">87%</span>
+</>
+className="metric-value">87%</span>
                   </div>
                   <div className="metric-item"><>
 
                     <span className="metric-label">Notice Response Rate</span>
                     <span
-</> className="metric-value">65%</span>
+</>
+className="metric-value">65%</span>
                   </div>
                 </div>
               </div>
@@ -870,7 +946,8 @@ function App() {
                 📊 Generate Monthly Report
               </button>
               <button
-</> className="tf-button-primary">
+</>
+className="tf-button-primary">
                 📈 Export Analytics Data
               </button>
               <button className="tf-button-primary">

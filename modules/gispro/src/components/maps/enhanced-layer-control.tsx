@@ -201,7 +201,8 @@ export function EnhancedLayerControl() {
 
         <h3 className="font-medium">Error loading map layers</h3>
         <p
-</> className="text-sm">Please try refreshing the page</p>
+</>
+className="text-sm">Please try refreshing the page</p>
       </div>
     );
   }
@@ -217,6 +218,7 @@ export function EnhancedLayerControl() {
               Layer Control
             </CardTitle>
             <CardDescription
+</>
 </>>Manage map layer visibility and properties</CardDescription>
           </div>
         </div>
@@ -243,7 +245,8 @@ export function EnhancedLayerControl() {
 
               <TabsTrigger value="all" className="flex-1">All Layers</TabsTrigger>
               <TabsTrigger
-</> value="visible" className="flex-1">Visible</TabsTrigger>
+</>
+value="visible" className="flex-1">Visible</TabsTrigger>
               <TabsTrigger value="hidden" className="flex-1">Hidden</TabsTrigger>
             </TabsList>
           </Tabs>
@@ -257,6 +260,7 @@ export function EnhancedLayerControl() {
               <SelectValue placeholder="Layer Type" />
             </SelectTrigger>
             <SelectContent
+</>
 </>>
               <SelectItem value="">All Types</SelectItem>
               {layerTypes.map(type => (
@@ -271,6 +275,7 @@ export function EnhancedLayerControl() {
               <SelectValue placeholder="Source" />
             </SelectTrigger>
             <SelectContent
+</>
 </>>
               <SelectItem value="">All Sources</SelectItem>
               {layerSources.map(source => (
@@ -320,13 +325,15 @@ export function EnhancedLayerControl() {
 
                         <h4 className="text-sm font-medium">{layer.name}</h4>
                         <div
-</> className="flex items-center space-x-1 mt-1"><>
+</>
+className="flex items-center space-x-1 mt-1"><>
 
                           <Badge variant="outline" className="text-xs capitalize">
                             {layer.type}
                           </Badge>
                           <Badge
-</> variant="secondary" className="text-xs capitalize">
+</>
+variant="secondary" className="text-xs capitalize">
                             {layer.source}
                           </Badge>
                           {layer.metadata && (layer.metadata as LayerMetadata).category && (
@@ -350,7 +357,8 @@ export function EnhancedLayerControl() {
 
                             <h4 className="font-medium">{layer.name}</h4>
                             <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                               {layer.metadata && typeof layer.metadata === 'object' && 'description' in layer.metadata
                                 ? (layer.metadata as LayerMetadata).description
                                 : 'No description available'
@@ -378,7 +386,8 @@ export function EnhancedLayerControl() {
                           <ArrowUp className="h-3 w-3" />
                         </Button>
                         <Button
-</> 
+</>
+
                           variant="ghost" 
                           size="icon" 
                           className="h-5 w-5"
@@ -401,7 +410,8 @@ export function EnhancedLayerControl() {
                           Opacity: {layer.opacity}%
                         </Label>
                         <div
-</> className="flex-1">
+</>
+className="flex-1">
                           <Slider
                             id={`opacity-${layer.id}`}
                             min={0}
@@ -439,7 +449,8 @@ export function EnhancedLayerControl() {
         </Button>
         
         <Button
-</> variant="secondary" size="sm">
+</>
+variant="secondary" size="sm">
           <Settings className="mr-2 h-4 w-4" />
           Save Configuration
         </Button>

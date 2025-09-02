@@ -365,11 +365,13 @@ export default function DocumentParcelManagementPage() {
               <SelectValue placeholder="Search type" />
             </SelectTrigger>
             <SelectContent
+</>
 </>><>
 
               <SelectItem value="document">Documents</SelectItem>
               <SelectItem
-</> value="parcel">Parcels</SelectItem>
+</>
+value="parcel">Parcels</SelectItem>
             </SelectContent>
           </Select>
           
@@ -411,6 +413,7 @@ export default function DocumentParcelManagementPage() {
 
                 <CardTitle>Documents</CardTitle>
                 <CardDescription
+</>
 </>>Select a document to view linked parcels</CardDescription>
               </CardHeader>
               <CardContent>
@@ -441,7 +444,8 @@ export default function DocumentParcelManagementPage() {
 
                               <p className="font-medium">{doc.name}</p>
                               <p
-</> className="text-xs text-muted-foreground">{doc.type}</p>
+</>
+className="text-xs text-muted-foreground">{doc.type}</p>
                             </div>
                           </div>
                         </Button>
@@ -472,6 +476,7 @@ export default function DocumentParcelManagementPage() {
                       )}
                     </CardTitle>
                     <CardDescription
+</>
 </>>
                       {isLoadingSelectedDocument ? (
                         <Skeleton className="h-4 w-[150px]" />
@@ -496,6 +501,7 @@ export default function DocumentParcelManagementPage() {
 
                           <DialogTitle>Link Document to Parcel</DialogTitle>
                           <DialogDescription
+</>
 </>>
                             Select a parcel and link type to establish a relationship between this document and a parcel.
                           </DialogDescription>
@@ -508,7 +514,8 @@ export default function DocumentParcelManagementPage() {
                               Parcel
                             </Label>
                             <div
-</> className="col-span-3">
+</>
+className="col-span-3">
                               <Select
                                 value={selectedParcelId?.toString() || ""}
                                 onValueChange={(value) => setSelectedParcelId(parseInt(value))}
@@ -518,6 +525,7 @@ export default function DocumentParcelManagementPage() {
                                   <SelectValue placeholder="Select a parcel" />
                                 </SelectTrigger>
                                 <SelectContent
+</>
 </>>
                                   {parcels?.map((parcel) => (
                                     <SelectItem key={parcel.id} value={parcel.id.toString()}>
@@ -535,7 +543,8 @@ export default function DocumentParcelManagementPage() {
                               Link Type
                             </Label>
                             <div
-</> className="col-span-3">
+</>
+className="col-span-3">
                               <Select
                                 value={linkType}
                                 onValueChange={setLinkType}
@@ -545,19 +554,23 @@ export default function DocumentParcelManagementPage() {
                                   <SelectValue placeholder="Select a link type" />
                                 </SelectTrigger>
                                 <SelectContent
+</>
 </>><>
 
                                   <SelectItem value="legal_description">Legal Description</SelectItem>
                                   <SelectItem
-</> value="reference">Reference</SelectItem><>
+</>
+value="reference">Reference</SelectItem><>
 
                                   <SelectItem value="related">Related</SelectItem>
                                   <SelectItem
-</> value="ownership">Ownership</SelectItem><>
+</>
+value="ownership">Ownership</SelectItem><>
 
                                   <SelectItem value="subdivision">Subdivision</SelectItem>
                                   <SelectItem
-</> value="transaction">Transaction</SelectItem>
+</>
+value="transaction">Transaction</SelectItem>
                                   <SelectItem value="other">Other</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -570,7 +583,8 @@ export default function DocumentParcelManagementPage() {
                               Notes
                             </Label>
                             <div
-</> className="col-span-3">
+</>
+className="col-span-3">
                               <Input
                                 id="notes"
                                 value={linkNotes}
@@ -590,7 +604,8 @@ export default function DocumentParcelManagementPage() {
                             Cancel
                           </Button>
                           <Button
-</> 
+</>
+
                             onClick={handleCreateLink}
                             disabled={!selectedParcelId || !selectedDocumentId}
                           >
@@ -619,10 +634,12 @@ export default function DocumentParcelManagementPage() {
 
                           <TableHead>Parcel Number</TableHead>
                           <TableHead
+</>
 </>>Address</TableHead><>
 
                           <TableHead>Link Type</TableHead>
                           <TableHead
+</>
 </>>Notes</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
@@ -633,10 +650,12 @@ export default function DocumentParcelManagementPage() {
 
                             <TableCell className="font-medium">{parcel.parcelNumber}</TableCell>
                             <TableCell
+</>
 </>>{parcel.address || "N/A"}</TableCell><>
 
                             <TableCell>{getLinkTypeBadge(parcel.linkType)}</TableCell>
                             <TableCell
+</>
 </>>{parcel.notes || "N/A"}</TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end space-x-2">
@@ -649,7 +668,8 @@ export default function DocumentParcelManagementPage() {
                                   <Info className="h-4 w-4" />
                                 </Button>
                                 <Button
-</> 
+</>
+
                                   variant="ghost" 
                                   size="icon"
                                   onClick={() => handleRemoveLink(selectedDocumentId!, parcel.id)}
@@ -675,7 +695,8 @@ export default function DocumentParcelManagementPage() {
 
                     <h3 className="text-lg font-semibold mb-2">Document Content</h3>
                     <div
-</> className="border rounded-md p-4 max-h-[300px] overflow-auto bg-muted/50">
+</>
+className="border rounded-md p-4 max-h-[300px] overflow-auto bg-muted/50">
                       <pre className="text-sm whitespace-pre-wrap">{selectedDocument.content}</pre>
                     </div>
                   </div>
@@ -693,6 +714,7 @@ export default function DocumentParcelManagementPage() {
 
                 <CardTitle>Parcels</CardTitle>
                 <CardDescription
+</>
 </>>Select a parcel to view linked documents</CardDescription>
               </CardHeader>
               <CardContent>
@@ -723,7 +745,8 @@ export default function DocumentParcelManagementPage() {
 
                               <p className="font-medium">{parcel.parcelNumber}</p>
                               <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                                 {parcel.address || (parcel.owner ? `Owner: ${parcel.owner}` : "No address")}
                               </p>
                             </div>
@@ -756,6 +779,7 @@ export default function DocumentParcelManagementPage() {
                       )}
                     </CardTitle>
                     <CardDescription
+</>
 </>>
                       {isLoadingSelectedParcel ? (
                         <Skeleton className="h-4 w-[150px]" />
@@ -780,6 +804,7 @@ export default function DocumentParcelManagementPage() {
 
                           <DialogTitle>Link Parcel to Document</DialogTitle>
                           <DialogDescription
+</>
 </>>
                             Select a document and link type to establish a relationship between this parcel and a document.
                           </DialogDescription>
@@ -792,7 +817,8 @@ export default function DocumentParcelManagementPage() {
                               Document
                             </Label>
                             <div
-</> className="col-span-3">
+</>
+className="col-span-3">
                               <Select
                                 value={selectedDocumentId?.toString() || ""}
                                 onValueChange={(value) => setSelectedDocumentId(parseInt(value))}
@@ -802,6 +828,7 @@ export default function DocumentParcelManagementPage() {
                                   <SelectValue placeholder="Select a document" />
                                 </SelectTrigger>
                                 <SelectContent
+</>
 </>>
                                   {documents?.map((doc) => (
                                     <SelectItem key={doc.id} value={doc.id.toString()}>
@@ -819,7 +846,8 @@ export default function DocumentParcelManagementPage() {
                               Link Type
                             </Label>
                             <div
-</> className="col-span-3">
+</>
+className="col-span-3">
                               <Select
                                 value={linkType}
                                 onValueChange={setLinkType}
@@ -829,19 +857,23 @@ export default function DocumentParcelManagementPage() {
                                   <SelectValue placeholder="Select a link type" />
                                 </SelectTrigger>
                                 <SelectContent
+</>
 </>><>
 
                                   <SelectItem value="legal_description">Legal Description</SelectItem>
                                   <SelectItem
-</> value="reference">Reference</SelectItem><>
+</>
+value="reference">Reference</SelectItem><>
 
                                   <SelectItem value="related">Related</SelectItem>
                                   <SelectItem
-</> value="ownership">Ownership</SelectItem><>
+</>
+value="ownership">Ownership</SelectItem><>
 
                                   <SelectItem value="subdivision">Subdivision</SelectItem>
                                   <SelectItem
-</> value="transaction">Transaction</SelectItem>
+</>
+value="transaction">Transaction</SelectItem>
                                   <SelectItem value="other">Other</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -854,7 +886,8 @@ export default function DocumentParcelManagementPage() {
                               Notes
                             </Label>
                             <div
-</> className="col-span-3">
+</>
+className="col-span-3">
                               <Input
                                 id="notes"
                                 value={linkNotes}
@@ -874,7 +907,8 @@ export default function DocumentParcelManagementPage() {
                             Cancel
                           </Button>
                           <Button
-</> 
+</>
+
                             onClick={handleCreateLink}
                             disabled={!selectedParcelId || !selectedDocumentId}
                           >
@@ -888,7 +922,6 @@ export default function DocumentParcelManagementPage() {
               </CardHeader>
               <CardContent>
                 {selectedParcel && (
-                  <>
                     {/* Parcel map and details */}
                     <div className="mb-4">
                       <div className="grid grid-cols-2 gap-4">
@@ -896,41 +929,43 @@ export default function DocumentParcelManagementPage() {
 
                           <h3 className="text-lg font-semibold mb-2">Property Details</h3>
                           <div
-</> className="border rounded-md p-4 bg-muted/50">
+</>
+className="border rounded-md p-4 bg-muted/50">
                             <dl className="grid grid-cols-2 gap-2 text-sm"><>
 
                               <dt className="font-semibold">Parcel Number:</dt>
                               <dd
+</>
 </>>{selectedParcel.parcelNumber}</dd><>
 
-                              
                               <dt className="font-semibold">Address:</dt>
                               <dd
+</>
 </>>{selectedParcel.address || "N/A"}</dd><>
 
-                              
                               <dt className="font-semibold">Owner:</dt>
                               <dd
+</>
 </>>{selectedParcel.owner || "N/A"}</dd><>
 
-                              
                               <dt className="font-semibold">Acreage:</dt>
                               <dd
+</>
 </>>{selectedParcel.acreage || "N/A"}</dd><>
 
-                              
                               <dt className="font-semibold">Property Type:</dt>
                               <dd
+</>
 </>>{selectedParcel.propertyType || "N/A"}</dd><>
 
-                              
                               <dt className="font-semibold">Zoning:</dt>
                               <dd
+</>
 </>>{selectedParcel.zoning || "N/A"}</dd><>
 
-                              
                               <dt className="font-semibold">Assessed Value:</dt>
                               <dd
+</>
 </>>{selectedParcel.assessedValue || "N/A"}</dd>
                             </dl>
                           </div>
@@ -940,7 +975,8 @@ export default function DocumentParcelManagementPage() {
 
                           <h3 className="text-lg font-semibold mb-2">Parcel Map</h3>
                           <div
-</> className="border rounded-md overflow-hidden h-[200px]">
+</>
+className="border rounded-md overflow-hidden h-[200px]">
                             {selectedParcel.geometry ? (
                               <MapboxMap
                                 height={200}
@@ -973,10 +1009,12 @@ export default function DocumentParcelManagementPage() {
 
                               <TableHead>Document Name</TableHead>
                               <TableHead
+</>
 </>>Type</TableHead><>
 
                               <TableHead>Link Type</TableHead>
                               <TableHead
+</>
 </>>Notes</TableHead>
                               <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -987,13 +1025,15 @@ export default function DocumentParcelManagementPage() {
 
                                 <TableCell className="font-medium">{doc.name}</TableCell>
                                 <TableCell
-</> className="flex items-center">
+</>
+className="flex items-center">
                                   {getDocumentTypeIcon(doc.type)}
                                   <span className="ml-1">{doc.type}</span>
                                 </TableCell><>
 
                                 <TableCell>{getLinkTypeBadge(doc.linkType)}</TableCell>
                                 <TableCell
+</>
 </>>{doc.notes || "N/A"}</TableCell>
                                 <TableCell className="text-right">
                                   <div className="flex justify-end space-x-2">
@@ -1006,7 +1046,8 @@ export default function DocumentParcelManagementPage() {
                                       <Info className="h-4 w-4" />
                                     </Button>
                                     <Button
-</> 
+</>
+
                                       variant="ghost" 
                                       size="icon"
                                       onClick={() => handleRemoveLink(doc.id, selectedParcelId!)}
@@ -1025,7 +1066,6 @@ export default function DocumentParcelManagementPage() {
                         No documents linked to this parcel.
                       </div>
                     )}
-                  </>
                 )}
               </CardContent>
             </Card>

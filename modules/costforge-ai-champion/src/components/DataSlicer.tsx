@@ -234,9 +234,11 @@ export default function DataSlicer({
                   >
                     <SelectTrigger className="w-auto min-w-[150px] h-9 text-sm">
 <>
+
                       <SelectValue placeholder={category.name} />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>>
                       <SelectItem value="_all">All {category.name}</SelectItem>
                       {category.options?.map(option => (
@@ -307,9 +309,11 @@ export default function DataSlicer({
                     >
                       <SelectTrigger className="w-full text-sm">
 <>
+
                         <SelectValue placeholder={`Select ${category.name}`} />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>>
                         <SelectItem value="_all">All {category.name}</SelectItem>
                         {category.options?.map(option => (
@@ -356,8 +360,10 @@ export default function DataSlicer({
                       />
                       <div className="flex justify-between text-xs text-neutral-500">
 <>
+
                         <span>{category.range.formatValue?.(filters[category.id][0]) || filters[category.id][0]}</span>
                         <span
+</>
 </>>{category.range.formatValue?.(filters[category.id][1]) || filters[category.id][1]}</span>
                       </div>
                     </div>

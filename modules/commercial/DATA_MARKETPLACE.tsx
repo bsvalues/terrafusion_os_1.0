@@ -226,23 +226,29 @@ export const DataMarketplace: React.FC = () => {
       {/* Header */}
       <div className="marketplace-header">
 <>
+
         <h1>Terrafusion Data Marketplace</h1>
         <p
+</>
 </>>Expand your coverage with additional county data packages</p>
         
         <div className="license-info">
           <Shield className="icon" />
 <>
+
           <span>
             {userLicense?.type === 'government' ? 'Government License' : `Commercial ${userLicense?.tier} License`}
           </span>
           <span
-</> className="separator">|</span>
+</>
+className="separator">|</span>
           <Database className="icon" />
 <>
+
           <span>{userLicense?.ownedCounties.length} Counties Owned</span>
           <span
-</> className="separator">|</span>
+</>
+className="separator">|</span>
           <DollarSign className="icon" />
           <span>{userLicense?.dataCredits?.toLocaleString()} Credits</span>
         </div>
@@ -264,18 +270,23 @@ export const DataMarketplace: React.FC = () => {
           className="state-filter"
         >
 <>
+
           <option value="all">All States</option>
           <option
-</> value="WA">Washington</option>
+</>
+value="WA">Washington</option>
 <>
+
           <option value="OR">Oregon</option>
           <option
-</> value="CA">California</option>
+</>
+value="CA">California</option>
           <option value="ID">Idaho</option>
         </select>
         
         <div className="view-toggle">
 <>
+
           <button 
             className={selectedView === 'grid' ? 'active' : ''}
             onClick={() => setSelectedView('grid')}
@@ -283,7 +294,8 @@ export const DataMarketplace: React.FC = () => {
             Grid View
           </button>
           <button
-</> 
+</>
+
             className={selectedView === 'map' ? 'active' : ''}
             onClick={() => setSelectedView('map')}
           >
@@ -324,8 +336,10 @@ export const DataMarketplace: React.FC = () => {
               
               <div className="package-features">
 <>
+
                 <h4>Includes:</h4>
                 <ul
+</>
 </>>
                   {pkg.features.map((feature, idx) => (
                     <li key={idx}>✓ {feature}</li>
@@ -336,16 +350,20 @@ export const DataMarketplace: React.FC = () => {
               <div className="package-pricing">
                 <div className="price-option">
 <>
+
                   <span className="label">Annual</span>
                   <span
-</> className="price">${pkg.price.annual.toLocaleString()}</span>
+</>
+className="price">${pkg.price.annual.toLocaleString()}</span>
                   <span className="period">/year</span>
                 </div>
                 <div className="price-option">
 <>
+
                   <span className="label">Monthly</span>
                   <span
-</> className="price">${pkg.price.monthly.toLocaleString()}</span>
+</>
+className="price">${pkg.price.monthly.toLocaleString()}</span>
                   <span className="period">/month</span>
                 </div>
               </div>
@@ -357,8 +375,9 @@ export const DataMarketplace: React.FC = () => {
                     Download Latest
                   </button>
                 ) : (
-                  <>
 <>
+
+
                     <button 
                       className="btn-sample"
                       onClick={() => console.log('Download sample', pkg.countyId)}
@@ -366,7 +385,8 @@ export const DataMarketplace: React.FC = () => {
                       Sample Data
                     </button>
                     <button
-</> 
+</>
+
                       className="btn-add-cart"
                       onClick={() => addToCart(pkg)}
                       disabled={cart.find(p => p.countyId === pkg.countyId) !== undefined}
@@ -374,7 +394,7 @@ export const DataMarketplace: React.FC = () => {
                       <ShoppingCart className="icon" />
                       {cart.find(p => p.countyId === pkg.countyId) ? 'In Cart' : 'Add to Cart'}
                     </button>
-                  </>
+
                 )}
               </div>
             </div>
@@ -386,17 +406,21 @@ export const DataMarketplace: React.FC = () => {
           <div className="shopping-cart">
             <h3>
 <>
+
               <ShoppingCart className="icon" />
               Shopping Cart ({cart.length})
             </h3>
             
             <div
-</> className="cart-items">
+</>
+className="cart-items">
               {cart.map(pkg => (
                 <div key={pkg.countyId} className="cart-item">
 <>
+
                   <span>{pkg.countyName}, {pkg.state}</span>
                   <span
+</>
 </>>${pkg.price.annual.toLocaleString()}/year</span>
                   <button onClick={() => removeFromCart(pkg.countyId)}>×</button>
                 </div>
@@ -405,8 +429,10 @@ export const DataMarketplace: React.FC = () => {
             
             <div className="cart-total">
 <>
+
               <span>Total (Annual):</span>
               <span
+</>
 </>>${calculateTotal().toLocaleString()}</span>
             </div>
             

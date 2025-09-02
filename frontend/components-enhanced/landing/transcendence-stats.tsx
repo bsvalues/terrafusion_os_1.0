@@ -92,11 +92,13 @@ export function TranscendenceStats() {
                   {formatValue(animatedValues[index], stat.suffix)}
                 </div>
                 <div
-</> className="space-y-2"><>
+</>
+className="space-y-2"><>
 
                   <h3 className="text-lg font-semibold text-tf-light">{stat.label}</h3>
                   <p
-</> className="text-sm text-tf-light/70">{stat.description}</p>
+</>
+className="text-sm text-tf-light/70">{stat.description}</p>
                 </div>
               </CardContent>
             </Card>

@@ -176,7 +176,8 @@ const ARViewer: React.FC<ARViewerProps> = ({
 
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             <span
-</> className="ml-3">Generating AR content...</span>
+</>
+className="ml-3">Generating AR content...</span>
           </div>
         </CardContent>
       </Card>
@@ -219,14 +220,16 @@ const ARViewer: React.FC<ARViewerProps> = ({
 
             <span>AR Building Visualization</span>
             <div
-</> className="flex space-x-2">
+</>
+className="flex space-x-2">
               <Button variant="outline" size="sm" onClick={handleTakeScreenshot}><>
 
                 <Download className="h-4 w-4 mr-1" />
                 Screenshot
               </Button>
               <Button
-</> variant="outline" size="sm" onClick={handleResetView}>
+</>
+variant="outline" size="sm" onClick={handleResetView}>
                 <RotateCcw className="h-4 w-4 mr-1" />
                 Reset View
               </Button>
@@ -332,10 +335,12 @@ const ARViewer: React.FC<ARViewerProps> = ({
 
               <li>Allow camera access when prompted</li>
                             <li
+</>
 </>>Point your camera at the Hiro marker or a flat surface</li><>
 
               <li>Move your device around to view the building from different angles</li>
                             <li
+</>
 </>>Tap the building model to interact with cost information</li>
             </ul>
           </div>
@@ -345,7 +350,8 @@ const ARViewer: React.FC<ARViewerProps> = ({
 
             <h3 className="font-medium mb-2">Building Summary</h3>
             <div
-</> className="grid grid-cols-2 gap-4 text-sm">
+</>
+className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="font-medium">Type:</span> {buildingData.buildingType}
               </div>

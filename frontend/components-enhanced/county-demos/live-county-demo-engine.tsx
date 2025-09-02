@@ -181,7 +181,8 @@ export function LiveCountyDemoEngine() {
               🏛️ LIVE COUNTY DEMO ENGINE 🏛️
             </h1>
             <p
-</> className="text-tf-light/80">See Terrafusion with YOUR county's actual data</p>
+</>
+className="text-tf-light/80">See Terrafusion with YOUR county's actual data</p>
           </div>
           <div className="flex items-center gap-4">
             {/* Data Status Indicator */}
@@ -216,6 +217,7 @@ export function LiveCountyDemoEngine() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 {availableCounties.map((county) => (
                   <SelectItem key={county.key} value={county.key}>
@@ -279,7 +281,8 @@ export function LiveCountyDemoEngine() {
 
                 <div className="text-2xl font-bold text-tf-transcend">{countyData.population.toLocaleString()}</div>
                 <div
-</> className="text-sm text-tf-light/70">Population</div>
+</>
+className="text-sm text-tf-light/70">Population</div>
               </CardContent>
             </Card>
             
@@ -289,7 +292,8 @@ export function LiveCountyDemoEngine() {
 
                 <div className="text-2xl font-bold text-tf-transcend">{countyData.totalProperties.toLocaleString()}</div>
                 <div
-</> className="text-sm text-tf-light/70">Properties</div>
+</>
+className="text-sm text-tf-light/70">Properties</div>
               </CardContent>
             </Card>
             
@@ -299,7 +303,8 @@ export function LiveCountyDemoEngine() {
 
                 <div className="text-2xl font-bold text-tf-transcend">${countyData.totalValue}</div>
                 <div
-</> className="text-sm text-tf-light/70">Total Value</div>
+</>
+className="text-sm text-tf-light/70">Total Value</div>
               </CardContent>
             </Card>
             
@@ -309,7 +314,8 @@ export function LiveCountyDemoEngine() {
 
                 <div className="text-2xl font-bold text-tf-transcend">${countyData.averageValue.toLocaleString()}</div>
                 <div
-</> className="text-sm text-tf-light/70">Avg Value</div>
+</>
+className="text-sm text-tf-light/70">Avg Value</div>
               </CardContent>
             </Card>
             
@@ -319,7 +325,8 @@ export function LiveCountyDemoEngine() {
 
                 <div className="text-2xl font-bold text-tf-transcend">{calculateTerraFusionSavings().toLocaleString()}×</div>
                 <div
-</> className="text-sm text-tf-light/70">TF Speed</div>
+</>
+className="text-sm text-tf-light/70">TF Speed</div>
               </CardContent>
             </Card>
           </div>
@@ -350,25 +357,29 @@ export function LiveCountyDemoEngine() {
 
                     <div className="text-sm text-tf-light/70">Assessor Office</div>
                     <div
-</> className="font-semibold text-tf-light">{countyData?.assessorOffice}</div>
+</>
+className="font-semibold text-tf-light">{countyData?.assessorOffice}</div>
                   </div>
                   <div><>
 
                     <div className="text-sm text-tf-light/70">Tax Rate</div>
                     <div
-</> className="font-semibold text-tf-light">{((countyData?.taxRate || 0) * 100).toFixed(2)}%</div>
+</>
+className="font-semibold text-tf-light">{((countyData?.taxRate || 0) * 100).toFixed(2)}%</div>
                   </div>
                   <div><>
 
                     <div className="text-sm text-tf-light/70">Last Revaluation</div>
                     <div
-</> className="font-semibold text-tf-light">{countyData?.lastRevaluation}</div>
+</>
+className="font-semibold text-tf-light">{countyData?.lastRevaluation}</div>
                   </div>
                   <div><>
 
                     <div className="text-sm text-tf-light/70">GIS Layers</div>
                     <div
-</> className="font-semibold text-tf-light">{countyData?.gisLayers.length} Active</div>
+</>
+className="font-semibold text-tf-light">{countyData?.gisLayers.length} Active</div>
                   </div>
                 </div>
                 
@@ -376,7 +387,8 @@ export function LiveCountyDemoEngine() {
 
                   <div className="text-sm text-tf-light/70 mb-2">Available GIS Layers</div>
                   <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                     {countyData?.gisLayers.map((layer /* , index */) => (
                       <Badge key={index} variant="secondary" className="bg-tf-accent/20 text-tf-accent">
                         {layer}
@@ -390,24 +402,19 @@ export function LiveCountyDemoEngine() {
 
                   <div className="text-sm text-tf-light/70 mb-1">Data Source</div>
                   <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                     {dataStatus === 'LIVE' && (
-                      <>
                         <Wifi className="w-4 h-4 text-tf-success" />
                         <span className="text-tf-success">Live from county open data APIs</span>
-                      </>
                     )}
                     {dataStatus === 'CACHED' && (
-                      <>
                         <Database className="w-4 h-4 text-tf-warning" />
                         <span className="text-tf-warning">Cached county data</span>
-                      </>
                     )}
                     {dataStatus === 'DEMO' && (
-                      <>
                         <WifiOff className="w-4 h-4 text-tf-error" />
                         <span className="text-tf-error">Demo data (API unavailable)</span>
-                      </>
                     )}
                   </div>
                   <div className="text-xs text-tf-light/50 mt-1">
@@ -435,7 +442,8 @@ export function LiveCountyDemoEngine() {
 
                   <div className="text-tf-success font-semibold mb-2">🎯 Terrafusion Solution Impact</div>
                   <div
-</> className="text-sm text-tf-light/80">
+</>
+className="text-sm text-tf-light/80">
                     All pain points eliminated with 379,000,000× speed improvement, 
                     real-time GIS integration, and automated citizen services.
                   </div>
@@ -467,25 +475,29 @@ export function LiveCountyDemoEngine() {
 
                     <div className="text-sm text-tf-primary font-mono mb-2">{property.id}</div>
                     <div
-</> className="text-tf-light font-semibold mb-2">{property.address}</div>
+</>
+className="text-tf-light font-semibold mb-2">{property.address}</div>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between"><>
 
                         <span className="text-tf-light/70">Value:</span>
                         <span
-</> className="text-tf-transcend font-bold">${property.value.toLocaleString()}</span>
+</>
+className="text-tf-transcend font-bold">${property.value.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between"><>
 
                         <span className="text-tf-light/70">Sq Ft:</span>
                         <span
-</> className="text-tf-light">{property.sqft.toLocaleString()}</span>
+</>
+className="text-tf-light">{property.sqft.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between"><>
 
                         <span className="text-tf-light/70">Built:</span>
                         <span
-</> className="text-tf-light">{property.yearBuilt}</span>
+</>
+className="text-tf-light">{property.yearBuilt}</span>
                       </div>
                     </div>
                   </div>
@@ -511,38 +523,44 @@ export function LiveCountyDemoEngine() {
 
                     <div className="text-sm text-tf-light/70">Property ID</div>
                     <div
-</> className="font-mono text-tf-transcend">{currentProperty.id}</div>
+</>
+className="font-mono text-tf-transcend">{currentProperty.id}</div>
                   </div>
                   <div><>
 
                     <div className="text-sm text-tf-light/70">Address</div>
                     <div
-</> className="text-tf-light">{currentProperty.address}</div>
+</>
+className="text-tf-light">{currentProperty.address}</div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div><>
 
                       <div className="text-sm text-tf-light/70">Square Feet</div>
                       <div
-</> className="text-tf-light">{currentProperty.sqft.toLocaleString()}</div>
+</>
+className="text-tf-light">{currentProperty.sqft.toLocaleString()}</div>
                     </div>
                     <div><>
 
                       <div className="text-sm text-tf-light/70">Bedrooms</div>
                       <div
-</> className="text-tf-light">{currentProperty.bedrooms}</div>
+</>
+className="text-tf-light">{currentProperty.bedrooms}</div>
                     </div>
                     <div><>
 
                       <div className="text-sm text-tf-light/70">Year Built</div>
                       <div
-</> className="text-tf-light">{currentProperty.yearBuilt}</div>
+</>
+className="text-tf-light">{currentProperty.yearBuilt}</div>
                     </div>
                     <div><>
 
                       <div className="text-sm text-tf-light/70">Current Value</div>
                       <div
-</> className="text-tf-transcend font-bold">${currentProperty.value.toLocaleString()}</div>
+</>
+className="text-tf-transcend font-bold">${currentProperty.value.toLocaleString()}</div>
                     </div>
                   </div>
                 </div>
@@ -590,7 +608,8 @@ export function LiveCountyDemoEngine() {
                       0.{processingTime.toString().padStart(2, '0')}ms
                     </div>
                     <div
-</> className="text-tf-light/70">Processing Time</div>
+</>
+className="text-tf-light/70">Processing Time</div>
                     <Progress value={(processingTime / 47) * 100} className="w-full" />
                     
                     {processingTime >= 47 && (
@@ -601,24 +620,28 @@ export function LiveCountyDemoEngine() {
                         </Badge>
                         
                         <div
-</> className="grid grid-cols-1 md:grid-cols-3 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="text-center p-4 bg-tf-transcend/10 rounded-lg"><>
 
                             <div className="text-2xl font-bold text-tf-transcend">${currentProperty?.value.toLocaleString()}</div>
                             <div
-</> className="text-sm text-tf-light/70">Validated Value</div>
+</>
+className="text-sm text-tf-light/70">Validated Value</div>
                           </div>
                           <div className="text-center p-4 bg-tf-primary/10 rounded-lg"><>
 
                             <div className="text-2xl font-bold text-tf-primary">0.47ms</div>
                             <div
-</> className="text-sm text-tf-light/70">vs 6 months traditional</div>
+</>
+className="text-sm text-tf-light/70">vs 6 months traditional</div>
                           </div>
                           <div className="text-center p-4 bg-tf-accent/10 rounded-lg"><>
 
                             <div className="text-2xl font-bold text-tf-accent">99.7%</div>
                             <div
-</> className="text-sm text-tf-light/70">Accuracy Rate</div>
+</>
+className="text-sm text-tf-light/70">Accuracy Rate</div>
                           </div>
                         </div>
                         
@@ -646,25 +669,29 @@ export function LiveCountyDemoEngine() {
 
               <div className="text-3xl font-black text-tf-transcend mb-2">$2.8M</div>
               <div
-</> className="text-sm text-tf-light/70">Annual Savings</div>
+</>
+className="text-sm text-tf-light/70">Annual Savings</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-black text-tf-primary mb-2">2.1</div>
               <div
-</> className="text-sm text-tf-light/70">Months Payback</div>
+</>
+className="text-sm text-tf-light/70">Months Payback</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-black text-tf-accent mb-2">$13.5M</div>
               <div
-</> className="text-sm text-tf-light/70">5-Year NPV</div>
+</>
+className="text-sm text-tf-light/70">5-Year NPV</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-black text-tf-success mb-2">98%</div>
               <div
-</> className="text-sm text-tf-light/70">Staff Satisfaction</div>
+</>
+className="text-sm text-tf-light/70">Staff Satisfaction</div>
             </div>
           </div>
           
@@ -677,7 +704,8 @@ export function LiveCountyDemoEngine() {
 
                 <div className="text-tf-success font-semibold">✅ Analysis based on LIVE {countyData?.name} data</div>
                 <div
-</> className="text-sm text-tf-light/70">Updated: {countyData?.lastUpdated.toLocaleString()}</div>
+</>
+className="text-sm text-tf-light/70">Updated: {countyData?.lastUpdated.toLocaleString()}</div>
               </div>
             )}
           </div>

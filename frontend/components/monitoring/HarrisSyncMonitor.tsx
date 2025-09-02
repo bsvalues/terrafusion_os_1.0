@@ -102,7 +102,8 @@ const HarrisSyncMonitor: React.FC = () => {
                     HARRIS PACS v{syncMetrics.harrisVersion} → TERRAFUSION OS
                 </h1>
                 <p
-</> className="text-gray-300 text-lg">
+</>
+className="text-gray-300 text-lg">
                     SUPREME VICTORY: Real-time synchronization of 89,247 Benton County parcels
                 </p>
             </div>
@@ -114,14 +115,16 @@ const HarrisSyncMonitor: React.FC = () => {
 
                         <div className="text-gray-400 text-sm font-medium">TOTAL PARCELS</div>
                         <Database
-</> className="w-5 h-5 text-cyan-400" />
+</>
+className="w-5 h-5 text-cyan-400" />
                     </div><>
 
                     <div className="text-3xl font-mono text-white font-bold">
                         {syncMetrics.totalParcels.toLocaleString()}
                     </div>
                     <div
-</> className="text-xs text-gray-500 mt-1">
+</>
+className="text-xs text-gray-500 mt-1">
                         Harris PACS v{syncMetrics.harrisVersion}
                     </div>
                 </div>
@@ -131,14 +134,16 @@ const HarrisSyncMonitor: React.FC = () => {
 
                         <div className="text-gray-400 text-sm font-medium">SYNCED</div>
                         <Activity
-</> className="w-5 h-5 text-cyan-400" />
+</>
+className="w-5 h-5 text-cyan-400" />
                     </div><>
 
                     <div className="text-3xl font-mono text-cyan-400 font-bold">
                         {syncMetrics.syncedParcels.toLocaleString()}
                     </div>
                     <div
-</> className="text-xs text-gray-500 mt-1">
+</>
+className="text-xs text-gray-500 mt-1">
                         15-second intervals
                     </div>
                 </div>
@@ -148,14 +153,16 @@ const HarrisSyncMonitor: React.FC = () => {
 
                         <div className="text-gray-400 text-sm font-medium">COMPLETION</div>
                         <Zap
-</> className="w-5 h-5 text-green-400" />
+</>
+className="w-5 h-5 text-green-400" />
                     </div><>
 
                     <div className="text-3xl font-mono text-green-400 font-bold">
                         {syncMetrics.syncRate}%
                     </div>
                     <div
-</> className="w-full bg-gray-700 rounded-full h-2 mt-2">
+</>
+className="w-full bg-gray-700 rounded-full h-2 mt-2">
                         <div 
                             className="bg-green-400 h-2 rounded-full transition-all duration-500"
                             style={{ width: `${syncMetrics.syncRate}%` }}
@@ -173,7 +180,8 @@ const HarrisSyncMonitor: React.FC = () => {
                         {syncMetrics.status}
                     </div>
                     <div
-</> className="text-xs text-gray-500 mt-1">
+</>
+className="text-xs text-gray-500 mt-1">
                         {syncMetrics.lastSync ? 
                             `Last: ${syncMetrics.lastSync.toLocaleTimeString()}` : 
                             'Initializing...'
@@ -192,7 +200,8 @@ const HarrisSyncMonitor: React.FC = () => {
                         Real-time Throughput (Parcels/Second)
                     </h3>
                     <div
-</> className="h-64">
+</>
+className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={syncMetrics.throughput}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -231,7 +240,8 @@ const HarrisSyncMonitor: React.FC = () => {
                         Property Class Distribution
                     </h3>
                     <div
-</> className="h-64">
+</>
+className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -252,7 +262,8 @@ const HarrisSyncMonitor: React.FC = () => {
                                     ))}
                                 </Pie>
                                 <Tooltip
-</> 
+</>
+
                                     formatter={(value: number, name: string) => [
                                         `${value.toLocaleString()} parcels`, 
                                         name
@@ -277,7 +288,8 @@ const HarrisSyncMonitor: React.FC = () => {
                         🎯 SUPREME VICTORY ACHIEVED!
                     </h2>
                     <p
-</> className="text-green-100 text-lg">
+</>
+className="text-green-100 text-lg">
                         Terrafusion OS has achieved total Harris PACS dominion with all 89,247 parcels synchronized!
                     </p>
                 </div>
@@ -288,30 +300,35 @@ const HarrisSyncMonitor: React.FC = () => {
 
                 <h3 className="text-xl font-semibold text-cyan-400 mb-4">System Information</h3>
                 <div
-</> className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+</>
+className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                     <div><>
 
                         <span className="text-gray-400">Harris PACS Version:</span>
                         <div
-</> className="text-white font-mono">v{syncMetrics.harrisVersion}</div>
+</>
+className="text-white font-mono">v{syncMetrics.harrisVersion}</div>
                     </div>
                     <div><>
 
                         <span className="text-gray-400">GIS Projection:</span>
                         <div
-</> className="text-white font-mono">EPSG:2927</div>
+</>
+className="text-white font-mono">EPSG:2927</div>
                     </div>
                     <div><>
 
                         <span className="text-gray-400">Sync Interval:</span>
                         <div
-</> className="text-white font-mono">15 seconds</div>
+</>
+className="text-white font-mono">15 seconds</div>
                     </div>
                     <div><>
 
                         <span className="text-gray-400">County:</span>
                         <div
-</> className="text-white font-mono">Benton, WA</div>
+</>
+className="text-white font-mono">Benton, WA</div>
                     </div>
                 </div>
             </div>

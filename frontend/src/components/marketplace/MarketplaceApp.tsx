@@ -154,8 +154,10 @@ export const MarketplaceApp: React.FC = () => {
           </div>
           <div>
 
+
             <h3 className="tf-heading-3">{plugin.name}</h3>
             <p
+
 className="text-sm text-gray-500">v{plugin.version} by {plugin.author}</p>
           </div>
         </div>
@@ -164,9 +166,11 @@ className="text-sm text-gray-500">v{plugin.version} by {plugin.author}</p>
         </span>
       </div>
 
+
       <p className="text-gray-600 mb-4 line-clamp-2">{plugin.description}</p>
       
       <div
+
 className="flex items-center justify-between">
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-1">
@@ -201,8 +205,10 @@ className="flex items-center justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2">
 
+
             <h3 className="tf-heading-4">{plugin.name}</h3>
             <span
+
 className="text-sm text-gray-500">v{plugin.version}</span>
             <span className="px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-600">
               {plugin.category}
@@ -220,10 +226,12 @@ className="text-sm text-gray-500">v{plugin.version}</span>
           </div>
         </div>
 
+
         <div className="flex items-center gap-1">
           {renderStars(plugin.rating)}
         </div>
         <button
+
 onClick={(e) => {
             e.stopPropagation();
             installPlugin(plugin);
@@ -249,8 +257,10 @@ onClick={(e) => {
               </div>
               <div>
 
+
                 <h2 className="tf-heading-2">{plugin.name}</h2>
                 <p
+
 className="text-gray-500">v{plugin.version} by {plugin.author}</p>
               </div>
             </div>
@@ -259,34 +269,44 @@ className="text-gray-500">v{plugin.version} by {plugin.author}</p>
 
           <div className="mb-6">
 
+
             <h3 className="tf-heading-3 mb-2">Description</h3>
             <p
+
 className="text-gray-600">{plugin.description}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
 
+
               <h4 className="tf-heading-4 mb-1">Category</h4>
               <p
+
 className="text-gray-600">{plugin.category}</p>
             </div>
             <div>
 
+
               <h4 className="tf-heading-4 mb-1">License</h4>
               <p
+
 className="text-gray-600">Government Use</p>
             </div>
             <div>
 
+
               <h4 className="tf-heading-4 mb-1">Downloads</h4>
               <p
+
 className="text-gray-600">{plugin.downloads.toLocaleString()}</p>
             </div>
             <div>
 
+
               <h4 className="tf-heading-4 mb-1">Rating</h4>
               <div
+
 className="flex items-center gap-2">
                 {renderStars(plugin.rating)}
                 <span className="text-gray-600">({plugin.ratingCount} reviews)</span>
@@ -296,8 +316,10 @@ className="flex items-center gap-2">
 
           <div className="mb-6">
 
+
             <h3 className="tf-heading-3 mb-2">Tags</h3>
             <div
+
 className="flex flex-wrap gap-2">
               {plugin.tags.map((tag) => (
                 <span key={tag} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
@@ -314,6 +336,7 @@ className="flex flex-wrap gap-2">
 
           <div className="flex gap-4">
 
+
             <button
               onClick={() => installPlugin(plugin)}
               className="tf-btn-primary flex-1"
@@ -321,6 +344,7 @@ className="flex flex-wrap gap-2">
               Install Plugin
             </button>
             <button
+
 onClick={() => window.open(`https://github.com/Terrafusion/${plugin.name}`, '_blank')}
               className="tf-btn-secondary"
             >
@@ -338,11 +362,14 @@ onClick={() => window.open(`https://github.com/Terrafusion/${plugin.name}`, '_bl
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
 
+
             <h1 className="tf-heading-display tf-text-gradient">🚀 Terrafusion Marketplace</h1>
             <div
+
 className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" sx={{ fontSize: 20 }} />
+
 
                 <input
                   type="text"
@@ -353,17 +380,22 @@ className="flex items-center gap-4">
                 />
               </div>
               <select
+
 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-tf-trust-blue"
               >
 
+
                 <option value="downloads">Most Downloads</option>
                 <option
+
 value="rating">Highest Rated</option>
+
 
                 <option value="name">Name</option>
                 <option
+
 value="updated">Recently Updated</option>
               </select>
               <div className="flex items-center border rounded-lg">
@@ -372,9 +404,11 @@ value="updated">Recently Updated</option>
                   className={`p-2 ${viewMode === 'grid' ? 'bg-tf-trust-blue text-white' : ''}`}
                 >
 
+
                   <GridView sx={{ fontSize: 20 }} />
                 </button>
                 <button
+
 onClick={() => setViewMode('list')}
                   className={`p-2 ${viewMode === 'list' ? 'bg-tf-trust-blue text-white' : ''}`}
                 >
@@ -390,8 +424,10 @@ onClick={() => setViewMode('list')}
         <div className="flex gap-8">
           <aside className="w-64">
 
+
             <h2 className="tf-heading-2 mb-4">Categories</h2>
             <ul
+
 className="space-y-2">
               <li>
                 <button
@@ -413,8 +449,10 @@ className="space-y-2">
                   >
                     <span className="flex items-center gap-2">
 
+
                       <span>{category.icon}</span>
                       <span
+
 className="capitalize">{category.name}</span>
                     </span>
                     <span className="text-sm opacity-75">{category.count}</span>

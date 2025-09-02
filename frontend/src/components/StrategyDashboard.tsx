@@ -130,6 +130,7 @@ const StrategyDashboard: React.FC = () => {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
 
+
         <h1 style={{
           fontSize: '2.5rem',
           fontWeight: 900,
@@ -142,6 +143,7 @@ const StrategyDashboard: React.FC = () => {
           Terrafusion Strategic Messaging Dashboard
         </h1>
         <p
+
 style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
           Targeted messaging strategies for government market segments
         </p>
@@ -204,6 +206,7 @@ style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
               marginBottom: '1.5rem'
             }}>
 
+
               <div style={{
                 width: '50px',
                 height: '50px',
@@ -217,6 +220,7 @@ style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
                 {segment.icon}
               </div>
               <div
+
 style={{
                 background: `${segment.color}20`,
                 color: segment.color,
@@ -229,6 +233,7 @@ style={{
               </div>
             </div>
 
+
             <h3 style={{
               fontSize: '1.3rem',
               fontWeight: 700,
@@ -239,6 +244,7 @@ style={{
             </h3>
 
             <p
+
 style={{
               color: 'rgba(255,255,255,0.7)',
               fontSize: '0.9rem',
@@ -255,20 +261,26 @@ style={{
             }}>
               <div style={{ textAlign: 'center' }}>
 
+
                 <div style={{ color: segment.color, fontWeight: 700 }}>{segment.metrics.reach}</div>
                 <div
+
 style={{ color: 'rgba(255,255,255,0.5)' }}>Reach</div>
               </div>
               <div style={{ textAlign: 'center' }}>
 
+
                 <div style={{ color: segment.color, fontWeight: 700 }}>{segment.metrics.engagement}</div>
                 <div
+
 style={{ color: 'rgba(255,255,255,0.5)' }}>Engagement</div>
               </div>
               <div style={{ textAlign: 'center' }}>
 
+
                 <div style={{ color: segment.color, fontWeight: 700 }}>{segment.metrics.conversion}</div>
                 <div
+
 style={{ color: 'rgba(255,255,255,0.5)' }}>Conversion</div>
               </div>
             </div>
@@ -304,6 +316,7 @@ style={{ color: 'rgba(255,255,255,0.5)' }}>Conversion</div>
           marginBottom: '2rem'
         }}>
 
+
           <div style={{
             width: '60px',
             height: '60px',
@@ -317,7 +330,9 @@ style={{ color: 'rgba(255,255,255,0.5)' }}>Conversion</div>
             {selectedSegmentData.icon}
           </div>
           <div
+
 >
+
 
             <h2 style={{
               fontSize: '2rem',
@@ -328,6 +343,7 @@ style={{ color: 'rgba(255,255,255,0.5)' }}>Conversion</div>
               {selectedSegmentData.name}
             </h2>
             <p
+
 style={{
               color: 'rgba(255,255,255,0.7)',
               fontSize: '1rem',
@@ -350,6 +366,7 @@ style={{
             padding: '1.5rem'
           }}>
 
+
             <h3 style={{
               fontSize: '1.3rem',
               fontWeight: 700,
@@ -363,7 +380,9 @@ style={{
             </h3>
             
             <div
+
 style={{ marginBottom: '1rem' }}>
+
 
               <h4 style={{
                 fontSize: '1rem',
@@ -374,6 +393,7 @@ style={{ marginBottom: '1rem' }}>
                 Primary Headline
               </h4>
               <p
+
 style={{
                 color: selectedSegmentData.color,
                 fontSize: '1.1rem',
@@ -386,6 +406,7 @@ style={{
 
             <div style={{ marginBottom: '1rem' }}>
 
+
               <h4 style={{
                 fontSize: '1rem',
                 fontWeight: 600,
@@ -395,6 +416,7 @@ style={{
                 Tagline
               </h4>
               <p
+
 style={{
                 color: 'rgba(255,255,255,0.8)',
                 fontSize: '0.95rem'
@@ -405,6 +427,7 @@ style={{
 
             <div>
 
+
               <h4 style={{
                 fontSize: '1rem',
                 fontWeight: 600,
@@ -414,6 +437,7 @@ style={{
                 Tone & Voice
               </h4>
               <p
+
 style={{
                 color: 'rgba(255,255,255,0.7)',
                 fontSize: '0.9rem'
@@ -430,6 +454,7 @@ style={{
             padding: '1.5rem'
           }}>
 
+
             <h3 style={{
               fontSize: '1.3rem',
               fontWeight: 700,
@@ -443,8 +468,9 @@ style={{
             </h3>
             
             <div
+
 style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              {selectedSegmentData.messaging.keyPoints.map((point , index) => (
+              {selectedSegmentData.messaging.keyPoints.map((point, index) => (
                 <div key={index} style={{
                   display: 'flex',
                   alignItems: 'flex-start',
@@ -454,6 +480,7 @@ style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                   borderRadius: '10px',
                   border: `1px solid ${selectedSegmentData.color}20`
                 }}>
+
 
                   <div style={{
                     width: '20px',
@@ -472,6 +499,7 @@ style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                     {index + 1}
                   </div>
                   <p
+
 style={{
                     color: 'rgba(255,255,255,0.9)',
                     fontSize: '0.9rem',
@@ -493,6 +521,7 @@ style={{
             gridColumn: 'span 2'
           }}>
 
+
             <h3 style={{
               fontSize: '1.3rem',
               fontWeight: 700,
@@ -506,6 +535,7 @@ style={{
             </h3>
             
             <div
+
 style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
@@ -518,7 +548,7 @@ style={{
                 { label: 'Market Share', value: '23%', desc: 'Segment penetration' },
                 { label: 'Growth Rate', value: '+47%', desc: 'YoY segment growth' },
                 { label: 'Satisfaction', value: '4.8/5', desc: 'Customer satisfaction score' }
-              ].map((metric , index) => (
+              ].map((metric, index) => (
                 <div key={index} style={{
                   textAlign: 'center',
                   padding: '1rem',
@@ -526,6 +556,7 @@ style={{
                   borderRadius: '10px',
                   border: `1px solid ${selectedSegmentData.color}30`
                 }}>
+
 
                   <div style={{
                     fontSize: '1.8rem',
@@ -536,6 +567,7 @@ style={{
                     {metric.value}
                   </div>
                   <div
+
 style={{
                     fontSize: '0.9rem',
                     fontWeight: 600,

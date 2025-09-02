@@ -122,7 +122,8 @@ function App() {
 
                 <p className="text-sm font-medium text-gray-600">Total Audits</p>
                 <p
-</> className="text-2xl font-bold text-gray-900">{stats.total || 0}</p>
+</>
+className="text-2xl font-bold text-gray-900">{stats.total || 0}</p>
               </div>
               <Globe className="w-8 h-8 text-blue-500" />
             </div>
@@ -134,7 +135,8 @@ function App() {
 
                 <p className="text-sm font-medium text-gray-600">Passed</p>
                 <p
-</> className="text-2xl font-bold text-green-600">{stats.passed || 0}</p>
+</>
+className="text-2xl font-bold text-green-600">{stats.passed || 0}</p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-500" />
             </div>
@@ -146,7 +148,8 @@ function App() {
 
                 <p className="text-sm font-medium text-gray-600">Failed</p>
                 <p
-</> className="text-2xl font-bold text-red-600">{stats.failed || 0}</p>
+</>
+className="text-2xl font-bold text-red-600">{stats.failed || 0}</p>
               </div>
               <XCircle className="w-8 h-8 text-red-500" />
             </div>
@@ -158,7 +161,8 @@ function App() {
 
                 <p className="text-sm font-medium text-gray-600">Avg Score</p>
                 <p
-</> className={`text-2xl font-bold ${getScoreColor(stats.average_score || 0)}`}>
+</>
+className={`text-2xl font-bold ${getScoreColor(stats.average_score || 0)}`}>
                   {stats.average_score || 0}
                 </p>
               </div>
@@ -172,7 +176,8 @@ function App() {
 
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Run New Audit</h3>
           <div
-</> className="flex space-x-4">
+</>
+className="flex space-x-4">
             <div className="flex-1"><>
 
               <input
@@ -186,6 +191,7 @@ function App() {
             </div>
             <button
 </>
+
               onClick={runNewAudit}
               disabled={runningAudit || !newUrl.trim()}
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
@@ -208,6 +214,7 @@ function App() {
               <h3 className="text-lg font-semibold text-gray-900">Recent Audits</h3>
               <button
 </>
+
                 onClick={loadAudits}
                 disabled={loading}
                 className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 disabled:opacity-50"
@@ -233,7 +240,8 @@ function App() {
 
                           <p className="text-sm font-medium text-gray-900">{audit.url}</p>
                           <p
-</> className="text-xs text-gray-500">
+</>
+className="text-xs text-gray-500">
                             {new Date(audit.timestamp).toLocaleString()}
                           </p>
                         </div>
@@ -243,12 +251,14 @@ function App() {
 
                           <p className="text-xs text-gray-600 font-medium">Issues:</p>
                           <ul
-</> className="text-xs text-red-600 mt-1">
+</>
+className="text-xs text-red-600 mt-1">
                             {audit.issues.map((issue /* , index */) => (
                               <li key={index} className="flex items-center space-x-1"><>
 
                                 <span>•</span>
                                 <span
+</>
 </>>{issue}</span>
                               </li>
                             ))}
@@ -262,7 +272,8 @@ function App() {
                         {audit.score}
                       </p>
                       <p
-</> className="text-xs text-gray-500 capitalize">{audit.status}</p>
+</>
+className="text-xs text-gray-500 capitalize">{audit.status}</p>
                     </div>
                   </div>
                 </div>

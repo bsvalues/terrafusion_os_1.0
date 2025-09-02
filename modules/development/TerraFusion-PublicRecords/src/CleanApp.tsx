@@ -135,7 +135,8 @@ const CleanApp: React.FC = () => {
                 Benton County Public Records
               </h1>
               <p
-</> className="text-sm text-gray-600 mt-1">
+</>
+className="text-sm text-gray-600 mt-1">
                 Search and access public property records
               </p>
             </div>
@@ -155,7 +156,8 @@ const CleanApp: React.FC = () => {
 
               <span className="text-gray-600">Total Records:</span>
               <span
-</> className="font-semibold text-gray-900">
+</>
+className="font-semibold text-gray-900">
                 {BentonCountyData.statistics.totalParcels.toLocaleString()}
               </span>
             </div>
@@ -164,7 +166,8 @@ const CleanApp: React.FC = () => {
 
               <span className="text-gray-600">Properties:</span>
               <span
-</> className="font-semibold text-gray-900">
+</>
+className="font-semibold text-gray-900">
                 94,149
               </span>
             </div>
@@ -173,7 +176,8 @@ const CleanApp: React.FC = () => {
 
               <span className="text-gray-600">Property Owners:</span>
               <span
-</> className="font-semibold text-gray-900">
+</>
+className="font-semibold text-gray-900">
                 72,341
               </span>
             </div>
@@ -199,6 +203,7 @@ const CleanApp: React.FC = () => {
           </button>
           <button
 </>
+
             onClick={() => setSelectedTab('documents')}
             className={`px-4 py-2 pb-3 font-medium transition-all border-b-2 ${
               selectedTab === 'documents' 
@@ -212,6 +217,7 @@ const CleanApp: React.FC = () => {
           </button>
           <button
 </>
+
             onClick={() => setSelectedTab('insights')}
             className={`px-4 py-2 pb-3 font-medium transition-all border-b-2 ${
               selectedTab === 'insights' 
@@ -246,10 +252,8 @@ const CleanApp: React.FC = () => {
                   {isSearching ? (
                     <Clock className="inline animate-spin" size={18} />
                   ) : (
-                    <>
                       <Search className="inline mr-2" size={18} />
                       Search
-                    </>
                   )}
                 </button>
               </div>
@@ -269,7 +273,8 @@ const CleanApp: React.FC = () => {
 
                           <h3 className="text-lg font-semibold text-gray-900">{result.property.address}</h3>
                           <p
-</> className="text-sm text-gray-600">{result.property.city}, WA</p>
+</>
+className="text-sm text-gray-600">{result.property.city}, WA</p>
                         </div>
                         <div className="text-right"><>
 
@@ -277,7 +282,8 @@ const CleanApp: React.FC = () => {
                             ${result.property.assessedValue.toLocaleString()}
                           </div>
                           <div
-</> className="text-xs text-gray-500">Assessed Value</div>
+</>
+className="text-xs text-gray-500">Assessed Value</div>
                         </div>
                       </div>
                       
@@ -286,19 +292,22 @@ const CleanApp: React.FC = () => {
 
                           <div className="text-gray-500">Owner</div>
                           <div
-</> className="font-medium text-gray-900">{result.property.owner}</div>
+</>
+className="font-medium text-gray-900">{result.property.owner}</div>
                         </div>
                         <div><>
 
                           <div className="text-gray-500">Parcel Number</div>
                           <div
-</> className="font-mono text-gray-900">{result.property.parcelNumber}</div>
+</>
+className="font-mono text-gray-900">{result.property.parcelNumber}</div>
                         </div>
                         <div><>
 
                           <div className="text-gray-500">Acres</div>
                           <div
-</> className="font-medium text-gray-900">{result.property.acres}</div>
+</>
+className="font-medium text-gray-900">{result.property.acres}</div>
                         </div>
                       </div>
 
@@ -310,7 +319,8 @@ const CleanApp: React.FC = () => {
                           Related Documents
                         </h4>
                         <div
-</> className="flex gap-2">
+</>
+className="flex gap-2">
                           {result.documents.map(doc => (
                             <span
                               key={doc.id}
@@ -341,7 +351,8 @@ const CleanApp: React.FC = () => {
 
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Property Analytics</h2>
             <div
-</> className="grid grid-cols-2 gap-4">
+</>
+className="grid grid-cols-2 gap-4">
             {BentonCountyData.aiDiscoveries.map((discovery /* , index */) => (
               <div
                 key={index}
@@ -353,14 +364,16 @@ const CleanApp: React.FC = () => {
 
                     <h3 className="font-bold text-lg mb-2">{discovery.type}</h3>
                     <p
-</> className="opacity-90 mb-3">{discovery.description}</p>
+</>
+className="opacity-90 mb-3">{discovery.description}</p>
                     <div className="flex items-center gap-4"><>
 
                       <span className="text-green-400 font-bold">
                         Impact: {discovery.impact}
                       </span>
                       <span
-</> className={`px-3 py-1 rounded-full text-sm ${
+</>
+className={`px-3 py-1 rounded-full text-sm ${
                         discovery.priority === 'HIGH' 
                           ? 'bg-red-500/30 text-red-300'
                           : discovery.priority === 'MEDIUM'
@@ -387,24 +400,28 @@ const CleanApp: React.FC = () => {
               </h2>
               
               <div
-</> className="grid grid-cols-3 gap-4 mb-6">
+</>
+className="grid grid-cols-3 gap-4 mb-6">
                 <div className="bg-gray-50 p-3 rounded-lg"><>
 
                   <div className="text-2xl font-semibold text-gray-900">1,129,788</div>
                   <div
-</> className="text-sm text-gray-600">Total Documents</div>
+</>
+className="text-sm text-gray-600">Total Documents</div>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-lg"><>
 
                   <div className="text-2xl font-semibold text-gray-900">94,149</div>
                   <div
-</> className="text-sm text-gray-600">Properties</div>
+</>
+className="text-sm text-gray-600">Properties</div>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-lg"><>
 
                   <div className="text-2xl font-semibold text-gray-900">2024</div>
                   <div
-</> className="text-sm text-gray-600">Current Year</div>
+</>
+className="text-sm text-gray-600">Current Year</div>
                 </div>
               </div>
 
@@ -427,14 +444,16 @@ const CleanApp: React.FC = () => {
 
                         <div className="font-medium text-gray-900">{docType.type}</div>
                         <div
-</> className="text-xs text-gray-500">Available for search</div>
+</>
+className="text-xs text-gray-500">Available for search</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-4"><>
 
                       <span className="text-lg font-semibold text-gray-700">{docType.count.toLocaleString()}</span>
                       <button
-</> className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
+</>
+className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
                         View
                       </button>
                     </div>

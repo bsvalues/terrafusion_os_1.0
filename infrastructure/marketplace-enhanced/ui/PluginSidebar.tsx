@@ -276,6 +276,7 @@ export function PluginSidebar() {
         <h2>Plugin Marketplace</h2>
         <button
 </>
+
           className={`auto-refresh-btn ${autoRefresh ? 'active' : ''}`}
           onClick={() => setAutoRefresh(!autoRefresh)}
           aria-label={autoRefresh ? 'Disable auto-refresh' : 'Enable auto-refresh'}
@@ -358,7 +359,8 @@ export function PluginSidebar() {
             <h2 id="modal-title">{selectedPlugin.name}</h2>
             
             <div
-</> className="detail-section">
+</>
+className="detail-section">
               <p><strong>Tags:</strong> {selectedPlugin.tags?.join(', ') || 'None'}</p>
               <p><strong>API:</strong> <code>{selectedPlugin.api}</code></p>
               <p><strong>K8s:</strong> <code>{selectedPlugin.k8s}</code></p>
@@ -374,6 +376,7 @@ export function PluginSidebar() {
 
                   <strong>Recent Errors:</strong>
                   <ul
+</>
 </>>
                     {selectedPlugin.errors.map((error, idx) => (
                       <li key={idx}>{error}</li>
@@ -387,6 +390,7 @@ export function PluginSidebar() {
 
                   <strong>Setup Tips:</strong>
                   <ul
+</>
 </>>
                     {selectedPlugin.onboarding.map((tip, idx) => (
                       <li key={idx}>{tip}</li>
@@ -405,7 +409,8 @@ export function PluginSidebar() {
                 Launch {getLaunchIcon(selectedPlugin)}
               </button>
               <button
-</> 
+</>
+
                 className="secondary-button"
                 onClick={handleCloseModal}
               >

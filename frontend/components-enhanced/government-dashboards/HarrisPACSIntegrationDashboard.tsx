@@ -309,7 +309,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                     System Status
                   </Typography>
                   <Typography
-</> variant="h6">
+</>
+variant="h6">
                     {systemStatus?.isOnline ? 'Online' : 'Offline'}
                   </Typography>
                 </Box>
@@ -331,7 +332,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                 PACS Version
               </Typography>
               <Typography
-</> variant="h6">
+</>
+variant="h6">
                 {systemStatus?.version || 'Unknown'}
               </Typography>
             </CardContent>
@@ -346,7 +348,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                 Response Time
               </Typography>
               <Typography
-</> variant="h6">
+</>
+variant="h6">
                 {systemStatus?.responseTime ? `${systemStatus.responseTime}ms` : 'N/A'}
               </Typography>
             </CardContent>
@@ -361,7 +364,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                 Active Connections
               </Typography>
               <Typography
-</> variant="h6">
+</>
+variant="h6">
                 {formatNumber(systemStatus?.activeConnections)}
               </Typography>
             </CardContent>
@@ -378,6 +382,7 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
               <InputLabel>Select Jurisdiction</InputLabel>
               <Select
 </>
+
                 value={selectedJurisdiction}
                 onChange={(e) => setSelectedJurisdiction(e.target.value)}
                 label="Select Jurisdiction"
@@ -390,7 +395,6 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
               </Select>
             </FormControl><>
 
-
             <Button
               variant="outlined"
               startIcon={<RefreshIcon />}
@@ -402,6 +406,7 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
 
             <Button
 </>
+
               variant="contained"
               startIcon={<SyncIcon />}
               onClick={() => setSyncDialogOpen(true)}
@@ -436,7 +441,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
             </Typography>
             
             <Grid
-</> container spacing={2}>
+</>
+container spacing={2}>
               <Grid item xs={12} md={2}>
                 <Box textAlign="center"><>
 
@@ -444,7 +450,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                     {formatNumber(syncStatuses[selectedJurisdiction].recordsProcessed)}
                   </Typography>
                   <Typography
-</> variant="body2" color="textSecondary">
+</>
+variant="body2" color="textSecondary">
                     Records Processed
                   </Typography>
                 </Box>
@@ -457,7 +464,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                     {formatNumber(syncStatuses[selectedJurisdiction].recordsUpdated)}
                   </Typography>
                   <Typography
-</> variant="body2" color="textSecondary">
+</>
+variant="body2" color="textSecondary">
                     Updated
                   </Typography>
                 </Box>
@@ -470,7 +478,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                     {formatNumber(syncStatuses[selectedJurisdiction].recordsAdded)}
                   </Typography>
                   <Typography
-</> variant="body2" color="textSecondary">
+</>
+variant="body2" color="textSecondary">
                     Added
                   </Typography>
                 </Box>
@@ -483,7 +492,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                     {formatNumber(syncStatuses[selectedJurisdiction].recordsSkipped)}
                   </Typography>
                   <Typography
-</> variant="body2" color="textSecondary">
+</>
+variant="body2" color="textSecondary">
                     Skipped
                   </Typography>
                 </Box>
@@ -496,7 +506,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                     {syncStatuses[selectedJurisdiction].errors.length}
                   </Typography>
                   <Typography
-</> variant="body2" color="textSecondary">
+</>
+variant="body2" color="textSecondary">
                     Errors
                   </Typography>
                 </Box>
@@ -534,7 +545,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                   Property Type Distribution
                 </Typography>
                 <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                   <PieChart>
                     <Pie
                       data={pieChartData}
@@ -552,7 +564,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                       ))}
                     </Pie>
                     <RechartsTooltip
-</> />
+</>
+/>
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -567,7 +580,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
                   Sync Performance by Jurisdiction
                 </Typography>
                 <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                   <BarChart data={syncPerformanceData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="jurisdiction" />
@@ -595,6 +609,7 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
               </Typography>
               <Button
 </>
+
                 startIcon={<DownloadIcon />}
                 onClick={() => {
                   // Export functionality would go here
@@ -617,18 +632,22 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
 
                       <TableCell>Parcel Number</TableCell>
                       <TableCell
+</>
 </>>Address</TableCell><>
 
                       <TableCell>City</TableCell>
                       <TableCell
+</>
 </>>Property Class</TableCell><>
 
                       <TableCell align="right">Land Value</TableCell>
                       <TableCell
-</> align="right">Building Value</TableCell><>
+</>
+align="right">Building Value</TableCell><>
 
                       <TableCell align="right">Total Value</TableCell>
                       <TableCell
+</>
 </>>Year Built</TableCell>
                       <TableCell>Last Updated</TableCell>
                     </TableRow>
@@ -639,18 +658,22 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
 
                         <TableCell>{property.parcelNumber}</TableCell>
                         <TableCell
+</>
 </>>{property.situsAddress}</TableCell><>
 
                         <TableCell>{property.city}</TableCell>
                         <TableCell
+</>
 </>>{property.propertyClass}</TableCell><>
 
                         <TableCell align="right">{formatCurrency(property.landValue)}</TableCell>
                         <TableCell
-</> align="right">{formatCurrency(property.buildingValue)}</TableCell><>
+</>
+align="right">{formatCurrency(property.buildingValue)}</TableCell><>
 
                         <TableCell align="right">{formatCurrency(property.totalAssessedValue)}</TableCell>
                         <TableCell
+</>
 </>>{property.yearBuilt || 'N/A'}</TableCell>
                         <TableCell>{new Date(property.lastUpdated).toLocaleDateString()}</TableCell>
                       </TableRow>
@@ -668,6 +691,7 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
 
         <DialogTitle>Initiate Data Synchronization</DialogTitle>
         <DialogContent
+</>
 </>><>
 
           <Typography>
@@ -675,7 +699,8 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
             {jurisdictions.find(j => j.jurisdictionId === selectedJurisdiction)?.jurisdictionName}?
           </Typography>
           <Typography
-</> variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+</>
+variant="body2" color="textSecondary" sx={{ mt: 1 }}>
             This process may take several minutes depending on the amount of data to sync.
           </Typography>
         </DialogContent>
@@ -684,6 +709,7 @@ const HarrisPACSIntegrationDashboard: React.FC = () => {
           <Button onClick={() => setSyncDialogOpen(false)}>Cancel</Button>
           <Button
 </>
+
             onClick={() => initiateSync(selectedJurisdiction)}
             variant="contained"
             disabled={loading}

@@ -41,13 +41,15 @@ export function ROIAnalysis() {
 
               <h4 className="text-white font-medium">{item.metric}</h4>
               <p
-</> className="text-sm text-gray-400">{item.timeframe}</p>
+</>
+className="text-sm text-gray-400">{item.timeframe}</p>
             </div>
             <div className="text-right"><>
 
               <p className="text-xl font-bold text-accent">{item.value}</p>
               <Badge
-</> variant="secondary" className="bg-accent/20 text-accent">
+</>
+variant="secondary" className="bg-accent/20 text-accent">
                 {item.status}
               </Badge>
             </div>

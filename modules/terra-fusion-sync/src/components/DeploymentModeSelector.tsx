@@ -90,7 +90,8 @@ const DeploymentModeSelector: React.FC = () => {
 
         <h1 className="text-3xl font-bold text-gray-900">Terrafusion OS Deployment Configurator</h1>
         <p
-</> className="text-gray-600">Choose your deployment model based on your county's needs and preferences</p>
+</>
+className="text-gray-600">Choose your deployment model based on your county's needs and preferences</p>
       </div>
 
       {/* Deployment Mode Selection */}
@@ -112,7 +113,8 @@ const DeploymentModeSelector: React.FC = () => {
 
                   <CardTitle className="text-xl">{option.name}</CardTitle>
                   <p
-</> className="text-sm text-gray-600 mt-1">{option.description}</p>
+</>
+className="text-sm text-gray-600 mt-1">{option.description}</p>
                 </div>
               </div>
             </CardHeader>
@@ -122,7 +124,8 @@ const DeploymentModeSelector: React.FC = () => {
 
                   <h4 className="font-semibold text-sm text-gray-700 mb-2">Key Features:</h4>
                   <ul
-</> className="space-y-1">
+</>
+className="space-y-1">
                     {option.features.map((feature /* , index */) => (
                       <li key={index} className="text-sm text-gray-600 flex items-center">
                         <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
@@ -172,7 +175,8 @@ const DeploymentModeSelector: React.FC = () => {
 
                       <h3 className="font-semibold">{county.name}</h3>
                       <Badge
-</> variant={county.status === 'Production Ready' ? 'default' : 'secondary'}>
+</>
+variant={county.status === 'Production Ready' ? 'default' : 'secondary'}>
                         {county.status}
                       </Badge>
                     </div>
@@ -210,13 +214,15 @@ const DeploymentModeSelector: React.FC = () => {
 
                   <h4 className="font-semibold text-sm text-gray-700">Deployment Mode:</h4>
                   <p
-</> className="text-lg font-medium capitalize">{selectedMode} Counties</p>
+</>
+className="text-lg font-medium capitalize">{selectedMode} Counties</p>
                 </div>
                 <div><>
 
                   <h4 className="font-semibold text-sm text-gray-700">Selected Counties:</h4>
                   <p
-</> className="text-lg font-medium">{selectedCounties.length} county(ies)</p>
+</>
+className="text-lg font-medium">{selectedCounties.length} county(ies)</p>
                 </div>
               </div>
               
@@ -224,7 +230,8 @@ const DeploymentModeSelector: React.FC = () => {
 
                 <h4 className="font-semibold text-sm text-gray-700 mb-2">Counties:</h4>
                 <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                   {selectedCounties.map(countyId => {
                     const county = availableCounties.find(c => c.id === countyId);
                     return (
@@ -263,7 +270,8 @@ const DeploymentModeSelector: React.FC = () => {
 
                   <th className="text-left py-2">Feature</th>
                   <th
-</> className="text-center py-2">Sovereign County</th>
+</>
+className="text-center py-2">Sovereign County</th>
                   <th className="text-center py-2">Federated Counties</th>
                 </tr>
               </thead>
@@ -272,35 +280,40 @@ const DeploymentModeSelector: React.FC = () => {
 
                   <td className="py-2">Data Sovereignty</td>
                   <td
-</> className="text-center py-2">✅ Complete</td>
+</>
+className="text-center py-2">✅ Complete</td>
                   <td className="text-center py-2">⚠️ Controlled</td>
                 </tr>
                 <tr className="border-b"><>
 
                   <td className="py-2">Infrastructure Costs</td>
                   <td
-</> className="text-center py-2">💰 Full Cost</td>
+</>
+className="text-center py-2">💰 Full Cost</td>
                   <td className="text-center py-2">💰 Shared Cost</td>
                 </tr>
                 <tr className="border-b"><>
 
                   <td className="py-2">Cross-County Analytics</td>
                   <td
-</> className="text-center py-2">❌ Not Available</td>
+</>
+className="text-center py-2">❌ Not Available</td>
                   <td className="text-center py-2">✅ Available</td>
                 </tr>
                 <tr className="border-b"><>
 
                   <td className="py-2">Administrative Control</td>
                   <td
-</> className="text-center py-2">✅ Full Control</td>
+</>
+className="text-center py-2">✅ Full Control</td>
                   <td className="text-center py-2">⚠️ Shared Control</td>
                 </tr>
                 <tr className="border-b"><>
 
                   <td className="py-2">Setup Complexity</td>
                   <td
-</> className="text-center py-2">🟢 Simple</td>
+</>
+className="text-center py-2">🟢 Simple</td>
                   <td className="text-center py-2">🟡 Moderate</td>
                 </tr>
               </tbody>

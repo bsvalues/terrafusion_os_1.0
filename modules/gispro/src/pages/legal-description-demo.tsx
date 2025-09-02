@@ -96,7 +96,8 @@ export default function LegalDescriptionDemo() {
 
       <h1 className="text-3xl font-bold mb-6">Legal Description Parser</h1>
       <p
-</> className="mb-6 text-gray-600">
+</>
+className="mb-6 text-gray-600">
         Enter a legal description of a property to visualize it on the map. The parser supports various formats
         including metes and bounds, rectangular survey system (township/range), and lot/block descriptions.
       </p>
@@ -108,6 +109,7 @@ export default function LegalDescriptionDemo() {
             <h2 className="text-xl font-semibold mb-4">Input Description</h2>
             <Textarea
 </>
+
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter a legal property description..."
@@ -122,20 +124,18 @@ export default function LegalDescriptionDemo() {
                   className="w-full"
                 >
                   {isLoading ? (
-                    <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Parsing...
-                    </>
                   ) : (
                     'Parse & Visualize'
                   )}
                 </Button>
               </div><>
 
-
               <div className="text-center text-sm text-gray-500 mt-2">Or try an example:</div>
               <div
-</> className="grid grid-cols-3 gap-2">
+</>
+className="grid grid-cols-3 gap-2">
                 {exampleDescriptions.map((_ /* , index */) => (
                   <Button
                     key={index}
@@ -160,12 +160,14 @@ export default function LegalDescriptionDemo() {
 
                 <h3 className="font-semibold">Parse Results</h3>
                 <div
-</> className="grid grid-cols-2 gap-4 mt-2">
+</>
+className="grid grid-cols-2 gap-4 mt-2">
                   <div><>
 
                     <span className="text-sm text-gray-500">Confidence:</span>
                     <span
-</> className={`ml-2 font-medium ${getConfidenceColor(parsedResult.confidence)}`}>
+</>
+className={`ml-2 font-medium ${getConfidenceColor(parsedResult.confidence)}`}>
                       {getConfidenceLabel(parsedResult.confidence)} ({Math.round(parsedResult.confidence * 100)}%)
                     </span>
                   </div>
@@ -173,19 +175,22 @@ export default function LegalDescriptionDemo() {
 
                     <span className="text-sm text-gray-500">Points:</span>
                     <span
-</> className="ml-2 font-medium">{parsedResult.points.length}</span>
+</>
+className="ml-2 font-medium">{parsedResult.points.length}</span>
                   </div>
                   <div><>
 
                     <span className="text-sm text-gray-500">Line Segments:</span>
                     <span
-</> className="ml-2 font-medium">{parsedResult.segments.length}</span>
+</>
+className="ml-2 font-medium">{parsedResult.segments.length}</span>
                   </div>
                   <div><>
 
                     <span className="text-sm text-gray-500">Polygon Created:</span>
                     <span
-</> className="ml-2 font-medium">{parsedResult.polygon ? 'Yes' : 'No'}</span>
+</>
+className="ml-2 font-medium">{parsedResult.polygon ? 'Yes' : 'No'}</span>
                   </div>
                 </div>
 
@@ -210,7 +215,8 @@ export default function LegalDescriptionDemo() {
 
                 <TabsTrigger value="map">Map Visualization</TabsTrigger>
                 <TabsTrigger
-</> value="json">Raw JSON Data</TabsTrigger>
+</>
+value="json">Raw JSON Data</TabsTrigger>
               </TabsList>
               
               <TabsContent value="map" className="h-[600px]">

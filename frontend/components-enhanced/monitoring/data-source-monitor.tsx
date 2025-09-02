@@ -119,7 +119,8 @@ export function DataSourceMonitor() {
               📊 DATA SOURCE MONITOR 📊
             </h1>
             <p
-</> className="text-tf-light/80">Real-time monitoring of county open data APIs</p>
+</>
+className="text-tf-light/80">Real-time monitoring of county open data APIs</p>
           </div>
           <div className="flex items-center gap-4">
             <Button
@@ -128,15 +129,11 @@ export function DataSourceMonitor() {
               className={isMonitoring ? "" : "bg-tf-primary hover:bg-tf-primary/80"}
             >
               {isMonitoring ? (
-                <>
                   <XCircle className="w-4 h-4 mr-2" />
                   Stop Monitoring
-                </>
               ) : (
-                <>
                   <Activity className="w-4 h-4 mr-2" />
                   Start Monitoring
-                </>
               )}
             </Button>
           </div>
@@ -150,7 +147,8 @@ export function DataSourceMonitor() {
 
               <div className="text-2xl font-bold text-tf-transcend">{overallHealth.toFixed(1)}%</div>
               <div
-</> className="text-sm text-tf-light/70">Overall Health</div>
+</>
+className="text-sm text-tf-light/70">Overall Health</div>
             </CardContent>
           </Card>
           
@@ -160,7 +158,8 @@ export function DataSourceMonitor() {
 
               <div className="text-2xl font-bold text-tf-transcend">{onlineCount}</div>
               <div
-</> className="text-sm text-tf-light/70">Online</div>
+</>
+className="text-sm text-tf-light/70">Online</div>
             </CardContent>
           </Card>
           
@@ -170,7 +169,8 @@ export function DataSourceMonitor() {
 
               <div className="text-2xl font-bold text-tf-transcend">{degradedCount}</div>
               <div
-</> className="text-sm text-tf-light/70">Degraded</div>
+</>
+className="text-sm text-tf-light/70">Degraded</div>
             </CardContent>
           </Card>
           
@@ -180,7 +180,8 @@ export function DataSourceMonitor() {
 
               <div className="text-2xl font-bold text-tf-transcend">{offlineCount}</div>
               <div
-</> className="text-sm text-tf-light/70">Offline</div>
+</>
+className="text-sm text-tf-light/70">Offline</div>
             </CardContent>
           </Card>
           
@@ -190,7 +191,8 @@ export function DataSourceMonitor() {
 
               <div className="text-2xl font-bold text-tf-transcend">{dataSourceStatuses.length}</div>
               <div
-</> className="text-sm text-tf-light/70">Total Sources</div>
+</>
+className="text-sm text-tf-light/70">Total Sources</div>
             </CardContent>
           </Card>
         </div>
@@ -219,7 +221,8 @@ export function DataSourceMonitor() {
 
                     <div className="text-sm text-tf-light">{source.state}</div>
                     <div
-</> className="text-xs text-tf-light/70">
+</>
+className="text-xs text-tf-light/70">
                       {source.lastUpdate.toLocaleTimeString()}
                     </div>
                   </div>
@@ -231,7 +234,8 @@ export function DataSourceMonitor() {
 
                     <div className="text-tf-light/70">Response Time</div>
                     <div
-</> className="font-semibold text-tf-light">
+</>
+className="font-semibold text-tf-light">
                       {source.responseTime.toFixed(0)}ms
                     </div>
                   </div>
@@ -239,7 +243,8 @@ export function DataSourceMonitor() {
 
                     <div className="text-tf-light/70">Success Rate</div>
                     <div
-</> className="font-semibold text-tf-light">
+</>
+className="font-semibold text-tf-light">
                       {source.successRate.toFixed(1)}%
                     </div>
                   </div>
@@ -247,7 +252,8 @@ export function DataSourceMonitor() {
 
                     <div className="text-tf-light/70">Data Quality</div>
                     <div
-</> className="font-semibold text-tf-light">
+</>
+className="font-semibold text-tf-light">
                       {source.dataQuality.toFixed(1)}%
                     </div>
                   </div>
@@ -255,7 +261,8 @@ export function DataSourceMonitor() {
 
                     <div className="text-tf-light/70">Errors (24h)</div>
                     <div
-</> className="font-semibold text-tf-light">
+</>
+className="font-semibold text-tf-light">
                       {source.errorCount}
                     </div>
                   </div>
@@ -267,7 +274,8 @@ export function DataSourceMonitor() {
 
                     <span className="text-xs text-tf-light/70">Data Quality</span>
                     <span
-</> className="text-xs text-tf-light">{source.dataQuality.toFixed(1)}%</span>
+</>
+className="text-xs text-tf-light">{source.dataQuality.toFixed(1)}%</span>
                   </div>
                   <Progress 
                     value={source.dataQuality} 
@@ -280,7 +288,8 @@ export function DataSourceMonitor() {
 
                   <div className="text-xs text-tf-light/70 mb-1">API Endpoint</div>
                   <div
-</> className="text-xs text-tf-accent font-mono break-all">
+</>
+className="text-xs text-tf-accent font-mono break-all">
                     {source.apiEndpoint}
                   </div>
                 </div>
@@ -298,6 +307,7 @@ export function DataSourceMonitor() {
                   </Button>
                   <Button
 </>
+
                     variant="outline"
                     size="sm"
                     className="flex-1 border-tf-accent/30 text-tf-accent hover:bg-tf-accent/10"
@@ -328,7 +338,8 @@ export function DataSourceMonitor() {
                 {((onlineCount / dataSourceStatuses.length) * 100).toFixed(1)}%
               </div>
               <div
-</> className="text-sm text-tf-light/70">Availability</div>
+</>
+className="text-sm text-tf-light/70">Availability</div>
             </div>
             <div className="text-center"><>
 
@@ -336,7 +347,8 @@ export function DataSourceMonitor() {
                 {dataSourceStatuses.reduce((acc, s) => acc + s.responseTime, 0) / dataSourceStatuses.length | 0}ms
               </div>
               <div
-</> className="text-sm text-tf-light/70">Avg Response Time</div>
+</>
+className="text-sm text-tf-light/70">Avg Response Time</div>
             </div>
             <div className="text-center"><>
 
@@ -344,7 +356,8 @@ export function DataSourceMonitor() {
                 {(dataSourceStatuses.reduce((acc, s) => acc + s.successRate, 0) / dataSourceStatuses.length).toFixed(1)}%
               </div>
               <div
-</> className="text-sm text-tf-light/70">Avg Success Rate</div>
+</>
+className="text-sm text-tf-light/70">Avg Success Rate</div>
             </div>
           </div>
           

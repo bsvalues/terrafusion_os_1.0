@@ -9,7 +9,8 @@ const BillTracker = () => {
 
           <h1 className="legislative-title">Bill Tracker</h1>
           <p
-</> className="legislative-body mt-1">Track and monitor legislative bills and resolutions</p>
+</>
+className="legislative-body mt-1">Track and monitor legislative bills and resolutions</p>
         </div>
         <div className="flex space-x-3">
           <button className="legislative-button"><>
@@ -18,7 +19,8 @@ const BillTracker = () => {
             Export
           </button>
           <button
-</> className="legislative-button">
+</>
+className="legislative-button">
             <Star className="w-4 h-4 mr-2 inline" />
             Watchlist
           </button>
@@ -43,10 +45,12 @@ const BillTracker = () => {
 
               <option>All Status</option>
               <option
+</>
 </>>Active</option><>
 
               <option>Committee</option>
               <option
+</>
 </>>Passed</option>
               <option>Failed</option>
             </select>
@@ -54,10 +58,12 @@ const BillTracker = () => {
 
               <option>All Priority</option>
               <option
+</>
 </>>Critical</option><>
 
               <option>High</option>
               <option
+</>
 </>>Medium</option>
               <option>Low</option>
             </select>
@@ -73,7 +79,8 @@ const BillTracker = () => {
 
         <h2 className="legislative-subtitle mb-4">Tracked Bills</h2>
         <div
-</> className="space-y-1">
+</>
+className="space-y-1">
           {[
             {
               id: 'HB-2024-0123',
@@ -115,7 +122,8 @@ const BillTracker = () => {
                       {bill.id}
                     </span>
                     <span
-</> className={`status-badge text-xs ${
+</>
+className={`status-badge text-xs ${
                       bill.priority === 'Critical' ? 'priority-critical' :
                       bill.priority === 'High' ? 'priority-high' :
                       'priority-medium'
@@ -133,11 +141,13 @@ const BillTracker = () => {
 
                   <h3 className="font-semibold text-gray-900 mb-1">{bill.title}</h3>
                   <p
-</> className="text-sm text-gray-600 mb-2">Sponsored by {bill.sponsor}</p><>
+</>
+className="text-sm text-gray-600 mb-2">Sponsored by {bill.sponsor}</p><>
 
                   <p className="text-sm text-gray-700 mb-2">{bill.lastAction}</p>
                   <p
-</> className="text-xs text-gray-500">Updated {bill.lastUpdate}</p>
+</>
+className="text-xs text-gray-500">Updated {bill.lastUpdate}</p>
                 </div>
                 <div className="flex items-center space-x-2 ml-4">
                   <button className="p-2 text-gray-400 hover:text-government"><>
@@ -145,7 +155,8 @@ const BillTracker = () => {
                     <Eye className="w-4 h-4" />
                   </button>
                   <button
-</> className={`p-2 ${bill.watching ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-600`}>
+</>
+className={`p-2 ${bill.watching ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-600`}>
                     <Star className="w-4 h-4" />
                   </button>
                 </div>

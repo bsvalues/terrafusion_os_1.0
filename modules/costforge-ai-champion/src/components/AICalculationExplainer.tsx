@@ -74,6 +74,7 @@ export default function AICalculationExplainer() {
             AI Calculation Explainer
           </CardTitle>
           <CardDescription
+</>
 </>>
             Get detailed explanations of building cost calculations with government compliance insights
           </CardDescription>
@@ -84,6 +85,7 @@ export default function AICalculationExplainer() {
 
             <AlertTitle>AI Service Configuration Required</AlertTitle>
             <AlertDescription
+</>
 </>>
               AI explanation service requires configuration. Contact your system administrator to enable advanced AI capabilities.
             </AlertDescription>
@@ -115,6 +117,7 @@ export default function AICalculationExplainer() {
           <Label htmlFor="calculationData">Enter Calculation Data (JSON format)</Label>
           <Textarea
 </>
+
             id="calculationData"
             className="min-h-[200px] font-mono text-sm mt-2"
             placeholder={`{
@@ -144,15 +147,11 @@ export default function AICalculationExplainer() {
             className="bg-primary hover:bg-primary/90"
           >
             {isExplaining ? (
-              <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 AI Analyzing...
-              </>
             ) : (
-              <>
                 <Info className="mr-2 h-4 w-4" />
                 Generate AI Explanation
-              </>
             )}
           </Button>
         </div>
@@ -179,7 +178,8 @@ export default function AICalculationExplainer() {
 
                     <h3 className="font-semibold mb-2 text-gray-800">Calculation Explanation</h3>
                     <p
-</> className="text-sm text-gray-700 leading-relaxed">
+</>
+className="text-sm text-gray-700 leading-relaxed">
                       {explanationResult.explanation}
                     </p>
                   </div>
@@ -191,7 +191,8 @@ export default function AICalculationExplainer() {
 
                     <h3 className="font-semibold mb-2 text-gray-800">Formula Breakdown</h3>
                     <div
-</> className="text-sm bg-white p-3 rounded-md font-mono border-l-4 border-blue-400">
+</>
+className="text-sm bg-white p-3 rounded-md font-mono border-l-4 border-blue-400">
                       <pre className="whitespace-pre-wrap text-gray-700">
                         {explanationResult.formulaBreakdown}
                       </pre>
@@ -205,13 +206,15 @@ export default function AICalculationExplainer() {
 
                     <h3 className="font-semibold mb-2 text-gray-800">Factor Explanations</h3>
                     <div
-</> className="grid gap-3">
+</>
+className="grid gap-3">
                       {Object.entries(explanationResult.factorExplanations).map(([factor, explanation] /* , index */) => (
                         <div key={index} className="p-3 bg-white rounded-md border-l-4 border-green-400"><>
 
                           <div className="font-medium text-green-800 mb-1">{factor}</div>
                           <div
-</> className="text-sm text-gray-700">{explanation}</div>
+</>
+className="text-sm text-gray-700">{explanation}</div>
                         </div>
                       ))}
                     </div>
@@ -224,7 +227,8 @@ export default function AICalculationExplainer() {
 
                     <h3 className="font-semibold mb-2 text-amber-800">Professional Insights</h3>
                     <p
-</> className="text-sm text-amber-700">{explanationResult.additionalInsights}</p>
+</>
+className="text-sm text-amber-700">{explanationResult.additionalInsights}</p>
                   </div>
                 )}
               </CardContent>
@@ -248,7 +252,8 @@ export default function AICalculationExplainer() {
 
                     <h4 className="font-semibold mb-2 text-gray-800">Standards & Guidelines Applied</h4>
                     <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                       {explanationResult.governmentCompliance.standardsUsed.map((standard /* , index */) => (
                         <Badge key={index} variant="secondary" className="bg-emerald-100 text-emerald-800">
                           <FileText className="h-3 w-3 mr-1" />
@@ -263,7 +268,8 @@ export default function AICalculationExplainer() {
 
                     <h4 className="font-semibold mb-2 text-emerald-800">Required Documentation</h4>
                     <ul
-</> className="text-sm space-y-1">
+</>
+className="text-sm space-y-1">
                       {explanationResult.governmentCompliance.requiredDocumentation.map((doc /* , index */) => (
                         <li key={index} className="flex items-center gap-2 text-emerald-700">
                           <CheckCircle className="h-4 w-4" />
@@ -284,6 +290,7 @@ export default function AICalculationExplainer() {
 
             <AlertTitle>Analysis Error</AlertTitle>
             <AlertDescription
+</>
 </>>
               {error || "An error occurred generating the explanation. The AI service may be temporarily unavailable."}
             </AlertDescription>

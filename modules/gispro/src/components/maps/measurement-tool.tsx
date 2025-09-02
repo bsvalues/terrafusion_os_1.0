@@ -247,7 +247,8 @@ const MeasurementTool: React.FC<MeasurementToolProps> = ({
 
               <h3 class="font-medium">Measure</h3>
               <button
-</> 
+</>
+
                 id="measurement-toggle-active"
                 class="px-2 py-1 text-xs rounded ${isActive ? 'bg-blue-500 text-white' : 'bg-gray-200'}"
               >
@@ -264,7 +265,8 @@ const MeasurementTool: React.FC<MeasurementToolProps> = ({
                 Distance
               </button>
               <button
-</> 
+</>
+
                 id="measurement-type-area"
                 class="px-2 py-1 text-xs rounded ${selectedType === MeasurementType.AREA ? 'bg-blue-500 text-white active' : 'bg-gray-200'}"
               >
@@ -286,6 +288,7 @@ const MeasurementTool: React.FC<MeasurementToolProps> = ({
 
                 <span>Units: ${selectedUnit}</span>
                 <span
+</>
 </>>▼</span>
               </button>
               
@@ -299,7 +302,8 @@ const MeasurementTool: React.FC<MeasurementToolProps> = ({
                     Meters
                   </button>
                   <button
-</> 
+</>
+
                     id="measurement-unit-kilometers"
                     class="w-full px-2 py-1 text-xs text-left hover:bg-gray-100"
                   >
@@ -313,7 +317,8 @@ const MeasurementTool: React.FC<MeasurementToolProps> = ({
                     Feet
                   </button>
                   <button
-</> 
+</>
+
                     id="measurement-unit-miles"
                     class="w-full px-2 py-1 text-xs text-left hover:bg-gray-100"
                   >
@@ -328,7 +333,8 @@ const MeasurementTool: React.FC<MeasurementToolProps> = ({
                       Square Meters
                     </button>
                     <button
-</> 
+</>
+
                       id="measurement-unit-hectares"
                       class="w-full px-2 py-1 text-xs text-left hover:bg-gray-100"
                     >
@@ -351,7 +357,8 @@ const MeasurementTool: React.FC<MeasurementToolProps> = ({
                 ${getDisplayValue()}
               </div>
               <button
-</> 
+</>
+
                 id="measurement-reset"
                 class="px-2 py-1 text-xs bg-red-500 text-white rounded"
               >

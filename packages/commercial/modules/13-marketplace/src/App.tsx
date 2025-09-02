@@ -163,12 +163,14 @@ function App() {
 
           <h2>System Metrics</h2>
           <div
-</> className="metrics-grid">
+</>
+className="metrics-grid">
             <div className="metric-card"><>
 
               <div className="metric-label">CPU Usage</div>
               <div
-</> className="metric-value">{systemMetrics.cpu_usage.toFixed(1)}%</div>
+</>
+className="metric-value">{systemMetrics.cpu_usage.toFixed(1)}%</div>
               <div className="metric-bar">
                 <div className="metric-fill" style={{ width: `${systemMetrics.cpu_usage}%` }}></div>
               </div>
@@ -177,7 +179,8 @@ function App() {
 
               <div className="metric-label">Memory Usage</div>
               <div
-</> className="metric-value">{systemMetrics.memory_usage.toFixed(1)}%</div>
+</>
+className="metric-value">{systemMetrics.memory_usage.toFixed(1)}%</div>
               <div className="metric-bar">
                 <div className="metric-fill" style={{ width: `${systemMetrics.memory_usage}%` }}></div>
               </div>
@@ -186,7 +189,8 @@ function App() {
 
               <div className="metric-label">Disk Usage</div>
               <div
-</> className="metric-value">{systemMetrics.disk_usage.toFixed(1)}%</div>
+</>
+className="metric-value">{systemMetrics.disk_usage.toFixed(1)}%</div>
               <div className="metric-bar">
                 <div className="metric-fill" style={{ width: `${systemMetrics.disk_usage}%` }}></div>
               </div>
@@ -195,7 +199,8 @@ function App() {
 
               <div className="metric-label">Network</div>
               <div
-</> className="metric-value network-status" style={{ color: systemMetrics.network_status === 'connected' ? '#00ff00' : '#ff0000' }}>
+</>
+className="metric-value network-status" style={{ color: systemMetrics.network_status === 'connected' ? '#00ff00' : '#ff0000' }}>
                 {systemMetrics.network_status}
               </div>
             </div>
@@ -212,7 +217,8 @@ function App() {
 
                   <span className="app-name">{app.name}</span>
                   <span
-</> className="app-status" style={{ color: getStatusColor(app.status) }}>
+</>
+className="app-status" style={{ color: getStatusColor(app.status) }}>
                     ●
                   </span>
                 </div>
@@ -242,7 +248,8 @@ function App() {
 
           <h2>Master Controls</h2>
           <div
-</> className="control-buttons"><>
+</>
+className="control-buttons"><>
 
             <button className="control-btn start-all" onClick={async () => {
               for (const app of appStatuses) {
@@ -255,7 +262,8 @@ function App() {
               Start All Apps
             </button>
             <button
-</> className="control-btn stop-all" onClick={async () => {
+</>
+className="control-btn stop-all" onClick={async () => {
               for (const app of appStatuses) {
                 if (app.status === 'running') {
                   await handleStopApp(app.id);
@@ -297,15 +305,18 @@ function App() {
 
             <h3>Recent Activity</h3>
             <div
-</> className="logs-container"><>
+</>
+className="logs-container"><>
 
               <div className="log-entry">[SUCCESS] TerraAgent: Health check passed</div>
               <div
-</> className="log-entry">[WARNING] PropertyWorkbench: Connection timeout</div><>
+</>
+className="log-entry">[WARNING] PropertyWorkbench: Connection timeout</div><>
 
               <div className="log-entry">[SUCCESS] CostForgeAI: Processing complete</div>
               <div
-</> className="log-entry">[INFO] System: Memory optimization completed</div>
+</>
+className="log-entry">[INFO] System: Memory optimization completed</div>
               <div className="log-entry">[SUCCESS] TerraMiner: Data sync successful</div>
             </div>
           </div>
@@ -316,32 +327,38 @@ function App() {
 
             <h2>{appStatuses.find(app => app.id === selectedApp)?.name} Details</h2>
             <div
-</> className="detailed-metrics">
+</>
+className="detailed-metrics">
               <div className="detail-card"><>
 
                 <h4>Performance Metrics</h4>
                 <div
+</>
 </>>Response Time: 45ms</div><>
 
                 <div>Throughput: 1,250 req/min</div>
                 <div
+</>
 </>>Error Rate: 0.02%</div>
               </div>
               <div className="detail-card"><>
 
                 <h4>Resource Usage</h4>
                 <div
+</>
 </>>CPU: 12.5%</div><>
 
                 <div>Memory: 256MB</div>
                 <div
+</>
 </>>Connections: 23</div>
               </div>
               <div className="detail-card"><>
 
                 <h4>Quick Actions</h4>
                 <button
-</> className="action-btn" onClick={() => console.log('Configure app:', selectedApp)}>Configure</button>
+</>
+className="action-btn" onClick={() => console.log('Configure app:', selectedApp)}>Configure</button>
                 <button className="action-btn" onClick={async () => {
                   try {
                     const logs = await invoke<string[]>("get_app_logs", { appId: selectedApp });

@@ -36,7 +36,8 @@ const PublicApp: React.FC = () => {
                   Terrafusion Public Access
                 </h1>
                 <p
-</> className="text-sm text-gray-600">
+</>
+className="text-sm text-gray-600">
                   Government that actually works for you
                 </p>
               </div>

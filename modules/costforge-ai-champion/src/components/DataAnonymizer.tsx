@@ -234,11 +234,13 @@ export function DataAnonymizer({
     return (
       <div className="flex items-center gap-2">
 <>
+
         <Button size="sm" onClick={handleAnonymize} disabled={!data || isProcessing}>
           🛡️ Anonymize Data
         </Button>
         <Badge
-</> variant={privacyColor === 'green' ? 'default' : 'secondary'}>
+</>
+variant={privacyColor === 'green' ? 'default' : 'secondary'}>
           {privacyLevel}% Privacy
         </Badge>
       </div>
@@ -261,9 +263,11 @@ export function DataAnonymizer({
           <AlertDescription>
             <div className="flex items-center justify-between">
 <>
+
               <span>Current Privacy Level:</span>
               <Badge
-</> 
+</>
+
                 className={`${
                   privacyColor === 'green' ? 'bg-green-100 text-green-800' :
                   privacyColor === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
@@ -278,10 +282,12 @@ export function DataAnonymizer({
 
         <div className="space-y-4">
 <>
+
           <h4 className="font-medium">Anonymization Options</h4>
           
           <div
-</> className="grid grid-cols-1 md:grid-cols-2 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <Switch
@@ -350,9 +356,11 @@ export function DataAnonymizer({
           {options.generalizeNumbers && (
             <div className="space-y-2">
 <>
+
               <Label>Generalization Level: {options.generalizationLevel}%</Label>
               <Slider
 </>
+
                 value={[options.generalizationLevel]}
                 onValueChange={(value) => 
                   setOptions(prev => ({ ...prev, generalizationLevel: value[0] }))}
@@ -366,9 +374,11 @@ export function DataAnonymizer({
           {options.addNoise && (
             <div className="space-y-2">
 <>
+
               <Label>Noise Level: {options.noiseLevel}%</Label>
               <Slider
 </>
+
                 value={[options.noiseLevel]}
                 onValueChange={(value) => 
                   setOptions(prev => ({ ...prev, noiseLevel: value[0] }))}
@@ -384,11 +394,13 @@ export function DataAnonymizer({
         
         <div className="flex gap-2">
 <>
+
           <Button onClick={generatePreview} disabled={!data || isProcessing}>
             {isProcessing ? 'Processing...' : 'Preview Anonymization'}
           </Button>
           <Button
-</> onClick={handleAnonymize} disabled={!data || isProcessing}>
+</>
+onClick={handleAnonymize} disabled={!data || isProcessing}>
             Apply Anonymization
           </Button>
           {onCancel && (
@@ -401,9 +413,11 @@ export function DataAnonymizer({
         {showPreview && previewData && (
           <div className="space-y-2">
 <>
+
             <h4 className="font-medium">Preview (First 3 Records)</h4>
             <ScrollArea
-</> className="h-48">
+</>
+className="h-48">
               <pre className="text-xs bg-muted p-2 rounded">
                 {JSON.stringify(
                   Array.isArray(previewData) ? previewData.slice(0, 3) : previewData,

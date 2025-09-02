@@ -312,6 +312,7 @@ export function WorkflowMapControls({
               {workflowLabel} Map Tools
             </CardTitle>
             <CardDescription
+</>
 </>>
               Step {workflowState?.currentStep || '?'}: {workflowState?.currentStepName || 'Loading...'}
             </CardDescription>
@@ -413,14 +414,12 @@ export function WorkflowMapControls({
       </CardContent>
       
       {workflowState?.workflowSpecificControls && (
-        <>
           <Separator />
           <CardFooter className="pt-2 pb-2">
             <div className="text-sm text-muted-foreground">
               {workflowState.workflowSpecificControls}
             </div>
           </CardFooter>
-        </>
       )}
       
       {/* Import/Export Dialogs */}

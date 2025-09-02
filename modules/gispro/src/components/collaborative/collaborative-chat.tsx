@@ -57,7 +57,8 @@ export function CollaborativeChat({
 
           <span>Room Chat</span>
           <span
-</> className="text-xs ml-2 font-normal opacity-75">
+</>
+className="text-xs ml-2 font-normal opacity-75">
             {connected ? (
               <span className="text-green-500 flex items-center">
                 <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1"></span>
@@ -81,7 +82,8 @@ export function CollaborativeChat({
 
               <div className="font-medium">Disconnected</div>
               <div
-</> className="text-sm">
+</>
+className="text-sm">
                 You are currently disconnected from the chat server. Messages cannot be sent until reconnected.
               </div>
             </div>
@@ -108,7 +110,8 @@ export function CollaborativeChat({
 
                     <div className="font-medium">{message.username}</div>
                     <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                       {formatDistanceToNow(message.timestamp, { addSuffix: true })}
                     </div>
                   </div>

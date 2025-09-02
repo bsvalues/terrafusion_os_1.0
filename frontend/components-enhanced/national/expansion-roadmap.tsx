@@ -66,7 +66,8 @@ export function ExpansionRoadmap() {
             🗺️ 5-YEAR CONQUEST MAP
           </Badge>
           <h2
-</> className="text-5xl font-black mb-6 bg-gradient-to-r from-primary via-accent to-transcend bg-clip-text text-transparent">
+</>
+className="text-5xl font-black mb-6 bg-gradient-to-r from-primary via-accent to-transcend bg-clip-text text-transparent">
             THE EXPANSION ROADMAP
           </h2>
           <p className="text-xl text-white/70 max-w-3xl mx-auto">
@@ -86,7 +87,8 @@ export function ExpansionRoadmap() {
 
                   <CardTitle className="text-3xl font-black text-white">{phase.year}</CardTitle>
                   <Badge
-</> className={`bg-gradient-to-r ${phase.color} text-black font-bold`}>{phase.status}</Badge>
+</>
+className={`bg-gradient-to-r ${phase.color} text-black font-bold`}>{phase.status}</Badge>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">{phase.title}</h3>
               </CardHeader>
@@ -100,7 +102,8 @@ export function ExpansionRoadmap() {
                     {phase.counties}
                   </div>
                   <div
-</> className="text-sm text-white/60">Counties</div>
+</>
+className="text-sm text-white/60">Counties</div>
                 </div>
 
                 <div className="text-center p-4 bg-black/40 rounded-lg"><>
@@ -111,7 +114,8 @@ export function ExpansionRoadmap() {
                     {phase.revenue}
                   </div>
                   <div
-</> className="text-sm text-white/60">Revenue</div>
+</>
+className="text-sm text-white/60">Revenue</div>
                 </div>
 
                 <div className="space-y-2">
@@ -132,40 +136,46 @@ export function ExpansionRoadmap() {
 
           <h3 className="text-3xl font-black text-center mb-8 text-transcend">Financial Trajectory</h3>
           <div
-</> className="grid grid-cols-1 md:grid-cols-5 gap-6 text-center">
+</>
+className="grid grid-cols-1 md:grid-cols-5 gap-6 text-center">
             <div className="p-4"><>
 
               <div className="text-2xl font-black text-primary mb-2">Year 1</div>
               <div
-</> className="text-xl text-white">$50M ARR</div>
+</>
+className="text-xl text-white">$50M ARR</div>
               <div className="text-sm text-white/60">(50 counties)</div>
             </div>
             <div className="p-4"><>
 
               <div className="text-2xl font-black text-accent mb-2">Year 2</div>
               <div
-</> className="text-xl text-white">$125M ARR</div>
+</>
+className="text-xl text-white">$125M ARR</div>
               <div className="text-sm text-white/60">(150 counties)</div>
             </div>
             <div className="p-4"><>
 
               <div className="text-2xl font-black text-transcend mb-2">Year 3</div>
               <div
-</> className="text-xl text-white">$250M ARR</div>
+</>
+className="text-xl text-white">$250M ARR</div>
               <div className="text-sm text-white/60">(300 counties)</div>
             </div>
             <div className="p-4"><>
 
               <div className="text-2xl font-black text-primary mb-2">Year 4</div>
               <div
-</> className="text-xl text-white">$500M ARR</div>
+</>
+className="text-xl text-white">$500M ARR</div>
               <div className="text-sm text-white/60">(500 counties)</div>
             </div>
             <div className="p-4"><>
 
               <div className="text-2xl font-black text-transcend mb-2 transcend-glow">Year 5</div>
               <div
-</> className="text-2xl font-black text-transcend">$1B ARR</div>
+</>
+className="text-2xl font-black text-transcend">$1B ARR</div>
               <div className="text-sm text-white/60">(1000+ counties)</div>
             </div>
           </div>

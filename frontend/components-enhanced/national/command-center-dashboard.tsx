@@ -76,7 +76,8 @@ export function CommandCenterDashboard() {
           Terrafusion National Command Center
         </h1>
         <p
-</> className="text-xl text-white/80">Real-Time County Migration Status</p>
+</>
+className="text-xl text-white/80">Real-Time County Migration Status</p>
 
         <div className="absolute top-8 right-8 flex items-center gap-2 px-4 py-2 bg-accent/20 border border-accent rounded-full">
           <div className="w-3 h-3 bg-accent rounded-full animate-pulse" />
@@ -91,13 +92,15 @@ export function CommandCenterDashboard() {
 
             <CardTitle className="text-sm font-medium text-white/70 uppercase tracking-wide">Total Counties</CardTitle>
             <span
-</> className="text-2xl">🏛️</span>
+</>
+className="text-2xl">🏛️</span>
           </CardHeader>
           <CardContent><>
 
             <div className="text-4xl font-black text-transcend mb-1">{metrics.totalCounties}</div>
             <p
-</> className="text-sm text-accent">↑ 2 this week</p>
+</>
+className="text-sm text-accent">↑ 2 this week</p>
           </CardContent>
         </Card>
 
@@ -108,13 +111,15 @@ export function CommandCenterDashboard() {
               Citizens Impacted
             </CardTitle>
             <span
-</> className="text-2xl">👥</span>
+</>
+className="text-2xl">👥</span>
           </CardHeader>
           <CardContent><>
 
             <div className="text-4xl font-black text-primary mb-1">{metrics.citizensImpacted.toFixed(1)}M</div>
             <p
-</> className="text-sm text-accent">↑ 2.7M this month</p>
+</>
+className="text-sm text-accent">↑ 2.7M this month</p>
           </CardContent>
         </Card>
 
@@ -125,13 +130,15 @@ export function CommandCenterDashboard() {
               Parcels Migrated
             </CardTitle>
             <span
-</> className="text-2xl">📍</span>
+</>
+className="text-2xl">📍</span>
           </CardHeader>
           <CardContent><>
 
             <div className="text-4xl font-black text-accent mb-1">{metrics.parcelsMigrated.toFixed(1)}M</div>
             <p
-</> className="text-sm text-accent">↑ 385K today</p>
+</>
+className="text-sm text-accent">↑ 385K today</p>
           </CardContent>
         </Card>
 
@@ -140,13 +147,15 @@ export function CommandCenterDashboard() {
 
             <CardTitle className="text-sm font-medium text-white/70 uppercase tracking-wide">Property Value</CardTitle>
             <span
-</> className="text-2xl">💰</span>
+</>
+className="text-2xl">💰</span>
           </CardHeader>
           <CardContent><>
 
             <div className="text-4xl font-black text-transcend mb-1">${metrics.propertyValue}B</div>
             <p
-</> className="text-sm text-accent">↑ $125B this week</p>
+</>
+className="text-sm text-accent">↑ $125B this week</p>
           </CardContent>
         </Card>
 
@@ -157,13 +166,15 @@ export function CommandCenterDashboard() {
               Processing Speed
             </CardTitle>
             <span
-</> className="text-2xl">⚡</span>
+</>
+className="text-2xl">⚡</span>
           </CardHeader>
           <CardContent><>
 
             <div className="text-4xl font-black text-primary mb-1">{metrics.processingSpeed}</div>
             <p
-</> className="text-sm text-accent">Verified & Proven</p>
+</>
+className="text-sm text-accent">Verified & Proven</p>
           </CardContent>
         </Card>
 
@@ -172,13 +183,15 @@ export function CommandCenterDashboard() {
 
             <CardTitle className="text-sm font-medium text-white/70 uppercase tracking-wide">Annual Revenue</CardTitle>
             <span
-</> className="text-2xl">📈</span>
+</>
+className="text-2xl">📈</span>
           </CardHeader>
           <CardContent><>
 
             <div className="text-4xl font-black text-accent mb-1">${metrics.annualRevenue.toFixed(1)}M</div>
             <p
-</> className="text-sm text-accent">↑ On track for $50M</p>
+</>
+className="text-sm text-accent">↑ On track for $50M</p>
           </CardContent>
         </Card>
       </div>
@@ -191,7 +204,8 @@ export function CommandCenterDashboard() {
 
               <CardTitle className="text-2xl font-bold text-orange-400">🌴 Florida</CardTitle>
               <Badge
-</> className="bg-orange-500/20 text-orange-400 border-orange-500/30">ACTIVE</Badge>
+</>
+className="bg-orange-500/20 text-orange-400 border-orange-500/30">ACTIVE</Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -200,7 +214,8 @@ export function CommandCenterDashboard() {
 
                 <span className="text-white/80">Counties Progress</span>
                 <span
-</> className="text-orange-400 font-bold">{Math.floor(floridaProgress / 6.67)} of 15 Live</span>
+</>
+className="text-orange-400 font-bold">{Math.floor(floridaProgress / 6.67)} of 15 Live</span>
               </div>
               <Progress value={floridaProgress} className="h-6 bg-white/10">
                 <div
@@ -215,19 +230,22 @@ export function CommandCenterDashboard() {
 
                 <div className="text-2xl font-bold text-orange-400">14.5M</div>
                 <div
-</> className="text-sm text-white/60">Population</div>
+</>
+className="text-sm text-white/60">Population</div>
               </div>
               <div className="text-center p-4 bg-black/50 rounded-lg"><>
 
                 <div className="text-2xl font-bold text-orange-400">2.1M</div>
                 <div
-</> className="text-sm text-white/60">Parcels</div>
+</>
+className="text-sm text-white/60">Parcels</div>
               </div>
               <div className="text-center p-4 bg-black/50 rounded-lg"><>
 
                 <div className="text-2xl font-bold text-orange-400">$685B</div>
                 <div
-</> className="text-sm text-white/60">Value</div>
+</>
+className="text-sm text-white/60">Value</div>
               </div>
             </div>
 
@@ -235,11 +253,13 @@ export function CommandCenterDashboard() {
 
               <p className="text-orange-400 font-bold mb-2">Live Counties:</p>
               <p
-</> className="text-white/80 text-sm mb-3">✓ Miami-Dade | ✓ Broward | ✓ Palm Beach | ✓ Pinellas | ✓ Lee</p><>
+</>
+className="text-white/80 text-sm mb-3">✓ Miami-Dade | ✓ Broward | ✓ Palm Beach | ✓ Pinellas | ✓ Lee</p><>
 
               <p className="text-orange-400 font-bold">Next Up:</p>
               <p
-</> className="text-white/80 text-sm">Orange, Hillsborough, Duval</p>
+</>
+className="text-white/80 text-sm">Orange, Hillsborough, Duval</p>
             </div>
           </CardContent>
         </Card>
@@ -250,7 +270,8 @@ export function CommandCenterDashboard() {
 
               <CardTitle className="text-2xl font-bold text-green-400">🌲 Washington</CardTitle>
               <Badge
-</> className="bg-green-500/20 text-green-400 border-green-500/30">LAUNCHING</Badge>
+</>
+className="bg-green-500/20 text-green-400 border-green-500/30">LAUNCHING</Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -259,7 +280,8 @@ export function CommandCenterDashboard() {
 
                 <span className="text-white/80">Counties Progress</span>
                 <span
-</> className="text-green-400 font-bold">{Math.floor(washingtonProgress / 8.33)} of 12 Live</span>
+</>
+className="text-green-400 font-bold">{Math.floor(washingtonProgress / 8.33)} of 12 Live</span>
               </div>
               <Progress value={washingtonProgress} className="h-6 bg-white/10">
                 <div
@@ -274,19 +296,22 @@ export function CommandCenterDashboard() {
 
                 <div className="text-2xl font-bold text-green-400">5.2M</div>
                 <div
-</> className="text-sm text-white/60">Population</div>
+</>
+className="text-sm text-white/60">Population</div>
               </div>
               <div className="text-center p-4 bg-black/50 rounded-lg"><>
 
                 <div className="text-2xl font-bold text-green-400">1.1M</div>
                 <div
-</> className="text-sm text-white/60">Parcels</div>
+</>
+className="text-sm text-white/60">Parcels</div>
               </div>
               <div className="text-center p-4 bg-black/50 rounded-lg"><>
 
                 <div className="text-2xl font-bold text-green-400">$425B</div>
                 <div
-</> className="text-sm text-white/60">Value</div>
+</>
+className="text-sm text-white/60">Value</div>
               </div>
             </div>
 
@@ -294,11 +319,13 @@ export function CommandCenterDashboard() {
 
               <p className="text-green-400 font-bold mb-2">Live Counties:</p>
               <p
-</> className="text-white/80 text-sm mb-3">✓ Island | ✓ Franklin | ✓ Cowlitz</p><>
+</>
+className="text-white/80 text-sm mb-3">✓ Island | ✓ Franklin | ✓ Cowlitz</p><>
 
               <p className="text-green-400 font-bold">Next Up:</p>
               <p
-</> className="text-white/80 text-sm">King, Pierce, Snohomish</p>
+</>
+className="text-white/80 text-sm">King, Pierce, Snohomish</p>
             </div>
           </CardContent>
         </Card>
@@ -309,7 +336,8 @@ export function CommandCenterDashboard() {
 
         <h3 className="text-transcend font-bold uppercase tracking-wide mb-4">Mission Control</h3>
         <div
-</> className="space-y-3"><>
+</>
+className="space-y-3"><>
 
           <Button
             onClick={simulateMigration}
@@ -319,6 +347,7 @@ export function CommandCenterDashboard() {
           </Button>
           <Button
 </>
+
             onClick={() =>
               alert(
                 "2025 PROJECTIONS:\n\nQ1: $15M ARR | 50 Counties\nQ2: $30M ARR | 100 Counties\nQ3: $40M ARR | 150 Counties\nQ4: $50M ARR | 200 Counties\n\nTotal: $50M ARR by EOY 2025",

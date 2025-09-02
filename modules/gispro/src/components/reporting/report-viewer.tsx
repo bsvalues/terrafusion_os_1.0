@@ -88,6 +88,7 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
 
         <AlertTitle>Error</AlertTitle>
         <AlertDescription
+</>
 </>>
           Failed to load report metadata. Please try again later.
         </AlertDescription>
@@ -102,6 +103,7 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
 
         <AlertTitle>Report is processing</AlertTitle>
         <AlertDescription
+</>
 </>>
           This report is still being generated. Please check back later.
           {reportQuery.data?.status === 'processing' && (
@@ -119,6 +121,7 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
 
         <AlertTitle>Report generation failed</AlertTitle>
         <AlertDescription
+</>
 </>>
           There was an error generating this report. Please try creating it again.
         </AlertDescription>
@@ -233,6 +236,7 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
 
           <AlertTitle>Error</AlertTitle>
           <AlertDescription
+</>
 </>>
             Failed to load report data. Please try again later.
           </AlertDescription>
@@ -247,7 +251,8 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
 
           <h3 className="mt-4 text-lg font-medium">No Data Available</h3>
           <p
-</> className="mt-2 text-sm text-muted-foreground">
+</>
+className="mt-2 text-sm text-muted-foreground">
             This report did not return any data matching the criteria.
           </p>
         </div>
@@ -258,7 +263,6 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
     const columns = Object.keys(dataQuery.data.rows[0]);
     
     return (
-      <>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -287,7 +291,6 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
           </div>
           {renderPagination()}
         </div>
-      </>
     );
   };
   
@@ -309,7 +312,8 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
 
           <h3 className="mt-4 text-lg font-medium">No Summaries Available</h3>
           <p
-</> className="mt-2 text-sm text-muted-foreground">
+</>
+className="mt-2 text-sm text-muted-foreground">
             This report does not include summary metrics.
           </p>
         </div>
@@ -338,7 +342,6 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
   
   // Main render
   return (
-    <>
       <Card className="w-full mb-6">
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -353,10 +356,12 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
 
                       <p className="mb-1">• View detailed report data</p>
                       <p
-</> className="mb-1">• Explore summary metrics</p><>
+</>
+className="mb-1">• Explore summary metrics</p><>
 
                       <p className="mb-1">• Navigate through paginated results</p>
                       <p
+</>
 </>>• Export report in various formats</p>
                     </div>
                   }
@@ -384,7 +389,8 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
                 Data
               </TabsTrigger>
               <TabsTrigger
-</> value="summaries">
+</>
+value="summaries">
                 <BarChart2 className="mr-2 h-4 w-4" />
                 Summaries
               </TabsTrigger>
@@ -394,7 +400,8 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
               {renderDataTable()}
             </TabsContent>
             <TabsContent
-</> value="summaries" className="space-y-4">
+</>
+value="summaries" className="space-y-4">
               {renderSummaries()}
             </TabsContent>
           </Tabs>
@@ -404,6 +411,5 @@ export const ReportViewer = ({ reportId }: ViewerProps) => {
       {reportQuery.data?.status === 'completed' && (
         <ReportExporter report={reportQuery.data} />
       )}
-    </>
   );
 };

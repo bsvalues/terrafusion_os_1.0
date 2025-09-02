@@ -35,6 +35,7 @@ export default function ComplexityFactorsTable({
 
         <AlertTitle>Error</AlertTitle>
         <AlertDescription
+</>
 </>>
           {error instanceof Error ? error.message : 'Failed to load complexity factors'}
         </AlertDescription>
@@ -48,6 +49,7 @@ export default function ComplexityFactorsTable({
 
         <TableCaption>{caption}</TableCaption>
         <TableHeader
+</>
 </>>
           <TableRow>
             <TableHead colSpan={2} className="text-center text-lg font-bold">
@@ -58,7 +60,8 @@ export default function ComplexityFactorsTable({
 
             <TableHead>Type</TableHead>
             <TableHead
-</> className="text-right">Factor</TableHead>
+</>
+className="text-right">Factor</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -71,7 +74,8 @@ export default function ComplexityFactorsTable({
                   <Skeleton className="h-4 w-24" />
                 </TableCell>
                 <TableCell
-</> className="text-right">
+</>
+className="text-right">
                   <Skeleton className="h-4 w-16 ml-auto" />
                 </TableCell>
               </TableRow>
@@ -83,7 +87,8 @@ export default function ComplexityFactorsTable({
 
                 <TableCell className="font-medium">{key}</TableCell>
                 <TableCell
-</> className="text-right">
+</>
+className="text-right">
                   {typeof value === 'number' ? value.toFixed(2) : String(value)}
                 </TableCell>
               </TableRow>

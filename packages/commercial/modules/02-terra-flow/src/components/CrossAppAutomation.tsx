@@ -251,7 +251,8 @@ const AppConnectionMap: React.FC<{
       <h3 className="text-lg font-semibold text-gray-900 mb-4">App Integration Map</h3>
       
       <div
-</> className="relative bg-gray-50 rounded-lg p-8" style={{ minHeight: '500px' }}>
+</>
+className="relative bg-gray-50 rounded-lg p-8" style={{ minHeight: '500px' }}>
         {/* Connection lines */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none">
           {rules.map(rule => {
@@ -307,7 +308,8 @@ const AppConnectionMap: React.FC<{
                   <Icon className="w-6 h-6" />
                 </div>
                 <h4
-</> className="font-medium text-gray-900 text-sm mb-1">{app.name}</h4>
+</>
+className="font-medium text-gray-900 text-sm mb-1">{app.name}</h4>
                 <p className="text-xs text-gray-500 mb-2">{connections.length} connections</p>
                 
                 {connections.length > 0 && (
@@ -382,13 +384,15 @@ const AutomationRuleBuilder: React.FC<{
         </h3>
 
         <form
-</> onSubmit={handleSubmit} className="space-y-6">
+</>
+onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div><>
 
               <label className="block text-sm font-medium text-gray-700 mb-2">Rule Name</label>
               <input
 </>
+
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -401,6 +405,7 @@ const AutomationRuleBuilder: React.FC<{
               <label className="block text-sm font-medium text-gray-700 mb-2">Trigger Type</label>
               <select
 </>
+
                 value={formData.trigger}
                 onChange={(e) => setFormData(prev => ({ ...prev, trigger: e.target.value as any }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -408,11 +413,13 @@ const AutomationRuleBuilder: React.FC<{
 
                 <option value="data_change">Data Change</option>
                 <option
-</> value="schedule">Schedule</option><>
+</>
+value="schedule">Schedule</option><>
 
                 <option value="manual">Manual</option>
                 <option
-</> value="event">Event</option>
+</>
+value="event">Event</option>
               </select>
             </div>
           </div>
@@ -422,6 +429,7 @@ const AutomationRuleBuilder: React.FC<{
             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <textarea
 </>
+
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -434,11 +442,13 @@ const AutomationRuleBuilder: React.FC<{
 
               <h4 className="font-medium text-gray-900">Source (Trigger)</h4>
               <div
+</>
 </>><>
 
                 <label className="block text-sm font-medium text-gray-700 mb-2">Source App</label>
                 <select
 </>
+
                   value={formData.sourceApp}
                   onChange={(e) => setFormData(prev => ({ ...prev, sourceApp: e.target.value, sourceEndpoint: '' }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -456,6 +466,7 @@ const AutomationRuleBuilder: React.FC<{
                   <label className="block text-sm font-medium text-gray-700 mb-2">Source Endpoint</label>
                   <select
 </>
+
                     value={formData.sourceEndpoint}
                     onChange={(e) => setFormData(prev => ({ ...prev, sourceEndpoint: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -474,11 +485,13 @@ const AutomationRuleBuilder: React.FC<{
 
               <h4 className="font-medium text-gray-900">Target (Action)</h4>
               <div
+</>
 </>><>
 
                 <label className="block text-sm font-medium text-gray-700 mb-2">Target App</label>
                 <select
 </>
+
                   value={formData.targetApp}
                   onChange={(e) => setFormData(prev => ({ ...prev, targetApp: e.target.value, targetEndpoint: '' }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -496,6 +509,7 @@ const AutomationRuleBuilder: React.FC<{
                   <label className="block text-sm font-medium text-gray-700 mb-2">Target Endpoint</label>
                   <select
 </>
+
                     value={formData.targetEndpoint}
                     onChange={(e) => setFormData(prev => ({ ...prev, targetEndpoint: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -521,6 +535,7 @@ const AutomationRuleBuilder: React.FC<{
               Cancel
             </button>
             <motion
+</>
 </>.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -614,7 +629,8 @@ const CrossAppAutomation: React.FC = () => {
 
           <h1 className="text-2xl font-bold text-gray-900">Cross-App Automation</h1>
           <p
-</> className="text-gray-600">Manage automation between Terrafusion applications</p>
+</>
+className="text-gray-600">Manage automation between Terrafusion applications</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.02 }}
@@ -642,7 +658,8 @@ const CrossAppAutomation: React.FC = () => {
 
             <h2 className="text-lg font-semibold text-gray-900">Automation Rules</h2>
             <div
-</> className="flex items-center space-x-3">
+</>
+className="flex items-center space-x-3">
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -651,11 +668,13 @@ const CrossAppAutomation: React.FC = () => {
 
                 <option value="all">All Status</option>
                 <option
-</> value="active">Active</option><>
+</>
+value="active">Active</option><>
 
                 <option value="paused">Paused</option>
                 <option
-</> value="error">Error</option>
+</>
+value="error">Error</option>
               </select>
             </div>
           </div>
@@ -691,14 +710,16 @@ const CrossAppAutomation: React.FC = () => {
 
                       <h3 className="font-medium text-gray-900">{rule.name}</h3>
                       <p
-</> className="text-sm text-gray-500">{rule.description}</p>
+</>
+className="text-sm text-gray-500">{rule.description}</p>
                       <div className="flex items-center space-x-4 mt-1"><>
 
                         <span className="text-xs text-gray-400">
                           {sourceApp?.name} → {targetApp?.name}
                         </span>
                         <span
-</> className="text-xs text-gray-400">
+</>
+className="text-xs text-gray-400">
                           {rule.runCount} runs • {rule.successRate}% success
                         </span>
                         {rule.lastRun && (
@@ -721,7 +742,8 @@ const CrossAppAutomation: React.FC = () => {
                     </span>
 
                     <div
-</> className="flex items-center space-x-1">
+</>
+className="flex items-center space-x-1">
                       <button
                         onClick={() => handleToggleRule(rule.id)}
                         className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
@@ -736,6 +758,7 @@ const CrossAppAutomation: React.FC = () => {
                       </button>
                       <button
 </>
+
                         onClick={() => handleEditRule(rule)}
                         className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
                       ><>
@@ -744,6 +767,7 @@ const CrossAppAutomation: React.FC = () => {
                       </button>
                       <button
 </>
+
                         onClick={() => setSelectedRule(rule)}
                         className="p-2 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors"
                       >

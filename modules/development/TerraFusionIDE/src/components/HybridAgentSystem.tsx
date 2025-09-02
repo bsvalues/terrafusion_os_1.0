@@ -168,7 +168,8 @@ const HybridAgentSystem: React.FC = () => {
           Hybrid Agent System
         </h2>
         <div
-</> className="flex items-center gap-2 text-sm text-gray-600">
+</>
+className="flex items-center gap-2 text-sm text-gray-600">
           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
           All Systems Operational
         </div>
@@ -222,7 +223,8 @@ const HybridAgentSystem: React.FC = () => {
             Agent Status
           </h3>
           <div
-</> className="space-y-3">
+</>
+className="space-y-3">
             {activeAgents.map((agent) => (
               <div
                 key={agent.id}
@@ -240,7 +242,8 @@ const HybridAgentSystem: React.FC = () => {
 
                       <h4 className="font-medium text-gray-800">{agent.name}</h4>
                       <p
-</> className="text-sm text-gray-600">{agent.currentTask}</p>
+</>
+className="text-sm text-gray-600">{agent.currentTask}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -252,13 +255,15 @@ const HybridAgentSystem: React.FC = () => {
                         agent.status === 'error' ? 'bg-red-500' : 'bg-gray-500'
                       }`}></div>
                       <span
-</> className="text-sm capitalize">{agent.status}</span>
+</>
+className="text-sm capitalize">{agent.status}</span>
                     </div>
                     <div className="text-right"><>
 
                       <div className="text-sm text-gray-600">Performance</div>
                       <div
-</> className="text-lg font-bold text-blue-600">{agent.performance}%</div>
+</>
+className="text-lg font-bold text-blue-600">{agent.performance}%</div>
                     </div>
                   </div>
                 </div>
@@ -287,7 +292,8 @@ const HybridAgentSystem: React.FC = () => {
               Persistent Memory
             </h3>
             <div
-</> className="space-y-3">
+</>
+className="space-y-3">
               {memories.map((memory) => (
                 <div
                   key={memory.id}
@@ -297,14 +303,16 @@ const HybridAgentSystem: React.FC = () => {
 
                     <h4 className="font-medium text-sm">{memory.title}</h4>
                     <span
-</> className="text-xs opacity-75">
+</>
+className="text-xs opacity-75">
                       {memory.timestamp.toLocaleTimeString()}
                     </span>
                   </div><>
 
                   <p className="text-xs mb-2">{memory.content}</p>
                   <div
-</> className="flex flex-wrap gap-1">
+</>
+className="flex flex-wrap gap-1">
                     {memory.tags.map((tag /* , index */) => (
                       <span
                         key={index}
@@ -327,26 +335,30 @@ const HybridAgentSystem: React.FC = () => {
               Quick Actions
             </h3>
             <div
-</> className="space-y-2">
+</>
+className="space-y-2">
               <button className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"><>
 
                 <Search className="w-4 h-4" />
                 Advanced Code Search
               </button>
               <button
-</> className="w-full p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"><>
+</>
+className="w-full p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"><>
 
                 <Rocket className="w-4 h-4" />
                 Deploy Application
               </button>
               <button
-</> className="w-full p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"><>
+</>
+className="w-full p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"><>
 
                 <Database className="w-4 h-4" />
                 Setup Database
               </button>
               <button
-</> className="w-full p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2">
+</>
+className="w-full p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2">
                 <Globe className="w-4 h-4" />
                 Browser Preview
               </button>
@@ -363,7 +375,8 @@ const HybridAgentSystem: React.FC = () => {
             {activeAgents.find(a => a.id === selectedAgent)?.name} - Detailed Status
           </h4>
           <div
-</> className="grid grid-cols-2 gap-4 text-sm">
+</>
+className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <strong>Status:</strong> {activeAgents.find(a => a.id === selectedAgent)?.status}
             </div>

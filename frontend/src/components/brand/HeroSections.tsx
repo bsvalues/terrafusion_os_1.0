@@ -114,18 +114,30 @@ const HeroSections: React.FC<HeroSectionsProps> = ({
           className={`hero-section ${activeHero !== hero.id ? 'hidden' : ''}`}
           id={`hero${hero.id}`}
         >
+
+
           <div className="grid-bg"></div>
           <div
+
 className="particles" id={`particles${hero.id}`}></div>
           <div className="hero-content">
+
+
             <div className="transcendence-badge">{hero.badge}</div>
             <h1
+
 className="hero-headline">{hero.headline}</h1>
+
+
             <p className="hero-subhead">{hero.subhead}</p>
             <div
+
 className="hero-ctas">
+
+
               <button className="btn-primary">{hero.primaryCTA}</button>
               <button
+
 className="btn-secondary">{hero.secondaryCTA}</button>
             </div>
           </div>

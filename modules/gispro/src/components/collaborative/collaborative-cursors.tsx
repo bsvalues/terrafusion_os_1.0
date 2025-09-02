@@ -262,7 +262,6 @@ export function CollaborativeCursors({
   }, []); // No dependencies since we use refs
   
   return (
-    <>
       {cursorPositions.map(cursor => (
         <div
           key={cursor.userId}
@@ -307,6 +306,5 @@ export function CollaborativeCursors({
           </div>
         </div>
       ))}
-    </>
   );
 }

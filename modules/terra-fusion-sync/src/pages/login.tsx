@@ -182,7 +182,8 @@ export default function Login() {
 
           <CardTitle className="text-2xl text-center">RAG Drive Hub</CardTitle>
           <CardDescription
-</> className="text-center">
+</>
+className="text-center">
             Sign in to access your AI-powered data connectors and RAG pipelines
           </CardDescription>
         </CardHeader>
@@ -193,6 +194,7 @@ export default function Login() {
 
               <AlertTitle className="font-medium">Authentication Error</AlertTitle>
               <AlertDescription
+</>
 </>>
                 {error}
                 {showDemo && (
@@ -223,6 +225,7 @@ export default function Login() {
                       Username
                     </FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input 
@@ -232,7 +235,8 @@ export default function Login() {
                       />
                     </FormControl>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -248,6 +252,7 @@ export default function Login() {
                       Password
                     </FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input 
@@ -258,7 +263,8 @@ export default function Login() {
                       />
                     </FormControl>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -312,7 +318,8 @@ export default function Login() {
             Don't have an account?
           </div>
           <Button
-</> 
+</>
+
             variant="outline" 
             className="w-full"
             onClick={() => setLocation("/register")}

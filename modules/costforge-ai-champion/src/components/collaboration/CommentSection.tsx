@@ -358,9 +358,11 @@ export default function CommentSection({
         <div className="flex gap-3 mb-2">
           <Avatar className="h-8 w-8">
 <>
+
             <AvatarFallback>{getInitials(comment.user?.name)}</AvatarFallback>
             <AvatarImage
 </>
+
               src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
                 comment.user.name
               )}&background=random`}
@@ -372,11 +374,13 @@ export default function CommentSection({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
 <>
+
                 <span className="font-medium">
                   {comment.user?.name || comment.user?.username || `User ${comment.userId}`}
                 </span>
                 <span
-</> className="text-xs text-muted-foreground flex items-center gap-1">
+</>
+className="text-xs text-muted-foreground flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {formatTimeAgo(comment.createdAt)}
                 </span>
@@ -417,20 +421,20 @@ export default function CommentSection({
                         onClick={() => handleToggleResolution(comment.id, comment.isResolved)}
                       >
                         {comment.isResolved ? (
-                          <>
+
                             <XCircle className="h-4 w-4 mr-2" />
                             Reopen
-                          </>
+
                         ) : (
-                          <>
+
                             <CheckCircle className="h-4 w-4 mr-2" />
                             Resolve
-                          </>
+
                         )}
                       </DropdownMenuItem>
                       
                       {(currentUserId === comment.userId || mockCurrentUser.role === 'admin') && (
-                        <>
+
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             onClick={() => setDeletingComment(comment.id)}
@@ -439,7 +443,7 @@ export default function CommentSection({
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
                           </DropdownMenuItem>
-                        </>
+
                       )}
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -458,6 +462,7 @@ export default function CommentSection({
                 />
                 <div className="flex justify-end gap-2 mt-2">
 <>
+
                   <Button 
                     variant="ghost" 
                     size="sm"
@@ -470,16 +475,17 @@ export default function CommentSection({
                     Cancel
                   </Button>
                   <Button
-</> 
+</>
+
                     size="sm"
                     onClick={handleSubmitEdit}
                     disabled={!editContent.trim() || isSubmitting}
                   >
                     {isSubmitting ? (
-                      <>
+
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Saving...
-                      </>
+
                     ) : (
                       'Save Changes'
                     )}
@@ -517,6 +523,7 @@ export default function CommentSection({
                 />
                 <div className="flex justify-end gap-2 mt-2">
 <>
+
                   <Button 
                     variant="ghost" 
                     size="sm"
@@ -529,16 +536,17 @@ export default function CommentSection({
                     Cancel
                   </Button>
                   <Button
-</> 
+</>
+
                     size="sm"
                     onClick={handleSubmitReply}
                     disabled={!replyContent.trim() || isSubmitting}
                   >
                     {isSubmitting ? (
-                      <>
+
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Replying...
-                      </>
+
                     ) : (
                       'Reply'
                     )}
@@ -594,15 +602,15 @@ export default function CommentSection({
                   disabled={!newComment.trim() || isSubmitting}
                 >
                   {isSubmitting ? (
-                    <>
+
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                       Posting...
-                    </>
+
                   ) : (
-                    <>
+
                       <Send className="h-4 w-4 mr-2" />
                       Post Comment
-                    </>
+
                   )}
                 </Button>
               </div>
@@ -631,26 +639,30 @@ export default function CommentSection({
           <AlertDialogContent>
             <AlertDialogHeader>
 <>
+
               <AlertDialogTitle>Delete Comment</AlertDialogTitle>
               <AlertDialogDescription
+</>
 </>>
                 Are you sure you want to delete this comment? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
 <>
+
               <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
               <AlertDialogAction
 </>
+
                 onClick={handleDeleteComment}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <>
+
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Deleting...
-                  </>
+
                 ) : (
                   "Delete"
                 )}

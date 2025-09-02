@@ -142,41 +142,49 @@ export const GovernmentDashboard: React.FC = () => {
 
           <div className="tf-stat-icon">🏛️</div>
           <div
-</> className="tf-stat-number">{counties.length}</div><>
+</>
+className="tf-stat-number">{counties.length}</div><>
 
           <div className="tf-stat-label">Federated Counties</div>
           <div
-</> className="tf-stat-trend">+2 this month</div>
+</>
+className="tf-stat-trend">+2 this month</div>
         </div>
         <div className="tf-stat-card"><>
 
           <div className="tf-stat-icon">🔒</div>
           <div
-</> className="tf-stat-number">98.2%</div><>
+</>
+className="tf-stat-number">98.2%</div><>
 
           <div className="tf-stat-label">Security Compliance</div>
           <div
-</> className="tf-stat-trend">+1.2% from last audit</div>
+</>
+className="tf-stat-trend">+1.2% from last audit</div>
         </div>
         <div className="tf-stat-card"><>
 
           <div className="tf-stat-icon">⚡</div>
           <div
-</> className="tf-stat-number">{plugins.length}</div><>
+</>
+className="tf-stat-number">{plugins.length}</div><>
 
           <div className="tf-stat-label">Active Plugins</div>
           <div
-</> className="tf-stat-trend">All validated</div>
+</>
+className="tf-stat-trend">All validated</div>
         </div>
         <div className="tf-stat-card"><>
 
           <div className="tf-stat-icon">📊</div>
           <div
-</> className="tf-stat-number">$2.8M</div><>
+</>
+className="tf-stat-number">$2.8M</div><>
 
           <div className="tf-stat-label">Monthly Processing</div>
           <div
-</> className="tf-stat-trend">PILT distributions</div>
+</>
+className="tf-stat-trend">PILT distributions</div>
         </div>
       </div>
 
@@ -184,7 +192,8 @@ export const GovernmentDashboard: React.FC = () => {
 
         <h3>Real-Time AI Validation Status</h3>
         <div
-</> className="tf-validation-grid">
+</>
+className="tf-validation-grid">
           {plugins.map(plugin => {
             const validation = validationStatuses[plugin.id];
             if (!validation) return null;
@@ -195,7 +204,8 @@ export const GovernmentDashboard: React.FC = () => {
 
                   <h4>{plugin.name}</h4>
                   <div
-</> className="tf-ai-confidence">
+</>
+className="tf-ai-confidence">
                     AI Confidence: {Math.round(validation.aiConfidence * 100)}%
                   </div>
                 </div>
@@ -204,7 +214,8 @@ export const GovernmentDashboard: React.FC = () => {
 
                     <span className="tf-metric-label">Security</span>
                     <span
-</> 
+</>
+
                       className="tf-metric-status"
                       style={{ color: getStatusColor(validation.security) }}
                     >
@@ -215,7 +226,8 @@ export const GovernmentDashboard: React.FC = () => {
 
                     <span className="tf-metric-label">Compliance</span>
                     <span
-</> 
+</>
+
                       className="tf-metric-status"
                       style={{ color: getStatusColor(validation.compliance) }}
                     >
@@ -226,7 +238,8 @@ export const GovernmentDashboard: React.FC = () => {
 
                     <span className="tf-metric-label">Performance</span>
                     <span
-</> 
+</>
+
                       className="tf-metric-status"
                       style={{ color: getStatusColor(validation.performance) }}
                     >
@@ -237,7 +250,8 @@ export const GovernmentDashboard: React.FC = () => {
 
                     <span className="tf-metric-label">Integration</span>
                     <span
-</> 
+</>
+
                       className="tf-metric-status"
                       style={{ color: getStatusColor(validation.integration) }}
                     >
@@ -262,7 +276,8 @@ export const GovernmentDashboard: React.FC = () => {
 
         <h3>Federated County Network</h3>
         <div
-</> className="tf-federation-controls">
+</>
+className="tf-federation-controls">
           <select 
             value={selectedCounty} 
             onChange={(e) => setSelectedCounty(e.target.value)}
@@ -287,7 +302,8 @@ export const GovernmentDashboard: React.FC = () => {
 
               <h4>{county.name}</h4>
               <span
-</> 
+</>
+
                 className="tf-federation-status"
                 style={{ color: getStatusColor(county.federationStatus) }}
               >
@@ -299,19 +315,22 @@ export const GovernmentDashboard: React.FC = () => {
 
                 <span>Population:</span>
                 <span
+</>
 </>>{county.population.toLocaleString()}</span>
               </div>
               <div className="tf-detail-row"><>
 
                 <span>Compliance Score:</span>
                 <span
+</>
 </>>{county.complianceScore}%</span>
               </div>
               <div className="tf-detail-row"><>
 
                 <span>Security Level:</span>
                 <span
-</> style={{ color: getStatusColor(county.securityLevel) }}>
+</>
+style={{ color: getStatusColor(county.securityLevel) }}>
                   {county.securityLevel.toUpperCase()}
                 </span>
               </div>
@@ -319,6 +338,7 @@ export const GovernmentDashboard: React.FC = () => {
 
                 <span>Last Audit:</span>
                 <span
+</>
 </>>{county.lastAudit}</span>
               </div>
             </div>
@@ -326,7 +346,8 @@ export const GovernmentDashboard: React.FC = () => {
 
               <button className="tf-btn tf-btn-sm">Manage</button>
               <button
-</> className="tf-btn tf-btn-sm tf-btn-outline">Audit</button>
+</>
+className="tf-btn tf-btn-sm tf-btn-outline">Audit</button>
             </div>
           </div>
         ))}
@@ -339,7 +360,8 @@ export const GovernmentDashboard: React.FC = () => {
 
       <h3>Government Compliance Dashboard</h3>
       <div
-</> className="tf-compliance-overview">
+</>
+className="tf-compliance-overview">
         <div className="tf-compliance-metric">
           <div className="tf-metric-circle" data-percentage="94">
             <span>94%</span>
@@ -348,6 +370,7 @@ export const GovernmentDashboard: React.FC = () => {
 
             <h4>Overall Compliance</h4>
             <p
+</>
 </>>Federal & State Requirements</p>
           </div>
         </div>
@@ -356,7 +379,8 @@ export const GovernmentDashboard: React.FC = () => {
 
             <span className="tf-compliance-label">FISMA Compliance</span>
             <div
-</> className="tf-progress-bar">
+</>
+className="tf-progress-bar">
               <div className="tf-progress-fill" style={{ width: '98%' }}></div>
             </div>
             <span className="tf-compliance-score">98%</span>
@@ -365,7 +389,8 @@ export const GovernmentDashboard: React.FC = () => {
 
             <span className="tf-compliance-label">State DOE Requirements</span>
             <div
-</> className="tf-progress-bar">
+</>
+className="tf-progress-bar">
               <div className="tf-progress-fill" style={{ width: '92%' }}></div>
             </div>
             <span className="tf-compliance-score">92%</span>
@@ -374,7 +399,8 @@ export const GovernmentDashboard: React.FC = () => {
 
             <span className="tf-compliance-label">County Audit Standards</span>
             <div
-</> className="tf-progress-bar">
+</>
+className="tf-progress-bar">
               <div className="tf-progress-fill" style={{ width: '96%' }}></div>
             </div>
             <span className="tf-compliance-score">96%</span>
@@ -389,7 +415,8 @@ export const GovernmentDashboard: React.FC = () => {
 
       <h3>Comprehensive Audit Trail</h3>
       <div
-</> className="tf-audit-filters">
+</>
+className="tf-audit-filters">
         <input 
           type="date" 
           className="tf-date-input"
@@ -404,10 +431,12 @@ export const GovernmentDashboard: React.FC = () => {
 
           <option>All Actions</option>
           <option
+</>
 </>>Plugin Deployments</option><>
 
           <option>Security Events</option>
           <option
+</>
 </>>Compliance Changes</option>
         </select>
         <button className="tf-btn tf-btn-primary">Generate Report</button>
@@ -417,10 +446,12 @@ export const GovernmentDashboard: React.FC = () => {
 
           <span>Timestamp</span>
           <span
+</>
 </>>Action</span><>
 
           <span>User</span>
           <span
+</>
 </>>County</span>
           <span>Details</span>
         </div>
@@ -428,10 +459,12 @@ export const GovernmentDashboard: React.FC = () => {
 
           <span>2025-07-30 16:15:23</span>
           <span
+</>
 </>>Plugin Validation</span><>
 
           <span>AI Agent</span>
           <span
+</>
 </>>Benton County</span>
           <span>PILT Calculator - Security scan completed</span>
         </div>
@@ -439,10 +472,12 @@ export const GovernmentDashboard: React.FC = () => {
 
           <span>2025-07-30 14:30:15</span>
           <span
+</>
 </>>Deployment</span><>
 
           <span>admin@benton.gov</span>
           <span
+</>
 </>>Benton County</span>
           <span>CostForge Pro v2.1.3 deployed successfully</span>
         </div>
@@ -457,6 +492,7 @@ export const GovernmentDashboard: React.FC = () => {
 
           <h1>Terrafusion Government Marketplace</h1>
           <p
+</>
 </>>Federated Municipal Software Ecosystem</p>
         </div>
         <div className="tf-header-actions">
@@ -464,6 +500,7 @@ export const GovernmentDashboard: React.FC = () => {
 
             <span className="tf-sovereignty-icon">🛡️</span>
             <span
+</>
 </>>Sovereign Control Active</span>
           </div>
         </div>
@@ -478,7 +515,8 @@ export const GovernmentDashboard: React.FC = () => {
           Overview
         </button>
         <button
-</> 
+</>
+
           className={`tf-tab ${activeTab === 'federation' ? 'active' : ''}`}
           onClick={() => setActiveTab('federation')}
         >
@@ -492,7 +530,8 @@ export const GovernmentDashboard: React.FC = () => {
           Compliance
         </button>
         <button
-</> 
+</>
+
           className={`tf-tab ${activeTab === 'audit' ? 'active' : ''}`}
           onClick={() => setActiveTab('audit')}
         >

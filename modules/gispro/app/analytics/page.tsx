@@ -14,7 +14,8 @@ export default function AnalyticsPage() {
             GAMA Analytics Center
           </h1>
           <p
-</> className="text-xl text-gray-600 mt-2">Advanced AI Analytics & External Data Integration Platform</p>
+</>
+className="text-xl text-gray-600 mt-2">Advanced AI Analytics & External Data Integration Platform</p>
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
@@ -22,7 +23,8 @@ export default function AnalyticsPage() {
 
             <TabsTrigger value="analytics">Advanced Analytics</TabsTrigger>
             <TabsTrigger
-</> value="integrations">Integration Hub</TabsTrigger>
+</>
+value="integrations">Integration Hub</TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics"><>
@@ -31,7 +33,8 @@ export default function AnalyticsPage() {
           </TabsContent>
 
           <TabsContent
-</> value="integrations">
+</>
+value="integrations">
             <IntegrationHub />
           </TabsContent>
         </Tabs>

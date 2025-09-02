@@ -71,6 +71,7 @@ export function ClassificationConfidenceCard({
           Document Classification
         </CardTitle>
         <CardDescription
+</>
 </>>
           Confidence analysis for this document's classification
         </CardDescription>
@@ -82,11 +83,11 @@ export function ClassificationConfidenceCard({
 
             <span className="text-sm font-medium text-slate-500">Document Type:</span>
             <h3
-</> className="text-xl font-semibold">{documentTypeLabel}</h3>
+</>
+className="text-xl font-semibold">{documentTypeLabel}</h3>
             <p className="text-xs text-slate-500">{documentType}</p>
           </div><>
 
-          
           <DocumentConfidenceIndicator 
             confidence={confidence} 
             size="lg"
@@ -96,7 +97,8 @@ export function ClassificationConfidenceCard({
         </div>
         
         <Alert
-</> className={`
+</>
+className={`
           ${confidenceLevel === 'high' ? 'bg-green-50 text-green-800 border-green-200' : ''} 
           ${confidenceLevel === 'medium' ? 'bg-yellow-50 text-yellow-800 border-yellow-200' : ''} 
           ${confidenceLevel === 'low' ? 'bg-red-50 text-red-800 border-red-200' : ''}
@@ -110,7 +112,8 @@ export function ClassificationConfidenceCard({
 
           <AlertTitle>{confidenceInfo.title}</AlertTitle>
           <AlertDescription
-</> className="mt-1">
+</>
+className="mt-1">
             {confidenceInfo.description}
           </AlertDescription>
         </Alert>

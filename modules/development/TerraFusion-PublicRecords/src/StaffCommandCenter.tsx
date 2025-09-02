@@ -368,11 +368,13 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
               <Shield className="text-white" size={20} />
             </div>
             <div
+</>
 </>><>
 
               <h1 className="text-lg font-bold">Command Center</h1>
               <p
-</> className="text-xs text-slate-400">Staff Portal</p>
+</>
+className="text-xs text-slate-400">Staff Portal</p>
             </div>
           </div>
         </div>
@@ -418,13 +420,15 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
               <span className="text-slate-400">Response Time</span>
               <span
-</> className="text-green-400 font-mono">{stats.avgResponseTime}s</span>
+</>
+className="text-green-400 font-mono">{stats.avgResponseTime}s</span>
             </div>
             <div className="flex items-center justify-between text-sm"><>
 
               <span className="text-slate-400">System Load</span>
               <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                 <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><>
 
                   <div 
@@ -436,7 +440,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                   />
                 </div>
                 <span
-</> className="text-xs font-mono">{stats.systemLoad}%</span>
+</>
+className="text-xs font-mono">{stats.systemLoad}%</span>
               </div>
             </div>
           </div>
@@ -459,11 +464,13 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                 {selectedView === 'settings' && 'System Settings'}
               </h2>
               <div
-</> className="flex items-center gap-2 text-sm"><>
+</>
+className="flex items-center gap-2 text-sm"><>
 
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span
-</> className="text-green-400">Live</span>
+</>
+className="text-green-400">Live</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -481,17 +488,20 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                 <Bell size={20} />
               </button>
               <button
-</> className="p-2 hover:bg-slate-700 rounded-lg transition-colors"><>
+</>
+className="p-2 hover:bg-slate-700 rounded-lg transition-colors"><>
 
                 <Refresh size={20} />
               </button>
               <div
-</> className="flex items-center gap-3 pl-3 border-l border-slate-600">
+</>
+className="flex items-center gap-3 pl-3 border-l border-slate-600">
                 <div className="text-right"><>
 
                   <p className="text-sm font-medium">Admin User</p>
                   <p
-</> className="text-xs text-slate-400">System Administrator</p>
+</>
+className="text-xs text-slate-400">System Administrator</p>
                 </div>
                 <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full"></div>
               </div>
@@ -514,7 +524,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                   <div className="text-3xl font-bold">{stats.requestsToday}</div>
                   <div
-</> className="text-sm text-slate-400">Requests Today</div>
+</>
+className="text-sm text-slate-400">Requests Today</div>
                 </div>
                 <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/30 p-6 rounded-xl border border-blue-700/30">
                   <div className="flex items-center justify-between mb-2">
@@ -524,7 +535,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                   <div className="text-3xl font-bold">{stats.avgResponseTime}s</div>
                   <div
-</> className="text-sm text-slate-400">Avg Response</div>
+</>
+className="text-sm text-slate-400">Avg Response</div>
                 </div>
                 <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 p-6 rounded-xl border border-purple-700/30">
                   <div className="flex items-center justify-between mb-2">
@@ -534,7 +546,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                   <div className="text-3xl font-bold">{stats.requestsThisWeek}</div>
                   <div
-</> className="text-sm text-slate-400">Weekly Volume</div>
+</>
+className="text-sm text-slate-400">Weekly Volume</div>
                 </div>
                 <div className="bg-gradient-to-br from-orange-900/30 to-orange-800/30 p-6 rounded-xl border border-orange-700/30">
                   <div className="flex items-center justify-between mb-2">
@@ -544,7 +557,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                   <div className="text-3xl font-bold">${(stats.revenueCollected / 1000).toFixed(1)}K</div>
                   <div
-</> className="text-sm text-slate-400">Collected Today</div>
+</>
+className="text-sm text-slate-400">Collected Today</div>
                 </div>
               </div>
 
@@ -556,7 +570,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                   AI Discoveries Requiring Action
                 </h3>
                 <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                   {aiDiscoveries.filter(d => d.actionRequired).slice(0, 3).map(discovery => (
                     <div key={discovery.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
                       <div className="flex items-center gap-3">
@@ -569,7 +584,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                           <p className="font-medium">{discovery.title}</p>
                           <p
-</> className="text-sm text-slate-400">{discovery.impact}</p>
+</>
+className="text-sm text-slate-400">{discovery.impact}</p>
                         </div>
                       </div>
                       <button className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm transition-colors">
@@ -589,12 +605,14 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                     Live Activity
                   </h3>
                   <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                     <div className="flex items-start gap-3"><>
 
                       <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                       <div
-</> className="flex-1">
+</>
+className="flex-1">
                         <p className="text-sm">New request from <span className="text-blue-400">John Smith</span></p>
                         <p className="text-xs text-slate-400">Building permit inquiry • Just now</p>
                       </div>
@@ -603,22 +621,26 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                       <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                       <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
                         <p className="text-sm">Request #REQ-2024-003 completed</p>
                         <p
-</> className="text-xs text-slate-400">Response time: 0.4s • 2 min ago</p>
+</>
+className="text-xs text-slate-400">Response time: 0.4s • 2 min ago</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3"><>
 
                       <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
                       <div
-</> className="flex-1"><>
+</>
+className="flex-1"><>
 
                         <p className="text-sm">AI detected duplicate documents</p>
                         <p
-</> className="text-xs text-slate-400">1,234 files • 5 min ago</p>
+</>
+className="text-xs text-slate-400">1,234 files • 5 min ago</p>
                       </div>
                     </div>
                   </div>
@@ -631,25 +653,29 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                     Team Status
                   </h3>
                   <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                     {staffMembers.filter(s => s.status === 'online').map(staff => (
                       <div key={staff.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-3"><>
 
                           <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full"></div>
                           <div
+</>
 </>><>
 
                             <p className="text-sm font-medium">{staff.name}</p>
                             <p
-</> className="text-xs text-slate-400">{staff.activeRequests} active • {staff.completedToday} completed</p>
+</>
+className="text-xs text-slate-400">{staff.activeRequests} active • {staff.completedToday} completed</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2"><>
 
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                           <span
-</> className="text-xs text-green-400">Online</span>
+</>
+className="text-xs text-green-400">Online</span>
                         </div>
                       </div>
                     ))}
@@ -678,6 +704,7 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                   </div>
                   <select
 </>
+
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:border-blue-500 focus:outline-none"
@@ -685,15 +712,18 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                     <option value="all">All Status</option>
                     <option
-</> value="new">New</option><>
+</>
+value="new">New</option><>
 
                     <option value="in_progress">In Progress</option>
                     <option
-</> value="waiting">Waiting</option><>
+</>
+value="waiting">Waiting</option><>
 
                     <option value="completed">Completed</option>
                     <option
-</> value="rejected">Rejected</option>
+</>
+value="rejected">Rejected</option>
                   </select>
                   <select
                     value={filterPriority}
@@ -703,11 +733,13 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                     <option value="all">All Priority</option>
                     <option
-</> value="urgent">Urgent</option><>
+</>
+value="urgent">Urgent</option><>
 
                     <option value="high">High</option>
                     <option
-</> value="medium">Medium</option>
+</>
+value="medium">Medium</option>
                     <option value="low">Low</option>
                   </select>
                   <button
@@ -725,7 +757,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                     <span className="text-sm">{selectedRequests.length} requests selected</span>
                     <div
-</> className="flex gap-2"><>
+</>
+className="flex gap-2"><>
 
                       <button
                         onClick={() => handleBulkAction('assign')}
@@ -735,6 +768,7 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                       </button>
                       <button
 </>
+
                         onClick={() => handleBulkAction('export')}
                         className="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm transition-colors"
                       >
@@ -774,19 +808,23 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                       <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">ID</th>
                       <th
-</> className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Citizen</th><>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Citizen</th><>
 
                       <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Request</th>
                       <th
-</> className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">AI Translation</th><>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">AI Translation</th><>
 
                       <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Status</th>
                       <th
-</> className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Priority</th><>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Priority</th><>
 
                       <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Assigned</th>
                       <th
-</> className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Due</th>
+</>
+className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Due</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Actions</th>
                     </tr>
                   </thead>
@@ -817,7 +855,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                             <p className="text-sm font-medium">{request.citizenName}</p>
                             <p
-</> className="text-xs text-slate-400">{request.citizenEmail}</p>
+</>
+className="text-xs text-slate-400">{request.citizenEmail}</p>
                           </div>
                         </td>
                         <td className="px-4 py-3">
@@ -828,7 +867,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                             <p className="text-sm text-slate-300 max-w-xs truncate">{request.translatedQuery}</p>
                             <span
-</> className="text-xs text-green-400">{request.aiConfidence}%</span>
+</>
+className="text-xs text-green-400">{request.aiConfidence}%</span>
                           </div>
                         </td>
                         <td className="px-4 py-3">
@@ -864,12 +904,14 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                               <Eye size={16} />
                             </button>
                             <button
-</> className="p-1 hover:bg-slate-700 rounded transition-colors"><>
+</>
+className="p-1 hover:bg-slate-700 rounded transition-colors"><>
 
                               <Edit3 size={16} />
                             </button>
                             <button
-</> className="p-1 hover:bg-slate-700 rounded transition-colors">
+</>
+className="p-1 hover:bg-slate-700 rounded transition-colors">
                               <MessageSquare size={16} />
                             </button>
                             {request.documents && (
@@ -919,7 +961,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                     Request Volume Trend
                   </h3>
                   <div
-</> className="h-64 flex items-end justify-between gap-2">
+</>
+className="h-64 flex items-end justify-between gap-2">
                     {[65, 72, 68, 74, 79, 82, 78, 85, 88, 92, 87, 94].map((height, i) => (
                       <div key={i} className="flex-1 bg-gradient-to-t from-blue-600 to-blue-400 rounded-t" style={{ height: `${height}%` }}></div>
                     ))}
@@ -928,26 +971,32 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                     <span>Jan</span>
                     <span
+</>
 </>>Feb</span><>
 
                     <span>Mar</span>
                     <span
+</>
 </>>Apr</span><>
 
                     <span>May</span>
                     <span
+</>
 </>>Jun</span><>
 
                     <span>Jul</span>
                     <span
+</>
 </>>Aug</span><>
 
                     <span>Sep</span>
                     <span
+</>
 </>>Oct</span><>
 
                     <span>Nov</span>
                     <span
+</>
 </>>Dec</span>
                   </div>
                 </div>
@@ -959,7 +1008,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                     Request Categories
                   </h3>
                   <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                     {[
                       { category: 'Property Records', percentage: 35, color: 'bg-blue-500' },
                       { category: 'Building Permits', percentage: 25, color: 'bg-green-500' },
@@ -972,7 +1022,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                           <span>{item.category}</span>
                           <span
-</> className="text-slate-400">{item.percentage}%</span>
+</>
+className="text-slate-400">{item.percentage}%</span>
                         </div>
                         <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                           <div className={`h-full ${item.color} transition-all`} style={{ width: `${item.percentage}%` }}></div>
@@ -988,7 +1039,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                 <h3 className="text-lg font-bold mb-4">Generate Reports</h3>
                 <div
-</> className="grid grid-cols-4 gap-4">
+</>
+className="grid grid-cols-4 gap-4">
                   <button className="p-4 bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors flex flex-col items-center gap-2">
                     <FileText className="text-blue-400" size={24} />
                     <span className="text-sm">Daily Summary</span>
@@ -1021,11 +1073,13 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full"></div>
                         <div
+</>
 </>><>
 
                           <h3 className="font-bold">{staff.name}</h3>
                           <p
-</> className="text-sm text-slate-400">{staff.role}</p>
+</>
+className="text-sm text-slate-400">{staff.role}</p>
                           <p className="text-xs text-slate-500">{staff.department}</p>
                         </div>
                       </div>
@@ -1037,7 +1091,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                           'bg-gray-500'
                         }`}></div>
                         <span
-</> className="text-xs capitalize">{staff.status}</span>
+</>
+className="text-xs capitalize">{staff.status}</span>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -1045,19 +1100,22 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                         <span className="text-slate-400">Active Requests</span>
                         <span
-</> className="font-mono">{staff.activeRequests}</span>
+</>
+className="font-mono">{staff.activeRequests}</span>
                       </div>
                       <div className="flex justify-between text-sm"><>
 
                         <span className="text-slate-400">Completed Today</span>
                         <span
-</> className="font-mono text-green-400">{staff.completedToday}</span>
+</>
+className="font-mono text-green-400">{staff.completedToday}</span>
                       </div>
                       <div className="flex justify-between text-sm"><>
 
                         <span className="text-slate-400">Avg Response</span>
                         <span
-</> className="font-mono text-blue-400">{staff.avgResponseTime}s</span>
+</>
+className="font-mono text-blue-400">{staff.avgResponseTime}s</span>
                       </div>
                     </div>
                     <div className="mt-4 pt-4 border-t border-slate-700 flex gap-2"><>
@@ -1066,7 +1124,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                         View Work
                       </button>
                       <button
-</> className="flex-1 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs transition-colors">
+</>
+className="flex-1 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs transition-colors">
                         Message
                       </button>
                     </div>
@@ -1087,6 +1146,7 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
               <h2 className="text-xl font-bold">Request Details: {selectedRequest.id}</h2>
               <button
 </>
+
                 onClick={() => setSelectedRequest(null)}
                 className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
               >
@@ -1100,7 +1160,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                   <h3 className="text-sm font-medium text-slate-400 mb-2">Citizen Information</h3>
                   <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                     <div className="flex items-center gap-2">
                       <User size={16} className="text-slate-400" />
                       <span>{selectedRequest.citizenName}</span>
@@ -1121,14 +1182,16 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
 
                   <h3 className="text-sm font-medium text-slate-400 mb-2">Request Status</h3>
                   <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                     <div className="flex items-center gap-2"><>
 
                       <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedRequest.status)}`}>
                         {selectedRequest.status.replace('_', ' ')}
                       </span>
                       <span
-</> className={`text-sm font-medium ${getPriorityColor(selectedRequest.priority)}`}>
+</>
+className={`text-sm font-medium ${getPriorityColor(selectedRequest.priority)}`}>
                         {selectedRequest.priority} priority
                       </span>
                     </div><>
@@ -1137,7 +1200,8 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                       Submitted: {selectedRequest.dateSubmitted.toLocaleString()}
                     </div>
                     <div
-</> className="text-sm text-slate-400">
+</>
+className="text-sm text-slate-400">
                       Due: {selectedRequest.dateDue.toLocaleString()}
                     </div>
                   </div>
@@ -1153,14 +1217,16 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                     AI Translation
                   </h3>
                   <span
-</> className="text-xs text-green-400">
+</>
+className="text-xs text-green-400">
                     {selectedRequest.aiConfidence}% confidence
                   </span>
                 </div><>
 
                 <p className="text-sm text-slate-400 mb-1">Original: "{selectedRequest.naturalLanguage}"</p>
                 <p
-</> className="text-sm">Translated: "{selectedRequest.translatedQuery}"</p>
+</>
+className="text-sm">Translated: "{selectedRequest.translatedQuery}"</p>
               </div>
 
               {/* Quick Actions */}
@@ -1171,19 +1237,22 @@ const StaffCommandCenter: React.FC<StaffCommandCenterProps> = ({ onReturnToPubli
                   Assign to Me
                 </button>
                 <button
-</> className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors flex items-center gap-2"><>
+</>
+className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors flex items-center gap-2"><>
 
                   <MessageSquare size={18} />
                   Add Note
                 </button>
                 <button
-</> className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors flex items-center gap-2"><>
+</>
+className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors flex items-center gap-2"><>
 
                   <Upload size={18} />
                   Upload Document
                 </button>
                 <button
-</> className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center gap-2">
+</>
+className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center gap-2">
                   <CheckCircle size={18} />
                   Mark Complete
                 </button>

@@ -41,13 +41,15 @@ export function FinancialMetrics() {
 
               <span className="text-gray-300">{metric.name}</span>
               <span
-</> className="text-white font-semibold">{metric.value}</span>
+</>
+className="text-white font-semibold">{metric.value}</span>
             </div>
             <Progress value={metric.current} className="h-2" />
             <div className="flex justify-between text-xs text-gray-400"><>
 
               <span>Current: {metric.current}%</span>
               <span
+</>
 </>>Target: {metric.target}%</span>
             </div>
           </div>

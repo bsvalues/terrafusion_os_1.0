@@ -263,7 +263,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
               <h4 className="font-medium">{member.name}</h4>
               <p
-</> className="text-sm text-muted-foreground">{member.email}</p>
+</>
+className="text-sm text-muted-foreground">{member.email}</p>
               <div className="flex items-center gap-2 mt-1"><>
 
                 <Badge variant="outline" className="text-xs flex items-center gap-1">
@@ -271,7 +272,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
                   {member.role.replace('_', ' ')}
                 </Badge>
                 <Badge
-</> variant="secondary" className="text-xs">
+</>
+variant="secondary" className="text-xs">
                   {member.department}
                 </Badge>
               </div>
@@ -288,19 +290,22 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
+</>
 </>><>
 
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Send Message
               </DropdownMenuItem>
               <DropdownMenuItem
+</>
 </>><>
 
                 <Activity className="h-4 w-4 mr-2" />
                 View Activity
               </DropdownMenuItem>
               <DropdownMenuSeparator
-</> />
+</>
+/>
               <DropdownMenuItem className="text-red-600">
                 <UserMinus className="h-4 w-4 mr-2" />
                 Remove from Team
@@ -316,13 +321,15 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                 <span className="text-muted-foreground">Tasks: </span>
                 <span
+</>
 </>>{stats.completedTasks} / {stats.totalTasks}</span>
               </div>
               <div><>
 
                 <span className="text-muted-foreground">Rate: </span>
                 <Badge
-</> 
+</>
+
                   variant={getPerformanceBadgeVariant(stats.completionRate)}
                   className="text-xs"
                 >
@@ -350,7 +357,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
           <p className="text-lg font-medium mb-2">No Teams Available</p>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             You are not a member of any teams yet.
           </p>
         </CardContent>
@@ -366,7 +374,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
           <h3 className="text-lg font-semibold">Team Collaboration</h3>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             Manage team members, track performance, and coordinate projects
           </p>
         </div>
@@ -378,6 +387,7 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
               <SelectValue placeholder="Select team" />
             </SelectTrigger>
             <SelectContent
+</>
 </>>
               {teams.map((team) => (
                 <SelectItem key={team.id} value={team.id}>
@@ -386,7 +396,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                     <span>{team.name}</span>
                     <Badge
-</> variant="outline" className="text-xs">
+</>
+variant="outline" className="text-xs">
                       {team.members.length}
                     </Badge>
                   </div>
@@ -403,7 +414,6 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
       </div>
 
       {selectedTeam && (
-        <>
           {/* Team Info Card */}
           <Card>
             <CardHeader>
@@ -413,6 +423,7 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
                 {selectedTeam.name}
               </CardTitle>
               <CardDescription
+</>
 </>>
                 {selectedTeam.description}
               </CardDescription>
@@ -424,25 +435,29 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                     <div className="text-2xl font-bold">{teamMetrics.totalMembers}</div>
                     <div
-</> className="text-xs text-muted-foreground">Members</div>
+</>
+className="text-xs text-muted-foreground">Members</div>
                   </div>
                   <div className="text-center"><>
 
                     <div className="text-2xl font-bold">{teamMetrics.activeProjects}</div>
                     <div
-</> className="text-xs text-muted-foreground">Active Projects</div>
+</>
+className="text-xs text-muted-foreground">Active Projects</div>
                   </div>
                   <div className="text-center"><>
 
                     <div className="text-2xl font-bold">{teamMetrics.completionRate}%</div>
                     <div
-</> className="text-xs text-muted-foreground">Task Completion</div>
+</>
+className="text-xs text-muted-foreground">Task Completion</div>
                   </div>
                   <div className="text-center"><>
 
                     <div className="text-2xl font-bold">{teamMetrics.productivity}%</div>
                     <div
-</> className="text-xs text-muted-foreground">Productivity</div>
+</>
+className="text-xs text-muted-foreground">Productivity</div>
                   </div>
                 </div>
               </CardContent>
@@ -454,7 +469,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger
-</> value="members">Members ({selectedTeam.members.length})</TabsTrigger>
+</>
+value="members">Members ({selectedTeam.members.length})</TabsTrigger>
               <TabsTrigger value="projects">Projects ({teamProjects.length})</TabsTrigger>
               {showMetrics && <TabsTrigger value="performance">Performance</TabsTrigger>}
             </TabsList>
@@ -467,7 +483,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                     <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
                     <Activity
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
@@ -481,7 +498,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                     <CardTitle className="text-sm font-medium">Completed</CardTitle>
                     <CheckCircle2
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
@@ -495,7 +513,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                     <CardTitle className="text-sm font-medium">Overdue</CardTitle>
                     <Warning
-</> className="h-4 w-4 text-destructive" />
+</>
+className="h-4 w-4 text-destructive" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-destructive">
@@ -521,7 +540,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                             <p className="font-medium text-sm">{project.name}</p>
                             <p
-</> className="text-xs text-muted-foreground">{project.description}</p>
+</>
+className="text-xs text-muted-foreground">{project.description}</p>
                           </div>
                           <Badge variant="outline">
                             {project.status.replace('_', ' ')}
@@ -553,6 +573,7 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
                   />
                 </div>
                 <Button
+</>
 </>>
                   <UserPlus className="h-4 w-4 mr-2" />
                   Add Member
@@ -582,7 +603,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                     <p className="text-lg font-medium mb-2">No Members Found</p>
                     <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
                       {searchQuery ? 'Try adjusting your search criteria' : 'This team has no members'}
                     </p>
                   </CardContent>
@@ -600,7 +622,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                           <CardTitle className="text-base">{project.name}</CardTitle>
                           <CardDescription
-</> className="line-clamp-2">
+</>
+className="line-clamp-2">
                             {project.description}
                           </CardDescription>
                         </div>
@@ -615,7 +638,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                           <span className="text-muted-foreground">Priority:</span>
                           <Badge
-</> variant={
+</>
+variant={
                             project.priority === 'critical' || project.priority === 'emergency' 
                               ? 'destructive' : 'secondary'
                           }>
@@ -626,6 +650,7 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                           <span className="text-muted-foreground">Tasks:</span>
                           <span
+</>
 </>>
                             {project.tasks.filter(t => t.status === TaskStatus.DONE).length} / {project.tasks.length}
                           </span>
@@ -634,6 +659,7 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                           <span className="text-muted-foreground">Due Date:</span>
                           <span
+</>
 </>>{new Date(project.timeline.endDate).toLocaleDateString()}</span>
                         </div>
                       </div>
@@ -649,7 +675,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                     <p className="text-lg font-medium mb-2">No Projects</p>
                     <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
                       This team doesn't have any projects assigned yet
                     </p>
                   </CardContent>
@@ -673,7 +700,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                         <span className="text-sm">Overall Productivity</span>
                         <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                           <div className="w-32 bg-secondary rounded-full h-2"><>
 
                             <div
@@ -682,7 +710,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
                             />
                           </div>
                           <span
-</> className="text-sm font-medium">{teamMetrics.productivity}%</span>
+</>
+className="text-sm font-medium">{teamMetrics.productivity}%</span>
                         </div>
                       </div>
                       
@@ -690,7 +719,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                         <span className="text-sm">Task Completion Rate</span>
                         <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                           <div className="w-32 bg-secondary rounded-full h-2"><>
 
                             <div
@@ -699,7 +729,8 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
                             />
                           </div>
                           <span
-</> className="text-sm font-medium">{teamMetrics.completionRate}%</span>
+</>
+className="text-sm font-medium">{teamMetrics.completionRate}%</span>
                         </div>
                       </div>
                     </div>
@@ -726,10 +757,12 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
 
                             <p className="font-medium text-sm">{stats.member.name}</p>
                             <div
-</> className="flex items-center gap-4 text-xs text-muted-foreground"><>
+</>
+className="flex items-center gap-4 text-xs text-muted-foreground"><>
 
                               <span>{stats.totalTasks} tasks</span>
                               <span
+</>
 </>>{stats.completedTasks} completed</span>
                               {stats.overdueTasks > 0 && (
                                 <span className="text-red-600">{stats.overdueTasks} overdue</span>
@@ -748,7 +781,6 @@ export const TeamCollaboration: React.FC<TeamCollaborationProps> = ({
               </TabsContent>
             )}
           </Tabs>
-        </>
       )}
     </div>
   );

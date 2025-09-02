@@ -27,7 +27,8 @@ export function DemoModule({ moduleId }: DemoModuleProps) {
 
             <h2 className="text-2xl font-bold mb-4">Module Not Found</h2>
             <p
-</> className="text-muted-foreground mb-4">The requested module demo is not available.</p>
+</>
+className="text-muted-foreground mb-4">The requested module demo is not available.</p>
             <Link href="/demo">
               <Button>Back to Demo</Button>
             </Link>
@@ -77,7 +78,8 @@ export function DemoModule({ moduleId }: DemoModuleProps) {
 
                 <CardTitle className="text-2xl font-heading">{module.name} Demo</CardTitle>
                 <p
-</> className="text-muted-foreground mt-2">{module.description}</p>
+</>
+className="text-muted-foreground mt-2">{module.description}</p>
               </div>
               <Badge variant="secondary" className="bg-tf-primary/10 text-tf-primary border-tf-primary/20">
                 Interactive Demo
@@ -96,7 +98,8 @@ export function DemoModule({ moduleId }: DemoModuleProps) {
                 Start Demo
               </Button>
               <Button
-</> onClick={() => setIsRunning(!isRunning)} variant="outline" disabled={progress === 0}>
+</>
+onClick={() => setIsRunning(!isRunning)} variant="outline" disabled={progress === 0}>
                 {isRunning ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
                 {isRunning ? "Pause" : "Resume"}
               </Button>
@@ -112,6 +115,7 @@ export function DemoModule({ moduleId }: DemoModuleProps) {
 
                   <span>Demo Progress</span>
                   <span
+</>
 </>>{progress}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
@@ -126,7 +130,8 @@ export function DemoModule({ moduleId }: DemoModuleProps) {
 
                 <h3 className="text-xl font-semibold">Interactive {module.name} Demo</h3>
                 <p
-</> className="text-muted-foreground max-w-md">
+</>
+className="text-muted-foreground max-w-md">
                   This would be a fully interactive demonstration of the {module.name} module with real workflows and
                   data processing.
                 </p>

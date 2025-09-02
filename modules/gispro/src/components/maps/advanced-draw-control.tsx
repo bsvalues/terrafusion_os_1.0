@@ -571,7 +571,8 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
 
                     <h3 className="font-medium">Save Version</h3>
                     <Input
-</> 
+</>
+
                       placeholder="Version name"
                       onChange={(e) => setActiveVersionName(e.target.value)}
                       value={activeVersionName}
@@ -599,7 +600,8 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
 
                     <h3 className="font-medium">Versions</h3>
                     <ScrollArea
-</> className="h-36">
+</>
+className="h-36">
                       {versions.length === 0 ? (
                         <p className="text-xs text-muted-foreground">No saved versions</p>
                       ) : (
@@ -611,7 +613,8 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
                                 {version.name}
                               </span>
                               <Button
-</> 
+</>
+
                                 size="xs" 
                                 variant="ghost" 
                                 onClick={() => handleRestoreVersion(version.id)}
@@ -636,7 +639,8 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
 
               <TabsTrigger value="snap">Snapping</TabsTrigger>
               <TabsTrigger
-</> value="annotations">Annotations</TabsTrigger>
+</>
+value="annotations">Annotations</TabsTrigger>
             </TabsList>
             
             <TabsContent value="snap" className="space-y-2">
@@ -645,6 +649,7 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
                 <Label htmlFor="snap-enabled" className="text-xs">Enable Snapping</Label>
                 <input
 </>
+
                   id="snap-enabled"
                   type="checkbox"
                   checked={snapEnabled}
@@ -658,6 +663,7 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
                 <Label htmlFor="snap-mode" className="text-xs">Snap Mode</Label>
                 <Select
 </>
+
                   value={snapMode}
                   onValueChange={(value) => setSnapMode(value as SnapMode)}
                 >
@@ -666,15 +672,18 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
                     <SelectValue placeholder="Snap Mode" />
                   </SelectTrigger>
                   <SelectContent
+</>
 </>><>
 
                     <SelectItem value={SnapMode.VERTEX}>Vertex only</SelectItem>
                     <SelectItem
-</> value={SnapMode.EDGE}>Edge only</SelectItem><>
+</>
+value={SnapMode.EDGE}>Edge only</SelectItem><>
 
                     <SelectItem value={SnapMode.BOTH}>Both</SelectItem>
                     <SelectItem
-</> value={SnapMode.NONE}>None</SelectItem>
+</>
+value={SnapMode.NONE}>None</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -686,6 +695,7 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
                 </Label>
                 <input
 </>
+
                   id="snap-threshold"
                   type="range"
                   min="0.001"
@@ -710,7 +720,8 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
 
                     <Label htmlFor="note" className="text-xs">Add Note</Label>
                     <div
-</> className="flex gap-1">
+</>
+className="flex gap-1">
                       <Input 
                         id="note"
                         placeholder="Add a note..." 
@@ -734,7 +745,8 @@ export const AdvancedDrawControl: React.FC<AdvancedDrawControlProps> = ({
 
                     <Label className="text-xs">Notes</Label>
                     <ScrollArea
-</> className="h-20 border rounded-md p-1">
+</>
+className="h-20 border rounded-md p-1">
                       {selectedFeature && (
                         <div className="flex flex-col gap-1">
                           {annotationManager.getNotes((selectedFeature.toGeoJSON() as GeoJSONFeature).id as string).map((note /* , index */) => (

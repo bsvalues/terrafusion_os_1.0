@@ -1,5 +1,5 @@
 /**
- * Comprehensive Feature Test for TerraFusion Shock-and-Awe
+ * Comprehensive Feature Test for Terrafusion Shock-and-Awe
  * Tests all features and identifies specific issues
  */
 

@@ -101,11 +101,13 @@ export function ModuleCard({ module, onToggle, onConfigure, onLaunch, showContro
               <Icon className={`w-5 h-5 text-${getCategoryColor(module.category)}`} />
             </div>
             <div
+</>
 </>><>
 
               <CardTitle className="text-lg font-heading">{module.name}</CardTitle>
               <div
-</> className="flex items-center gap-2 mt-1"><>
+</>
+className="flex items-center gap-2 mt-1"><>
 
                 <Badge
                   variant="secondary"
@@ -114,7 +116,8 @@ export function ModuleCard({ module, onToggle, onConfigure, onLaunch, showContro
                   {module.status}
                 </Badge>
                 <span
-</> className="text-xs text-muted-foreground">v{module.version}</span>
+</>
+className="text-xs text-muted-foreground">v{module.version}</span>
               </div>
             </div>
           </div>
@@ -137,7 +140,8 @@ export function ModuleCard({ module, onToggle, onConfigure, onLaunch, showContro
 
             <p className="text-xs font-medium text-muted-foreground">Dependencies:</p>
             <div
-</> className="flex flex-wrap gap-1">
+</>
+className="flex flex-wrap gap-1">
               {module.dependencies.map((depId) => (
                 <Badge key={depId} variant="outline" className="text-xs">
                   {depId}
@@ -159,6 +163,7 @@ export function ModuleCard({ module, onToggle, onConfigure, onLaunch, showContro
             </Button>
             <Button
 </>
+
               size="sm"
               variant="outline"
               onClick={() => onConfigure?.(module.id)}

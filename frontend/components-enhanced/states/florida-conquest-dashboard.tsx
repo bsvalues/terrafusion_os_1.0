@@ -57,7 +57,8 @@ export function FloridaConquestDashboard() {
 
               <div className="text-2xl font-black text-transcend mb-1">{metric.value}</div>
               <div
-</> className="text-sm text-primary font-medium mb-1">{metric.label}</div>
+</>
+className="text-sm text-primary font-medium mb-1">{metric.label}</div>
               <div className="text-xs text-accent">{metric.subtext}</div>
             </CardContent>
           </Card>
@@ -87,6 +88,7 @@ export function FloridaConquestDashboard() {
                     <h3 className="font-bold text-white">{region.name}</h3>
                     <Badge
 </>
+
                       variant={
                         region.status === "CRITICAL"
                           ? "destructive"
@@ -102,11 +104,13 @@ export function FloridaConquestDashboard() {
 
                     <div className="text-transcend">Population: {region.population}</div>
                     <div
-</> className="text-accent">Property Value: {region.value}</div><>
+</>
+className="text-accent">Property Value: {region.value}</div><>
 
                     <div className="text-primary">Readiness: {region.readiness}%</div>
                     <div
-</> className="text-xs text-gray-300">Counties: {region.counties.join(", ")}</div>
+</>
+className="text-xs text-gray-300">Counties: {region.counties.join(", ")}</div>
                   </div>
                 </CardContent>
               </Card>
@@ -119,24 +123,28 @@ export function FloridaConquestDashboard() {
 
               <h3 className="text-xl font-bold text-orange-400 mb-4">🌪️ HURRICANE RESILIENCE ADVANTAGE</h3>
               <div
-</> className="grid md:grid-cols-3 gap-4">
+</>
+className="grid md:grid-cols-3 gap-4">
                 <div className="text-center"><>
 
                   <div className="text-2xl font-bold text-transcend">75%</div>
                   <div
-</> className="text-sm text-orange-300">Faster Response Time</div>
+</>
+className="text-sm text-orange-300">Faster Response Time</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-2xl font-bold text-transcend">90%</div>
                   <div
-</> className="text-sm text-orange-300">Insurance Processing Speed</div>
+</>
+className="text-sm text-orange-300">Insurance Processing Speed</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-2xl font-bold text-transcend">24hrs</div>
                   <div
-</> className="text-sm text-orange-300">Damage Assessment</div>
+</>
+className="text-sm text-orange-300">Damage Assessment</div>
                 </div>
               </div>
               <p className="text-orange-200 text-sm mt-4 text-center italic">
@@ -153,13 +161,15 @@ export function FloridaConquestDashboard() {
 
           <h2 className="text-2xl font-bold text-transcend mb-4">INITIATE FLORIDA CONQUEST</h2>
           <div
-</> className="flex flex-wrap gap-4 justify-center"><>
+</>
+className="flex flex-wrap gap-4 justify-center"><>
 
             <Button className="bg-gradient-to-r from-primary to-transcend hover:scale-105 transition-transform">
               LAUNCH SOUTH FLORIDA BLITZ
             </Button>
             <Button
-</> variant="outline" className="border-transcend text-transcend hover:bg-transcend/20 bg-transparent">
+</>
+variant="outline" className="border-transcend text-transcend hover:bg-transcend/20 bg-transparent">
               ACTIVATE HURRICANE MODE
             </Button>
             <Button variant="outline" className="border-accent text-accent hover:bg-accent/20 bg-transparent">

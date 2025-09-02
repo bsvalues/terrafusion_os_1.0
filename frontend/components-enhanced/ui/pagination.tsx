@@ -95,7 +95,8 @@ function PaginationNext({
 
       <span className="hidden sm:block">Next</span>
       <ChevronRightIcon
-</> />
+</>
+/>
     </PaginationLink>
   )
 }

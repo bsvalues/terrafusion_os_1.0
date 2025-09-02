@@ -24,11 +24,13 @@ const NotificationTestHarness = () => {
 
       <div data-testid="unread-count">{unreadCount}</div>
       <button
-</> onClick={() => markAsRead(1)}>Mark #1 as Read</button><>
+</>
+onClick={() => markAsRead(1)}>Mark #1 as Read</button><>
 
       <button onClick={() => dismissNotification(1)}>Dismiss #1</button>
       <button
-</> onClick={dismissAll}>Dismiss All</button>
+</>
+onClick={dismissAll}>Dismiss All</button>
       <div>
         {notifications.map(notification => (
           <div key={notification.id} data-testid={`notification-${notification.id}`}>

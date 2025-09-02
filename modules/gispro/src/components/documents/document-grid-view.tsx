@@ -69,6 +69,7 @@ export function DocumentGridView({ documents, onViewDocument }: DocumentGridView
           </Button>
           <Button
 </>
+
             variant={viewMode === 'list' ? 'secondary' : 'ghost'}
             size="sm"
             className="h-8"

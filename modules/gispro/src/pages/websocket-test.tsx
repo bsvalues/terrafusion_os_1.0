@@ -304,6 +304,7 @@ export default function WebSocketTestPage() {
 
             <CardTitle className="text-xl">WebSocket Testing Console</CardTitle>
             <CardDescription
+</>
 </>>
               Advanced testing utility for WebSocket connections and message formats
             </CardDescription>
@@ -323,7 +324,8 @@ export default function WebSocketTestPage() {
 
                   <Label htmlFor="username">Username</Label>
                   <Input
-</> 
+</>
+
                     id="username" 
                     value={username} 
                     onChange={(e) => setUsername(e.target.value)}
@@ -357,14 +359,16 @@ export default function WebSocketTestPage() {
 
                       <div className="h-3 w-3 rounded-full bg-green-500 mr-2"></div>
                       <span
-</> className="text-green-600 font-medium">Connected</span>
+</>
+className="text-green-600 font-medium">Connected</span>
                     </div>
                   ) : (
                     <div className="flex items-center"><>
 
                       <div className="h-3 w-3 rounded-full bg-red-500 mr-2"></div>
                       <span
-</> className="text-red-600 font-medium">Disconnected</span>
+</>
+className="text-red-600 font-medium">Disconnected</span>
                     </div>
                   )}
                 </div>
@@ -381,7 +385,8 @@ export default function WebSocketTestPage() {
 
                   <Label htmlFor="roomId">Room ID</Label>
                   <Input
-</> 
+</>
+
                     id="roomId" 
                     value={roomId} 
                     onChange={(e) => setRoomId(e.target.value)}
@@ -414,7 +419,8 @@ export default function WebSocketTestPage() {
 
                     <div className="text-sm text-muted-foreground mb-1">Current Room:</div>
                     <Badge
-</> variant="outline" className="text-xs px-2 py-1">
+</>
+variant="outline" className="text-xs px-2 py-1">
                       {joinedRoom}
                     </Badge>
                   </div>
@@ -436,7 +442,8 @@ export default function WebSocketTestPage() {
                       Messages
                     </TabsTrigger>
                     <TabsTrigger
-</> value="custom" className="flex-1">
+</>
+value="custom" className="flex-1">
                       Custom Message
                     </TabsTrigger>
                   </TabsList>
@@ -473,7 +480,8 @@ export default function WebSocketTestPage() {
                                           : msg.data.type}
                                   </div>
                                   <div
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                                     {formatTimestamp(msg.timestamp)}
                                   </div>
                                 </div>
@@ -524,6 +532,7 @@ export default function WebSocketTestPage() {
                       <Label htmlFor="custom-message">Custom JSON Message</Label>
                       <Textarea
 </>
+
                         id="custom-message"
                         rows={10}
                         value={customMessageText}
@@ -531,7 +540,6 @@ export default function WebSocketTestPage() {
                         className="font-mono text-sm"
                       /><>
 
-                      
                       <Button 
                         onClick={sendCustomMessage}
                         disabled={!connected || !joinedRoom}
@@ -541,13 +549,15 @@ export default function WebSocketTestPage() {
                       </Button>
                       
                       <Alert
-</> className="mt-4">
+</>
+className="mt-4">
                         <Info className="h-4 w-4" />
                         <div className="text-sm"><>
 
                           <p className="font-medium">Custom Message Format:</p>
                           <ul
-</> className="list-disc list-inside space-y-1 mt-1">
+</>
+className="list-disc list-inside space-y-1 mt-1">
                             <li><span className="font-mono">type</span>: Message type (e.g., 'chat_message', 'cursor_move')</li>
                             <li><span className="font-mono">roomId</span>: Room identifier</li>
                             <li><span className="font-mono">userId</span>: Your user ID</li>

@@ -42,23 +42,31 @@ const MainNavigation: React.FC = () => {
           onClick={() => navigate('/')}
           sx={{ mr: 2 }}
         >
+
+
           <Home />
         </IconButton>
 
         <Typography
+
 variant='h6' component='div' sx={{ flexGrow: 1 }}>
           Terrafusion OS 1.0
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+
+
           <Button color='inherit' startIcon={<Dashboard />} onClick={() => navigate('/dashboard')}>
             Dashboard
           </Button>
 
           <Button
+
 color='inherit' startIcon={<MenuBook />} onClick={() => navigate('/docs')}>
             API Docs
           </Button>
+
+
           <Button
             color='inherit'
             startIcon={<Description />}
@@ -68,6 +76,7 @@ color='inherit' startIcon={<MenuBook />} onClick={() => navigate('/docs')}>
           </Button>
 
           <IconButton
+
 size='large'
             aria-label='account of current user'
             aria-controls='menu-appbar'
@@ -75,10 +84,13 @@ size='large'
             onClick={handleMenu}
             color='inherit'
           >
+
+
             <AccountCircle />
           </IconButton>
 
           <Menu
+
 id='menu-appbar'
             anchorEl={anchorEl}
             anchorOrigin={{
@@ -93,8 +105,11 @@ id='menu-appbar'
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
+
+
             <MenuItem onClick={() => handleNavigation('/profile')}>Profile</MenuItem>
             <MenuItem
+
 onClick={() => handleNavigation('/settings')}>Settings</MenuItem>
             <MenuItem onClick={() => handleNavigation('/logout')}>Logout</MenuItem>
           </Menu>

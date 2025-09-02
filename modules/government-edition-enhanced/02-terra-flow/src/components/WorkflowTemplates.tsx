@@ -372,7 +372,8 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
 
               <h2 className="text-2xl font-bold">Workflow Templates</h2>
               <p
-</> className="text-blue-100 mt-1">Choose from pre-built automation workflows</p>
+</>
+className="text-blue-100 mt-1">Choose from pre-built automation workflows</p>
             </div>
             <button
               onClick={onClose}
@@ -429,7 +430,8 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
                   <Filter className="w-16 h-16 mx-auto" />
                 </div>
                 <h3
-</> className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+</>
+className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
                 <p className="text-gray-500">Try adjusting your search or category filter</p>
               </div>
             ) : (
@@ -451,11 +453,13 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
                           <template.icon className="w-6 h-6" />
                         </div>
                         <div
+</>
 </>><>
 
                           <h3 className="font-semibold text-gray-900">{template.name}</h3>
                           <div
-</> className="flex items-center space-x-2 mt-1"><>
+</>
+className="flex items-center space-x-2 mt-1"><>
 
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                               COMPLEXITY_LEVELS[template.complexity as keyof typeof COMPLEXITY_LEVELS].color
@@ -463,7 +467,8 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
                               {COMPLEXITY_LEVELS[template.complexity as keyof typeof COMPLEXITY_LEVELS].label}
                             </span>
                             <span
-</> className="text-xs text-gray-500">
+</>
+className="text-xs text-gray-500">
                               <Clock className="w-3 h-3 inline-block mr-1" />
                               {template.estimatedTime}
                             </span>
@@ -472,11 +477,11 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
                       </div>
                     </div><>
 
-
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{template.description}</p>
 
                     <div
-</> className="flex flex-wrap gap-1 mb-4">
+</>
+className="flex flex-wrap gap-1 mb-4">
                       {template.tags.slice(0, 3).map(tag => (
                         <span
                           key={tag}
@@ -494,12 +499,14 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
                         {template.steps} steps • {template.apps.length} apps
                       </div>
                       <div
-</> className="flex items-center space-x-2">
+</>
+className="flex items-center space-x-2">
                         <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><>
 
                           <Copy className="w-4 h-4 text-gray-400" />
                         </button>
                         <motion
+</>
 </>.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
@@ -546,11 +553,13 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
                       <selectedTemplate.icon className="w-6 h-6" />
                     </div>
                     <div
+</>
 </>><>
 
                       <h3 className="text-xl font-semibold text-gray-900">{selectedTemplate.name}</h3>
                       <p
-</> className="text-gray-600">{selectedTemplate.description}</p>
+</>
+className="text-gray-600">{selectedTemplate.description}</p>
                     </div>
                   </div>
                   <button
@@ -567,7 +576,8 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
 
                       <h4 className="font-medium text-gray-900 mb-2">Complexity</h4>
                       <span
-</> className={`px-3 py-1 rounded-full text-sm font-medium ${
+</>
+className={`px-3 py-1 rounded-full text-sm font-medium ${
                         COMPLEXITY_LEVELS[selectedTemplate.complexity as keyof typeof COMPLEXITY_LEVELS].color
                       }`}>
                         {COMPLEXITY_LEVELS[selectedTemplate.complexity as keyof typeof COMPLEXITY_LEVELS].label}
@@ -577,7 +587,8 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
 
                       <h4 className="font-medium text-gray-900 mb-2">Setup Time</h4>
                       <p
-</> className="text-gray-600">{selectedTemplate.estimatedTime}</p>
+</>
+className="text-gray-600">{selectedTemplate.estimatedTime}</p>
                     </div>
                   </div>
 
@@ -585,7 +596,8 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
 
                     <h4 className="font-medium text-gray-900 mb-2">Connected Apps</h4>
                     <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                       {selectedTemplate.apps.map((app: string) => (
                         <span
                           key={app}
@@ -601,7 +613,8 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
 
                     <h4 className="font-medium text-gray-900 mb-2">Tags</h4>
                     <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                       {selectedTemplate.tags.map((tag: string) => (
                         <span
                           key={tag}
@@ -623,6 +636,7 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({ onSelectTemplate,
                     Cancel
                   </button>
                   <motion
+</>
 </>.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}

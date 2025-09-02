@@ -1,28 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { AppBar,
+import React, { useState } from 'react';
+import {
+  Box,
+  AppBar,
   Toolbar,
   Typography,
-  Box,
-  Grid,
-  Card,
-  CardContent,
+  Avatar,
   IconButton,
   Badge,
+  Chip,
+  Card,
+  CardContent,
+  Grid,
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
-  Avatar,
-  Chip } from '@mui/material';
-import { Dashboard,
+} from '@mui/material';
+
+import {
   Settings,
   Notifications,
   AccountCircle,
   Apps,
   Memory,
   Speed,
-  Security } from '@mui/icons-material';
+  Security,
+  Dashboard,
+  Extension,
+} from '@mui/icons-material';
 
 import { useSystemHealth } from '../hooks/useSystemHealth';
 import { useModules } from '../hooks/useModules';
@@ -59,7 +66,7 @@ export const DesktopShell: React.FC = () => {
     <Box
       sx={{
         height: '100vh',
-        background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%)', // Terrafusion Championship Gradient
+        background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%)',
         overflow: 'hidden',
       }}
     >
@@ -67,23 +74,28 @@ export const DesktopShell: React.FC = () => {
       <AppBar
         position='static'
         sx={{
-          background: 'rgba(11, 16, 32, 0.9)', // Terrafusion Deep Space with transparency
+          background: 'rgba(11, 16, 32, 0.9)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(0, 255, 238, 0.2)', // Terrafusion Transcend Cyan border
+          borderBottom: '1px solid rgba(0, 255, 238, 0.2)',
         }}
       >
         <Toolbar>
+          <IconButton color='inherit' onClick={() => setDrawerOpen(true)}>
+            <Apps />
+          </IconButton>
+
           <Avatar
             sx={{
               mr: 2,
-              background: 'linear-gradient(135deg, #0099ff, #00ffee)', // Terrafusion gradient
+              background: 'linear-gradient(135deg, #0099ff, #00ffee)',
               color: '#0b1020',
               fontWeight: 'bold',
-              boxShadow: '0 0 20px rgba(0, 255, 238, 0.4)', // Terrafusion glow
+              boxShadow: '0 0 20px rgba(0, 255, 238, 0.4)',
             }}
           >
             TF
           </Avatar>
+          
           <Typography
             variant='h6'
             component='div'
@@ -96,7 +108,7 @@ export const DesktopShell: React.FC = () => {
               fontWeight: 600,
             }}
           >
-            Terrafusion OS 1.0 • Government. Transcended.
+            TerraFusion OS 1.0 • Government. Transcended.
           </Typography>
 
           {/* System Health Indicators */}
@@ -115,7 +127,7 @@ export const DesktopShell: React.FC = () => {
             />
           </Box>
 
-          <IconButtoncolor='inherit'>
+          <IconButton color='inherit'>
             <Badge badgeContent={systemHealth.notifications} color='error'>
               <Notifications />
             </Badge>
@@ -152,10 +164,10 @@ export const DesktopShell: React.FC = () => {
               <Card
                 className='tf-card'
                 sx={{
-                  background: 'rgba(11, 16, 32, 0.8)', // Terrafusion Deep Space
+                  background: 'rgba(11, 16, 32, 0.8)',
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0, 255, 238, 0.3)', // Terrafusion Transcend Cyan border
-                  boxShadow: '0 20px 40px rgba(10, 15, 28, 0.8), 0 0 60px rgba(0, 255, 238, 0.2)', // Terrafusion shadows
+                  border: '1px solid rgba(0, 255, 238, 0.3)',
+                  boxShadow: '0 20px 40px rgba(10, 15, 28, 0.8), 0 0 60px rgba(0, 255, 238, 0.2)',
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
@@ -170,7 +182,7 @@ export const DesktopShell: React.FC = () => {
                     variant='h4'
                     gutterBottom
                     sx={{
-                      background: 'linear-gradient(135deg, #0099ff, #00ffee)', // Terrafusion gradient text
+                      background: 'linear-gradient(135deg, #0099ff, #00ffee)',
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
@@ -179,14 +191,14 @@ export const DesktopShell: React.FC = () => {
                   >
                     Government AI Operating System
                   </Typography>
-                  <Typographyvariant='body1'
+                  <Typography
+                    variant='body1'
                     sx={{
                       color: 'rgba(255,255,255,0.9)',
                       fontWeight: 500,
                     }}
                   >
-                    1,008 AI Agents • 379M× Performance • Quantum Computing • Government.
-                    Transcended.
+                    50,000+ AI Agents • 379M× Performance • Quantum Computing • Government. Transcended.
                   </Typography>
                   <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                     <Chip label='Benton County' color='primary' size='small' />
@@ -210,7 +222,7 @@ export const DesktopShell: React.FC = () => {
                   <Typography variant='h6' gutterBottom sx={{ color: 'white' }}>
                     System Status
                   </Typography>
-                  <Boxsx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Chip
                       icon={<Apps />}
                       label={`${modules.filter((m) => m.status === 'active').length} Active Modules`}
@@ -255,22 +267,37 @@ export const DesktopShell: React.FC = () => {
       >
         <List>
           <ListItem>
-            <ListItemIcon>
-              <Dashboard sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemTextprimary='System Dashboard' primaryTypographyProps={{ color: 'white' }} />
+            <ListItemButton>
+              <ListItemIcon>
+                <Dashboard sx={{ color: 'white' }} />
+              </ListItemIcon>
+              <ListItemText 
+                primary='System Dashboard' 
+                primaryTypographyProps={{ color: 'white' }} 
+              />
+            </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemIcon>
-              <Apps sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemTextprimary='Module Manager' primaryTypographyProps={{ color: 'white' }} />
+            <ListItemButton>
+              <ListItemIcon>
+                <Extension sx={{ color: 'white' }} />
+              </ListItemIcon>
+              <ListItemText 
+                primary='Module Manager' 
+                primaryTypographyProps={{ color: 'white' }} 
+              />
+            </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemIcon>
-              <AccountCircle sx={{ color: 'white' }} />
-            </ListItemIcon>
-            <ListItemTextprimary='User Settings' primaryTypographyProps={{ color: 'white' }} />
+            <ListItemButton>
+              <ListItemIcon>
+                <AccountCircle sx={{ color: 'white' }} />
+              </ListItemIcon>
+              <ListItemText 
+                primary='User Settings' 
+                primaryTypographyProps={{ color: 'white' }} 
+              />
+            </ListItemButton>
           </ListItem>
         </List>
       </Drawer>

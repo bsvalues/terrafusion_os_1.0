@@ -174,6 +174,8 @@ const PropertyAssessmentWorkflow: React.FC = () => {
         return (
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
+
+
               <TextField
                 fullWidth
                 label="Parcel ID *"
@@ -183,7 +185,8 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                 sx={{ mb: 2 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid
+ item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Property Address *"
@@ -201,22 +204,33 @@ const PropertyAssessmentWorkflow: React.FC = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} md={4}>
               <FormControl fullWidth sx={{ mb: 2 }}>
+
+
                 <InputLabel>Property Type *</InputLabel>
                 <Select
+
 value={propertyData.propertyType}
                   onChange={(e) => setPropertyData(prev => ({ ...prev, propertyType: e.target.value }))}
                   label="Property Type *"
                 >
+
+
                   <MenuItem value="residential">Residential</MenuItem>
                   <MenuItem
+
 value="commercial">Commercial</MenuItem>
+
+
                   <MenuItem value="industrial">Industrial</MenuItem>
                   <MenuItem
+
 value="agricultural">Agricultural</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} md={4}>
+
+
               <TextField
                 fullWidth
                 label="Year Built *"
@@ -226,7 +240,8 @@ value="agricultural">Agricultural</MenuItem>
                 sx={{ mb: 2 }}
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid
+ item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Square Footage *"
@@ -244,10 +259,13 @@ value="agricultural">Agricultural</MenuItem>
           <Box>
             {isProcessing ? (
               <Box sx={{ textAlign: 'center', py: 4 }}>
+
+
                 <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
                   🤖 Orchestrating clarity…
                 </Typography>
                 <LinearProgress
+
 variant="determinate"
                   value={aiAssessmentProgress}
                   sx={{
@@ -269,9 +287,12 @@ variant="determinate"
                   <WorkflowCard>
                     <CardContent sx={{ textAlign: 'center' }}>
                       <Avatar sx={{ background: 'linear-gradient(135deg, #00ffaa, #00cc88)', mx: 'auto', mb: 2 }}>
+
+
                         <LocationOn />
                       </Avatar>
                       <Typography
+
 variant="h6" sx={{ color: 'white', mb: 1 }}>
                         Land Value
                       </Typography>
@@ -285,9 +306,12 @@ variant="h6" sx={{ color: 'white', mb: 1 }}>
                   <WorkflowCard>
                     <CardContent sx={{ textAlign: 'center' }}>
                       <Avatar sx={{ background: 'linear-gradient(135deg, #00d2ff, #0891b2)', mx: 'auto', mb: 2 }}>
+
+
                         <Business />
                       </Avatar>
                       <Typography
+
 variant="h6" sx={{ color: 'white', mb: 1 }}>
                         Improvement Value
                       </Typography>
@@ -301,9 +325,12 @@ variant="h6" sx={{ color: 'white', mb: 1 }}>
                   <WorkflowCard>
                     <CardContent sx={{ textAlign: 'center' }}>
                       <Avatar sx={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', mx: 'auto', mb: 2 }}>
+
+
                         <AttachMoney />
                       </Avatar>
                       <Typography
+
 variant="h6" sx={{ color: 'white', mb: 1 }}>
                         Total Assessed Value
                       </Typography>
@@ -335,6 +362,8 @@ variant="h6" sx={{ color: 'white', mb: 1 }}>
         return (
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
+
+
               <TextField
                 fullWidth
                 label="Owner Name *"
@@ -344,7 +373,8 @@ variant="h6" sx={{ color: 'white', mb: 1 }}>
                 sx={{ mb: 2 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid
+ item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Owner Address *"
@@ -360,6 +390,8 @@ variant="h6" sx={{ color: 'white', mb: 1 }}>
       case 4:
         return (
           <Box>
+
+
             <Alert
               severity="info"
               sx={{
@@ -372,45 +404,70 @@ variant="h6" sx={{ color: 'white', mb: 1 }}>
             >
               Please review all assessment details before final submission.
             </Alert>
-            <Grid container spacing={2}>
+            <Grid
+ container spacing={2}>
               <Grid item xs={12} md={6}>
+
+
                 <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>Property Information</Typography>
                 <Stack
+
 spacing={1}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Parcel ID:</Typography>
                     <Typography
+
 sx={{ color: 'white' }}>{propertyData.parcelId}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Address:</Typography>
                     <Typography
+
 sx={{ color: 'white' }}>{propertyData.address}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Type:</Typography>
                     <Typography
+
 sx={{ color: 'white' }}>{propertyData.propertyType}</Typography>
                   </Box>
                 </Stack>
               </Grid>
               <Grid item xs={12} md={6}>
+
+
                 <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>Assessment Values</Typography>
                 <Stack
+
 spacing={1}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Land Value:</Typography>
                     <Typography
+
 sx={{ color: '#00ffaa' }}>{propertyData.landValue}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Improvement Value:</Typography>
                     <Typography
+
 sx={{ color: '#00d2ff' }}>{propertyData.improvementValue}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Total Value:</Typography>
                     <Typography
+
 sx={{ color: '#667eea', fontWeight: 700 }}>{propertyData.totalValue}</Typography>
                   </Box>
                 </Stack>
@@ -426,16 +483,19 @@ sx={{ color: '#667eea', fontWeight: 700 }}>{propertyData.totalValue}</Typography
 
   return (
     <Box sx={{ p: 3 }}>
+
+
       <Typography variant="h4" className="tf-text-gradient" sx={{ mb: 3, textAlign: 'center' }}>
         🏛️ Property Assessment Workflow
       </Typography>
       
-      <Grid container spacing={4}>
+      <Grid
+ container spacing={4}>
         <Grid item xs={12} md={4}>
           <WorkflowCard>
             <CardContent>
               <Stepper activeStep={activeStep} orientation="vertical">
-                {steps.map((step , index) => (
+                {steps.map((step, index) => (
                   <Step key={step.label}>
                     <StepLabel
                       StepIconComponent={() => (
@@ -474,6 +534,8 @@ sx={{ color: '#667eea', fontWeight: 700 }}>{propertyData.totalValue}</Typography
               {renderStepContent(activeStep)}
               
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+
+
                 <Button
                   disabled={activeStep === 0}
                   onClick={handleBack}
@@ -490,6 +552,7 @@ sx={{ color: '#667eea', fontWeight: 700 }}>{propertyData.totalValue}</Typography
                 </Button>
                 
                 <Button
+
 variant="contained"
                   onClick={handleNext}
                   disabled={!canProceed() && activeStep !== 2 && activeStep !== 4}

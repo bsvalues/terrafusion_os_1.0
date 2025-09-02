@@ -22,7 +22,8 @@ export default function DataMigrationPage() {
 
         <h1 className="text-3xl font-bold tracking-tight">Data Migration</h1>
         <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
           Manage data transfers between BentonGeoPro and external systems
         </p>
       </div>
@@ -32,6 +33,7 @@ export default function DataMigrationPage() {
 
         <AlertTitle>Information</AlertTitle>
         <AlertDescription
+</>
 </>>
           The Data Migration system allows you to transfer spatial data files, documents, 
           and other information between BentonGeoPro and external systems. Connect to FTP servers
@@ -44,7 +46,8 @@ export default function DataMigrationPage() {
 
           <TabsTrigger value="ftp">FTP Migration</TabsTrigger>
           <TabsTrigger
-</> value="spatialest" disabled>SpatialEST Integration</TabsTrigger>
+</>
+value="spatialest" disabled>SpatialEST Integration</TabsTrigger>
           <TabsTrigger value="batch" disabled>Batch Processing</TabsTrigger>
         </TabsList>
         
@@ -54,12 +57,14 @@ export default function DataMigrationPage() {
         </TabsContent>
         
         <TabsContent
-</> value="spatialest">
+</>
+value="spatialest">
           <Card>
             <CardHeader><>
 
               <CardTitle>SpatialEST Integration</CardTitle>
               <CardDescription
+</>
 </>>
                 Connect directly to SpatialEST for seamless data synchronization
               </CardDescription>
@@ -78,6 +83,7 @@ export default function DataMigrationPage() {
 
               <CardTitle>Batch Processing</CardTitle>
               <CardDescription
+</>
 </>>
                 Configure automated batch import/export jobs
               </CardDescription>

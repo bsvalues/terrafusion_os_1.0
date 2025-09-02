@@ -20,6 +20,7 @@ const DocumentationHub: React.FC = () => {
           </Link>
           <Typography
 </>
+
             sx={{ display: 'flex', alignItems: 'center' }}
             color="text.primary"
           >

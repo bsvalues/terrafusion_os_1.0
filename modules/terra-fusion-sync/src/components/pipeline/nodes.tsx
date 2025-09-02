@@ -29,7 +29,8 @@ const BaseNode = memo(({ data, children, className }: BaseNodeProps) => {
 
           <CardTitle className="text-sm font-medium">{data.label}</CardTitle>
           <Button
-</> variant="ghost" size="icon" className="h-8 w-8">
+</>
+variant="ghost" size="icon" className="h-8 w-8">
             <Settings2 className="h-4 w-4" />
           </Button>
         </div>
@@ -67,7 +68,8 @@ const TransformNode = memo(({ data, ...props }: NodeProps) => {
 
         <div className="text-xs">Transform Data</div>
         <Dialog
-</> open={isOpen} onOpenChange={setIsOpen}>
+</>
+open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="w-full">
               {transformation ? 'Edit Transform' : 'Configure Transform'}
@@ -83,6 +85,7 @@ const TransformNode = memo(({ data, ...props }: NodeProps) => {
                 <Label>Current Transformation</Label>
                 <Textarea
 </>
+
                   value={transformation}
                   onChange={(e) => handleApplyTransformation(e.target.value)}
                   placeholder="Enter transformation code..."
@@ -115,7 +118,8 @@ const FilterNode = memo(({ data, ...props }: NodeProps) => (
 
     <div className="text-xs">Filter Data</div>
     <Handle
-</> type="source" position={Position.Right} data-handlepos="right" />
+</>
+type="source" position={Position.Right} data-handlepos="right" />
   </BaseNode>
 ));
 
@@ -125,7 +129,8 @@ const JoinNode = memo(({ data, ...props }: NodeProps) => (
 
     <div className="text-xs">Join Data</div>
     <Handle
-</> type="source" position={Position.Right} data-handlepos="right" />
+</>
+type="source" position={Position.Right} data-handlepos="right" />
   </BaseNode>
 ));
 

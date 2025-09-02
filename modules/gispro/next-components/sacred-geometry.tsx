@@ -220,6 +220,7 @@ export function SacredGeometry() {
             Sacred Geometry Visualization
           </CardTitle>
           <CardDescription
+</>
 </>>
             Advanced property analysis using geometric patterns and mathematical principles
           </CardDescription>
@@ -232,7 +233,8 @@ export function SacredGeometry() {
 
                 <h3 className="font-medium mb-3">Pattern Type</h3>
                 <div
-</> className="grid grid-cols-3 gap-2">
+</>
+className="grid grid-cols-3 gap-2">
                   <Button
                     variant={pattern === "fibonacci" ? "default" : "outline"}
                     size="sm"
@@ -245,6 +247,7 @@ export function SacredGeometry() {
                   </Button>
                   <Button
 </>
+
                     variant={pattern === "voronoi" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setPattern("voronoi")}
@@ -256,6 +259,7 @@ export function SacredGeometry() {
                   </Button>
                   <Button
 </>
+
                     variant={pattern === "golden" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setPattern("golden")}
@@ -271,46 +275,45 @@ export function SacredGeometry() {
 
                 <h3 className="font-medium mb-3">Complexity: {complexity[0]}</h3>
                 <Slider
-</> value={complexity} onValueChange={setComplexity} max={15} min={3} step={1} className="w-full" />
+</>
+value={complexity} onValueChange={setComplexity} max={15} min={3} step={1} className="w-full" />
               </div><>
-
 
               <Button onClick={toggleAnimation} disabled={isAnimating} className="w-full">
                 {isAnimating ? "Animating..." : "Animate Pattern"}
               </Button>
 
               <div
-</> className="space-y-2"><>
+</>
+className="space-y-2"><>
 
                 <h4 className="font-medium text-sm">Pattern Properties</h4>
                 <div
-</> className="space-y-1">
-                  {pattern === "fibonacci" && (
-                    <><>
+</>
+className="space-y-1">
+                  {pattern === "fibonacci" && (<>
 
                       <Badge variant="secondary">Golden Ratio: φ = 1.618...</Badge>
                       <Badge
-</> variant="secondary">Natural Growth Patterns</Badge>
+</>
+variant="secondary">Natural Growth Patterns</Badge>
                       <Badge variant="secondary">Market Trend Analysis</Badge>
-                    </>
                   )}
-                  {pattern === "voronoi" && (
-                    <><>
+                  {pattern === "voronoi" && (<>
 
                       <Badge variant="secondary">Spatial Tessellation</Badge>
                       <Badge
-</> variant="secondary">Territory Mapping</Badge>
+</>
+variant="secondary">Territory Mapping</Badge>
                       <Badge variant="secondary">Market Boundaries</Badge>
-                    </>
                   )}
-                  {pattern === "golden" && (
-                    <><>
+                  {pattern === "golden" && (<>
 
                       <Badge variant="secondary">Divine Proportion</Badge>
                       <Badge
-</> variant="secondary">Aesthetic Harmony</Badge>
+</>
+variant="secondary">Aesthetic Harmony</Badge>
                       <Badge variant="secondary">Value Optimization</Badge>
-                    </>
                   )}
                 </div>
               </div>
@@ -328,18 +331,22 @@ export function SacredGeometry() {
               </div>
 
               <div
-</> className="text-sm text-gray-600"><>
+</>
+className="text-sm text-gray-600"><>
 
                 <h4 className="font-medium mb-2">Geometric Analysis Applications</h4>
                 <ul
-</> className="space-y-1"><>
+</>
+className="space-y-1"><>
 
                   <li>• Property value optimization using golden ratio principles</li>
                             <li
+</>
 </>>• Market territory analysis with Voronoi diagrams</li><>
 
                   <li>• Growth pattern prediction using Fibonacci sequences</li>
                             <li
+</>
 </>>• Spatial relationship modeling for comparable properties</li>
                 </ul>
               </div>

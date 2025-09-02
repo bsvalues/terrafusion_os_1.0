@@ -117,21 +117,25 @@ export default function CostAnalysisPage() {
 
               <Label>Region</Label>
               <Select
-</> value={selectedRegion} onValueChange={setSelectedRegion}>
+</>
+value={selectedRegion} onValueChange={setSelectedRegion}>
                 <SelectTrigger className="w-48 bg-slate-800/50 border-slate-700/50"><>
 
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="all">All Regions</SelectItem>
                   <SelectItem
-</> value="benton-county">Benton County</SelectItem><>
+</>
+value="benton-county">Benton County</SelectItem><>
 
                   <SelectItem value="corvallis">Corvallis</SelectItem>
                   <SelectItem
-</> value="albany">Albany</SelectItem>
+</>
+value="albany">Albany</SelectItem>
                   <SelectItem value="philomath">Philomath</SelectItem>
                 </SelectContent>
               </Select>
@@ -141,21 +145,25 @@ export default function CostAnalysisPage() {
 
               <Label>Time Period</Label>
               <Select
-</> value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+</>
+value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
                 <SelectTrigger className="w-48 bg-slate-800/50 border-slate-700/50"><>
 
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="3months">Last 3 Months</SelectItem>
                   <SelectItem
-</> value="6months">Last 6 Months</SelectItem><>
+</>
+value="6months">Last 6 Months</SelectItem><>
 
                   <SelectItem value="12months">Last 12 Months</SelectItem>
                   <SelectItem
-</> value="24months">Last 24 Months</SelectItem>
+</>
+value="24months">Last 24 Months</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -176,13 +184,15 @@ export default function CostAnalysisPage() {
             Regional Analysis
           </TabsTrigger>
           <TabsTrigger
-</> value="building-types" className="flex items-center gap-2"><>
+</>
+value="building-types" className="flex items-center gap-2"><>
 
             <Building2 className="h-4 w-4" />
             Building Types
           </TabsTrigger>
           <TabsTrigger
-</> value="cost-breakdown" className="flex items-center gap-2">
+</>
+value="cost-breakdown" className="flex items-center gap-2">
             <PieChart className="h-4 w-4" />
             Cost Breakdown
           </TabsTrigger>
@@ -202,13 +212,15 @@ export default function CostAnalysisPage() {
 
                         <h4 className="font-medium text-slate-200">{region.region}</h4>
                         <p
-</> className="text-sm text-slate-400">{region.projects} projects</p>
+</>
+className="text-sm text-slate-400">{region.projects} projects</p>
                       </div>
                       <div className="text-right"><>
 
                         <p className="text-lg font-semibold text-slate-200">${region.avgCost}/sq ft</p>
                         <div
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                           {region.trend === 'up' ? (
                             <ArrowUpRight className="h-4 w-4 text-emerald-400" />
                           ) : region.trend === 'down' ? (
@@ -241,7 +253,8 @@ export default function CostAnalysisPage() {
 
                     <p className="text-2xl font-bold text-sky-400">+8.5%</p>
                     <p
-</> className="text-slate-400">Average cost increase</p>
+</>
+className="text-slate-400">Average cost increase</p>
                     <p className="text-xs text-slate-500 mt-1">vs. previous year</p>
                   </div>
 
@@ -250,25 +263,29 @@ export default function CostAnalysisPage() {
 
                       <span className="text-slate-400">Material Costs</span>
                       <span
-</> className="text-amber-400">+12.3%</span>
+</>
+className="text-amber-400">+12.3%</span>
                     </div>
                     <div className="flex justify-between items-center"><>
 
                       <span className="text-slate-400">Labor Costs</span>
                       <span
-</> className="text-amber-400">+6.8%</span>
+</>
+className="text-amber-400">+6.8%</span>
                     </div>
                     <div className="flex justify-between items-center"><>
 
                       <span className="text-slate-400">Permit Fees</span>
                       <span
-</> className="text-emerald-400">+2.1%</span>
+</>
+className="text-emerald-400">+2.1%</span>
                     </div>
                     <div className="flex justify-between items-center"><>
 
                       <span className="text-slate-400">Equipment</span>
                       <span
-</> className="text-amber-400">+4.5%</span>
+</>
+className="text-amber-400">+4.5%</span>
                     </div>
                   </div>
                 </div>
@@ -290,12 +307,14 @@ export default function CostAnalysisPage() {
 
                       <h4 className="font-medium text-slate-200 text-sm">{type.type}</h4>
                       <span
-</> className="text-xs text-slate-400">{type.marketShare}%</span>
+</>
+className="text-xs text-slate-400">{type.marketShare}%</span>
                     </div><>
 
                     <p className="text-xl font-bold text-sky-400">${type.avgCost}/sq ft</p>
                     <p
-</> className="text-sm text-slate-400">{type.count} projects</p>
+</>
+className="text-sm text-slate-400">{type.count} projects</p>
                     <div className="mt-2 bg-slate-700/50 rounded-full h-2">
                       <div 
                         className="bg-sky-500 h-2 rounded-full" 
@@ -323,7 +342,8 @@ export default function CostAnalysisPage() {
 
                         <span className="text-slate-400 capitalize">{category}</span>
                         <span
-</> className="text-slate-300">{percentage}%</span>
+</>
+className="text-slate-300">{percentage}%</span>
                       </div>
                       <div className="bg-slate-700/50 rounded-full h-2">
                         <div 
@@ -347,7 +367,8 @@ export default function CostAnalysisPage() {
 
                     <h4 className="font-medium text-emerald-400 mb-2">Most Cost-Effective</h4>
                     <p
-</> className="text-slate-300">Industrial Warehouse</p>
+</>
+className="text-slate-300">Industrial Warehouse</p>
                     <p className="text-sm text-slate-400">$120/sq ft average</p>
                   </div>
                   
@@ -355,7 +376,8 @@ export default function CostAnalysisPage() {
 
                     <h4 className="font-medium text-amber-400 mb-2">Highest Premium</h4>
                     <p
-</> className="text-slate-300">Educational Facilities</p>
+</>
+className="text-slate-300">Educational Facilities</p>
                     <p className="text-sm text-slate-400">$200/sq ft average</p>
                   </div>
                   
@@ -363,7 +385,8 @@ export default function CostAnalysisPage() {
 
                     <h4 className="font-medium text-sky-400 mb-2">Most Popular</h4>
                     <p
-</> className="text-slate-300">Single Family Residential</p>
+</>
+className="text-slate-300">Single Family Residential</p>
                     <p className="text-sm text-slate-400">38.9% of all projects</p>
                   </div>
                 </div>

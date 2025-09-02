@@ -215,7 +215,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                   <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                   <div
-</> className="h-8 bg-gray-200 rounded w-1/2"></div>
+</>
+className="h-8 bg-gray-200 rounded w-1/2"></div>
                 </div>
               </CardContent>
             </Card>
@@ -245,13 +246,15 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
             <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
             <BarChart3
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent><>
 
             <div className="text-2xl font-bold">{projectStats.totalProjects}</div>
             <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
               {projectStats.activeProjects} active
             </p>
           </CardContent>
@@ -262,13 +265,15 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
             <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
             <Target
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent><>
 
             <div className="text-2xl font-bold">{Math.round(projectStats.completionRate)}%</div>
             <Progress
-</> value={projectStats.completionRate} className="mt-2" />
+</>
+value={projectStats.completionRate} className="mt-2" />
           </CardContent>
         </Card>
 
@@ -277,7 +282,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
             <CardTitle className="text-sm font-medium">Overdue Items</CardTitle>
             <Warning
-</> className="h-4 w-4 text-destructive" />
+</>
+className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent><>
 
@@ -285,7 +291,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
               {projectStats.overdueProjects + projectStats.overdueTasks}
             </div>
             <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
               {projectStats.overdueProjects} projects, {projectStats.overdueTasks} tasks
             </p>
           </CardContent>
@@ -296,7 +303,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
             <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
             <DollarSign
-</> className="h-4 w-4 text-muted-foreground" />
+</>
+className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent><>
 
@@ -304,7 +312,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
               ${projectStats.totalBudget.toLocaleString()}
             </div>
             <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
               Estimated across all projects
             </p>
           </CardContent>
@@ -316,11 +325,13 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger
-</> value="progress">Progress</TabsTrigger><>
+</>
+value="progress">Progress</TabsTrigger><>
 
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger
-</> value="timeline">Timeline</TabsTrigger>
+</>
+value="timeline">Timeline</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -353,7 +364,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
                         ))}
                       </Pie>
                       <Tooltip
-</> />
+</>
+/>
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -395,25 +407,29 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                   <div className="text-2xl font-bold text-green-600">{timelineAnalysis.onTime}</div>
                   <div
-</> className="text-xs text-muted-foreground">Completed On Time</div>
+</>
+className="text-xs text-muted-foreground">Completed On Time</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-2xl font-bold text-blue-600">{timelineAnalysis.onTrack}</div>
                   <div
-</> className="text-xs text-muted-foreground">On Track</div>
+</>
+className="text-xs text-muted-foreground">On Track</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-2xl font-bold text-red-600">{timelineAnalysis.delayed}</div>
                   <div
-</> className="text-xs text-muted-foreground">Delayed</div>
+</>
+className="text-xs text-muted-foreground">Delayed</div>
                 </div>
                 <div className="text-center"><>
 
                   <div className="text-2xl font-bold">{timelineAnalysis.total}</div>
                   <div
-</> className="text-xs text-muted-foreground">Total Projects</div>
+</>
+className="text-xs text-muted-foreground">Total Projects</div>
                 </div>
               </div>
             </CardContent>
@@ -482,11 +498,13 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                           <p className="font-medium text-sm">{project.name}</p>
                           <div
-</> className="flex items-center gap-2 text-xs text-muted-foreground"><>
+</>
+className="flex items-center gap-2 text-xs text-muted-foreground"><>
 
                             <Badge variant="outline">{project.status.replace('_', ' ')}</Badge>
                             <Badge
-</> variant={project.priority === 'critical' || project.priority === 'emergency' ? 'destructive' : 'secondary'}>
+</>
+variant={project.priority === 'critical' || project.priority === 'emergency' ? 'destructive' : 'secondary'}>
                               {project.priority}
                             </Badge>
                             {isOverdue && (
@@ -498,7 +516,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                           <p className="text-sm font-medium">{Math.round(progress)}%</p>
                           <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                             {project.tasks.filter(t => t.status === TaskStatus.DONE).length} / {project.tasks.length} tasks
                           </p>
                         </div>
@@ -550,19 +569,22 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                   <span className="text-sm">Average Tasks per Project</span>
                   <span
-</> className="font-medium">{Math.round(projectStats.averageTasksPerProject)}</span>
+</>
+className="font-medium">{Math.round(projectStats.averageTasksPerProject)}</span>
                 </div>
                 <div className="flex justify-between items-center"><>
 
                   <span className="text-sm">Task Completion Rate</span>
                   <span
-</> className="font-medium">{Math.round(projectStats.completionRate)}%</span>
+</>
+className="font-medium">{Math.round(projectStats.completionRate)}%</span>
                 </div>
                 <div className="flex justify-between items-center"><>
 
                   <span className="text-sm">Project Success Rate</span>
                   <span
-</> className="font-medium">
+</>
+className="font-medium">
                     {projectStats.totalProjects > 0 
                       ? Math.round((projectStats.completedProjects / projectStats.totalProjects) * 100)
                       : 0
@@ -573,7 +595,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                   <span className="text-sm">On-Time Delivery Rate</span>
                   <span
-</> className="font-medium">
+</>
+className="font-medium">
                     {timelineAnalysis.total > 0 
                       ? Math.round((timelineAnalysis.onTime / timelineAnalysis.total) * 100)
                       : 0
@@ -592,44 +615,52 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                   <span className="text-sm">Projects Completed</span>
                   <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                     <span className="font-medium">{projectStats.completedProjects}</span>
                     <CheckCircle2
-</> className="h-4 w-4 text-green-500" />
+</>
+className="h-4 w-4 text-green-500" />
                   </div>
                 </div>
                 <div className="flex justify-between items-center"><>
 
                   <span className="text-sm">Projects Overdue</span>
                   <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                     <span className="font-medium">{projectStats.overdueProjects}</span>
                     <Warning
-</> className="h-4 w-4 text-red-500" />
+</>
+className="h-4 w-4 text-red-500" />
                   </div>
                 </div>
                 <div className="flex justify-between items-center"><>
 
                   <span className="text-sm">Tasks Overdue</span>
                   <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                     <span className="font-medium">{projectStats.overdueTasks}</span>
                     <Clock
-</> className="h-4 w-4 text-red-500" />
+</>
+className="h-4 w-4 text-red-500" />
                   </div>
                 </div>
                 <div className="flex justify-between items-center"><>
 
                   <span className="text-sm">Budget Utilization</span>
                   <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
                     <span className="font-medium">${projectStats.totalBudget.toLocaleString()}</span>
                     <DollarSign
-</> className="h-4 w-4 text-blue-500" />
+</>
+className="h-4 w-4 text-blue-500" />
                   </div>
                 </div>
               </CardContent>
@@ -645,7 +676,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                 <CardTitle className="text-sm font-medium">On Schedule</CardTitle>
                 <TrendingUp
-</> className="h-4 w-4 text-green-500" />
+</>
+className="h-4 w-4 text-green-500" />
               </CardHeader>
               <CardContent><>
 
@@ -653,7 +685,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
                   {timelineAnalysis.onTrack + timelineAnalysis.onTime}
                 </div>
                 <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                   Projects meeting deadlines
                 </p>
               </CardContent>
@@ -664,7 +697,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                 <CardTitle className="text-sm font-medium">At Risk</CardTitle>
                 <Warning
-</> className="h-4 w-4 text-orange-500" />
+</>
+className="h-4 w-4 text-orange-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-orange-600">
@@ -686,7 +720,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                 <CardTitle className="text-sm font-medium">Overdue</CardTitle>
                 <TrendingDown
-</> className="h-4 w-4 text-red-500" />
+</>
+className="h-4 w-4 text-red-500" />
               </CardHeader>
               <CardContent><>
 
@@ -694,7 +729,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
                   {timelineAnalysis.delayed}
                 </div>
                 <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                   Past deadline
                 </p>
               </CardContent>
@@ -728,7 +764,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
 
                           <p className="font-medium text-sm">{project.name}</p>
                           <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                             Team: {project.team.name}
                           </p>
                         </div>
@@ -745,7 +782,8 @@ export const ProjectAnalytics: React.FC<ProjectAnalyticsProps> = ({
                             }
                           </p>
                           <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                             {format(new Date(project.timeline.endDate), 'MMM dd, yyyy')}
                           </p>
                         </div>

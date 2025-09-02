@@ -18,6 +18,7 @@ export function CostFactorDashboard() {
 
         <AlertTitle>Error loading cost factor sources</AlertTitle>
         <AlertDescription
+</>
 </>>
           {error instanceof Error ? error.message : 'Failed to load cost factor sources'}
         </AlertDescription>
@@ -34,12 +35,14 @@ export function CostFactorDashboard() {
       <h1 className="text-3xl font-bold mb-6">Benton County Cost Factors</h1>
       
       <div
-</> className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+</>
+className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader><>
 
             <CardTitle>Building Cost Data</CardTitle>
             <CardDescription
+</>
 </>>
               Cost factors for calculating building valuations
             </CardDescription>
@@ -67,6 +70,7 @@ export function CostFactorDashboard() {
 
             <CardTitle>Regional Multipliers</CardTitle>
             <CardDescription
+</>
 </>>
               Location-based adjustment factors
             </CardDescription>
@@ -90,6 +94,7 @@ export function CostFactorDashboard() {
 
             <CardTitle>Quality Grades</CardTitle>
             <CardDescription
+</>
 </>>
               Construction quality adjustment factors
             </CardDescription>
@@ -120,18 +125,21 @@ export function CostFactorDashboard() {
 
             <TabsTrigger value="residential">Residential</TabsTrigger>
             <TabsTrigger
-</> value="commercial">Commercial</TabsTrigger><>
+</>
+value="commercial">Commercial</TabsTrigger><>
 
             <TabsTrigger value="industrial">Industrial</TabsTrigger>
             <TabsTrigger
-</> value="complexity">Complexity Factors</TabsTrigger>
+</>
+value="complexity">Complexity Factors</TabsTrigger>
           </TabsList>
           
           <TabsContent value="residential" className="p-4 border rounded-md"><>
 
             <h2 className="text-2xl font-bold mb-4">Residential Building Cost Factors</h2>
             <div
-</> className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+</>
+className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {defaultBuildingTypes.filter(type => type === 'RES').map((type) => (
                 <CostFactorTable 
                   key={type} 
@@ -147,7 +155,8 @@ export function CostFactorDashboard() {
 
             <h2 className="text-2xl font-bold mb-4">Commercial Building Cost Factors</h2>
             <div
-</> className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+</>
+className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {defaultBuildingTypes.filter(type => type === 'COM').map((type) => (
                 <CostFactorTable 
                   key={type} 
@@ -163,7 +172,8 @@ export function CostFactorDashboard() {
 
             <h2 className="text-2xl font-bold mb-4">Industrial Building Cost Factors</h2>
             <div
-</> className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+</>
+className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {defaultBuildingTypes.filter(type => type === 'IND').map((type) => (
                 <CostFactorTable 
                   key={type} 
@@ -179,7 +189,8 @@ export function CostFactorDashboard() {
 
             <h2 className="text-2xl font-bold mb-4">Complexity Factors</h2>
             <div
-</> className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+</>
+className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <ComplexityFactorsTable 
                 category="STORIES" 
                 title="Story Height Factors"
@@ -199,6 +210,7 @@ export function CostFactorDashboard() {
 
           <AlertTitle>No cost factor sources available</AlertTitle>
           <AlertDescription
+</>
 </>>
             No cost factor sources have been configured. Please contact the system administrator.
           </AlertDescription>

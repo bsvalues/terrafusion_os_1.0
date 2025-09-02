@@ -198,12 +198,14 @@ export const EnhancedPluginDiscovery: React.FC<EnhancedPluginDiscoveryProps> = (
 
                   <h4 className="font-medium text-gray-900">{plugin.name}</h4>
                   <span
-</> className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">AI Pick</span>
+</>
+className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">AI Pick</span>
                 </div><>
 
                 <p className="text-sm text-gray-600 mb-3 line-clamp-2">{plugin.description}</p>
                 <div
-</> className="flex items-center justify-between">
+</>
+className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
                     <span className="text-sm text-gray-600">{plugin.rating}</span>
@@ -246,11 +248,13 @@ export const EnhancedPluginDiscovery: React.FC<EnhancedPluginDiscoveryProps> = (
 
                 <div className="bg-current rounded-sm"></div>
                 <div
-</> className="bg-current rounded-sm"></div><>
+</>
+className="bg-current rounded-sm"></div><>
 
                 <div className="bg-current rounded-sm"></div>
                 <div
-</> className="bg-current rounded-sm"></div>
+</>
+className="bg-current rounded-sm"></div>
               </div>
             </button>
             <button
@@ -261,7 +265,8 @@ export const EnhancedPluginDiscovery: React.FC<EnhancedPluginDiscoveryProps> = (
 
                 <div className="h-1 bg-current rounded"></div>
                 <div
-</> className="h-1 bg-current rounded"></div>
+</>
+className="h-1 bg-current rounded"></div>
                 <div className="h-1 bg-current rounded"></div>
               </div>
             </button>
@@ -278,15 +283,18 @@ export const EnhancedPluginDiscovery: React.FC<EnhancedPluginDiscoveryProps> = (
 
             <option value="">All Categories</option>
             <option
-</> value="Infrastructure & Integration">Infrastructure</option><>
+</>
+value="Infrastructure & Integration">Infrastructure</option><>
 
             <option value="Assessment & Valuation">Assessment</option>
             <option
-</> value="Analytics & Reporting">Analytics</option><>
+</>
+value="Analytics & Reporting">Analytics</option><>
 
             <option value="Workflow & Automation">Workflow</option>
             <option
-</> value="Compliance & Audit">Compliance</option>
+</>
+value="Compliance & Audit">Compliance</option>
           </select>
 
           <select
@@ -297,11 +305,13 @@ export const EnhancedPluginDiscovery: React.FC<EnhancedPluginDiscoveryProps> = (
 
             <option value="">All Tiers</option>
             <option
-</> value="Tier1CoreFoundation">Foundation</option><>
+</>
+value="Tier1CoreFoundation">Foundation</option><>
 
             <option value="Tier2CostForgeProfessional">Professional</option>
             <option
-</> value="Tier3EnterpriseSuite">Enterprise</option>
+</>
+value="Tier3EnterpriseSuite">Enterprise</option>
           </select>
 
           <select
@@ -312,11 +322,13 @@ export const EnhancedPluginDiscovery: React.FC<EnhancedPluginDiscoveryProps> = (
 
             <option value="relevance">Most Relevant</option>
             <option
-</> value="downloads">Most Downloaded</option><>
+</>
+value="downloads">Most Downloaded</option><>
 
             <option value="rating">Highest Rated</option>
             <option
-</> value="updated">Recently Updated</option>
+</>
+value="updated">Recently Updated</option>
           </select>
 
           <div className="flex items-center space-x-4">
@@ -337,7 +349,8 @@ export const EnhancedPluginDiscovery: React.FC<EnhancedPluginDiscoveryProps> = (
 
           <span>{filteredPlugins.length} plugins found</span>
           <div
-</> className="flex items-center space-x-2">
+</>
+className="flex items-center space-x-2">
             <Filter className="w-4 h-4" />
             <span>Filters active: {Object.values(filters).filter(Boolean).length}</span>
           </div>
@@ -369,7 +382,8 @@ export const EnhancedPluginDiscovery: React.FC<EnhancedPluginDiscoveryProps> = (
             <Search className="w-12 h-12 mx-auto" />
           </div>
           <h3
-</> className="text-lg font-medium text-gray-900 mb-2">No plugins found</h3>
+</>
+className="text-lg font-medium text-gray-900 mb-2">No plugins found</h3>
           <p className="text-gray-600">Try adjusting your search criteria or filters</p>
         </div>
       )}
@@ -403,7 +417,8 @@ const PluginCard: React.FC<PluginCardProps> = ({
 
               <h3 className="text-lg font-semibold text-gray-900">{plugin.name}</h3>
               <span
-</> className={`px-2 py-1 text-xs font-medium rounded-full border ${getTierColor(plugin.tier)}`}>
+</>
+className={`px-2 py-1 text-xs font-medium rounded-full border ${getTierColor(plugin.tier)}`}>
                 {getTierLabel(plugin.tier)}
               </span>
               {plugin.featured && (
@@ -416,7 +431,8 @@ const PluginCard: React.FC<PluginCardProps> = ({
 
             <p className="text-gray-600 mb-3">{plugin.description}</p>
             <div
-</> className="flex items-center space-x-4 text-sm text-gray-500">
+</>
+className="flex items-center space-x-4 text-sm text-gray-500">
               <div className="flex items-center space-x-1">
                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
                 <span>{plugin.rating}</span>
@@ -441,6 +457,7 @@ const PluginCard: React.FC<PluginCardProps> = ({
             </button>
             <button
 </>
+
               onClick={() => onInstall(plugin.id)}
               className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
             >
@@ -458,16 +475,17 @@ const PluginCard: React.FC<PluginCardProps> = ({
 
         <h3 className="text-lg font-semibold text-gray-900 truncate">{plugin.name}</h3>
         <span
-</> className={`px-2 py-1 text-xs font-medium rounded-full border ${getTierColor(plugin.tier)}`}>
+</>
+className={`px-2 py-1 text-xs font-medium rounded-full border ${getTierColor(plugin.tier)}`}>
           {getTierLabel(plugin.tier)}
         </span>
       </div><>
 
-      
       <p className="text-gray-600 text-sm mb-4 line-clamp-3">{plugin.description}</p>
       
       <div
-</> className="flex items-center space-x-3 mb-4 text-sm text-gray-500">
+</>
+className="flex items-center space-x-3 mb-4 text-sm text-gray-500">
         <div className="flex items-center space-x-1">
           <Star className="w-4 h-4 text-yellow-400 fill-current" />
           <span>{plugin.rating}</span>
@@ -503,6 +521,7 @@ const PluginCard: React.FC<PluginCardProps> = ({
         </button>
         <button
 </>
+
           onClick={() => onInstall(plugin.id)}
           className="flex-1 px-3 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
         >

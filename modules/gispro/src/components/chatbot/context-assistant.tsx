@@ -226,7 +226,6 @@ function ContextAssistant() {
   
   // Render the assistant UI
   return (
-    <>
       {/* Chat toggle button */}
       <Button
         variant="outline"
@@ -268,7 +267,6 @@ function ContextAssistant() {
         
         {/* Chat content - only shown when not minimized */}
         {!isMinimized && (
-          <>
             {/* Messages area */}
             <CardContent className="p-0 h-[400px]">
               <ScrollArea className="h-full px-3 pt-3">
@@ -301,7 +299,8 @@ function ContextAssistant() {
 
                     <p className="text-sm font-medium text-muted-foreground mb-2">Suggested questions:</p>
                     <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                       {getContextForRoute().suggestedQuestions.map((question /* , index */) => (
                         <Badge
                           key={index}
@@ -342,10 +341,8 @@ function ContextAssistant() {
                 </Button>
               </div>
             </CardFooter>
-          </>
         )}
       </Card>
-    </>
   );
 }
 

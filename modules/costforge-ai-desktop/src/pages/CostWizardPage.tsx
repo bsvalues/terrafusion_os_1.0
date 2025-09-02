@@ -175,6 +175,7 @@ const CostWizardPage: React.FC = () => {
                   <Label>Project Name</Label>
                   <Input
 </>
+
                     placeholder="Enter project name"
                     value={wizardData.projectName}
                     onChange={(e) => updateWizardData('projectName', e.target.value)}
@@ -186,12 +187,14 @@ const CostWizardPage: React.FC = () => {
 
                   <Label>Building Type</Label>
                   <Select
-</> value={wizardData.buildingType} onValueChange={(value) => updateWizardData('buildingType', value)}>
+</>
+value={wizardData.buildingType} onValueChange={(value) => updateWizardData('buildingType', value)}>
                     <SelectTrigger className="bg-slate-800/50 border-slate-700/50"><>
 
                       <SelectValue placeholder="Select building type" />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>>
                       {buildingTypes.map(type => (
                         <SelectItem key={type.value} value={type.value}>
@@ -206,7 +209,8 @@ const CostWizardPage: React.FC = () => {
 
                   <Label>Location</Label>
                   <div
-</> className="flex items-center gap-2 p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
+</>
+className="flex items-center gap-2 p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
                     <MapPin className="h-4 w-4 text-sky-400" />
                     <span className="text-slate-300">{wizardData.region}</span>
                   </div>
@@ -230,6 +234,7 @@ const CostWizardPage: React.FC = () => {
                     <Label>Square Footage</Label>
                     <Input
 </>
+
                       type="number"
                       placeholder="Enter square footage"
                       value={wizardData.squareFootage}
@@ -242,21 +247,25 @@ const CostWizardPage: React.FC = () => {
 
                     <Label>Number of Stories</Label>
                     <Select
-</> value={wizardData.stories} onValueChange={(value) => updateWizardData('stories', value)}>
+</>
+value={wizardData.stories} onValueChange={(value) => updateWizardData('stories', value)}>
                       <SelectTrigger className="bg-slate-800/50 border-slate-700/50"><>
 
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>><>
 
                         <SelectItem value="1">1 Story</SelectItem>
                         <SelectItem
-</> value="2">2 Stories</SelectItem><>
+</>
+value="2">2 Stories</SelectItem><>
 
                         <SelectItem value="3">3 Stories</SelectItem>
                         <SelectItem
-</> value="4">4+ Stories</SelectItem>
+</>
+value="4">4+ Stories</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -267,6 +276,7 @@ const CostWizardPage: React.FC = () => {
                   <Label>Year Built</Label>
                   <Input
 </>
+
                     type="number"
                     placeholder="Enter year built"
                     value={wizardData.yearBuilt}
@@ -279,21 +289,25 @@ const CostWizardPage: React.FC = () => {
 
                   <Label>Occupancy Type</Label>
                   <Select
-</> value={wizardData.occupancyType} onValueChange={(value) => updateWizardData('occupancyType', value)}>
+</>
+value={wizardData.occupancyType} onValueChange={(value) => updateWizardData('occupancyType', value)}>
                     <SelectTrigger className="bg-slate-800/50 border-slate-700/50"><>
 
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent
+</>
 </>><>
 
                       <SelectItem value="residential">Residential</SelectItem>
                       <SelectItem
-</> value="commercial">Commercial</SelectItem><>
+</>
+value="commercial">Commercial</SelectItem><>
 
                       <SelectItem value="industrial">Industrial</SelectItem>
                       <SelectItem
-</> value="institutional">Institutional</SelectItem>
+</>
+value="institutional">Institutional</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -315,12 +329,14 @@ const CostWizardPage: React.FC = () => {
 
                     <Label>Quality Class</Label>
                     <Select
-</> value={wizardData.qualityClass} onValueChange={(value) => updateWizardData('qualityClass', value)}>
+</>
+value={wizardData.qualityClass} onValueChange={(value) => updateWizardData('qualityClass', value)}>
                       <SelectTrigger className="bg-slate-800/50 border-slate-700/50"><>
 
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>>
                         {qualityClasses.map(quality => (
                           <SelectItem key={quality.value} value={quality.value}>
@@ -335,12 +351,14 @@ const CostWizardPage: React.FC = () => {
 
                     <Label>Construction Type</Label>
                     <Select
-</> value={wizardData.constructionType} onValueChange={(value) => updateWizardData('constructionType', value)}>
+</>
+value={wizardData.constructionType} onValueChange={(value) => updateWizardData('constructionType', value)}>
                       <SelectTrigger className="bg-slate-800/50 border-slate-700/50"><>
 
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>>
                         {constructionTypes.map(type => (
                           <SelectItem key={type.value} value={type.value}>
@@ -357,6 +375,7 @@ const CostWizardPage: React.FC = () => {
                   <Label>Project Notes (Optional)</Label>
                   <Textarea
 </>
+
                     placeholder="Add any additional notes about the project..."
                     value={wizardData.notes}
                     onChange={(e) => updateWizardData('notes', e.target.value)}
@@ -385,7 +404,8 @@ const CostWizardPage: React.FC = () => {
 
                 <h2 className="text-2xl font-bold text-slate-100 mb-2">Estimate Complete</h2>
                 <p
-</> className="text-slate-400">Your building cost estimate has been calculated</p>
+</>
+className="text-slate-400">Your building cost estimate has been calculated</p>
               </div>
             </EnterpriseCard>
 
@@ -402,7 +422,8 @@ const CostWizardPage: React.FC = () => {
                         ${estimate.totalCost.toLocaleString()}
                       </p>
                       <p
-</> className="text-slate-400">Total Estimated Cost</p>
+</>
+className="text-slate-400">Total Estimated Cost</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -410,7 +431,8 @@ const CostWizardPage: React.FC = () => {
 
                         <p className="text-sm text-slate-400">Cost per Sq Ft</p>
                         <p
-</> className="text-lg font-semibold text-slate-200">
+</>
+className="text-lg font-semibold text-slate-200">
                           ${estimate.costPerSqFt.toFixed(2)}
                         </p>
                       </div>
@@ -418,7 +440,8 @@ const CostWizardPage: React.FC = () => {
 
                         <p className="text-sm text-slate-400">Base Rate</p>
                         <p
-</> className="text-lg font-semibold text-slate-200">
+</>
+className="text-lg font-semibold text-slate-200">
                           ${estimate.baseCost}/sq ft
                         </p>
                       </div>
@@ -438,7 +461,8 @@ const CostWizardPage: React.FC = () => {
 
                         <span className="text-slate-400 capitalize">{category}</span>
                         <span
-</> className="text-slate-200 font-medium">
+</>
+className="text-slate-200 font-medium">
                           ${(cost as number).toLocaleString()}
                         </span>
                       </div>
@@ -478,7 +502,8 @@ const CostWizardPage: React.FC = () => {
                 Step {currentStep} of {totalSteps}
               </h3>
               <span
-</> className="text-sm text-slate-400">
+</>
+className="text-sm text-slate-400">
                 {Math.round((currentStep / totalSteps) * 100)}% Complete
               </span>
             </div>
@@ -490,10 +515,12 @@ const CostWizardPage: React.FC = () => {
 
               <span>Project Info</span>
               <span
+</>
 </>>Specifications</span><>
 
               <span>Quality & Construction</span>
               <span
+</>
 </>>Results</span>
             </div>
           </div>
@@ -521,6 +548,7 @@ const CostWizardPage: React.FC = () => {
 
           <Button
 </>
+
             onClick={nextStep}
             disabled={!canProceed()}
             className="bg-sky-600 hover:bg-sky-700"
@@ -560,14 +588,16 @@ const CostWizardPage: React.FC = () => {
           </Button>
 
           <Button
-</> className="bg-emerald-600 hover:bg-emerald-700"><>
+</>
+className="bg-emerald-600 hover:bg-emerald-700"><>
 
             <Save className="mr-2 h-4 w-4" />
             Save Estimate
           </Button>
 
           <Button
-</> variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800">
+</>
+variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800">
             <FileText className="mr-2 h-4 w-4" />
             Export Report
           </Button>

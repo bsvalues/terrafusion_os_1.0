@@ -87,7 +87,8 @@ export function QuickParcelPreview({
 
           <TabsTrigger value="info">Information</TabsTrigger>
           <TabsTrigger
-</> value="map">Map View</TabsTrigger>
+</>
+value="map">Map View</TabsTrigger>
         </TabsList>
         
         <TabsContent value="info" className="p-0">
@@ -102,7 +103,8 @@ export function QuickParcelPreview({
 
                   <h3 className="font-mono text-sm mb-1">{parcelInfo.parcelId}</h3>
                   <Badge
-</> variant="outline" className="bg-primary-50 text-primary-700 border-primary-200">
+</>
+variant="outline" className="bg-primary-50 text-primary-700 border-primary-200">
                     {parcelInfo.propertyType}
                   </Badge>
                 </div>
@@ -117,7 +119,8 @@ export function QuickParcelPreview({
                     Owner
                   </div>
                   <div
-</> className="font-medium text-sm">{parcelInfo.ownerName}</div>
+</>
+className="font-medium text-sm">{parcelInfo.ownerName}</div>
                 </div>
                 <div className="bg-neutral-50 p-2.5 rounded-md border border-neutral-200">
                   <div className="flex items-center text-xs text-neutral-500 mb-1"><>
@@ -126,7 +129,8 @@ export function QuickParcelPreview({
                     Last Updated
                   </div>
                   <div
-</> className="font-medium text-sm">{parcelInfo.lastUpdated}</div>
+</>
+className="font-medium text-sm">{parcelInfo.lastUpdated}</div>
                 </div>
               </div>
               
@@ -135,7 +139,8 @@ export function QuickParcelPreview({
 
                   <div className="text-xs text-neutral-500 mb-1">Assessed Value</div>
                   <div
-</> className="font-medium text-sm">
+</>
+className="font-medium text-sm">
                     ${parcelInfo.assessedValue?.toLocaleString()}
                   </div>
                 </div>
@@ -143,7 +148,8 @@ export function QuickParcelPreview({
 
                   <div className="text-xs text-neutral-500 mb-1">Area</div>
                   <div
-</> className="font-medium text-sm">{parcelInfo.acres} acres</div>
+</>
+className="font-medium text-sm">{parcelInfo.acres} acres</div>
                 </div>
               </div>
             </CardContent>

@@ -200,7 +200,8 @@ const WorkflowNodeComponent: React.FC<{
 
               <h4 className="font-semibold text-gray-900 text-sm">{node.name}</h4>
               <p
-</> className="text-xs text-gray-500">{node.description}</p>
+</>
+className="text-xs text-gray-500">{node.description}</p>
             </div>
           </div>
           <div className="flex items-center space-x-1">
@@ -217,6 +218,7 @@ const WorkflowNodeComponent: React.FC<{
             </button>
             <button
 </>
+
               onClick={(e) => {
                 e.stopPropagation();
                 onNodeDelete(node.id);
@@ -241,7 +243,8 @@ const WorkflowNodeComponent: React.FC<{
             ))}
           </div>
           <div
-</> className="flex space-x-1">
+</>
+className="flex space-x-1">
             {node.outputs.map((output, _idx) => (
               <div
                 key={output}
@@ -273,7 +276,8 @@ const WorkflowNodeComponent: React.FC<{
 
               <h3 className="text-lg font-semibold mb-4">Configure {node.name}</h3>
               <div
-</> className="space-y-4">
+</>
+className="space-y-4">
                 <div><>
 
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -281,6 +285,7 @@ const WorkflowNodeComponent: React.FC<{
                   </label>
                   <input
 </>
+
                     type="text"
                     value={node.name}
                     onChange={(e) => onNodeUpdate(node.id, { name: e.target.value })}
@@ -294,6 +299,7 @@ const WorkflowNodeComponent: React.FC<{
                   </label>
                   <textarea
 </>
+
                     value={node.description}
                     onChange={(e) => onNodeUpdate(node.id, { description: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -312,6 +318,7 @@ const WorkflowNodeComponent: React.FC<{
                 </button>
                 <button
 </>
+
                   onClick={() => setIsEditing(false)}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
@@ -344,7 +351,8 @@ const NodePalette: React.FC<{
 
             <h3 className="font-semibold text-gray-900">Workflow Components</h3>
             <p
-</> className="text-sm text-gray-500">Drag to add to workflow</p>
+</>
+className="text-sm text-gray-500">Drag to add to workflow</p>
           </div>
           
           <div className="p-4 overflow-y-auto">
@@ -353,7 +361,8 @@ const NodePalette: React.FC<{
 
                 <h4 className="font-medium text-gray-700 mb-3 capitalize">{category}</h4>
                 <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                   {templates.map((template, idx) => (
                     <motion.div
                       key={idx}
@@ -368,11 +377,13 @@ const NodePalette: React.FC<{
                           <template.icon className="w-4 h-4" />
                         </div>
                         <div
+</>
 </>><>
 
                           <h5 className="font-medium text-gray-900 text-sm">{template.name}</h5>
                           <p
-</> className="text-xs text-gray-500">{template.description}</p>
+</>
+className="text-xs text-gray-500">{template.description}</p>
                         </div>
                       </div>
                     </motion.div>
@@ -504,6 +515,7 @@ const WorkflowBuilder: React.FC<{
             </button>
             
             <motion
+</>
 </>.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -569,7 +581,8 @@ const WorkflowBuilder: React.FC<{
                   <GitBranch className="w-16 h-16 text-blue-600" />
                 </div>
                 <h3
-</> className="text-xl font-semibold text-gray-900 mb-2">
+</>
+className="text-xl font-semibold text-gray-900 mb-2">
                   Start Building Your Workflow
                 </h3><>
 
@@ -578,6 +591,7 @@ const WorkflowBuilder: React.FC<{
                 </p>
                 <button
 </>
+
                   onClick={() => setShowPalette(true)}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all"
                 >

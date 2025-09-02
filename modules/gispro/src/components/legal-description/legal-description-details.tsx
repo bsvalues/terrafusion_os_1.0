@@ -64,11 +64,13 @@ export const LegalDescriptionDetails: React.FC<LegalDescriptionDetailsProps> = (
 
           <CardTitle>Parsed Legal Description</CardTitle>
           <div
-</> className="flex items-center gap-2"><>
+</>
+className="flex items-center gap-2"><>
 
             <span className="text-sm">Confidence:</span>
             <Badge
-</> variant="outline" className="text-white" style={{ backgroundColor: confidenceColor }}>
+</>
+variant="outline" className="text-white" style={{ backgroundColor: confidenceColor }}>
               {(confidence * 100).toFixed(0)}%
             </Badge>
           </div>
@@ -81,7 +83,8 @@ export const LegalDescriptionDetails: React.FC<LegalDescriptionDetailsProps> = (
 
             <TabsTrigger value="points">Points</TabsTrigger>
             <TabsTrigger
-</> value="segments">Segments</TabsTrigger>
+</>
+value="segments">Segments</TabsTrigger>
             <TabsTrigger value="issues">Issues {issues && issues.length > 0 && <span className="ml-1">({issues.length})</span>}</TabsTrigger>
           </TabsList>
           
@@ -93,16 +96,19 @@ export const LegalDescriptionDetails: React.FC<LegalDescriptionDetailsProps> = (
               </div>
               
               <Table
+</>
 </>>
                 <TableHeader>
                   <TableRow><>
 
                     <TableHead>#</TableHead>
                     <TableHead
+</>
 </>>Coordinates</TableHead><>
 
                     <TableHead>Type</TableHead>
                     <TableHead
+</>
 </>>Description</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -112,6 +118,7 @@ export const LegalDescriptionDetails: React.FC<LegalDescriptionDetailsProps> = (
 
                       <TableCell>{index + 1}</TableCell>
                       <TableCell
+</>
 </>>{formatCoordinate(point.coordinate)}</TableCell>
                       <TableCell>
                         <Badge variant={point.type === 'corner' ? 'default' : 'outline'}>
@@ -134,20 +141,24 @@ export const LegalDescriptionDetails: React.FC<LegalDescriptionDetailsProps> = (
               </div>
               
               <Table
+</>
 </>>
                 <TableHeader>
                   <TableRow><>
 
                     <TableHead>#</TableHead>
                     <TableHead
+</>
 </>>From</TableHead><>
 
                     <TableHead>To</TableHead>
                     <TableHead
+</>
 </>>Type</TableHead><>
 
                     <TableHead>Bearing</TableHead>
                     <TableHead
+</>
 </>>Distance</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -157,10 +168,12 @@ export const LegalDescriptionDetails: React.FC<LegalDescriptionDetailsProps> = (
 
                       <TableCell>{index + 1}</TableCell>
                       <TableCell
+</>
 </>>{formatCoordinate(segment.start.coordinate)}</TableCell><>
 
                       <TableCell>{formatCoordinate(segment.end.coordinate)}</TableCell>
                       <TableCell
+</>
 </>>
                         <Badge variant={segment.type === 'boundary' ? 'default' : 'outline'}>
                           {segment.type}
@@ -169,6 +182,7 @@ export const LegalDescriptionDetails: React.FC<LegalDescriptionDetailsProps> = (
 
                       <TableCell>{segment.bearing || '-'}</TableCell>
                       <TableCell
+</>
 </>>{segment.distance || '-'}</TableCell>
                     </TableRow>
                   ))}

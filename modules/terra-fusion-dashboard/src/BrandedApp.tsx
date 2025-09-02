@@ -18,7 +18,8 @@ const BrandedApp: React.FC = () => {
 
           <span className="module-code">TD</span>
           <span
-</> className="brand-text">Terrafusion Dashboard</span>
+</>
+className="brand-text">Terrafusion Dashboard</span>
         </div>
         <div className="performance-indicator">
           <span className="performance-text">379,000,000× faster than Marshall & Swift</span>
@@ -31,16 +32,19 @@ const BrandedApp: React.FC = () => {
       </div>
       
       <div
-</> className="terrafusion-footer">
+</>
+className="terrafusion-footer">
         <div className="system-status"><>
 
           <span className="status-item">System: OPERATIONAL</span>
           <span
-</> className="status-separator">|</span><>
+</>
+className="status-separator">|</span><>
 
           <span className="status-item">Benton County: 94,149 properties</span>
           <span
-</> className="status-separator">|</span>
+</>
+className="status-separator">|</span>
           <span className="status-item">Performance: CHAMPIONSHIP</span>
         </div>
       </div>

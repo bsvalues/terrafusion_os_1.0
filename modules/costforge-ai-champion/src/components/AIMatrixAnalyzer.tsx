@@ -85,6 +85,7 @@ export default function AIMatrixAnalyzer() {
             AI Matrix Analyzer
           </CardTitle>
           <CardDescription
+</>
 </>>
             Advanced analysis of cost matrix data with government-grade insights
           </CardDescription>
@@ -95,6 +96,7 @@ export default function AIMatrixAnalyzer() {
 
             <AlertTitle>AI Service Configuration Required</AlertTitle>
             <AlertDescription
+</>
 </>>
               Matrix analysis service requires configuration. Contact your system administrator to enable advanced AI capabilities.
             </AlertDescription>
@@ -126,6 +128,7 @@ export default function AIMatrixAnalyzer() {
           <Label htmlFor="matrixData">Enter Cost Matrix Data (JSON format)</Label>
           <Textarea
 </>
+
             id="matrixData"
             className="min-h-[200px] font-mono text-sm mt-2"
             placeholder={`{
@@ -163,15 +166,11 @@ export default function AIMatrixAnalyzer() {
             className="bg-primary hover:bg-primary/90"
           >
             {isAnalyzing ? (
-              <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 AI Processing...
-              </>
             ) : (
-              <>
                 <BarChart3 className="mr-2 h-4 w-4" />
                 Analyze Matrix Data
-              </>
             )}
           </Button>
         </div>
@@ -217,7 +216,8 @@ export default function AIMatrixAnalyzer() {
                         ${analysisResult.statisticalSummary.avgCost.toFixed(2)}
                       </div>
                       <div
-</> className="text-sm text-gray-600">Average Cost/sq ft</div>
+</>
+className="text-sm text-gray-600">Average Cost/sq ft</div>
                     </div>
                     <div className="p-4 bg-white/70 rounded-lg text-center border"><>
 
@@ -225,7 +225,8 @@ export default function AIMatrixAnalyzer() {
                         ${analysisResult.statisticalSummary.medianCost.toFixed(2)}
                       </div>
                       <div
-</> className="text-sm text-gray-600">Median Cost/sq ft</div>
+</>
+className="text-sm text-gray-600">Median Cost/sq ft</div>
                     </div>
                     <div className="p-4 bg-white/70 rounded-lg text-center border"><>
 
@@ -233,7 +234,8 @@ export default function AIMatrixAnalyzer() {
                         ${analysisResult.statisticalSummary.costRange.min} - ${analysisResult.statisticalSummary.costRange.max}
                       </div>
                       <div
-</> className="text-sm text-gray-600">Cost Range</div>
+</>
+className="text-sm text-gray-600">Cost Range</div>
                     </div>
                     <div className="p-4 bg-white/70 rounded-lg text-center border"><>
 
@@ -241,7 +243,8 @@ export default function AIMatrixAnalyzer() {
                         {(analysisResult.statisticalSummary.regionVariance * 100).toFixed(1)}%
                       </div>
                       <div
-</> className="text-sm text-gray-600">Regional Variance</div>
+</>
+className="text-sm text-gray-600">Regional Variance</div>
                     </div>
                   </div>
                 </CardContent>
@@ -350,6 +353,7 @@ export default function AIMatrixAnalyzer() {
 
             <AlertTitle>Analysis Error</AlertTitle>
             <AlertDescription
+</>
 </>>
               {error || "An error occurred during the matrix analysis. The AI service may be temporarily unavailable."}
             </AlertDescription>

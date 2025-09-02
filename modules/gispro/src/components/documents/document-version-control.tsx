@@ -273,6 +273,7 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
           Version History
         </CardTitle>
         <CardDescription
+</>
 </>>
           Track and manage document changes over time
         </CardDescription>
@@ -328,7 +329,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                   <TabsTrigger value="side-by-side">Side by Side</TabsTrigger>
                   <TabsTrigger
-</> value="unified">Unified View</TabsTrigger>
+</>
+value="unified">Unified View</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="side-by-side" className="space-y-4">
@@ -338,7 +340,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                         <div className="font-medium mb-2">Version {version.versionNumber}</div>
                         <div
-</> className="text-sm text-slate-500 mb-4">
+</>
+className="text-sm text-slate-500 mb-4">
                           Created {formatDistanceToNow(new Date(version.createdAt))} ago
                         </div>
                         
@@ -352,7 +355,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                             <div className="font-medium">Notes:</div>
                             <p
-</> className="text-slate-600 dark:text-slate-400">{version.notes}</p>
+</>
+className="text-slate-600 dark:text-slate-400">{version.notes}</p>
                           </div>
                         )}
                       </div>
@@ -369,7 +373,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
                           Version {compareVersions[0].versionNumber}
                         </span>
                         <span
-</> className="mx-2">→</span>
+</>
+className="mx-2">→</span>
                         <span className="text-blue-600 dark:text-blue-400 font-medium">
                           Version {compareVersions[1].versionNumber}
                         </span>
@@ -407,7 +412,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
                   </div>
                   
                   <FileText
-</> className="h-5 w-5 text-slate-400 flex-shrink-0" />
+</>
+className="h-5 w-5 text-slate-400 flex-shrink-0" />
                   
                   <div 
                     className="flex-grow cursor-pointer"
@@ -416,7 +422,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                     <div className="font-medium">Version {version.versionNumber}</div>
                     <div
-</> className="text-xs text-slate-500">
+</>
+className="text-xs text-slate-500">
                       {formatDistanceToNow(new Date(version.createdAt))} ago
                     </div>
                   </div>
@@ -435,7 +442,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                         <div className="font-medium mb-1">Notes:</div>
                         <p
-</> className="text-slate-600 dark:text-slate-400">
+</>
+className="text-slate-600 dark:text-slate-400">
                           {version.notes}
                         </p>
                       </div>
@@ -461,7 +469,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
                       </Button>
                       
                       <Button
-</> 
+</>
+
                         variant="ghost" 
                         size="sm"
                         className="text-xs h-7"
@@ -483,7 +492,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
               No Versions Found
             </h3>
             <p
-</> className="text-sm text-slate-500 dark:text-slate-400">
+</>
+className="text-sm text-slate-500 dark:text-slate-400">
               This document doesn't have any version history yet
             </p>
           </div>
@@ -499,6 +509,7 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
               <DialogTitle>Version Details</DialogTitle>
               <DialogDescription
+</>
 </>>
                 Information about document version {selectedVersion?.versionNumber}
               </DialogDescription>
@@ -511,14 +522,16 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                     <div className="text-sm font-medium mb-1">Version</div>
                     <div
-</> className="text-xl font-semibold">{selectedVersion.versionNumber}</div>
+</>
+className="text-xl font-semibold">{selectedVersion.versionNumber}</div>
                   </div>
                   
                   <div><>
 
                     <div className="text-sm font-medium mb-1">Created</div>
                     <div
-</> className="flex items-center text-slate-600 dark:text-slate-400">
+</>
+className="flex items-center text-slate-600 dark:text-slate-400">
                       <Clock className="h-4 w-4 mr-1" />
                       {formatDistanceToNow(new Date(selectedVersion.createdAt))} ago
                     </div>
@@ -529,7 +542,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                   <div className="text-sm font-medium mb-1">Hash</div>
                   <div
-</> className="text-xs font-mono bg-slate-100 dark:bg-slate-800 p-2 rounded overflow-x-auto">
+</>
+className="text-xs font-mono bg-slate-100 dark:bg-slate-800 p-2 rounded overflow-x-auto">
                     {selectedVersion.contentHash}
                   </div>
                 </div>
@@ -539,7 +553,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                     <div className="text-sm font-medium mb-1">Notes</div>
                     <div
-</> className="bg-slate-100 dark:bg-slate-800 p-3 rounded-md text-slate-800 dark:text-slate-200">
+</>
+className="bg-slate-100 dark:bg-slate-800 p-3 rounded-md text-slate-800 dark:text-slate-200">
                       {selectedVersion.notes}
                     </div>
                   </div>
@@ -554,7 +569,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
                     Close
                   </Button>
                   <Button
-</> 
+</>
+
                     variant="default"
                     onClick={() => {
                       setIsRevertDialogOpen(true);
@@ -579,6 +595,7 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
               <DialogTitle>Create New Version</DialogTitle>
               <DialogDescription
+</>
 </>>
                 Upload a new version of this document with changes
               </DialogDescription>
@@ -589,7 +606,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                 <Label htmlFor="file-upload">Upload new version</Label>
                 <div
-</> 
+</>
+
                   className="border-2 border-dashed rounded-md p-6 mt-2 text-center cursor-pointer hover:border-primary"
                   onClick={handleBrowseClick}
                 >
@@ -608,7 +626,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                       <p className="text-sm font-medium">{selectedFile.name}</p>
                       <p
-</> className="text-xs text-slate-500 mt-1">
+</>
+className="text-xs text-slate-500 mt-1">
                         {(selectedFile.size / 1024).toFixed(1)} KB
                       </p>
                     </div>
@@ -618,7 +637,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
                       <p className="text-sm font-medium">Click to upload a file</p>
                       <p
-</> className="text-xs text-slate-500 mt-1">
+</>
+className="text-xs text-slate-500 mt-1">
                         PDF, Word, Excel, or image files
                       </p>
                     </div>
@@ -631,6 +651,7 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
                 <Label htmlFor="version-notes">Version notes</Label>
                 <Textarea
 </>
+
                   id="version-notes"
                   placeholder="Describe what changed in this version"
                   value={versionNotes}
@@ -655,6 +676,7 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
               </Button>
               <Button
 </>
+
                 onClick={handleCreateVersion}
                 disabled={!selectedFile || createVersionMutation.isPending}
               >
@@ -671,6 +693,7 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
               <AlertDialogTitle>Revert Document Version</AlertDialogTitle>
               <AlertDialogDescription
+</>
 </>>
                 This will create a new version that matches the content of version {selectedVersion?.versionNumber}.
                 The current version will remain in the version history.
@@ -680,7 +703,8 @@ export function DocumentVersionControl({ document }: DocumentVersionControlProps
 
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
-</> onClick={handleRevert}>
+</>
+onClick={handleRevert}>
                 Confirm
               </AlertDialogAction>
             </AlertDialogFooter>

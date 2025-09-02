@@ -336,7 +336,8 @@ export const TaskKanbanBoard: React.FC<TaskKanbanBoardProps> = ({
 
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-</> 
+</>
+
                           onClick={() => {
                             setSelectedTask(task);
                             setIsDetailDialogOpen(true);
@@ -347,13 +348,15 @@ export const TaskKanbanBoard: React.FC<TaskKanbanBoardProps> = ({
                           View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem
+</>
 </>><>
 
                           <Edit className="h-4 w-4 mr-2" />
                           Edit Task
                         </DropdownMenuItem>
                         <DropdownMenuSeparator
-</> />
+</>
+/>
                         <DropdownMenuItem className="text-red-600">
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete Task
@@ -437,7 +440,8 @@ export const TaskKanbanBoard: React.FC<TaskKanbanBoardProps> = ({
 
               <h3 className="font-semibold text-sm">{column.title}</h3>
               <Badge
-</> variant="secondary" className={`text-xs ${isLimitExceeded ? 'bg-red-100 text-red-800' : ''}`}>
+</>
+variant="secondary" className={`text-xs ${isLimitExceeded ? 'bg-red-100 text-red-800' : ''}`}>
                 {tasks.length}{column.limit && ` / ${column.limit}`}
               </Badge>
             </div>
@@ -492,7 +496,8 @@ export const TaskKanbanBoard: React.FC<TaskKanbanBoardProps> = ({
           <h3 className="text-lg font-semibold">Task Board</h3>
           
           <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -539,6 +544,7 @@ export const TaskKanbanBoard: React.FC<TaskKanbanBoardProps> = ({
                   <SelectValue placeholder="Select project" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   <SelectItem value="all">All Projects</SelectItem>
                   {projects.map((project) => (
@@ -557,11 +563,13 @@ export const TaskKanbanBoard: React.FC<TaskKanbanBoardProps> = ({
                   <SelectValue placeholder="Select assignee" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>><>
 
                   <SelectItem value="all">All Assignees</SelectItem>
                   <SelectItem
-</> value="unassigned">Unassigned</SelectItem>
+</>
+value="unassigned">Unassigned</SelectItem>
                   {allAssignees.map((assignee) => (
                     <SelectItem key={assignee.id} value={assignee.id}>
                       {assignee.name}

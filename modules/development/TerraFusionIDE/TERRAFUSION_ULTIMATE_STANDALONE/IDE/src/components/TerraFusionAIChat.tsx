@@ -198,7 +198,8 @@ export const TerraFusionAIChat: React.FC = () => {
 
         <span className="text-sm text-gray-300">AI Agent:</span>
         <select
-</> 
+</>
+
           value={selectedAgent}
           onChange={(e) => setSelectedAgent(e.target.value)}
           className="bg-gray-700 text-white text-sm rounded px-2 py-1 border border-gray-600"
@@ -208,11 +209,13 @@ export const TerraFusionAIChat: React.FC = () => {
 
           <option value="supreme-commander">Supreme Commander Claude</option>
           <option
-</> value="claude-flow">Claude Flow Orchestrator</option><>
+</>
+value="claude-flow">Claude Flow Orchestrator</option><>
 
           <option value="workspace-companion">Workspace Companion</option>
           <option
-</> value="mcp-servers">MCP Server Coordinator</option>
+</>
+value="mcp-servers">MCP Server Coordinator</option>
           <option value="government-compliance">Government Compliance</option>
         </select>
       </div>
@@ -275,11 +278,13 @@ export const TerraFusionAIChat: React.FC = () => {
 
                 <span className="text-gray-300">AI is thinking...</span>
                 <div
-</> className="flex space-x-1"><>
+</>
+className="flex space-x-1"><>
 
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
                   <div
-</> className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+</>
+className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                 </div>
               </div>

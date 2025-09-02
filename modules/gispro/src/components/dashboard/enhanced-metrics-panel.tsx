@@ -182,7 +182,8 @@ export function EnhancedMetricsPanel() {
                   <Skeleton className="h-4 w-24" />
                 </CardHeader>
                 <CardContent
-</> className="p-4 pt-2">
+</>
+className="p-4 pt-2">
                   <Skeleton className="h-[180px] w-full" />
                 </CardContent>
               </Card>
@@ -243,6 +244,7 @@ export function EnhancedMetricsPanel() {
 
             <CardTitle className="text-xl">Dashboard Analytics</CardTitle>
             <CardDescription
+</>
 </>>Key metrics and insights for your workflows and documents</CardDescription>
           </div>
           <div className="flex items-center gap-2">
@@ -256,15 +258,18 @@ export function EnhancedMetricsPanel() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent
+</>
 </>><>
 
                 <SelectItem value="7d">7 days</SelectItem>
                 <SelectItem
-</> value="30d">30 days</SelectItem><>
+</>
+value="30d">30 days</SelectItem><>
 
                 <SelectItem value="90d">90 days</SelectItem>
                 <SelectItem
-</> value="1y">1 year</SelectItem>
+</>
+value="1y">1 year</SelectItem>
               </SelectContent>
             </Select>
             
@@ -280,6 +285,7 @@ export function EnhancedMetricsPanel() {
               </Button>
               <Button
 </>
+
                 variant={chartType === 'pie' ? 'default' : 'ghost'}
                 size="sm"
                 className="rounded-none border-x h-9 px-2.5"
@@ -290,6 +296,7 @@ export function EnhancedMetricsPanel() {
               </Button>
               <Button
 </>
+
                 variant={chartType === 'line' ? 'default' : 'ghost'}
                 size="sm"
                 className="rounded-l-none h-9 px-2.5"
@@ -316,7 +323,8 @@ export function EnhancedMetricsPanel() {
 
             <TabsTrigger value="workflows">Workflows</TabsTrigger>
             <TabsTrigger
-</> value="documents">Documents</TabsTrigger>
+</>
+value="documents">Documents</TabsTrigger>
             <TabsTrigger value="parcels">Parcels</TabsTrigger>
           </TabsList>
           
@@ -362,7 +370,8 @@ export function EnhancedMetricsPanel() {
                           ))}
                         </Pie>
                         <Tooltip
-</> />
+</>
+/>
                       </PieChart>
                     </ResponsiveContainer>
                   )}
@@ -417,7 +426,8 @@ export function EnhancedMetricsPanel() {
                           ))}
                         </Pie>
                         <Tooltip
-</> />
+</>
+/>
                       </PieChart>
                     </ResponsiveContainer>
                   )}
@@ -517,7 +527,8 @@ export function EnhancedMetricsPanel() {
                           ))}
                         </Pie>
                         <Tooltip
-</> />
+</>
+/>
                       </PieChart>
                     </ResponsiveContainer>
                   )}
@@ -613,7 +624,8 @@ export function EnhancedMetricsPanel() {
                           ))}
                         </Pie>
                         <Tooltip
-</> />
+</>
+/>
                       </PieChart>
                     </ResponsiveContainer>
                   )}

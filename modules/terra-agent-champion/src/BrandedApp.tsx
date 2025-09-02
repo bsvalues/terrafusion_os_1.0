@@ -16,7 +16,8 @@ const BrandedApp: React.FC = () => {
 
           <span className="module-code">TA</span>
           <span
-</> className="brand-text">Terra Agent</span>
+</>
+className="brand-text">Terra Agent</span>
         </div>
         <div className="performance-indicator">
           <span className="performance-text">AI-Powered Government Operations</span>
@@ -29,16 +30,19 @@ const BrandedApp: React.FC = () => {
       </div>
       
       <div
-</> className="terrafusion-footer">
+</>
+className="terrafusion-footer">
         <div className="system-status"><>
 
           <span className="status-item">AI Agent: ONLINE</span>
           <span
-</> className="status-separator">|</span><>
+</>
+className="status-separator">|</span><>
 
           <span className="status-item">Operations: AUTOMATED</span>
           <span
-</> className="status-separator">|</span>
+</>
+className="status-separator">|</span>
           <span className="status-item">Government: TRANSCENDED</span>
         </div>
       </div>

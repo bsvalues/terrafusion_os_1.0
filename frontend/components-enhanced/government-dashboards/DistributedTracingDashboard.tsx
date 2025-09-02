@@ -369,7 +369,8 @@ const DistributedTracingDashboard: React.FC = () => {
           🔍 Distributed Tracing Dashboard
         </Typography>
         <Box
-</> sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+</>
+sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Chip 
             label={`${traces.filter(t => t.status === 'active').length} Active Traces`}
             color="warning"
@@ -393,7 +394,8 @@ const DistributedTracingDashboard: React.FC = () => {
                 Real-time Performance Metrics
               </Typography>
               <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                 <LineChart data={performanceData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="timestamp" />
@@ -418,7 +420,8 @@ const DistributedTracingDashboard: React.FC = () => {
                 Service Latency Distribution
               </Typography>
               <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                 <BarChart data={[
                   { service: 'API Gateway', latency: 245 },
                   { service: 'AI Swarm', latency: 1567 },
@@ -460,6 +463,7 @@ const DistributedTracingDashboard: React.FC = () => {
                 <InputLabel>Service</InputLabel>
                 <Select
 </>
+
                   value={serviceFilter}
                   label="Service"
                   onChange={(e) => setServiceFilter(e.target.value)}
@@ -477,6 +481,7 @@ const DistributedTracingDashboard: React.FC = () => {
                 <InputLabel>Status</InputLabel>
                 <Select
 </>
+
                   value={statusFilter}
                   label="Status"
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -484,11 +489,13 @@ const DistributedTracingDashboard: React.FC = () => {
 
                   <MenuItem value="all">All Status</MenuItem>
                   <MenuItem
-</> value="completed">Completed</MenuItem><>
+</>
+value="completed">Completed</MenuItem><>
 
                   <MenuItem value="active">Active</MenuItem>
                   <MenuItem
-</> value="error">Error</MenuItem>
+</>
+value="error">Error</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -498,6 +505,7 @@ const DistributedTracingDashboard: React.FC = () => {
                 <InputLabel>Time Range</InputLabel>
                 <Select
 </>
+
                   value={timeRange}
                   label="Time Range"
                   onChange={(e) => setTimeRange(e.target.value)}
@@ -505,11 +513,13 @@ const DistributedTracingDashboard: React.FC = () => {
 
                   <MenuItem value="5m">Last 5 minutes</MenuItem>
                   <MenuItem
-</> value="1h">Last hour</MenuItem><>
+</>
+value="1h">Last hour</MenuItem><>
 
                   <MenuItem value="24h">Last 24 hours</MenuItem>
                   <MenuItem
-</> value="7d">Last 7 days</MenuItem>
+</>
+value="7d">Last 7 days</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -535,25 +545,30 @@ const DistributedTracingDashboard: React.FC = () => {
             Recent Traces ({filteredTraces.length})
           </Typography>
           <TableContainer
-</> component={Paper} sx={{ maxHeight: 600 }}>
+</>
+component={Paper} sx={{ maxHeight: 600 }}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow><>
 
                   <TableCell>Trace ID</TableCell>
                   <TableCell
+</>
 </>>Operation</TableCell><>
 
                   <TableCell>Service</TableCell>
                   <TableCell
+</>
 </>>Status</TableCell><>
 
                   <TableCell>Duration</TableCell>
                   <TableCell
+</>
 </>>Start Time</TableCell><>
 
                   <TableCell>User</TableCell>
                   <TableCell
+</>
 </>>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -579,6 +594,7 @@ const DistributedTracingDashboard: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell
+</>
 </>>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {getStatusIcon(trace.status)}
@@ -637,16 +653,15 @@ const DistributedTracingDashboard: React.FC = () => {
               Trace Details: {selectedTrace}
             </Typography>
             <Box
+</>
 </>>
               {traceMetrics && (
-                <>
                   <Chip label={`${traceMetrics.totalDuration}ms`} color="primary" sx={{ mr: 1 }} />
                   <Chip label={`${traceMetrics.spanCount} spans`} color="secondary" sx={{ mr: 1 }} />
                   <Chip 
                     label={`${traceMetrics.errorCount} errors`} 
                     color={traceMetrics.errorCount > 0 ? 'error' : 'success'} 
                   />
-                </>
               )}
             </Box>
           </Box>
@@ -657,6 +672,7 @@ const DistributedTracingDashboard: React.FC = () => {
 
               <Typography variant="h6" sx={{ mb: 2 }}>Span Timeline</Typography>
               <List
+</>
 </>>
                 {traceDetails.map((span /* , index */) => (
                   <React.Fragment key={span.spanId}>
@@ -667,13 +683,15 @@ const DistributedTracingDashboard: React.FC = () => {
                           <Timeline />
                         </Avatar>
                         <Box
-</> sx={{ flexGrow: 1 }}><>
+</>
+sx={{ flexGrow: 1 }}><>
 
                           <Typography variant="body1" fontWeight="bold">
                             {span.operationName}
                           </Typography>
                           <Typography
-</> variant="body2" color="textSecondary">
+</>
+variant="body2" color="textSecondary">
                             {span.serviceName} • {span.duration}ms
                           </Typography>
                           <Box sx={{ mt: 1 }}>
@@ -713,10 +731,10 @@ const DistributedTracingDashboard: React.FC = () => {
                     <strong>Throughput:</strong> {traceMetrics.throughputRpm} req/min
                   </Typography><>
 
-                  
                   <Typography variant="h6" sx={{ mb: 1 }}>Critical Path:</Typography>
                   <List
-</> dense>
+</>
+dense>
                     {traceMetrics.criticalPath.map((operation /* , index */) => (
                       <ListItem key={index} sx={{ py: 0 }}>
                         <ListItemText 

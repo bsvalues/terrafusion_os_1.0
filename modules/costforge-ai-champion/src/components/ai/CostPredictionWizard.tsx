@@ -615,9 +615,11 @@ export default function CostPredictionWizard() {
           <div className="text-center space-y-2">
             <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
 <>
+
             <h2 className="text-2xl font-bold">Prediction Complete!</h2>
             <p
-</> className="text-gray-500">
+</>
+className="text-gray-500">
               Here's your detailed building cost prediction based on the information provided.
             </p>
           </div>
@@ -628,8 +630,10 @@ export default function CostPredictionWizard() {
                 <Alert>
                   <HelpCircle className="h-4 w-4" />
 <>
+
                   <AlertTitle>Enhanced Calculation Engine</AlertTitle>
                   <AlertDescription
+</>
 </>>
                     {predictionResult.note || "Using sophisticated calculation methodology with demonstration data."}
                   </AlertDescription>
@@ -643,13 +647,15 @@ export default function CostPredictionWizard() {
                   </CardHeader>
                   <CardContent>
 <>
+
                     <div className="text-3xl font-bold text-primary">
                       ${typeof predictionResult.totalCost === 'string' 
                         ? predictionResult.totalCost 
                         : predictionResult.totalCost.toLocaleString('en-US', { maximumFractionDigits: 2 })}
                     </div>
                     <p
-</> className="text-sm text-gray-500">Total estimated cost</p>
+</>
+className="text-sm text-gray-500">Total estimated cost</p>
                   </CardContent>
                 </Card>
                 
@@ -659,13 +665,15 @@ export default function CostPredictionWizard() {
                   </CardHeader>
                   <CardContent>
 <>
+
                     <div className="text-3xl font-bold text-primary">
                       ${typeof predictionResult.costPerSquareFoot === 'string'
                         ? predictionResult.costPerSquareFoot
                         : predictionResult.costPerSquareFoot.toLocaleString('en-US', { maximumFractionDigits: 2 })}
                     </div>
                     <p
-</> className="text-sm text-gray-500">Per square foot</p>
+</>
+className="text-sm text-gray-500">Per square foot</p>
                   </CardContent>
                 </Card>
               </div>
@@ -674,10 +682,12 @@ export default function CostPredictionWizard() {
                 <CardHeader>
                   <CardTitle className="flex items-center">
 <>
+
                     <BarChart className="h-5 w-5 mr-2" />
                     Cost Prediction Factors
                   </CardTitle>
                   <CardDescription
+</>
 </>>
                     These factors influenced your building cost prediction
                   </CardDescription>
@@ -688,9 +698,11 @@ export default function CostPredictionWizard() {
                       <div key={index} className="space-y-1">
                         <div className="flex justify-between">
 <>
+
                           <div className="font-medium">{factor.factor || factor.feature}</div>
                           <Badge
-</> variant={
+</>
+variant={
                             factor.impact === 'positive' ? 'default' : 
                             factor.impact === 'negative' ? 'secondary' : 'outline'
                           }>
@@ -712,10 +724,12 @@ export default function CostPredictionWizard() {
                   <CardHeader>
                     <CardTitle className="flex items-center">
 <>
+
                       <Lightbulb className="h-5 w-5 mr-2" />
                       Material Recommendations
                     </CardTitle>
                     <CardDescription
+</>
 </>>
                       Potential cost-saving alternatives for your project
                     </CardDescription>
@@ -726,9 +740,11 @@ export default function CostPredictionWizard() {
                         <div key={index} className="space-y-1">
                           <div className="flex justify-between">
 <>
+
                             <div className="font-medium">Replace: {rec.originalMaterial}</div>
                             <Badge
-</> variant="outline">
+</>
+variant="outline">
                               Save ${typeof rec.potentialSavings === 'string' 
                                 ? rec.potentialSavings 
                                 : rec.potentialSavings.toLocaleString('en-US')}
@@ -736,9 +752,11 @@ export default function CostPredictionWizard() {
                           </div>
                           <p className="text-sm">With: <span className="font-medium">{rec.suggestedAlternative}</span></p>
 <>
+
                           <p className="text-sm text-gray-500">{rec.reasonForRecommendation}</p>
                           <Badge
-</> variant={
+</>
+variant={
                             rec.qualityImpact === 'none' ? 'outline' : 
                             rec.qualityImpact === 'minor' ? 'default' :
                             rec.qualityImpact === 'moderate' ? 'secondary' : 'destructive'
@@ -755,6 +773,7 @@ export default function CostPredictionWizard() {
               
               <div className="flex justify-between items-center">
 <>
+
                 <Button variant="outline" onClick={() => {
                   setCurrentStep(0);
                   setPredictionResult(null);
@@ -763,7 +782,8 @@ export default function CostPredictionWizard() {
                   Start New Prediction
                 </Button>
                 <Button
-</> variant="default" onClick={() => {
+</>
+variant="default" onClick={() => {
                   // TODO: Implement export functionality
                 }}>
                   Export Prediction
@@ -793,12 +813,14 @@ export default function CostPredictionWizard() {
         {/* Step Title */}
         <div className="space-y-2">
 <>
+
           <h2 className="text-2xl font-bold flex items-center">
             {steps[currentStep].icon && React.createElement(steps[currentStep].icon, { className: "h-6 w-6 mr-2" })}
             {explanation?.title || currentStepName}
           </h2>
           <p
-</> className="text-gray-500">{explanation?.description}</p>
+</>
+className="text-gray-500">{explanation?.description}</p>
         </div>
         
         {/* AI Assistant Tips */}
@@ -812,11 +834,13 @@ export default function CostPredictionWizard() {
             </CardHeader>
             <CardContent>
 <>
+
               <p className="text-sm">
                 {AI_TIPS[currentStepName as keyof typeof AI_TIPS][currentTipIndex[currentStepName] || 0]}
               </p>
               <Button
-</> 
+</>
+
                 variant="ghost" 
                 size="sm" 
                 className="mt-2 h-7 text-xs text-blue-600"
@@ -863,9 +887,11 @@ export default function CostPredictionWizard() {
               render={({ field }) => (
                 <FormItem>
 <>
+
                   <FormLabel>Region</FormLabel>
                   <Select
-</> 
+</>
+
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
                   >
@@ -883,11 +909,13 @@ export default function CostPredictionWizard() {
                     </SelectContent>
                   </Select>
 <>
+
                   <FormDescription>
                     Select the region where the building is located.
                   </FormDescription>
                   <FormMessage
-</> />
+</>
+/>
                 </FormItem>
               )}
             />
@@ -910,10 +938,13 @@ export default function CostPredictionWizard() {
               render={({ field }) => (
                 <FormItem>
 <>
+
                   <FormLabel>Square Footage</FormLabel>
                   <FormControl
+</>
 </>>
 <>
+
                     <Input 
                       type="number" 
                       {...field} 
@@ -921,6 +952,7 @@ export default function CostPredictionWizard() {
                     />
                   </FormControl>
                   <FormDescription
+</>
 </>>
                     Enter the total square footage of the building.
                   </FormDescription>
@@ -947,10 +979,13 @@ export default function CostPredictionWizard() {
               render={({ field }) => (
                 <FormItem>
 <>
+
                   <FormLabel>Year Built</FormLabel>
                   <FormControl
+</>
 </>>
 <>
+
                     <Input 
                       type="number" 
                       {...field} 
@@ -961,6 +996,7 @@ export default function CostPredictionWizard() {
                     />
                   </FormControl>
                   <FormDescription
+</>
 </>>
                     Enter the year the building was constructed.
                   </FormDescription>
@@ -975,11 +1011,14 @@ export default function CostPredictionWizard() {
               render={({ field }) => (
                 <FormItem>
 <>
+
                   <FormLabel>Building Age (years)</FormLabel>
                   <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                     <FormControl>
 <>
+
                       <Input 
                         type="number" 
                         {...field} 
@@ -990,14 +1029,17 @@ export default function CostPredictionWizard() {
                       />
                     </FormControl>
                     <span
-</> className="text-sm text-gray-500">years</span>
+</>
+className="text-sm text-gray-500">years</span>
                   </div>
 <>
+
                   <FormDescription>
                     The calculated age of the building.
                   </FormDescription>
                   <FormMessage
-</> />
+</>
+/>
                 </FormItem>
               )}
             />
@@ -1048,14 +1090,18 @@ export default function CostPredictionWizard() {
               render={({ field }) => (
                 <FormItem>
 <>
+
                   <FormLabel>Building Complexity Factor</FormLabel>
                   <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                     <div className="flex justify-between">
 <>
+
                       <span className="text-sm">Simple</span>
                       <span
-</> className="text-sm font-medium">{field.value.toFixed(2)}</span>
+</>
+className="text-sm font-medium">{field.value.toFixed(2)}</span>
                       <span className="text-sm">Complex</span>
                     </div>
                     <FormControl>
@@ -1069,11 +1115,13 @@ export default function CostPredictionWizard() {
                     </FormControl>
                   </div>
 <>
+
                   <FormDescription>
                     Rate the complexity of the building design. Higher values indicate more complex structures.
                   </FormDescription>
                   <FormMessage
-</> />
+</>
+/>
                 </FormItem>
               )}
             />
@@ -1084,14 +1132,18 @@ export default function CostPredictionWizard() {
               render={({ field }) => (
                 <FormItem>
 <>
+
                   <FormLabel>Building Condition Factor</FormLabel>
                   <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                     <div className="flex justify-between">
 <>
+
                       <span className="text-sm">Poor</span>
                       <span
-</> className="text-sm font-medium">{field.value.toFixed(2)}</span>
+</>
+className="text-sm font-medium">{field.value.toFixed(2)}</span>
                       <span className="text-sm">Excellent</span>
                     </div>
                     <FormControl>
@@ -1105,11 +1157,13 @@ export default function CostPredictionWizard() {
                     </FormControl>
                   </div>
 <>
+
                   <FormDescription>
                     Rate the current condition of the building. Higher values indicate better condition.
                   </FormDescription>
                   <FormMessage
-</> />
+</>
+/>
                 </FormItem>
               )}
             />
@@ -1143,10 +1197,12 @@ export default function CostPredictionWizard() {
                       <CheckCircle2 className="h-5 w-5 text-primary" />
                     ) : (
 <>
+
                       <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
                     )}
                   </div>
                   <span
+</>
 </>>{feature}</span>
                 </div>
               ))}
@@ -1158,16 +1214,20 @@ export default function CostPredictionWizard() {
               render={({ field }) => (
                 <FormItem>
 <>
+
                   <FormLabel>Additional Features</FormLabel>
                   <FormControl
+</>
 </>>
 <>
+
                     <Textarea
                       placeholder="Enter custom features, separated by commas"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription
+</>
 </>>
                     Add any additional features not listed above, separated by commas.
                   </FormDescription>
@@ -1194,8 +1254,10 @@ export default function CostPredictionWizard() {
               render={({ field }) => (
                 <FormItem>
 <>
+
                   <FormLabel>Select AI Provider</FormLabel>
                   <FormDescription
+</>
 </>>
                     Choose which AI provider to use for your building cost prediction
                   </FormDescription>
@@ -1211,16 +1273,20 @@ export default function CostPredictionWizard() {
                     >
                       <div className="flex items-center justify-between mb-2">
 <>
+
                         <div className="font-semibold text-lg">OpenAI</div>
                         <div
-</> className={`w-4 h-4 rounded-full ${field.value === 'openai' ? 'bg-primary' : 'bg-gray-200'}`}></div>
+</>
+className={`w-4 h-4 rounded-full ${field.value === 'openai' ? 'bg-primary' : 'bg-gray-200'}`}></div>
                       </div>
 <>
+
                       <div className="text-sm text-gray-600 mb-2">
                         Uses OpenAI's GPT-4o model for detailed cost analysis with industry expertise.
                       </div>
                       <div
-</> className="flex items-center text-xs text-gray-500">
+</>
+className="flex items-center text-xs text-gray-500">
                         <Zap className="h-3 w-3 mr-1" /> Optimized for detailed reasoning
                       </div>
                     </div>
@@ -1236,16 +1302,20 @@ export default function CostPredictionWizard() {
                     >
                       <div className="flex items-center justify-between mb-2">
 <>
+
                         <div className="font-semibold text-lg">Anthropic Claude</div>
                         <div
-</> className={`w-4 h-4 rounded-full ${field.value === 'anthropic' ? 'bg-primary' : 'bg-gray-200'}`}></div>
+</>
+className={`w-4 h-4 rounded-full ${field.value === 'anthropic' ? 'bg-primary' : 'bg-gray-200'}`}></div>
                       </div>
 <>
+
                       <div className="text-sm text-gray-600 mb-2">
                         Uses Anthropic's Claude 3 model for nuanced regional cost factors and contextual analysis.
                       </div>
                       <div
-</> className="flex items-center text-xs text-gray-500">
+</>
+className="flex items-center text-xs text-gray-500">
                         <Settings className="h-3 w-3 mr-1" /> Specialty in regional variations
                       </div>
                     </div>
@@ -1291,9 +1361,11 @@ export default function CostPredictionWizard() {
           </div>
           <div className="flex items-center space-x-2">
 <>
+
             <span className="text-sm text-gray-500">AI Tips</span>
             <Switch
 </>
+
               checked={showAITips}
               onCheckedChange={setShowAITips}
             />
@@ -1304,8 +1376,10 @@ export default function CostPredictionWizard() {
         <div className="mt-4 space-y-1">
           <div className="flex justify-between text-xs text-gray-500">
 <>
+
             <span>Step {currentStep + 1} of {totalSteps}</span>
             <span
+</>
 </>>{Math.round(progressPercentage)}% Complete</span>
           </div>
           <Progress value={progressPercentage} className="h-2" />
@@ -1324,8 +1398,10 @@ export default function CostPredictionWizard() {
         {error && (
           <Alert variant="destructive" className="mt-4">
 <>
+
             <AlertTitle>Error</AlertTitle>
             <AlertDescription
+</>
 </>>{error}</AlertDescription>
           </Alert>
         )}
@@ -1349,24 +1425,24 @@ export default function CostPredictionWizard() {
             disabled={isSubmitting}
           >
             {currentStep === steps.length - 1 ? (
-              <>
+
                 {isSubmitting ? (
-                  <>
+
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Processing
-                  </>
+
                 ) : (
-                  <>
+
                     Complete
                     <CheckCircle2 className="h-4 w-4 ml-2" />
-                  </>
+
                 )}
-              </>
+
             ) : (
-              <>
+
                 Next
                 <ArrowRight className="h-4 w-4 ml-2" />
-              </>
+
             )}
           </Button>
         ) : null}

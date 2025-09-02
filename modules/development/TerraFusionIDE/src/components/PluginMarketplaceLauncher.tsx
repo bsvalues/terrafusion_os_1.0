@@ -170,7 +170,8 @@ export default function PluginMarketplaceLauncher() {
 
           <h1 className="text-3xl font-bold text-gradient">Plugin Marketplace</h1>
           <p
-</> className="text-muted-foreground">Discover and install powerful government plugins</p>
+</>
+className="text-muted-foreground">Discover and install powerful government plugins</p>
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="flex items-center"><>
@@ -179,7 +180,8 @@ export default function PluginMarketplaceLauncher() {
             {plugins.length} Plugins
           </Badge>
           <Badge
-</> variant="outline" className="flex items-center">
+</>
+variant="outline" className="flex items-center">
             <TrendingUp className="h-4 w-4 mr-1" />
             ${totalRevenue.toLocaleString()}
           </Badge>
@@ -191,7 +193,8 @@ export default function PluginMarketplaceLauncher() {
 
           <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
           <TabsTrigger
-</> value="revenue">Revenue Analytics</TabsTrigger>
+</>
+value="revenue">Revenue Analytics</TabsTrigger>
           <TabsTrigger value="installed">Installed</TabsTrigger>
         </TabsList>
 
@@ -207,12 +210,14 @@ export default function PluginMarketplaceLauncher() {
               />
             </div>
             <Select
-</> value={selectedCategory} onValueChange={setSelectedCategory}>
+</>
+value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="w-48"><>
 
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 <SelectItem value="">All Categories</SelectItem>
                 {categories.map(category => (
@@ -228,15 +233,18 @@ export default function PluginMarketplaceLauncher() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent
+</>
 </>><>
 
                 <SelectItem value="downloads">Most Popular</SelectItem>
                 <SelectItem
-</> value="rating">Highest Rated</SelectItem><>
+</>
+value="rating">Highest Rated</SelectItem><>
 
                 <SelectItem value="name">Name A-Z</SelectItem>
                 <SelectItem
-</> value="price">Price</SelectItem>
+</>
+value="price">Price</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -261,7 +269,8 @@ export default function PluginMarketplaceLauncher() {
                           )}
                         </CardTitle>
                         <p
-</> className="text-sm text-muted-foreground">v{plugin.version}</p>
+</>
+className="text-sm text-muted-foreground">v{plugin.version}</p>
                       </div>
                       <Badge variant={plugin.isInstalled ? "default" : "secondary"}>
                         {plugin.isInstalled ? "Installed" : `$${plugin.price}`}
@@ -273,14 +282,16 @@ export default function PluginMarketplaceLauncher() {
                     <p className="text-sm">{plugin.description}</p>
                     
                     <div
-</> className="flex items-center space-x-4 text-sm text-muted-foreground">
+</>
+className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <span className="flex items-center"><>
 
                         <Download className="h-4 w-4 mr-1" />
                         {plugin.downloads.toLocaleString()}
                       </span>
                       <span
-</> className="flex items-center">
+</>
+className="flex items-center">
                         <Star className="h-4 w-4 mr-1" />
                         {plugin.rating} ({plugin.ratingCount})
                       </span>
@@ -300,20 +311,14 @@ export default function PluginMarketplaceLauncher() {
                       className="w-full"
                     >
                       {installing === plugin.id ? (
-                        <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                           Installing...
-                        </>
                       ) : plugin.isInstalled ? (
-                        <>
                           <CheckCircle className="h-4 w-4 mr-2" />
                           Installed
-                        </>
                       ) : (
-                        <>
                           <Download className="h-4 w-4 mr-2" />
                           Install
-                        </>
                       )}
                     </Button>
                   </CardContent>
@@ -336,7 +341,8 @@ export default function PluginMarketplaceLauncher() {
 
                 <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
                 <p
-</> className="text-sm text-muted-foreground">Lifetime earnings</p>
+</>
+className="text-sm text-muted-foreground">Lifetime earnings</p>
               </CardContent>
             </Card>
 
@@ -351,7 +357,8 @@ export default function PluginMarketplaceLauncher() {
 
                 <div className="text-2xl font-bold">{totalInstallations.toLocaleString()}</div>
                 <p
-</> className="text-sm text-muted-foreground">Active installations</p>
+</>
+className="text-sm text-muted-foreground">Active installations</p>
               </CardContent>
             </Card>
 
@@ -366,7 +373,8 @@ export default function PluginMarketplaceLauncher() {
 
                 <div className="text-2xl font-bold text-green-600">+24%</div>
                 <p
-</> className="text-sm text-muted-foreground">This month</p>
+</>
+className="text-sm text-muted-foreground">This month</p>
               </CardContent>
             </Card>
           </div>
@@ -383,7 +391,8 @@ export default function PluginMarketplaceLauncher() {
 
                       <h4 className="font-medium">{item.pluginName}</h4>
                       <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                         {item.installations} installations
                       </p>
                     </div>
@@ -391,7 +400,8 @@ export default function PluginMarketplaceLauncher() {
 
                       <div className="font-bold">${item.revenue.toLocaleString()}</div>
                       <div
-</> className="text-sm text-green-600">+{item.growth}%</div>
+</>
+className="text-sm text-green-600">+{item.growth}%</div>
                     </div>
                   </div>
                 ))}
@@ -414,11 +424,13 @@ export default function PluginMarketplaceLauncher() {
 
                   <p className="text-sm text-muted-foreground mb-4">{plugin.description}</p>
                   <div
-</> className="flex items-center justify-between"><>
+</>
+className="flex items-center justify-between"><>
 
                     <Badge variant="outline">v{plugin.version}</Badge>
                     <Button
-</> variant="outline" size="sm">
+</>
+variant="outline" size="sm">
                       Configure
                     </Button>
                   </div>

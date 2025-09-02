@@ -55,7 +55,8 @@ export const MarketplaceSidebar: React.FC = () => {
 
               <span className="text-2xl mr-3">{plugin.icon || '🔌'}</span>
               <span
-</> className="font-medium mr-auto">{plugin.name}</span>
+</>
+className="font-medium mr-auto">{plugin.name}</span>
               <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity" title="Open plugin">
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7L10 14" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </span>

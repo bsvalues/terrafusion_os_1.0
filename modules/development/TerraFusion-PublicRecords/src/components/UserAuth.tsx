@@ -69,7 +69,8 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
             {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : 'Government Access'}
           </h2>
           <p
-</> className="text-gray-600">
+</>
+className="text-gray-600">
             {mode === 'login' ? 'Access your records and applications' : 
              mode === 'register' ? 'Start accessing public records instantly' :
              'Secure portal for government employees'}
@@ -102,7 +103,8 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
                 Full Name
               </label>
               <div
-</> className="relative">
+</>
+className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
@@ -122,7 +124,8 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
               Email Address
             </label>
             <div
-</> className="relative">
+</>
+className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="email"
@@ -141,7 +144,8 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
               Password
             </label>
             <div
-</> className="relative">
+</>
+className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="password"
@@ -161,7 +165,8 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
                 Employee ID / PIV Card
               </label>
               <div
-</> className="relative">
+</>
+className="relative">
                 <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
@@ -176,7 +181,6 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
           )}
 
           {mode === 'register' && (
-            <>
               <div><>
 
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -184,6 +188,7 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
                 </label>
                 <input
 </>
+
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
@@ -198,6 +203,7 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
                 </label>
                 <input
 </>
+
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -205,7 +211,6 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
                   placeholder="(509) 555-0123"
                 />
               </div>
-            </>
           )}
 
           {error && (
@@ -218,7 +223,6 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
           {/* Features List */}
           <div className="py-4 space-y-2">
             {mode === 'register' && (
-              <>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <CheckCircle className="w-4 h-4 text-green-500" />
                   <span>Save searches and get alerts</span>
@@ -231,10 +235,8 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
                   <CheckCircle className="w-4 h-4 text-green-500" />
                   <span>Track application status</span>
                 </div>
-              </>
             )}
             {mode === 'gov' && (
-              <>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Shield className="w-4 h-4 text-blue-500" />
                   <span>Secure government access</span>
@@ -247,7 +249,6 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
                   <Shield className="w-4 h-4 text-blue-500" />
                   <span>Access restricted records</span>
                 </div>
-              </>
             )}
           </div>
 

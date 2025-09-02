@@ -112,7 +112,8 @@ const BaseMapSelector: React.FC<BaseMapSelectorProps> = ({
                 Base Map
               </h3>
               <button
-</> 
+</>
+
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="px-2 py-1 text-xs bg-gray-200 rounded"
               >

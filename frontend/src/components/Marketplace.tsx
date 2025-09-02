@@ -186,6 +186,7 @@ const Marketplace: React.FC = () => {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
 
+
         <h1 style={{
           fontSize: '2.5rem',
           fontWeight: 900,
@@ -198,6 +199,7 @@ const Marketplace: React.FC = () => {
           Terrafusion Marketplace
         </h1>
         <p
+
 style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
           Enterprise modules and integrations for government operations
         </p>
@@ -271,6 +273,7 @@ style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
       {featuredItems.length > 0 && (
         <div style={{ marginBottom: '3rem' }}>
 
+
           <h2 style={{
             fontSize: '1.8rem',
             fontWeight: 700,
@@ -281,6 +284,7 @@ style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
             ⭐ Featured Modules
           </h2>
           <div
+
 style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
@@ -311,6 +315,7 @@ style={{
                 }}
               >
 
+
                 <div style={{
                   position: 'absolute',
                   top: '1rem',
@@ -326,12 +331,14 @@ style={{
                 </div>
 
                 <div
+
 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '1rem',
                   marginBottom: '1rem'
                 }}>
+
 
                   <div style={{
                     fontSize: '2.5rem',
@@ -346,7 +353,9 @@ style={{
                     {item.icon}
                   </div>
                   <div
+
 >
+
 
                     <h3 style={{
                       fontSize: '1.3rem',
@@ -357,6 +366,7 @@ style={{
                       {item.name}
                     </h3>
                     <p
+
 style={{
                       color: 'rgba(255,255,255,0.6)',
                       fontSize: '0.85rem',
@@ -366,6 +376,7 @@ style={{
                     </p>
                   </div>
                 </div>
+
 
                 <p style={{
                   color: 'rgba(255,255,255,0.8)',
@@ -377,12 +388,14 @@ style={{
                 </p>
 
                 <div
+
 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   marginBottom: '1rem'
                 }}>
+
 
                   <div style={{
                     fontSize: '1.2rem',
@@ -392,6 +405,7 @@ style={{
                     {item.price}
                   </div>
                   <div
+
 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -400,8 +414,10 @@ style={{
                     color: 'rgba(255,255,255,0.7)'
                   }}>
 
+
                     <span>⭐ {item.rating}</span>
                     <span
+
 >📥 {item.downloads}</span>
                   </div>
                 </div>
@@ -412,7 +428,7 @@ style={{
                   marginBottom: '1rem',
                   flexWrap: 'wrap'
                 }}>
-                  {item.tags.map((tag , index) => (
+                  {item.tags.map((tag, index) => (
                     <span
                       key={index}
                       style={{
@@ -430,6 +446,7 @@ style={{
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
+
 
                   <button
                     onClick={() => installModule(item.id)}
@@ -455,6 +472,7 @@ style={{
                     Install Now
                   </button>
                   <button
+
 onClick={() => viewDetails(item.id)}
                     style={{
                       padding: '0.8rem 1rem',
@@ -486,6 +504,7 @@ onClick={() => viewDetails(item.id)}
       {/* All Modules Grid */}
       <div style={{ marginBottom: '2rem' }}>
 
+
         <h2 style={{
           fontSize: '1.8rem',
           fontWeight: 700,
@@ -496,6 +515,7 @@ onClick={() => viewDetails(item.id)}
           All Modules ({filteredItems.length})
         </h2>
         <div
+
 style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
@@ -551,6 +571,7 @@ style={{
                 marginBottom: '1rem'
               }}>
 
+
                 <div style={{
                   fontSize: '2rem',
                   width: '50px',
@@ -564,7 +585,9 @@ style={{
                   {item.icon}
                 </div>
                 <div
+
 >
+
 
                   <h3 style={{
                     fontSize: '1.1rem',
@@ -575,6 +598,7 @@ style={{
                     {item.name}
                   </h3>
                   <p
+
 style={{
                     color: 'rgba(255,255,255,0.6)',
                     fontSize: '0.8rem',
@@ -584,6 +608,7 @@ style={{
                   </p>
                 </div>
               </div>
+
 
               <p style={{
                 color: 'rgba(255,255,255,0.7)',
@@ -600,12 +625,14 @@ style={{
               </p>
 
               <div
+
 style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: '1rem'
               }}>
+
 
                 <div style={{
                   fontSize: '1rem',
@@ -615,6 +642,7 @@ style={{
                   {item.price}
                 </div>
                 <div
+
 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -623,13 +651,16 @@ style={{
                   color: 'rgba(255,255,255,0.6)'
                 }}>
 
+
                   <span>⭐ {item.rating}</span>
                   <span
+
 >📥 {item.downloads}</span>
                 </div>
               </div>
 
               <div style={{ display: 'flex', gap: '0.5rem' }}>
+
 
                 <button
                   onClick={() => installModule(item.id)}
@@ -649,6 +680,7 @@ style={{
                   Install
                 </button>
                 <button
+
 onClick={() => viewDetails(item.id)}
                   style={{
                     padding: '0.7rem 0.8rem',
@@ -689,8 +721,9 @@ onClick={() => viewDetails(item.id)}
             { value: '12K+', label: 'Downloads' },
             { value: '4.7', label: 'Avg Rating' },
             { value: '24/7', label: 'Support' }
-          ].map((stat , index) => (
+          ].map((stat, index) => (
             <div key={index}>
+
 
               <div style={{
                 fontSize: '1.8rem',
@@ -701,6 +734,7 @@ onClick={() => viewDetails(item.id)}
                 {stat.value}
               </div>
               <div
+
 style={{
                 color: 'rgba(255,255,255,0.7)',
                 fontSize: '0.9rem'

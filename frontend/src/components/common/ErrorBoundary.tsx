@@ -73,7 +73,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
     // Reset error boundary when resetKeys change
     if (hasError && resetKeys && prevProps.resetKeys) {
-      const resetKeysChanged = resetKeys.some((key , index) => key !== prevProps.resetKeys![index]);
+      const resetKeysChanged = resetKeys.some((key, index) => key !== prevProps.resetKeys![index]);
 
       if (resetKeysChanged) {
         this.resetErrorBoundary();
@@ -208,9 +208,13 @@ Component Stack: ${errorInfo?.componentStack}
           <Card className='w-full max-w-2xl'>
             <CardHeader className='text-center'>
               <div className='mx-auto mb-4 w-16 h-16 bg-red-100 rounded-full flex items-center justify-center'>
+
+
                 <Warning className='w-8 h-8 text-red-600' />
               </div>
-              <CardTitleclassName='text-2xl font-bold text-gray-900'>
+              <CardTitle
+
+className='text-2xl font-bold text-gray-900'>
                 Something went wrong
               </CardTitle>
               <CardDescription className='text-gray-600'>
@@ -221,8 +225,11 @@ Component Stack: ${errorInfo?.componentStack}
             <CardContent className='space-y-6'>
               <Alert>
                 <Warning className='h-4 w-4' />
+
+
                 <AlertTitle>Error Information</AlertTitle>
                 <AlertDescription
+
 >
                   <div className='mt-2 space-y-2'>
                     <p>
@@ -242,19 +249,27 @@ Component Stack: ${errorInfo?.componentStack}
 
               <div className='flex flex-wrap gap-3 justify-center'>
                 <Button onClick={this.handleRetry} className='flex items-center gap-2'>
+
+
                   <Refresh className='w-4 h-4' />
                   Try Again
                 </Button>
 
-                <Buttonvariant='outline'
+                <Button
+
+variant='outline'
                   onClick={this.handleReload}
                   className='flex items-center gap-2'
                 >
+
+
                   <Refresh className='w-4 h-4' />
                   Reload Page
                 </Button>
 
-                <Buttonvariant='outline'
+                <Button
+
+variant='outline'
                   onClick={this.handleGoHome}
                   className='flex items-center gap-2'
                 >
@@ -276,16 +291,28 @@ Component Stack: ${errorInfo?.componentStack}
 
               {isDevelopment && this.props.showErrorDetails && (
                 <details className='mt-6'>
+
+
                   <summary className='cursor-pointer font-medium text-gray-700 hover:text-gray-900'>
                     🔍 Technical Details (Development Only)
                   </summary>
-                  <divclassName='mt-4 p-4 bg-gray-100 rounded-lg overflow-auto'>
+                  <div
+
+className='mt-4 p-4 bg-gray-100 rounded-lg overflow-auto'>
+
+
                     <h4 className='font-semibold mb-2'>Error Stack:</h4>
-                    <preclassName='text-sm text-red-600 whitespace-pre-wrap mb-4'>
+                    <pre
+
+className='text-sm text-red-600 whitespace-pre-wrap mb-4'>
                       {error?.stack}
                     </pre>
+
+
                     <h4 className='font-semibold mb-2'>Component Stack:</h4>
-                    <preclassName='text-sm text-blue-600 whitespace-pre-wrap'>
+                    <pre
+
+className='text-sm text-blue-600 whitespace-pre-wrap'>
                       {errorInfo?.componentStack}
                     </pre>
                   </div>
@@ -405,8 +432,11 @@ export class AsyncErrorBoundary extends Component<Props, State> {
             textAlign: 'center',
           }}
         >
+
+
           <h2>Something went wrong</h2>
           <p
+
 >An error occurred while rendering this component.</p>
           <button
             onClick={this.resetErrorBoundary}

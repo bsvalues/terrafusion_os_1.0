@@ -276,7 +276,8 @@ const AIAgentMonitoringDashboard: React.FC = () => {
           🤖 AI Agent Swarm Monitoring Dashboard
         </Typography>
         <Box
-</> sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+</>
+sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Chip 
             label={`${swarmMetrics.activeAgents}/${swarmMetrics.totalAgents} Active`}
             color="primary"
@@ -301,11 +302,13 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                   <SmartToy />
                 </Avatar>
                 <Box
+</>
 </>><>
 
                   <Typography variant="h4">{swarmMetrics.totalAgents}</Typography>
                   <Typography
-</> variant="body2" color="textSecondary">Total Agents</Typography>
+</>
+variant="body2" color="textSecondary">Total Agents</Typography>
                 </Box>
               </Box>
               <LinearProgress 
@@ -326,11 +329,13 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                   <Psychology />
                 </Avatar>
                 <Box
+</>
 </>><>
 
                   <Typography variant="h4">{swarmMetrics.collectiveIntelligence.toFixed(1)}%</Typography>
                   <Typography
-</> variant="body2" color="textSecondary">Collective Intelligence</Typography>
+</>
+variant="body2" color="textSecondary">Collective Intelligence</Typography>
                 </Box>
               </Box>
               <LinearProgress 
@@ -352,11 +357,13 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                   <Speed />
                 </Avatar>
                 <Box
+</>
 </>><>
 
                   <Typography variant="h4">{swarmMetrics.taskThroughput.toLocaleString()}</Typography>
                   <Typography
-</> variant="body2" color="textSecondary">Tasks/Hour</Typography>
+</>
+variant="body2" color="textSecondary">Tasks/Hour</Typography>
                 </Box>
               </Box>
               <LinearProgress 
@@ -378,11 +385,13 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                   <Warning />
                 </Avatar>
                 <Box
+</>
 </>><>
 
                   <Typography variant="h4">{swarmMetrics.errorRate.toFixed(1)}%</Typography>
                   <Typography
-</> variant="body2" color="textSecondary">Error Rate</Typography>
+</>
+variant="body2" color="textSecondary">Error Rate</Typography>
                 </Box>
               </Box>
               <LinearProgress 
@@ -406,7 +415,8 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                 AI Swarm Performance Trends
               </Typography>
               <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                 <LineChart data={performanceData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="timestamp" />
@@ -430,7 +440,8 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                 Swarm Capability Radar
               </Typography>
               <ResponsiveContainer
-</> width="100%" height={300}>
+</>
+width="100%" height={300}>
                 <RadarChart data={radarData}>
                   <PolarGrid />
                   <PolarAngleAxis dataKey="subject" />
@@ -453,21 +464,25 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                 Individual Agent Status
               </Typography>
               <TableContainer
-</> component={Paper} sx={{ maxHeight: 400 }}>
+</>
+component={Paper} sx={{ maxHeight: 400 }}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow><>
 
                       <TableCell>Agent</TableCell>
                       <TableCell
+</>
 </>>Type</TableCell><>
 
                       <TableCell>Status</TableCell>
                       <TableCell
+</>
 </>>Performance</TableCell><>
 
                       <TableCell>Tasks</TableCell>
                       <TableCell
+</>
 </>>Efficiency</TableCell>
                       <TableCell>Actions</TableCell>
                     </TableRow>
@@ -482,13 +497,15 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                               {getAgentTypeIcon(agent.type)}
                             </Avatar>
                             <Box
+</>
 </>><>
 
                               <Typography variant="body2" fontWeight="bold">
                                 {agent.name}
                               </Typography>
                               <Typography
-</> variant="caption" color="textSecondary">
+</>
+variant="caption" color="textSecondary">
                                 {agent.specialization}
                               </Typography>
                             </Box>
@@ -503,6 +520,7 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                           />
                         </TableCell>
                         <TableCell
+</>
 </>>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             {getStatusIcon(agent.status)}
@@ -527,6 +545,7 @@ const AIAgentMonitoringDashboard: React.FC = () => {
 
                         <TableCell>{agent.tasksCompleted.toLocaleString()}</TableCell>
                         <TableCell
+</>
 </>>{agent.efficiency.toFixed(1)}%</TableCell>
                         <TableCell>
                           <Tooltip title="View Details">
@@ -557,6 +576,7 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                 Agent Type Distribution
               </Typography>
               <List
+</>
 </>>
                 {['scout', 'worker', 'queen', 'sentinel', 'communicator'].map((type) => {
                   const count = agents.filter(agent => agent.type === type).length;

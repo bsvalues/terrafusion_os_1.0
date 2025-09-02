@@ -9,7 +9,8 @@ export function MichiganTechnicalHeader() {
 
             <h1 className="text-3xl font-bold text-white mb-2">Michigan Technical Integration</h1>
             <p
-</> className="text-gray-300">Great Lakes Gateway to National Dominance</p>
+</>
+className="text-gray-300">Great Lakes Gateway to National Dominance</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20">

@@ -188,7 +188,6 @@ export function DataSourceForm() {
     switch (sourceType) {
       case "sql":
         return (
-          <>
             <FormField
               control={form.control}
               name="config.config.dialect"
@@ -197,7 +196,8 @@ export function DataSourceForm() {
 
                   <FormLabel>Database Type</FormLabel>
                   <Select
-</> 
+</>
+
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
                   >
@@ -229,6 +229,7 @@ export function DataSourceForm() {
 
                   <FormLabel>Server Name/IP</FormLabel>
                   <FormControl
+</>
 </>>
                     <div className="flex items-center space-x-2">
                       <Server className="w-4 h-4 text-muted-foreground" />
@@ -240,7 +241,8 @@ export function DataSourceForm() {
                     For SQL Server, you can use server name or IP address
                   </FormDescription>
                   <FormMessage
-</> />
+</>
+/>
                 </FormItem>
               )}
             />
@@ -252,6 +254,7 @@ export function DataSourceForm() {
 
                   <FormLabel>Port</FormLabel>
                   <FormControl
+</>
 </>><>
 
                     <Input 
@@ -264,7 +267,8 @@ export function DataSourceForm() {
                     />
                   </FormControl>
                   <FormMessage
-</> />
+</>
+/>
                 </FormItem>
               )}
             />
@@ -276,6 +280,7 @@ export function DataSourceForm() {
 
                   <FormLabel>Database Name</FormLabel>
                   <FormControl
+</>
 </>>
                     <div className="flex items-center space-x-2">
                       <Database className="w-4 h-4 text-muted-foreground" />
@@ -295,6 +300,7 @@ export function DataSourceForm() {
 
                     <FormLabel>Windows Authentication</FormLabel>
                     <FormDescription
+</>
 </>>
                       Use Windows integrated security
                     </FormDescription>
@@ -309,7 +315,6 @@ export function DataSourceForm() {
               )}
             />
             {!form.watch("config.config.trustedConnection") && (
-              <>
                 <FormField
                   control={form.control}
                   name="config.config.username"
@@ -318,6 +323,7 @@ export function DataSourceForm() {
 
                       <FormLabel>Username</FormLabel>
                       <FormControl
+</>
 </>>
                         <div className="flex items-center space-x-2">
                           <User className="w-4 h-4 text-muted-foreground" />
@@ -336,6 +342,7 @@ export function DataSourceForm() {
 
                       <FormLabel>Password</FormLabel>
                       <FormControl
+</>
 </>>
                         <div className="flex items-center space-x-2">
                           <Lock className="w-4 h-4 text-muted-foreground" />
@@ -346,7 +353,6 @@ export function DataSourceForm() {
                     </FormItem>
                   )}
                 />
-              </>
             )}
             <FormField
               control={form.control}
@@ -357,6 +363,7 @@ export function DataSourceForm() {
 
                     <FormLabel>Encrypt Connection</FormLabel>
                     <FormDescription
+</>
 </>>
                       Use encryption for data sent between client and server
                     </FormDescription>
@@ -370,7 +377,6 @@ export function DataSourceForm() {
                 </FormItem>
               )}
             />
-          </>
         );
       default:
         return null;
@@ -388,12 +394,14 @@ export function DataSourceForm() {
 
               <FormLabel>Name</FormLabel>
               <FormControl
+</>
 </>><>
 
                 <Input placeholder="My Data Source" {...field} data-testid="name-input" />
               </FormControl>
               <FormMessage
-</> data-testid="name-validation-error" />
+</>
+data-testid="name-validation-error" />
             </FormItem>
           )}
         />
@@ -406,7 +414,8 @@ export function DataSourceForm() {
 
               <FormLabel>Type</FormLabel>
               <Select
-</> 
+</>
+
                 onValueChange={(value: SourceType) => {
                   field.onChange(value);
                   setSourceType(value);
@@ -433,7 +442,8 @@ export function DataSourceForm() {
 
                           <div>{type.label}</div>
                           <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                             {type.description}
                           </p>
                         </div>
@@ -447,13 +457,13 @@ export function DataSourceForm() {
           )}
         /><>
 
-
         <div className="space-y-4">
           {renderConfigFields()}
         </div>
 
         <Button
-</> type="submit" disabled={createMutation.isPending} data-testid="submit-button">
+</>
+type="submit" disabled={createMutation.isPending} data-testid="submit-button">
           {createMutation.isPending ? "Creating..." : "Create Data Source"}
         </Button>
       </form>

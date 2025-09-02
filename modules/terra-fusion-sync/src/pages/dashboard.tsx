@@ -29,6 +29,7 @@ export default function Dashboard() {
             <Skeleton className="h-5 w-2/3" />
           </CardHeader>
           <CardContent
+</>
 </>>
             <Skeleton className="h-4 w-full mb-2" />
             <Skeleton className="h-4 w-4/5" />
@@ -64,7 +65,8 @@ export default function Dashboard() {
               You haven't uploaded any files. Upload files to see them here.
             </p>
             <Button
-</> onClick={() => navigate("/files")}>
+</>
+onClick={() => navigate("/files")}>
               <FolderOpen className="w-4 h-4 mr-2" />
               Go to File Explorer
             </Button>
@@ -80,13 +82,15 @@ export default function Dashboard() {
 
             <CardTitle className="line-clamp-1">{file.name}</CardTitle>
             <CardDescription
-</> className="flex items-center">
+</>
+className="flex items-center">
               <FileText className="w-3 h-3 mr-1" />
               {file.type}<>
 
               <span className="mx-2">•</span>
               <Clock
-</> className="w-3 h-3 mr-1" />
+</>
+className="w-3 h-3 mr-1" />
               {new Date(file.createdAt).toLocaleDateString()}
             </CardDescription>
           </div>
@@ -118,6 +122,7 @@ export default function Dashboard() {
             <Skeleton className="h-5 w-2/3" />
           </CardHeader>
           <CardContent
+</>
 </>>
             <Skeleton className="h-4 w-full mb-2" />
             <Skeleton className="h-4 w-1/2" />
@@ -153,7 +158,8 @@ export default function Dashboard() {
               You haven't connected any data sources. Connect a data source to see it here.
             </p>
             <Button
-</> onClick={() => navigate("/data-sources")}>
+</>
+onClick={() => navigate("/data-sources")}>
               <Database className="w-4 h-4 mr-2" />
               Set Up Data Sources
             </Button>
@@ -193,7 +199,8 @@ export default function Dashboard() {
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
 
       <div
-</> className="space-y-8">
+</>
+className="space-y-8">
         <MetricsCards />
 
         <div className="grid gap-4 md:grid-cols-4"><>
@@ -202,12 +209,14 @@ export default function Dashboard() {
         </div>
 
         <div
+</>
 </>>
           <div className="flex justify-between items-center mb-4"><>
 
             <h2 className="text-xl font-semibold">Recent Files</h2>
             <Button
-</> 
+</>
+
               variant="ghost" 
               size="sm" 
               onClick={() => navigate("/files")}
@@ -227,7 +236,8 @@ export default function Dashboard() {
 
             <h2 className="text-xl font-semibold">Data Sources</h2>
             <Button
-</> 
+</>
+
               variant="ghost" 
               size="sm" 
               onClick={() => navigate("/data-sources")}

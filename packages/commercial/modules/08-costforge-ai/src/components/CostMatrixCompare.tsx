@@ -228,6 +228,7 @@ export default function CostMatrixCompare() {
           Cost Matrix Comparison
         </CardTitle>
         <CardDescription
+</>
 </>>
           Compare building costs between different matrix years to analyze trends and changes.
         </CardDescription>
@@ -239,7 +240,8 @@ export default function CostMatrixCompare() {
 
             <label className="text-sm font-medium">Base Matrix (Earlier Year)</label>
             <Select
-</> 
+</>
+
               value={matrix1Id} 
               onValueChange={setMatrix1Id}
             >
@@ -248,6 +250,7 @@ export default function CostMatrixCompare() {
                 <SelectValue placeholder="Select base matrix" />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 {years.map(year => (
                   <SelectItem key={`year-${year}`} value={`year-${year}`} disabled>
@@ -267,7 +270,8 @@ export default function CostMatrixCompare() {
 
             <label className="text-sm font-medium">Comparison Matrix (Later Year)</label>
             <Select
-</> 
+</>
+
               value={matrix2Id} 
               onValueChange={setMatrix2Id}
             >
@@ -276,6 +280,7 @@ export default function CostMatrixCompare() {
                 <SelectValue placeholder="Select comparison matrix" />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 {years.map(year => (
                   <SelectItem key={`year-${year}`} value={`year-${year}`} disabled>
@@ -298,19 +303,17 @@ export default function CostMatrixCompare() {
             disabled={!matrix1Id || !matrix2Id || isComparing}
           >
             {isComparing ? (
-              <>
                 <RefreshCcwIcon className="mr-2 h-4 w-4 animate-spin" />
                 Comparing...
-              </>
-            ) : (
-              <>
+            ) : (<>
+
                 <DiffIcon className="mr-2 h-4 w-4" />
                 Compare Matrices
-              </>
             )}
           </Button>
           
-          <Button 
+          <Button
+</> 
             variant="outline" 
             onClick={resetComparison}
             disabled={isComparing || (!matrix1Id && !matrix2Id)}
@@ -327,7 +330,6 @@ export default function CostMatrixCompare() {
         )}
         
         {diffResults.length > 0 && (
-          <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <Card>
                 <CardHeader className="pb-2">
@@ -340,7 +342,8 @@ export default function CostMatrixCompare() {
 
                   <div className="text-2xl font-bold">{summaryStats.increases}</div>
                   <p
-</> className="text-sm text-muted-foreground">building costs increased</p>
+</>
+className="text-sm text-muted-foreground">building costs increased</p>
                 </CardContent>
               </Card>
               
@@ -355,7 +358,8 @@ export default function CostMatrixCompare() {
 
                   <div className="text-2xl font-bold">{summaryStats.decreases}</div>
                   <p
-</> className="text-sm text-muted-foreground">building costs decreased</p>
+</>
+className="text-sm text-muted-foreground">building costs decreased</p>
                 </CardContent>
               </Card>
               
@@ -371,7 +375,8 @@ export default function CostMatrixCompare() {
                     {formatPercentage(summaryStats.averageChange)}
                   </div>
                   <p
-</> className="text-sm text-muted-foreground">average cost change</p>
+</>
+className="text-sm text-muted-foreground">average cost change</p>
                 </CardContent>
               </Card>
             </div>
@@ -381,7 +386,8 @@ export default function CostMatrixCompare() {
 
                 <TabsTrigger value="table">Table View</TabsTrigger>
                 <TabsTrigger
-</> value="chart">Chart View</TabsTrigger>
+</>
+value="chart">Chart View</TabsTrigger>
                 <TabsTrigger value="summary">Summary</TabsTrigger>
               </TabsList>
               
@@ -392,19 +398,23 @@ export default function CostMatrixCompare() {
                     Cost Matrix Comparison: {diffResults[0]?.year1} vs {diffResults[0]?.year2}
                   </TableCaption>
                   <TableHeader
+</>
 </>>
                     <TableRow><>
 
                       <TableHead>Building Type</TableHead>
                       <TableHead
+</>
 </>>Region</TableHead><>
 
                       <TableHead>{diffResults[0]?.year1} Cost</TableHead>
                       <TableHead
+</>
 </>>{diffResults[0]?.year2} Cost</TableHead><>
 
                       <TableHead>Difference</TableHead>
                       <TableHead
+</>
 </>>Change</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -414,14 +424,17 @@ export default function CostMatrixCompare() {
 
                         <TableCell>{diff.buildingType}</TableCell>
                         <TableCell
+</>
 </>>{diff.region}</TableCell><>
 
                         <TableCell>{formatCurrency(diff.baseCost1)}</TableCell>
                         <TableCell
+</>
 </>>{formatCurrency(diff.baseCost2)}</TableCell><>
 
                         <TableCell>{formatCurrency(diff.difference)}</TableCell>
                         <TableCell
+</>
 </>>
                           <Badge variant={diff.percentageChange > 0 ? 'danger' : diff.percentageChange < 0 ? 'success' : 'default'}>
                             {diff.percentageChange > 0 ? (
@@ -470,7 +483,8 @@ export default function CostMatrixCompare() {
 
                     <h3 className="text-lg font-medium mb-2">Largest Cost Increases</h3>
                     <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                       The most significant cost increases between 
                       {diffResults[0]?.year1} and {diffResults[0]?.year2}:
                     </p>
@@ -482,7 +496,8 @@ export default function CostMatrixCompare() {
                           {summaryStats.maxIncrease.type} in {summaryStats.maxIncrease.region}
                         </p>
                         <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                           Increased by {formatPercentage(summaryStats.maxIncrease.value)}
                         </p>
                       </div>
@@ -497,7 +512,8 @@ export default function CostMatrixCompare() {
 
                     <h3 className="text-lg font-medium mb-2">Largest Cost Decreases</h3>
                     <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                       The most significant cost decreases between 
                       {diffResults[0]?.year1} and {diffResults[0]?.year2}:
                     </p>
@@ -509,7 +525,8 @@ export default function CostMatrixCompare() {
                           {summaryStats.maxDecrease.type} in {summaryStats.maxDecrease.region}
                         </p>
                         <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                           Decreased by {formatPercentage(Math.abs(summaryStats.maxDecrease.value))}
                         </p>
                       </div>
@@ -524,7 +541,8 @@ export default function CostMatrixCompare() {
 
                     <h3 className="text-lg font-medium mb-2">Overall Analysis</h3>
                     <p
-</> className="text-sm">
+</>
+className="text-sm">
                       Between {diffResults[0]?.year1} and {diffResults[0]?.year2}, 
                       building costs have {summaryStats.averageChange > 0 ? 'increased' : 'decreased'} by 
                       an average of {formatPercentage(Math.abs(summaryStats.averageChange))}.
@@ -535,6 +553,7 @@ export default function CostMatrixCompare() {
                         {summaryStats.increases} building types showed an increase in cost
                       </li>
                             <li
+</>
 </>>
                         {summaryStats.decreases} building types showed a decrease in cost
                       </li>
@@ -546,7 +565,6 @@ export default function CostMatrixCompare() {
                 </div>
               </TabsContent>
             </Tabs>
-          </>
         )}
       </CardContent>
       

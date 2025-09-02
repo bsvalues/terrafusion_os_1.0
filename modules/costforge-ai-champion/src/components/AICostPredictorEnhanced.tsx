@@ -190,6 +190,7 @@ export default function AICostPredictorEnhanced() {
             AI Cost Predictor - Enhanced
           </CardTitle>
           <CardDescription
+</>
 </>>
             Advanced AI-powered building cost prediction with government compliance
           </CardDescription>
@@ -200,6 +201,7 @@ export default function AICostPredictorEnhanced() {
 
             <AlertTitle>AI Service Configuration Required</AlertTitle>
             <AlertDescription
+</>
 </>>
               Enhanced AI prediction service requires configuration. Contact your system administrator to enable advanced AI capabilities.
             </AlertDescription>
@@ -238,7 +240,8 @@ export default function AICostPredictorEnhanced() {
 
                     <FormLabel>Building Type</FormLabel>
                     <Select
-</> 
+</>
+
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
@@ -260,7 +263,8 @@ export default function AICostPredictorEnhanced() {
                       Primary building classification for government assessment
                     </FormDescription>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -274,7 +278,8 @@ export default function AICostPredictorEnhanced() {
 
                     <FormLabel>Geographic Region</FormLabel>
                     <Select
-</> 
+</>
+
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
@@ -296,7 +301,8 @@ export default function AICostPredictorEnhanced() {
                       Geographic region affects material costs and labor rates
                     </FormDescription>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -310,6 +316,7 @@ export default function AICostPredictorEnhanced() {
 
                     <FormLabel>Square Footage</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input 
@@ -320,6 +327,7 @@ export default function AICostPredictorEnhanced() {
                       />
                     </FormControl>
                     <FormDescription
+</>
 </>>
                       Total building area in square feet
                     </FormDescription>
@@ -337,6 +345,7 @@ export default function AICostPredictorEnhanced() {
 
                     <FormLabel>Year Built (Optional)</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input 
@@ -348,6 +357,7 @@ export default function AICostPredictorEnhanced() {
                       />
                     </FormControl>
                     <FormDescription
+</>
 </>>
                       Construction year affects compliance requirements
                     </FormDescription>
@@ -365,7 +375,8 @@ export default function AICostPredictorEnhanced() {
 
                     <FormLabel>Building Condition</FormLabel>
                     <Select
-</> 
+</>
+
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
@@ -387,7 +398,8 @@ export default function AICostPredictorEnhanced() {
                       Current physical condition assessment
                     </FormDescription>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -417,6 +429,7 @@ export default function AICostPredictorEnhanced() {
                       />
                     </FormControl>
                     <FormDescription
+</>
 </>>
                       Architectural and structural complexity (0.5 = Simple, 2.0 = Highly Complex)
                     </FormDescription>
@@ -447,28 +460,32 @@ export default function AICostPredictorEnhanced() {
 
                         <div className="font-semibold text-gray-700">Base Cost per Sq Ft:</div>
                         <div
-</> className="text-lg font-mono">${predictionResult.baseCost ? (predictionResult.baseCost / form.getValues().squareFootage).toFixed(2) : 'N/A'}</div>
+</>
+className="text-lg font-mono">${predictionResult.baseCost ? (predictionResult.baseCost / form.getValues().squareFootage).toFixed(2) : 'N/A'}</div>
                       </div>
                       
                       <div className="space-y-2"><>
 
                         <div className="font-semibold text-gray-700">Adjusted Cost per Sq Ft:</div>
                         <div
-</> className="text-lg font-mono">${predictionResult.costPerSquareFoot?.toFixed(2) || predictionResult.costPerSqft?.toFixed(2)}</div>
+</>
+className="text-lg font-mono">${predictionResult.costPerSquareFoot?.toFixed(2) || predictionResult.costPerSqft?.toFixed(2)}</div>
                       </div>
                       
                       <div className="space-y-2"><>
 
                         <div className="font-semibold text-gray-700">Regional Factor:</div>
                         <div
-</> className="text-lg font-mono">{predictionResult.regionFactor}×</div>
+</>
+className="text-lg font-mono">{predictionResult.regionFactor}×</div>
                       </div>
                       
                       <div className="space-y-2"><>
 
                         <div className="font-semibold text-gray-700">Complexity Factor:</div>
                         <div
-</> className="text-lg font-mono">{predictionResult.complexityFactor}×</div>
+</>
+className="text-lg font-mono">{predictionResult.complexityFactor}×</div>
                       </div>
                       
                       <div className="col-span-2 mt-4 pt-4 border-t border-blue-200">
@@ -476,7 +493,8 @@ export default function AICostPredictorEnhanced() {
 
                           <span className="text-xl font-bold text-gray-800">Total Estimated Cost:</span>
                           <span
-</> className="text-2xl font-bold text-blue-600">
+</>
+className="text-2xl font-bold text-blue-600">
                             ${predictionResult.totalCost?.toLocaleString()}
                           </span>
                         </div>
@@ -489,7 +507,8 @@ export default function AICostPredictorEnhanced() {
 
                         <h4 className="font-semibold mb-2 text-blue-800">AI Analysis:</h4>
                         <p
-</> className="text-sm text-gray-700">{predictionResult.explanation}</p>
+</>
+className="text-sm text-gray-700">{predictionResult.explanation}</p>
                       </div>
                     )}
                   </CardContent>
@@ -512,13 +531,15 @@ export default function AICostPredictorEnhanced() {
 
                               <h4 className="font-semibold text-green-800">{rec.material}</h4>
                               <div
-</> className="flex gap-2"><>
+</>
+className="flex gap-2"><>
 
                                 <Badge variant="outline" className="bg-blue-100">
                                   Cost: {rec.costImpact > 1 ? '+' : ''}{((rec.costImpact - 1) * 100).toFixed(0)}%
                                 </Badge>
                                 <Badge
-</> variant="outline" className="bg-green-100">
+</>
+variant="outline" className="bg-green-100">
                                   <Leaf className="h-3 w-3 mr-1" />
                                   {rec.sustainability}/10
                                 </Badge>
@@ -581,7 +602,8 @@ export default function AICostPredictorEnhanced() {
 
                 <AlertTitle className="text-amber-700">AI Insights & Recommendations</AlertTitle>
                 <AlertDescription
-</> className="text-amber-700">
+</>
+className="text-amber-700">
                   <ul className="list-disc pl-5 space-y-1 mt-2">
                     {dataQualityWarnings.map((warning /* , index */) => (
                       <li key={index}>{warning}</li>
@@ -597,6 +619,7 @@ export default function AICostPredictorEnhanced() {
 
                 <AlertTitle>Prediction Error</AlertTitle>
                 <AlertDescription
+</>
 </>>
                   {error || "An error occurred during the AI cost prediction. The service may be temporarily unavailable."}
                 </AlertDescription>
@@ -612,29 +635,21 @@ export default function AICostPredictorEnhanced() {
                   disabled={isExporting}
                 >
                   {isExporting ? (
-                    <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Preparing...
-                    </>
                   ) : (
-                    <>
                       <FileDown className="mr-2 h-4 w-4" />
                       Export Analysis
-                    </>
                   )}
                 </Button>
               )}
               <Button type="submit" disabled={isPredicting} className="bg-primary hover:bg-primary/90">
                 {isPredicting ? (
-                  <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     AI Analyzing...
-                  </>
                 ) : (
-                  <>
                     <Calculator className="mr-2 h-4 w-4" />
                     Predict Cost with AI
-                  </>
                 )}
               </Button>
             </div>

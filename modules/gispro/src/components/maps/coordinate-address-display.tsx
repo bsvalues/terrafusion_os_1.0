@@ -97,6 +97,7 @@ export function CoordinateAddressDisplay({
 
               <div>{formatCoordinate(latitude, true)}</div>
               <div
+</>
 </>>{formatCoordinate(longitude)}</div>
             </div>
             <Button

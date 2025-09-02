@@ -275,12 +275,14 @@ export const AdvancedAnalytics: React.FC = () => {
 
             <h3>Total Counties</h3>
             <span
-</> className="card-icon">🏛️</span>
+</>
+className="card-icon">🏛️</span>
           </div><>
 
           <div className="card-value">{analyticsData?.countyMetrics.length || 0}</div>
           <div
-</> className="card-change positive">+2 this month</div>
+</>
+className="card-change positive">+2 this month</div>
         </div>
 
         <div className="summary-card">
@@ -288,14 +290,16 @@ export const AdvancedAnalytics: React.FC = () => {
 
             <h3>Active Users</h3>
             <span
-</> className="card-icon">👥</span>
+</>
+className="card-icon">👥</span>
           </div><>
 
           <div className="card-value">
             {analyticsData?.countyMetrics.reduce((sum, county) => sum + county.activeUsers, 0) || 0}
           </div>
           <div
-</> className="card-change positive">+23% growth</div>
+</>
+className="card-change positive">+23% growth</div>
         </div>
 
         <div className="summary-card">
@@ -303,14 +307,16 @@ export const AdvancedAnalytics: React.FC = () => {
 
             <h3>Total Cost Savings</h3>
             <span
-</> className="card-icon">💰</span>
+</>
+className="card-icon">💰</span>
           </div><>
 
           <div className="card-value">
             {formatCurrency(analyticsData?.countyMetrics.reduce((sum, county) => sum + county.costSavings, 0) || 0)}
           </div>
           <div
-</> className="card-change positive">+15% this quarter</div>
+</>
+className="card-change positive">+15% this quarter</div>
         </div>
 
         <div className="summary-card">
@@ -318,14 +324,16 @@ export const AdvancedAnalytics: React.FC = () => {
 
             <h3>Avg Compliance</h3>
             <span
-</> className="card-icon">✅</span>
+</>
+className="card-icon">✅</span>
           </div><>
 
           <div className="card-value">
             {formatPercentage(analyticsData?.complianceMetrics.overallCompliance || 0)}
           </div>
           <div
-</> className="card-change positive">+3% improvement</div>
+</>
+className="card-change positive">+3% improvement</div>
         </div>
       </div>
 
@@ -334,7 +342,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
           <h3>User Adoption Trend</h3>
           <div
-</> className="trend-chart">
+</>
+className="trend-chart">
             {analyticsData?.trends.find(t => t.metric === 'User Adoption')?.values.map((value /* , index */) => (
               <div key={index} className="trend-bar"><>
 
@@ -344,7 +353,8 @@ export const AdvancedAnalytics: React.FC = () => {
                   title={`${value} users`}
                 ></div>
                 <span
-</> className="bar-label">W{index + 1}</span>
+</>
+className="bar-label">W{index + 1}</span>
               </div>
             ))}
           </div>
@@ -354,7 +364,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
           <h3>Compliance Score Trend</h3>
           <div
-</> className="trend-chart">
+</>
+className="trend-chart">
             {analyticsData?.trends.find(t => t.metric === 'Compliance Score')?.values.map((value /* , index */) => (
               <div key={index} className="trend-bar"><>
 
@@ -364,7 +375,8 @@ export const AdvancedAnalytics: React.FC = () => {
                   title={`${value}% compliance`}
                 ></div>
                 <span
-</> className="bar-label">W{index + 1}</span>
+</>
+className="bar-label">W{index + 1}</span>
               </div>
             ))}
           </div>
@@ -378,18 +390,21 @@ export const AdvancedAnalytics: React.FC = () => {
 
       <h3>County Performance Metrics</h3>
       <div
-</> className="counties-grid">
+</>
+className="counties-grid">
         {analyticsData?.countyMetrics.map(county => (
           <div key={county.countyId} className="county-analytics-card">
             <div className="county-header"><>
 
               <h4>{county.countyName}</h4>
               <div
-</> className="county-score"><>
+</>
+className="county-score"><>
 
                 <span className="score-value">{county.complianceScore}%</span>
                 <span
-</> className="score-label">Compliance</span>
+</>
+className="score-label">Compliance</span>
               </div>
             </div>
             
@@ -398,25 +413,29 @@ export const AdvancedAnalytics: React.FC = () => {
 
                 <span className="metric-label">Active Users</span>
                 <span
-</> className="metric-value">{county.activeUsers}</span>
+</>
+className="metric-value">{county.activeUsers}</span>
               </div>
               <div className="metric-row"><>
 
                 <span className="metric-label">Total Plugins</span>
                 <span
-</> className="metric-value">{county.totalPlugins}</span>
+</>
+className="metric-value">{county.totalPlugins}</span>
               </div>
               <div className="metric-row"><>
 
                 <span className="metric-label">Cost Savings</span>
                 <span
-</> className="metric-value">{formatCurrency(county.costSavings)}</span>
+</>
+className="metric-value">{formatCurrency(county.costSavings)}</span>
               </div>
               <div className="metric-row"><>
 
                 <span className="metric-label">Efficiency Gain</span>
                 <span
-</> className="metric-value">{county.efficiencyGain}%</span>
+</>
+className="metric-value">{county.efficiencyGain}%</span>
               </div>
             </div>
 
@@ -436,20 +455,24 @@ export const AdvancedAnalytics: React.FC = () => {
 
       <h3>Plugin Usage Analytics</h3>
       <div
-</> className="plugins-table">
+</>
+className="plugins-table">
         <div className="table-header"><>
 
           <div className="header-cell">Plugin</div>
           <div
-</> className="header-cell">Deployments</div><>
+</>
+className="header-cell">Deployments</div><>
 
           <div className="header-cell">Monthly Usage</div>
           <div
-</> className="header-cell">Satisfaction</div><>
+</>
+className="header-cell">Satisfaction</div><>
 
           <div className="header-cell">ROI</div>
           <div
-</> className="header-cell">Cost/Use</div>
+</>
+className="header-cell">Cost/Use</div>
         </div>
         
         {analyticsData?.pluginUsage.map(plugin => (
@@ -458,20 +481,23 @@ export const AdvancedAnalytics: React.FC = () => {
 
               <strong>{plugin.pluginName}</strong>
               <span
-</> className="plugin-status">
+</>
+className="plugin-status">
                 {plugin.activeInstances}/{plugin.totalDeployments} active
               </span>
             </div><>
 
             <div className="cell">{plugin.totalDeployments}</div>
             <div
-</> className="cell">{plugin.monthlyUsage.toLocaleString()}</div>
+</>
+className="cell">{plugin.monthlyUsage.toLocaleString()}</div>
             <div className="cell">
               <div className="satisfaction-rating"><>
 
                 <span className="rating-value">{plugin.userSatisfaction}</span>
                 <span
-</> className="rating-stars">
+</>
+className="rating-stars">
                   {'★'.repeat(Math.floor(plugin.userSatisfaction))}
                 </span>
               </div>
@@ -479,7 +505,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
             <div className="cell roi-value">{plugin.roi}%</div>
             <div
-</> className="cell">{formatCurrency(plugin.costPerUse)}</div>
+</>
+className="cell">{formatCurrency(plugin.costPerUse)}</div>
           </div>
         ))}
       </div>
@@ -492,13 +519,15 @@ export const AdvancedAnalytics: React.FC = () => {
       <h3>Compliance Dashboard</h3>
       
       <div
-</> className="compliance-overview">
+</>
+className="compliance-overview">
         <div className="compliance-score-circle">
           <div className="score-circle" data-score={analyticsData?.complianceMetrics.overallCompliance}><>
 
             <span className="score-number">{analyticsData?.complianceMetrics.overallCompliance}%</span>
             <span
-</> className="score-label">Overall Compliance</span>
+</>
+className="score-label">Overall Compliance</span>
           </div>
         </div>
 
@@ -508,7 +537,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
               <span className="metric-name">FISMA Compliance</span>
               <span
-</> className="metric-score">{analyticsData?.complianceMetrics.fismaScore}%</span>
+</>
+className="metric-score">{analyticsData?.complianceMetrics.fismaScore}%</span>
             </div>
             <div className="metric-bar">
               <div 
@@ -523,7 +553,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
               <span className="metric-name">State DOE Requirements</span>
               <span
-</> className="metric-score">{analyticsData?.complianceMetrics.stateDoEScore}%</span>
+</>
+className="metric-score">{analyticsData?.complianceMetrics.stateDoEScore}%</span>
             </div>
             <div className="metric-bar">
               <div 
@@ -538,7 +569,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
               <span className="metric-name">County Audit Standards</span>
               <span
-</> className="metric-score">{analyticsData?.complianceMetrics.countyAuditScore}%</span>
+</>
+className="metric-score">{analyticsData?.complianceMetrics.countyAuditScore}%</span>
             </div>
             <div className="metric-bar">
               <div 
@@ -555,7 +587,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
           <h4>Risk Level</h4>
           <div
-</> className={`risk-indicator ${analyticsData?.complianceMetrics.riskLevel}`}>
+</>
+className={`risk-indicator ${analyticsData?.complianceMetrics.riskLevel}`}>
             {analyticsData?.complianceMetrics.riskLevel?.toUpperCase()}
           </div>
         </div>
@@ -564,7 +597,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
           <h4>Last Audit</h4>
           <div
-</> className="audit-date">
+</>
+className="audit-date">
             {analyticsData?.complianceMetrics.lastAudit}
           </div>
         </div>
@@ -573,7 +607,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
           <h4>Next Audit</h4>
           <div
-</> className="audit-date">
+</>
+className="audit-date">
             {analyticsData?.complianceMetrics.nextAudit}
           </div>
         </div>
@@ -587,7 +622,8 @@ export const AdvancedAnalytics: React.FC = () => {
       <h3>AI-Powered Insights & Recommendations</h3>
       
       <div
-</> className="insights-grid">
+</>
+className="insights-grid">
         {analyticsData?.aiInsights.map(insight => (
           <div key={insight.id} className={`insight-card ${insight.type}`}>
             <div className="insight-header">
@@ -603,17 +639,18 @@ export const AdvancedAnalytics: React.FC = () => {
               </div>
             </div><>
 
-
             <h4 className="insight-title">{insight.title}</h4>
             <p
-</> className="insight-description">{insight.description}</p>
+</>
+className="insight-description">{insight.description}</p>
 
             <div className="insight-footer">
               <div className="confidence-score"><>
 
                 <span className="confidence-label">AI Confidence:</span>
                 <span
-</> className="confidence-value">{Math.round(insight.confidence * 100)}%</span>
+</>
+className="confidence-value">{Math.round(insight.confidence * 100)}%</span>
               </div>
               
               {insight.actionable && (
@@ -621,6 +658,7 @@ export const AdvancedAnalytics: React.FC = () => {
 
                   <strong>Recommendation:</strong>
                   <p
+</>
 </>>{insight.recommendation}</p>
                   <button className="action-button">Take Action</button>
                 </div>
@@ -638,6 +676,7 @@ export const AdvancedAnalytics: React.FC = () => {
 
         <div className="loading-spinner"></div>
         <p
+</>
 </>>Loading advanced analytics...</p>
       </div>
     );
@@ -649,6 +688,7 @@ export const AdvancedAnalytics: React.FC = () => {
 
         <h3>Analytics Error</h3>
         <p
+</>
 </>>{error}</p>
         <button onClick={loadAnalyticsData}>Retry</button>
       </div>
@@ -661,7 +701,8 @@ export const AdvancedAnalytics: React.FC = () => {
 
         <h2>Terrafusion Advanced Analytics</h2>
         <div
-</> className="analytics-controls">
+</>
+className="analytics-controls">
           <select 
             value={selectedTimeframe} 
             onChange={(e) => setSelectedTimeframe(e.target.value as any)}
@@ -671,11 +712,13 @@ export const AdvancedAnalytics: React.FC = () => {
 
             <option value="7d">Last 7 Days</option>
             <option
-</> value="30d">Last 30 Days</option><>
+</>
+value="30d">Last 30 Days</option><>
 
             <option value="90d">Last 90 Days</option>
             <option
-</> value="1y">Last Year</option>
+</>
+value="1y">Last Year</option>
           </select>
         </div>
       </div>
@@ -689,7 +732,8 @@ export const AdvancedAnalytics: React.FC = () => {
           📊 Overview
         </button>
         <button
-</> 
+</>
+
           className={`tab-button ${selectedView === 'counties' ? 'active' : ''}`}
           onClick={() => setSelectedView('counties')}
         >
@@ -703,7 +747,8 @@ export const AdvancedAnalytics: React.FC = () => {
           🔌 Plugins
         </button>
         <button
-</> 
+</>
+
           className={`tab-button ${selectedView === 'compliance' ? 'active' : ''}`}
           onClick={() => setSelectedView('compliance')}
         >

@@ -101,7 +101,8 @@ export function DashboardPage() {
 
         <h1>Terrafusion Plugin Analytics</h1>
         <DashboardExportButton
-</> plugins={plugins} />
+</>
+plugins={plugins} />
       </div>
       <table className="tf-dashboard-table">
         <thead>
@@ -115,19 +116,23 @@ export function DashboardPage() {
 
               <td>{plugin.name}</td>
               <td
+</>
 </>>{plugin.version}</td><>
 
               <td>{plugin.healthy ? '🟢' : '🔴'}</td>
               <td
+</>
 </>>{plugin.launchCount}</td><>
 
               <td>{plugin.uptime !== null ? (plugin.uptime*100).toFixed(1)+'%' : '—'}</td>
               <td
+</>
 </>>{plugin.errors?.length || 0}</td><>
 
               <td>{plugin.owner}</td>
               <td
-</> onClick={e=>e.stopPropagation()}><DashboardAdminActions plugin={plugin} onAction={handleAdminAction} /></td>
+</>
+onClick={e=>e.stopPropagation()}><DashboardAdminActions plugin={plugin} onAction={handleAdminAction} /></td>
             </tr>
           ))}
         </tbody>

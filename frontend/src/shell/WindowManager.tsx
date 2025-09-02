@@ -74,11 +74,14 @@ export const WindowManager: React.FC<WindowManagerProps> = ({ activeModule, onCl
           py: 1,
         }}
       >
+
+
         <Typography variant='h6' sx={{ color: 'white' }}>
           {getModuleDisplayName(activeModule)}
         </Typography>
 
         <Box
+
 sx={{ display: 'flex', gap: 1 }}>
           <IconButton
             size='small'
@@ -87,18 +90,24 @@ sx={{ display: 'flex', gap: 1 }}>
               /* Minimize functionality */
             }}
           >
+
+
             <Minimize />
           </IconButton>
 
           <IconButton
+
 size='small'
             sx={{ color: 'rgba(255,255,255,0.7)' }}
             onClick={() => setIsMaximized(!isMaximized)}
           >
+
+
             <Fullscreen />
           </IconButton>
 
           <IconButton
+
 size='small' sx={{ color: 'rgba(255,255,255,0.7)' }} onClick={onClose}>
             <Close />
           </IconButton>
@@ -127,10 +136,13 @@ size='small' sx={{ color: 'rgba(255,255,255,0.7)' }} onClick={onClose}>
             }}
           >
             <CircularProgress size={60} />
+
+
             <Typography variant='h6' sx={{ color: 'white' }}>
               Loading {getModuleDisplayName(activeModule)}...
             </Typography>
             <Typography
+
 variant='body2' sx={{ color: 'rgba(255,255,255,0.7)' }}>
               Initializing module components and AI services
             </Typography>
@@ -146,11 +158,14 @@ variant='body2' sx={{ color: 'rgba(255,255,255,0.7)' }}>
               p: 4,
             }}
           >
+
+
             <Typography variant='h4' gutterBottom sx={{ color: 'white' }}>
               {getModuleDisplayName(activeModule)}
             </Typography>
 
             <Typography
+
 variant='body1'
               sx={{ color: 'rgba(255,255,255,0.8)', mb: 3, textAlign: 'center' }}
             >

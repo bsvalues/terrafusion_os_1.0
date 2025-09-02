@@ -334,6 +334,7 @@ export function PredictiveCostAnalysis({
             AI-Powered Cost Prediction Engine
           </CardTitle>
           <CardDescription
+</>
 </>>
             Advanced machine learning models to predict future building costs with confidence intervals
           </CardDescription>
@@ -346,6 +347,7 @@ export function PredictiveCostAnalysis({
 
               <AlertTitle>API Key Required</AlertTitle>
               <AlertDescription
+</>
 </>>
                 The AI Cost Prediction Engine works best with OpenAI integration. 
                 Configure an OpenAI API key in settings for enhanced predictions.
@@ -358,13 +360,15 @@ export function PredictiveCostAnalysis({
 
               <h3 className="text-sm font-medium mb-2">Forecast Settings</h3>
               <div
-</> className="space-y-3 border rounded-md p-3">
+</>
+className="space-y-3 border rounded-md p-3">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2"><>
 
                     <Label htmlFor="target-year">Target Year</Label>
                     <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                       <Input
                         id="target-year"
                         type="number"
@@ -380,6 +384,7 @@ export function PredictiveCostAnalysis({
                             <Info className="h-4 w-4 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent
+</>
 </>>
                             <p className="max-w-xs">
                               Predictions become less certain the further into the future they go.
@@ -395,7 +400,8 @@ export function PredictiveCostAnalysis({
 
                     <Label htmlFor="multi-year-forecast">Multi-Year Forecasts</Label>
                     <Select
-</> 
+</>
+
                       onValueChange={(value) => {
                         setPredictionYears(value.split(',').map(Number));
                       }}
@@ -406,15 +412,18 @@ export function PredictiveCostAnalysis({
                         <SelectValue placeholder="Select years" />
                       </SelectTrigger>
                       <SelectContent
+</>
 </>><>
 
                         <SelectItem value="1,3,5,10">1, 3, 5, 10 years</SelectItem>
                         <SelectItem
-</> value="1,2,3,4,5">1-5 years</SelectItem><>
+</>
+value="1,2,3,4,5">1-5 years</SelectItem><>
 
                         <SelectItem value="5,10,15,20">5, 10, 15, 20 years</SelectItem>
                         <SelectItem
-</> value="1,5,10,15,20,25">Long-term (25yr)</SelectItem>
+</>
+value="1,5,10,15,20,25">Long-term (25yr)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -428,7 +437,8 @@ export function PredictiveCostAnalysis({
 
                       <Label htmlFor="include-inflation">Include Inflation</Label>
                       <p
-</> className="text-xs text-gray-500">Account for future inflation rates</p>
+</>
+className="text-xs text-gray-500">Account for future inflation rates</p>
                     </div><>
 
                     <Switch
@@ -441,12 +451,14 @@ export function PredictiveCostAnalysis({
                   </div>
                   
                   <div
-</> className="flex items-center justify-between">
+</>
+className="flex items-center justify-between">
                     <div className="space-y-0.5"><>
 
                       <Label htmlFor="include-material-trends">Material Price Trends</Label>
                       <p
-</> className="text-xs text-gray-500">Analyze commodity and material price trends</p>
+</>
+className="text-xs text-gray-500">Analyze commodity and material price trends</p>
                     </div><>
 
                     <Switch
@@ -459,12 +471,14 @@ export function PredictiveCostAnalysis({
                   </div>
                   
                   <div
-</> className="flex items-center justify-between">
+</>
+className="flex items-center justify-between">
                     <div className="space-y-0.5"><>
 
                       <Label htmlFor="include-regional-factors">Regional Growth Factors</Label>
                       <p
-</> className="text-xs text-gray-500">Consider regional economic forecasts</p>
+</>
+className="text-xs text-gray-500">Consider regional economic forecasts</p>
                     </div><>
 
                     <Switch
@@ -477,12 +491,14 @@ export function PredictiveCostAnalysis({
                   </div>
                   
                   <div
-</> className="flex items-center justify-between">
+</>
+className="flex items-center justify-between">
                     <div className="space-y-0.5"><>
 
                       <Label htmlFor="include-labor-trends">Labor Market Trends</Label>
                       <p
-</> className="text-xs text-gray-500">Include labor availability and wage forecasts</p>
+</>
+className="text-xs text-gray-500">Include labor availability and wage forecasts</p>
                     </div>
                     <Switch
                       id="include-labor-trends"
@@ -500,7 +516,8 @@ export function PredictiveCostAnalysis({
 
               <h3 className="text-sm font-medium mb-2">Feature Selection</h3>
               <div
-</> className="border rounded-md p-3">
+</>
+className="border rounded-md p-3">
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <div className="flex flex-col">
                     <div className="flex items-center mb-1">
@@ -531,7 +548,8 @@ export function PredictiveCostAnalysis({
 
                   <div className="text-sm font-medium mb-1">Additional Features</div>
                   <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                     {[
                       'Energy Efficiency', 'Smart Building Tech', 'Accessibility Features',
                       'Green Certification', 'High-End Finishes', 'Custom Design',
@@ -568,7 +586,8 @@ export function PredictiveCostAnalysis({
 
                 <TabsTrigger value="forecast">Cost Forecast</TabsTrigger>
                 <TabsTrigger
-</> value="factors">Impact Factors</TabsTrigger>
+</>
+value="factors">Impact Factors</TabsTrigger>
                 <TabsTrigger value="analysis">Trend Analysis</TabsTrigger>
               </TabsList>
               
@@ -583,6 +602,7 @@ export function PredictiveCostAnalysis({
                           Cost Prediction for {predictionResult.yearPredicted}
                         </CardTitle>
                         <CardDescription
+</>
 </>>
                           Based on current factors and selected preferences
                         </CardDescription>
@@ -595,12 +615,14 @@ export function PredictiveCostAnalysis({
 
                               <span>Total Cost:</span>
                               <span
-</> className="text-[#243E4D]">{formatCurrency(predictionResult.totalCost)}</span>
+</>
+className="text-[#243E4D]">{formatCurrency(predictionResult.totalCost)}</span>
                             </div>
                             <div className="flex justify-between text-sm text-gray-500"><>
 
                               <span>Cost per sq. ft:</span>
                               <span
+</>
 </>>{formatCurrency(predictionResult.costPerSquareFoot)}/sqft</span>
                             </div>
                           </div>
@@ -610,7 +632,8 @@ export function PredictiveCostAnalysis({
 
                               <span>Confidence Interval:</span>
                               <span
-</> className="font-medium">
+</>
+className="font-medium">
                                 {formatCurrency(predictionResult.confidenceInterval[0])} - {formatCurrency(predictionResult.confidenceInterval[1])}
                               </span>
                             </div>
@@ -640,11 +663,13 @@ export function PredictiveCostAnalysis({
                               />
                             </div>
                             <div
-</> className="flex justify-between text-xs text-gray-500 mt-1"><>
+</>
+className="flex justify-between text-xs text-gray-500 mt-1"><>
 
                               <span>{formatCurrency(predictionResult.confidenceInterval[0])}</span>
                               <span
-</> className="font-medium">{formatCurrency(predictionResult.totalCost)}</span>
+</>
+className="font-medium">{formatCurrency(predictionResult.totalCost)}</span>
                               <span>{formatCurrency(predictionResult.confidenceInterval[1])}</span>
                             </div>
                           </div>
@@ -654,7 +679,8 @@ export function PredictiveCostAnalysis({
 
                               <div className="text-sm">Confidence Score:</div>
                               <div
-</> className={`text-lg font-bold ${getConfidenceColor(predictionResult.confidenceScore)}`}>
+</>
+className={`text-lg font-bold ${getConfidenceColor(predictionResult.confidenceScore)}`}>
                                 {(predictionResult.confidenceScore * 100).toFixed(0)}%
                               </div>
                             </div>
@@ -682,7 +708,8 @@ export function PredictiveCostAnalysis({
                           Cost Optimization Suggestions
                         </h3>
                         <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                           {predictionResult.materialRecommendations.map((rec, i) => (
                             <div key={i} className="border rounded-md p-3 bg-amber-50">
                               <div className="flex justify-between items-start">
@@ -690,7 +717,8 @@ export function PredictiveCostAnalysis({
 
                                   <h4 className="text-sm font-medium">{rec.suggestedAlternative}</h4>
                                   <p
-</> className="text-xs text-gray-600 mt-0.5">Alternative for {rec.originalMaterial}</p>
+</>
+className="text-xs text-gray-600 mt-0.5">Alternative for {rec.originalMaterial}</p>
                                 </div>
                                 <Badge className="bg-[#3CAB36] text-white">
                                   Save {formatCurrency(rec.potentialSavings)}
@@ -711,7 +739,8 @@ export function PredictiveCostAnalysis({
                       Multi-Year Cost Projections
                     </h3>
                     <div
-</> className="border rounded-md p-3 bg-white">
+</>
+className="border rounded-md p-3 bg-white">
                       <ResponsiveContainer width="100%" height={220}>
                         <AreaChart data={multiYearPredictions}>
                           <CartesianGrid strokeDasharray="3 3" />
@@ -759,7 +788,8 @@ export function PredictiveCostAnalysis({
 
                             <div className="text-sm font-bold">{formatCurrency(prediction.cost)}</div>
                             <div
-</> className="text-xs text-gray-500 mt-0.5">
+</>
+className="text-xs text-gray-500 mt-0.5">
                               Range: {formatCurrency(prediction.lowerBound)} - {formatCurrency(prediction.upperBound)}
                             </div>
                           </div>
@@ -776,7 +806,8 @@ export function PredictiveCostAnalysis({
 
                     <h3 className="text-sm font-medium mb-2">Cost Impact Factors</h3>
                     <div
-</> className="border rounded-md">
+</>
+className="border rounded-md">
                       {predictionResult.predictionFactors.map((factor, i) => (
                         <div 
                           key={i} 
@@ -786,7 +817,8 @@ export function PredictiveCostAnalysis({
 
                             <h4 className="text-sm font-medium">{factor.feature}</h4>
                             <Badge
-</> className={`
+</>
+className={`
                               ${factor.impact === 'positive' ? 'bg-green-100 text-green-800' : ''}
                               ${factor.impact === 'negative' ? 'bg-red-100 text-red-800' : ''}
                               ${factor.impact === 'neutral' ? 'bg-blue-100 text-blue-800' : ''}
@@ -815,7 +847,8 @@ export function PredictiveCostAnalysis({
 
                     <h3 className="text-sm font-medium mb-2">Factor Importance</h3>
                     <div
-</> className="border rounded-md p-3 bg-white">
+</>
+className="border rounded-md p-3 bg-white">
                       <ResponsiveContainer width="100%" height={240}>
                         <BarChart
                           data={predictionResult.predictionFactors.map(factor => ({
@@ -846,7 +879,8 @@ export function PredictiveCostAnalysis({
 
                         <div className="text-sm font-medium">Understanding Impact Factors</div>
                         <p
-</> className="text-xs text-gray-600">
+</>
+className="text-xs text-gray-600">
                           These factors show the relative importance of each variable in determining the final cost prediction.
                           Factors with higher percentages have a greater influence on the overall cost.
                         </p>
@@ -855,18 +889,21 @@ export function PredictiveCostAnalysis({
 
                             <div className="w-3 h-3 rounded-full bg-green-500 mr-1"></div>
                             <span
+</>
 </>>Positive Impact</span>
                           </div>
                           <div className="flex items-center"><>
 
                             <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
                             <span
+</>
 </>>Neutral Impact</span>
                           </div>
                           <div className="flex items-center"><>
 
                             <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
                             <span
+</>
 </>>Negative Impact</span>
                           </div>
                         </div>
@@ -886,7 +923,8 @@ export function PredictiveCostAnalysis({
                         Cost Growth Projection
                       </h3>
                       <div
-</> className="border rounded-md p-3 bg-white">
+</>
+className="border rounded-md p-3 bg-white">
                         <ResponsiveContainer width="100%" height={200}>
                           <LineChart data={[
                             { year: new Date().getFullYear(), value: predictionResult.predictedCost },
@@ -920,7 +958,8 @@ export function PredictiveCostAnalysis({
                         Cost Distribution by Category
                       </h3>
                       <div
-</> className="border rounded-md p-3 bg-white">
+</>
+className="border rounded-md p-3 bg-white">
                         <ResponsiveContainer width="100%" height={200}>
                           <BarChart data={[
                             { name: 'Materials', value: 0.5 },
@@ -952,7 +991,8 @@ export function PredictiveCostAnalysis({
                       Regional Cost Comparison
                     </h3>
                     <div
-</> className="border rounded-md p-3 bg-white">
+</>
+className="border rounded-md p-3 bg-white">
                       <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={[
                           { name: 'National Avg', value: predictionResult.totalCost * 0.95 },

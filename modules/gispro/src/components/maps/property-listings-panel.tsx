@@ -65,7 +65,8 @@ export function PropertyListingsPanel({
             Benton County Property Listings
           </CardTitle>
           <Button
-</> variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 text-white hover:text-benton-tan hover:bg-benton-navy/50">
+</>
+variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 text-white hover:text-benton-tan hover:bg-benton-navy/50">
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -84,7 +85,8 @@ export function PropertyListingsPanel({
               <Skeleton className="h-4 w-[80%]" />
             </div>
             <div
-</> className="flex space-x-4">
+</>
+className="flex space-x-4">
               <Skeleton className="h-8 w-8 rounded-full" />
               <Skeleton className="h-8 w-8 rounded-full" />
               <Skeleton className="h-8 w-8 rounded-full" />
@@ -115,7 +117,8 @@ export function PropertyListingsPanel({
           Data from Zillow
         </Badge>
         <Button
-</> variant="outline" size="sm" onClick={onClose} className="border-benton-navy text-benton-navy hover:bg-benton-navy hover:text-white">
+</>
+variant="outline" size="sm" onClick={onClose} className="border-benton-navy text-benton-navy hover:bg-benton-navy hover:text-white">
           Close
         </Button>
       </CardFooter>
@@ -165,7 +168,8 @@ function PropertyListingCard({ property }: PropertyListingCardProps) {
 
             <CardTitle className="text-base">{formatCurrency(property.price)}</CardTitle>
             <CardDescription
-</> className="line-clamp-1">{property.address}</CardDescription>
+</>
+className="line-clamp-1">{property.address}</CardDescription>
           </div>
           <Button variant="ghost" size="icon" onClick={openZillowListing} title="View on Zillow">
             <ExternalLink className="h-4 w-4" />
@@ -179,7 +183,8 @@ function PropertyListingCard({ property }: PropertyListingCardProps) {
 
             <TabsTrigger value="details" className="data-[state=active]:bg-benton-navy data-[state=active]:text-white">Details</TabsTrigger>
             <TabsTrigger
-</> value="location" className="data-[state=active]:bg-benton-navy data-[state=active]:text-white">Location</TabsTrigger>
+</>
+value="location" className="data-[state=active]:bg-benton-navy data-[state=active]:text-white">Location</TabsTrigger>
           </TabsList>
           
           <TabsContent value="details" className="space-y-2 pt-2">
@@ -189,21 +194,24 @@ function PropertyListingCard({ property }: PropertyListingCardProps) {
 
                 <span className="font-medium text-benton-slate">{property.bedrooms}</span>
                 <span
-</> className="text-xs text-benton-slate/80">Beds</span>
+</>
+className="text-xs text-benton-slate/80">Beds</span>
               </div>
               <div className="flex flex-col items-center p-1 border rounded border-benton-navy/20 bg-benton-tan/10">
                 <Bath className="h-4 w-4 mb-1 text-benton-navy" /><>
 
                 <span className="font-medium text-benton-slate">{property.bathrooms}</span>
                 <span
-</> className="text-xs text-benton-slate/80">Baths</span>
+</>
+className="text-xs text-benton-slate/80">Baths</span>
               </div>
               <div className="flex flex-col items-center p-1 border rounded border-benton-navy/20 bg-benton-tan/10">
                 <Maximize className="h-4 w-4 mb-1 text-benton-navy" /><>
 
                 <span className="font-medium text-benton-slate">{property.livingArea.toLocaleString()}</span>
                 <span
-</> className="text-xs text-benton-slate/80">Sq Ft</span>
+</>
+className="text-xs text-benton-slate/80">Sq Ft</span>
               </div>
             </div>
             
@@ -212,7 +220,8 @@ function PropertyListingCard({ property }: PropertyListingCardProps) {
 
               <span className="text-benton-slate">Type:</span>
               <span
-</> className="ml-1 font-medium text-benton-navy">{property.homeType}</span>
+</>
+className="ml-1 font-medium text-benton-navy">{property.homeType}</span>
             </div>
             
             {property.yearBuilt && (
@@ -221,7 +230,8 @@ function PropertyListingCard({ property }: PropertyListingCardProps) {
 
                 <span className="text-benton-slate">Built:</span>
                 <span
-</> className="ml-1 font-medium text-benton-navy">{property.yearBuilt}</span>
+</>
+className="ml-1 font-medium text-benton-navy">{property.yearBuilt}</span>
               </div>
             )}
           </TabsContent>
@@ -232,7 +242,8 @@ function PropertyListingCard({ property }: PropertyListingCardProps) {
 
               <span className="text-benton-slate">Location:</span>
               <span
-</> className="font-medium line-clamp-1 text-benton-navy">
+</>
+className="font-medium line-clamp-1 text-benton-navy">
                 {[property.city, property.state, property.zipcode].filter(Boolean).join(', ')}
               </span>
             </div>
@@ -241,7 +252,8 @@ function PropertyListingCard({ property }: PropertyListingCardProps) {
 
               <span className="text-benton-slate">Coordinates:</span>
               <span
-</> className="ml-1 font-medium text-benton-navy">
+</>
+className="ml-1 font-medium text-benton-navy">
                 {property.latitude.toFixed(4)}, {property.longitude.toFixed(4)}
               </span>
             </div>
@@ -251,7 +263,8 @@ function PropertyListingCard({ property }: PropertyListingCardProps) {
 
                 <span className="text-benton-slate">Lot Size:</span>
                 <span
-</> className="ml-1 font-medium text-benton-navy">{property.lotSize.toLocaleString()} Sq Ft</span>
+</>
+className="ml-1 font-medium text-benton-navy">{property.lotSize.toLocaleString()} Sq Ft</span>
               </div>
             )}
           </TabsContent>

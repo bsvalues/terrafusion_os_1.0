@@ -72,6 +72,7 @@ export function CollaborativeWorkspace({
           <span>Collaborative Workspace</span>
           <Button
 </>
+
             variant="ghost"
             size="icon"
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -114,7 +115,8 @@ export function CollaborativeWorkspace({
 
             <span className="text-muted-foreground">Current Room:</span>
             <code
-</> className="bg-muted px-2 py-1 rounded">{roomId}</code>
+</>
+className="bg-muted px-2 py-1 rounded">{roomId}</code>
             <Button 
               variant="outline" 
               size="icon" 
@@ -136,13 +138,15 @@ export function CollaborativeWorkspace({
                 Chat
               </TabsTrigger>
               <TabsTrigger
-</> value="users"><>
+</>
+value="users"><>
 
                 <Users className="h-4 w-4 mr-2" />
                 Users
               </TabsTrigger>
               <TabsTrigger
-</> value="map">
+</>
+value="map">
                 <Map className="h-4 w-4 mr-2" />
                 Map
               </TabsTrigger>
@@ -154,12 +158,14 @@ export function CollaborativeWorkspace({
             </TabsContent>
             
             <TabsContent
-</> value="users" className="m-0">
+</>
+value="users" className="m-0">
               <div className="p-4 bg-muted/20 rounded-md"><>
 
                 <h3 className="font-medium mb-2">Connected Users</h3>
                 <p
-</> className="text-muted-foreground">This feature will display real-time user presence.</p>
+</>
+className="text-muted-foreground">This feature will display real-time user presence.</p>
               </div>
             </TabsContent>
             
@@ -168,7 +174,8 @@ export function CollaborativeWorkspace({
 
                 <h3 className="font-medium mb-2">Collaborative Map</h3>
                 <p
-</> className="text-muted-foreground">This feature will integrate with the map component for real-time collaboration.</p>
+</>
+className="text-muted-foreground">This feature will integrate with the map component for real-time collaboration.</p>
               </div>
             </TabsContent>
           </Tabs>

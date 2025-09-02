@@ -186,7 +186,8 @@ export const ShockAwePresentation: React.FC = () => {
 
         <div className="text-sm opacity-60 mb-1">PERFORMANCE MULTIPLIER</div>
         <div
-</> className="text-2xl font-bold" style={{ color: currentStyle.accent }}>
+</>
+className="text-2xl font-bold" style={{ color: currentStyle.accent }}>
           379,000,000×
         </div>
       </div>
@@ -195,7 +196,8 @@ export const ShockAwePresentation: React.FC = () => {
 
         <div className="text-sm opacity-60 mb-1">MARKET POTENTIAL</div>
         <div
-</> className="text-2xl font-bold" style={{ color: currentStyle.accent }}>
+</>
+className="text-2xl font-bold" style={{ color: currentStyle.accent }}>
           $1B ARR
         </div>
       </div>

@@ -54,7 +54,8 @@ export function TimelinePlanner() {
 
               <h3 className="text-white font-semibold">{phase.phase}</h3>
               <Badge
-</> variant="secondary" className="bg-primary/20 text-primary">
+</>
+variant="secondary" className="bg-primary/20 text-primary">
                 {phase.status}
               </Badge>
             </div>

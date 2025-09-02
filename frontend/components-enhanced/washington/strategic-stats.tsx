@@ -75,12 +75,14 @@ export function StrategicStats() {
 
                 <h3 className="text-lg font-semibold text-white">{tier.tier}</h3>
                 <Badge
-</> className={`bg-gradient-to-r ${tier.color} text-white`}>{tier.percentage}%</Badge>
+</>
+className={`bg-gradient-to-r ${tier.color} text-white`}>{tier.percentage}%</Badge>
               </div><>
 
               <p className="text-white/70 text-sm mb-4">{tier.description}</p>
               <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                 {tier.counties.map((county, idx) => (
                   <span key={idx} className="px-3 py-1 bg-white/10 rounded-full text-xs text-white/80">
                     {county}
@@ -104,13 +106,15 @@ export function StrategicStats() {
 
               <div className="text-3xl font-black text-primary mb-2">${activeMetrics.totalOpportunity.toFixed(1)}B</div>
               <div
-</> className="text-white/60 text-sm">Combined Annual Budgets</div>
+</>
+className="text-white/60 text-sm">Combined Annual Budgets</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-black text-accent mb-2">${activeMetrics.potentialSavings.toFixed(0)}M</div>
               <div
-</> className="text-white/60 text-sm">Potential Annual Savings</div>
+</>
+className="text-white/60 text-sm">Potential Annual Savings</div>
             </div>
             <div className="text-center"><>
 
@@ -118,13 +122,15 @@ export function StrategicStats() {
                 ${activeMetrics.implementationRevenue.toFixed(1)}M
               </div>
               <div
-</> className="text-white/60 text-sm">Implementation Revenue</div>
+</>
+className="text-white/60 text-sm">Implementation Revenue</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-black text-accent mb-2">${activeMetrics.contractValue.toFixed(0)}M</div>
               <div
-</> className="text-white/60 text-sm">5-Year Contract Value</div>
+</>
+className="text-white/60 text-sm">5-Year Contract Value</div>
             </div>
           </div>
         </div>

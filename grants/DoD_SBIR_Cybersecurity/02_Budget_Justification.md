@@ -456,7 +456,7 @@ interface IndirectCostAnalysis {
     marketComparison: {
       typical: '25-35%',
       government: '20-30%',
-      TerraFusion: '15%'
+      Terrafusion: '15%'
     }
   },
   

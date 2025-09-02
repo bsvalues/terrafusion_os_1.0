@@ -36,15 +36,16 @@ export function NationalExpansionLanding() {
         </Badge>
 
         <h1
-</> className="text-6xl md:text-8xl font-black mb-6 bg-gradient-to-r from-primary via-accent to-transcend bg-clip-text text-transparent">
+</>
+className="text-6xl md:text-8xl font-black mb-6 bg-gradient-to-r from-primary via-accent to-transcend bg-clip-text text-transparent">
           TOTAL DOMINATION
         </h1><>
-
 
         <p className="text-2xl md:text-3xl text-white/80 mb-4 font-bold">From Two States to 50 States</p>
 
         <p
-</> className="text-xl text-white/60 mb-12 max-w-4xl mx-auto leading-relaxed">
+</>
+className="text-xl text-white/60 mb-12 max-w-4xl mx-auto leading-relaxed">
           The path to $1 Billion ARR in 5 years. Starting with Florida's 15+ counties and Washington's 12 counties,
           Terrafusion will transform American government operations county by county, state by state, coast to coast.
         </p>
@@ -64,25 +65,29 @@ export function NationalExpansionLanding() {
 
             <div className="text-3xl font-black text-primary mb-2">27</div>
             <div
-</> className="text-sm text-white/60 uppercase tracking-wide">Counties Ready</div>
+</>
+className="text-sm text-white/60 uppercase tracking-wide">Counties Ready</div>
           </div>
           <div className="p-6 bg-black/30 backdrop-blur-xl rounded-xl border border-accent/20"><>
 
             <div className="text-3xl font-black text-accent mb-2">20M+</div>
             <div
-</> className="text-sm text-white/60 uppercase tracking-wide">Citizens</div>
+</>
+className="text-sm text-white/60 uppercase tracking-wide">Citizens</div>
           </div>
           <div className="p-6 bg-black/30 backdrop-blur-xl rounded-xl border border-transcend/20"><>
 
             <div className="text-3xl font-black text-transcend mb-2">8.1M</div>
             <div
-</> className="text-sm text-white/60 uppercase tracking-wide">Parcels</div>
+</>
+className="text-sm text-white/60 uppercase tracking-wide">Parcels</div>
           </div>
           <div className="p-6 bg-black/30 backdrop-blur-xl rounded-xl border border-primary/20"><>
 
             <div className="text-3xl font-black text-primary mb-2">$3T</div>
             <div
-</> className="text-sm text-white/60 uppercase tracking-wide">Property Value</div>
+</>
+className="text-sm text-white/60 uppercase tracking-wide">Property Value</div>
           </div>
         </div>
 
@@ -123,7 +128,8 @@ export function NationalExpansionLanding() {
             "Every county we transform is millions of citizens whose lives get better."
           </p>
           <p
-</> className="text-lg text-white/80">The Transcendence Begins NOW. 🚀</p>
+</>
+className="text-lg text-white/80">The Transcendence Begins NOW. 🚀</p>
         </div>
       </div>
     </section>

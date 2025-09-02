@@ -567,12 +567,14 @@ export default function FtpManager() {
 
                       <FormLabel>Host</FormLabel>
                       <FormControl
+</>
 </>><>
 
                         <Input placeholder="ftp.spatialest.com" {...field} />
                       </FormControl>
                       <FormMessage
-</> />
+</>
+/>
                     </FormItem>
                   )}
                 />
@@ -585,12 +587,14 @@ export default function FtpManager() {
 
                       <FormLabel>Port</FormLabel>
                       <FormControl
+</>
 </>><>
 
                         <Input placeholder="21" {...field} />
                       </FormControl>
                       <FormMessage
-</> />
+</>
+/>
                     </FormItem>
                   )}
                 />
@@ -605,12 +609,14 @@ export default function FtpManager() {
 
                       <FormLabel>Username</FormLabel>
                       <FormControl
+</>
 </>><>
 
                         <Input placeholder="username" {...field} />
                       </FormControl>
                       <FormMessage
-</> />
+</>
+/>
                     </FormItem>
                   )}
                 />
@@ -623,12 +629,14 @@ export default function FtpManager() {
 
                       <FormLabel>Password</FormLabel>
                       <FormControl
+</>
 </>><>
 
                         <Input type="password" placeholder="password" {...field} />
                       </FormControl>
                       <FormMessage
-</> />
+</>
+/>
                     </FormItem>
                   )}
                 />
@@ -647,10 +655,12 @@ export default function FtpManager() {
                       />
                     </FormControl>
                     <div
-</> className="space-y-1 leading-none"><>
+</>
+className="space-y-1 leading-none"><>
 
                       <FormLabel>Use Secure Connection (FTPS)</FormLabel>
                       <FormDescription
+</>
 </>>
                         Connect using explicit FTPS (FTP over TLS)
                       </FormDescription>
@@ -670,7 +680,8 @@ export default function FtpManager() {
 
               <TabsTrigger value="browse">Browse Files</TabsTrigger>
               <TabsTrigger
-</> value="transfers">Transfer Status</TabsTrigger>
+</>
+value="transfers">Transfer Status</TabsTrigger>
             </TabsList>
             
             <TabsContent value="browse" className="space-y-4">
@@ -688,6 +699,7 @@ export default function FtpManager() {
                   
                   <Button
 </>
+
                     variant="outline"
                     size="sm"
                     onClick={goBack}
@@ -700,6 +712,7 @@ export default function FtpManager() {
                   
                   <Button
 </>
+
                     variant="outline"
                     size="sm"
                     onClick={() => loadFiles(currentPath)}
@@ -709,13 +722,13 @@ export default function FtpManager() {
                   </Button>
                 </div><>
 
-                
                 <div className="flex-1 mx-2 px-3 py-1 text-sm truncate bg-muted rounded-md">
                   {currentPath}
                 </div>
                 
                 <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -728,6 +741,7 @@ export default function FtpManager() {
                   
                   <Button
 </>
+
                     variant="outline"
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
@@ -739,6 +753,7 @@ export default function FtpManager() {
                   
                   <input
 </>
+
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileUpload}
@@ -753,6 +768,7 @@ export default function FtpManager() {
                 <Label htmlFor="file-type" className="whitespace-nowrap">File Type:</Label>
                 <select
 </>
+
                   id="file-type"
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium"
                   value={fileUploadType}
@@ -771,7 +787,8 @@ export default function FtpManager() {
                   <span className="text-sm font-medium">{selectedFiles.length} item(s) selected</span>
                   
                   <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -785,6 +802,7 @@ export default function FtpManager() {
                     
                     <Button
 </>
+
                       variant="destructive"
                       size="sm"
                       onClick={deleteSelectedFiles}
@@ -820,7 +838,8 @@ export default function FtpManager() {
 
                         <span className="flex-1">..</span>
                         <span
-</> className="text-sm text-muted-foreground">Parent Directory</span>
+</>
+className="text-sm text-muted-foreground">Parent Directory</span>
                       </div>
                     )}
                     
@@ -847,7 +866,8 @@ export default function FtpManager() {
                             {file.name}
                           </span>
                           <span
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                             {formatDate(file.date)}
                           </span>
                         </div>
@@ -870,7 +890,8 @@ export default function FtpManager() {
 
                           <span className="flex-1 truncate">{file.name}</span>
                           <span
-</> className="text-sm text-muted-foreground mr-4">
+</>
+className="text-sm text-muted-foreground mr-4">
                             {formatBytes(file.size)}
                           </span>
                           <TooltipProvider>
@@ -936,11 +957,11 @@ export default function FtpManager() {
 
                           <p className="text-sm truncate font-medium">{transfer.filename}</p>
                           <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                             Started: {formatDate(new Date(transfer.startTime))}
                             {transfer.endTime && (
-                              <> • Ended: {formatDate(new Date(transfer.endTime))}</>
-                            )}
+                              <> • Ended: {formatDate(new Date(transfer.endTime))}<div )}
                           </p>
                         </div>
                         
@@ -951,6 +972,7 @@ export default function FtpManager() {
                               {formatBytes(transfer.bytesTransferred)} / {formatBytes(transfer.totalBytes)}
                             </span>
                             <span
+</>
 </>>{Math.round(transfer.percentComplete)}%</span>
                           </div>
                           <Progress value={transfer.percentComplete} className="h-2" />
@@ -962,7 +984,8 @@ export default function FtpManager() {
 
                             <AlertTitle>Error</AlertTitle>
                             <AlertDescription
-</> className="text-xs">
+</>
+className="text-xs">
                               {transfer.error}
                             </AlertDescription>
                           </Alert>

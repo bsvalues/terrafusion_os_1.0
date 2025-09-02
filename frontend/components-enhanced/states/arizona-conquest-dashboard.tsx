@@ -16,25 +16,29 @@ export function ArizonaConquestDashboard() {
 
               <div className="text-3xl font-bold text-tf-transcend">15</div>
               <div
-</> className="text-sm text-tf-light/70">Counties</div>
+</>
+className="text-sm text-tf-light/70">Counties</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-bold text-tf-primary">7.3M</div>
               <div
-</> className="text-sm text-tf-light/70">Population</div>
+</>
+className="text-sm text-tf-light/70">Population</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-bold text-tf-accent">$187M</div>
               <div
-</> className="text-sm text-tf-light/70">Market Size</div>
+</>
+className="text-sm text-tf-light/70">Market Size</div>
             </div>
             <div className="text-center"><>
 
               <div className="text-3xl font-bold text-tf-success">92%</div>
               <div
-</> className="text-sm text-tf-light/70">Conquest Rate</div>
+</>
+className="text-sm text-tf-light/70">Conquest Rate</div>
             </div>
           </div>
         </CardContent>

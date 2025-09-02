@@ -88,8 +88,11 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
         style={{ backgroundColor: getStatusColor() }}
         onClick={() => setIsExpanded(!isExpanded)}
       >
+
+
         <span className='status-icon'>{getStatusIcon()}</span>
         <span
+
 className='status-text'>{getStatusText()}</span>
         <span className='expand-icon'>{isExpanded ? '−' : '+'}</span>
       </div>
@@ -97,29 +100,41 @@ className='status-text'>{getStatusText()}</span>
       {isExpanded && (
         <div className='indicator-details'>
           <div className='detail-header'>
+
+
             <h4>🔍 SYSTEM TRANSPARENCY REPORT</h4>
             <p
+
 >Addressing AI Audit Concerns</p>
           </div>
 
           <div className='status-grid'>
             <div className='status-item'>
+
+
               <span className='status-label'>Data Source:</span>
               <span
+
 className={`status-value ${mockMode ? 'mock' : 'real'}`}>
                 {mockMode ? 'Mock Data (Development)' : 'Real Backend API'}
               </span>
             </div>
 
             <div className='status-item'>
+
+
               <span className='status-label'>Environment:</span>
               <span
+
 className='status-value'>{connectionStats?.environment || 'Unknown'}</span>
             </div>
 
             <div className='status-item'>
+
+
               <span className='status-label'>Backend Status:</span>
               <span
+
 className={`status-value ${healthStatus?.backend_connected ? 'connected' : 'disconnected'}`}
               >
                 {healthStatus?.backend_connected ? 'Connected ✅' : 'Offline ❌'}
@@ -127,8 +142,11 @@ className={`status-value ${healthStatus?.backend_connected ? 'connected' : 'disc
             </div>
 
             <div className='status-item'>
+
+
               <span className='status-label'>Database:</span>
               <span
+
 className={`status-value ${healthStatus?.database_operational ? 'connected' : 'disconnected'}`}
               >
                 {healthStatus?.database_operational ? 'Operational ✅' : 'Unavailable ❌'}
@@ -136,8 +154,11 @@ className={`status-value ${healthStatus?.database_operational ? 'connected' : 'd
             </div>
 
             <div className='status-item'>
+
+
               <span className='status-label'>AI Services:</span>
               <span
+
 className={`status-value ${healthStatus?.ai_services_online ? 'connected' : 'disconnected'}`}
               >
                 {healthStatus?.ai_services_online ? 'Online ✅' : 'Mock Data ⚠️'}
@@ -145,8 +166,11 @@ className={`status-value ${healthStatus?.ai_services_online ? 'connected' : 'dis
             </div>
 
             <div className='status-item'>
+
+
               <span className='status-label'>Security Systems:</span>
               <span
+
 className={`status-value ${healthStatus?.security_systems_active ? 'connected' : 'disconnected'}`}
               >
                 {healthStatus?.security_systems_active ? 'Active ✅' : 'Simulated ⚠️'}
@@ -155,19 +179,21 @@ className={`status-value ${healthStatus?.security_systems_active ? 'connected' :
           </div>
 
           <div className='audit-notice'>
+
+
             <h5>🛡️ AUDIT TRANSPARENCY NOTICE</h5>
             <p>
               {mockMode ? (
-                <>
+                <span>
                   <strong>Development Phase:</strong> This system is currently using mock data for
                   frontend development and testing. This is standard practice for government systems
                   during the development phase.
-                </>
+                </span>
               ) : (
-                <>
+                <span>
                   <strong>Production Ready:</strong> This system is connected to real backend
                   services and displaying actual operational data.
-                </>
+                </span>
               )}
             </p>
 
@@ -201,14 +227,23 @@ className={`status-value ${healthStatus?.security_systems_active ? 'connected' :
           </div>
 
           <div className='development-info'>
+
+
             <h5>📋 DEVELOPMENT CONTEXT</h5>
             <ul
+
 >
+
+
               <li>✅ Frontend components are production-ready</li>
                             <li
+
 >✅ Backend API endpoints are defined and documented</li>
+
+
               <li>✅ Database schemas are implemented</li>
                             <li
+
 >⚠️ Mock data used for development and testing</li>
               <li>🔄 Real integration activated when backend is available</li>
             </ul>

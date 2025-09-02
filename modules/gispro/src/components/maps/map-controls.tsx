@@ -457,7 +457,6 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
   };
   
   return (
-    <>
       <div 
         className={cn(
           'absolute z-[1000] bg-white rounded-md shadow-md p-2 flex flex-col gap-1',
@@ -475,7 +474,8 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
           <Ruler size={18} />
         </Button>
         <Button
-</> 
+</>
+
           size="icon" 
           variant={activeTool === 'rectangle' ? 'default' : 'outline'} 
           onClick={handleRectangleClick}
@@ -485,7 +485,8 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
           <Square size={18} />
         </Button>
         <Button
-</> 
+</>
+
           size="icon" 
           variant={activeTool === 'polygon' ? 'default' : 'outline'} 
           onClick={handlePolygonClick}
@@ -495,7 +496,8 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
           <CircleIcon size={18} />
         </Button>
         <div
-</> className="w-full h-px bg-gray-200 my-1"></div>
+</>
+className="w-full h-px bg-gray-200 my-1"></div>
         <Button 
           size="icon" 
           variant="outline" 
@@ -516,7 +518,8 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
               Measurement Results
             </h3>
             <Button
-</> 
+</>
+
               size="icon" 
               variant="ghost" 
               className="h-6 w-6"
@@ -532,7 +535,8 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
 
               <span className="text-gray-500">Distance:</span>
               <span
-</> className="font-medium text-right">
+</>
+className="font-medium text-right">
                 {measurementInfo.distance >= 1000 
                   ? `${(measurementInfo.distance / 1000).toFixed(2)} km` 
                   : `${Math.round(measurementInfo.distance)} m`}
@@ -540,13 +544,15 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
 
               <span className="text-gray-500">Miles:</span>
               <span
-</> className="font-medium text-right">
+</>
+className="font-medium text-right">
                 {(measurementInfo.distance * 0.000621371).toFixed(3)} mi
               </span><>
 
               <span className="text-gray-500">Feet:</span>
               <span
-</> className="font-medium text-right">
+</>
+className="font-medium text-right">
                 {Math.round(measurementInfo.distance * 3.28084)} ft
               </span>
             </div>
@@ -557,7 +563,8 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
 
               <span className="text-gray-500">Area:</span>
               <span
-</> className="font-medium text-right">
+</>
+className="font-medium text-right">
                 {measurementInfo.area >= 10000 
                   ? `${(measurementInfo.area / 10000).toFixed(2)} ha` 
                   : `${Math.round(measurementInfo.area)} m²`}
@@ -565,32 +572,32 @@ export function MapControls({ position = 'topleft', className }: MapControlsProp
 
               <span className="text-gray-500">Acres:</span>
               <span
-</> className="font-medium text-right">
+</>
+className="font-medium text-right">
                 {squareMetersToAcres(measurementInfo.area).toFixed(3)} ac
               </span><>
 
               <span className="text-gray-500">Square Feet:</span>
               <span
-</> className="font-medium text-right">
+</>
+className="font-medium text-right">
                 {Math.round(squareMetersToSquareFeet(measurementInfo.area))} ft²
               </span>
               
-              {measurementInfo.perimeter !== undefined && (
-                <><>
+              {measurementInfo.perimeter !== undefined && (<>
 
                   <span className="text-gray-500 mt-1">Perimeter:</span>
                   <span
-</> className="font-medium text-right mt-1">
+</>
+className="font-medium text-right mt-1">
                     {measurementInfo.perimeter >= 1000 
                       ? `${(measurementInfo.perimeter / 1000).toFixed(2)} km` 
                       : `${Math.round(measurementInfo.perimeter)} m`}
                   </span>
-                </>
               )}
             </div>
           )}
         </div>
       )}
-    </>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-// Import TerraFusion Ultimate CSS Architecture
+// Import Terrafusion Ultimate CSS Architecture
 import '../styles/terrafusion-intelligent-architecture.css';
 
 interface QuantumSystemMetrics {
@@ -62,7 +62,7 @@ const WebGLTranscendence: React.FC = () => {
       varying vec2 vUv;
       
       void main() {
-        // TerraFusion brand colors: primary #0099ff, transcend #00ffee, accent #00ffaa
+        // Terrafusion brand colors: primary #0099ff, transcend #00ffee, accent #00ffaa
         vec3 primaryColor = vec3(0.0, 0.6, 1.0);    // --tf-primary
         vec3 transcendColor = vec3(0.0, 1.0, 0.93); // --tf-transcend
         vec3 accentColor = vec3(0.0, 1.0, 0.67);    // --tf-accent
@@ -142,7 +142,7 @@ const WebGLTranscendence: React.FC = () => {
   }, []);
 
   return (
-    <>
+    <div>
       {loading && (
         <div className="tf-ultimate-component tf-loading-overlay tf-transcend-reveal" 
              data-user-level="expert"
@@ -192,7 +192,7 @@ const WebGLTranscendence: React.FC = () => {
            } as React.CSSProperties}>
         <div className="tf-dev-info" />
       </div>
-    </>
+    </div>
   );
 };
 

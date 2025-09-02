@@ -235,20 +235,21 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
   };
 
   return (
-    <>
       <DialogHeader>
         <div className="flex items-start justify-between">
           <div><>
 
             <DialogTitle className="text-xl">{task.title}</DialogTitle>
             <div
-</> className="flex items-center gap-2 mt-2"><>
+</>
+className="flex items-center gap-2 mt-2"><>
 
               <Badge variant={getStatusBadgeVariant(task.status)}>
                 {task.status.replace('_', ' ')}
               </Badge>
               <Badge
-</> variant={getPriorityBadgeVariant(task.priority)}>
+</>
+variant={getPriorityBadgeVariant(task.priority)}>
                 {task.priority}
               </Badge>
               <Badge variant="outline">
@@ -273,13 +274,15 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-</> onClick={() => setIsEditing(true)}><>
+</>
+onClick={() => setIsEditing(true)}><>
 
                 <Edit className="h-4 w-4 mr-2" />
                 Edit Task
               </DropdownMenuItem>
               <DropdownMenuSeparator
-</> />
+</>
+/>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <DropdownMenuItem className="text-red-600" onSelect={(e) => e.preventDefault()}>
@@ -292,6 +295,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                     <AlertDialogDescription
+</>
 </>>
                       This action cannot be undone. This will permanently delete the task
                       and all associated comments and history.
@@ -301,7 +305,8 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
-</> className="bg-red-600 hover:bg-red-700">
+</>
+className="bg-red-600 hover:bg-red-700">
                       Delete Task
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -317,13 +322,15 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger
-</> value="comments">
+</>
+value="comments">
             Comments ({task.comments.length})
           </TabsTrigger><>
 
           <TabsTrigger value="activity">Activity</TabsTrigger>
           <TabsTrigger
-</> value="details">Details</TabsTrigger>
+</>
+value="details">Details</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 mt-6">
@@ -338,6 +345,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent
+</>
 </>>
                 {Object.values(TaskStatus).map((status) => (
                   <SelectItem key={status} value={status}>
@@ -371,6 +379,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <span>Completion</span>
                     <span
+</>
 </>>{getProgressPercentage()}%</span>
                   </div>
                   <div className="w-full bg-secondary rounded-full h-2">
@@ -386,6 +395,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <span className="text-muted-foreground">Time Spent: </span>
                     <span
+</>
 </>>{getTimeSpent()}h</span>
                     {task.estimatedHours && (
                       <span className="text-muted-foreground"> / {task.estimatedHours}h</span>
@@ -395,6 +405,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <span className="text-muted-foreground">Created: </span>
                     <span
+</>
 </>>{formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}</span>
                   </div>
                 </div>
@@ -426,19 +437,22 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <span className="text-muted-foreground">Project: </span>
                     <span
+</>
 </>>{project.name}</span>
                   </div>
                   <div><>
 
                     <span className="text-muted-foreground">Team: </span>
                     <span
+</>
 </>>{project.team.name}</span>
                   </div>
                   <div><>
 
                     <span className="text-muted-foreground">Project Status: </span>
                     <Badge
-</> variant="outline" className="text-xs">
+</>
+variant="outline" className="text-xs">
                       {project.status.replace('_', ' ')}
                     </Badge>
                   </div>
@@ -446,6 +460,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <span className="text-muted-foreground">Project Due: </span>
                     <span
+</>
 </>>{format(new Date(project.timeline.endDate), 'PPP')}</span>
                   </div>
                 </div>
@@ -498,7 +513,8 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                   <p className="text-muted-foreground">No comments yet</p>
                   <p
-</> className="text-xs text-muted-foreground mt-1">
+</>
+className="text-xs text-muted-foreground mt-1">
                     Be the first to add a comment
                   </p>
                 </CardContent>
@@ -519,7 +535,8 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                           <span className="font-medium text-sm">{comment.user.name}</span>
                           <Badge
-</> variant="outline" className="text-xs">
+</>
+variant="outline" className="text-xs">
                             {comment.user.role}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
@@ -553,6 +570,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                   <div
+</>
 </>>
                     <p className="text-sm">
                       <span className="font-medium">{task.reporter.name}</span> created this task
@@ -569,6 +587,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                     <div
+</>
 </>>
                       <p className="text-sm">
                         <span className="font-medium">{comment.user.name}</span> added a comment
@@ -578,7 +597,8 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
                         {format(new Date(comment.createdAt), 'PPP p')}
                       </p>
                       <div
-</> className="bg-muted p-2 rounded text-xs">
+</>
+className="bg-muted p-2 rounded text-xs">
                         {comment.content.substring(0, 100)}
                         {comment.content.length > 100 && '...'}
                       </div>
@@ -609,36 +629,42 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <span className="text-muted-foreground">ID: </span>
                     <span
-</> className="font-mono">{task.id.substring(0, 8)}</span>
+</>
+className="font-mono">{task.id.substring(0, 8)}</span>
                   </div>
                   <div><>
 
                     <span className="text-muted-foreground">Type: </span>
                     <span
+</>
 </>>{task.type.replace('_', ' ')}</span>
                   </div>
                   <div><>
 
                     <span className="text-muted-foreground">Priority: </span>
                     <span
+</>
 </>>{task.priority}</span>
                   </div>
                   <div><>
 
                     <span className="text-muted-foreground">Status: </span>
                     <span
+</>
 </>>{task.status.replace('_', ' ')}</span>
                   </div>
                   <div><>
 
                     <span className="text-muted-foreground">Created: </span>
                     <span
+</>
 </>>{format(new Date(task.createdAt), 'PPP')}</span>
                   </div>
                   <div><>
 
                     <span className="text-muted-foreground">Updated: </span>
                     <span
+</>
 </>>{format(new Date(task.updatedAt), 'PPP')}</span>
                   </div>
                 </div>
@@ -655,7 +681,8 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                   <p className="text-xs text-muted-foreground mb-2">Reporter</p>
                   <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
                       <AvatarImage src={task.reporter.avatar} />
                       <AvatarFallback className="text-xs">
@@ -671,7 +698,8 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <p className="text-xs text-muted-foreground mb-2">Assignee</p>
                     <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
                       <Avatar className="h-6 w-6">
                         <AvatarImage src={task.assignee.avatar} />
                         <AvatarFallback className="text-xs">
@@ -744,12 +772,14 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                     <span className="text-muted-foreground">Estimated: </span>
                     <span
+</>
 </>>{task.estimatedHours || 0}h</span>
                   </div>
                   <div><>
 
                     <span className="text-muted-foreground">Actual: </span>
                     <span
+</>
 </>>{task.actualHours || 0}h</span>
                   </div>
                 </div>
@@ -759,6 +789,7 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
 
                       <span>Progress</span>
                       <span
+</>
 </>>
                         {Math.min(100, Math.round((task.actualHours / task.estimatedHours) * 100))}%
                       </span>
@@ -786,7 +817,6 @@ export const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
       <div className="flex justify-end pt-6">
         <Button onClick={onClose}>Close</Button>
       </div>
-    </>
   );
 };
 

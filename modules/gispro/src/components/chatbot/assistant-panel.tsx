@@ -40,7 +40,6 @@ export function AssistantPanel({
   };
   
   return (
-    <>
       {/* Toggle button */}
       <Button
         variant="outline"
@@ -83,6 +82,5 @@ export function AssistantPanel({
         {/* Content */}
         {!isMinimized && <CardContent className="p-4">{content}</CardContent>}
       </Card>
-    </>
   );
 }

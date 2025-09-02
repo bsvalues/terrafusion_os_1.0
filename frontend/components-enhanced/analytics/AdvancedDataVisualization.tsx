@@ -448,6 +448,7 @@ const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps> = ({
         <InputLabel>Chart Type</InputLabel>
         <Select
 </>
+
           value={selectedChartType}
           onChange={(e) => handleChartTypeChange(e.target.value as ChartType)}
           label="Chart Type"
@@ -496,6 +497,7 @@ const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps> = ({
         <InputLabel>Time Range</InputLabel>
         <Select
 </>
+
           value={timeRange}
           onChange={(e) => setTimeRange(e.target.value)}
           label="Time Range"
@@ -503,11 +505,13 @@ const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps> = ({
 
           <MenuItem value="7d">Last 7 Days</MenuItem>
           <MenuItem
-</> value="30d">Last 30 Days</MenuItem><>
+</>
+value="30d">Last 30 Days</MenuItem><>
 
           <MenuItem value="90d">Last 90 Days</MenuItem>
           <MenuItem
-</> value="1y">Last Year</MenuItem>
+</>
+value="1y">Last Year</MenuItem>
         </Select>
       </FormControl>
 
@@ -525,7 +529,8 @@ const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps> = ({
       </Box>
 
       <Box
-</> sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
+</>
+sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
         <Tooltip title="Refresh Data">
           <IconButton onClick={refreshData} size="small">
             <RefreshIcon />
@@ -555,6 +560,7 @@ const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps> = ({
 
       <DialogTitle>Visualization Settings</DialogTitle>
       <DialogContent
+</>
 </>>
         <Grid container spacing={3} sx={{ mt: 1 }}>
           <Grid item xs={12} md={6}><>
@@ -564,6 +570,7 @@ const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps> = ({
             </Typography>
             <FormControlLabel
 </>
+
               control={
                 <Switch
                   checked={chartSettings.showGrid}
@@ -593,13 +600,15 @@ const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps> = ({
             />
           </Grid>
           <Grid
-</> item xs={12} md={6}><>
+</>
+item xs={12} md={6}><>
 
             <Typography variant="subtitle1" gutterBottom>
               Opacity
             </Typography>
             <Slider
 </>
+
               value={chartSettings.opacity}
               onChange={(_, value) => setChartSettings(prev => ({ ...prev, opacity: value as number }))}
               min={0.1}
@@ -614,7 +623,8 @@ const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps> = ({
 
         <Button onClick={() => setShowSettings(false)}>Cancel</Button>
         <Button
-</> variant="contained" onClick={() => setShowSettings(false)}>
+</>
+variant="contained" onClick={() => setShowSettings(false)}>
           Apply Settings
         </Button>
       </DialogActions>

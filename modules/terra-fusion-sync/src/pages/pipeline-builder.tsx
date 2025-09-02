@@ -118,6 +118,7 @@ function Flow() {
           <Label htmlFor="pipeline-name">Pipeline Name</Label>
           <Input
 </>
+
             id="pipeline-name"
             value={pipelineName}
             onChange={(e) => setPipelineName(e.target.value)}
@@ -138,7 +139,8 @@ function Flow() {
 
           <h2 className="font-semibold">Nodes</h2>
           <div
-</> className="space-y-2">
+</>
+className="space-y-2">
             {['source', 'transform', 'filter', 'join', 'output'].map((type) => (
               <div
                 key={type}

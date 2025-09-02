@@ -156,6 +156,7 @@ export function CollaborativeMap({
                 </Button>
                 <Button
 </>
+
                   variant={activeMode === 'select' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleModeChange('select')}
@@ -184,6 +185,7 @@ export function CollaborativeMap({
                 </Button>
                 <Button
 </>
+
                   variant={activeMode === 'annotate' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleModeChange('annotate')}
@@ -329,7 +331,8 @@ function CollaborativeCursor({ user, mapLoaded, map }: CollaborativeCursorProps)
           <MousePointer className="h-4 w-4" />
         </div>
         <div
-</> className="px-1 py-0.5 bg-primary text-primary-foreground text-[10px] rounded">
+</>
+className="px-1 py-0.5 bg-primary text-primary-foreground text-[10px] rounded">
           {user.username || `User ${user.id.substring(0, 4)}`}
         </div>
       </div>

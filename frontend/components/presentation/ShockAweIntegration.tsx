@@ -164,7 +164,8 @@ export const ShockAweIntegration: React.FC = () => {
 
             <option value="executive">Executive Mode</option>
             <option
-</> value="technical">Technical Mode</option>
+</>
+value="technical">Technical Mode</option>
             <option value="financial">Financial Mode</option>
           </select>
           
@@ -191,7 +192,8 @@ export const ShockAweIntegration: React.FC = () => {
               {slide.title}
             </h2>
             <p
-</> className="text-2xl text-gray-300 font-light">
+</>
+className="text-2xl text-gray-300 font-light">
               {slide.subtitle}
             </p>
           </div>
@@ -212,7 +214,8 @@ export const ShockAweIntegration: React.FC = () => {
             </button>
             
             <div
-</> className="flex gap-2">
+</>
+className="flex gap-2">
               {shockAweSlides.map((_ /* , index */) => (<>
 
                 <button
@@ -227,6 +230,7 @@ export const ShockAweIntegration: React.FC = () => {
             
             <button
 </>
+
               onClick={() => setCurrentSlide((prev) => (prev + 1) % shockAweSlides.length)}
               className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors"
             >

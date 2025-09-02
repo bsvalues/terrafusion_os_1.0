@@ -429,6 +429,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                 <CardTitle>Permission Management</CardTitle>
                 <CardDescription
+</>
 </>>
                   Manage access permissions and security settings for{' '}
                   {entity ? (entity as any).name : `this ${entityType}`}
@@ -449,6 +450,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                     <DialogTitle>Assign Permissions</DialogTitle>
                     <DialogDescription
+</>
 </>>
                       Grant permissions to users for this {entityType}
                     </DialogDescription>
@@ -489,6 +491,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   <SelectItem value="all">All Categories</SelectItem>
                   {Object.values(PermissionCategory).map(category => (
@@ -505,6 +508,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
                   <SelectValue placeholder="Level" />
                 </SelectTrigger>
                 <SelectContent
+</>
 </>>
                   <SelectItem value="all">All Levels</SelectItem>
                   {Object.values(PermissionLevel).map(level => (
@@ -524,7 +528,8 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
           <TabsTrigger value="permissions">User Permissions</TabsTrigger>
           <TabsTrigger
-</> value="available">Available Permissions</TabsTrigger>
+</>
+value="available">Available Permissions</TabsTrigger>
           {showAuditLog && <TabsTrigger value="audit">Audit Log</TabsTrigger>}
         </TabsList>
 
@@ -534,6 +539,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
               <CardTitle className="text-sm">User Permissions Overview</CardTitle>
               <CardDescription
+</>
 </>>
                 Manage individual user permissions and access levels
               </CardDescription>
@@ -545,7 +551,8 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                   <p className="text-lg font-medium mb-2">No users found</p>
                   <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
                     {searchQuery ? 'Try adjusting your search' : 'No users have permissions yet'}
                   </p>
                 </div>
@@ -567,14 +574,16 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                               <h4 className="font-medium">{userPerm.user.name}</h4>
                               <p
-</> className="text-sm text-muted-foreground">{userPerm.user.email}</p>
+</>
+className="text-sm text-muted-foreground">{userPerm.user.email}</p>
                               <div className="flex items-center gap-2 mt-1"><>
 
                                 <Badge variant="outline" className="text-xs">
                                   {userPerm.user.role.replace('_', ' ')}
                                 </Badge>
                                 <Badge
-</> variant="secondary" className="text-xs">
+</>
+variant="secondary" className="text-xs">
                                   {userPerm.user.department}
                                 </Badge>
                                 {getClearanceBadge(userPerm.user.governmentClearance)}
@@ -591,19 +600,22 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                 <DropdownMenuItem
+</>
 </>><>
 
                                   <Plus className="h-4 w-4 mr-2" />
                                   Grant Permission
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
+</>
 </>><>
 
                                   <Eye className="h-4 w-4 mr-2" />
                                   View Details
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator
-</> />
+</>
+/>
                                 <DropdownMenuItem className="text-red-600">
                                   <Trash2 className="h-4 w-4 mr-2" />
                                   Remove All Permissions
@@ -616,7 +628,8 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                             <p className="text-xs text-muted-foreground">Permissions:</p>
                             <div
-</> className="flex flex-wrap gap-2">
+</>
+className="flex flex-wrap gap-2">
                               {userPerm.permissions.map((permission) => {
                                 const PermissionIcon = getPermissionLevelIcon(permission.level);
                                 
@@ -630,6 +643,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
                                     <span>{permission.name}</span>
                                     <Button
 </>
+
                                       variant="ghost"
                                       size="sm"
                                       className="h-4 w-4 p-0 hover:bg-red-100"
@@ -668,6 +682,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
               <CardTitle className="text-sm">Available Permissions</CardTitle>
               <CardDescription
+</>
 </>>
                 Browse and manage all available permissions in the system
               </CardDescription>
@@ -679,14 +694,17 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                     <TableHead>Permission</TableHead>
                     <TableHead
+</>
 </>>Category</TableHead><>
 
                     <TableHead>Level</TableHead>
                     <TableHead
+</>
 </>>Scope</TableHead><>
 
                     <TableHead>Users</TableHead>
                     <TableHead
+</>
 </>>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -707,7 +725,8 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                               <p className="font-medium text-sm">{permission.name}</p>
                               <p
-</> className="text-xs text-muted-foreground">
+</>
+className="text-xs text-muted-foreground">
                                 {permission.description}
                               </p>
                             </div>
@@ -742,7 +761,8 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
                               <Eye className="h-4 w-4" />
                             </Button>
                             <Button
-</> variant="ghost" size="sm">
+</>
+variant="ghost" size="sm">
                               <Edit className="h-4 w-4" />
                             </Button>
                             {!permission.isSystemPermission && (
@@ -771,6 +791,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
                   Permission Audit Log
                 </CardTitle>
                 <CardDescription
+</>
 </>>
                   Track all permission changes and security events
                 </CardDescription>
@@ -783,7 +804,8 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
 
                       <p className="text-lg font-medium mb-2">No audit events</p>
                       <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
                         No permission changes have been recorded yet
                       </p>
                     </div>
@@ -800,12 +822,14 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
                         </div>
                         
                         <div
-</> className="flex-1">
+</>
+className="flex-1">
                           <div className="flex items-center justify-between mb-2"><>
 
                             <p className="font-medium text-sm">{event.action}</p>
                             <div
-</> className="flex items-center gap-2 text-xs text-muted-foreground">
+</>
+className="flex items-center gap-2 text-xs text-muted-foreground">
                               <Calendar className="h-3 w-3" />
                               <span>{format(event.timestamp, 'MMM dd, yyyy HH:mm')}</span>
                             </div>
@@ -819,8 +843,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
                               <p>
                                 Permission: <span className="font-mono">{event.details.permission}</span>
                                 {event.details.target && (
-                                  <> for <span className="font-medium">{event.details.target}</span></>
-                                )}
+                                  <> for <span className="font-medium">{event.details.target}</span><div )}
                               </p>
                             )}
                             <p>IP: {event.ipAddress} • Session: {event.sessionId}</p>

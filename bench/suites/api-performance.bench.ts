@@ -146,9 +146,11 @@ function htmlReport(data) {
 <head><>
 <>
 <>
+<>
 
   <title>API Performance Report - Terrafusion OS</title>
   <style
+</>
 </>
 </>
 </>>
@@ -163,12 +165,15 @@ function htmlReport(data) {
 <body><>
 <>
 <>
+<>
 
   <h1>API Performance Benchmark Results</h1>
   <div
 </>
 </>
+</>
 </> class="metric"><>
+<>
 <>
 <>
 
@@ -176,9 +181,11 @@ function htmlReport(data) {
     <table
 </>
 </>
+</>
 </>>
       <tr><th>Percentile</th><th>Latency (ms)</th><th>Target</th><th>Status</th></tr>
       <tr><>
+<>
 <>
 <>
 
@@ -186,12 +193,15 @@ function htmlReport(data) {
         <td
 </>
 </>
+</>
 </>>${metrics.api_latency.values['p(50)'].toFixed(2)}</td><>
+<>
 <>
 <>
 
         <td>&lt;50ms</td>
         <td
+</>
 </>
 </>
 </> class="${metrics.api_latency.values['p(50)'] < 50 ? 'pass' : 'fail'}">
@@ -201,17 +211,21 @@ function htmlReport(data) {
       <tr><>
 <>
 <>
+<>
 
         <td>p95</td>
         <td
 </>
 </>
+</>
 </>>${metrics.api_latency.values['p(95)'].toFixed(2)}</td><>
+<>
 <>
 <>
 
         <td>&lt;200ms</td>
         <td
+</>
 </>
 </>
 </> class="${metrics.api_latency.values['p(95)'] < 200 ? 'pass' : 'fail'}">
@@ -221,17 +235,21 @@ function htmlReport(data) {
       <tr><>
 <>
 <>
+<>
 
         <td>p99</td>
         <td
 </>
 </>
+</>
 </>>${metrics.api_latency.values['p(99)'].toFixed(2)}</td><>
+<>
 <>
 <>
 
         <td>&lt;500ms</td>
         <td
+</>
 </>
 </>
 </> class="${metrics.api_latency.values['p(99)'] < 500 ? 'pass' : 'fail'}">
@@ -243,17 +261,21 @@ function htmlReport(data) {
   <div class="metric"><>
 <>
 <>
+<>
 
     <h2>Error Rate</h2>
     <p
 </>
 </>
+</>
 </>>Current: ${(metrics.api_errors.rate * 100).toFixed(2)}%</p><>
+<>
 <>
 <>
 
     <p>Target: &lt;1%</p>
     <p
+</>
 </>
 </>
 </>>Status: ${metrics.api_errors.rate < 0.01 ? '✅ PASS' : '❌ FAIL'}</p>

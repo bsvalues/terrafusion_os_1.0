@@ -71,7 +71,8 @@ export default function EnhancedMapCollaborationPage() {
 
       <h1 className="text-3xl font-bold mb-6 text-center">Enhanced Map Collaboration</h1>
       <p
-</> className="text-center mb-8 max-w-3xl mx-auto text-muted-foreground">
+</>
+className="text-center mb-8 max-w-3xl mx-auto text-muted-foreground">
         This demo showcases real-time collaboration capabilities on maps using Mapbox GL JS and WebSockets.
         Users can see each other's cursors, draw features, and communicate in real-time.
       </p>
@@ -83,6 +84,7 @@ export default function EnhancedMapCollaborationPage() {
 
               <CardTitle>Collaborative Map</CardTitle>
               <CardDescription
+</>
 </>>Work together with others in real-time</CardDescription>
             </div>
             <div className="flex items-center space-x-3">
@@ -114,6 +116,7 @@ export default function EnhancedMapCollaborationPage() {
                 <label htmlFor="room-id" className="text-sm font-medium block mb-1">Room ID:</label>
                 <Input
 </>
+
                   id="room-id"
                   value={roomId}
                   onChange={(e) => setRoomId(e.target.value)}
@@ -126,6 +129,7 @@ export default function EnhancedMapCollaborationPage() {
                 <label htmlFor="room-name" className="text-sm font-medium block mb-1">Room Name:</label>
                 <Input
 </>
+
                   id="room-name"
                   value={roomName}
                   onChange={(e) => setRoomName(e.target.value)}
@@ -149,19 +153,22 @@ export default function EnhancedMapCollaborationPage() {
                   Map
                 </TabsTrigger>
                 <TabsTrigger
-</> value="chat" className="flex items-center"><>
+</>
+value="chat" className="flex items-center"><>
 
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Chat
                 </TabsTrigger>
                 <TabsTrigger
-</> value="users" className="flex items-center"><>
+</>
+value="users" className="flex items-center"><>
 
                   <Users className="mr-2 h-4 w-4" />
                   Users
                 </TabsTrigger>
                 <div
-</> className="flex-1 flex justify-end">
+</>
+className="flex-1 flex justify-end">
                   <Button variant="outline" size="sm" onClick={handleLeaveRoom}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Leave Room
@@ -184,7 +191,8 @@ export default function EnhancedMapCollaborationPage() {
               </TabsContent>
               
               <TabsContent
-</> value="chat">
+</>
+value="chat">
                 <div className="border rounded-md p-4">
                   <ScrollArea className="h-[300px] mb-4">
                     <div className="space-y-3 p-2">
@@ -208,7 +216,8 @@ export default function EnhancedMapCollaborationPage() {
                                 {msg.username || 'Unknown user'}
                               </span>
                               <span
-</> className="text-xs opacity-70">
+</>
+className="text-xs opacity-70">
                                 {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}
                               </span>
                             </div>
@@ -240,7 +249,8 @@ export default function EnhancedMapCollaborationPage() {
 
                   <h3 className="text-sm font-medium mb-3">Users Viewing This Map</h3>
                   <p
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
                     As users move their cursor on the map, they will appear here.
                     You can see active users directly on the map as well.
                   </p>
@@ -254,6 +264,7 @@ export default function EnhancedMapCollaborationPage() {
 
           <p>Click on the map to add points</p>
           <p
+</>
 </>>Use the toolbar to add lines and polygons</p>
         </CardFooter>
       </Card>
@@ -262,18 +273,22 @@ export default function EnhancedMapCollaborationPage() {
 
         <h2 className="text-xl font-semibold mb-3">Mapbox-Powered Collaboration Features</h2>
         <ul
-</> className="list-disc pl-5 space-y-2"><>
+</>
+className="list-disc pl-5 space-y-2"><>
 
           <li>Interactive Mapbox GL JS map with navigation controls</li>
                             <li
+</>
 </>>Real-time cursor position sharing between users</li><>
 
           <li>Create and share points with a single click</li>
                             <li
+</>
 </>>Add lines and polygons visible to all users</li><>
 
           <li>Real-time chat with others in the same map room</li>
                             <li
+</>
 </>>Automatic reconnection on network issues</li>
           <li>Support for multiple collaborative rooms</li>
         </ul>

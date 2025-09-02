@@ -104,6 +104,7 @@ export function SystemArchitecture() {
             GAMA System Architecture
           </CardTitle>
           <CardDescription
+</>
 </>>
             Comprehensive overview of the TerraFusionTheory system components and data flow
           </CardDescription>
@@ -114,11 +115,13 @@ export function SystemArchitecture() {
 
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger
-</> value="components">Components</TabsTrigger><>
+</>
+value="components">Components</TabsTrigger><>
 
               <TabsTrigger value="dataflow">Data Flow</TabsTrigger>
               <TabsTrigger
-</> value="deployment">Deployment</TabsTrigger>
+</>
+value="deployment">Deployment</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
@@ -132,7 +135,8 @@ export function SystemArchitecture() {
 
                       <h3 className="font-medium text-center">Frontend Layer</h3>
                       <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                         <ArchComponent
                           icon={<Globe className="h-4 w-4" />}
                           title="React SPA"
@@ -156,7 +160,8 @@ export function SystemArchitecture() {
 
                       <h3 className="font-medium text-center">Backend Layer</h3>
                       <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                         <ArchComponent
                           icon={<Server className="h-4 w-4" />}
                           title="Node.js API"
@@ -180,7 +185,8 @@ export function SystemArchitecture() {
 
                       <h3 className="font-medium text-center">Data Layer</h3>
                       <div
-</> className="space-y-2">
+</>
+className="space-y-2">
                         <ArchComponent
                           icon={<Database className="h-4 w-4" />}
                           title="PostgreSQL"
@@ -218,11 +224,13 @@ export function SystemArchitecture() {
 
                       <Badge variant="outline">JWT Authentication</Badge>
                       <Badge
-</> variant="outline">Role-based Access Control</Badge><>
+</>
+variant="outline">Role-based Access Control</Badge><>
 
                       <Badge variant="outline">HTTPS (via Next.js server)</Badge>
                       <Badge
-</> variant="outline">Rate Limiting (API routes)</Badge>
+</>
+variant="outline">Rate Limiting (API routes)</Badge>
                       <Badge variant="outline">CORS Protection (API routes)</Badge>
                     </CardContent>
                   </Card>
@@ -238,11 +246,13 @@ export function SystemArchitecture() {
 
                       <Badge variant="outline">Next.js Analytics</Badge>
                       <Badge
-</> variant="outline">Custom Logging</Badge><>
+</>
+variant="outline">Custom Logging</Badge><>
 
                       <Badge variant="outline">Error Tracking (e.g., Sentry)</Badge>
                       <Badge
-</> variant="outline">Performance Monitoring</Badge>
+</>
+variant="outline">Performance Monitoring</Badge>
                     </CardContent>
                   </Card>
                 </div>
@@ -389,29 +399,34 @@ export function SystemArchitecture() {
                           Property Data Flow
                         </h4>
                         <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                           <div className="flex items-center gap-2"><>
 
                             <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                             <span
+</>
 </>>User interacts with Next.js UI (Renderer Process)</span>
                           </div>
                           <div className="flex items-center gap-2"><>
 
                             <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                             <span
+</>
 </>>UI makes `fetch` requests to local Next.js Server (e.g., /api/properties)</span>
                           </div>
                           <div className="flex items-center gap-2"><>
 
                             <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                             <span
+</>
 </>>Next.js API route handles request (e.g., queries PostgreSQL)</span>
                           </div>
                           <div className="flex items-center gap-2"><>
 
                             <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                             <span
+</>
 </>>
                               For Python tasks: UI -> Electron Main (IPC) -> Python Script -> Electron Main -> UI
                             </span>
@@ -420,6 +435,7 @@ export function SystemArchitecture() {
 
                             <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                             <span
+</>
 </>>Data returned to UI for display/visualization</span>
                           </div>
                         </div>
@@ -433,17 +449,20 @@ export function SystemArchitecture() {
                           Market Analysis Flow
                         </h4>
                         <div
-</> className="space-y-2 text-sm">
+</>
+className="space-y-2 text-sm">
                           <div className="flex items-center gap-2"><>
 
                             <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                             <span
+</>
 </>>UI requests market data from local Next.js Server (/api/market)</span>
                           </div>
                           <div className="flex items-center gap-2"><>
 
                             <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                             <span
+</>
 </>>
                               Next.js API route processes request, potentially calling external APIs (e.g., ArcGIS via
                               /api/arcgis) or Python scripts via Electron IPC
@@ -453,6 +472,7 @@ export function SystemArchitecture() {
 
                             <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                             <span
+</>
 </>>Results aggregated and returned to UI for dashboard updates</span>
                           </div>
                         </div>
@@ -473,6 +493,7 @@ export function SystemArchitecture() {
                       Deploy to Vercel
                     </CardTitle>
                     <CardDescription
+</>
 </>>
                       Push the latest changes and deploy the Next.js application to Vercel. Assumes Vercel CLI is set up
                       and project is linked.
@@ -488,7 +509,8 @@ export function SystemArchitecture() {
 
                         <h4 className="font-medium text-sm">Deployment Log:</h4>
                         <ScrollArea
-</> className="h-48 w-full rounded-md border p-3 bg-gray-900 text-gray-100 font-mono text-xs">
+</>
+className="h-48 w-full rounded-md border p-3 bg-gray-900 text-gray-100 font-mono text-xs">
                           {deploymentLog.map((log /* , index */) => (
                             <div key={index}>{log}</div>
                           ))}
@@ -546,17 +568,20 @@ export function SystemArchitecture() {
 
                         <div className="text-green-400"># Terminal 1: Start Next.js Dev Server</div>
                         <div
+</>
 </>>npm run dev</div>
                         <br /><>
 
                         <div className="text-green-400"># Terminal 2: Start Electron</div>
                         <div
+</>
 </>>npm run electron:dev</div>
                       </div>
                       <div className="space-y-2 text-sm"><>
 
                         <div>• Hot reloading for Next.js frontend & backend</div>
                         <div
+</>
 </>>• Electron main process reloads on change (if using nodemon, or manually restart)</div>
                         <div>• Direct access to browser dev tools and Node.js debugger</div>
                       </div>
@@ -576,18 +601,21 @@ export function SystemArchitecture() {
 
                         <div className="text-green-400"># Build Next.js & Package Electron App</div>
                         <div
+</>
 </>>npm run electron:package</div>
                       </div>
                       <div className="space-y-2 text-sm"><>
 
                         <div>• Creates optimized Next.js production build (.next)</div>
                         <div
+</>
 </>>• Bundles Next.js server and app with Electron</div><>
 
                         <div>
                           • `electron-builder` creates installers (e.g., .exe, .dmg, .AppImage) in `dist_electron`
                         </div>
                         <div
+</>
 </>>
                           • Python scripts need to be included in the package (see `extraResources` in `package.json`)
                         </div>
@@ -638,7 +666,8 @@ function ComponentDetail({
 
       <div className="font-medium text-sm">{name}</div>
       <div
-</> className="text-xs text-blue-600 mb-1">{tech}</div>
+</>
+className="text-xs text-blue-600 mb-1">{tech}</div>
       <div className="text-xs text-gray-600">{description}</p>
     </div>
   )

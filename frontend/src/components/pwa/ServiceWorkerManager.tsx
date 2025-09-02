@@ -74,9 +74,10 @@ export const ServiceWorkerManager: React.FC = () => {
         }
       });
 
-      console.log('Service Worker registered successfully');
+      // Service Worker registered successfully
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
+      // Service Worker registration failed
+      setSwState(prev => ({ ...prev, isSupported: false }));
     }
   }, [swState.isSupported]);
 
@@ -153,27 +154,29 @@ export const ServiceWorkerManager: React.FC = () => {
   }, [showNotification, updateApp]);
 
   // Background sync for module data
-  const syncModuleData = useCallback(async () => {
+  const _syncModuleData = useCallback(async () => {
     if (swState.registration?.sync) {
       try {
         await swState.registration.sync.register('module-data-sync');
-        console.log('Background sync registered for module data');
+        // Background sync registered for module data
       } catch (error) {
-        console.error('Background sync registration failed:', error);
+        // Background sync registration failed
+        setSwState(prev => ({ ...prev, isOffline: true }));
       }
     }
   }, [swState.registration]);
 
   // Export app data for offline use
-  const cacheModuleData = useCallback(async (moduleData: any) => {
+  const _cacheModuleData = useCallback(async (moduleData: any) => {
     if ('caches' in window) {
       try {
         const cache = await caches.open('terrafusion-module-data-v1');
         const response = new Response(JSON.stringify(moduleData));
         await cache.put('/api/ecosystem/status', response);
-        console.log('Module data cached for offline use');
+        // Module data cached for offline use
       } catch (error) {
-        console.error('Failed to cache module data:', error);
+        // Failed to cache module data
+        setSwState(prev => ({ ...prev, isOffline: true }));
       }
     }
   }, []);
@@ -183,7 +186,8 @@ export const ServiceWorkerManager: React.FC = () => {
     if (navigator.storage && navigator.storage.persist) {
       navigator.storage.persist().then(granted => {
         if (granted) {
-          console.log('Persistent storage granted');
+          // Persistent storage granted
+          setSwState(prev => ({ ...prev, isPersistent: true }));
         }
       });
     }
@@ -194,7 +198,7 @@ export const ServiceWorkerManager: React.FC = () => {
   };
 
   return (
-    <>
+    <div>
       {/* Update Available Snackbar */}
       <Snackbar
         open={notifications.show}
@@ -239,13 +243,19 @@ export const ServiceWorkerManager: React.FC = () => {
           fontFamily="monospace"
           zIndex={9999}
         >
+
+
           <div>SW Supported: {swState.isSupported ? '✓' : '✗'}</div>
-          <div>SW Registered: {swState.isRegistered ? '✓' : '✗'}</div>
+          <div
+>SW Registered: {swState.isRegistered ? '✓' : '✗'}</div>
+
+
           <div>Update Available: {swState.isUpdateAvailable ? '✓' : '✗'}</div>
-          <div>Offline: {swState.isOffline ? '✓' : '✗'}</div>
+          <div
+>Offline: {swState.isOffline ? '✓' : '✗'}</div>
         </Box>
       )}
-    </>
+    </div>
   );
 };
 

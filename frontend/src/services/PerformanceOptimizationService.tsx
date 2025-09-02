@@ -28,10 +28,13 @@ export const OptimizedValuationComponent = memo(({ propertyId }: { propertyId: s
   return (
     <div className="optimized-valuation">
       <Suspense fallback={<ValuationSkeleton />}>
+
+
         <LazyValuationChart data={data} />
       </Suspense>
       
-      <Suspense fallback={<div>Loading details...</div>}>
+      <Suspense
+ fallback={<div>Loading details...</div>}>
         <LazyPropertyDetails propertyId={propertyId} />
       </Suspense>
     </div>
@@ -201,17 +204,26 @@ export const BundleOptimizer = {
 // Skeleton components for loading states
 const ValuationSkeleton = () => (
   <div className="valuation-skeleton animate-pulse">
+
+
     <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-    <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+    <div
+ className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+
+
     <div className="h-32 bg-gray-300 rounded mb-4"></div>
-    <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+    <div
+ className="h-4 bg-gray-300 rounded w-2/3"></div>
   </div>
 );
 
 const ErrorBoundary = ({ error }: { error: any }) => (
   <div className="error-boundary p-4 border border-red-300 rounded bg-red-50">
+
+
     <h3 className="text-red-800 font-semibold">Performance Error</h3>
-    <p className="text-red-600">{error?.message || 'An error occurred'}</p>
+    <p
+ className="text-red-600">{error?.message || 'An error occurred'}</p>
   </div>
 );
 

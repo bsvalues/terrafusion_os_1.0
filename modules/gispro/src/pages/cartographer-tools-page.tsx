@@ -136,7 +136,8 @@ export default function CartographerToolsPage() {
 
           <h1 className="text-3xl font-bold tracking-tight">Advanced Cartography Tools</h1>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             Precision drawing and editing tools for cartographers
           </p>
         </div>
@@ -148,19 +149,22 @@ export default function CartographerToolsPage() {
             Import
           </Button>
           <Button
-</> variant="outline" onClick={handleExportGeoJSON}><>
+</>
+variant="outline" onClick={handleExportGeoJSON}><>
 
             <Eye className="h-4 w-4 mr-2" />
             View GeoJSON
           </Button>
           <Button
-</> onClick={handleDownloadGeoJSON}><>
+</>
+onClick={handleDownloadGeoJSON}><>
 
             <Download className="h-4 w-4 mr-2" />
             Download
           </Button>
           <Button
-</> variant="outline" onClick={() => setShowTutorial(true)}>
+</>
+variant="outline" onClick={() => setShowTutorial(true)}>
             <HelpCircle className="h-4 w-4 mr-2" />
             Tutorial
           </Button>
@@ -173,6 +177,7 @@ export default function CartographerToolsPage() {
 
             <CardTitle>Interactive Map</CardTitle>
             <CardDescription
+</>
 </>>
               Use the precision drawing tools to create and edit map features
             </CardDescription>
@@ -188,7 +193,8 @@ export default function CartographerToolsPage() {
             />
           </CardContent>
           <CardFooter
-</> className="flex justify-between border-t pt-4">
+</>
+className="flex justify-between border-t pt-4">
             <div className="text-sm text-muted-foreground">
               {mapFeatures.length} feature{mapFeatures.length !== 1 ? 's' : ''} on map
               <span className="ml-4 text-blue-500 font-medium">
@@ -213,6 +219,7 @@ export default function CartographerToolsPage() {
               {exportTab === 'json' ? 'GeoJSON Data' : 'Import GeoJSON'}
             </DialogTitle>
             <DialogDescription
+</>
 </>>
               {exportTab === 'json' 
                 ? 'View and export the GeoJSON representation of your map features' 
@@ -225,7 +232,8 @@ export default function CartographerToolsPage() {
 
               <TabsTrigger value="json">GeoJSON</TabsTrigger>
               <TabsTrigger
-</> value="import">Import</TabsTrigger>
+</>
+value="import">Import</TabsTrigger>
             </TabsList>
             <TabsContent value="json" className="pt-4">
               <div className="grid gap-4"><>
@@ -238,13 +246,15 @@ export default function CartographerToolsPage() {
               </div>
               
               <DialogFooter
-</> className="mt-6"><>
+</>
+className="mt-6"><>
 
                 <Button variant="outline" onClick={() => setJsonDialogOpen(false)}>
                   Close
                 </Button>
                 <Button
-</> onClick={handleDownloadGeoJSON}>
+</>
+onClick={handleDownloadGeoJSON}>
                   <Download className="h-4 w-4 mr-2" />
                   Download GeoJSON
                 </Button>
@@ -257,7 +267,8 @@ export default function CartographerToolsPage() {
 
                   <Label htmlFor="json-import">Paste GeoJSON Data</Label>
                   <Textarea
-</> 
+</>
+
                     id="json-import"
                     value={jsonText} 
                     onChange={(e) => setJsonText(e.target.value)}
@@ -273,7 +284,8 @@ export default function CartographerToolsPage() {
                   Cancel
                 </Button>
                 <Button
-</> onClick={handleImportGeoJSON}>
+</>
+onClick={handleImportGeoJSON}>
                   <Upload className="h-4 w-4 mr-2" />
                   Import Data
                 </Button>
@@ -290,6 +302,7 @@ export default function CartographerToolsPage() {
 
             <DialogTitle>Advanced Cartography Tools Guide</DialogTitle>
             <DialogDescription
+</>
 </>>
               Learn how to use the precision drawing and editing features
             </DialogDescription>
@@ -300,7 +313,8 @@ export default function CartographerToolsPage() {
 
               <h3 className="text-lg font-semibold mb-2 text-blue-700">NEW: Animated County Boundaries</h3>
               <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                 Smooth transitions between county boundary layers:
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm">
@@ -318,7 +332,8 @@ export default function CartographerToolsPage() {
 
               <h3 className="text-lg font-semibold mb-2">Drawing Tools</h3>
               <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                 Advanced drawing tools with precision controls:
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm">
@@ -333,7 +348,8 @@ export default function CartographerToolsPage() {
 
               <h3 className="text-lg font-semibold mb-2">Editing Features</h3>
               <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                 Tools for editing and modifying features:
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm">
@@ -348,7 +364,8 @@ export default function CartographerToolsPage() {
 
               <h3 className="text-lg font-semibold mb-2">Version Control</h3>
               <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                 Track changes to features over time:
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm">
@@ -362,7 +379,8 @@ export default function CartographerToolsPage() {
 
               <h3 className="text-lg font-semibold mb-2">Legal Descriptions</h3>
               <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                 Generate legal descriptions from drawn parcels:
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm">
@@ -376,7 +394,8 @@ export default function CartographerToolsPage() {
 
               <h3 className="text-lg font-semibold mb-2">Data Import/Export</h3>
               <p
-</> className="text-sm text-muted-foreground mb-2">
+</>
+className="text-sm text-muted-foreground mb-2">
                 Share and save your work:
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm">

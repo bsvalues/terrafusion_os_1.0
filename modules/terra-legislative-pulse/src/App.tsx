@@ -20,7 +20,8 @@ function App() {
 
               <h1 className="text-xl font-bold">Terrafusion Legislative Pulse</h1>
               <p
-</> className="text-sm text-blue-200">Government Legislative Intelligence System</p>
+</>
+className="text-sm text-blue-200">Government Legislative Intelligence System</p>
             </div>
           </div>
         </div>
@@ -38,7 +39,8 @@ function App() {
 
               <h2 className="text-2xl font-bold text-gray-700 mb-4">Page Not Found</h2>
               <p
-</> className="text-gray-600">The requested page could not be found.</p>
+</>
+className="text-gray-600">The requested page could not be found.</p>
             </div>
           </Route>
         </Switch>

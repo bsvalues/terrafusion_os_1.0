@@ -74,7 +74,8 @@ export default function Register() {
 
           <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
           <CardDescription
-</> className="text-center">
+</>
+className="text-center">
             Sign up to get started with RAG Drive
           </CardDescription>
         </CardHeader>
@@ -90,12 +91,14 @@ export default function Register() {
 
                     <FormLabel>Username</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input placeholder="Choose a username" {...field} />
                     </FormControl>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -108,12 +111,14 @@ export default function Register() {
 
                     <FormLabel>Password</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input type="password" placeholder="Create a password" {...field} />
                     </FormControl>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -126,12 +131,14 @@ export default function Register() {
 
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input type="password" placeholder="Confirm your password" {...field} />
                     </FormControl>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -153,7 +160,8 @@ export default function Register() {
             Already have an account?
           </div>
           <Button
-</> 
+</>
+
             variant="outline" 
             className="w-full"
             onClick={() => setLocation("/login")}

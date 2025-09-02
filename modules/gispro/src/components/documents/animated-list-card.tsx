@@ -55,18 +55,21 @@ export function AnimatedListCard({ document, onView }: AnimatedListCardProps) {
           </div>
           
           <div
-</> className="space-y-1"><>
+</>
+className="space-y-1"><>
 
             <div className="font-medium">{document.name}</div>
             <div
-</> className="flex items-center space-x-2"><>
+</>
+className="flex items-center space-x-2"><>
 
               <Badge variant="outline" className="capitalize">
                 {getDocumentTypeLabel(document.type)}
               </Badge>
               
               <div
-</> className="flex items-center text-xs text-slate-500">
+</>
+className="flex items-center text-xs text-slate-500">
                 <Clock className="h-3 w-3 mr-1" />
                 {formatDistanceToNow(new Date(document.uploadedAt))} ago
               </div>

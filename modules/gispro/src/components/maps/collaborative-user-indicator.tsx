@@ -142,7 +142,8 @@ export function CollaborativeUserIndicator({
                               User {activity.userId.substring(0, 6)}
                             </p>
                             <div
-</> className="flex items-center space-x-1">
+</>
+className="flex items-center space-x-1">
                               <span className="text-xs text-muted-foreground">
                                 {formatTimeSince(activity.lastActivity)}
                               </span>

@@ -315,6 +315,7 @@ export const AIAssistant: React.FC = () => {
 
               <span className="ai-icon">🤖</span>
               <h3
+</>
 </>>Terrafusion AI Assistant</h3>
             </div>
             <div className="ai-controls">
@@ -339,7 +340,8 @@ export const AIAssistant: React.FC = () => {
                 🗑️
               </button>
               <button
-</> 
+</>
+
                 onClick={() => setIsExpanded(false)}
                 className="close-btn"
                 title="Close Assistant"
@@ -354,7 +356,8 @@ export const AIAssistant: React.FC = () => {
 
             <div className="quick-actions-label">Quick Actions:</div>
             <div
-</> className="quick-actions-grid">
+</>
+className="quick-actions-grid">
               {quickActions.map(action => (
                 <button
                   key={action.id}
@@ -365,7 +368,8 @@ export const AIAssistant: React.FC = () => {
 
                   <span className="action-icon">{action.icon}</span>
                   <span
-</> className="action-label">{action.label}</span>
+</>
+className="action-label">{action.label}</span>
                 </button>
               ))}
             </div>
@@ -447,6 +451,7 @@ export const AIAssistant: React.FC = () => {
 
                     <span></span>
                     <span
+</>
 </>></span>
                     <span></span>
                   </div>
@@ -487,7 +492,8 @@ export const AIAssistant: React.FC = () => {
                 Mode: {templateOptions.find(t => t.value === selectedTemplate)?.label}
               </span>
               <span
-</> className="input-hint">
+</>
+className="input-hint">
                 Press Enter to send, Shift+Enter for new line
               </span>
             </div>

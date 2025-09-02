@@ -1,7 +1,7 @@
 {{- if .Values.podDisruptionBudget.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
-metadata:    
+metadata:      
   name: {{ include "terrafusion-ai-swarm.fullname" . }}
   labels:
     {{- include "terrafusion-ai-swarm.labels" . | nindent 4 }}

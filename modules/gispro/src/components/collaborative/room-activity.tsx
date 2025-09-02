@@ -158,30 +158,35 @@ export function RoomActivity({
             <Flag className="h-6 w-6 text-primary" />
           </div>
           <div
+</>
 </>><>
 
             <h3 className="font-medium">{roomId}</h3>
             <div
-</> className="flex items-center gap-3 text-sm text-muted-foreground">
+</>
+className="flex items-center gap-3 text-sm text-muted-foreground">
               <span className="flex items-center gap-1"><>
 
                 <Users className="h-3 w-3" />
                 {roomInfo.userCount}
               </span>
               <span
-</> className="flex items-center gap-1"><>
+</>
+className="flex items-center gap-1"><>
 
                 <Pencil className="h-3 w-3" />
                 {roomInfo.featureCount}
               </span>
               <span
-</> className="flex items-center gap-1"><>
+</>
+className="flex items-center gap-1"><>
 
                 <MapPin className="h-3 w-3" />
                 {roomInfo.annotationCount}
               </span>
               <span
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 {formatTimeElapsed(roomInfo.lastActivity)}
               </span>
@@ -211,7 +216,8 @@ export function RoomActivity({
 
           <span>{roomId}</span>
           <Badge
-</> 
+</>
+
             variant={activityLevel > 50 ? "default" : "secondary"} 
             className="flex gap-1 items-center"
           >
@@ -227,7 +233,8 @@ export function RoomActivity({
 
             <div className="text-sm font-medium">Users</div>
             <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
               <span className="text-2xl font-semibold">{roomInfo.userCount}</span>
             </div>
@@ -237,7 +244,8 @@ export function RoomActivity({
 
             <div className="text-sm font-medium">Features</div>
             <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               <span className="text-2xl font-semibold">{roomInfo.featureCount}</span>
             </div>
@@ -247,7 +255,8 @@ export function RoomActivity({
 
             <div className="text-sm font-medium">Annotations</div>
             <div
-</> className="flex items-center gap-2">
+</>
+className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-muted-foreground" />
               <span className="text-2xl font-semibold">{roomInfo.annotationCount}</span>
             </div>
@@ -257,7 +266,8 @@ export function RoomActivity({
 
             <div className="text-sm font-medium">Created</div>
             <div
-</> className="text-sm text-muted-foreground">
+</>
+className="text-sm text-muted-foreground">
               {formatDate(roomInfo.createdAt)}
             </div>
           </div>
@@ -268,18 +278,21 @@ export function RoomActivity({
 
             <span className="text-muted-foreground">Activity Level</span>
             <span
-</> className="font-medium">{activityLevel}%</span>
+</>
+className="font-medium">{activityLevel}%</span>
           </div><>
 
           <Progress value={activityLevel} className="h-2" />
         </div>
         
         <div
-</> className="text-sm"><>
+</>
+className="text-sm"><>
 
           <span className="text-muted-foreground mr-1">Last activity:</span>
           <span
-</> className="font-medium">{formatTimeElapsed(roomInfo.lastActivity)}</span>
+</>
+className="font-medium">{formatTimeElapsed(roomInfo.lastActivity)}</span>
         </div>
       </CardContent>
       

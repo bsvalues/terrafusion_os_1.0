@@ -19,7 +19,8 @@ export default function DashboardPage() {
             GAMA Professional Dashboard
           </h1>
           <p
-</> className="text-xl text-gray-600 mt-2">Advanced Property Analysis & Market Intelligence Platform</p>
+</>
+className="text-xl text-gray-600 mt-2">Advanced Property Analysis & Market Intelligence Platform</p>
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
@@ -28,11 +29,13 @@ export default function DashboardPage() {
 
             <TabsTrigger value="dashboard">Live Dashboard</TabsTrigger>
             <TabsTrigger
-</> value="search">Property Search</TabsTrigger><>
+</>
+value="search">Property Search</TabsTrigger><>
 
             <TabsTrigger value="agent">AI Agent</TabsTrigger>
             <TabsTrigger
-</> value="geometry">Sacred Geometry</TabsTrigger>
+</>
+value="geometry">Sacred Geometry</TabsTrigger>
             <TabsTrigger value="market">Market Analysis</TabsTrigger>
             {/* Add new TabsTrigger for Benton County GIS */}
             <TabsTrigger value="benton-gis">Benton GIS</TabsTrigger>
@@ -44,25 +47,29 @@ export default function DashboardPage() {
           </TabsContent>
 
           <TabsContent
-</> value="search"><>
+</>
+value="search"><>
 
             <PropertySearch />
           </TabsContent>
 
           <TabsContent
-</> value="agent"><>
+</>
+value="agent"><>
 
             <PropertyAgent />
           </TabsContent>
 
           <TabsContent
-</> value="geometry"><>
+</>
+value="geometry"><>
 
             <SacredGeometry />
           </TabsContent>
 
           <TabsContent
-</> value="market">
+</>
+value="market">
             <MarketAnalysis />
           </TabsContent>
 

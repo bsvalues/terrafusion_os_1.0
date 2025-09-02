@@ -313,7 +313,8 @@ export default function ProjectProgressPage() {
 
         <h1 className="text-3xl font-bold tracking-tight">Project Progress Tracker</h1>
         <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
           Track the development progress of the BentonGeoPro GIS Workflow Solution.
         </p>
       </div>

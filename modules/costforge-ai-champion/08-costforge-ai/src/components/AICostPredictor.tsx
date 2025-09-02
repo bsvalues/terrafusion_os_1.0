@@ -182,6 +182,7 @@ export default function AICostPredictor() {
           AI Cost Predictor
         </CardTitle>
         <CardDescription
+</>
 </>>
           Leverage AI to predict building costs based on advanced analysis
         </CardDescription>
@@ -199,7 +200,8 @@ export default function AICostPredictor() {
 
                     <FormLabel>Building Type</FormLabel>
                     <Select
-</> 
+</>
+
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
@@ -221,7 +223,8 @@ export default function AICostPredictor() {
                       The primary classification of the building
                     </FormDescription>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -235,7 +238,8 @@ export default function AICostPredictor() {
 
                     <FormLabel>Region</FormLabel>
                     <Select
-</> 
+</>
+
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
@@ -257,7 +261,8 @@ export default function AICostPredictor() {
                       The geographic region of the building
                     </FormDescription>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -271,6 +276,7 @@ export default function AICostPredictor() {
 
                     <FormLabel>Square Footage</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input 
@@ -280,6 +286,7 @@ export default function AICostPredictor() {
                       />
                     </FormControl>
                     <FormDescription
+</>
 </>>
                       Total area in square feet
                     </FormDescription>
@@ -297,6 +304,7 @@ export default function AICostPredictor() {
 
                     <FormLabel>Year Built</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Input 
@@ -306,6 +314,7 @@ export default function AICostPredictor() {
                       />
                     </FormControl>
                     <FormDescription
+</>
 </>>
                       Year the building was constructed
                     </FormDescription>
@@ -323,7 +332,8 @@ export default function AICostPredictor() {
 
                     <FormLabel>Building Condition</FormLabel>
                     <Select
-</> 
+</>
+
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
@@ -345,7 +355,8 @@ export default function AICostPredictor() {
                       Current condition of the building
                     </FormDescription>
                     <FormMessage
-</> />
+</>
+/>
                   </FormItem>
                 )}
               />
@@ -359,6 +370,7 @@ export default function AICostPredictor() {
 
                     <FormLabel>Complexity Factor: {field.value || 1}</FormLabel>
                     <FormControl
+</>
 </>><>
 
                       <Slider
@@ -370,6 +382,7 @@ export default function AICostPredictor() {
                       />
                     </FormControl>
                     <FormDescription
+</>
 </>>
                       Building complexity from simple (0.5) to complex (2.0)
                     </FormDescription>
@@ -390,21 +403,22 @@ export default function AICostPredictor() {
 
                     <div className="font-semibold">Estimated Base Cost:</div>
                     <div
+</>
 </>>${(predictionResult.totalCost / (predictionResult.breakdown.materials + predictionResult.breakdown.labor + predictionResult.breakdown.permits + predictionResult.breakdown.overhead))?.toFixed(2)}</div><>
 
-                    
                     <div className="font-semibold">Region Factor:</div>
                     <div
+</>
 </>>{predictionResult.factors.regionMultiplier}</div><>
 
-                    
                     <div className="font-semibold">Complexity Factor:</div>
                     <div
+</>
 </>>{predictionResult.factors.complexityMultiplier}</div><>
 
-                    
                     <div className="font-semibold">Cost per Square Foot:</div>
                     <div
+</>
 </>>${predictionResult.costPerSqFt?.toFixed(2)}</div>
                     
                     <div className="col-span-2 mt-2 pt-2 border-t">
@@ -412,7 +426,8 @@ export default function AICostPredictor() {
 
                         <span className="text-xl font-bold">Total Estimated Cost:</span>
                         <span
-</> className="text-xl font-bold text-primary">
+</>
+className="text-xl font-bold text-primary">
                           ${predictionResult.totalCost?.toLocaleString()}
                         </span>
                       </div>
@@ -423,7 +438,8 @@ export default function AICostPredictor() {
 
                         <h4 className="font-semibold mb-1">AI Recommendations:</h4>
                         <ul
-</> className="text-sm space-y-1">
+</>
+className="text-sm space-y-1">
                           {predictionResult.recommendations.slice(0, 2).map((rec /* , index */) => (
                             <li key={index}>• {rec}</li>
                           ))}
@@ -442,7 +458,8 @@ export default function AICostPredictor() {
 
                 <AlertTitle className="text-amber-700">Data Quality Warnings</AlertTitle>
                 <AlertDescription
-</> className="text-amber-700">
+</>
+className="text-amber-700">
                   <ul className="list-disc pl-5 space-y-1 mt-2">
                     {dataQualityWarnings.map((warning /* , index */) => (
                       <li key={index}>{warning}</li>
@@ -458,7 +475,8 @@ export default function AICostPredictor() {
 
                 <span className="font-medium">Prediction Confidence:</span>
                 <div
-</> className="flex items-center gap-1">
+</>
+className="flex items-center gap-1">
                   {predictionResult.confidence >= 0.8 ? (
                     <CheckCircle className="h-4 w-4 text-green-500" />
                   ) : predictionResult.confidence >= 0.6 ? (
@@ -486,27 +504,20 @@ export default function AICostPredictor() {
                   disabled={isExporting || !predictionResult}
                 >
                   {isExporting ? (
-                    <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Exporting...
-                    </>
                   ) : (
-                    <>
                       <FileDown className="mr-2 h-4 w-4" />
                       Export as PDF
-                    </>
                   )}
                 </Button>
               )}
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
-                  <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Analyzing...
-                  </>
                 ) : (
-                  <>Predict Cost</>
-                )}
+                  <>Predict Cost<div )}
               </Button>
             </div>
           </form>

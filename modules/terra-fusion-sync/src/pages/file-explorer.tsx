@@ -200,7 +200,8 @@ export default function FileExplorer() {
 
           <h3 className="text-lg font-semibold">Error loading files</h3>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             There was a problem loading your files. Please try again.
           </p>
         </div>
@@ -214,7 +215,8 @@ export default function FileExplorer() {
 
           <h3 className="text-lg font-semibold">No files found</h3>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             {(searchQuery || Object.keys(filters).length > 0) 
               ? "No files match your search criteria" 
               : "Upload files to get started"}
@@ -251,7 +253,8 @@ export default function FileExplorer() {
 
           <h3 className="text-lg font-semibold">Error loading files</h3>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             There was a problem loading your files. Please try again.
           </p>
         </div>
@@ -265,7 +268,8 @@ export default function FileExplorer() {
 
           <h3 className="text-lg font-semibold">No files found</h3>
           <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
             {(searchQuery || Object.keys(filters).length > 0) 
               ? "No files match your search criteria" 
               : "Upload files to get started"}
@@ -280,11 +284,13 @@ export default function FileExplorer() {
 
           <div className="col-span-5">Name</div>
           <div
-</> className="col-span-2">Type</div><>
+</>
+className="col-span-2">Type</div><>
 
           <div className="col-span-2">Size</div>
           <div
-</> className="col-span-2">Date</div>
+</>
+className="col-span-2">Date</div>
           <div className="col-span-1 text-right">Actions</div>
         </div>
         <div className="divide-y">
@@ -312,7 +318,8 @@ export default function FileExplorer() {
                 {formatBytes(file.size)}
               </div>
               <div
-</> className="col-span-2 text-muted-foreground text-sm">
+</>
+className="col-span-2 text-muted-foreground text-sm">
                 {file.createdAt ? new Date(file.createdAt).toLocaleDateString() : 'N/A'}
               </div>
               <div className="col-span-1 text-right">
@@ -343,7 +350,8 @@ export default function FileExplorer() {
         <h1 className="text-3xl font-bold">File Explorer</h1>
         
         <div
-</> className="flex items-center gap-4">
+</>
+className="flex items-center gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" /><>
 
@@ -356,15 +364,14 @@ export default function FileExplorer() {
             />
           </div>
           <Button
-</> 
+</>
+
             onClick={handleSearch} 
             disabled={searchMutation.isPending}
           >
             {searchMutation.isPending ? (
-              <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Searching...
-              </>
             ) : "Search"}
           </Button>
         </div>
@@ -376,7 +383,8 @@ export default function FileExplorer() {
       </div>
       
       <div
-</> className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+</>
+className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
@@ -404,19 +412,23 @@ export default function FileExplorer() {
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent
+</>
 </>><>
 
               <SelectItem value="newest">Newest First</SelectItem>
               <SelectItem
-</> value="oldest">Oldest First</SelectItem><>
+</>
+value="oldest">Oldest First</SelectItem><>
 
               <SelectItem value="name_asc">Name (A-Z)</SelectItem>
               <SelectItem
-</> value="name_desc">Name (Z-A)</SelectItem><>
+</>
+value="name_desc">Name (Z-A)</SelectItem><>
 
               <SelectItem value="size_asc">Size (Smallest)</SelectItem>
               <SelectItem
-</> value="size_desc">Size (Largest)</SelectItem>
+</>
+value="size_desc">Size (Largest)</SelectItem>
             </SelectContent>
           </Select>
           
@@ -431,7 +443,8 @@ export default function FileExplorer() {
                 <Grid className="h-4 w-4" />
               </TabsTrigger>
               <TabsTrigger
-</> 
+</>
+
                 value="list" 
                 onClick={() => setViewMode("list")}
                 className="w-10 h-10 p-0"

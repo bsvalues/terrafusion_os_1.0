@@ -18,7 +18,8 @@ export function MapCollaborationStarterPage() {
 
         <h1 className="text-2xl font-bold">Map Collaboration Starter</h1>
         <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
           Start or join a collaborative map session with other users
         </p>
       </div>

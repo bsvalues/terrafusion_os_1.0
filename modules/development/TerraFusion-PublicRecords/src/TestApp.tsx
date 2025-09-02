@@ -19,6 +19,7 @@ const TestApp: React.FC = () => {
 
         <h1>✅ React App is Working!</h1>
         <p
+</>
 </>>Terrafusion Public Records - Test Mode</p>
       </div>
 
@@ -31,21 +32,24 @@ const TestApp: React.FC = () => {
 
         <h2>System Status</h2>
         <ul
+</>
 </>><>
 
           <li>✅ React: Working</li>
                             <li
+</>
 </>>✅ TypeScript: Compiled</li><>
 
           <li>✅ Vite: Running on port 3500</li>
                             <li
+</>
 </>>✅ Dev Server: Active</li>
         </ul><>
 
-
         <h3>Quick Links:</h3>
         <div
-</> style={{ display: 'flex', gap: '10px', marginTop: '20px' }}><>
+</>
+style={{ display: 'flex', gap: '10px', marginTop: '20px' }}><>
 
           <button 
             onClick={() => window.location.href = '/'} 
@@ -61,7 +65,8 @@ const TestApp: React.FC = () => {
             Try Main App
           </button>
           <button
-</> 
+</>
+
             onClick={() => localStorage.clear()} 
             style={{
               padding: '10px 20px',
@@ -76,10 +81,10 @@ const TestApp: React.FC = () => {
           </button>
         </div><>
 
-
         <h3>Local Storage Status:</h3>
         <pre
-</> style={{
+</>
+style={{
           background: '#f3f4f6',
           padding: '10px',
           borderRadius: '6px',

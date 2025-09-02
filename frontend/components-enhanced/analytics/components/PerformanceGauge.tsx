@@ -55,7 +55,8 @@ export const PerformanceGauge: React.FC<PerformanceGaugeProps> = ({
         {title}
       </Typography>
       <Box
-</> sx={{ position: 'relative', height: 120 }}>
+</>
+sx={{ position: 'relative', height: 120 }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -88,7 +89,8 @@ export const PerformanceGauge: React.FC<PerformanceGaugeProps> = ({
             {value}{unit}
           </Typography>
           <Typography
-</> variant="caption" color="text.secondary">
+</>
+variant="caption" color="text.secondary">
             of {max}{unit}
           </Typography>
         </Box>

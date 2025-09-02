@@ -89,7 +89,8 @@ export function RecentActivity() {
             Recent Activity
           </CardTitle>
           <Button
-</> variant="ghost" size="sm" className="text-tf-primary hover:bg-tf-primary/10">
+</>
+variant="ghost" size="sm" className="text-tf-primary hover:bg-tf-primary/10">
             View All
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
@@ -114,6 +115,7 @@ export function RecentActivity() {
                 <p className="text-sm font-medium truncate">{activity.user}</p>
                 <Badge
 </>
+
                   variant="secondary"
                   className={`text-xs bg-${getStatusColor(activity.status)}/10 text-${getStatusColor(activity.status)} border-${getStatusColor(activity.status)}/20`}
                 >

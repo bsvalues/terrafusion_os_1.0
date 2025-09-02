@@ -50,7 +50,8 @@ export default function CollaborativeMapDemoPage() {
 
         <h1 className="text-3xl font-bold mb-2">Collaborative Map</h1>
         <p
-</> className="text-muted-foreground">
+</>
+className="text-muted-foreground">
           Real-time collaborative mapping for Benton County Assessor's Office
         </p>
       </header>
@@ -61,7 +62,8 @@ export default function CollaborativeMapDemoPage() {
 
           <div className="font-medium">Missing Mapbox Token</div>
           <div
-</> className="text-sm mt-1">
+</>
+className="text-sm mt-1">
             The Mapbox access token is not available. Please ensure the MAPBOX_ACCESS_TOKEN environment variable is set.
           </div>
         </Alert>
@@ -73,6 +75,7 @@ export default function CollaborativeMapDemoPage() {
 
             <CardTitle>Join Collaborative Session</CardTitle>
             <CardDescription
+</>
 </>>
               Enter your details to join a collaborative mapping session
             </CardDescription>
@@ -84,6 +87,7 @@ export default function CollaborativeMapDemoPage() {
                 <Label htmlFor="username">Your Name</Label>
                 <Input
 </>
+
                   id="username"
                   placeholder="Enter your name"
                   value={username}
@@ -95,6 +99,7 @@ export default function CollaborativeMapDemoPage() {
                 <Label htmlFor="roomId">Room ID</Label>
                 <Input
 </>
+
                   id="roomId"
                   placeholder="Enter room ID"
                   value={roomId}
@@ -121,7 +126,8 @@ export default function CollaborativeMapDemoPage() {
 
               <h2 className="text-xl font-semibold">Collaborative Session: {roomId}</h2>
               <p
-</> className="text-sm text-muted-foreground">You joined as: {username}</p>
+</>
+className="text-sm text-muted-foreground">You joined as: {username}</p>
             </div>
             <Button variant="outline" onClick={handleLeave}>
               Leave Session
@@ -133,15 +139,18 @@ export default function CollaborativeMapDemoPage() {
 
             <div className="font-medium">Collaboration Features</div>
             <div
-</> className="text-sm mt-1">
+</>
+className="text-sm mt-1">
               <ul className="list-disc list-inside mt-2"><>
 
                 <li>See other users' cursors in real-time</li>
                             <li
+</>
 </>>Draw and annotate on the map collaboratively</li><>
 
                 <li>Changes are synchronized with all participants</li>
                             <li
+</>
 </>>Use the tools on the left to switch between modes</li>
               </ul>
             </div>
@@ -161,7 +170,8 @@ export default function CollaborativeMapDemoPage() {
           </div>
           
           <div
-</> className="grid grid-cols-1 md:grid-cols-3 gap-4">
+</>
+className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base">Available Tools</CardTitle>
@@ -174,13 +184,15 @@ export default function CollaborativeMapDemoPage() {
                     Pan &amp; Zoom
                   </li>
                   <li
-</> className="flex items-center"><>
+</>
+className="flex items-center"><>
 
                     <FileText className="h-4 w-4 mr-2 text-primary" />
                     Measure Distance
                   </li>
                   <li
-</> className="flex items-center">
+</>
+className="flex items-center">
                     <Users className="h-4 w-4 mr-2 text-primary" />
                     See Collaborators
                   </li>

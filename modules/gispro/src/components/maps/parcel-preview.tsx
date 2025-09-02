@@ -32,7 +32,8 @@ export function ParcelPreview({ parcelIds, mapLayers = [] }: ParcelPreviewProps)
 
                 <p>No parcels to display</p>
                 <p
-</> className="text-xs mt-1">Generate parcel IDs to see a preview</p>
+</>
+className="text-xs mt-1">Generate parcel IDs to see a preview</p>
               </div>
             </div>
           )}
@@ -43,7 +44,8 @@ export function ParcelPreview({ parcelIds, mapLayers = [] }: ParcelPreviewProps)
 
             <h3 className="text-sm font-medium mb-2">Selected Parcel</h3>
             <div
-</> className="grid grid-cols-2 gap-2 text-sm">
+</>
+className="grid grid-cols-2 gap-2 text-sm">
               <div>
                 <span className="text-neutral-500">ID:</span> <span className="font-mono">{parcelId}</span>
               </div>

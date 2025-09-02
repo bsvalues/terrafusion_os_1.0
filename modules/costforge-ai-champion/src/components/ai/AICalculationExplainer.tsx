@@ -150,8 +150,10 @@ export default function AICalculationExplainer() {
         <CardContent>
           <Alert variant="destructive">
 <>
+
             <AlertTitle>API Key Missing</AlertTitle>
             <AlertDescription
+</>
 </>>
               OpenAI API key is not configured. Please contact your administrator to set up the API key for AI-powered explanations.
             </AlertDescription>
@@ -184,9 +186,11 @@ export default function AICalculationExplainer() {
         <div className="space-y-4">
           <div className="space-y-2">
 <>
+
             <Label htmlFor="calculation-data">Calculation Data (JSON Format)</Label>
             <Textarea
 </>
+
               id="calculation-data"
               placeholder={`Enter your calculation data in JSON format, for example:
 {
@@ -220,19 +224,21 @@ export default function AICalculationExplainer() {
               className="flex items-center gap-2"
             >
               {isExplaining ? (
-                <>
+
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Generating Explanation...
-                </>
+
               ) : (
-                <>
+<>
+
                   <Zap className="h-4 w-4" />
                   Explain Calculation
-                </>
+
               )}
             </Button>
             
-            <Button variant="outline" onClick={handleClear}>
+            <Button
+</> variant="outline" onClick={handleClear}>
               Clear
             </Button>
           </div>
@@ -246,9 +252,11 @@ export default function AICalculationExplainer() {
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
 <>
+
                 <h3 className="text-lg font-semibold">AI Explanation Results</h3>
                 <Badge
-</> variant="outline">
+</>
+variant="outline">
                   Accuracy: {Math.round(explanationResult.accuracy_score * 100)}%
                 </Badge>
               </div>
@@ -256,9 +264,11 @@ export default function AICalculationExplainer() {
               <Alert>
                 <Info className="h-4 w-4" />
 <>
+
                 <AlertTitle>Overall Explanation</AlertTitle>
                 <AlertDescription
-</> className="mt-2">
+</>
+className="mt-2">
                   {explanationResult.explanation}
                 </AlertDescription>
               </Alert>
@@ -274,13 +284,17 @@ export default function AICalculationExplainer() {
                         <div key={index} className="space-y-2">
                           <div className="flex justify-between items-start">
 <>
+
                             <span className="font-medium text-sm">{item.category}</span>
                             <div
-</> className="text-right">
+</>
+className="text-right">
 <>
+
                               <div className="font-semibold">${item.amount.toLocaleString()}</div>
                               <Badge
-</> variant="outline" className="text-xs">
+</>
+variant="outline" className="text-xs">
                                 {Math.round(item.confidence * 100)}% confidence
                               </Badge>
                             </div>
@@ -315,8 +329,10 @@ export default function AICalculationExplainer() {
               <Card>
                 <CardHeader className="pb-3">
 <>
+
                   <CardTitle className="text-base">Key Assumptions</CardTitle>
                   <CardDescription
+</>
 </>>
                     These assumptions were made in the calculation analysis
                   </CardDescription>

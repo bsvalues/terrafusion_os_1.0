@@ -87,14 +87,16 @@ function App() {
           <Icon size={24} />
         </div>
         <span
-</> className="metric-title">{title}</span>
+</>
+className="metric-title">{title}</span>
       </div><>
 
       <div className="metric-value">
         {prefix}{typeof value === 'number' ? value.toLocaleString() : value}{suffix}
       </div>
       <div
-</> className={`metric-change ${change >= 0 ? 'positive' : 'negative'}`}>
+</>
+className={`metric-change ${change >= 0 ? 'positive' : 'negative'}`}>
         <TrendingUp size={16} />
         {change >= 0 ? '+' : ''}{change.toFixed(1)}% from last period
       </div>
@@ -135,13 +137,15 @@ function App() {
       </div>
       
       <div
-</> className="charts-section">
+</>
+className="charts-section">
         <div className="chart-container">
           <div className="chart-header"><>
 
             <h3>Revenue Trend</h3>
             <div
-</> className="chart-controls">
+</>
+className="chart-controls">
               <select 
                 value={dateRange} 
                 onChange={(e) => setDateRange(e.target.value)}
@@ -150,11 +154,13 @@ function App() {
 
                 <option value="7d">Last 7 days</option>
                 <option
-</> value="30d">Last 30 days</option><>
+</>
+value="30d">Last 30 days</option><>
 
                 <option value="90d">Last 90 days</option>
                 <option
-</> value="1y">Last year</option>
+</>
+value="1y">Last year</option>
               </select>
             </div>
           </div>
@@ -163,7 +169,8 @@ function App() {
 
             <p>Revenue Analytics Chart</p>
             <span
-</> className="chart-subtitle">Dynamic visualization based on selected time period</span>
+</>
+className="chart-subtitle">Dynamic visualization based on selected time period</span>
           </div>
         </div>
 
@@ -176,7 +183,8 @@ function App() {
 
             <p>User Segmentation</p>
             <span
-</> className="chart-subtitle">Geographic and demographic breakdown</span>
+</>
+className="chart-subtitle">Geographic and demographic breakdown</span>
           </div>
         </div>
       </div>
@@ -185,14 +193,17 @@ function App() {
 
         <h3>Key Insights</h3>
         <div
-</> className="insight-item"><>
+</>
+className="insight-item"><>
 
           <div className="insight-indicator positive"></div>
           <div
-</> className="insight-content"><>
+</>
+className="insight-content"><>
 
             <h4>Revenue Growth Acceleration</h4>
             <p
+</>
 </>>Revenue increased by 27.6% compared to the previous period, showing strong market traction.</p>
           </div>
         </div>
@@ -200,10 +211,12 @@ function App() {
 
           <div className="insight-indicator positive"></div>
           <div
-</> className="insight-content"><>
+</>
+className="insight-content"><>
 
             <h4>User Acquisition Success</h4>
             <p
+</>
 </>>25.9% increase in active users indicates effective marketing campaigns.</p>
           </div>
         </div>
@@ -211,10 +224,12 @@ function App() {
 
           <div className="insight-indicator warning"></div>
           <div
-</> className="insight-content"><>
+</>
+className="insight-content"><>
 
             <h4>Conversion Optimization Opportunity</h4>
             <p
+</>
 </>>While conversion rates improved, there's still room for optimization in the user funnel.</p>
           </div>
         </div>
@@ -228,20 +243,23 @@ function App() {
 
         <h3>Analytics Reports</h3>
         <div
-</> className="toolbar-actions">
+</>
+className="toolbar-actions">
           <button className="action-btn"><>
 
             <Filter size={16} />
             Filters
           </button>
           <button
-</> className="action-btn" onClick={() => exportReport('pdf')}><>
+</>
+className="action-btn" onClick={() => exportReport('pdf')}><>
 
             <Download size={16} />
             Export PDF
           </button>
           <button
-</> className="action-btn" onClick={() => exportReport('excel')}>
+</>
+className="action-btn" onClick={() => exportReport('excel')}>
             <Download size={16} />
             Export Excel
           </button>
@@ -253,6 +271,7 @@ function App() {
 
           <h4>Performance Summary</h4>
           <p
+</>
 </>>Comprehensive overview of all key metrics and KPIs</p>
           <button className="generate-btn">Generate Report</button>
         </div>
@@ -260,6 +279,7 @@ function App() {
 
           <h4>User Behavior Analysis</h4>
           <p
+</>
 </>>Detailed analysis of user interactions and engagement patterns</p>
           <button className="generate-btn">Generate Report</button>
         </div>
@@ -267,6 +287,7 @@ function App() {
 
           <h4>Revenue Attribution</h4>
           <p
+</>
 </>>Revenue breakdown by channels, campaigns, and user segments</p>
           <button className="generate-btn">Generate Report</button>
         </div>
@@ -274,6 +295,7 @@ function App() {
 
           <h4>Conversion Funnel</h4>
           <p
+</>
 </>>Step-by-step analysis of user conversion journey</p>
           <button className="generate-btn">Generate Report</button>
         </div>
@@ -286,12 +308,14 @@ function App() {
 
       <h3>Analytics Configuration</h3>
       <div
-</> className="settings-grid">
+</>
+className="settings-grid">
         <div className="setting-group"><>
 
           <h4>Data Sources</h4>
           <div
-</> className="setting-item">
+</>
+className="setting-item">
             <label>
               <input type="checkbox" checked />
               Google Analytics
@@ -315,15 +339,18 @@ function App() {
 
           <h4>Refresh Settings</h4>
           <div
-</> className="setting-item"><>
+</>
+className="setting-item"><>
 
             <label>Auto-refresh interval:</label>
             <select
-</> className="setting-select"><>
+</>
+className="setting-select"><>
 
               <option value="5">5 minutes</option>
               <option
-</> value="15">15 minutes</option>
+</>
+value="15">15 minutes</option>
               <option value="60">1 hour</option>
             </select>
           </div>
@@ -333,7 +360,8 @@ function App() {
 
           <h4>Notifications</h4>
           <div
-</> className="setting-item">
+</>
+className="setting-item">
             <label>
               <input type="checkbox" checked />
               Alert on significant changes
@@ -358,7 +386,8 @@ function App() {
 
           <h1>TerraInsight</h1>
           <span
-</> className="app-subtitle">Advanced Analytics Dashboard</span>
+</>
+className="app-subtitle">Advanced Analytics Dashboard</span>
         </div>
         <div className="header-right">
           <button className="header-btn" onClick={loadAnalyticsData} disabled={isLoading}><>
@@ -366,12 +395,14 @@ function App() {
             <Refresh size={20} className={isLoading ? 'spinning' : ''} />
           </button>
           <button
-</> className="header-btn"><>
+</>
+className="header-btn"><>
 
             <Calendar size={20} />
           </button>
           <button
-</> className="header-btn">
+</>
+className="header-btn">
             <Settings size={20} />
           </button>
         </div>
@@ -388,7 +419,8 @@ function App() {
             Overview
           </button>
           <button
-</> 
+</>
+
             className={`nav-btn ${activeView === 'analytics' ? 'active' : ''}`}
             onClick={() => setActiveView('analytics')}
           ><>
@@ -397,7 +429,8 @@ function App() {
             Analytics
           </button>
           <button
-</> 
+</>
+
             className={`nav-btn ${activeView === 'reports' ? 'active' : ''}`}
             onClick={() => setActiveView('reports')}
           ><>
@@ -406,7 +439,8 @@ function App() {
             Reports
           </button>
           <button
-</> 
+</>
+
             className={`nav-btn ${activeView === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveView('settings')}
           >

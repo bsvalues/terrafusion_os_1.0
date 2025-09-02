@@ -68,7 +68,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             {this.state.error?.message || 'An unexpected error occurred'}
           </p>
           <div
-</> className="flex gap-2"><>
+</>
+className="flex gap-2"><>
 
             <Button 
               variant="destructive" 
@@ -78,7 +79,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               Try again
             </Button>
             <Button
-</> 
+</>
+
               variant="outline" 
               size="sm" 
               onClick={() => window.location.reload()}

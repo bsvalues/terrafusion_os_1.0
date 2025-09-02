@@ -255,12 +255,14 @@ export default function AuthPage() {
 
                 <h2 className="text-xl font-semibold text-primary-600">Benton GIS Workflow Assistant</h2>
                 <p
-</> className="text-xs text-neutral-500">Assessor's Office</p>
+</>
+className="text-xs text-neutral-500">Assessor's Office</p>
               </div>
             </div><>
 
             <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
             <CardDescription
+</>
 </>>
               Sign in to access the Benton County GIS Workflow Assistant
             </CardDescription>
@@ -271,7 +273,8 @@ export default function AuthPage() {
 
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger
-</> value="register">Register</TabsTrigger>
+</>
+value="register">Register</TabsTrigger>
               </TabsList>
               
               <TabsContent value="login">
@@ -285,12 +288,14 @@ export default function AuthPage() {
 
                           <FormLabel>Username</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input placeholder="Enter your username" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -302,12 +307,14 @@ export default function AuthPage() {
 
                           <FormLabel>Password</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input type="password" placeholder="Enter your password" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -316,17 +323,17 @@ export default function AuthPage() {
                       className="w-full" 
                       disabled={loginMutation.isPending}
                     >
-                      {loginMutation.isPending ? (
-                        <>
+                      {loginMutation.isPending ? (<>
+
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
                           Signing In
-                        </>
                       ) : (
                         "Sign In"
                       )}
                     </Button>
                     
-                    <div className="pt-2 text-center">
+                    <div
+</> className="pt-2 text-center">
                       <Button 
                         type="button"
                         variant="ghost"
@@ -335,10 +342,8 @@ export default function AuthPage() {
                         className="text-xs text-neutral-500 hover:text-primary-500"
                       >
                         {devLoginMutation.isPending ? (
-                          <>
                             <Loader2 className="mr-2 h-3 w-3 animate-spin" /> 
                             Auto Login
-                          </>
                         ) : (
                           "Auto Login (Dev Only)"
                         )}
@@ -359,12 +364,14 @@ export default function AuthPage() {
 
                           <FormLabel>Username</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input placeholder="Create a username" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -376,12 +383,14 @@ export default function AuthPage() {
 
                           <FormLabel>Password</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input type="password" placeholder="Create a password" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -393,12 +402,14 @@ export default function AuthPage() {
 
                           <FormLabel>Full Name</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input placeholder="Enter your full name" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -410,12 +421,14 @@ export default function AuthPage() {
 
                           <FormLabel>Email</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input placeholder="Enter your email" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -427,12 +440,14 @@ export default function AuthPage() {
 
                           <FormLabel>Department</FormLabel>
                           <FormControl
+</>
 </>><>
 
                             <Input placeholder="Enter your department (optional)" {...field} />
                           </FormControl>
                           <FormMessage
-</> />
+</>
+/>
                         </FormItem>
                       )}
                     />
@@ -442,10 +457,8 @@ export default function AuthPage() {
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending ? (
-                        <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
                           Creating Account
-                        </>
                       ) : (
                         "Create Account"
                       )}
@@ -469,7 +482,8 @@ export default function AuthPage() {
 
           <h1 className="text-3xl font-bold mb-6">Streamline Your GIS Workflows</h1>
           <p
-</> className="mb-8">
+</>
+className="mb-8">
             The Benton GIS Workflow Assistant modernizes and simplifies cartography, 
             parcel management, and reporting processes for the Benton County Assessor's Office.
           </p>
@@ -481,11 +495,13 @@ export default function AuthPage() {
                 <MapPin className="h-5 w-5" />
               </div>
               <div
+</>
 </>><>
 
                 <h3 className="font-semibold">Advanced GIS Integration</h3>
                 <p
-</> className="text-sm opacity-80">Seamlessly integrates with ArcGIS Pro and QGIS via RESTful APIs.</p>
+</>
+className="text-sm opacity-80">Seamlessly integrates with ArcGIS Pro and QGIS via RESTful APIs.</p>
               </div>
             </div>
             
@@ -495,11 +511,13 @@ export default function AuthPage() {
                 <FileText className="h-5 w-5" />
               </div>
               <div
+</>
 </>><>
 
                 <h3 className="font-semibold">Interactive Workflows</h3>
                 <p
-</> className="text-sm opacity-80">Step-by-step guidance through complex assessor office procedures.</p>
+</>
+className="text-sm opacity-80">Step-by-step guidance through complex assessor office procedures.</p>
               </div>
             </div>
             
@@ -509,11 +527,13 @@ export default function AuthPage() {
                 <Shield className="h-5 w-5" />
               </div>
               <div
+</>
 </>><>
 
                 <h3 className="font-semibold">Compliance Focused</h3>
                 <p
-</> className="text-sm opacity-80">Ensures all operations adhere to Washington State requirements.</p>
+</>
+className="text-sm opacity-80">Ensures all operations adhere to Washington State requirements.</p>
               </div>
             </div>
             
@@ -523,11 +543,13 @@ export default function AuthPage() {
                 <Users className="h-5 w-5" />
               </div>
               <div
+</>
 </>><>
 
                 <h3 className="font-semibold">Collaborative Tools</h3>
                 <p
-</> className="text-sm opacity-80">Enables efficient teamwork among county assessor staff.</p>
+</>
+className="text-sm opacity-80">Enables efficient teamwork among county assessor staff.</p>
               </div>
             </div>
           </div>

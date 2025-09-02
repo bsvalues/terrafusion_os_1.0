@@ -213,13 +213,15 @@ function App() {
                   <Workflow className="w-6 h-6 text-white" />
                 </div>
                 <div
+</>
 </>><>
 
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                     TerraFlow
                   </h1>
                   <p
-</> className="text-sm text-gray-500 font-medium">Workflow Automation Engine</p>
+</>
+className="text-sm text-gray-500 font-medium">Workflow Automation Engine</p>
                 </div>
               </motion.div>
               
@@ -262,6 +264,7 @@ function App() {
                 </button>
                 <button
 </>
+
                   onClick={() => setViewMode('list')}
                   className={`p-2 rounded-md transition-all ${
                     viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'
@@ -325,7 +328,8 @@ function App() {
 
                 <div className="text-2xl font-bold text-gray-900">{workflows.length}</div>
                 <div
-</> className="text-sm text-gray-500 font-medium">Total Workflows</div>
+</>
+className="text-sm text-gray-500 font-medium">Total Workflows</div>
               </div>
               <div className="text-center"><>
 
@@ -333,7 +337,8 @@ function App() {
                   {workflows.filter(w => w.status === 'active').length}
                 </div>
                 <div
-</> className="text-sm text-gray-500 font-medium">Active</div>
+</>
+className="text-sm text-gray-500 font-medium">Active</div>
               </div>
               <div className="text-center"><>
 
@@ -341,7 +346,8 @@ function App() {
                   {workflows.filter(w => w.status === 'paused').length}
                 </div>
                 <div
-</> className="text-sm text-gray-500 font-medium">Paused</div>
+</>
+className="text-sm text-gray-500 font-medium">Paused</div>
               </div>
             </div>
           </div>
@@ -383,7 +389,8 @@ function App() {
 
                     <span className="text-gray-600 font-medium">Status</span>
                     <span
-</> className={`px-2 py-1 rounded-full text-xs font-medium ${
+</>
+className={`px-2 py-1 rounded-full text-xs font-medium ${
                       workflow.status === 'active' ? 'bg-green-100 text-green-700' :
                       workflow.status === 'paused' ? 'bg-yellow-100 text-yellow-700' :
                       'bg-gray-100 text-gray-700'
@@ -396,7 +403,8 @@ function App() {
 
                     <span className="text-gray-600 font-medium">Runs</span>
                     <span
-</> className="text-gray-900 font-semibold">{workflow.runCount}</span>
+</>
+className="text-gray-900 font-semibold">{workflow.runCount}</span>
                   </div>
                   
                   {workflow.lastRun && (
@@ -404,7 +412,8 @@ function App() {
 
                       <span className="text-gray-600 font-medium">Last Run</span>
                       <span
-</> className="text-gray-500 text-xs">
+</>
+className="text-gray-500 text-xs">
                         {new Date(workflow.lastRun).toLocaleDateString()}
                       </span>
                     </div>
@@ -453,7 +462,8 @@ function App() {
                 <Workflow className="w-12 h-12 text-blue-600" />
               </div>
               <h3
-</> className="text-xl font-semibold text-gray-900 mb-2">
+</>
+className="text-xl font-semibold text-gray-900 mb-2">
                 {searchTerm ? 'No workflows found' : 'No workflows yet'}
               </h3>
               <p className="text-gray-500 mb-6">

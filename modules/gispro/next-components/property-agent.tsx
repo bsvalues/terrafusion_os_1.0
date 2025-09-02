@@ -95,6 +95,7 @@ export function PropertyAgent() {
             AI Property Agent
           </CardTitle>
           <CardDescription
+</>
 </>>
             Advanced property valuation using machine learning and sacred geometry principles
           </CardDescription>
@@ -107,12 +108,14 @@ export function PropertyAgent() {
               <h3 className="font-medium">Property Details</h3>
 
               <div
-</> className="space-y-3">
+</>
+className="space-y-3">
                 <div><>
 
                   <Label htmlFor="address">Address</Label>
                   <Input
 </>
+
                     id="address"
                     value={propertyData.address}
                     onChange={(e) => setPropertyData({ ...propertyData, address: e.target.value })}
@@ -125,6 +128,7 @@ export function PropertyAgent() {
                     <Label htmlFor="size">Size (sq ft)</Label>
                     <Input
 </>
+
                       id="size"
                       type="number"
                       value={propertyData.size}
@@ -136,6 +140,7 @@ export function PropertyAgent() {
                     <Label htmlFor="yearBuilt">Year Built</Label>
                     <Input
 </>
+
                       id="yearBuilt"
                       type="number"
                       value={propertyData.yearBuilt}
@@ -150,6 +155,7 @@ export function PropertyAgent() {
                     <Label htmlFor="bedrooms">Bedrooms</Label>
                     <Input
 </>
+
                       id="bedrooms"
                       type="number"
                       value={propertyData.bedrooms}
@@ -161,6 +167,7 @@ export function PropertyAgent() {
                     <Label htmlFor="bathrooms">Bathrooms</Label>
                     <Input
 </>
+
                       id="bathrooms"
                       type="number"
                       value={propertyData.bathrooms}
@@ -174,6 +181,7 @@ export function PropertyAgent() {
                   <Label htmlFor="location">Location Type</Label>
                   <select
 </>
+
                     id="location"
                     className="w-full p-2 border rounded-md"
                     value={propertyData.location}
@@ -182,7 +190,8 @@ export function PropertyAgent() {
 
                     <option value="Urban">Urban</option>
                     <option
-</> value="Suburban">Suburban</option>
+</>
+value="Suburban">Suburban</option>
                     <option value="Rural">Rural</option>
                   </select>
                 </div>
@@ -212,14 +221,16 @@ export function PropertyAgent() {
 
                         <span className="text-sm text-gray-600">Estimated Value</span>
                         <DollarSign
-</> className="h-4 w-4 text-green-600" />
+</>
+className="h-4 w-4 text-green-600" />
                       </div><>
 
                       <div className="text-2xl font-bold text-green-600">
                         ${analysis.estimatedValue.toLocaleString()}
                       </div>
                       <div
-</> className="text-xs text-gray-500">{analysis.confidence}% confidence</div>
+</>
+className="text-xs text-gray-500">{analysis.confidence}% confidence</div>
                     </CardContent>
                   </Card>
 
@@ -263,7 +274,8 @@ export function PropertyAgent() {
 
                       <h4 className="font-medium mb-2">AI Recommendations</h4>
                       <ul
-</> className="space-y-1">
+</>
+className="space-y-1">
                         {analysis.recommendations.map((rec /* , index */) => (
                           <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
                             <span className="text-blue-600 mt-1">•</span>

@@ -189,7 +189,8 @@ export function MCPVisualizations() {
 
           <h2 className="text-2xl font-bold tracking-tight">MCP Visualizations</h2>
           <p
-</> className="text-muted-foreground">Real-time monitoring of Model Content Protocol agents</p>
+</>
+className="text-muted-foreground">Real-time monitoring of Model Content Protocol agents</p>
         </div>
         
         <Tabs defaultValue={selectedView} onValueChange={setSelectedView}>
@@ -200,7 +201,8 @@ export function MCPVisualizations() {
               Real-time
             </TabsTrigger>
             <TabsTrigger
-</> value="historical">
+</>
+value="historical">
               <BarChart2 className="mr-2 h-4 w-4" />
               Historical
             </TabsTrigger>
@@ -252,7 +254,6 @@ export function MCPVisualizations() {
             fetchNewData={fetchNewMemoryUsageData}
           /><>
 
-          
           <RealTimeChart
             title="Active Tasks"
             description="Number of tasks being processed by agents"
@@ -269,7 +270,8 @@ export function MCPVisualizations() {
         </div>
         
         <div
-</> className="grid grid-cols-1 md:grid-cols-3 gap-6">
+</>
+className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center"><>
@@ -278,6 +280,7 @@ export function MCPVisualizations() {
                 Agent Status
               </CardTitle>
               <CardDescription
+</>
 </>>Health status of all MCP agents</CardDescription>
             </CardHeader>
             <CardContent>
@@ -325,6 +328,7 @@ export function MCPVisualizations() {
                 Task Completion
               </CardTitle>
               <CardDescription
+</>
 </>>Task completion metrics</CardDescription>
             </CardHeader>
             <CardContent>
@@ -333,28 +337,32 @@ export function MCPVisualizations() {
 
                   <span className="text-sm">Completed Today</span>
                   <span
-</> className="font-medium">127</span>
+</>
+className="font-medium">127</span>
                 </div>
                 
                 <div className="flex items-center justify-between"><>
 
                   <span className="text-sm">Failed</span>
                   <span
-</> className="font-medium">12</span>
+</>
+className="font-medium">12</span>
                 </div>
                 
                 <div className="flex items-center justify-between"><>
 
                   <span className="text-sm">Success Rate</span>
                   <span
-</> className="font-medium">91.3%</span>
+</>
+className="font-medium">91.3%</span>
                 </div>
                 
                 <div className="flex items-center justify-between"><>
 
                   <span className="text-sm">Avg. Completion Time</span>
                   <span
-</> className="font-medium">1.3s</span>
+</>
+className="font-medium">1.3s</span>
                 </div>
               </div>
             </CardContent>
@@ -368,6 +376,7 @@ export function MCPVisualizations() {
                 System Performance
               </CardTitle>
               <CardDescription
+</>
 </>>Overall system metrics</CardDescription>
             </CardHeader>
             <CardContent>
@@ -376,28 +385,32 @@ export function MCPVisualizations() {
 
                   <span className="text-sm">API Requests/min</span>
                   <span
-</> className="font-medium">347</span>
+</>
+className="font-medium">347</span>
                 </div>
                 
                 <div className="flex items-center justify-between"><>
 
                   <span className="text-sm">Avg. Response Time</span>
                   <span
-</> className="font-medium">0.8s</span>
+</>
+className="font-medium">0.8s</span>
                 </div>
                 
                 <div className="flex items-center justify-between"><>
 
                   <span className="text-sm">Error Rate</span>
                   <span
-</> className="font-medium">2.4%</span>
+</>
+className="font-medium">2.4%</span>
                 </div>
                 
                 <div className="flex items-center justify-between"><>
 
                   <span className="text-sm">Uptime</span>
                   <span
-</> className="font-medium">99.95%</span>
+</>
+className="font-medium">99.95%</span>
                 </div>
               </div>
             </CardContent>
@@ -411,6 +424,7 @@ export function MCPVisualizations() {
 
             <CardTitle>Historical Data</CardTitle>
             <CardDescription
+</>
 </>>
               Long-term trend analysis and historical performance metrics
             </CardDescription>

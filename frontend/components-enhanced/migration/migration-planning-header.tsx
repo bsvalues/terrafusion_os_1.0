@@ -9,7 +9,8 @@ export function MigrationPlanningHeader() {
 
             <h1 className="text-3xl font-bold text-white mb-2">Migration Planning Tools</h1>
             <p
-</> className="text-gray-300">Comprehensive county migration planning and execution</p>
+</>
+className="text-gray-300">Comprehensive county migration planning and execution</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-lg border border-accent/20">
