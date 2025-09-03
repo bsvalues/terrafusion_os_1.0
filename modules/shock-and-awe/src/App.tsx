@@ -45,7 +45,8 @@ import {
   AccountTree as AccountTreeIcon,
   CrystalBall as CrystalBallIcon,
   Settings as SettingsIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  AutoFixHigh as AutoFixHighIcon
 } from '@mui/icons-material';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -82,6 +83,9 @@ const NeuralNetworkTheater = lazy(() =>
 );
 const PredictiveFutureModeling = lazy(() => 
   import('./components/PredictiveFutureModeling')
+);
+const SelfEvolvingAgentConsole = lazy(() => 
+  import('./components/SelfEvolvingAgentConsole')
 );
 
 // Dark theme optimized for AI demonstrations
@@ -263,6 +267,16 @@ const demoModules: DemoModule[] = [
     category: 'PREDICTION',
     difficulty: 'EXPERT',
     estimatedTime: '20-30 min'
+  },
+  {
+    id: 'evolving',
+    name: 'Self-Evolving Agent Architecture',
+    description: 'Watch AI agents autonomously evolve beyond human limitations',
+    icon: <AutoFixHighIcon />,
+    component: SelfEvolvingAgentConsole,
+    category: 'AI',
+    difficulty: 'EXPERT',
+    estimatedTime: '15-25 min'
   }
 ];
 
