@@ -30,8 +30,7 @@ RUN dotnet publish TerraFusion.API/TerraFusion.API.csproj \
     -o /app/publish \
     --no-restore \
     --verbosity minimal \
-    /p:TreatWarningsAsErrors=false \
-    /p:IsTestProject=false
+    /p:TreatWarningsAsErrors=false
 
 # Stage 2: Production Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS production

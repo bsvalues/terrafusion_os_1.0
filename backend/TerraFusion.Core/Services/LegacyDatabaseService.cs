@@ -169,8 +169,7 @@ public class LegacyDatabaseService
     private string GetDefaultConnectionString(string countyName)
     {
         var safeCountyName = countyName.Replace(" ", "_").ToLower();
-        var databasePath = _configuration["LegacyDatabase:DatabasePath"] ?? "data/databases";
-        return $"Data Source={databasePath}/{safeCountyName}_legacy.db";
+        return $"Data Source=data/databases/{safeCountyName}_legacy.db";
     }
 
     /// <summary>

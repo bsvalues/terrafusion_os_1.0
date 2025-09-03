@@ -52,8 +52,7 @@ class TerraFusionAutoCorrector {
 # 🚨 AI AGENT CORRECTIVE GUIDANCE
 
 ## Detected Violations:
-${violations.map(v => `- ❌ ${v}`).join('
-')}
+${violations.map(v => `- ❌ ${v}`).join('\n')}
 
 ## Critical Facts to Remember:
 - TerraFusion is a COMPLETE GOVERNMENT OPERATING SYSTEM

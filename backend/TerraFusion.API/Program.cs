@@ -4,16 +4,12 @@ using TerraFusion.API.Services;
 using TerraFusion.API.Hubs;
 using TerraFusion.API.Security;
 using TerraFusion.API.Middleware;
-using TerraFusion.API.Configuration;
 using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Configure Azure Key Vault integration (Disabled for local deployment)
-// builder.Configuration.AddAzureKeyVaultConfiguration(builder.Configuration, builder.Environment);
 
 // Configure URLs - respect command line args, then environment, then default
 // Note: Command line args take precedence automatically through WebApplicationBuilder
@@ -34,9 +30,6 @@ builder.Services.AddSignalR();
 // Register authentication services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTerraFusionAuthentication(builder.Configuration);
-
-// Register secure configuration services
-builder.Services.AddSecureConfiguration();
 
 // Register core services
 builder.Services.AddScoped<IAuditLogger, AuditLogger>();

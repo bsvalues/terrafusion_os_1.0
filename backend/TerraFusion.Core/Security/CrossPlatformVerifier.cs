@@ -133,8 +133,7 @@ namespace TerraFusion.Core.Security
                     Provider = provider.Name,
                     IsValid = isValid,
                     ExecutionTime = executionTime,
-                    Success = true,
-                    Error = string.Empty
+                    Success = true
                 };
             }
             catch (Exception ex)
@@ -237,8 +236,7 @@ namespace TerraFusion.Core.Security
                     {
                         Provider = provider.Name,
                         IsHealthy = isHealthy,
-                        LastChecked = DateTime.UtcNow,
-                        Error = string.Empty
+                        LastChecked = DateTime.UtcNow
                     });
                 }
                 catch (Exception ex)
@@ -344,7 +342,7 @@ namespace TerraFusion.Core.Security
         public double ConsensusThreshold { get; set; } = 0.67; // 67% consensus required
         public double HealthThreshold { get; set; } = 0.5; // 50% providers must be healthy
         public bool NodeJsServiceEnabled { get; set; } = true;
-        public string NodeJsServiceUrl { get; set; } = string.Empty; // Should be configured via appsettings
+        public string NodeJsServiceUrl { get; set; } = "http://localhost:3000/crypto/verify";
         public bool OpenSslEnabled { get; set; } = false; // Disabled due to CLI limitations
         public TimeSpan VerificationTimeout { get; set; } = TimeSpan.FromSeconds(30);
     }

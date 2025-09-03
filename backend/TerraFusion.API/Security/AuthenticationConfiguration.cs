@@ -92,12 +92,7 @@ namespace TerraFusion.API.Security
 
         private static string GenerateDefaultKey()
         {
-            // Generate a cryptographically secure random key for development only
-            // WARNING: This should NEVER be used in production
-            using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
-            var keyBytes = new byte[32]; // 256-bit key
-            rng.GetBytes(keyBytes);
-            return Convert.ToBase64String(keyBytes);
+            return "TerraFusion-Default-Key-CHANGE-IN-PRODUCTION-2025-" + Guid.NewGuid().ToString().Substring(0, 8);
         }
     }
 
