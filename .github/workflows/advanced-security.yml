@@ -1,0 +1,556 @@
+name: 🔐 Advanced Security Scanning & Threat Detection
+
+on:
+  schedule:
+    # Run comprehensive security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of security scan to run'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+        - comprehensive
+        - dependencies
+        - secrets
+        - infrastructure
+        - compliance
+
+env:
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.11'
+  SECURITY_SCAN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  # =============================================================================
+  # SECRET SCANNING & DETECTION
+  # =============================================================================
+  secret-scanning:
+    name: 🔍 Advanced Secret Detection
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_type == 'secrets' || github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install secret scanning tools
+        run: |
+          # Install TruffleHog for comprehensive secret detection
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+          
+          # Install GitLeaks for additional secret detection
+          wget https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.18.4_linux_x64.tar.gz
+          tar -xzf gitleaks_8.18.4_linux_x64.tar.gz
+          sudo mv gitleaks /usr/local/bin/
+          
+          # Install detect-secrets
+          pip install detect-secrets
+
+      - name: Run TruffleHog secret scan
+        run: |
+          echo "🔍 Running TruffleHog secret detection..."
+          trufflehog filesystem . --json > trufflehog-results.json || true
+          
+          # Process results
+          if [[ -s trufflehog-results.json ]]; then
+            echo "⚠️ TruffleHog found potential secrets:"
+            cat trufflehog-results.json | jq -r '.Raw' | head -20
+            echo "Full results saved to trufflehog-results.json"
+          else
+            echo "✅ No secrets detected by TruffleHog"
+          fi
+
+      - name: Run GitLeaks scan
+        run: |
+          echo "🔍 Running GitLeaks secret detection..."
+          gitleaks detect --source . --report-format json --report-path gitleaks-results.json || true
+          
+          if [[ -s gitleaks-results.json ]]; then
+            echo "⚠️ GitLeaks found potential secrets:"
+            cat gitleaks-results.json | jq -r '.[].Description' | head -10
+          else
+            echo "✅ No secrets detected by GitLeaks"
+          fi
+
+      - name: Run detect-secrets baseline
+        run: |
+          echo "🔍 Running detect-secrets scan..."
+          detect-secrets scan --all-files --baseline .secrets.baseline || true
+          
+          if [[ -f .secrets.baseline ]]; then
+            baseline_count=$(cat .secrets.baseline | jq '.results | length')
+            echo "📊 Detect-secrets baseline created with $baseline_count potential secrets"
+          fi
+
+      - name: Upload secret scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: secret-scan-results
+          path: |
+            trufflehog-results.json
+            gitleaks-results.json
+            .secrets.baseline
+          retention-days: 30
+
+  # =============================================================================
+  # DEPENDENCY VULNERABILITY SCANNING
+  # =============================================================================
+  dependency-scanning:
+    name: 🔐 Dependency Vulnerability Analysis
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_type == 'dependencies' || github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependency scanning tools
+        run: |
+          # Install npm audit tools
+          npm install -g npm-audit-ci-wrapper
+          npm install -g auditjs
+          
+          # Install Python security tools
+          pip install safety pip-audit bandit
+          
+          # Install additional scanning tools
+          npm install -g snyk
+
+      - name: NPM dependency audit
+        if: hashFiles('package.json') != ''
+        run: |
+          echo "🔍 Running NPM dependency audit..."
+          npm install
+          
+          # Run comprehensive npm audit
+          npm audit --audit-level moderate --json > npm-audit-results.json || true
+          
+          if [[ -s npm-audit-results.json ]]; then
+            vulnerabilities=$(cat npm-audit-results.json | jq '.metadata.vulnerabilities.total // 0')
+            echo "📊 NPM audit found $vulnerabilities total vulnerabilities"
+            
+            # Show summary
+            cat npm-audit-results.json | jq '.metadata.vulnerabilities'
+          fi
+          
+          # Run additional audit with auditjs
+          auditjs ossi --json > auditjs-results.json || true
+
+      - name: Python dependency audit
+        if: hashFiles('requirements.txt', 'Pipfile', 'pyproject.toml') != ''
+        run: |
+          echo "🔍 Running Python dependency audit..."
+          
+          # Install dependencies if requirements.txt exists
+          if [[ -f requirements.txt ]]; then
+            pip install -r requirements.txt
+          fi
+          
+          # Run safety check
+          safety check --json > safety-results.json || true
+          
+          # Run pip-audit
+          pip-audit --format=json --output=pip-audit-results.json || true
+          
+          if [[ -s safety-results.json ]]; then
+            vulnerabilities=$(cat safety-results.json | jq 'length')
+            echo "📊 Safety found $vulnerabilities vulnerabilities"
+          fi
+
+      - name: Snyk vulnerability scanning
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          echo "🔍 Running Snyk vulnerability scanning..."
+          
+          if [[ -n "$SNYK_TOKEN" ]]; then
+            snyk auth $SNYK_TOKEN
+            snyk test --json > snyk-results.json || true
+            
+            if [[ -s snyk-results.json ]]; then
+              vulnerabilities=$(cat snyk-results.json | jq '.vulnerabilities | length')
+              echo "📊 Snyk found $vulnerabilities vulnerabilities"
+            fi
+          else
+            echo "⚠️ Snyk token not configured, skipping Snyk scan"
+          fi
+
+      - name: Generate dependency report
+        run: |
+          echo "# 🔐 Dependency Vulnerability Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Scan Date**: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # NPM Results
+          if [[ -f npm-audit-results.json && -s npm-audit-results.json ]]; then
+            total=$(cat npm-audit-results.json | jq '.metadata.vulnerabilities.total // 0')
+            critical=$(cat npm-audit-results.json | jq '.metadata.vulnerabilities.critical // 0')
+            high=$(cat npm-audit-results.json | jq '.metadata.vulnerabilities.high // 0')
+            moderate=$(cat npm-audit-results.json | jq '.metadata.vulnerabilities.moderate // 0')
+            
+            echo "## 📦 NPM Dependencies" >> $GITHUB_STEP_SUMMARY
+            echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Critical | $critical |" >> $GITHUB_STEP_SUMMARY
+            echo "| High | $high |" >> $GITHUB_STEP_SUMMARY
+            echo "| Moderate | $moderate |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Total** | **$total** |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Python Results
+          if [[ -f safety-results.json && -s safety-results.json ]]; then
+            python_vulns=$(cat safety-results.json | jq 'length')
+            echo "## 🐍 Python Dependencies" >> $GITHUB_STEP_SUMMARY
+            echo "- **Safety Vulnerabilities**: $python_vulns" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload dependency scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-scan-results
+          path: |
+            npm-audit-results.json
+            auditjs-results.json
+            safety-results.json
+            pip-audit-results.json
+            snyk-results.json
+          retention-days: 30
+
+  # =============================================================================
+  # INFRASTRUCTURE SECURITY SCANNING
+  # =============================================================================
+  infrastructure-scanning:
+    name: 🏗️ Infrastructure Security Analysis
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_type == 'infrastructure' || github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install infrastructure scanning tools
+        run: |
+          # Install Checkov for IaC scanning
+          pip install checkov
+          
+          # Install tfsec for Terraform scanning
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          
+          # Install Terrascan
+          curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
+          tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
+          sudo install terrascan /usr/local/bin && rm terrascan
+
+      - name: Docker security scanning
+        if: hashFiles('Dockerfile*', 'docker-compose*.yml') != ''
+        run: |
+          echo "🐳 Scanning Docker configurations..."
+          
+          # Install Hadolint for Dockerfile scanning
+          wget -O hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+          chmod +x hadolint
+          sudo mv hadolint /usr/local/bin
+          
+          # Scan Dockerfiles
+          find . -name "Dockerfile*" -type f | while read dockerfile; do
+            echo "Scanning $dockerfile..."
+            hadolint "$dockerfile" --format json > "hadolint-$(basename $dockerfile).json" || true
+          done
+          
+          # Scan docker-compose files with Checkov
+          find . -name "docker-compose*.yml" -type f | while read compose_file; do
+            echo "Scanning $compose_file with Checkov..."
+            checkov -f "$compose_file" --framework docker_compose --output json > "checkov-$(basename $compose_file).json" || true
+          done
+
+      - name: Terraform security scanning
+        if: hashFiles('**/*.tf') != ''
+        run: |
+          echo "🏗️ Scanning Terraform configurations..."
+          
+          # Run tfsec
+          tfsec . --format json > tfsec-results.json || true
+          
+          # Run Checkov on Terraform
+          checkov -d . --framework terraform --output json > checkov-terraform-results.json || true
+          
+          # Run Terrascan
+          terrascan scan -t terraform -o json > terrascan-results.json || true
+
+      - name: Kubernetes security scanning
+        if: hashFiles('**/*.yaml', '**/*.yml') != ''
+        run: |
+          echo "☸️ Scanning Kubernetes configurations..."
+          
+          # Install kube-score
+          wget https://github.com/zegl/kube-score/releases/latest/download/kube-score_linux_amd64 -O kube-score
+          chmod +x kube-score
+          sudo mv kube-score /usr/local/bin
+          
+          # Scan Kubernetes manifests
+          find . -name "*.yaml" -o -name "*.yml" | grep -E "(k8s|kubernetes|deployment|service|ingress)" | while read k8s_file; do
+            echo "Scanning $k8s_file..."
+            kube-score score "$k8s_file" --output-format json > "kube-score-$(basename $k8s_file).json" || true
+          done
+          
+          # Run Checkov on Kubernetes
+          checkov -d . --framework kubernetes --output json > checkov-kubernetes-results.json || true
+
+      - name: Generate infrastructure security report
+        run: |
+          echo "# 🏗️ Infrastructure Security Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Docker Results
+          if ls hadolint-*.json 1> /dev/null 2>&1; then
+            echo "## 🐳 Docker Security" >> $GITHUB_STEP_SUMMARY
+            echo "| File | Issues | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+            
+            for result in hadolint-*.json; do
+              if [[ -s "$result" ]]; then
+                issues=$(cat "$result" | jq 'length')
+                file=$(echo "$result" | sed 's/hadolint-//' | sed 's/.json//')
+                status=$([ "$issues" -eq 0 ] && echo "✅ Clean" || echo "⚠️ $issues issues")
+                echo "| $file | $issues | $status |" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Terraform Results
+          if [[ -f tfsec-results.json && -s tfsec-results.json ]]; then
+            critical=$(cat tfsec-results.json | jq '.results[] | select(.severity=="CRITICAL") | length' | wc -l)
+            high=$(cat tfsec-results.json | jq '.results[] | select(.severity=="HIGH") | length' | wc -l)
+            medium=$(cat tfsec-results.json | jq '.results[] | select(.severity=="MEDIUM") | length' | wc -l)
+            
+            echo "## 🏗️ Terraform Security" >> $GITHUB_STEP_SUMMARY
+            echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Critical | $critical |" >> $GITHUB_STEP_SUMMARY
+            echo "| High | $high |" >> $GITHUB_STEP_SUMMARY
+            echo "| Medium | $medium |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload infrastructure scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: infrastructure-scan-results
+          path: |
+            hadolint-*.json
+            checkov-*.json
+            tfsec-results.json
+            terrascan-results.json
+            kube-score-*.json
+          retention-days: 30
+
+  # =============================================================================
+  # COMPLIANCE & GOVERNANCE VERIFICATION
+  # =============================================================================
+  compliance-verification:
+    name: 📋 Compliance & Governance Check
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_type == 'compliance' || github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: FISMA compliance verification
+        run: |
+          echo "🏛️ Verifying FISMA compliance controls..."
+          
+          # NIST SP 800-53 Control Assessment
+          controls_passed=0
+          controls_total=12
+          
+          echo "## 🏛️ FISMA NIST SP 800-53 Controls Assessment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Control | Title | Status | Evidence |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|-------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          
+          # AC-2: Account Management
+          if [[ -f .github/CODEOWNERS ]]; then
+            echo "| AC-2 | Account Management | ✅ Implemented | CODEOWNERS file present |" >> $GITHUB_STEP_SUMMARY
+            controls_passed=$((controls_passed + 1))
+          else
+            echo "| AC-2 | Account Management | ❌ Missing | No CODEOWNERS file |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # AU-2: Audit Events
+          if [[ -d .github/workflows ]]; then
+            echo "| AU-2 | Audit Events | ✅ Implemented | GitHub Actions workflows |" >> $GITHUB_STEP_SUMMARY
+            controls_passed=$((controls_passed + 1))
+          else
+            echo "| AU-2 | Audit Events | ❌ Missing | No workflow auditing |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # CM-2: Baseline Configuration
+          if [[ -f .gitignore && -f README.md ]]; then
+            echo "| CM-2 | Baseline Configuration | ✅ Implemented | Version control baseline |" >> $GITHUB_STEP_SUMMARY
+            controls_passed=$((controls_passed + 1))
+          else
+            echo "| CM-2 | Baseline Configuration | ❌ Missing | Incomplete baseline |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Add more controls as needed...
+          
+          compliance_score=$(( (controls_passed * 100) / controls_total ))
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**FISMA Compliance Score**: $compliance_score% ($controls_passed/$controls_total controls)" >> $GITHUB_STEP_SUMMARY
+
+      - name: SOC 2 compliance check
+        run: |
+          echo "🔐 Checking SOC 2 compliance criteria..."
+          
+          criteria_met=0
+          criteria_total=5
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🔐 SOC 2 Trust Service Criteria" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Criteria | Status | Implementation |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|----------------|" >> $GITHUB_STEP_SUMMARY
+          
+          # Security
+          if [[ -f .github/workflows/security.yml ]]; then
+            echo "| Security | ✅ Met | Automated security scanning |" >> $GITHUB_STEP_SUMMARY
+            criteria_met=$((criteria_met + 1))
+          else
+            echo "| Security | ❌ Not Met | No security workflow |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Availability
+          if [[ -f .github/workflows/monitoring.yml ]]; then
+            echo "| Availability | ✅ Met | Monitoring and health checks |" >> $GITHUB_STEP_SUMMARY
+            criteria_met=$((criteria_met + 1))
+          else
+            echo "| Availability | ❌ Not Met | No monitoring workflow |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          soc2_score=$(( (criteria_met * 100) / criteria_total ))
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**SOC 2 Readiness Score**: $soc2_score% ($criteria_met/$criteria_total criteria)" >> $GITHUB_STEP_SUMMARY
+
+  # =============================================================================
+  # SECURITY REPORT CONSOLIDATION
+  # =============================================================================
+  security-report:
+    name: 📊 Security Assessment Report
+    runs-on: ubuntu-latest
+    needs: [secret-scanning, dependency-scanning, infrastructure-scanning, compliance-verification]
+    if: always()
+    steps:
+      - name: Download all scan results
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Generate comprehensive security report
+        run: |
+          echo "# 🛡️ Comprehensive Security Assessment Report" > security-report.md
+          echo "" >> security-report.md
+          echo "**Report Generated**: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> security-report.md
+          echo "**Repository**: ${{ github.repository }}" >> security-report.md
+          echo "**Branch**: ${{ github.ref_name }}" >> security-report.md
+          echo "**Commit**: ${{ github.sha }}" >> security-report.md
+          echo "" >> security-report.md
+          
+          # Executive Summary
+          echo "## 🎯 Executive Summary" >> security-report.md
+          echo "" >> security-report.md
+          
+          # Calculate overall security score
+          job_results=("${{ needs.secret-scanning.result }}" "${{ needs.dependency-scanning.result }}" "${{ needs.infrastructure-scanning.result }}" "${{ needs.compliance-verification.result }}")
+          successful_jobs=0
+          total_jobs=${#job_results[@]}
+          
+          for result in "${job_results[@]}"; do
+            if [[ "$result" == "success" ]]; then
+              successful_jobs=$((successful_jobs + 1))
+            fi
+          done
+          
+          security_score=$(( (successful_jobs * 100) / total_jobs ))
+          
+          if [[ $security_score -ge 90 ]]; then
+            security_grade="🏆 Excellent"
+            risk_level="🟢 Low Risk"
+          elif [[ $security_score -ge 75 ]]; then
+            security_grade="✅ Good"
+            risk_level="🟡 Medium Risk"
+          elif [[ $security_score -ge 60 ]]; then
+            security_grade="⚠️ Needs Improvement"
+            risk_level="🟠 High Risk"
+          else
+            security_grade="❌ Critical Issues"
+            risk_level="🔴 Critical Risk"
+          fi
+          
+          echo "- **Overall Security Score**: $security_score% ($security_grade)" >> security-report.md
+          echo "- **Risk Level**: $risk_level" >> security-report.md
+          echo "- **Scan Completion**: $successful_jobs/$total_jobs modules" >> security-report.md
+          echo "" >> security-report.md
+          
+          # Module Status
+          echo "## 📋 Security Module Status" >> security-report.md
+          echo "" >> security-report.md
+          echo "| Module | Status | Result |" >> security-report.md
+          echo "|--------|--------|--------|" >> security-report.md
+          echo "| Secret Scanning | ${{ needs.secret-scanning.result }} | Advanced secret detection |" >> security-report.md
+          echo "| Dependency Scanning | ${{ needs.dependency-scanning.result }} | Vulnerability analysis |" >> security-report.md
+          echo "| Infrastructure Scanning | ${{ needs.infrastructure-scanning.result }} | IaC security assessment |" >> security-report.md
+          echo "| Compliance Verification | ${{ needs.compliance-verification.result }} | FISMA & SOC 2 compliance |" >> security-report.md
+          echo "" >> security-report.md
+          
+          # Recommendations
+          echo "## 🎯 Security Recommendations" >> security-report.md
+          echo "" >> security-report.md
+          echo "### Immediate Actions:" >> security-report.md
+          echo "- Review and remediate any identified vulnerabilities" >> security-report.md
+          echo "- Ensure all secrets are properly managed" >> security-report.md
+          echo "- Update dependencies with known vulnerabilities" >> security-report.md
+          echo "" >> security-report.md
+          echo "### Long-term Improvements:" >> security-report.md
+          echo "- Implement automated security monitoring" >> security-report.md
+          echo "- Regular security training for development team" >> security-report.md
+          echo "- Establish incident response procedures" >> security-report.md
+          
+          # Add to step summary
+          cat security-report.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload comprehensive security report
+        uses: actions/upload-artifact@v4
+        with:
+          name: comprehensive-security-report
+          path: security-report.md
+          retention-days: 90

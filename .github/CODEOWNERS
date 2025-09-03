@@ -1,51 +1,136 @@
-# TerraFusion OS 1.0 - Code Ownership and Review Requirements
+# 🛡️ TerraFusion Enterprise Code Ownership & Security Requirements
+# This file defines code ownership, security review requirements, and governance controls
+# for enterprise-grade repository management and compliance adherence.
 
-# Global ownership - all files require review
-* @bsvalues/terrafusion-core-team
+# =============================================================================
+# 🎯 GLOBAL SECURITY & OWNERSHIP DEFAULTS
+# =============================================================================
 
-# Backend components
-/backend/ @bsvalues/backend-team @bsvalues/security-team
-/backend/TerraFusion.Core/ @bsvalues/core-architects
-/backend/TerraFusion.AI/ @bsvalues/ai-team
+# Global owners for all files - Enterprise security team oversight
+* @bsvalues/terrafusion-core-team @bsvalues/security-team
 
-# Frontend components
+# =============================================================================
+# 🔒 CRITICAL SECURITY & INFRASTRUCTURE FILES
+# =============================================================================
+
+# GitHub workflows and CI/CD pipelines require security team approval
+/.github/ @bsvalues/devops-team @bsvalues/security-team
+/.github/workflows/ @bsvalues/devops-team @bsvalues/security-team
+/.github/actions/ @bsvalues/devops-team @bsvalues/security-team
+
+# Security policies and governance documents
+/.github/SECURITY.md @bsvalues/security-team
+/.github/policies/ @bsvalues/security-team
+/.github/CODEOWNERS @bsvalues/security-team @bsvalues/devops-team
+
+# Infrastructure as Code files require infrastructure team approval
+/infrastructure/ @bsvalues/devops-team @bsvalues/security-team
+/terraform/ @bsvalues/devops-team @bsvalues/security-team
+/deployment/ @bsvalues/devops-team @bsvalues/security-team
+
+# Docker and containerization files
+Dockerfile* @bsvalues/devops-team @bsvalues/security-team
+docker-compose*.yml @bsvalues/devops-team @bsvalues/security-team
+.dockerignore @bsvalues/devops-team
+
+# =============================================================================
+# 📋 DEPLOYMENT & PRODUCTION CRITICAL FILES
+# =============================================================================
+
+# Production deployment scripts require multiple approvals
+Deploy-Production.ps1 @bsvalues/devops-team @bsvalues/security-team
+deploy-production.sh @bsvalues/devops-team @bsvalues/security-team
+Deploy-TerraFusion.ps1 @bsvalues/devops-team @bsvalues/security-team
+
+# Environment configuration files
+.env* @bsvalues/devops-team @bsvalues/security-team
+/config/ @bsvalues/security-team @bsvalues/devops-team
+*.config.json @bsvalues/devops-team
+
+# =============================================================================
+# 🔧 BUILD & DEPENDENCY MANAGEMENT
+# =============================================================================
+
+# Package management files require security review for dependencies
+package.json @bsvalues/frontend-team @bsvalues/security-team
+package-lock.json @bsvalues/frontend-team @bsvalues/security-team
+yarn.lock @bsvalues/frontend-team @bsvalues/security-team
+
+# =============================================================================
+# 🏗️ FRONTEND ARCHITECTURE & COMPONENTS
+# =============================================================================
+
+# Frontend source code ownership
 /frontend/ @bsvalues/frontend-team @bsvalues/ux-team
-/frontend/components-enhanced/ @bsvalues/ai-team
+/frontend/components-enhanced/ @bsvalues/ai-team @bsvalues/frontend-team
+
+# =============================================================================
+# ⚙️ BACKEND ARCHITECTURE & SERVICES
+# =============================================================================
+
+# Backend source code ownership
+/backend/ @bsvalues/backend-team @bsvalues/security-team
+/backend/TerraFusion.Core/ @bsvalues/core-architects @bsvalues/backend-team
+/backend/TerraFusion.AI/ @bsvalues/ai-team @bsvalues/backend-team
+
+# =============================================================================
+# 🤖 AI & MACHINE LEARNING COMPONENTS
+# =============================================================================
 
 # AI and ML components
 /.ai/ @bsvalues/ai-team @bsvalues/ml-engineers
 /modules/ai-advanced/ @bsvalues/ai-team
-**/quantum*.ts @bsvalues/quantum-team
+**/quantum*.ts @bsvalues/quantum-team @bsvalues/ai-team
 **/probabilistic*.ts @bsvalues/ai-team
 **/swarm*.ts @bsvalues/ai-team
+championship*.* @bsvalues/performance-team @bsvalues/ai-team
 
-# Infrastructure and DevOps
-/infrastructure/ @bsvalues/devops-team @bsvalues/security-team
-/deployment/ @bsvalues/devops-team
-/.github/ @bsvalues/devops-team
-/ops/ @bsvalues/devops-team
-/compose/ @bsvalues/devops-team
-Dockerfile @bsvalues/devops-team
-docker-compose*.yml @bsvalues/devops-team
+# =============================================================================
+# 🧪 TESTING & QUALITY ASSURANCE
+# =============================================================================
 
-# Security-sensitive files
-/.env* @bsvalues/security-team
-/config/ @bsvalues/security-team
-**/security*.* @bsvalues/security-team
-**/auth*.* @bsvalues/security-team
+# Test files and configurations
+/tests/ @bsvalues/qa-team @bsvalues/backend-team
+**/performance*.* @bsvalues/performance-team @bsvalues/qa-team
+**/benchmark*.* @bsvalues/performance-team
 
-# Documentation
+# =============================================================================
+# 📚 DOCUMENTATION & KNOWLEDGE MANAGEMENT
+# =============================================================================
+
+# Technical documentation
 /docs/ @bsvalues/documentation-team
 README.md @bsvalues/documentation-team
 *.md @bsvalues/documentation-team
+CHANGELOG.md @bsvalues/documentation-team
+CONTRIBUTING.md @bsvalues/documentation-team
 
-# Performance and testing
-/tests/ @bsvalues/qa-team
-**/performance*.* @bsvalues/performance-team
-**/benchmark*.* @bsvalues/performance-team
-championship*.* @bsvalues/performance-team
+# =============================================================================
+# 🔐 SECURITY-SENSITIVE FILE PATTERNS
+# =============================================================================
 
-# Database and data
-/data/ @bsvalues/data-team @bsvalues/security-team
-**/migration*.* @bsvalues/data-team
+# Security and authentication files
+**/security*.* @bsvalues/security-team
+**/auth*.* @bsvalues/security-team
+*secret* @bsvalues/security-team
+*credential* @bsvalues/security-team
+*key* @bsvalues/security-team
+
+# =============================================================================
+# 🚀 RELEASE & VERSION MANAGEMENT
+# =============================================================================
+
+# Release configuration and versioning
+.releaserc.json @bsvalues/devops-team @bsvalues/security-team
+VERSION @bsvalues/devops-team
+.gitignore @bsvalues/devops-team
+
+# =============================================================================
+# 🎮 EMERGENCY OVERRIDE CONTACTS
+# =============================================================================
+# For critical production issues requiring immediate attention:
+# Primary: @bsvalues/terrafusion-core-team
+# Security Incidents: @bsvalues/security-team
+# Infrastructure Issues: @bsvalues/devops-team
+# =============================================================================
 **/schema*.* @bsvalues/data-team
