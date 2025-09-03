@@ -46,8 +46,14 @@ import {
   CrystalBall as CrystalBallIcon,
   Settings as SettingsIcon,
   Info as InfoIcon,
-  AutoFixHigh as AutoFixHighIcon
+  AutoFixHigh as AutoFixHighIcon,
+  LocationOn as LocationOnIcon,
+  AnalyticsOutlined as AnalyticsIcon
 } from '@mui/icons-material';
+
+// Import the original SHOCK_AND_AWE components
+import LiveCountyDemoEngine from './components/LiveCountyDemoEngine';
+import AnalyticsSummary from './components/AnalyticsSummary';
 import { ErrorBoundary } from 'react-error-boundary';
 
 // Lazy load all components for optimal performance
@@ -158,6 +164,26 @@ interface DemoModule {
 }
 
 const demoModules: DemoModule[] = [
+  {
+    id: 'county-demo',
+    name: 'Live County Demo Engine',
+    description: 'Interactive demonstrations with REAL county data - 379M× speed improvement showcase',
+    icon: <LocationOnIcon />,
+    component: LiveCountyDemoEngine,
+    category: 'GOVERNMENT',
+    difficulty: 'BEGINNER',
+    estimatedTime: '2-5 min'
+  },
+  {
+    id: 'analytics-dashboard',
+    name: 'Analytics Dashboard',
+    description: 'Professional KPI dashboard with real-time government metrics and ROI analysis',
+    icon: <AnalyticsIcon />,
+    component: AnalyticsSummary,
+    category: 'GOVERNMENT',
+    difficulty: 'BEGINNER',
+    estimatedTime: '3-7 min'
+  },
   {
     id: 'consciousness',
     name: 'AI Consciousness Evolution',

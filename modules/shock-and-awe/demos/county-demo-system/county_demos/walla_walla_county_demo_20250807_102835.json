@@ -1,0 +1,149 @@
+{
+  "id": "cd4fa67d-a131-43ed-b598-c4264f6a9c83",
+  "county": "Walla Walla County",
+  "generated_at": "2025-08-07T17:28:35.839801+00:00",
+  "customizations": {
+    "primary_color": "#2E5984",
+    "secondary_color": "#8BB8E8",
+    "logo_url": null,
+    "contact_info": {
+      "department": "Walla Walla County Assessor",
+      "phone": "(509) 524-2530",
+      "email": "assessor@co.walla-walla.wa.us",
+      "website": "https://www.co.walla-walla.wa.us"
+    },
+    "key_features": [
+      "Property Tax Optimization",
+      "Assessment Appeals Management",
+      "Market Value Analysis",
+      "Revenue Forecasting"
+    ],
+    "demo_scenarios": [
+      {
+        "name": "Property Value Analysis",
+        "description": "Analyze property values across different districts",
+        "expected_outcome": "Identify undervalued properties and tax optimization opportunities"
+      },
+      {
+        "name": "Assessment Appeals Processing",
+        "description": "Streamline property assessment appeals workflow",
+        "expected_outcome": "Reduce appeals processing time by 60%"
+      }
+    ]
+  },
+  "sample_properties": [],
+  "analytics": {
+    "total_properties": 0,
+    "average_assessed_value": 250000,
+    "total_assessed_value": 0,
+    "median_assessed_value": 250000,
+    "property_type_distribution": {},
+    "value_ranges": {},
+    "data_quality_metrics": {
+      "completeness_score": 0.0,
+      "total_fields_analyzed": 0,
+      "sample_size": 0
+    }
+  },
+  "recommendations": [
+    {
+      "id": "f1053716-5c96-41ca-8fed-42ee8e80cb61",
+      "title": "Optimize Walla Walla County Property Assessment Workflow",
+      "description": "Implement TerraFusion's AI-powered assessment tools to improve accuracy and efficiency",
+      "impact": "High",
+      "estimated_revenue_increase": 151900.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "3-6 months"
+    },
+    {
+      "id": "81493e93-3e1a-4bc0-b9f7-7944600c1dc1",
+      "title": "Deploy Automated Valuation Models (AVM)",
+      "description": "Use machine learning to provide consistent, accurate property valuations",
+      "impact": "Very High",
+      "estimated_revenue_increase": 303800.0,
+      "implementation_complexity": "High",
+      "timeframe": "6-12 months"
+    },
+    {
+      "id": "f396233d-034a-4ad2-ade1-6a6cc8edd595",
+      "title": "Implement Real-time Market Analysis",
+      "description": "Track market trends and automatically adjust assessments based on current conditions",
+      "impact": "High",
+      "estimated_revenue_increase": 182280.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "4-8 months"
+    }
+  ],
+  "terrafusion_features": {
+    "core_applications": [
+      {
+        "name": "TerraAgent",
+        "description": "AI-powered government assistant for citizen services",
+        "benefits": [
+          "24/7 citizen support",
+          "Reduced call center load",
+          "Improved service delivery"
+        ]
+      },
+      {
+        "name": "CostForgeAI",
+        "description": "Quantum property valuation and cost analysis",
+        "benefits": [
+          "95%+ valuation accuracy",
+          "Automated assessment updates",
+          "Appeal reduction"
+        ]
+      },
+      {
+        "name": "TerraFlow",
+        "description": "Workflow automation for government processes",
+        "benefits": [
+          "60% faster processing",
+          "Reduced manual errors",
+          "Compliance tracking"
+        ]
+      },
+      {
+        "name": "TerraInsight",
+        "description": "Advanced analytics and reporting dashboard",
+        "benefits": [
+          "Real-time insights",
+          "Predictive analytics",
+          "Custom reporting"
+        ]
+      }
+    ],
+    "county_specific_features": [
+      "Property Tax Optimization",
+      "Assessment Appeals Management",
+      "Market Value Analysis",
+      "Revenue Forecasting"
+    ],
+    "integration_capabilities": [
+      "Existing GIS systems",
+      "Property management software",
+      "Financial systems",
+      "State reporting systems",
+      "Public portals"
+    ]
+  },
+  "roi_projections": {
+    "implementation_cost": {
+      "year_1": 1215200.0,
+      "year_2": 607600.0,
+      "year_3": 303800.0
+    },
+    "projected_savings": {
+      "year_1": 3038000.0,
+      "year_2": 4860800.0,
+      "year_3": 7291200.0
+    },
+    "roi_percentage": {
+      "year_1": 150,
+      "year_2": 700,
+      "year_3": 2300
+    },
+    "break_even_timeline": "4-6 months",
+    "total_3_year_roi": 15190000.0
+  }
+}

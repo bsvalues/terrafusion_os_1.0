@@ -1,0 +1,195 @@
+{
+  "timestamp": "2025-06-21T18:56:05.342370",
+  "logo_implementation_status": {
+    "main_app": {
+      "tf_logo_class": true,
+      "svg_implementation": true,
+      "gradient_definitions": true,
+      "terrafusion_colors": true,
+      "animation_support": true,
+      "ai_logo_variant": true,
+      "navbar_logo": true,
+      "logo_css": true
+    },
+    "showcase": {
+      "exists": true,
+      "checks": {
+        "main_logo": true,
+        "animated_logo": true,
+        "ai_logo": true,
+        "compact_logo": true,
+        "proper_styling": true,
+        "terrafusion_colors": true
+      },
+      "score": "6/6"
+    }
+  },
+  "file_verification": {
+    "TerraFlow_PRODUCTION": {
+      "terrafusion-logo.svg": {
+        "exists": true,
+        "path": "TerraFlow_PRODUCTION\\static\\images\\terrafusion-logo.svg",
+        "size": 1681
+      },
+      "terrafusion-logo-animated.svg": {
+        "exists": true,
+        "path": "TerraFlow_PRODUCTION\\static\\images\\terrafusion-logo-animated.svg",
+        "size": 2569
+      },
+      "terrafusion-ai-logo.svg": {
+        "exists": true,
+        "path": "TerraFlow_PRODUCTION\\static\\images\\terrafusion-ai-logo.svg",
+        "size": 2390
+      },
+      "terrafusion-compact.svg": {
+        "exists": true,
+        "path": "TerraFlow_PRODUCTION\\static\\images\\terrafusion-compact.svg",
+        "size": 753
+      },
+      "favicon.svg": {
+        "exists": true,
+        "path": "TerraFlow_PRODUCTION\\static\\images\\favicon.svg",
+        "size": 658
+      }
+    },
+    "TerraFusionSync_PRODUCTION": {
+      "terrafusion-logo.svg": {
+        "exists": true,
+        "path": "TerraFusionSync_PRODUCTION\\static\\images\\terrafusion-logo.svg",
+        "size": 1681
+      },
+      "terrafusion-logo-animated.svg": {
+        "exists": true,
+        "path": "TerraFusionSync_PRODUCTION\\static\\images\\terrafusion-logo-animated.svg",
+        "size": 2569
+      },
+      "terrafusion-ai-logo.svg": {
+        "exists": true,
+        "path": "TerraFusionSync_PRODUCTION\\static\\images\\terrafusion-ai-logo.svg",
+        "size": 2390
+      },
+      "terrafusion-compact.svg": {
+        "exists": true,
+        "path": "TerraFusionSync_PRODUCTION\\static\\images\\terrafusion-compact.svg",
+        "size": 753
+      },
+      "favicon.svg": {
+        "exists": true,
+        "path": "TerraFusionSync_PRODUCTION\\static\\images\\favicon.svg",
+        "size": 658
+      }
+    },
+    "TerraAgent_PRODUCTION": {
+      "terrafusion-logo.svg": {
+        "exists": true,
+        "path": "TerraAgent_PRODUCTION\\static\\images\\terrafusion-logo.svg",
+        "size": 1681
+      },
+      "terrafusion-logo-animated.svg": {
+        "exists": true,
+        "path": "TerraAgent_PRODUCTION\\static\\images\\terrafusion-logo-animated.svg",
+        "size": 2569
+      },
+      "terrafusion-ai-logo.svg": {
+        "exists": true,
+        "path": "TerraAgent_PRODUCTION\\static\\images\\terrafusion-ai-logo.svg",
+        "size": 2390
+      },
+      "terrafusion-compact.svg": {
+        "exists": true,
+        "path": "TerraAgent_PRODUCTION\\static\\images\\terrafusion-compact.svg",
+        "size": 753
+      },
+      "favicon.svg": {
+        "exists": true,
+        "path": "TerraAgent_PRODUCTION\\static\\images\\favicon.svg",
+        "size": 658
+      }
+    },
+    "BSIncomeValuation_PRODUCTION": {
+      "terrafusion-logo.svg": {
+        "exists": true,
+        "path": "BSIncomeValuation_PRODUCTION\\static\\images\\terrafusion-logo.svg",
+        "size": 1681
+      },
+      "terrafusion-logo-animated.svg": {
+        "exists": true,
+        "path": "BSIncomeValuation_PRODUCTION\\static\\images\\terrafusion-logo-animated.svg",
+        "size": 2569
+      },
+      "terrafusion-ai-logo.svg": {
+        "exists": true,
+        "path": "BSIncomeValuation_PRODUCTION\\static\\images\\terrafusion-ai-logo.svg",
+        "size": 2390
+      },
+      "terrafusion-compact.svg": {
+        "exists": true,
+        "path": "BSIncomeValuation_PRODUCTION\\static\\images\\terrafusion-compact.svg",
+        "size": 753
+      },
+      "favicon.svg": {
+        "exists": true,
+        "path": "BSIncomeValuation_PRODUCTION\\static\\images\\favicon.svg",
+        "size": 658
+      }
+    },
+    "TerraFusionPro_PRODUCTION": {
+      "terrafusion-logo.svg": {
+        "exists": true,
+        "path": "TerraFusionPro_PRODUCTION\\static\\images\\terrafusion-logo.svg",
+        "size": 1681
+      },
+      "terrafusion-logo-animated.svg": {
+        "exists": true,
+        "path": "TerraFusionPro_PRODUCTION\\static\\images\\terrafusion-logo-animated.svg",
+        "size": 2569
+      },
+      "terrafusion-ai-logo.svg": {
+        "exists": true,
+        "path": "TerraFusionPro_PRODUCTION\\static\\images\\terrafusion-ai-logo.svg",
+        "size": 2390
+      },
+      "terrafusion-compact.svg": {
+        "exists": true,
+        "path": "TerraFusionPro_PRODUCTION\\static\\images\\terrafusion-compact.svg",
+        "size": 753
+      },
+      "favicon.svg": {
+        "exists": true,
+        "path": "TerraFusionPro_PRODUCTION\\static\\images\\favicon.svg",
+        "size": 658
+      }
+    },
+    "BCBSGISPRO_PRODUCTION": {
+      "terrafusion-logo.svg": {
+        "exists": true,
+        "path": "BCBSGISPRO_PRODUCTION\\static\\images\\terrafusion-logo.svg",
+        "size": 1681
+      },
+      "terrafusion-logo-animated.svg": {
+        "exists": true,
+        "path": "BCBSGISPRO_PRODUCTION\\static\\images\\terrafusion-logo-animated.svg",
+        "size": 2569
+      },
+      "terrafusion-ai-logo.svg": {
+        "exists": true,
+        "path": "BCBSGISPRO_PRODUCTION\\static\\images\\terrafusion-ai-logo.svg",
+        "size": 2390
+      },
+      "terrafusion-compact.svg": {
+        "exists": true,
+        "path": "BCBSGISPRO_PRODUCTION\\static\\images\\terrafusion-compact.svg",
+        "size": 753
+      },
+      "favicon.svg": {
+        "exists": true,
+        "path": "BCBSGISPRO_PRODUCTION\\static\\images\\favicon.svg",
+        "size": 658
+      }
+    }
+  },
+  "application_status": {
+    "running": false
+  },
+  "overall_score": 75.0
+}

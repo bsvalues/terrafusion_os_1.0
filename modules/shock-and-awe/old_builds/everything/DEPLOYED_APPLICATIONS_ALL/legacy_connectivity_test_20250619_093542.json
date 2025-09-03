@@ -1,0 +1,69 @@
+{
+  "test_timestamp": "2025-06-19T09:35:39.835670",
+  "environment": {
+    "python_version": "3.13.4 (tags/v3.13.4:8a526ec, Jun  3 2025, 17:46:04) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "win32",
+    "pyodbc_available": false,
+    "oracle_available": false
+  },
+  "tests": {
+    "network_prerequisites": {
+      "system": "Network Prerequisites",
+      "status": "completed",
+      "details": {
+        "internet_connectivity": "success",
+        "dns_JCHARRISPACS": "failed: [Errno 11001] getaddrinfo failed",
+        "dns_ciaps.wa.gov": "failed: [Errno 11001] getaddrinfo failed",
+        "dns_services.arcgis.com": "resolved to 3.163.158.61",
+        "python_modules": {
+          "pyodbc": false,
+          "cx_Oracle": false,
+          "requests": true
+        }
+      },
+      "recommendations": []
+    },
+    "pacs": {
+      "system": "PACS",
+      "server": "JCHARRISPACS",
+      "database": "pacs_oltp",
+      "connection_type": "SQL Server",
+      "status": "error",
+      "details": {
+        "error": "pyodbc module not available"
+      },
+      "recommendations": [
+        "Install pyodbc: pip install pyodbc"
+      ]
+    },
+    "arcgis": {
+      "system": "ArcGIS Online",
+      "base_url": "https://services.arcgis.com/benton",
+      "connection_type": "REST API",
+      "status": "success",
+      "details": {
+        "url_1": {
+          "url": "https://services.arcgis.com/benton",
+          "status_code": 200,
+          "response_time": "0.39s",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "working_url": "https://services.arcgis.com/benton"
+      },
+      "recommendations": []
+    },
+    "ciaps": {
+      "system": "CIAPS",
+      "server": "ciaps.wa.gov",
+      "connection_type": "Oracle Database",
+      "status": "error",
+      "details": {
+        "error": "cx_Oracle module not available"
+      },
+      "recommendations": [
+        "Install cx_Oracle: pip install cx_Oracle"
+      ]
+    }
+  },
+  "overall_status": "partial_success"
+}

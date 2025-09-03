@@ -1,0 +1,149 @@
+name: Performance Testing
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sunday
+  workflow_dispatch:  # Allow manual trigger
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  performance:
+    name: Performance Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v9
+      with:
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+        configPath: './lighthouserc.js'
+
+    - name: Run k6 performance tests
+      uses: grafana/k6-action@v0.2.0
+      with:
+        filename: tests/performance/load-test.js
+        flags: --out json=results.json
+
+    - name: Upload k6 results
+      uses: actions/upload-artifact@v3
+      with:
+        name: k6-results
+        path: results.json
+        retention-days: 30
+
+    - name: Run memory leak tests
+      run: |
+        npm run test:memory
+      env:
+        NODE_ENV: test
+
+    - name: Upload memory test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: memory-test-results
+        path: reports/memory
+        retention-days: 30
+
+    - name: Run CPU profiling
+      run: |
+        npm run test:cpu
+      env:
+        NODE_ENV: test
+
+    - name: Upload CPU profile results
+      uses: actions/upload-artifact@v3
+      with:
+        name: cpu-profile-results
+        path: reports/cpu
+        retention-days: 30
+
+    - name: Generate performance report
+      run: |
+        npm run generate:performance-report
+      env:
+        NODE_ENV: test
+
+    - name: Upload performance report
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-report
+        path: reports/performance
+        retention-days: 30
+
+    - name: Check performance thresholds
+      run: |
+        npm run check:performance-thresholds
+      env:
+        NODE_ENV: test
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  analyze:
+    name: Analyze Results
+    needs: performance
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+
+    - name: Generate analysis report
+      run: |
+        npm run analyze:performance
+      env:
+        NODE_ENV: test
+
+    - name: Upload analysis report
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-analysis
+        path: reports/analysis
+        retention-days: 30
+
+    - name: Create performance issue
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('reports/analysis/summary.json', 'utf8'));
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Performance Regression Detected',
+            body: `## Performance Test Results\n\n${report.summary}\n\n### Details\n\n${report.details}`,
+            labels: ['performance', 'needs-review']
+          }); 

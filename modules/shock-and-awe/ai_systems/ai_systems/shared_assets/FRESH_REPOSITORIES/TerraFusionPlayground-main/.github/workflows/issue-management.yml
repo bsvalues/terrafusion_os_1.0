@@ -1,0 +1,110 @@
+name: Issue Management
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled, closed, reopened]
+  pull_request:
+    types: [opened, edited, labeled, unlabeled, closed, reopened]
+
+jobs:
+  issue-management:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for security issues
+        if: github.event.issue.labels.*.name == 'security'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels: ['priority:high']
+            });
+
+      - name: Assign to project board
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const projectNumber = 1; // Your project board number
+            
+            await github.rest.projects.createCard({
+              column_id: 'in-progress',
+              content_id: issue.id,
+              content_type: 'Issue'
+            });
+
+      - name: Auto-label based on title
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = issue.title.toLowerCase();
+            
+            if (title.includes('bug') || title.includes('error')) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['bug']
+              });
+            }
+            
+            if (title.includes('feature') || title.includes('enhancement')) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['enhancement']
+              });
+            }
+
+      - name: Assign to team members
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(label => label.name);
+            
+            if (labels.includes('frontend')) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                assignees: ['frontend-team-lead']
+              });
+            }
+            
+            if (labels.includes('backend')) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                assignees: ['backend-team-lead']
+              });
+            }
+            
+            if (labels.includes('security')) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                assignees: ['security-team-lead']
+              });
+            }
+
+      - name: Update project status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const projectNumber = 1; // Your project board number
+            
+            if (context.payload.action === 'closed') {
+              await github.rest.projects.moveCard({
+                card_id: issue.id,
+                column_id: 'done'
+              });
+            } 

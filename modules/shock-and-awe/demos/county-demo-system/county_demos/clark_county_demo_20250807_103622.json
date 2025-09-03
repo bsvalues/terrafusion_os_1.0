@@ -1,0 +1,167 @@
+{
+  "id": "a86e806d-86d7-476d-8cc3-80d0b776390d",
+  "county": "Clark County",
+  "generated_at": "2025-08-07T17:36:22.318945+00:00",
+  "customizations": {
+    "primary_color": "#8B4513",
+    "secondary_color": "#DAA520",
+    "logo_url": null,
+    "contact_info": {
+      "department": "Clark County Geographic Information Services",
+      "phone": "(564) 397-4652",
+      "email": "gistechsupport@clark.wa.gov",
+      "website": "https://clark.wa.gov"
+    },
+    "key_features": [
+      "Comprehensive Open Data Hub",
+      "Advanced Property Information Center",
+      "Multi-Platform Integration (MapsOnline)",
+      "Land Records Management",
+      "Development Review Automation",
+      "Environmental Health Integration",
+      "Community Health Data Analytics",
+      "Cross-Border Coordination (Oregon)"
+    ],
+    "demo_scenarios": [
+      {
+        "name": "Comprehensive Property & Land Management",
+        "description": "Integrate property records, permits, surveyor data, and development review for 500K+ population",
+        "expected_outcome": "Reduce property transaction processing time by 45% and eliminate data inconsistencies"
+      },
+      {
+        "name": "Public Health Data Integration",
+        "description": "Combine GIS with comprehensive health data including climate, demographics, and community health",
+        "expected_outcome": "Enable data-driven public health decisions and reduce response time to health emergencies by 60%"
+      },
+      {
+        "name": "Cross-Border Regional Coordination",
+        "description": "Coordinate with Oregon counties and Portland metro area for regional planning",
+        "expected_outcome": "Streamline cross-border processes and improve regional development coordination"
+      },
+      {
+        "name": "Advanced Development Review Process",
+        "description": "Automate complex development review workflows with integrated permitting and environmental analysis",
+        "expected_outcome": "Reduce development approval timeline by 50% while maintaining compliance standards"
+      }
+    ]
+  },
+  "sample_properties": [],
+  "analytics": {
+    "total_properties": 0,
+    "average_assessed_value": 250000,
+    "total_assessed_value": 0,
+    "median_assessed_value": 250000,
+    "property_type_distribution": {},
+    "value_ranges": {},
+    "data_quality_metrics": {
+      "completeness_score": 0.0,
+      "total_fields_analyzed": 0,
+      "sample_size": 0
+    }
+  },
+  "recommendations": [
+    {
+      "id": "323c30d6-5c67-456a-8c9d-f526e6d80e11",
+      "title": "Optimize Clark County Property Assessment Workflow",
+      "description": "Implement TerraFusion's AI-powered assessment tools to improve accuracy and efficiency",
+      "impact": "High",
+      "estimated_revenue_increase": 1258277.5,
+      "implementation_complexity": "Medium",
+      "timeframe": "3-6 months"
+    },
+    {
+      "id": "0c50b369-d7f3-462b-83f4-ffed12caf455",
+      "title": "Deploy Automated Valuation Models (AVM)",
+      "description": "Use machine learning to provide consistent, accurate property valuations",
+      "impact": "Very High",
+      "estimated_revenue_increase": 2516555.0,
+      "implementation_complexity": "High",
+      "timeframe": "6-12 months"
+    },
+    {
+      "id": "fd9e183f-7520-4239-8627-1ba0679bb79b",
+      "title": "Implement Real-time Market Analysis",
+      "description": "Track market trends and automatically adjust assessments based on current conditions",
+      "impact": "High",
+      "estimated_revenue_increase": 1509933.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "4-8 months"
+    }
+  ],
+  "terrafusion_features": {
+    "core_applications": [
+      {
+        "name": "TerraAgent",
+        "description": "AI-powered government assistant for citizen services",
+        "benefits": [
+          "24/7 citizen support",
+          "Reduced call center load",
+          "Improved service delivery"
+        ]
+      },
+      {
+        "name": "CostForgeAI",
+        "description": "Quantum property valuation and cost analysis",
+        "benefits": [
+          "95%+ valuation accuracy",
+          "Automated assessment updates",
+          "Appeal reduction"
+        ]
+      },
+      {
+        "name": "TerraFlow",
+        "description": "Workflow automation for government processes",
+        "benefits": [
+          "60% faster processing",
+          "Reduced manual errors",
+          "Compliance tracking"
+        ]
+      },
+      {
+        "name": "TerraInsight",
+        "description": "Advanced analytics and reporting dashboard",
+        "benefits": [
+          "Real-time insights",
+          "Predictive analytics",
+          "Custom reporting"
+        ]
+      }
+    ],
+    "county_specific_features": [
+      "Comprehensive Open Data Hub",
+      "Advanced Property Information Center",
+      "Multi-Platform Integration (MapsOnline)",
+      "Land Records Management",
+      "Development Review Automation",
+      "Environmental Health Integration",
+      "Community Health Data Analytics",
+      "Cross-Border Coordination (Oregon)"
+    ],
+    "integration_capabilities": [
+      "Existing GIS systems",
+      "Property management software",
+      "Financial systems",
+      "State reporting systems",
+      "Public portals"
+    ]
+  },
+  "roi_projections": {
+    "implementation_cost": {
+      "year_1": 10066220.0,
+      "year_2": 5033110.0,
+      "year_3": 2516555.0
+    },
+    "projected_savings": {
+      "year_1": 25165550.0,
+      "year_2": 40264880.0,
+      "year_3": 60397320.0
+    },
+    "roi_percentage": {
+      "year_1": 150,
+      "year_2": 700,
+      "year_3": 2300
+    },
+    "break_even_timeline": "4-6 months",
+    "total_3_year_roi": 125827750.0
+  }
+}

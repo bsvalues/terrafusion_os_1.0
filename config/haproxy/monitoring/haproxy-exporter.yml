@@ -11,7 +11,7 @@ services:
     
     # Command line options for HAProxy stats
     command:
-      - '--haproxy.scrape-uri=http://admin:${HAPROXY_STATS_PASSWORD}@haproxy:8404/stats?stats;csv'
+      - '--haproxy.scrape-uri=http://admin:TF_LB_2025_SECURE!@haproxy:8404/stats?stats;csv'
       - '--haproxy.timeout=5s'
       - '--web.listen-address=:9101'
       - '--web.telemetry-path=/metrics'

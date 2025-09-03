@@ -1,0 +1,169 @@
+{
+  "id": "5f5f8326-9187-4889-98a9-4850b084c494",
+  "county": "Whatcom County",
+  "generated_at": "2025-08-07T17:36:23.880659+00:00",
+  "customizations": {
+    "primary_color": "#2E8B57",
+    "secondary_color": "#90EE90",
+    "logo_url": null,
+    "contact_info": {
+      "department": "Whatcom County Information Technology - GIS",
+      "phone": "(360) 778-5000",
+      "email": "gis@co.whatcom.wa.us",
+      "website": "https://www.whatcomcounty.us"
+    },
+    "key_features": [
+      "University Town Integration (Western Washington University)",
+      "International Border Coordination (Canada)",
+      "Advanced Watershed Management",
+      "Comprehensive Map Portal System",
+      "Natural Hazards Management",
+      "Multi-Modal Transportation Planning",
+      "Conservation Easement Programs",
+      "Flood Risk Assessment and Planning",
+      "Emergency Management Integration"
+    ],
+    "demo_scenarios": [
+      {
+        "name": "University-Community Integration",
+        "description": "Coordinate county services with major university presence (WWU) including student housing, transportation, and economic impact",
+        "expected_outcome": "Optimize town-gown relationships and increase student civic engagement by 50% while managing growth impacts"
+      },
+      {
+        "name": "International Border Operations",
+        "description": "Manage cross-border coordination with Canada including trade, transportation, and emergency services",
+        "expected_outcome": "Streamline international coordination processes and improve cross-border emergency response by 45%"
+      },
+      {
+        "name": "Advanced Watershed and Environmental Management",
+        "description": "Comprehensive watershed management with flood risk assessment and conservation programs",
+        "expected_outcome": "Reduce flood risk by 35% and increase conservation program participation through integrated data management"
+      },
+      {
+        "name": "Comprehensive Emergency and Natural Hazards Management",
+        "description": "Integrate natural hazards planning with emergency management across diverse geography",
+        "expected_outcome": "Improve emergency response times by 40% and enhance community resilience through predictive analytics"
+      }
+    ]
+  },
+  "sample_properties": [],
+  "analytics": {
+    "total_properties": 0,
+    "average_assessed_value": 250000,
+    "total_assessed_value": 0,
+    "median_assessed_value": 250000,
+    "property_type_distribution": {},
+    "value_ranges": {},
+    "data_quality_metrics": {
+      "completeness_score": 0.0,
+      "total_fields_analyzed": 0,
+      "sample_size": 0
+    }
+  },
+  "recommendations": [
+    {
+      "id": "f9739bef-82c7-4ff8-a5c8-52bade5c556e",
+      "title": "Optimize Whatcom County Property Assessment Workflow",
+      "description": "Implement TerraFusion's AI-powered assessment tools to improve accuracy and efficiency",
+      "impact": "High",
+      "estimated_revenue_increase": 580000.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "3-6 months"
+    },
+    {
+      "id": "2207ecf2-45bd-4239-889f-2dc899b44a0c",
+      "title": "Deploy Automated Valuation Models (AVM)",
+      "description": "Use machine learning to provide consistent, accurate property valuations",
+      "impact": "Very High",
+      "estimated_revenue_increase": 1160000.0,
+      "implementation_complexity": "High",
+      "timeframe": "6-12 months"
+    },
+    {
+      "id": "ef616cfb-cbe0-4f7e-b722-0ac708adfad6",
+      "title": "Implement Real-time Market Analysis",
+      "description": "Track market trends and automatically adjust assessments based on current conditions",
+      "impact": "High",
+      "estimated_revenue_increase": 696000.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "4-8 months"
+    }
+  ],
+  "terrafusion_features": {
+    "core_applications": [
+      {
+        "name": "TerraAgent",
+        "description": "AI-powered government assistant for citizen services",
+        "benefits": [
+          "24/7 citizen support",
+          "Reduced call center load",
+          "Improved service delivery"
+        ]
+      },
+      {
+        "name": "CostForgeAI",
+        "description": "Quantum property valuation and cost analysis",
+        "benefits": [
+          "95%+ valuation accuracy",
+          "Automated assessment updates",
+          "Appeal reduction"
+        ]
+      },
+      {
+        "name": "TerraFlow",
+        "description": "Workflow automation for government processes",
+        "benefits": [
+          "60% faster processing",
+          "Reduced manual errors",
+          "Compliance tracking"
+        ]
+      },
+      {
+        "name": "TerraInsight",
+        "description": "Advanced analytics and reporting dashboard",
+        "benefits": [
+          "Real-time insights",
+          "Predictive analytics",
+          "Custom reporting"
+        ]
+      }
+    ],
+    "county_specific_features": [
+      "University Town Integration (Western Washington University)",
+      "International Border Coordination (Canada)",
+      "Advanced Watershed Management",
+      "Comprehensive Map Portal System",
+      "Natural Hazards Management",
+      "Multi-Modal Transportation Planning",
+      "Conservation Easement Programs",
+      "Flood Risk Assessment and Planning",
+      "Emergency Management Integration"
+    ],
+    "integration_capabilities": [
+      "Existing GIS systems",
+      "Property management software",
+      "Financial systems",
+      "State reporting systems",
+      "Public portals"
+    ]
+  },
+  "roi_projections": {
+    "implementation_cost": {
+      "year_1": 4640000.0,
+      "year_2": 2320000.0,
+      "year_3": 1160000.0
+    },
+    "projected_savings": {
+      "year_1": 11600000.0,
+      "year_2": 18560000.0,
+      "year_3": 27840000.0
+    },
+    "roi_percentage": {
+      "year_1": 150,
+      "year_2": 700,
+      "year_3": 2300
+    },
+    "break_even_timeline": "4-6 months",
+    "total_3_year_roi": 58000000.0
+  }
+}

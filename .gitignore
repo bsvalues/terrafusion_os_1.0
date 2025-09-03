@@ -58,6 +58,18 @@ coverage/
 # nyc test coverage
 .nyc_output
 
+# Large archive files that exceed GitHub limits
+*.zip
+*.tar.gz
+*.tar.bz2
+docs/old_builds.zip
+docs/src-tauri.zip
+docs/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK.zip
+modules/shock-and-awe/ai_systems/ai_systems/shared_assets/FRESH_REPOSITORIES/TerraBuild-main.zip
+modules/shock-and-awe/ai_systems/ai_systems/shared_assets/FRESH_REPOSITORIES/TerraFusionPlayground-main.zip
+modules/shock-and-awe/terrafusion-shock-awe-hostinger-fixed.tar.gz
+modules/shock-and-awe/terrafusion-shock-awe-hostinger.zip
+
 # Dependency directories
 jspm_packages/
 
