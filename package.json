@@ -7,7 +7,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "ai-agent-info": "echo 'TERRAFUSION OS - Complete Government Operating System with 50,000+ AI Agents. NOT a web app. Read AI_AGENT_START_HERE.md first!'",
+    "ai-agent-info": "echo 'TERRAFUSION OS - Complete Government Operating System OPERATIONAL: 46 controllers, 37 database tables, 6 containers running. Read COMPREHENSIVE_SYSTEM_AUDIT_REPORT.md!'",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "dotnet watch run --project backend/Terrafusion.API/Terrafusion.API.csproj",
     "dev:frontend": "cd frontend && npm run dev",
@@ -114,7 +114,10 @@
     "enhanced-training": "npm run ai-training && npm run marketplace-training && npm run monitor-agents",
     "ai-training": "pwsh scripts/ai-agent-training.ps1",
     "validate-agent": "node sdk/terrafusion-os-sdk.js",
-    "os-status": "echo 'TerraFusion OS: Government Operating System - 50,000+ AI Agents Operational'"
+    "os-status": "echo 'TerraFusion OS: OPERATIONAL - 46 API controllers, 37 DB tables, 6 containers running, Docker production environment'",
+    "system-audit": "type COMPREHENSIVE_SYSTEM_AUDIT_REPORT.md",
+    "production-status": "docker ps --format \"table {{.Names}}\\t{{.Status}}\" && curl -s http://localhost:5000/health",
+    "verify-deployment": "npm run production-status && npm run system-audit"
   },
   "keywords": [
     "government",

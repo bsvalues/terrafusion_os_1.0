@@ -253,10 +253,17 @@ logs/
 *.sqlite
 *.sqlite3
 
+# Docker data volumes
+data/postgres/
+data/postgres-gov/
+data/redis/
+data/redis-gov/
+
 # Backup files
 *.bak
 *.backup
 *.old
+backups/
 
 # Test results
 test-results/
