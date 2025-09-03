@@ -486,7 +486,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
                 SystemId = "harris_pacs_12_4_7",
                 SystemName = "Harris PACS v12.4.7",
                 SystemType = "harris_pacs",
-                ConnectionString = "Data Source=harris_pacs.db",
+                ConnectionString = Environment.GetEnvironmentVariable("HARRIS_PACS_CONNECTION_STRING") ?? "Data Source=harris_pacs.db",
                 EnableAutoSync = true,
                 SyncInterval = TimeSpan.FromMinutes(15)
             },
@@ -495,7 +495,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
                 SystemId = "tyler_iasworld",
                 SystemName = "Tyler iasWorld",
                 SystemType = "tyler_iasworld",
-                ConnectionString = "Data Source=tyler.db",
+                ConnectionString = Environment.GetEnvironmentVariable("TYLER_CONNECTION_STRING") ?? "Data Source=tyler.db",
                 EnableAutoSync = false,
                 SyncInterval = TimeSpan.FromHours(1)
             },
@@ -504,7 +504,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
                 SystemId = "aumentum_cama",
                 SystemName = "Aumentum CAMA",
                 SystemType = "aumentum_cama",
-                ConnectionString = "Data Source=aumentum.db",
+                ConnectionString = Environment.GetEnvironmentVariable("AUMENTUM_CONNECTION_STRING") ?? "Data Source=aumentum.db",
                 EnableAutoSync = false,
                 SyncInterval = TimeSpan.FromHours(2)
             }

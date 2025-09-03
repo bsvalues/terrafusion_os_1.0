@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TerraFusion.API.Security;
+using TerraFusion.API.Configuration;
 
 namespace TerraFusion.API.Controllers
 {
@@ -17,12 +18,18 @@ namespace TerraFusion.API.Controllers
         private readonly IJwtAuthService _jwtAuthService;
         private readonly ILogger<AuthController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly ISecureConfigurationService _secureConfig;
 
-        public AuthController(IJwtAuthService jwtAuthService, ILogger<AuthController> logger, IConfiguration configuration)
+        public AuthController(
+            IJwtAuthService jwtAuthService, 
+            ILogger<AuthController> logger, 
+            IConfiguration configuration,
+            ISecureConfigurationService secureConfig)
         {
             _jwtAuthService = jwtAuthService;
             _logger = logger;
             _configuration = configuration;
+            _secureConfig = secureConfig;
         }
 
         [HttpPost("login")]
@@ -114,32 +121,38 @@ namespace TerraFusion.API.Controllers
         {
             await Task.Delay(100);
 
-            // SECURITY: Load users from configuration instead of hardcoding
-            var adminUsername = _configuration["Authentication:Admin:Username"];
-            var adminPassword = _configuration["Authentication:Admin:Password"];
-            var assessorUsername = _configuration["Authentication:Assessor:Username"];
-            var assessorPassword = _configuration["Authentication:Assessor:Password"];
-            var demoUsername = _configuration["Authentication:Demo:Username"];
-            var demoPassword = _configuration["Authentication:Demo:Password"];
+            try
+            {
+                // Load credentials from secure configuration (Azure Key Vault or fallback to config)
+                var adminPassword = await _secureConfig.GetSecretAsync("Authentication--AdminPassword");
+                var assessorPassword = await _secureConfig.GetSecretAsync("Authentication--AssessorPassword");
+                var demoPassword = await _secureConfig.GetSecretAsync("Authentication--DemoPassword");
 
-            if (!string.IsNullOrEmpty(adminUsername) && !string.IsNullOrEmpty(adminPassword) &&
-                username == adminUsername && password == adminPassword)
-            {
-                return (true, "admin-001", "admin@terrafusion.gov", new List<string> { "Admin", "SystemAdmin" });
-            }
-            else if (!string.IsNullOrEmpty(assessorUsername) && !string.IsNullOrEmpty(assessorPassword) &&
-                     username == assessorUsername && password == assessorPassword)
-            {
-                return (true, "assessor-001", "assessor@bentoncounty.gov", new List<string> { "Assessor", "User" });
-            }
-            else if (!string.IsNullOrEmpty(demoUsername) && !string.IsNullOrEmpty(demoPassword) &&
-                     username == demoUsername && password == demoPassword)
-            {
-                return (true, "demo-001", "demo@terrafusion.com", new List<string> { "User" });
-            }
+                // Check credentials against standard usernames
+                if (username == "admin" && !string.IsNullOrEmpty(adminPassword) && password == adminPassword)
+                {
+                    _logger.LogInformation("Admin user authenticated successfully");
+                    return (true, "admin-001", "admin@terrafusion.gov", new List<string> { "Admin", "SystemAdmin" });
+                }
+                else if (username == "assessor" && !string.IsNullOrEmpty(assessorPassword) && password == assessorPassword)
+                {
+                    _logger.LogInformation("Assessor user authenticated successfully");
+                    return (true, "assessor-001", "assessor@bentoncounty.gov", new List<string> { "Assessor", "User" });
+                }
+                else if (username == "demo" && !string.IsNullOrEmpty(demoPassword) && password == demoPassword)
+                {
+                    _logger.LogInformation("Demo user authenticated successfully");
+                    return (true, "demo-001", "demo@terrafusion.com", new List<string> { "User" });
+                }
 
-            _logger.LogWarning("Authentication failed for username: {Username}", username);
-            return (false, null, null, null);
+                _logger.LogWarning("Authentication failed for username: {Username}", username);
+                return (false, null, null, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during credential validation for username: {Username}", username);
+                return (false, null, null, null);
+            }
         }
 
         private string GenerateRefreshToken()

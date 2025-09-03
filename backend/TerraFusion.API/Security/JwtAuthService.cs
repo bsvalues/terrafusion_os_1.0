@@ -40,7 +40,12 @@ namespace TerraFusion.API.Security
 
         private string GenerateDefaultKey()
         {
-            return "TerraFusion-Default-Key-CHANGE-IN-PRODUCTION-" + Guid.NewGuid().ToString();
+            // Generate a cryptographically secure random key for development only
+            // WARNING: This should NEVER be used in production
+            using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+            var keyBytes = new byte[32]; // 256-bit key
+            rng.GetBytes(keyBytes);
+            return Convert.ToBase64String(keyBytes);
         }
 
         public string GenerateToken(string userId, string email, IEnumerable<string> roles)

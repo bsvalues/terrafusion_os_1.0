@@ -197,7 +197,7 @@ jobs:
 
       - name: Run integration tests
         env:
-          ConnectionStrings__DefaultConnection: "Server=localhost;Port=5432;Database=test_db;User Id=test_user;Password=test_password;"
+          ConnectionStrings__DefaultConnection: "Server=localhost;Port=5432;Database=test_db;User Id=test_user;Password=${{ secrets.TEST_DB_PASSWORD }};"
           ConnectionStrings__Redis: "localhost:6379"
         run: |
           cd backend
