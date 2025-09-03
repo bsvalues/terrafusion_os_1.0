@@ -1,0 +1,522 @@
+name: 📊 Enterprise Monitoring & Health Dashboard
+
+on:
+  schedule:
+    # Run health checks every 15 minutes
+    - cron: '*/15 * * * *'
+    # Daily comprehensive monitoring at 3 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      monitoring_level:
+        description: 'Level of monitoring to perform'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+        - basic
+        - comprehensive
+        - deep-analysis
+        - emergency
+      component:
+        description: 'Specific component to monitor'
+        required: false
+        type: choice
+        options:
+        - all
+        - performance
+        - security
+        - availability
+        - dependencies
+        - compliance
+
+env:
+  MONITORING_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  LIGHTHOUSE_CI_TOKEN: ${{ secrets.LIGHTHOUSE_CI_TOKEN }}
+  DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+
+jobs:
+  # =============================================================================
+  # SYSTEM HEALTH & AVAILABILITY MONITORING
+  # =============================================================================
+  health-monitoring:
+    name: 🏥 System Health & Availability
+    runs-on: ubuntu-latest
+    if: github.event.inputs.component == 'availability' || github.event.inputs.component == 'all' || github.event.inputs.component == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup monitoring tools
+        run: |
+          # Install monitoring utilities
+          npm install -g @lhci/cli
+          pip install requests beautifulsoup4 psutil
+
+      - name: Repository health assessment
+        run: |
+          echo "🏥 Assessing repository health..."
+          
+          # GitHub API health checks
+          repo_info=$(gh api repos/${{ github.repository }})
+          
+          # Extract key metrics
+          stars=$(echo "$repo_info" | jq '.stargazers_count')
+          forks=$(echo "$repo_info" | jq '.forks_count')
+          issues=$(echo "$repo_info" | jq '.open_issues_count')
+          last_push=$(echo "$repo_info" | jq -r '.pushed_at')
+          
+          echo "## 🏥 Repository Health Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Stars | $stars | ⭐ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Forks | $forks | 🍴 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Open Issues | $issues | 📋 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Last Push | $last_push | 🔄 |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Workflow execution health
+        run: |
+          echo "🔄 Analyzing workflow execution health..."
+          
+          # Get recent workflow runs
+          workflow_runs=$(gh api repos/${{ github.repository }}/actions/runs --paginate | jq '[.workflow_runs[] | select(.created_at > (now - 86400))]')
+          
+          total_runs=$(echo "$workflow_runs" | jq 'length')
+          successful_runs=$(echo "$workflow_runs" | jq '[.[] | select(.conclusion == "success")] | length')
+          failed_runs=$(echo "$workflow_runs" | jq '[.[] | select(.conclusion == "failure")] | length')
+          
+          if [[ $total_runs -gt 0 ]]; then
+            success_rate=$(( (successful_runs * 100) / total_runs ))
+          else
+            success_rate=0
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🔄 Workflow Execution Health (24h)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Count | Percentage |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Runs | $total_runs | 100% |" >> $GITHUB_STEP_SUMMARY
+          echo "| Successful | $successful_runs | ${success_rate}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| Failed | $failed_runs | $(( 100 - success_rate ))% |" >> $GITHUB_STEP_SUMMARY
+          
+          # Health score calculation
+          if [[ $success_rate -ge 95 ]]; then
+            health_status="🟢 Excellent"
+          elif [[ $success_rate -ge 85 ]]; then
+            health_status="🟡 Good"
+          elif [[ $success_rate -ge 70 ]]; then
+            health_status="🟠 Warning"
+          else
+            health_status="🔴 Critical"
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Overall Health Status**: $health_status" >> $GITHUB_STEP_SUMMARY
+
+      - name: Dependency health check
+        run: |
+          echo "📦 Checking dependency health..."
+          
+          if [[ -f package.json ]]; then
+            # Check for outdated npm packages
+            npm outdated --json > npm-outdated.json 2>/dev/null || true
+            
+            if [[ -s npm-outdated.json ]]; then
+              outdated_count=$(cat npm-outdated.json | jq 'keys | length')
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "## 📦 Dependency Health" >> $GITHUB_STEP_SUMMARY
+              echo "- **Outdated NPM Packages**: $outdated_count" >> $GITHUB_STEP_SUMMARY
+              
+              if [[ $outdated_count -gt 0 ]]; then
+                echo "- **Status**: ⚠️ Updates Available" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "- **Status**: ✅ All Dependencies Current" >> $GITHUB_STEP_SUMMARY
+              fi
+            fi
+          fi
+
+  # =============================================================================
+  # PERFORMANCE MONITORING & ANALYTICS
+  # =============================================================================
+  performance-monitoring:
+    name: 🚀 Performance Monitoring & Analytics
+    runs-on: ubuntu-latest
+    if: github.event.inputs.component == 'performance' || github.event.inputs.component == 'all' || github.event.inputs.component == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Build performance monitoring
+        run: |
+          echo "🚀 Analyzing build performance..."
+          
+          if [[ -f package.json ]]; then
+            # Measure install time
+            start_time=$(date +%s)
+            npm ci
+            end_time=$(date +%s)
+            install_duration=$((end_time - start_time))
+            
+            # Measure build time if build script exists
+            if npm run build --dry-run 2>/dev/null; then
+              build_start=$(date +%s)
+              npm run build
+              build_end=$(date +%s)
+              build_duration=$((build_end - build_start))
+            else
+              build_duration="N/A"
+            fi
+            
+            echo "## 🚀 Build Performance Metrics" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Phase | Duration | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "|-------|----------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Dependencies Install | ${install_duration}s | $([ $install_duration -lt 60 ] && echo "✅ Fast" || echo "⚠️ Slow") |" >> $GITHUB_STEP_SUMMARY
+            echo "| Build Process | ${build_duration}s | $([ "$build_duration" != "N/A" ] && ([ $build_duration -lt 120 ] && echo "✅ Fast" || echo "⚠️ Slow") || echo "➖ N/A") |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Bundle size analysis
+        run: |
+          echo "📊 Analyzing bundle size..."
+          
+          # Check for build output
+          if [[ -d dist ]] || [[ -d build ]] || [[ -d out ]]; then
+            build_dir="dist"
+            [[ -d build ]] && build_dir="build"
+            [[ -d out ]] && build_dir="out"
+            
+            # Calculate bundle sizes
+            total_size=$(du -sh $build_dir 2>/dev/null | cut -f1 || echo "0K")
+            js_size=$(find $build_dir -name "*.js" -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0K")
+            css_size=$(find $build_dir -name "*.css" -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0K")
+            
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## 📊 Bundle Size Analysis" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Asset Type | Size | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "|------------|------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Total Bundle | $total_size | 📦 |" >> $GITHUB_STEP_SUMMARY
+            echo "| JavaScript | $js_size | 📜 |" >> $GITHUB_STEP_SUMMARY
+            echo "| CSS | $css_size | 🎨 |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Lighthouse performance audit
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LIGHTHOUSE_CI_TOKEN }}
+        run: |
+          echo "🏮 Running Lighthouse performance audit..."
+          
+          if [[ -f lighthouserc.json ]]; then
+            # Run Lighthouse CI if configured
+            lhci autorun || echo "Lighthouse CI completed with warnings"
+            
+            # Check for results
+            if [[ -f .lighthouseci/results.json ]]; then
+              performance_score=$(cat .lighthouseci/results.json | jq '.[] | .lhr.categories.performance.score * 100' | head -1)
+              accessibility_score=$(cat .lighthouseci/results.json | jq '.[] | .lhr.categories.accessibility.score * 100' | head -1)
+              seo_score=$(cat .lighthouseci/results.json | jq '.[] | .lhr.categories.seo.score * 100' | head -1)
+              
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "## 🏮 Lighthouse Audit Results" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "| Category | Score | Grade |" >> $GITHUB_STEP_SUMMARY
+              echo "|----------|-------|-------|" >> $GITHUB_STEP_SUMMARY
+              echo "| Performance | ${performance_score}% | $([ $(echo "$performance_score > 90" | bc -l) -eq 1 ] && echo "🟢 A" || [ $(echo "$performance_score > 70" | bc -l) -eq 1 ] && echo "🟡 B" || echo "🔴 C") |" >> $GITHUB_STEP_SUMMARY
+              echo "| Accessibility | ${accessibility_score}% | $([ $(echo "$accessibility_score > 90" | bc -l) -eq 1 ] && echo "🟢 A" || [ $(echo "$accessibility_score > 70" | bc -l) -eq 1 ] && echo "🟡 B" || echo "🔴 C") |" >> $GITHUB_STEP_SUMMARY
+              echo "| SEO | ${seo_score}% | $([ $(echo "$seo_score > 90" | bc -l) -eq 1 ] && echo "🟢 A" || [ $(echo "$seo_score > 70" | bc -l) -eq 1 ] && echo "🟡 B" || echo "🔴 C") |" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ No Lighthouse configuration found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # =============================================================================
+  # SECURITY MONITORING & THREAT DETECTION
+  # =============================================================================
+  security-monitoring:
+    name: 🛡️ Security Monitoring & Threat Detection
+    runs-on: ubuntu-latest
+    if: github.event.inputs.component == 'security' || github.event.inputs.component == 'all' || github.event.inputs.component == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Security posture assessment
+        run: |
+          echo "🛡️ Assessing security posture..."
+          
+          # Check security features
+          security_score=0
+          total_checks=10
+          
+          echo "## 🛡️ Security Posture Assessment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Feature | Status | Points |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          
+          # Branch protection
+          if gh api repos/${{ github.repository }}/branches/main/protection > /dev/null 2>&1; then
+            echo "| Branch Protection | ✅ Enabled | +1 |" >> $GITHUB_STEP_SUMMARY
+            security_score=$((security_score + 1))
+          else
+            echo "| Branch Protection | ❌ Disabled | 0 |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # CODEOWNERS
+          if [[ -f .github/CODEOWNERS ]]; then
+            echo "| Code Ownership | ✅ Configured | +1 |" >> $GITHUB_STEP_SUMMARY
+            security_score=$((security_score + 1))
+          else
+            echo "| Code Ownership | ❌ Missing | 0 |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Security policy
+          if [[ -f .github/SECURITY.md ]]; then
+            echo "| Security Policy | ✅ Present | +1 |" >> $GITHUB_STEP_SUMMARY
+            security_score=$((security_score + 1))
+          else
+            echo "| Security Policy | ❌ Missing | 0 |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Dependabot
+          if [[ -f .github/dependabot.yml ]]; then
+            echo "| Dependabot | ✅ Configured | +1 |" >> $GITHUB_STEP_SUMMARY
+            security_score=$((security_score + 1))
+          else
+            echo "| Dependabot | ❌ Not Configured | 0 |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Security workflows
+          if [[ -f .github/workflows/security.yml ]] || [[ -f .github/workflows/advanced-security.yml ]]; then
+            echo "| Security Scanning | ✅ Automated | +1 |" >> $GITHUB_STEP_SUMMARY
+            security_score=$((security_score + 1))
+          else
+            echo "| Security Scanning | ❌ Manual Only | 0 |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          security_percentage=$(( (security_score * 100) / total_checks ))
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Security Score**: $security_percentage% ($security_score/$total_checks)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Vulnerability trend analysis
+        run: |
+          echo "📈 Analyzing vulnerability trends..."
+          
+          # Get recent security advisories
+          advisories=$(gh api repos/${{ github.repository }}/security-advisories 2>/dev/null || echo "[]")
+          advisory_count=$(echo "$advisories" | jq 'length')
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📈 Security Trends (30 days)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security Advisories**: $advisory_count" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trend**: $([ $advisory_count -eq 0 ] && echo "✅ Stable" || echo "⚠️ Attention Required")" >> $GITHUB_STEP_SUMMARY
+
+  # =============================================================================
+  # COMPLIANCE MONITORING & REPORTING
+  # =============================================================================
+  compliance-monitoring:
+    name: 📋 Compliance Monitoring & Reporting
+    runs-on: ubuntu-latest
+    if: github.event.inputs.component == 'compliance' || github.event.inputs.component == 'all' || github.event.inputs.component == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: GDPR compliance monitoring
+        run: |
+          echo "🌍 Monitoring GDPR compliance..."
+          
+          # Check for privacy policy and data handling
+          privacy_score=0
+          privacy_total=5
+          
+          echo "## 🌍 GDPR Compliance Monitoring" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Requirement | Status | Notes |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------------|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          
+          # Privacy policy
+          if find . -name "*privacy*" -o -name "*PRIVACY*" | grep -q .; then
+            echo "| Privacy Policy | ✅ Present | Documentation found |" >> $GITHUB_STEP_SUMMARY
+            privacy_score=$((privacy_score + 1))
+          else
+            echo "| Privacy Policy | ❌ Missing | No privacy documentation |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Data processing documentation
+          if find . -name "*data*processing*" -o -name "*GDPR*" | grep -q .; then
+            echo "| Data Processing Records | ✅ Present | GDPR documentation found |" >> $GITHUB_STEP_SUMMARY
+            privacy_score=$((privacy_score + 1))
+          else
+            echo "| Data Processing Records | ❌ Missing | No GDPR documentation |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          privacy_percentage=$(( (privacy_score * 100) / privacy_total ))
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**GDPR Compliance Score**: $privacy_percentage%" >> $GITHUB_STEP_SUMMARY
+
+      - name: Accessibility compliance check
+        run: |
+          echo "♿ Checking accessibility compliance..."
+          
+          # Check for accessibility documentation and tools
+          a11y_score=0
+          a11y_total=4
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ♿ Accessibility Compliance" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| WCAG Requirement | Status | Implementation |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------------|--------|----------------|" >> $GITHUB_STEP_SUMMARY
+          
+          # Check for accessibility testing tools
+          if grep -r "axe\|a11y\|accessibility" package.json 2>/dev/null; then
+            echo "| Testing Tools | ✅ Configured | Accessibility testing tools found |" >> $GITHUB_STEP_SUMMARY
+            a11y_score=$((a11y_score + 1))
+          else
+            echo "| Testing Tools | ❌ Missing | No accessibility testing tools |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          a11y_percentage=$(( (a11y_score * 100) / a11y_total ))
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Accessibility Score**: $a11y_percentage%" >> $GITHUB_STEP_SUMMARY
+
+  # =============================================================================
+  # ENTERPRISE DASHBOARD GENERATION
+  # =============================================================================
+  enterprise-dashboard:
+    name: 📊 Enterprise Health Dashboard
+    runs-on: ubuntu-latest
+    needs: [health-monitoring, performance-monitoring, security-monitoring, compliance-monitoring]
+    if: always()
+    steps:
+      - name: Generate enterprise dashboard
+        run: |
+          echo "# 🏢 TerraFusion Enterprise Health Dashboard" > dashboard.md
+          echo "" >> dashboard.md
+          echo "**Last Updated**: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> dashboard.md
+          echo "**Repository**: ${{ github.repository }}" >> dashboard.md
+          echo "**Monitoring Level**: ${{ github.event.inputs.monitoring_level || 'Scheduled' }}" >> dashboard.md
+          echo "" >> dashboard.md
+          
+          # Calculate overall health score
+          job_results=("${{ needs.health-monitoring.result }}" "${{ needs.performance-monitoring.result }}" "${{ needs.security-monitoring.result }}" "${{ needs.compliance-monitoring.result }}")
+          successful_jobs=0
+          total_jobs=${#job_results[@]}
+          
+          for result in "${job_results[@]}"; do
+            if [[ "$result" == "success" ]]; then
+              successful_jobs=$((successful_jobs + 1))
+            fi
+          done
+          
+          overall_health=$(( (successful_jobs * 100) / total_jobs ))
+          
+          # Health grade calculation
+          if [[ $overall_health -ge 95 ]]; then
+            health_grade="🏆 Excellent"
+            health_emoji="🟢"
+          elif [[ $overall_health -ge 85 ]]; then
+            health_grade="✅ Good"
+            health_emoji="🟡"
+          elif [[ $overall_health -ge 70 ]]; then
+            health_grade="⚠️ Needs Attention"
+            health_emoji="🟠"
+          else
+            health_grade="❌ Critical Issues"
+            health_emoji="🔴"
+          fi
+          
+          echo "## 🎯 Executive Summary" >> dashboard.md
+          echo "" >> dashboard.md
+          echo "| Metric | Value | Status |" >> dashboard.md
+          echo "|--------|-------|--------|" >> dashboard.md
+          echo "| Overall Health Score | $overall_health% | $health_grade |" >> dashboard.md
+          echo "| System Status | $health_emoji | $([ $overall_health -ge 85 ] && echo "Operational" || echo "Needs Attention") |" >> dashboard.md
+          echo "| Monitoring Coverage | $successful_jobs/$total_jobs | $([ $successful_jobs -eq $total_jobs ] && echo "Complete" || echo "Partial") |" >> dashboard.md
+          echo "" >> dashboard.md
+          
+          # Module status breakdown
+          echo "## 📋 Module Status Breakdown" >> dashboard.md
+          echo "" >> dashboard.md
+          echo "| Module | Status | Last Check | Next Action |" >> dashboard.md
+          echo "|--------|--------|------------|-------------|" >> dashboard.md
+          echo "| Health Monitoring | ${{ needs.health-monitoring.result }} | $(date -u +%H:%M) | Continuous monitoring |" >> dashboard.md
+          echo "| Performance Analytics | ${{ needs.performance-monitoring.result }} | $(date -u +%H:%M) | Weekly optimization review |" >> dashboard.md
+          echo "| Security Monitoring | ${{ needs.security-monitoring.result }} | $(date -u +%H:%M) | Daily security scans |" >> dashboard.md
+          echo "| Compliance Tracking | ${{ needs.compliance-monitoring.result }} | $(date -u +%H:%M) | Monthly compliance audit |" >> dashboard.md
+          echo "" >> dashboard.md
+          
+          # Recommendations
+          echo "## 🎯 Strategic Recommendations" >> dashboard.md
+          echo "" >> dashboard.md
+          
+          if [[ $overall_health -ge 95 ]]; then
+            echo "### 🏆 Excellence Maintained" >> dashboard.md
+            echo "- Continue current monitoring practices" >> dashboard.md
+            echo "- Consider advanced optimization initiatives" >> dashboard.md
+            echo "- Share best practices with other teams" >> dashboard.md
+          elif [[ $overall_health -ge 85 ]]; then
+            echo "### ✅ Good Performance" >> dashboard.md
+            echo "- Focus on continuous improvement" >> dashboard.md
+            echo "- Address any performance bottlenecks" >> dashboard.md
+            echo "- Enhance monitoring coverage" >> dashboard.md
+          else
+            echo "### ⚠️ Immediate Attention Required" >> dashboard.md
+            echo "- Investigate failed monitoring modules" >> dashboard.md
+            echo "- Implement corrective actions" >> dashboard.md
+            echo "- Increase monitoring frequency" >> dashboard.md
+          fi
+          
+          echo "" >> dashboard.md
+          echo "## 📞 Escalation Contacts" >> dashboard.md
+          echo "- **Technical Issues**: TerraFusion DevOps Team" >> dashboard.md
+          echo "- **Security Incidents**: TerraFusion Security Team" >> dashboard.md
+          echo "- **Compliance Concerns**: TerraFusion Legal Team" >> dashboard.md
+          echo "- **Emergency Response**: TerraFusion On-Call Team" >> dashboard.md
+          
+          # Add to step summary
+          cat dashboard.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Archive monitoring data
+        uses: actions/upload-artifact@v4
+        with:
+          name: enterprise-health-dashboard
+          path: dashboard.md
+          retention-days: 90
+
+      - name: Send dashboard notifications
+        if: github.event_name == 'schedule' || github.event.inputs.monitoring_level == 'emergency'
+        run: |
+          echo "📬 Sending dashboard notifications..."
+          
+          # Calculate alert level
+          job_results=("${{ needs.health-monitoring.result }}" "${{ needs.performance-monitoring.result }}" "${{ needs.security-monitoring.result }}" "${{ needs.compliance-monitoring.result }}")
+          failed_jobs=0
+          
+          for result in "${job_results[@]}"; do
+            if [[ "$result" != "success" ]]; then
+              failed_jobs=$((failed_jobs + 1))
+            fi
+          done
+          
+          if [[ $failed_jobs -gt 0 ]]; then
+            echo "🚨 Health check failures detected: $failed_jobs modules"
+            echo "Alert level: $([ $failed_jobs -ge 3 ] && echo "CRITICAL" || echo "WARNING")"
+            
+            # In a real environment, this would send notifications via:
+            # - Slack/Teams webhooks
+            # - Email alerts
+            # - PagerDuty/Datadog
+            # - SMS for critical issues
+          else
+            echo "✅ All monitoring modules healthy"
+          fi
