@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # Configuration
-DB_CONNECTION="postgresql://terrafusion_user:password@localhost:5432/terrafusion_production"
+DB_CONNECTION="${DATABASE_URL:-postgresql://terrafusion_user:${DB_PASSWORD:-password}@localhost:5432/terrafusion_production}"
 ACTION="create"
 SCHEMA_VERSION="v1.0.0"
 DRY_RUN=false

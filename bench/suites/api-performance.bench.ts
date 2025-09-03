@@ -43,8 +43,8 @@ export default function() {
   // Benchmark: Authentication endpoint
   const authStart = Date.now();
   const authRes = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({
-    username: 'benchmark@bentoncounty.gov',
-    password: 'BenchmarkTest123!',
+    username: __ENV.BENCH_USERNAME || 'benchmark@bentoncounty.gov',
+    password: __ENV.BENCH_PASSWORD || 'BenchmarkTest123!',
     mfa_code: '123456'  // Testing MFA performance
   }), {
     headers: { 'Content-Type': 'application/json' },
@@ -143,7 +143,8 @@ function htmlReport(data) {
   return `
 <!DOCTYPE html>
 <html>
-<head><>
+<head>
+<>
 <>
 <>
 <>
@@ -162,7 +163,8 @@ function htmlReport(data) {
     th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
   </style>
 </head>
-<body><>
+<body>
+<>
 <>
 <>
 <>
@@ -172,7 +174,8 @@ function htmlReport(data) {
 </>
 </>
 </>
-</> class="metric"><>
+</> class="metric">
+<>
 <>
 <>
 <>
@@ -184,7 +187,8 @@ function htmlReport(data) {
 </>
 </>>
       <tr><th>Percentile</th><th>Latency (ms)</th><th>Target</th><th>Status</th></tr>
-      <tr><>
+      <tr>
+<>
 <>
 <>
 <>
@@ -194,7 +198,8 @@ function htmlReport(data) {
 </>
 </>
 </>
-</>>${metrics.api_latency.values['p(50)'].toFixed(2)}</td><>
+</>>${metrics.api_latency.values['p(50)'].toFixed(2)}</td>
+<>
 <>
 <>
 <>
@@ -208,7 +213,8 @@ function htmlReport(data) {
           ${metrics.api_latency.values['p(50)'] < 50 ? '✅' : '❌'}
         </td>
       </tr>
-      <tr><>
+      <tr>
+<>
 <>
 <>
 <>
@@ -218,7 +224,8 @@ function htmlReport(data) {
 </>
 </>
 </>
-</>>${metrics.api_latency.values['p(95)'].toFixed(2)}</td><>
+</>>${metrics.api_latency.values['p(95)'].toFixed(2)}</td>
+<>
 <>
 <>
 <>
@@ -232,7 +239,8 @@ function htmlReport(data) {
           ${metrics.api_latency.values['p(95)'] < 200 ? '✅' : '❌'}
         </td>
       </tr>
-      <tr><>
+      <tr>
+<>
 <>
 <>
 <>
@@ -242,7 +250,8 @@ function htmlReport(data) {
 </>
 </>
 </>
-</>>${metrics.api_latency.values['p(99)'].toFixed(2)}</td><>
+</>>${metrics.api_latency.values['p(99)'].toFixed(2)}</td>
+<>
 <>
 <>
 <>
@@ -258,7 +267,8 @@ function htmlReport(data) {
       </tr>
     </table>
   </div>
-  <div class="metric"><>
+  <div class="metric">
+<>
 <>
 <>
 <>
@@ -268,7 +278,8 @@ function htmlReport(data) {
 </>
 </>
 </>
-</>>Current: ${(metrics.api_errors.rate * 100).toFixed(2)}%</p><>
+</>>Current: ${(metrics.api_errors.rate * 100).toFixed(2)}%</p>
+<>
 <>
 <>
 <>

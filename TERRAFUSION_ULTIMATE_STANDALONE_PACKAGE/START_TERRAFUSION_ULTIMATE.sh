@@ -48,9 +48,9 @@ COUNTY_STATE=WA
 ASPNETCORE_ENVIRONMENT=Production
 
 # Database Configuration
-POSTGRES_PASSWORD=TerraDivineDB2025!
-POSTGRES_USER=terrafusion_admin
-POSTGRES_DB=terrafusion
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-$(openssl rand -base64 32)}
+POSTGRES_USER=${POSTGRES_USER:-terrafusion_admin}
+POSTGRES_DB=${POSTGRES_DB:-terrafusion}
 
 # AI Configuration
 AI_SWARM_SIZE=1008
