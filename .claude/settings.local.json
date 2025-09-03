@@ -169,7 +169,8 @@
       "Bash(dotnet format:*)",
       "Bash(cargo check:*)",
       "Bash(gh workflow:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(zip:*)"
     ],
     "deny": [],
     "ask": [],
