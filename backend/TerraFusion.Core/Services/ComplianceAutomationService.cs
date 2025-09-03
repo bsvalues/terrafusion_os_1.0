@@ -78,9 +78,31 @@ namespace TerraFusion.Core.Services
         public double ComplianceScore { get; set; }
         public int TotalControls { get; set; }
         public int ImplementedControls { get; set; }
+        public required string Status { get; set; }
+
+    public class ComplianceReport
+    {
+        public string Id { get; set; }
+        public ComplianceFramework Framework { get; set; }
+        public DateTime GeneratedAt { get; set; }
+        public DateTime PeriodStart { get; set; }
+        public DateTime PeriodEnd { get; set; }
+        public ComplianceStatus OverallStatus { get; set; }
+        public List<ComplianceControl> Controls { get; set; }
+        public List<ComplianceViolation> Violations { get; set; }
+        public ComplianceMetrics Metrics { get; set; }
+        public List<ComplianceRecommendation> Recommendations { get; set; }
+    }
+
+    public class ComplianceStatus
+    {
+        public ComplianceFramework Framework { get; set; }
+        public double ComplianceScore { get; set; }
+        public int TotalControls { get; set; }
+        public int ImplementedControls { get; set; }
         public int ViolationCount { get; set; }
         public DateTime LastAssessment { get; set; }
-        public required string StatusDescription { get; set; }
+        public string Status { get; set; }
     }
 
     public class ComplianceViolation
@@ -182,13 +204,8 @@ namespace TerraFusion.Core.Services
                     Timestamp = DateTime.UtcNow,
                     Action = action,
                     UserId = userId,
-                    UserName = userId, // Default to userId for now
-                    EntityType = entityType ?? "Unknown",
-                    EntityId = Guid.NewGuid().ToString(), // Generate if not provided
+                    EntityType = entityType,
                     Data = JsonSerializer.Serialize(data),
-                    IPAddress = "Unknown", // Should be passed from HTTP context
-                    UserAgent = "System", // Default value
-                    SessionId = Guid.NewGuid().ToString(), // Generate session ID
                     ApplicableFrameworks = DetermineApplicableFrameworks(action, entityType)
                 };
 
@@ -306,7 +323,7 @@ namespace TerraFusion.Core.Services
                     ImplementedControls = implementedControls,
                     ViolationCount = violations.Count(v => v.Status != "Resolved"),
                     LastAssessment = DateTime.UtcNow,
-                    StatusDescription = complianceScore >= 95 ? "Compliant" : complianceScore >= 80 ? "Partially Compliant" : "Non-Compliant"
+                    Status = complianceScore >= 95 ? "Compliant" : complianceScore >= 80 ? "Partially Compliant" : "Non-Compliant"
                 };
 
                 return status;
@@ -520,7 +537,12 @@ namespace TerraFusion.Core.Services
                         Framework = ComplianceFramework.FISMA, 
                         Status = ComplianceControlStatus.Implemented, 
                         Evidence = "Policy documented", 
-                        ResponsibleParty = "IT Security"
+                        ResponsibleParty = "IT Security",
+                        ControlId = "AC-1",
+                        ControlName = "Access Control Policy",
+                        Severity = "High",
+                        RemediationAction = "Maintain policy",
+                        RemediatedBy = ""
                     },
                     new ComplianceControl { 
                         Id = "AU-1", 
@@ -529,7 +551,12 @@ namespace TerraFusion.Core.Services
                         Framework = ComplianceFramework.FISMA, 
                         Status = ComplianceControlStatus.Implemented, 
                         Evidence = "Policy documented", 
-                        ResponsibleParty = "Compliance Team"
+                        ResponsibleParty = "Compliance Team",
+                        ControlId = "AU-1",
+                        ControlName = "Audit and Accountability Policy",
+                        Severity = "High",
+                        RemediationAction = "Maintain policy",
+                        RemediatedBy = ""
                     },
                     new ComplianceControl { 
                         Id = "SC-1", 
@@ -538,7 +565,12 @@ namespace TerraFusion.Core.Services
                         Framework = ComplianceFramework.FISMA, 
                         Status = ComplianceControlStatus.Implemented, 
                         Evidence = "Policy documented", 
-                        ResponsibleParty = "IT Security"
+                        ResponsibleParty = "IT Security",
+                        ControlId = "SC-1",
+                        ControlName = "System and Communications Protection Policy",
+                        Severity = "High",
+                        RemediationAction = "Maintain policy",
+                        RemediatedBy = ""
                     }
                 },
                 [ComplianceFramework.NIST] = new List<ComplianceControl>
@@ -550,7 +582,12 @@ namespace TerraFusion.Core.Services
                         Framework = ComplianceFramework.NIST, 
                         Status = ComplianceControlStatus.Implemented, 
                         Evidence = "Asset inventory maintained", 
-                        ResponsibleParty = "IT Operations"
+                        ResponsibleParty = "IT Operations",
+                        ControlId = "ID.AM-1",
+                        ControlName = "Physical devices and systems are inventoried",
+                        Severity = "Medium",
+                        RemediationAction = "Maintain inventory",
+                        RemediatedBy = ""
                     },
                     new ComplianceControl { 
                         Id = "PR.AC-1", 
@@ -559,7 +596,12 @@ namespace TerraFusion.Core.Services
                         Framework = ComplianceFramework.NIST, 
                         Status = ComplianceControlStatus.Implemented, 
                         Evidence = "Identity system in place", 
-                        ResponsibleParty = "IT Security"
+                        ResponsibleParty = "IT Security",
+                        ControlId = "PR.AC-1",
+                        ControlName = "Identities and credentials are issued",
+                        Severity = "High",
+                        RemediationAction = "Maintain identity system",
+                        RemediatedBy = ""
                     }
                 }
             };

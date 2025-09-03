@@ -252,18 +252,25 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
-
-# Docker data volumes
-data/postgres/
-data/postgres-gov/
-data/redis/
-data/redis-gov/
+data/postgres*/
+data/redis*/
 
 # Backup files
 *.bak
 *.backup
 *.old
 backups/
+
+# Development environment files
+.env.development
+.env.production
+.env.staging
+
+# Build and development artifacts
+TerraFusionDevelopment/
+
+# Test artifacts
+backend/TerraFusion.API/Tests/
 
 # Test results
 test-results/
