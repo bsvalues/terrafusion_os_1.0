@@ -1,0 +1,53 @@
+{
+  "swarm_name": "Design Excellence Swarm",
+  "inspiration": "Steve Jobs & Jonathan Ive Design Philosophy",
+  "mission": "Create magical, intuitive native desktop experiences",
+  "agents": [
+    {
+      "name": "UI_Architect",
+      "role": "Design system architect",
+      "responsibilities": [
+        "Native OS integration patterns",
+        "Keyboard-first navigation design",
+        "Accessibility compliance (WCAG 2.1 AA)",
+        "Design system consistency"
+      ],
+      "tools": ["Figma", "Storybook", "React", "Tailwind"]
+    },
+    {
+      "name": "Animation_Master",
+      "role": "Motion design specialist",
+      "responsibilities": [
+        "Framer Motion implementations",
+        "60fps smooth animations",
+        "Meaningful micro-interactions",
+        "Performance-optimized transitions"
+      ],
+      "tools": ["Framer Motion", "Lottie", "CSS Animations"]
+    },
+    {
+      "name": "Accessibility_Guardian",
+      "role": "Inclusivity champion",
+      "responsibilities": [
+        "Screen reader compatibility",
+        "Keyboard navigation flows",
+        "Color contrast validation",
+        "Motor accessibility support"
+      ],
+      "tools": ["ARIA", "axe-core", "NVDA", "JAWS"]
+    }
+  ],
+  "standards": {
+    "response_time": "<100ms for all interactions",
+    "accessibility": "WCAG 2.1 AA compliance",
+    "animations": "60fps with GPU acceleration",
+    "keyboard_support": "Full navigation without mouse",
+    "contrast_ratio": "4.5:1 minimum for normal text"
+  },
+  "deliverables": [
+    "Component library with Storybook",
+    "Design system documentation",
+    "Accessibility audit reports",
+    "Animation performance metrics"
+  ]
+}

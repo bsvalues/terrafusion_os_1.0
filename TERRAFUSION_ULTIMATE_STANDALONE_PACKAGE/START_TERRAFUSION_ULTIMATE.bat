@@ -49,9 +49,9 @@ if not exist ".env.production" (
         echo ASPNETCORE_ENVIRONMENT=Production
         echo.
         echo # Database Configuration
-        echo POSTGRES_PASSWORD=^%POSTGRES_PASSWORD^%
-        echo POSTGRES_USER=^%POSTGRES_USER^%
-        echo POSTGRES_DB=^%POSTGRES_DB^%
+        echo POSTGRES_PASSWORD=TerraDivineDB2025!
+        echo POSTGRES_USER=terrafusion_admin
+        echo POSTGRES_DB=terrafusion
         echo.
         echo # AI Configuration
         echo AI_SWARM_SIZE=1008

@@ -1,0 +1,697 @@
+{
+  "id": "50dc9a9d-34ae-41ad-ae56-cea0624e3656",
+  "county": "Cowlitz County",
+  "generated_at": "2025-08-07T17:21:36.285116+00:00",
+  "customizations": {
+    "primary_color": "#1B4D3E",
+    "secondary_color": "#4A9B8E",
+    "logo_url": null,
+    "contact_info": {
+      "department": "Cowlitz County GIS Department",
+      "phone": "(360) 577-3030",
+      "email": "gis@co.cowlitz.wa.us",
+      "website": "https://www.co.cowlitz.wa.us"
+    },
+    "key_features": [
+      "Land Use Planning",
+      "Zoning Compliance",
+      "Development Tracking",
+      "Environmental Impact Assessment"
+    ],
+    "demo_scenarios": [
+      {
+        "name": "Land Use Optimization",
+        "description": "Optimize land use planning and zoning decisions",
+        "expected_outcome": "Improve development planning efficiency by 40%"
+      }
+    ]
+  },
+  "sample_properties": [
+    {
+      "id": "306d8f1b-6aa5-4e13-b188-19099c4bf28b",
+      "address": "1000 Main St",
+      "assessed_value": 100000,
+      "owner": "Property Owner 1",
+      "property_type": "Residential",
+      "square_footage": 1500,
+      "year_built": 1980,
+      "lot_size": 0.25,
+      "zoning": "R-1"
+    },
+    {
+      "id": "4314f7b9-6e6b-4f74-beca-01426e4822c4",
+      "address": "1001 Main St",
+      "assessed_value": 105000,
+      "owner": "Property Owner 2",
+      "property_type": "Residential",
+      "square_footage": 1550,
+      "year_built": 1981,
+      "lot_size": 0.35,
+      "zoning": "R-1"
+    },
+    {
+      "id": "44ac5a2b-9d67-4b8c-a352-52bbef4d831f",
+      "address": "1002 Main St",
+      "assessed_value": 110000,
+      "owner": "Property Owner 3",
+      "property_type": "Residential",
+      "square_footage": 1600,
+      "year_built": 1982,
+      "lot_size": 0.45,
+      "zoning": "R-1"
+    },
+    {
+      "id": "45a66cf2-c55a-4cae-ab28-3e2a7d70faa9",
+      "address": "1003 Main St",
+      "assessed_value": 115000,
+      "owner": "Property Owner 4",
+      "property_type": "Residential",
+      "square_footage": 1650,
+      "year_built": 1983,
+      "lot_size": 0.55,
+      "zoning": "R-1"
+    },
+    {
+      "id": "349bb66d-bb69-4b58-b2d5-8fa56bb19007",
+      "address": "1004 Main St",
+      "assessed_value": 120000,
+      "owner": "Property Owner 5",
+      "property_type": "Residential",
+      "square_footage": 1700,
+      "year_built": 1984,
+      "lot_size": 0.65,
+      "zoning": "R-1"
+    },
+    {
+      "id": "5357653b-6f4f-4fb0-b81c-c5b376c66b78",
+      "address": "1005 Main St",
+      "assessed_value": 125000,
+      "owner": "Property Owner 6",
+      "property_type": "Residential",
+      "square_footage": 1750,
+      "year_built": 1985,
+      "lot_size": 0.75,
+      "zoning": "R-1"
+    },
+    {
+      "id": "9aecf61a-e787-4f37-bc3c-2d8e85178d59",
+      "address": "1006 Main St",
+      "assessed_value": 130000,
+      "owner": "Property Owner 7",
+      "property_type": "Residential",
+      "square_footage": 1800,
+      "year_built": 1986,
+      "lot_size": 0.8500000000000001,
+      "zoning": "R-1"
+    },
+    {
+      "id": "4d244d06-37d0-49d8-b7f9-0c5d55df16a5",
+      "address": "1007 Main St",
+      "assessed_value": 135000,
+      "owner": "Property Owner 8",
+      "property_type": "Residential",
+      "square_footage": 1850,
+      "year_built": 1987,
+      "lot_size": 0.9500000000000001,
+      "zoning": "R-1"
+    },
+    {
+      "id": "7ae311aa-ae1f-44c8-8e26-345c04fde1b7",
+      "address": "1008 Main St",
+      "assessed_value": 140000,
+      "owner": "Property Owner 9",
+      "property_type": "Residential",
+      "square_footage": 1900,
+      "year_built": 1988,
+      "lot_size": 1.05,
+      "zoning": "R-1"
+    },
+    {
+      "id": "6248b975-66c8-4246-b916-83b3ca69a794",
+      "address": "1009 Main St",
+      "assessed_value": 145000,
+      "owner": "Property Owner 10",
+      "property_type": "Residential",
+      "square_footage": 1950,
+      "year_built": 1989,
+      "lot_size": 1.15,
+      "zoning": "R-1"
+    },
+    {
+      "id": "dd0fc30f-e29e-4655-b7c5-1cac35c80db7",
+      "address": "1010 Main St",
+      "assessed_value": 150000,
+      "owner": "Property Owner 11",
+      "property_type": "Residential",
+      "square_footage": 2000,
+      "year_built": 1990,
+      "lot_size": 1.25,
+      "zoning": "R-1"
+    },
+    {
+      "id": "f71e3831-c8b5-473a-bf22-9debec558cd7",
+      "address": "1011 Main St",
+      "assessed_value": 155000,
+      "owner": "Property Owner 12",
+      "property_type": "Residential",
+      "square_footage": 2050,
+      "year_built": 1991,
+      "lot_size": 1.35,
+      "zoning": "R-1"
+    },
+    {
+      "id": "a1ef6ad5-4d5c-41e1-8ee1-a56a205af058",
+      "address": "1012 Main St",
+      "assessed_value": 160000,
+      "owner": "Property Owner 13",
+      "property_type": "Residential",
+      "square_footage": 2100,
+      "year_built": 1992,
+      "lot_size": 1.4500000000000002,
+      "zoning": "R-1"
+    },
+    {
+      "id": "e49da5b3-9fcb-4168-b323-2dd0c200cac7",
+      "address": "1013 Main St",
+      "assessed_value": 165000,
+      "owner": "Property Owner 14",
+      "property_type": "Residential",
+      "square_footage": 2150,
+      "year_built": 1993,
+      "lot_size": 1.55,
+      "zoning": "R-1"
+    },
+    {
+      "id": "06082207-8a09-4891-b305-75bc40073239",
+      "address": "1014 Main St",
+      "assessed_value": 170000,
+      "owner": "Property Owner 15",
+      "property_type": "Residential",
+      "square_footage": 2200,
+      "year_built": 1994,
+      "lot_size": 1.6500000000000001,
+      "zoning": "R-1"
+    },
+    {
+      "id": "860716b3-6be7-4a2e-85cb-0e89e218fd9e",
+      "address": "1015 Main St",
+      "assessed_value": 175000,
+      "owner": "Property Owner 16",
+      "property_type": "Residential",
+      "square_footage": 2250,
+      "year_built": 1995,
+      "lot_size": 1.75,
+      "zoning": "R-1"
+    },
+    {
+      "id": "9f39a64a-15a0-47c2-9ad2-5411861e3830",
+      "address": "1016 Main St",
+      "assessed_value": 180000,
+      "owner": "Property Owner 17",
+      "property_type": "Residential",
+      "square_footage": 2300,
+      "year_built": 1996,
+      "lot_size": 1.85,
+      "zoning": "R-1"
+    },
+    {
+      "id": "273f6d5f-fa3e-41d5-a4f7-7ccb9d5ad8bc",
+      "address": "1017 Main St",
+      "assessed_value": 185000,
+      "owner": "Property Owner 18",
+      "property_type": "Residential",
+      "square_footage": 2350,
+      "year_built": 1997,
+      "lot_size": 1.9500000000000002,
+      "zoning": "R-1"
+    },
+    {
+      "id": "50805fe0-acb1-4327-82f3-2057c6aab9cb",
+      "address": "1018 Main St",
+      "assessed_value": 190000,
+      "owner": "Property Owner 19",
+      "property_type": "Residential",
+      "square_footage": 2400,
+      "year_built": 1998,
+      "lot_size": 2.05,
+      "zoning": "R-1"
+    },
+    {
+      "id": "ff67c9e3-6804-4f09-8ac5-50b5926a0f92",
+      "address": "1019 Main St",
+      "assessed_value": 195000,
+      "owner": "Property Owner 20",
+      "property_type": "Residential",
+      "square_footage": 2450,
+      "year_built": 1999,
+      "lot_size": 2.1500000000000004,
+      "zoning": "R-1"
+    },
+    {
+      "id": "fb6d2b46-7da1-4637-bd2f-a83f99ecbc55",
+      "address": "1020 Main St",
+      "assessed_value": 200000,
+      "owner": "Property Owner 21",
+      "property_type": "Residential",
+      "square_footage": 2500,
+      "year_built": 2000,
+      "lot_size": 2.25,
+      "zoning": "R-1"
+    },
+    {
+      "id": "a888cdbb-bf21-4c6c-9230-320d232ec84f",
+      "address": "1021 Main St",
+      "assessed_value": 205000,
+      "owner": "Property Owner 22",
+      "property_type": "Residential",
+      "square_footage": 2550,
+      "year_built": 2001,
+      "lot_size": 2.35,
+      "zoning": "R-1"
+    },
+    {
+      "id": "20093cb3-453b-4e54-a69e-abfcd01c6912",
+      "address": "1022 Main St",
+      "assessed_value": 210000,
+      "owner": "Property Owner 23",
+      "property_type": "Residential",
+      "square_footage": 2600,
+      "year_built": 2002,
+      "lot_size": 2.45,
+      "zoning": "R-1"
+    },
+    {
+      "id": "cbc7e862-f6d1-4fd1-a970-84627f4fc8a6",
+      "address": "1023 Main St",
+      "assessed_value": 215000,
+      "owner": "Property Owner 24",
+      "property_type": "Residential",
+      "square_footage": 2650,
+      "year_built": 2003,
+      "lot_size": 2.5500000000000003,
+      "zoning": "R-1"
+    },
+    {
+      "id": "ee46cf8e-0b6f-42b1-aff9-57a8a4090887",
+      "address": "1024 Main St",
+      "assessed_value": 220000,
+      "owner": "Property Owner 25",
+      "property_type": "Residential",
+      "square_footage": 2700,
+      "year_built": 2004,
+      "lot_size": 2.6500000000000004,
+      "zoning": "R-1"
+    },
+    {
+      "id": "7d6d6194-f608-41f5-ae82-7cc4fe5c8eb1",
+      "address": "1025 Main St",
+      "assessed_value": 225000,
+      "owner": "Property Owner 26",
+      "property_type": "Residential",
+      "square_footage": 2750,
+      "year_built": 2005,
+      "lot_size": 2.75,
+      "zoning": "R-1"
+    },
+    {
+      "id": "06344bc5-368a-4bd5-b290-27f700a87187",
+      "address": "1026 Main St",
+      "assessed_value": 230000,
+      "owner": "Property Owner 27",
+      "property_type": "Residential",
+      "square_footage": 2800,
+      "year_built": 2006,
+      "lot_size": 2.85,
+      "zoning": "R-1"
+    },
+    {
+      "id": "1e46211d-3786-43aa-a6e7-aa810c7eb130",
+      "address": "1027 Main St",
+      "assessed_value": 235000,
+      "owner": "Property Owner 28",
+      "property_type": "Residential",
+      "square_footage": 2850,
+      "year_built": 2007,
+      "lot_size": 2.95,
+      "zoning": "R-1"
+    },
+    {
+      "id": "9c3d0900-7f55-4264-b960-64814317e560",
+      "address": "1028 Main St",
+      "assessed_value": 240000,
+      "owner": "Property Owner 29",
+      "property_type": "Residential",
+      "square_footage": 2900,
+      "year_built": 2008,
+      "lot_size": 3.0500000000000003,
+      "zoning": "R-1"
+    },
+    {
+      "id": "39c2fb46-cd6f-4ea2-831d-d4f954f4b364",
+      "address": "1029 Main St",
+      "assessed_value": 245000,
+      "owner": "Property Owner 30",
+      "property_type": "Residential",
+      "square_footage": 2950,
+      "year_built": 2009,
+      "lot_size": 3.1500000000000004,
+      "zoning": "R-1"
+    },
+    {
+      "id": "8a2c628e-f7e0-470b-aca9-510ac752b860",
+      "address": "1030 Main St",
+      "assessed_value": 250000,
+      "owner": "Property Owner 31",
+      "property_type": "Residential",
+      "square_footage": 3000,
+      "year_built": 2010,
+      "lot_size": 3.25,
+      "zoning": "R-1"
+    },
+    {
+      "id": "dda14a06-96e3-4a6c-8c2f-ba207761b4c3",
+      "address": "1031 Main St",
+      "assessed_value": 255000,
+      "owner": "Property Owner 32",
+      "property_type": "Residential",
+      "square_footage": 3050,
+      "year_built": 2011,
+      "lot_size": 3.35,
+      "zoning": "R-1"
+    },
+    {
+      "id": "87b130d2-3b2b-436a-af75-82bafc9c5b27",
+      "address": "1032 Main St",
+      "assessed_value": 260000,
+      "owner": "Property Owner 33",
+      "property_type": "Residential",
+      "square_footage": 3100,
+      "year_built": 2012,
+      "lot_size": 3.45,
+      "zoning": "R-1"
+    },
+    {
+      "id": "6f3d2e16-0ab4-416b-a212-19fa9f83934a",
+      "address": "1033 Main St",
+      "assessed_value": 265000,
+      "owner": "Property Owner 34",
+      "property_type": "Residential",
+      "square_footage": 3150,
+      "year_built": 2013,
+      "lot_size": 3.5500000000000003,
+      "zoning": "R-1"
+    },
+    {
+      "id": "6b852fe1-3c67-4d2a-a22c-2d0b51db3d59",
+      "address": "1034 Main St",
+      "assessed_value": 270000,
+      "owner": "Property Owner 35",
+      "property_type": "Residential",
+      "square_footage": 3200,
+      "year_built": 2014,
+      "lot_size": 3.6500000000000004,
+      "zoning": "R-1"
+    },
+    {
+      "id": "8643d5aa-cdf3-45fc-8f09-b53d00ad9999",
+      "address": "1035 Main St",
+      "assessed_value": 275000,
+      "owner": "Property Owner 36",
+      "property_type": "Residential",
+      "square_footage": 3250,
+      "year_built": 2015,
+      "lot_size": 3.75,
+      "zoning": "R-1"
+    },
+    {
+      "id": "2f7fa4ea-c0a5-41ce-97c1-20ddaea03914",
+      "address": "1036 Main St",
+      "assessed_value": 280000,
+      "owner": "Property Owner 37",
+      "property_type": "Residential",
+      "square_footage": 3300,
+      "year_built": 2016,
+      "lot_size": 3.85,
+      "zoning": "R-1"
+    },
+    {
+      "id": "98c39341-ccf4-4de0-9106-5bf277738950",
+      "address": "1037 Main St",
+      "assessed_value": 285000,
+      "owner": "Property Owner 38",
+      "property_type": "Residential",
+      "square_footage": 3350,
+      "year_built": 2017,
+      "lot_size": 3.95,
+      "zoning": "R-1"
+    },
+    {
+      "id": "275a368a-cfce-4b45-8493-11ee23f8da8d",
+      "address": "1038 Main St",
+      "assessed_value": 290000,
+      "owner": "Property Owner 39",
+      "property_type": "Residential",
+      "square_footage": 3400,
+      "year_built": 2018,
+      "lot_size": 4.050000000000001,
+      "zoning": "R-1"
+    },
+    {
+      "id": "ccb1072d-febf-4ea5-9db0-10d5893f1c92",
+      "address": "1039 Main St",
+      "assessed_value": 295000,
+      "owner": "Property Owner 40",
+      "property_type": "Residential",
+      "square_footage": 3450,
+      "year_built": 2019,
+      "lot_size": 4.15,
+      "zoning": "R-1"
+    },
+    {
+      "id": "cdee2f68-f5ca-42e7-aa78-251dcccebc5d",
+      "address": "1040 Main St",
+      "assessed_value": 300000,
+      "owner": "Property Owner 41",
+      "property_type": "Residential",
+      "square_footage": 3500,
+      "year_built": 1980,
+      "lot_size": 4.25,
+      "zoning": "R-1"
+    },
+    {
+      "id": "6a028920-ac05-4417-8960-968cd3bea7a6",
+      "address": "1041 Main St",
+      "assessed_value": 305000,
+      "owner": "Property Owner 42",
+      "property_type": "Residential",
+      "square_footage": 3550,
+      "year_built": 1981,
+      "lot_size": 4.3500000000000005,
+      "zoning": "R-1"
+    },
+    {
+      "id": "1ddb0f23-1c07-4500-8947-b8c5238504f9",
+      "address": "1042 Main St",
+      "assessed_value": 310000,
+      "owner": "Property Owner 43",
+      "property_type": "Residential",
+      "square_footage": 3600,
+      "year_built": 1982,
+      "lot_size": 4.45,
+      "zoning": "R-1"
+    },
+    {
+      "id": "d34f96c2-5a87-4660-a832-684b8898cf69",
+      "address": "1043 Main St",
+      "assessed_value": 315000,
+      "owner": "Property Owner 44",
+      "property_type": "Residential",
+      "square_footage": 3650,
+      "year_built": 1983,
+      "lot_size": 4.55,
+      "zoning": "R-1"
+    },
+    {
+      "id": "5fc4e074-6d4f-45ee-8b0b-2d08a31d9190",
+      "address": "1044 Main St",
+      "assessed_value": 320000,
+      "owner": "Property Owner 45",
+      "property_type": "Residential",
+      "square_footage": 3700,
+      "year_built": 1984,
+      "lot_size": 4.65,
+      "zoning": "R-1"
+    },
+    {
+      "id": "d009244b-6a22-486d-8d37-4460fa591570",
+      "address": "1045 Main St",
+      "assessed_value": 325000,
+      "owner": "Property Owner 46",
+      "property_type": "Residential",
+      "square_footage": 3750,
+      "year_built": 1985,
+      "lot_size": 4.75,
+      "zoning": "R-1"
+    },
+    {
+      "id": "2650fae0-4394-473d-afd2-af9573c8e074",
+      "address": "1046 Main St",
+      "assessed_value": 330000,
+      "owner": "Property Owner 47",
+      "property_type": "Residential",
+      "square_footage": 3800,
+      "year_built": 1986,
+      "lot_size": 4.8500000000000005,
+      "zoning": "R-1"
+    },
+    {
+      "id": "3b0cc933-1f15-477f-bcb1-ef5d374ad17d",
+      "address": "1047 Main St",
+      "assessed_value": 335000,
+      "owner": "Property Owner 48",
+      "property_type": "Residential",
+      "square_footage": 3850,
+      "year_built": 1987,
+      "lot_size": 4.95,
+      "zoning": "R-1"
+    },
+    {
+      "id": "5cf10807-7ebb-4a5e-b2fd-f25e102971d4",
+      "address": "1048 Main St",
+      "assessed_value": 340000,
+      "owner": "Property Owner 49",
+      "property_type": "Residential",
+      "square_footage": 3900,
+      "year_built": 1988,
+      "lot_size": 5.050000000000001,
+      "zoning": "R-1"
+    },
+    {
+      "id": "783c9ddb-4536-42cc-a050-b6f82ad3b205",
+      "address": "1049 Main St",
+      "assessed_value": 345000,
+      "owner": "Property Owner 50",
+      "property_type": "Residential",
+      "square_footage": 3950,
+      "year_built": 1989,
+      "lot_size": 5.15,
+      "zoning": "R-1"
+    }
+  ],
+  "analytics": {
+    "total_properties": 1000,
+    "average_assessed_value": 250000,
+    "total_assessed_value": 250000000,
+    "median_assessed_value": 250000,
+    "property_type_distribution": {
+      "Unknown": 100
+    },
+    "value_ranges": {},
+    "data_quality_metrics": {
+      "completeness_score": 86.55151515151513,
+      "total_fields_analyzed": 33,
+      "sample_size": 100
+    }
+  },
+  "recommendations": [
+    {
+      "id": "18e4b765-0537-4a3c-8bba-fe52a005b1c8",
+      "title": "Optimize Cowlitz County Property Assessment Workflow",
+      "description": "Implement TerraFusion's AI-powered assessment tools to improve accuracy and efficiency",
+      "impact": "High",
+      "estimated_revenue_increase": 276825.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "3-6 months"
+    },
+    {
+      "id": "335622ed-dac8-4363-a5f3-89730abe7256",
+      "title": "Deploy Automated Valuation Models (AVM)",
+      "description": "Use machine learning to provide consistent, accurate property valuations",
+      "impact": "Very High",
+      "estimated_revenue_increase": 553650.0,
+      "implementation_complexity": "High",
+      "timeframe": "6-12 months"
+    },
+    {
+      "id": "3626ac23-b66a-461b-92d3-8c1636ccc0e2",
+      "title": "Implement Real-time Market Analysis",
+      "description": "Track market trends and automatically adjust assessments based on current conditions",
+      "impact": "High",
+      "estimated_revenue_increase": 332190.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "4-8 months"
+    }
+  ],
+  "terrafusion_features": {
+    "core_applications": [
+      {
+        "name": "TerraAgent",
+        "description": "AI-powered government assistant for citizen services",
+        "benefits": [
+          "24/7 citizen support",
+          "Reduced call center load",
+          "Improved service delivery"
+        ]
+      },
+      {
+        "name": "CostForgeAI",
+        "description": "Quantum property valuation and cost analysis",
+        "benefits": [
+          "95%+ valuation accuracy",
+          "Automated assessment updates",
+          "Appeal reduction"
+        ]
+      },
+      {
+        "name": "TerraFlow",
+        "description": "Workflow automation for government processes",
+        "benefits": [
+          "60% faster processing",
+          "Reduced manual errors",
+          "Compliance tracking"
+        ]
+      },
+      {
+        "name": "TerraInsight",
+        "description": "Advanced analytics and reporting dashboard",
+        "benefits": [
+          "Real-time insights",
+          "Predictive analytics",
+          "Custom reporting"
+        ]
+      }
+    ],
+    "county_specific_features": [
+      "Land Use Planning",
+      "Zoning Compliance",
+      "Development Tracking",
+      "Environmental Impact Assessment"
+    ],
+    "integration_capabilities": [
+      "Existing GIS systems",
+      "Property management software",
+      "Financial systems",
+      "State reporting systems",
+      "Public portals"
+    ]
+  },
+  "roi_projections": {
+    "implementation_cost": {
+      "year_1": 2214600.0,
+      "year_2": 1107300.0,
+      "year_3": 553650.0
+    },
+    "projected_savings": {
+      "year_1": 5536500.0,
+      "year_2": 8858400.0,
+      "year_3": 13287600.0
+    },
+    "roi_percentage": {
+      "year_1": 150,
+      "year_2": 700,
+      "year_3": 2300
+    },
+    "break_even_timeline": "4-6 months",
+    "total_3_year_roi": 27682500.0
+  }
+}

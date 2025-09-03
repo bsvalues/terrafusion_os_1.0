@@ -43,8 +43,8 @@ export default function() {
   // Benchmark: Authentication endpoint
   const authStart = Date.now();
   const authRes = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({
-    username: __ENV.BENCH_USERNAME || 'benchmark@bentoncounty.gov',
-    password: __ENV.BENCH_PASSWORD || 'BenchmarkTest123!',
+    username: 'benchmark@bentoncounty.gov',
+    password: 'BenchmarkTest123!',
     mfa_code: '123456'  // Testing MFA performance
   }), {
     headers: { 'Content-Type': 'application/json' },
