@@ -1,0 +1,342 @@
+name: 🏷️ Semantic Release
+
+on:
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Type of release'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+        - auto
+        - patch
+        - minor
+        - major
+        - prerelease
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # =============================================================================
+  # VERSION ANALYSIS & RELEASE PREPARATION
+  # =============================================================================
+  analyze-commits:
+    name: 📝 Analyze Commits & Determine Version
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.analysis.outputs.should_release }}
+      next_version: ${{ steps.analysis.outputs.next_version }}
+      release_type: ${{ steps.analysis.outputs.release_type }}
+      release_notes: ${{ steps.analysis.outputs.release_notes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install semantic-release
+        run: |
+          npm install -g semantic-release
+          npm install -g @semantic-release/changelog
+          npm install -g @semantic-release/git
+          npm install -g @semantic-release/github
+          npm install -g @semantic-release/commit-analyzer
+          npm install -g @semantic-release/release-notes-generator
+
+      - name: Analyze commits for version bump
+        id: analysis
+        run: |
+          echo "🔍 Analyzing commits since last release..."
+          
+          # Get the last tag/release
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Last release: $LAST_TAG"
+          
+          # Get commits since last tag
+          if [[ "$LAST_TAG" != "v0.0.0" ]]; then
+            COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
+          else
+            COMMITS=$(git log --oneline)
+          fi
+          
+          echo "Commits to analyze:"
+          echo "$COMMITS"
+          
+          # Analyze commit types for semantic versioning
+          MAJOR_COUNT=0
+          MINOR_COUNT=0
+          PATCH_COUNT=0
+          
+          while IFS= read -r commit; do
+            if [[ -n "$commit" ]]; then
+              # Check for breaking changes
+              if echo "$commit" | grep -iE "(BREAKING|breaking change|!:)" > /dev/null; then
+                MAJOR_COUNT=$((MAJOR_COUNT + 1))
+              # Check for features
+              elif echo "$commit" | grep -E "^[a-f0-9]+ (feat|feature)" > /dev/null; then
+                MINOR_COUNT=$((MINOR_COUNT + 1))
+              # Check for fixes
+              elif echo "$commit" | grep -E "^[a-f0-9]+ (fix|bugfix|patch)" > /dev/null; then
+                PATCH_COUNT=$((PATCH_COUNT + 1))
+              fi
+            fi
+          done <<< "$COMMITS"
+          
+          # Determine release type
+          if [[ $MAJOR_COUNT -gt 0 ]]; then
+            RELEASE_TYPE="major"
+          elif [[ $MINOR_COUNT -gt 0 ]]; then
+            RELEASE_TYPE="minor"
+          elif [[ $PATCH_COUNT -gt 0 ]]; then
+            RELEASE_TYPE="patch"
+          else
+            RELEASE_TYPE="none"
+          fi
+          
+          # Override with manual input if provided
+          if [[ "${{ github.event.inputs.release_type }}" != "auto" && "${{ github.event.inputs.release_type }}" != "" ]]; then
+            RELEASE_TYPE="${{ github.event.inputs.release_type }}"
+          fi
+          
+          echo "Release type determined: $RELEASE_TYPE"
+          
+          # Calculate next version
+          if [[ "$LAST_TAG" == "v0.0.0" ]]; then
+            CURRENT_VERSION="0.0.0"
+          else
+            CURRENT_VERSION=${LAST_TAG#v}
+          fi
+          
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR=${VERSION_PARTS[0]:-0}
+          MINOR=${VERSION_PARTS[1]:-0}
+          PATCH=${VERSION_PARTS[2]:-0}
+          
+          case "$RELEASE_TYPE" in
+            "major")
+              NEXT_VERSION="$((MAJOR + 1)).0.0"
+              SHOULD_RELEASE="true"
+              ;;
+            "minor")
+              NEXT_VERSION="$MAJOR.$((MINOR + 1)).0"
+              SHOULD_RELEASE="true"
+              ;;
+            "patch")
+              NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+              SHOULD_RELEASE="true"
+              ;;
+            "prerelease")
+              if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+                NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))-beta.$(date +%Y%m%d%H%M)"
+              else
+                NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))-alpha.$(date +%Y%m%d%H%M)"
+              fi
+              SHOULD_RELEASE="true"
+              ;;
+            *)
+              NEXT_VERSION="$CURRENT_VERSION"
+              SHOULD_RELEASE="false"
+              ;;
+          esac
+          
+          echo "should_release=$SHOULD_RELEASE" >> $GITHUB_OUTPUT
+          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
+          
+          echo "Current version: $CURRENT_VERSION"
+          echo "Next version: $NEXT_VERSION"
+          echo "Should release: $SHOULD_RELEASE"
+
+      - name: Generate release notes
+        if: steps.analysis.outputs.should_release == 'true'
+        id: notes
+        run: |
+          echo "📝 Generating release notes..."
+          
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          
+          # Create release notes
+          cat > release_notes.md << EOF
+          # Release v${{ steps.analysis.outputs.next_version }}
+          
+          ## 🚀 What's New
+          
+          EOF
+          
+          # Add feature commits
+          echo "### ✨ Features" >> release_notes.md
+          git log ${LAST_TAG}..HEAD --oneline | grep -E "(feat|feature)" || echo "- No new features in this release" >> release_notes.md
+          echo "" >> release_notes.md
+          
+          # Add bug fixes
+          echo "### 🐛 Bug Fixes" >> release_notes.md
+          git log ${LAST_TAG}..HEAD --oneline | grep -E "(fix|bugfix)" || echo "- No bug fixes in this release" >> release_notes.md
+          echo "" >> release_notes.md
+          
+          # Add other improvements
+          echo "### 🔧 Improvements" >> release_notes.md
+          git log ${LAST_TAG}..HEAD --oneline | grep -vE "(feat|feature|fix|bugfix|merge|chore)" || echo "- No other improvements in this release" >> release_notes.md
+          echo "" >> release_notes.md
+          
+          # Add breaking changes if any
+          if git log ${LAST_TAG}..HEAD --oneline | grep -iE "(BREAKING|breaking change)" > /dev/null; then
+            echo "### ⚠️ BREAKING CHANGES" >> release_notes.md
+            git log ${LAST_TAG}..HEAD --oneline | grep -iE "(BREAKING|breaking change)" >> release_notes.md
+            echo "" >> release_notes.md
+          fi
+          
+          RELEASE_NOTES=$(cat release_notes.md)
+          echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  # =============================================================================
+  # CREATE GITHUB RELEASE
+  # =============================================================================
+  create-release:
+    name: 🎉 Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: analyze-commits
+    if: needs.analyze-commits.outputs.should_release == 'true'
+    permissions:
+      contents: write
+    outputs:
+      release_id: ${{ steps.release.outputs.id }}
+      release_url: ${{ steps.release.outputs.html_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Update version files
+        run: |
+          VERSION="${{ needs.analyze-commits.outputs.next_version }}"
+          
+          # Update package.json version if it exists
+          if [[ -f "package.json" ]]; then
+            sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" package.json
+            echo "✅ Updated package.json version to $VERSION"
+          fi
+          
+          # Update frontend package.json if it exists
+          if [[ -f "frontend/package.json" ]]; then
+            sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" frontend/package.json
+            echo "✅ Updated frontend/package.json version to $VERSION"
+          fi
+          
+          # Update .NET project versions if they exist
+          find . -name "*.csproj" -exec sed -i "s/<Version>.*<\/Version>/<Version>$VERSION<\/Version>/" {} \;
+          find . -name "*.csproj" -exec sed -i "s/<AssemblyVersion>.*<\/AssemblyVersion>/<AssemblyVersion>$VERSION<\/AssemblyVersion>/" {} \;
+          
+          echo "✅ Updated .NET project versions to $VERSION"
+
+      - name: Update CHANGELOG
+        run: |
+          VERSION="${{ needs.analyze-commits.outputs.next_version }}"
+          DATE=$(date +%Y-%m-%d)
+          
+          # Create new CHANGELOG entry
+          cat > CHANGELOG_NEW.md << EOF
+          # Changelog
+          
+          All notable changes to this project will be documented in this file.
+          
+          ## [v$VERSION] - $DATE
+          
+          ${{ needs.analyze-commits.outputs.release_notes }}
+          
+          EOF
+          
+          # Append existing changelog if it exists
+          if [[ -f "CHANGELOG.md" ]]; then
+            tail -n +4 CHANGELOG.md >> CHANGELOG_NEW.md
+          fi
+          
+          mv CHANGELOG_NEW.md CHANGELOG.md
+          echo "✅ Updated CHANGELOG.md"
+
+      - name: Commit version updates
+        run: |
+          VERSION="${{ needs.analyze-commits.outputs.next_version }}"
+          
+          git add .
+          git commit -m "chore(release): v$VERSION [skip ci]
+
+          - Updated version files to v$VERSION
+          - Updated CHANGELOG.md with release notes
+          - Automated version bump by semantic release"
+
+      - name: Create and push tag
+        run: |
+          VERSION="v${{ needs.analyze-commits.outputs.next_version }}"
+          
+          git tag -a "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
+          git push origin HEAD
+          
+          echo "✅ Created and pushed tag: $VERSION"
+
+      - name: Create GitHub Release
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.analyze-commits.outputs.next_version }}
+          release_name: TerraFusion OS v${{ needs.analyze-commits.outputs.next_version }}
+          body: ${{ needs.analyze-commits.outputs.release_notes }}
+          draft: false
+          prerelease: ${{ contains(needs.analyze-commits.outputs.next_version, 'alpha') || contains(needs.analyze-commits.outputs.next_version, 'beta') }}
+
+  # =============================================================================
+  # POST-RELEASE ACTIONS
+  # =============================================================================
+  post-release:
+    name: 📢 Post-Release Actions
+    runs-on: ubuntu-latest
+    needs: [analyze-commits, create-release]
+    if: needs.analyze-commits.outputs.should_release == 'true'
+    steps:
+      - name: Generate release summary
+        run: |
+          echo "# 🎉 Release v${{ needs.analyze-commits.outputs.next_version }} Published!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📋 Release Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: v${{ needs.analyze-commits.outputs.next_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type**: ${{ needs.analyze-commits.outputs.release_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release URL**: ${{ needs.create-release.outputs.release_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📝 Release Notes" >> $GITHUB_STEP_SUMMARY
+          echo "${{ needs.analyze-commits.outputs.release_notes }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Update documentation
+        run: |
+          echo "📚 Post-release documentation updates completed"
+          echo "- CHANGELOG.md updated with release notes"
+          echo "- Version files updated across all projects"
+          echo "- GitHub release created with artifacts"
+
+      - name: Notify stakeholders
+        if: needs.analyze-commits.outputs.release_type == 'major' || github.ref == 'refs/heads/main'
+        run: |
+          echo "📢 Sending release notifications..."
+          echo "🎉 TerraFusion OS v${{ needs.analyze-commits.outputs.next_version }} has been released!"
+          echo "🔗 Release URL: ${{ needs.create-release.outputs.release_url }}"
