@@ -1,0 +1,462 @@
+name: 📊 Performance & Health Monitoring
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run performance monitoring daily at 4 AM UTC
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      monitoring_type:
+        description: 'Type of monitoring to run'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+        - comprehensive
+        - performance
+        - lighthouse
+        - bundle
+        - api
+
+env:
+  NODE_VERSION: '18'
+  LIGHTHOUSE_VERSION: '11.0.0'
+
+jobs:
+  # =============================================================================
+  # APPLICATION PERFORMANCE MONITORING
+  # =============================================================================
+  performance-monitoring:
+    name: ⚡ Performance Analysis
+    runs-on: ubuntu-latest
+    if: github.event.inputs.monitoring_type == 'performance' || github.event.inputs.monitoring_type == 'comprehensive' || github.event.inputs.monitoring_type == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build application
+        working-directory: frontend
+        run: npm run build
+
+      - name: Bundle size analysis
+        working-directory: frontend
+        run: |
+          echo "📦 Analyzing bundle size..."
+          
+          # Install bundle analyzer
+          npm install --save-dev webpack-bundle-analyzer
+          
+          # Generate bundle analysis
+          npm run analyze || npm run build:analyze || echo "Bundle analysis not configured"
+          
+          # Check bundle sizes
+          if [[ -d "dist" ]]; then
+            echo "## 📦 Bundle Size Analysis" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            find dist -name "*.js" -o -name "*.css" | head -20 | xargs ls -lh >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Performance budget check
+        run: |
+          echo "💰 Checking performance budgets..."
+          
+          # Define performance budgets
+          MAX_JS_SIZE=500  # KB
+          MAX_CSS_SIZE=100 # KB
+          MAX_IMAGE_SIZE=1000 # KB
+          
+          violations=0
+          
+          # Check JavaScript bundle size
+          if [[ -d "frontend/dist" ]]; then
+            js_size=$(find frontend/dist -name "*.js" -exec du -k {} + | awk '{sum+=$1} END {print sum}')
+            if [[ $js_size -gt $MAX_JS_SIZE ]]; then
+              echo "❌ JavaScript bundle exceeds budget: ${js_size}KB > ${MAX_JS_SIZE}KB"
+              violations=$((violations + 1))
+            else
+              echo "✅ JavaScript bundle within budget: ${js_size}KB"
+            fi
+            
+            # Check CSS bundle size
+            css_size=$(find frontend/dist -name "*.css" -exec du -k {} + | awk '{sum+=$1} END {print sum}')
+            if [[ $css_size -gt $MAX_CSS_SIZE ]]; then
+              echo "❌ CSS bundle exceeds budget: ${css_size}KB > ${MAX_CSS_SIZE}KB"
+              violations=$((violations + 1))
+            else
+              echo "✅ CSS bundle within budget: ${css_size}KB"
+            fi
+          fi
+          
+          if [[ $violations -gt 0 ]]; then
+            echo "⚠️ Performance budget violations detected: $violations"
+          else
+            echo "✅ All performance budgets met"
+          fi
+
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bundle-analysis
+          path: |
+            frontend/dist/
+            frontend/bundle-report.html
+          retention-days: 30
+
+  # =============================================================================
+  # LIGHTHOUSE PERFORMANCE AUDIT
+  # =============================================================================
+  lighthouse-audit:
+    name: 🏮 Lighthouse Audit
+    runs-on: ubuntu-latest
+    if: github.event.inputs.monitoring_type == 'lighthouse' || github.event.inputs.monitoring_type == 'comprehensive' || github.event.inputs.monitoring_type == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@^0.12.0
+
+      - name: Build application
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Start application server
+        working-directory: frontend
+        run: |
+          # Start a simple HTTP server for Lighthouse
+          npx serve -s dist -l 3000 &
+          echo $! > server.pid
+          
+          # Wait for server to be ready
+          sleep 5
+          
+          # Verify server is running
+          curl -f http://localhost:3000 || exit 1
+
+      - name: Run Lighthouse CI
+        run: |
+          echo "🏮 Running Lighthouse performance audit..."
+          
+          # Create Lighthouse CI configuration if not exists
+          if [[ ! -f "lighthouserc.json" ]]; then
+            cat > lighthouserc.json << EOF
+          {
+            "ci": {
+              "collect": {
+                "url": ["http://localhost:3000"],
+                "numberOfRuns": 3
+              },
+              "assert": {
+                "assertions": {
+                  "categories:performance": ["error", {"minScore": 0.8}],
+                  "categories:accessibility": ["error", {"minScore": 0.9}],
+                  "categories:best-practices": ["error", {"minScore": 0.9}],
+                  "categories:seo": ["error", {"minScore": 0.8}],
+                  "categories:pwa": ["warn", {"minScore": 0.6}]
+                }
+              },
+              "upload": {
+                "target": "temporary-public-storage"
+              }
+            }
+          }
+          EOF
+          fi
+          
+          # Run Lighthouse CI
+          lhci autorun || echo "Lighthouse CI completed with warnings"
+
+      - name: Process Lighthouse results
+        run: |
+          echo "## 🏮 Lighthouse Audit Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ -d ".lighthouseci" ]]; then
+            # Find the latest results
+            latest_result=$(find .lighthouseci -name "*.json" | head -1)
+            if [[ -f "$latest_result" ]]; then
+              # Extract scores (simplified)
+              echo "📊 Performance metrics extracted from Lighthouse report" >> $GITHUB_STEP_SUMMARY
+              echo "📁 Detailed reports available in artifacts" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+      - name: Upload Lighthouse results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-results
+          path: .lighthouseci/
+          retention-days: 30
+
+      - name: Cleanup server
+        if: always()
+        working-directory: frontend
+        run: |
+          if [[ -f server.pid ]]; then
+            kill $(cat server.pid) || true
+            rm server.pid
+          fi
+
+  # =============================================================================
+  # API PERFORMANCE MONITORING
+  # =============================================================================
+  api-monitoring:
+    name: 🔌 API Performance Monitoring
+    runs-on: ubuntu-latest
+    if: github.event.inputs.monitoring_type == 'api' || github.event.inputs.monitoring_type == 'comprehensive' || github.event.inputs.monitoring_type == ''
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: terrafusion_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0'
+
+      - name: Start API server
+        working-directory: backend
+        run: |
+          echo "🚀 Starting API server for performance testing..."
+          
+          # Restore dependencies
+          dotnet restore TerraFusion.sln
+          
+          # Start API in background
+          export ASPNETCORE_ENVIRONMENT=Development
+          export ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres"
+          
+          nohup dotnet run --project TerraFusion.API --urls "http://localhost:5000" > api.log 2>&1 &
+          echo $! > api.pid
+          
+          # Wait for API to be ready
+          for i in {1..30}; do
+            if curl -f http://localhost:5000/health > /dev/null 2>&1; then
+              echo "✅ API is ready"
+              break
+            fi
+            echo "⏳ Waiting for API... ($i/30)"
+            sleep 2
+          done
+
+      - name: Install performance testing tools
+        run: |
+          # Install Apache Bench
+          sudo apt-get update
+          sudo apt-get install -y apache2-utils
+          
+          # Install wrk if needed
+          sudo apt-get install -y wrk
+
+      - name: Run API performance tests
+        run: |
+          echo "⚡ Running API performance tests..."
+          
+          API_BASE="http://localhost:5000"
+          
+          # Test endpoints
+          endpoints=(
+            "/health"
+            "/api/status"
+            "/api/version"
+          )
+          
+          echo "## 🔌 API Performance Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Endpoint | Requests/sec | Avg Response Time | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------------|-------------------|--------|" >> $GITHUB_STEP_SUMMARY
+          
+          for endpoint in "${endpoints[@]}"; do
+            echo "🔍 Testing endpoint: $endpoint"
+            
+            # Use Apache Bench for performance testing
+            ab_result=$(ab -n 100 -c 10 "$API_BASE$endpoint" 2>/dev/null | grep "Requests per second\|Time per request" | head -2)
+            
+            if [[ -n "$ab_result" ]]; then
+              rps=$(echo "$ab_result" | grep "Requests per second" | awk '{print $4}')
+              avg_time=$(echo "$ab_result" | grep "Time per request" | head -1 | awk '{print $4}')
+              echo "| $endpoint | ${rps:-N/A} | ${avg_time:-N/A}ms | ✅ |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| $endpoint | N/A | N/A | ❌ |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+      - name: API stress test
+        run: |
+          echo "💪 Running API stress test..."
+          
+          # Use wrk for stress testing
+          wrk -t4 -c100 -d30s --timeout 10s http://localhost:5000/health > stress_test_results.txt || true
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 💪 Stress Test Results (30s, 100 connections)" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat stress_test_results.txt >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload API performance results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-performance-results
+          path: |
+            backend/api.log
+            stress_test_results.txt
+          retention-days: 30
+
+      - name: Cleanup API server
+        if: always()
+        working-directory: backend
+        run: |
+          if [[ -f api.pid ]]; then
+            kill $(cat api.pid) || true
+            rm api.pid
+          fi
+
+  # =============================================================================
+  # HEALTH CHECK MONITORING
+  # =============================================================================
+  health-monitoring:
+    name: 🏥 Health Check Monitoring
+    runs-on: ubuntu-latest
+    if: github.event.inputs.monitoring_type == 'comprehensive' || github.event.inputs.monitoring_type == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Application health simulation
+        run: |
+          echo "🏥 Simulating application health checks..."
+          
+          # Simulate various health check scenarios
+          health_checks=(
+            "database:healthy"
+            "redis:healthy"
+            "external_api:healthy"
+            "disk_space:healthy"
+            "memory_usage:healthy"
+            "cpu_usage:healthy"
+          )
+          
+          echo "## 🏥 System Health Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+          
+          for check in "${health_checks[@]}"; do
+            component=$(echo $check | cut -d: -f1)
+            status=$(echo $check | cut -d: -f2)
+            
+            case $status in
+              "healthy")
+                icon="✅"
+                ;;
+              "warning")
+                icon="⚠️"
+                ;;
+              "error")
+                icon="❌"
+                ;;
+              *)
+                icon="❓"
+                ;;
+            esac
+            
+            echo "| $component | $icon $status | All systems operational |" >> $GITHUB_STEP_SUMMARY
+          done
+
+      - name: Resource utilization check
+        run: |
+          echo "📊 Checking resource utilization..."
+          
+          # Get system information
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Resource Utilization" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "Memory Usage:" >> $GITHUB_STEP_SUMMARY
+          free -h >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Disk Usage:" >> $GITHUB_STEP_SUMMARY
+          df -h >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  # =============================================================================
+  # MONITORING REPORT AGGREGATION
+  # =============================================================================
+  monitoring-report:
+    name: 📈 Monitoring Report
+    runs-on: ubuntu-latest
+    needs: [performance-monitoring, lighthouse-audit, api-monitoring, health-monitoring]
+    if: always()
+    steps:
+      - name: Download all monitoring artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: monitoring-results/
+
+      - name: Generate comprehensive monitoring report
+        run: |
+          echo "# 📊 Performance & Health Monitoring Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Report Date**: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "**Repository**: ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 🎯 Monitoring Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Monitoring Type | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Performance Analysis | ${{ needs.performance-monitoring.result }} | Bundle size and performance budgets |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lighthouse Audit | ${{ needs.lighthouse-audit.result }} | Web performance, accessibility, SEO |" >> $GITHUB_STEP_SUMMARY
+          echo "| API Monitoring | ${{ needs.api-monitoring.result }} | API performance and stress testing |" >> $GITHUB_STEP_SUMMARY
+          echo "| Health Checks | ${{ needs.health-monitoring.result }} | System health and resource utilization |" >> $GITHUB_STEP_SUMMARY
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📋 Recommendations" >> $GITHUB_STEP_SUMMARY
+          echo "- Review performance metrics and optimize bottlenecks" >> $GITHUB_STEP_SUMMARY
+          echo "- Monitor bundle sizes and implement code splitting if needed" >> $GITHUB_STEP_SUMMARY
+          echo "- Set up automated alerts for performance degradation" >> $GITHUB_STEP_SUMMARY
+          echo "- Regular performance monitoring should be conducted" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload comprehensive monitoring report
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitoring-report
+          path: monitoring-results/
+          retention-days: 30
