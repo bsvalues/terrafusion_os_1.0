@@ -1,6 +1,6 @@
 {
   "name": "terrafusion-frontend",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Terrafusion OS Frontend - React 18 PWA with Electron Shell",
   "private": true,
   "dependencies": {
