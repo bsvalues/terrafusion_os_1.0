@@ -70,6 +70,19 @@ modules/shock-and-awe/ai_systems/ai_systems/shared_assets/FRESH_REPOSITORIES/Ter
 modules/shock-and-awe/terrafusion-shock-awe-hostinger-fixed.tar.gz
 modules/shock-and-awe/terrafusion-shock-awe-hostinger.zip
 
+# Embedded git repositories (should be submodules instead)
+modules/shock-and-awe/ai_systems/ai-agents/TerraInsight/TerraInsight/
+modules/shock-and-awe/old_builds/critical_systems/ai-agents/TerraInsight/TerraInsight/
+modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/BCBSGISPRO_PRODUCTION/
+modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/BCBSLevy_PRODUCTION/
+modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/BCBSWebhub_PRODUCTION/
+modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/BSIncomeValuation_PRODUCTION/
+modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/DEPLOYED_APPLICATIONS/TerraFusionPlayground_PRODUCTION/
+modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/MCP_Servers_PRODUCTION/
+modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/SystemPrompts_AI_Tools_PRODUCTION/
+modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/TerraAgent_PRODUCTION/
+modules/web-audit-tracker/
+
 # Dependency directories
 jspm_packages/
 
