@@ -1,6 +1,6 @@
 {
   "name": "terrafusion-os",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Government AI Operating System - Unified Platform",
   "main": "frontend/electron/main.js",
   "homepage": "./",
@@ -221,7 +221,7 @@
     "security": "./mcp-security-config.js"
   },
   "terrafusion": {
-    "version": "1.0.0",
+    "version": "0.1.0",
     "aiAgents": 1008,
     "modules": 32,
     "quantumOptimization": true,
