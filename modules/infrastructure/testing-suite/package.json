@@ -1,0 +1,239 @@
+{
+  "name": "@terrafusion/ultimate-testing-suite",
+  "version": "1.0.0",
+  "description": "The most advanced testing framework that makes QA engineers beg to work here",
+  "main": "ultimate-testing-framework.js",
+  "scripts": {
+    "test": "node ultimate-testing-framework.js",
+    "test:full": "node ultimate-testing-framework.js --mode=full",
+    "test:visual": "node ultimate-testing-framework.js --mode=visual",
+    "test:performance": "node ultimate-testing-framework.js --mode=performance",
+    "test:ai-swarm": "node ultimate-testing-framework.js --mode=swarm",
+    "test:security": "node ultimate-testing-framework.js --mode=security",
+    "test:generate": "python3 ai-test-generator.py",
+    "test:dashboard": "open visual-test-dashboard.html",
+    "test:watch": "nodemon ultimate-testing-framework.js",
+    "test:coverage": "nyc node ultimate-testing-framework.js",
+    "test:benchmark": "node performance-benchmark.js",
+    "test:chaos": "node chaos-testing.js",
+    "test:ai-heal": "node ai-test-healer.js",
+    "test:export": "node test-exporter.js",
+    "test:ci": "node ci-integration.js",
+    "dev": "concurrently \"npm run test:watch\" \"npm run test:dashboard\"",
+    "validate": "node test-validator.js",
+    "report": "node intelligent-reporter.js",
+    "mcp:start": "cd mcp-server && npm start",
+    "mcp:dev": "cd mcp-server && npm run dev",
+    "mcp:install": "cd mcp-server && npm install"
+  },
+  "keywords": [
+    "testing",
+    "qa",
+    "automation",
+    "ai",
+    "visual-regression",
+    "performance",
+    "terrafusion",
+    "government",
+    "property-valuation"
+  ],
+  "author": "Terrafusion OS Team",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "figlet": "^1.7.0",
+    "inquirer": "^9.2.12",
+    "ora": "^7.0.1",
+    "puppeteer": "^21.5.2",
+    "playwright": "^1.40.1",
+    "jest": "^29.7.0",
+    "@jest/globals": "^29.7.0",
+    "pixelmatch": "^5.3.0",
+    "pngjs": "^7.0.0",
+    "sharp": "^0.32.6",
+    "lighthouse": "^11.4.0",
+    "axe-core": "^4.8.3",
+    "k6": "^0.47.0",
+    "artillery": "^2.0.3",
+    "cucumber": "^10.0.1",
+    "webdriverio": "^8.24.12",
+    "selenium-webdriver": "^4.16.0",
+    "cypress": "^13.6.1",
+    "testcafe": "^3.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "concurrently": "^8.2.2",
+    "nyc": "^15.1.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.10.4",
+    "typescript": "^5.3.3",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terrafusion/ultimate-testing-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/terrafusion/ultimate-testing-suite/issues"
+  },
+  "homepage": "https://terrafusion.gov/testing",
+  "config": {
+    "testing": {
+      "aiEnabled": true,
+      "visualRegressionEnabled": true,
+      "performanceThresholds": {
+        "responseTime": 3000,
+        "valuationTime": 3000,
+        "searchTime": 500,
+        "memoryUsage": 4000,
+        "cpuUsage": 80
+      },
+      "aiSwarmConfig": {
+        "totalAgents": 1008,
+        "devAgents": 41,
+        "testTimeout": 30000
+      },
+      "coverage": {
+        "threshold": 95,
+        "includeUntested": true
+      },
+      "reports": {
+        "format": [
+          "json",
+          "html",
+          "lcov"
+        ],
+        "outputDir": "./test-reports"
+      }
+    }
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/test-setup.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/test-utils/**"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "coverageDirectory": "coverage",
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,ts,tsx}",
+      "<rootDir>/src/**/*.(test|spec).{js,ts,tsx}",
+      "<rootDir>/generated_tests/**/*.{js,ts,tsx}"
+    ],
+    "moduleNameMapping": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testTimeout": 30000
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run test:full"
+    }
+  },
+  "terrafusion": {
+    "testSuites": {
+      "unit": {
+        "count": 247,
+        "timeout": 5000,
+        "parallel": true
+      },
+      "integration": {
+        "count": 89,
+        "timeout": 15000,
+        "parallel": false
+      },
+      "e2e": {
+        "count": 156,
+        "timeout": 30000,
+        "parallel": false
+      },
+      "visual": {
+        "count": 78,
+        "timeout": 10000,
+        "threshold": 0.05
+      },
+      "performance": {
+        "count": 34,
+        "timeout": 60000,
+        "iterations": 5
+      },
+      "security": {
+        "count": 45,
+        "timeout": 20000,
+        "severity": [
+          "critical",
+          "high",
+          "medium"
+        ]
+      },
+      "aiSwarm": {
+        "count": 67,
+        "timeout": 45000,
+        "agents": 1008
+      }
+    },
+    "integrations": {
+      "ci": [
+        "github-actions",
+        "jenkins",
+        "gitlab-ci"
+      ],
+      "reporting": [
+        "slack",
+        "teams",
+        "email"
+      ],
+      "monitoring": [
+        "datadog",
+        "newrelic",
+        "grafana"
+      ]
+    },
+    "features": {
+      "aiHealing": true,
+      "predictiveFailures": true,
+      "intelligentRetries": true,
+      "parallelExecution": true,
+      "realTimeReporting": true,
+      "visualRegression": true,
+      "performanceBaselines": true,
+      "securityScanning": true,
+      "chaosEngineering": true
+    }
+  },
+  "mcp": {
+    "server": "./mcp-server",
+    "tools": [
+      "build-executor",
+      "deployment-manager",
+      "monitoring-interface"
+    ],
+    "capabilities": []
+  }
+}

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Linq;
+using TerraFusion.Abstractions.DTOs;
 
 namespace TerraFusion.Core.Services
 {
@@ -20,159 +21,6 @@ namespace TerraFusion.Core.Services
         Task<bool> ScheduleComplianceReportAsync(ComplianceReportSchedule schedule);
         Task<List<ComplianceControl>> GetComplianceControlsAsync(ComplianceFramework framework);
         Task<bool> UpdateComplianceControlAsync(string controlId, ComplianceControlStatus status, string evidence);
-    }
-
-    public enum ComplianceFramework
-    {
-        FISMA,
-        NIST,
-        SOC2,
-        FedRAMP,
-        HIPAA,
-        PCI_DSS,
-        All
-    }
-
-    public enum ComplianceControlStatus
-    {
-        NotImplemented,
-        PartiallyImplemented,
-        Implemented,
-        Monitored,
-        NonCompliant
-    }
-
-    public class AuditTrail
-    {
-        public required string Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public required string Action { get; set; }
-        public required string UserId { get; set; }
-        public required string UserName { get; set; }
-        public required string EntityType { get; set; }
-        public required string EntityId { get; set; }
-        public required string Data { get; set; }
-        public required string IPAddress { get; set; }
-        public required string UserAgent { get; set; }
-        public required string SessionId { get; set; }
-        public required ComplianceFramework[] ApplicableFrameworks { get; set; }
-    }
-
-    public class ComplianceReport
-    {
-        public required string Id { get; set; }
-        public ComplianceFramework Framework { get; set; }
-        public DateTime GeneratedAt { get; set; }
-        public DateTime PeriodStart { get; set; }
-        public DateTime PeriodEnd { get; set; }
-        public required ComplianceStatus OverallStatus { get; set; }
-        public required List<ComplianceControl> Controls { get; set; }
-        public required List<ComplianceViolation> Violations { get; set; }
-        public required ComplianceMetrics Metrics { get; set; }
-        public required List<ComplianceRecommendation> Recommendations { get; set; }
-    }
-
-    public class ComplianceStatus
-    {
-        public ComplianceFramework Framework { get; set; }
-        public double ComplianceScore { get; set; }
-        public int TotalControls { get; set; }
-        public int ImplementedControls { get; set; }
-        public required string Status { get; set; }
-
-    public class ComplianceReport
-    {
-        public string Id { get; set; }
-        public ComplianceFramework Framework { get; set; }
-        public DateTime GeneratedAt { get; set; }
-        public DateTime PeriodStart { get; set; }
-        public DateTime PeriodEnd { get; set; }
-        public ComplianceStatus OverallStatus { get; set; }
-        public List<ComplianceControl> Controls { get; set; }
-        public List<ComplianceViolation> Violations { get; set; }
-        public ComplianceMetrics Metrics { get; set; }
-        public List<ComplianceRecommendation> Recommendations { get; set; }
-    }
-
-    public class ComplianceStatus
-    {
-        public ComplianceFramework Framework { get; set; }
-        public double ComplianceScore { get; set; }
-        public int TotalControls { get; set; }
-        public int ImplementedControls { get; set; }
-        public int ViolationCount { get; set; }
-        public DateTime LastAssessment { get; set; }
-        public string Status { get; set; }
-    }
-
-    public class ComplianceViolation
-    {
-        public required string Id { get; set; }
-        public ComplianceFramework Framework { get; set; }
-        public required string ControlId { get; set; }
-        public required string ControlName { get; set; }
-        public required string Description { get; set; }
-        public required string Severity { get; set; }
-        public DateTime DetectedAt { get; set; }
-        public required string Status { get; set; }
-        public required string RemediationAction { get; set; }
-        public DateTime? RemediatedAt { get; set; }
-        public required string RemediatedBy { get; set; }
-    }
-
-    public class ComplianceControl
-    {
-        public required string Id { get; set; }
-        public required string Name { get; set; }
-        public required string Description { get; set; }
-        public ComplianceFramework Framework { get; set; }
-        public ComplianceControlStatus Status { get; set; }
-        public required string Evidence { get; set; }
-        public DateTime LastUpdated { get; set; }
-        public required string ResponsibleParty { get; set; }
-        public DateTime? NextReview { get; set; }
-    }
-
-    public class ComplianceMetrics
-    {
-        public double ComplianceScore { get; set; }
-        public int TotalAuditEvents { get; set; }
-        public int SecurityIncidents { get; set; }
-        public int DataAccessEvents { get; set; }
-        public int PrivilegedAccessEvents { get; set; }
-        public int FailedLoginAttempts { get; set; }
-        public int ConfigurationChanges { get; set; }
-        public Dictionary<string, int> ViolationsByType { get; set; } = new Dictionary<string, int>();
-    }
-
-    public class ComplianceRecommendation
-    {
-        public required string Id { get; set; }
-        public required string Title { get; set; }
-        public required string Description { get; set; }
-        public required string Priority { get; set; }
-        public required string Category { get; set; }
-        public required List<string> ActionItems { get; set; }
-        public DateTime CreatedAt { get; set; }
-    }
-
-    public class ComplianceDashboardData
-    {
-        public required Dictionary<ComplianceFramework, ComplianceStatus> FrameworkStatus { get; set; }
-        public required List<ComplianceViolation> RecentViolations { get; set; }
-        public required ComplianceMetrics OverallMetrics { get; set; }
-        public required List<ComplianceRecommendation> TopRecommendations { get; set; }
-        public required Dictionary<string, object> TrendData { get; set; }
-    }
-
-    public class ComplianceReportSchedule
-    {
-        public required string Id { get; set; }
-        public ComplianceFramework Framework { get; set; }
-        public required string Frequency { get; set; }
-        public required List<string> Recipients { get; set; }
-        public required string Format { get; set; }
-        public bool IsActive { get; set; }
     }
 
     public class ComplianceAutomationService : IComplianceAutomationService
@@ -321,7 +169,7 @@ namespace TerraFusion.Core.Services
                     ComplianceScore = complianceScore,
                     TotalControls = controls.Count,
                     ImplementedControls = implementedControls,
-                    ViolationCount = violations.Count(v => v.Status != "Resolved"),
+                    ViolationCount = violations.Count(v => v.Status != ComplianceControlStatus.Resolved),
                     LastAssessment = DateTime.UtcNow,
                     Status = complianceScore >= 95 ? "Compliant" : complianceScore >= 80 ? "Partially Compliant" : "Non-Compliant"
                 };
@@ -470,7 +318,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        private ComplianceFramework[] DetermineApplicableFrameworks(string action, string entityType)
+        private List<ComplianceFramework> DetermineApplicableFrameworks(string action, string entityType)
         {
             var frameworks = new List<ComplianceFramework>();
             
@@ -483,7 +331,7 @@ namespace TerraFusion.Core.Services
                 frameworks.Add(ComplianceFramework.NIST);
             }
             
-            return frameworks.ToArray();
+            return frameworks;
         }
 
         private ComplianceMetrics CalculateComplianceMetrics(List<AuditTrail> auditTrails, List<ComplianceViolation> violations)

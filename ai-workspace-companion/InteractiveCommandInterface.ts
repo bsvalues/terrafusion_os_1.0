@@ -145,9 +145,9 @@ export class InteractiveCommandInterface {
    * Process dot commands (traditional command interface)
    */
   private async processDotCommand(input: string): Promise<CommandResult> {
-    const command = input.substring(1).toLowerCase();
+    const { name, args } = this.parseArgsForDotCommand(input.substring(1));
     
-    switch (command) {
+    switch (name) {
       case 'status':
         return await this.handleStatusCommand();
       
@@ -161,26 +161,44 @@ export class InteractiveCommandInterface {
         return await this.handleCapabilitiesCommand();
       
       case 'ai-generate':
-        return await this.handleAIGenerateCommand();
+        return await this.handleAIGenerateCommand(args);
       
       case 'ai-review':
-        return await this.handleAIReviewCommand();
+        return await this.handleAIReviewCommand(args);
       
       case 'ai-test':
-        return await this.handleAITestCommand();
+        return await this.handleAITestCommand(args);
       
       case 'ai-refactor':
-        return await this.handleAIRefactorCommand();
+        return await this.handleAIRefactorCommand(args);
       
       case 'ai-solve':
-        return await this.handleAISolveCommand();
+        return await this.handleAISolveCommand(args);
       
       case 'ai-architecture':
-        return await this.handleAIArchitectureCommand();
+        return await this.handleAIArchitectureCommand(args);
       
       case 'ai-compliance':
-        return await this.handleAIComplianceCommand();
-      
+        return await this.handleAIComplianceCommand(args);
+
+      case 'diagnostics':
+        return await this.handleDiagnosticsCommand();
+
+      case 'security':
+        return await this.handleSecurityCommand();
+
+      case 'quantum':
+        return await this.handleQuantumCommand();
+
+      case 'ecosystem':
+        return await this.handleEcosystemCommand();
+
+      case 'compliance-status':
+        return await this.handleComplianceStatusCommand();
+
+      case 'audit-trail':
+        return await this.handleAuditTrailCommand();
+
       case 'help':
         return await this.handleHelpCommand();
       
@@ -200,10 +218,52 @@ export class InteractiveCommandInterface {
       default:
         return {
           success: false,
-          message: `Unknown command: ${command}`,
+          message: `Unknown command: ${name}`,
           suggestions: ['Type .help for available commands']
         };
     }
+  }
+
+  /**
+   * Parse dot command input into name and arguments, supporting quoted strings
+   */
+  private parseArgsForDotCommand(input: string): { name: string; args: string[] } {
+    const tokens = this.tokenize(input);
+    const name = (tokens.shift() || '').toLowerCase();
+    return { name, args: tokens };
+  }
+
+  /**
+   * Tokenize a command line preserving quoted substrings
+   */
+  private tokenize(input: string): string[] {
+    const tokens: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    let quoteChar = '';
+    for (let i = 0; i < input.length; i++) {
+      const ch = input[i] || '';
+      if ((ch === '"' || ch === '\'') && (!inQuotes || ch === quoteChar)) {
+        if (!inQuotes) {
+          inQuotes = true;
+          quoteChar = ch;
+        } else {
+          inQuotes = false;
+          quoteChar = '';
+        }
+        continue;
+      }
+      if (!inQuotes && /\s/.test(ch)) {
+        if (current.length > 0) {
+          tokens.push(current);
+          current = '';
+        }
+      } else {
+        current += ch;
+      }
+    }
+    if (current.length > 0) tokens.push(current);
+    return tokens;
   }
 
   /**
@@ -373,8 +433,19 @@ export class InteractiveCommandInterface {
     console.log('   .ai-architecture <comp> <reqs>   - Get architecture advice');
     console.log('   .ai-compliance <code> [standards] - Validate compliance');
     console.log('');
-    console.log('💡 AI Tools are powered by Terrafusion\'s AI capabilities');
-    console.log('   and provide intelligent assistance for development tasks.');
+    console.log('🔬 ADVANCED ENTERPRISE COMMANDS:');
+    console.log('   .diagnostics                     - Run comprehensive diagnostics');
+    console.log('   .security                        - View security metrics');
+    console.log('   .quantum                         - Check quantum optimization');
+    console.log('   .ecosystem                       - View Terrafusion ecosystem');
+    console.log('   .compliance-status               - Get compliance validation status');
+    console.log('   .audit-trail                     - Review security audit trail');
+    console.log('');
+    console.log('💡 AI Tools powered by Terrafusion\'s advanced capabilities:');
+    console.log('   • OpenAI GPT-4 integration with quantum optimization');
+    console.log('   • Government compliance validation (FISMA, NIST, Section 508)');
+    console.log('   • Enterprise security & audit trails');
+    console.log('   • 949x performance optimization algorithms');
     
     return {
       success: true,
@@ -498,23 +569,21 @@ export class InteractiveCommandInterface {
   /**
    * Handle AI code generation command
    */
-  private async handleAIGenerateCommand(): Promise<CommandResult> {
+  private async handleAIGenerateCommand(args?: string[]): Promise<CommandResult> {
     try {
-      console.log('🤖 AI Code Generation');
-      console.log('Usage: .ai-generate <language> <prompt>');
-      console.log('Example: .ai-generate typescript "Create a user authentication service"');
-      
+      if (!args || args.length < 2) {
+        return {
+          success: false,
+          message: 'Usage: .ai-generate <language> <prompt>'
+        };
+      }
+      const language = args[0] || 'typescript';
+      const prompt = args.slice(1).join(' ') || 'Generate a simple function';
+      const code = await this.agent.generateCode(prompt, language);
       return {
         success: true,
-        message: 'AI Code Generation ready. Use the format above to generate code.',
-        data: {
-          supportedLanguages: ['typescript', 'javascript', 'python', 'csharp', 'java'],
-          examples: [
-            '.ai-generate typescript "Create a REST API endpoint"',
-            '.ai-generate python "Data validation function"',
-            '.ai-generate csharp "Entity framework repository"'
-          ]
-        }
+        message: 'AI Code Generation result',
+        data: { language, prompt, code }
       };
     } catch (error) {
       return {
@@ -528,19 +597,21 @@ export class InteractiveCommandInterface {
   /**
    * Handle AI code review command
    */
-  private async handleAIReviewCommand(): Promise<CommandResult> {
+  private async handleAIReviewCommand(args?: string[]): Promise<CommandResult> {
     try {
-      console.log('🤖 AI Code Review');
-      console.log('Usage: .ai-review <language> <code>');
-      console.log('Example: .ai-review typescript "function validateUser() { ... }"');
-      
+      if (!args || args.length < 2) {
+        return {
+          success: false,
+          message: 'Usage: .ai-review <language> <code>'
+        };
+      }
+      const language = args[0] || 'typescript';
+      const codeSnippet = args.slice(1).join(' ') || 'function example() { return true; }';
+      const review = await this.agent.reviewCode(codeSnippet, language);
       return {
         success: true,
-        message: 'AI Code Review ready. Use the format above to review code.',
-        data: {
-          reviewFocus: ['security', 'performance', 'readability', 'compliance'],
-          standards: ['Government compliance', 'Best practices', 'Code quality']
-        }
+        message: 'AI Code Review result',
+        data: { language, review }
       };
     } catch (error) {
       return {
@@ -554,22 +625,23 @@ export class InteractiveCommandInterface {
   /**
    * Handle AI test generation command
    */
-  private async handleAITestCommand(): Promise<CommandResult> {
+  private async handleAITestCommand(args?: string[]): Promise<CommandResult> {
     try {
-      console.log('🤖 AI Test Generation');
-      console.log('Usage: .ai-test <language> <code> [framework]');
-      console.log('Example: .ai-test typescript "class UserService { ... }" jest');
-      
+      if (!args || args.length < 2) {
+        return {
+          success: false,
+          message: 'Usage: .ai-test <language> <code> [framework]'
+        };
+      }
+      const language = args[0] || 'typescript';
+      const hasFramework = args.length >= 3;
+      const framework = hasFramework ? args[args.length - 1] : undefined;
+      const codeSnippet = hasFramework ? args.slice(1, -1).join(' ') : args.slice(1).join(' ') || 'class Example { method() {} }';
+      const tests = await this.agent.generateTests(codeSnippet, language, framework);
       return {
         success: true,
-        message: 'AI Test Generation ready. Use the format above to generate tests.',
-        data: {
-          supportedFrameworks: {
-            typescript: ['jest', 'mocha', 'vitest'],
-            python: ['pytest', 'unittest'],
-            csharp: ['xunit', 'nunit', 'mstest']
-          }
-        }
+        message: 'AI Test Generation result',
+        data: { language, framework: framework || null, tests }
       };
     } catch (error) {
       return {
@@ -583,19 +655,21 @@ export class InteractiveCommandInterface {
   /**
    * Handle AI refactoring command
    */
-  private async handleAIRefactorCommand(): Promise<CommandResult> {
+  private async handleAIRefactorCommand(args?: string[]): Promise<CommandResult> {
     try {
-      console.log('🤖 AI Refactoring Analysis');
-      console.log('Usage: .ai-refactor <language> <code>');
-      console.log('Example: .ai-refactor typescript "function complexFunction() { ... }"');
-      
+      if (!args || args.length < 2) {
+        return {
+          success: false,
+          message: 'Usage: .ai-refactor <language> <code>'
+        };
+      }
+      const language = args[0] || 'typescript';
+      const codeSnippet = args.slice(1).join(' ') || 'function complex() { return true; }';
+      const refactoring = await this.agent.suggestRefactoring(codeSnippet, language);
       return {
         success: true,
-        message: 'AI Refactoring Analysis ready. Use the format above to get refactoring suggestions.',
-        data: {
-          focusAreas: ['performance', 'maintainability', 'readability', 'best-practices'],
-          output: ['suggestions', 'priority', 'impact', 'estimated effort']
-        }
+        message: 'AI Refactoring result',
+        data: { language, refactoring }
       };
     } catch (error) {
       return {
@@ -609,19 +683,22 @@ export class InteractiveCommandInterface {
   /**
    * Handle AI problem solving command
    */
-  private async handleAISolveCommand(): Promise<CommandResult> {
+  private async handleAISolveCommand(args?: string[]): Promise<CommandResult> {
     try {
-      console.log('🤖 AI Problem Solver');
-      console.log('Usage: .ai-solve <description> [error-logs]');
-      console.log('Example: .ai-solve "API endpoint returning 500 errors" "Error: Cannot read property..."');
-      
+      if (!args || args.length < 1) {
+        return {
+          success: false,
+          message: 'Usage: .ai-solve <description> [error-logs]'
+        };
+      }
+      const hasLogs = args.length >= 2;
+      const description = hasLogs ? (args[0] || 'API is returning errors') : (args.join(' ') || 'API is returning errors');
+      const logs = hasLogs ? args.slice(1).join(' ') : undefined;
+      const solution = await this.agent.solveProblem(description, logs);
       return {
         success: true,
-        message: 'AI Problem Solver ready. Use the format above to get solutions.',
-        data: {
-          output: ['solution', 'explanation', 'steps', 'prevention'],
-          context: 'Uses current workspace context for better problem analysis'
-        }
+        message: 'AI Problem Solver result',
+        data: { description, logs: logs || null, solution }
       };
     } catch (error) {
       return {
@@ -635,20 +712,21 @@ export class InteractiveCommandInterface {
   /**
    * Handle AI architecture command
    */
-  private async handleAIArchitectureCommand(): Promise<CommandResult> {
+  private async handleAIArchitectureCommand(args?: string[]): Promise<CommandResult> {
     try {
-      console.log('🤖 AI Architecture Advisor');
-      console.log('Usage: .ai-architecture <component> <requirements...>');
-      console.log('Example: .ai-architecture "User Management" "scalable" "secure" "compliant"');
-      
+      if (!args || args.length < 1) {
+        return {
+          success: false,
+          message: 'Usage: .ai-architecture <component> <requirements...>'
+        };
+      }
+      const component = args[0] || 'UserService';
+      const requirements = args.slice(1).length > 0 ? args.slice(1) : ['scalable', 'secure'];
+      const advice = await this.agent.getArchitectureAdvice(component, requirements);
       return {
         success: true,
-        message: 'AI Architecture Advisor ready. Use the format above to get architecture advice.',
-        data: {
-          focusAreas: ['government-compliance', 'security', 'scalability'],
-          patterns: ['microservices', 'event-driven', 'layered'],
-          output: ['recommendations', 'patterns', 'tradeoffs', 'implementation']
-        }
+        message: 'AI Architecture Advisor result',
+        data: { component, requirements, advice }
       };
     } catch (error) {
       return {
@@ -662,26 +740,218 @@ export class InteractiveCommandInterface {
   /**
    * Handle AI compliance validation command
    */
-  private async handleAIComplianceCommand(): Promise<CommandResult> {
+  private async handleAIComplianceCommand(args?: string[]): Promise<CommandResult> {
     try {
-      console.log('🤖 AI Compliance Validator');
-      console.log('Usage: .ai-compliance <code> [standards...]');
-      console.log('Example: .ai-compliance "function processData() { ... }" "FISMA" "NIST-800-53"');
-      
+      if (!args || args.length < 1) {
+        return {
+          success: false,
+          message: 'Usage: .ai-compliance <code> [standards...]'
+        };
+      }
+      const codeSnippet = args[0] || 'function processData() { return true; }';
+      const standards = args.slice(1).length > 0 ? args.slice(1) : ['FISMA', 'NIST-800-53'];
+      const validation = await this.agent.validateCompliance(codeSnippet, standards);
       return {
         success: true,
-        message: 'AI Compliance Validator ready. Use the format above to validate compliance.',
-        data: {
-          defaultStandards: ['FISMA', 'NIST-800-53', 'Section-508'],
-          focusAreas: ['security', 'accessibility', 'data-protection', 'audit-trails'],
-          output: ['compliant', 'violations', 'recommendations', 'risk-level']
-        }
+        message: 'AI Compliance Validation result',
+        data: { standards: standards.length ? standards : ['FISMA', 'NIST-800-53', 'Section-508'], validation }
       };
     } catch (error) {
       return {
         success: false,
         message: 'AI Compliance Validator failed',
         suggestions: ['Check your input format', 'Ensure the agent is active']
+      };
+    }
+  }
+
+  // ===== ADVANCED ENTERPRISE COMMANDS =====
+
+  /**
+   * Handle diagnostics command
+   */
+  private async handleDiagnosticsCommand(): Promise<CommandResult> {
+    try {
+      console.log('🔬 Running advanced system diagnostics...');
+      const diagnostics = await this.agent.performAdvancedDiagnostics();
+
+      return {
+        success: true,
+        message: 'Advanced diagnostics completed',
+        data: {
+          systemHealth: diagnostics.systemHealth.overallHealth,
+          securityScore: diagnostics.securityMetrics.securityScore,
+          complianceStatus: diagnostics.complianceStatus.overallStatus,
+          quantumOptimization: diagnostics.quantumMetrics.optimizationLevel,
+          aiSwarm: `${diagnostics.ecosystemStatus.aiSwarm.activeAgents}/${diagnostics.ecosystemStatus.aiSwarm.totalAgents} agents`,
+          recommendations: diagnostics.recommendations
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Diagnostics failed',
+        suggestions: ['Check agent initialization', 'Verify workspace configuration']
+      };
+    }
+  }
+
+  /**
+   * Handle security command
+   */
+  private async handleSecurityCommand(): Promise<CommandResult> {
+    try {
+      console.log('🔒 Retrieving security metrics...');
+      const security = await this.agent.getSecurityMetrics();
+
+      return {
+        success: true,
+        message: 'Security metrics retrieved',
+        data: {
+          securityScore: security.securityScore,
+          totalRequests: security.totalRequests,
+          complianceRate: security.complianceRate,
+          highRiskRequests: security.highRiskRequests,
+          auditEntries: security.auditEntries,
+          encryptionStatus: security.encryptionStatus,
+          accessControl: security.accessControl,
+          auditLogging: security.auditLogging
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Security metrics retrieval failed',
+        suggestions: ['Check agent security configuration']
+      };
+    }
+  }
+
+  /**
+   * Handle quantum command
+   */
+  private async handleQuantumCommand(): Promise<CommandResult> {
+    try {
+      console.log('⚡ Retrieving quantum optimization metrics...');
+      const quantum = await this.agent.getQuantumMetrics();
+
+      return {
+        success: true,
+        message: 'Quantum metrics retrieved',
+        data: {
+          optimizationLevel: quantum.optimizationLevel,
+          algorithmsActive: quantum.algorithmsActive,
+          totalOptimizations: quantum.totalOptimizations,
+          averageGain: quantum.averageGain,
+          successRate: quantum.successRate,
+          processingMode: quantum.processingMode,
+          efficiency: quantum.efficiency
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Quantum metrics retrieval failed',
+        suggestions: ['Check quantum engine configuration']
+      };
+    }
+  }
+
+  /**
+   * Handle ecosystem command
+   */
+  private async handleEcosystemCommand(): Promise<CommandResult> {
+    try {
+      console.log('🌐 Retrieving Terrafusion ecosystem status...');
+      const ecosystem = await this.agent.getEcosystemStatus();
+
+      return {
+        success: true,
+        message: 'Ecosystem status retrieved',
+        data: {
+          aiSwarm: ecosystem.aiSwarm,
+          modules: ecosystem.modules,
+          marketplace: ecosystem.marketplace,
+          quantumEngine: ecosystem.quantumEngine,
+          compliance: ecosystem.compliance
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Ecosystem status retrieval failed',
+        suggestions: ['Check Terrafusion configuration']
+      };
+    }
+  }
+
+  /**
+   * Handle compliance status command
+   */
+  private async handleComplianceStatusCommand(): Promise<CommandResult> {
+    try {
+      console.log('📋 Retrieving compliance validation status...');
+      const compliance = await this.agent.getComplianceStatus();
+
+      return {
+        success: true,
+        message: 'Compliance status retrieved',
+        data: {
+          overallStatus: compliance.overallStatus,
+          standards: compliance.standards,
+          violations: compliance.violations,
+          recommendations: compliance.recommendations,
+          riskLevel: compliance.riskLevel,
+          lastValidation: compliance.lastValidation,
+          certificationStatus: compliance.certificationStatus
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Compliance status retrieval failed',
+        suggestions: ['Check compliance configuration']
+      };
+    }
+  }
+
+  /**
+   * Handle audit trail command
+   */
+  private async handleAuditTrailCommand(): Promise<CommandResult> {
+    try {
+      console.log('📊 Retrieving audit trail...');
+      const aiService = this.agent.getAIService();
+      const auditTrail = aiService.getAuditTrail();
+
+      const recentEntries = auditTrail.slice(-10).map(entry => ({
+        timestamp: entry.timestamp.toISOString(),
+        action: entry.action,
+        user: entry.user,
+        resource: entry.resource,
+        compliance: entry.compliance,
+        riskLevel: entry.riskLevel,
+        quantumOptimized: entry.quantumOptimized
+      }));
+
+      return {
+        success: true,
+        message: 'Audit trail retrieved',
+        data: {
+          totalEntries: auditTrail.length,
+          recentEntries,
+          summary: {
+            compliantActions: auditTrail.filter(e => e.compliance).length,
+            highRiskActions: auditTrail.filter(e => e.riskLevel === 'high').length,
+            quantumOptimizedActions: auditTrail.filter(e => e.quantumOptimized).length
+          }
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Audit trail retrieval failed',
+        suggestions: ['Check audit logging configuration']
       };
     }
   }

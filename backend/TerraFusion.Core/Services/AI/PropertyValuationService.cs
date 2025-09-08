@@ -4,6 +4,7 @@ using Microsoft.ML;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Services.AI;
 using TerraFusion.Core.Services.Monitoring;
+using TerraFusion.Core.Extensions;
 
 namespace TerraFusion.Core.Services.AI;
 
@@ -172,7 +173,7 @@ public class PropertyValuationService : IPropertyValuationService
                 context: new { PropertyId = request.PropertyId });
 
             // Step 1: Define search criteria
-            var searchCriteria = BuildComparableSearchCriteria(request);
+            var searchCriteria = await BuildComparableSearchCriteriaAsync(request);
 
             // Step 2: Execute semantic search for similar properties
             var potentialComparables = await SearchSimilarPropertiesAsync(searchCriteria);
@@ -203,7 +204,7 @@ public class PropertyValuationService : IPropertyValuationService
 
             // Apply predictive modeling
             var predictedGrowthRate = await PredictGrowthRateAsync(marketTrends, economicFactors, monthsAhead);
-            var predictedValue = currentValue * (1 + predictedGrowthRate);
+            var predictedValue = currentValue * (1 + (decimal)predictedGrowthRate);
 
             return new PropertyValuePrediction
             {
@@ -472,7 +473,7 @@ Provide brief insights on:
     }
 
     // Additional helper methods would be implemented here...
-    private async Task<ComparableSearchCriteria> BuildComparableSearchCriteria(PropertyValuationRequest request)
+    private async Task<ComparableSearchCriteria> BuildComparableSearchCriteriaAsync(PropertyValuationRequest request)
     {
         await Task.Delay(5);
         return new ComparableSearchCriteria();

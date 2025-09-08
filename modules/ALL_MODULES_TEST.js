@@ -14,7 +14,7 @@ console.log('🚀 TERRAFUSION MODULES - COMPREHENSIVE TEST');
 console.log('==========================================');
 console.log('');
 
-const modulesDir = '/mnt/e/TerraFusion_OS_1.0/modules';
+const modulesDir = 'C:\\Users\\bsval\\terrafusion_os_1.0\\modules';
 const startingPort = 3001;
 let currentPort = startingPort;
 

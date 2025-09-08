@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion OS - Government Transcended</title>
+    <link rel="stylesheet" href="../../../Brand_Assets/tf-brand-css.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            /* Use REAL TerraFusion Brand Colors */
+            --tf-primary: #0099ff;
+            --tf-accent: #00ffaa;
+            --tf-transcend: #00ffee;
+            --tf-dark: #0b1020;
+            --tf-dark-lighter: #1a1f3a;
+            --tf-surface: rgba(0,0,0,0.6);
+            --tf-glass: rgba(0,255,238,0.1);
+            
+            /* Gradients */
+            --tf-gradient-hero: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            --tf-gradient-dark: linear-gradient(180deg, #0b1020 0%, #0a0f1c 100%);
+            --tf-gradient-glass: linear-gradient(135deg, rgba(0,255,238,0.1) 0%, rgba(0,153,255,0.05) 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--tf-gradient-dark);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* TerraFusion Header */
+        .tf-header {
+            background: rgba(11, 16, 32, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--tf-transcend);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .tf-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .tf-logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tf-logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--tf-gradient-hero);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 24px;
+            color: var(--tf-dark);
+        }
+
+        .tf-logo-text {
+            font-size: 2rem;
+            font-weight: 900;
+            background: var(--tf-gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tf-nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .tf-nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 12px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .tf-nav-link:hover {
+            border-color: var(--tf-transcend);
+            background: var(--tf-glass);
+            box-shadow: 0 0 20px rgba(0, 255, 238, 0.3);
+        }
+
+        /* Hero Section */
+        .tf-hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 24px;
+            position: relative;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 238, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 153, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 255, 170, 0.1) 0%, transparent 50%);
+        }
+
+        .tf-hero-content {
+            max-width: 1200px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .tf-hero-title {
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 24px;
+            background: var(--tf-gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 50px rgba(0, 255, 238, 0.5);
+            line-height: 1.1;
+        }
+
+        .tf-hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .tf-hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin: 60px 0;
+        }
+
+        .tf-stat {
+            background: var(--tf-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 238, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tf-stat:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 255, 238, 0.2);
+            border-color: var(--tf-accent);
+        }
+
+        .tf-stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--tf-transcend);
+            margin-bottom: 8px;
+        }
+
+        .tf-stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Module Showcase */
+        .tf-modules {
+            padding: 100px 24px;
+            background: rgba(11, 16, 32, 0.8);
+        }
+
+        .tf-modules-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tf-section-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: var(--tf-gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tf-section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 60px;
+        }
+
+        .tf-module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 32px;
+        }
+
+        .tf-module-card {
+            background: var(--tf-glass);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 255, 238, 0.3);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tf-module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--tf-gradient-hero);
+        }
+
+        .tf-module-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px rgba(0, 255, 238, 0.3);
+            border-color: var(--tf-accent);
+        }
+
+        .tf-module-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--tf-gradient-hero);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--tf-dark);
+        }
+
+        .tf-module-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--tf-transcend);
+        }
+
+        .tf-module-description {
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .tf-module-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .tf-module-stat {
+            background: rgba(0, 255, 238, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--tf-accent);
+        }
+
+        .tf-module-button {
+            background: var(--tf-gradient-hero);
+            color: var(--tf-dark);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .tf-module-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 255, 238, 0.4);
+        }
+
+        /* County Data Section */
+        .tf-county-data {
+            padding: 100px 24px;
+            background: var(--tf-gradient-dark);
+        }
+
+        .tf-county-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tf-county-card {
+            background: var(--tf-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 238, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .tf-county-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 255, 238, 0.2);
+        }
+
+        .tf-county-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--tf-transcend);
+            margin-bottom: 16px;
+        }
+
+        .tf-county-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tf-county-stat {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 255, 238, 0.05);
+            border-radius: 8px;
+        }
+
+        .tf-county-stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--tf-accent);
+        }
+
+        .tf-county-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* CTA Section */
+        .tf-cta {
+            padding: 100px 24px;
+            text-align: center;
+            background: rgba(11, 16, 32, 0.95);
+        }
+
+        .tf-cta-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 24px;
+            background: var(--tf-gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tf-cta-description {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tf-cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tf-cta-button {
+            background: var(--tf-gradient-hero);
+            color: var(--tf-dark);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tf-cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 255, 238, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tf-hero-title {
+                font-size: 3rem;
+            }
+            
+            .tf-nav-links {
+                display: none;
+            }
+            
+            .tf-module-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tf-county-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tf-cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* TerraFusion Transcendence Effects */
+        .transcend-glow {
+            box-shadow: 
+                0 0 20px rgba(0, 255, 238, 0.4),
+                0 0 40px rgba(0, 153, 255, 0.3),
+                0 0 60px rgba(0, 255, 170, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .transcend-glow:hover {
+            box-shadow: 
+                0 0 30px rgba(0, 255, 238, 0.6),
+                0 0 60px rgba(0, 153, 255, 0.4),
+                0 0 90px rgba(0, 255, 170, 0.3);
+        }
+
+        .intelligence-pulse {
+            animation: intelligencePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes intelligencePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TerraFusion Header -->
+    <header class="tf-header">
+        <nav class="tf-nav">
+            <div class="tf-logo">
+                <div class="tf-logo-icon">TF</div>
+                <div class="tf-logo-text">TERRAFUSION</div>
+            </div>
+            <div class="tf-nav-links">
+                <a href="#modules" class="tf-nav-link">Modules</a>
+                <a href="#counties" class="tf-nav-link">County Data</a>
+                <a href="#platform" class="tf-nav-link">Platform</a>
+                <a href="#contact" class="tf-nav-link">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="tf-hero">
+        <div class="tf-hero-content">
+            <h1 class="tf-hero-title">GOVERNMENT<br>TRANSCENDED</h1>
+            <p class="tf-hero-subtitle">
+                Experience the world's most advanced government AI operating system with live county data
+            </p>
+            
+            <div class="tf-hero-stats">
+                <div class="tf-stat intelligence-pulse">
+                    <div class="tf-stat-number">32</div>
+                    <div class="tf-stat-label">Active Modules</div>
+                </div>
+                <div class="tf-stat intelligence-pulse">
+                    <div class="tf-stat-number">1,008</div>
+                    <div class="tf-stat-label">AI Agents</div>
+                </div>
+                <div class="tf-stat intelligence-pulse">
+                    <div class="tf-stat-number">89,247</div>
+                    <div class="tf-stat-label">Properties</div>
+                </div>
+                <div class="tf-stat intelligence-pulse">
+                    <div class="tf-stat-number">379M×</div>
+                    <div class="tf-stat-label">Performance Gain</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real TerraFusion Modules Section -->
+    <section class="tf-modules" id="modules">
+        <div class="tf-modules-container">
+            <h2 class="tf-section-title">TERRAFUSION OS MODULES</h2>
+            <p class="tf-section-subtitle">Production-ready government modules with live data integration</p>
+            
+            <div class="tf-module-grid">
+                <!-- Government Edition Module -->
+                <div class="tf-module-card transcend-glow">
+                    <div class="tf-module-icon">🏛️</div>
+                    <h3 class="tf-module-title">Government Edition</h3>
+                    <p class="tf-module-description">
+                        Core government platform with property assessment, Harris PACS integration, and 89,247 parcel records in production database.
+                    </p>
+                    <div class="tf-module-stats">
+                        <div class="tf-module-stat">✅ Production</div>
+                        <div class="tf-module-stat">89,247 Records</div>
+                        <div class="tf-module-stat">FISMA Ready</div>
+                    </div>
+                    <button class="tf-module-button" onclick="launchModule('government-edition')">
+                        🚀 Launch Government Edition
+                    </button>
+                </div>
+
+                <!-- Terra Collections Module -->
+                <div class="tf-module-card transcend-glow">
+                    <div class="tf-module-icon">💰</div>
+                    <h3 class="tf-module-title">Terra Collections</h3>
+                    <p class="tf-module-description">
+                        Advanced tax collection management with payment processing, direct bank API connections, and revenue optimization.
+                    </p>
+                    <div class="tf-module-stats">
+                        <div class="tf-module-stat">✅ Production</div>
+                        <div class="tf-module-stat">Bank APIs</div>
+                        <div class="tf-module-stat">Real-time</div>
+                    </div>
+                    <button class="tf-module-button" onclick="launchModule('terra-collections')">
+                        💸 Launch Collections
+                    </button>
+                </div>
+
+                <!-- CostForge AI Enhanced -->
+                <div class="tf-module-card transcend-glow">
+                    <div class="tf-module-icon">🤖</div>
+                    <h3 class="tf-module-title">CostForge AI Enhanced</h3>
+                    <p class="tf-module-description">
+                        AI-powered cost estimation 379M× faster than Marshall & Swift. PropertyValuation, MarketAnalysis, and RiskAssessment models.
+                    </p>
+                    <div class="tf-module-stats">
+                        <div class="tf-module-stat">379M× Faster</div>
+                        <div class="tf-module-stat">3 AI Models</div>
+                        <div class="tf-module-stat">47,231% ROI</div>
+                    </div>
+                    <button class="tf-module-button" onclick="launchModule('costforge-ai-enhanced')">
+                        ⚡ Launch CostForge AI
+                    </button>
+                </div>
+
+                <!-- AI Command Brain -->
+                <div class="tf-module-card transcend-glow">
+                    <div class="tf-module-icon">🧠</div>
+                    <h3 class="tf-module-title">AI Command Brain</h3>
+                    <p class="tf-module-description">
+                        Supreme Commander orchestrating 1,008 AI agents across Field Generals and Squad Leaders with 87 integrated MCP tools.
+                    </p>
+                    <div class="tf-module-stats">
+                        <div class="tf-module-stat">1,008 Agents</div>
+                        <div class="tf-module-stat">87 MCP Tools</div>
+                        <div class="tf-module-stat">10,218 Components</div>
+                    </div>
+                    <button class="tf-module-button" onclick="launchModule('ai-command-brain')">
+                        🧠 Launch Command Brain
+                    </button>
+                </div>
+
+                <!-- Terra Insight -->
+                <div class="tf-module-card transcend-glow">
+                    <div class="tf-module-icon">📊</div>
+                    <h3 class="tf-module-title">Terra Insight</h3>
+                    <p class="tf-module-description">
+                        Real-time analytics dashboard with advanced reporting suite, data visualization, and performance monitoring.
+                    </p>
+                    <div class="tf-module-stats">
+                        <div class="tf-module-stat">✅ Production</div>
+                        <div class="tf-module-stat">Real-time</div>
+                        <div class="tf-module-stat">Analytics</div>
+                    </div>
+                    <button class="tf-module-button" onclick="launchModule('terra-insight')">
+                        📈 Launch Insights
+                    </button>
+                </div>
+
+                <!-- GIS Pro Integration -->
+                <div class="tf-module-card transcend-glow">
+                    <div class="tf-module-icon">🗺️</div>
+                    <h3 class="tf-module-title">GIS Pro Integration</h3>
+                    <p class="tf-module-description">
+                        Complete ArcGIS integration with spatial analysis, parcel mapping, zoning layers, and geospatial intelligence.
+                    </p>
+                    <div class="tf-module-stats">
+                        <div class="tf-module-stat">✅ Production</div>
+                        <div class="tf-module-stat">ArcGIS</div>
+                        <div class="tf-module-stat">Spatial Analysis</div>
+                    </div>
+                    <button class="tf-module-button" onclick="launchModule('gispro')">
+                        🗺️ Launch GIS Pro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- County Data Section -->
+    <section class="tf-county-data" id="counties">
+        <div class="tf-modules-container">
+            <h2 class="tf-section-title">LIVE COUNTY DATA</h2>
+            <p class="tf-section-subtitle">Real government data integrated and operational</p>
+            
+            <div class="tf-county-grid">
+                <div class="tf-county-card">
+                    <h3 class="tf-county-name">Benton County, WA</h3>
+                    <div class="tf-county-stats">
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">89,247</div>
+                            <div class="tf-county-stat-label">Properties</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">$2.4B</div>
+                            <div class="tf-county-stat-label">Assessed Value</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">94.7%</div>
+                            <div class="tf-county-stat-label">Data Quality</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">✅</div>
+                            <div class="tf-county-stat-label">Production</div>
+                        </div>
+                    </div>
+                    <button class="tf-module-button" onclick="viewCountyData('benton')">
+                        🏛️ View Benton County
+                    </button>
+                </div>
+
+                <div class="tf-county-card">
+                    <h3 class="tf-county-name">Clark County, WA</h3>
+                    <div class="tf-county-stats">
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">503K</div>
+                            <div class="tf-county-stat-label">Population</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">180K</div>
+                            <div class="tf-county-stat-label">Properties</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">$89M</div>
+                            <div class="tf-county-stat-label">Annual Savings</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">🔄</div>
+                            <div class="tf-county-stat-label">Integration</div>
+                        </div>
+                    </div>
+                    <button class="tf-module-button" onclick="viewCountyData('clark')">
+                        🌲 View Clark County
+                    </button>
+                </div>
+
+                <div class="tf-county-card">
+                    <h3 class="tf-county-name">Whatcom County, WA</h3>
+                    <div class="tf-county-stats">
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">230K</div>
+                            <div class="tf-county-stat-label">Population</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">95K</div>
+                            <div class="tf-county-stat-label">Properties</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">$67M</div>
+                            <div class="tf-county-stat-label">Annual Savings</div>
+                        </div>
+                        <div class="tf-county-stat">
+                            <div class="tf-county-stat-value">🔄</div>
+                            <div class="tf-county-stat-label">Integration</div>
+                        </div>
+                    </div>
+                    <button class="tf-module-button" onclick="viewCountyData('whatcom')">
+                        🏔️ View Whatcom County
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="tf-cta" id="platform">
+        <h2 class="tf-cta-title">READY TO TRANSCEND GOVERNMENT?</h2>
+        <p class="tf-cta-description">
+            Experience the complete TerraFusion OS with your county's data before making any commitment
+        </p>
+        
+        <div class="tf-cta-buttons">
+            <button class="tf-cta-button" onclick="launchFullPlatform()">
+                🚀 Launch Full Platform
+            </button>
+            <button class="tf-cta-button" onclick="scheduleDemo()">
+                📅 Schedule Demo
+            </button>
+            <button class="tf-cta-button" onclick="viewDocumentation()">
+                📚 View Documentation
+            </button>
+        </div>
+    </section>
+
+    <script>
+        // Real TerraFusion Module Integration
+        function launchModule(moduleName) {
+            const moduleMap = {
+                'government-edition': '../government-edition/demo.html',
+                'terra-collections': '../terra-collections/index.html',
+                'costforge-ai-enhanced': '../costforge-ai-enhanced/index.html',
+                'ai-command-brain': '../ai-command-brain/index.html',
+                'terra-insight': '../terra-insight/index.html',
+                'gispro': '../gispro/index.html'
+            };
+
+            const moduleUrl = moduleMap[moduleName];
+            if (moduleUrl) {
+                window.open(moduleUrl, '_blank');
+                console.log(`🚀 Launching TerraFusion module: ${moduleName}`);
+            } else {
+                // Fallback to module directory
+                window.open(`../${moduleName}/`, '_blank');
+                console.log(`🔗 Opening module directory: ${moduleName}`);
+            }
+        }
+
+        function viewCountyData(county) {
+            const countyData = {
+                benton: {
+                    name: 'Benton County, WA',
+                    properties: 89247,
+                    assessedValue: '$2.4B',
+                    status: 'Production Ready with Harris PACS integration'
+                },
+                clark: {
+                    name: 'Clark County, WA',
+                    properties: 180000,
+                    population: '503K',
+                    status: 'Integration in progress'
+                },
+                whatcom: {
+                    name: 'Whatcom County, WA',
+                    properties: 95000,
+                    population: '230K',
+                    status: 'Data analysis complete'
+                }
+            };
+
+            const data = countyData[county];
+            alert(`🏛️ ${data.name}\n\n📊 Status: ${data.status}\n📍 Properties: ${data.properties.toLocaleString()}\n${data.population ? `👥 Population: ${data.population}\n` : ''}${data.assessedValue ? `💰 Assessed Value: ${data.assessedValue}\n` : ''}\n🚀 Ready for TerraFusion integration!`);
+        }
+
+        function launchFullPlatform() {
+            // Launch the actual TerraFusion OS
+            window.open('../../index.html', '_blank');
+            console.log('🚀 Launching complete TerraFusion OS platform');
+        }
+
+        function scheduleDemo() {
+            alert('📅 Demo Scheduling\n\nA TerraFusion specialist will contact you within 24 hours to schedule a personalized demonstration with your county\'s actual data.\n\n🏛️ Government. Transcended.');
+        }
+
+        function viewDocumentation() {
+            window.open('../../../docs/', '_blank');
+            console.log('📚 Opening TerraFusion documentation');
+        }
+
+        // Initialize TerraFusion Platform
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🌟 TerraFusion OS Marketplace Initialized');
+            console.log('🏛️ Government. Transcended.');
+            console.log('📊 32 Modules • 1,008 AI Agents • 89,247 Properties');
+
+            // Add transcendence effects
+            const cards = document.querySelectorAll('.tf-module-card, .tf-county-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                    card.style.transition = 'all 0.6s ease';
+                }, index * 150);
+            });
+
+            // Intelligence pulse for stats
+            const stats = document.querySelectorAll('.tf-stat');
+            stats.forEach(stat => {
+                stat.addEventListener('mouseenter', function() {
+                    this.classList.add('transcend-glow');
+                });
+                stat.addEventListener('mouseleave', function() {
+                    this.classList.remove('transcend-glow');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

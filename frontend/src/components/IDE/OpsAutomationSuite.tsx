@@ -526,12 +526,21 @@ export const OpsAutomationSuite: React.FC<OpsAutomationSuiteProps> = ({
 
       onToolExecute?.(tool.id, params);
       
-    } catch (error) {
+    } catch (error: unknown) {
+      let errorMessage: string;
+      if (error instanceof Error) {
+        errorMessage = (error as Error).message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else {
+        errorMessage = 'Execution failed';
+      }
+      
       setToolResults(prev => ({
         ...prev,
         [tool.id]: {
           success: false,
-          error: error instanceof Error ? error.message : 'Execution failed',
+          error: errorMessage,
           timestamp: new Date()
         }
       }));
@@ -690,13 +699,17 @@ export const OpsAutomationSuite: React.FC<OpsAutomationSuiteProps> = ({
                     <CardContent sx={{ flexGrow: 1 }}>
                       {/* Tool Header */}
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <IconComponent 
+                        <Box 
                           sx={{ 
                             mr: 1, 
                             color: categoryConfig[tool.category].color,
-                            fontSize: 24 
-                          }} 
-                        />
+                            fontSize: 24,
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <IconComponent />
+                        </Box>
                         <Box sx={{ flexGrow: 1 }}>
                           <Typography variant="h6" sx={{ fontSize: '1rem' }}>
                             {tool.name}

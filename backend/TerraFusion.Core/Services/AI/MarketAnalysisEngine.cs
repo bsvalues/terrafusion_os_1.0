@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Services.AI;
 using TerraFusion.Core.Services.Monitoring;
+using TerraFusion.Core.Extensions;
 
 namespace TerraFusion.Core.Services.AI;
 
@@ -696,7 +697,15 @@ public class SeasonalAnalysis { }
 public class MomentumAnalysis { }
 public class TrendIndicator { }
 public class PriceDataPoint { }
-public class SegmentData { }
+public class SegmentData 
+{ 
+    public double MarketShare { get; set; }
+    public decimal AveragePrice { get; set; }
+    public decimal MedianPrice { get; set; }
+    public int InventoryLevels { get; set; }
+    public int DaysOnMarket { get; set; }
+    public double PriceAppreciation { get; set; }
+}
 public class CompetitiveAnalysis { }
 public class SegmentTrend { }
 public class SupplyMetrics { public double TotalInventory { get; set; } }

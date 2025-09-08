@@ -14,6 +14,7 @@ namespace TerraFusion.Core.Services;
 /// </summary>
 public interface IHealthCheckService
 {
+    Task<HealthCheckResult> CheckHealthAsync();
     Task<HealthCheckResult> CheckDatabaseHealthAsync();
     Task<HealthCheckResult> CheckCacheHealthAsync();
     Task<HealthCheckResult> CheckAIAgentsHealthAsync();
@@ -39,6 +40,37 @@ public class HealthCheckService : IHealthCheckService
         _configuration = configuration;
         _performanceService = performanceService;
         _loggingService = loggingService;
+    }
+
+    public async Task<HealthCheckResult> CheckHealthAsync()
+    {
+        try
+        {
+            var tasks = new[]
+            {
+                CheckDatabaseHealthAsync(),
+                CheckCacheHealthAsync(),
+                CheckAIAgentsHealthAsync(),
+                CheckPerformanceHealthAsync(),
+                CheckExternalServicesHealthAsync()
+            };
+
+            var results = await Task.WhenAll(tasks);
+            var allHealthy = results.All(r => r.Status == HealthStatus.Healthy);
+            var anyDegraded = results.Any(r => r.Status == HealthStatus.Degraded);
+
+            var status = allHealthy ? HealthStatus.Healthy : 
+                        anyDegraded ? HealthStatus.Degraded : HealthStatus.Unhealthy;
+
+            var data = results.SelectMany(r => r.Data).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            return new HealthCheckResult(status, "Overall system health check", null, data);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during overall health check");
+            return HealthCheckResult.Unhealthy("Overall health check failed", ex);
+        }
     }
 
     public async Task<HealthCheckResult> CheckDatabaseHealthAsync()

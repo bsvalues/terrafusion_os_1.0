@@ -1,0 +1,34 @@
+{
+  "name": "quantum-computing-integration-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for TerraFusion OS quantum-computing-integration module",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "quantum-computing-integration-mcp-server": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --inspect index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.4.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "nodemon": "^3.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "terrafusion-os",
+    "specialized",
+    "ai-integration"
+  ],
+  "author": "TerraFusion OS",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

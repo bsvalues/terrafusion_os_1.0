@@ -129,6 +129,7 @@ namespace TerraFusion.Core.Services
         public required string UserId { get; set; }
         public required string IpAddress { get; set; }
         public required string UserAgent { get; set; }
+        public required string Source { get; set; }
         public Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
     }
 
@@ -195,6 +196,7 @@ namespace TerraFusion.Core.Services
                     Id = Guid.NewGuid().ToString(),
                     Timestamp = DateTime.UtcNow,
                     ThreatType = securityEvent.EventType,
+                    Description = $"Security threat detected: {securityEvent.EventType} from {securityEvent.Source}",
                     Metadata = securityEvent.Data
                 };
 
@@ -283,6 +285,7 @@ namespace TerraFusion.Core.Services
                     Description = "Vulnerability remediation below target threshold",
                     Severity = ViolationSeverity.Medium,
                     AffectedSystem = "TerraFusion.API",
+                    UserId = "system-automated-scan",
                     RemediationSteps = "Update security patches and conduct vulnerability scan"
                 });
             }
@@ -662,6 +665,7 @@ namespace TerraFusion.Core.Services
                 Description = $"Sensitive data type {dataType} detected in user content",
                 Source = "DataLossPreventionEngine",
                 UserId = userId,
+                IpAddress = "127.0.0.1", // Default for internal detection
                 Status = AlertStatus.Open,
                 AffectedSystems = new List<string> { "TerraFusion.API" }
             };

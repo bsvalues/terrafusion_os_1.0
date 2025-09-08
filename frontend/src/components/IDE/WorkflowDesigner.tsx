@@ -52,6 +52,7 @@ import ReactFlow, {
   Edge,
   Controls,
   Background,
+  BackgroundVariant,
   MiniMap,
   useNodesState,
   useEdgesState,
@@ -62,6 +63,12 @@ import ReactFlow, {
   EdgeTypes
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+
+// Type assertion to fix React Flow TypeScript compatibility
+const ReactFlowComponent = ReactFlow as any;
+const ControlsComponent = Controls as any;
+const MiniMapComponent = MiniMap as any;
+const BackgroundComponent = Background as any;
 
 // Custom node types for AI agents and government operations
 import { AIAgentNode } from './nodes/AIAgentNode';
@@ -98,7 +105,10 @@ interface WorkflowNode extends Node {
   };
 }
 
-interface WorkflowEdge extends Edge {
+interface WorkflowEdge extends Omit<Edge, 'id' | 'source' | 'target'> {
+  id: string;
+  source: string;
+  target: string;
   data?: {
     dataType: string;
     security: 'ENCRYPTED' | 'STANDARD';
@@ -657,7 +667,7 @@ export const WorkflowDesigner: React.FC<WorkflowDesignerProps> = ({
             }
           }}
         >
-          <ReactFlow
+          <ReactFlowComponent
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
@@ -673,14 +683,14 @@ export const WorkflowDesigner: React.FC<WorkflowDesignerProps> = ({
             defaultViewport={{ x: 0, y: 0, zoom: 1 }}
             attributionPosition="bottom-left"
           >
-            <Controls />
-            <MiniMap 
+            <ControlsComponent />
+            <MiniMapComponent 
               nodeStrokeColor="#1976d2"
               nodeColor="#e3f2fd"
               nodeBorderRadius={2}
             />
-            <Background variant="dots" gap={20} size={1} />
-          </ReactFlow>
+            <BackgroundComponent variant={BackgroundVariant.Dots} gap={20} size={1} />
+          </ReactFlowComponent>
         </Box>
       </Box>
 
