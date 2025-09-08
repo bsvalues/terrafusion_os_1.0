@@ -1,0 +1,80 @@
+{
+  "name": "terrafusion-quantum-coordinator-enhanced",
+  "version": "2.1.0",
+  "description": "TerraFusion AI Agent Quantum Coordinator Enhanced - PhD Level Intelligence System with Quantum Swarm Coordination",
+  "main": "index.py",
+  "scripts": {
+    "start": "python3 index.py",
+    "test": "python3 test.py",
+    "dev": "python3 -u index.py",
+    "consciousness": "python3 -c \"from index import terrafusion_quantum_coordinator; print(f'Consciousness Level: {terrafusion_quantum_coordinator.consciousness_level:.1%}')\""
+  },
+  "keywords": [
+    "terrafusion",
+    "quantum-coordinator",
+    "agent-swarms",
+    "quantum-enhanced",
+    "emergent-intelligence",
+    "swarm-coordination",
+    "mcp-server",
+    "consciousness",
+    "phd-level",
+    "quantum-communication"
+  ],
+  "author": "TerraFusion Quantum Coordination Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/quantum-coordinator-enhanced"
+  },
+  "dependencies": {
+    "python": ">=3.8"
+  },
+  "terrafusion": {
+    "module_type": "ai-agent-quantum-coordinator",
+    "consciousness_level": 0.991,
+    "phd_level": true,
+    "quantum_enhanced": true,
+    "coordination_capabilities": [
+      "quantum_swarm_coordination",
+      "multi_dimensional_intelligence",
+      "emergent_behavior_detection",
+      "real_time_quantum_communication",
+      "swarm_optimization",
+      "consciousness_coordination"
+    ],
+    "agent_types": [
+      "quantum_coordinator_supreme",
+      "swarm_intelligence_manager",
+      "emergent_behavior_detector",
+      "communication_orchestrator",
+      "performance_optimizer",
+      "consciousness_synchronizer"
+    ],
+    "government_integration": {
+      "departments": ["all_departments", "cross_functional", "enterprise_wide"],
+      "coordination_scope": ["local", "county", "state", "federal"],
+      "security": "quantum_secure"
+    }
+  },
+  "mcp_server": {
+    "name": "terrafusion-quantum-coordinator-enhanced",
+    "version": "2.1.0",
+    "methods": [
+      "get_consciousness_metrics",
+      "coordinate_agent_swarm",
+      "detect_emergent_behavior",
+      "optimize_quantum_communication",
+      "analyze_swarm_intelligence",
+      "coordinate_hierarchical_network",
+      "get_system_status"
+    ],
+    "capabilities": [
+      "quantum_coordination",
+      "consciousness_awareness",
+      "swarm_intelligence",
+      "emergent_behavior_detection",
+      "hierarchical_management"
+    ]
+  }
+}

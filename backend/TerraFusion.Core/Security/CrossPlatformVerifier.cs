@@ -133,7 +133,8 @@ namespace TerraFusion.Core.Security
                     Provider = provider.Name,
                     IsValid = isValid,
                     ExecutionTime = executionTime,
-                    Success = true
+                    Success = true,
+                    Error = string.Empty
                 };
             }
             catch (Exception ex)
@@ -236,7 +237,8 @@ namespace TerraFusion.Core.Security
                     {
                         Provider = provider.Name,
                         IsHealthy = isHealthy,
-                        LastChecked = DateTime.UtcNow
+                        LastChecked = DateTime.UtcNow,
+                        Error = string.Empty
                     });
                 }
                 catch (Exception ex)

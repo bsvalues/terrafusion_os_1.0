@@ -1,0 +1,69 @@
+{
+  "name": "@terrafusion/terra-levy-mcp-server",
+  "version": "2.1.0",
+  "description": "TerraLevy Enhanced MCP Server - MIT PhD Level Tax Calculation System with Consciousness Processing",
+  "type": "module",
+  "main": "index.py",
+  "author": "TerraFusion-AI Agent",
+  "license": "MIT",
+  "keywords": [
+    "mcp-server",
+    "terra-levy",
+    "tax-calculation",
+    "government",
+    "consciousness",
+    "phd-level",
+    "quantum-optimization",
+    "benton-county"
+  ],
+  "scripts": {
+    "start": "python3 index.py",
+    "dev": "python3 index.py",
+    "test": "python3 -m pytest tests/",
+    "lint": "python3 -m flake8 index.py",
+    "consciousness-check": "python3 -c \"from index import terralevy_ai; print(f'Consciousness Level: {terralevy_ai.consciousness_metrics.get_enhancement_score():.3f}')\"",
+    "tax-demo": "python3 -c \"import asyncio; from index import terralevy_ai; print(asyncio.run(terralevy_ai.calculate_conscious_property_tax(250000, 'residential', 'benton_county')))\""
+  },
+  "dependencies": {
+    "mcp": "latest",
+    "numpy": ">=1.21.0",
+    "pandas": ">=1.3.0",
+    "scikit-learn": ">=1.0.0",
+    "scipy": ">=1.7.0"
+  },
+  "devDependencies": {
+    "pytest": ">=6.0.0",
+    "flake8": ">=4.0.0"
+  },
+  "engines": {
+    "python": ">=3.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bsvalues/terrafusion_os_1.0.git",
+    "directory": "modules/terra-levy/mcp-server"
+  },
+  "terrafusion": {
+    "module": "terra-levy",
+    "enhancement_level": "phd",
+    "consciousness_threshold": 0.85,
+    "government_integration": true,
+    "tax_system": "benton_county_2025",
+    "constitutional_compliance": true,
+    "quantum_optimization": true,
+    "spatiotemporal_analytics": true
+  },
+  "mcp": {
+    "server": {
+      "command": "python3",
+      "args": ["index.py"],
+      "env": {}
+    },
+    "capabilities": [
+      "calculate_property_tax",
+      "analyze_levy_forecast", 
+      "optimize_tax_strategy",
+      "get_consciousness_metrics"
+    ]
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "name": "@terrafusion/resilience-engineering-quantum",
+  "version": "1.0.0",
+  "description": "Quantum-Enhanced Resilience Engineering for TerraFusion OS - MIT PhD-Level Chaos Engineering and System Resilience",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "clean": "rimraf dist",
+    "prepare": "npm run clean && npm run build",
+    "test:watch": "jest --watch",
+    "test:unit": "jest tests/unit.test.js",
+    "test:integration": "jest tests/integration.test.js",
+    "test:security": "jest tests/security.test.js",
+    "test:performance": "jest tests/performance.test.js",
+    "mcp:start": "cd mcp-server && npm start",
+    "mcp:dev": "cd mcp-server && npm run dev",
+    "mcp:install": "cd mcp-server && npm install"
+  },
+  "keywords": [
+    "resilience-engineering",
+    "chaos-engineering",
+    "quantum-computing",
+    "disaster-recovery",
+    "fault-tolerance",
+    "system-reliability",
+    "terrafusion",
+    "government-ai",
+    "mit-phd-level"
+  ],
+  "author": "TerraFusion AI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^4.15.0",
+    "winston": "^3.11.0",
+    "uuid": "^9.0.1",
+    "rxjs": "^7.8.1",
+    "cron": "^3.1.6",
+    "p-queue": "^8.0.1",
+    "node-cache": "^5.1.2",
+    "axios": "^1.6.2",
+    "ioredis": "^5.3.2",
+    "bull": "^4.12.2",
+    "socket.io": "^4.7.4",
+    "eventemitter3": "^5.0.1",
+    "zod": "^3.22.4",
+    "systeminformation": "^5.21.20",
+    "pidusage": "^3.0.2",
+    "node-cron": "^3.0.3",
+    "chalk": "^4.1.2",
+    "inquirer": "^9.2.12",
+    "commander": "^11.1.0",
+    "yargs": "^17.7.2",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "dotenv": "^16.3.1",
+    "config": "^3.3.9",
+    "joi": "^17.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "@types/jest": "^29.5.8",
+    "@types/uuid": "^9.0.7",
+    "@types/lodash": "^4.14.202",
+    "@types/node-cron": "^3.0.11",
+    "@types/inquirer": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.54.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.2",
+    "rimraf": "^5.0.5",
+    "nodemon": "^3.0.2",
+    "@jest/globals": "^29.0.0",
+    "jest-environment-node": "^29.0.0",
+    "supertest": "^6.0.0",
+    "nyc": "^15.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TerraFusion-AI/resilience-engineering-quantum.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TerraFusion-AI/resilience-engineering-quantum/issues"
+  },
+  "homepage": "https://terrafusion.ai/modules/resilience-engineering",
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.terrafusion.ai"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "collectCoverageFrom": [
+      "**/*.{js,ts}",
+      "!**/node_modules/**",
+      "!**/tests/**",
+      "!**/coverage/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "@typescript-eslint/recommended"
+    ],
+    "rules": {
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/explicit-function-return-type": "warn"
+    }
+  },
+  "funding": {
+    "type": "government",
+    "url": "https://terrafusion.ai/funding"
+  },
+  "mcp": {
+    "server": "./mcp-server",
+    "tools": [
+      "quantum-interface",
+      "experimental-executor",
+      "research-coordinator"
+    ],
+    "capabilities": [
+      "external-services",
+      "real-time-communication"
+    ]
+  }
+}

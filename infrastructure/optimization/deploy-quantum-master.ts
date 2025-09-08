@@ -3,7 +3,7 @@
  * Deploys and executes the complete quantum optimization system
  */
 
-import { QuantumOptimizationMaster } from "./quantum-master";
+import { QuantumOptimizationMaster } from "./quantum-master.js";
 
 async function deployQuantumOptimizationMaster(): Promise<void> {
   console.log("🌌 Deploying Terrafusion Quantum Optimization Master...");

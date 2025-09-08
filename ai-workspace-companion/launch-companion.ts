@@ -21,8 +21,12 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
+import { config } from 'dotenv';
 import WorkspaceCompanionAgent from './WorkspaceCompanionAgent';
 import InteractiveCommandInterface from './InteractiveCommandInterface';
+
+// Load environment variables
+config();
 
 // Configuration
 const CONFIG = {
@@ -40,6 +44,7 @@ class CompanionLauncher {
   private agent: WorkspaceCompanionAgent;
   private interface: InteractiveCommandInterface | null = null;
   private isRunning: boolean = false;
+  private workspaceRoot: string = process.cwd();
 
   constructor() {
     this.agent = new WorkspaceCompanionAgent();
@@ -88,6 +93,37 @@ class CompanionLauncher {
   }
 
   /**
+   * Install required dependencies automatically
+   */
+  private async installDependencies(): Promise<void> {
+    const packageJsonPath = path.join(process.cwd(), 'package.json');
+
+    if (!fs.existsSync(packageJsonPath)) {
+      console.log('⚠️ No package.json found, skipping dependency installation');
+      return;
+    }
+
+    try {
+      // Check if node_modules exists
+      const nodeModulesPath = path.join(process.cwd(), 'node_modules');
+      if (!fs.existsSync(nodeModulesPath)) {
+        console.log('📦 Installing dependencies...');
+
+        const { exec } = require('child_process');
+        const { promisify } = require('util');
+        const execAsync = promisify(exec);
+
+        await execAsync('npm install');
+        console.log('✅ Dependencies installed successfully');
+      } else {
+        console.log('✅ Dependencies already installed');
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to install dependencies, continuing anyway:', error);
+    }
+  }
+
+  /**
    * Validate workspace environment
    */
   private validateWorkspace(): boolean {
@@ -117,8 +153,10 @@ class CompanionLauncher {
 
     // If we're in a subdirectory, check the parent directory
     const checkDir = currentDir.includes(CONFIG.workspaceName) && workspaceName !== CONFIG.workspaceName 
-      ? path.dirname(currentDir) 
+      ? currentDir.substring(0, currentDir.indexOf(CONFIG.workspaceName) + CONFIG.workspaceName.length)
       : currentDir;
+
+    this.workspaceRoot = checkDir;
 
     const missingFiles = essentialFiles.filter(file => !fs.existsSync(path.join(checkDir, file)));
     
@@ -132,8 +170,8 @@ class CompanionLauncher {
 
     if (!CONFIG.quietMode) {
       console.log('✅ Workspace validation passed');
-      console.log(`🏛️ Project: ${workspaceName}`);
-      console.log(`📁 Directory: ${currentDir}`);
+      console.log(`🏛️ Project: ${path.basename(this.workspaceRoot)}`);
+      console.log(`📁 Directory: ${this.workspaceRoot}`);
     }
 
     return true;
@@ -170,9 +208,19 @@ class CompanionLauncher {
       // Display launch banner
       this.displayLaunchBanner();
 
+      // Install dependencies automatically
+      await this.installDependencies();
+
       // Validate workspace
       if (!this.validateWorkspace()) {
         process.exit(1);
+      }
+
+      // Ensure process runs from workspace root for accurate detection
+      try {
+        process.chdir(this.workspaceRoot);
+      } catch (e) {
+        console.error('❌ Failed to change directory to workspace root:', this.workspaceRoot);
       }
 
       // Check if auto-activation is enabled

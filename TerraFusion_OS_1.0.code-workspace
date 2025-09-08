@@ -1,4 +1,20 @@
 {
+  "settings": {
+    "TerraFusion.OS.Type": "COMPLETE_GOVERNMENT_OPERATING_SYSTEM",
+    "TerraFusion.Status": "PRODUCTION_OPERATIONAL",
+    "TerraFusion.Warning": "NOT_A_WEB_APPLICATION",
+    "workbench.colorTheme": "Default Dark+",
+    "TerraFusion.AI.Agents": 50000,
+    "editor.rulers": [
+      80,
+      120
+    ],
+    "workbench.startupEditor": "readme",
+    "files.associations": {
+      "*.terrafusion": "json",
+      "AI_AGENT_START_HERE.md": "markdown"
+    }
+  },
   "extensions": {
     "recommendations": [
       "ms-vscode.vscode-typescript-next",
@@ -10,21 +26,5 @@
     {
       "path": "."
     }
-  ],
-  "settings": {
-    "editor.rulers": [
-      80,
-      120
-    ],
-    "files.associations": {
-      "*.terrafusion": "json",
-      "AI_AGENT_START_HERE.md": "markdown"
-    },
-    "TerraFusion.Warning": "NOT_A_WEB_APPLICATION",
-    "workbench.startupEditor": "readme",
-    "TerraFusion.AI.Agents": 50000,
-    "workbench.colorTheme": "Default Dark+",
-    "TerraFusion.OS.Type": "COMPLETE_GOVERNMENT_OPERATING_SYSTEM",
-    "TerraFusion.Status": "PRODUCTION_OPERATIONAL"
-  }
+  ]
 }

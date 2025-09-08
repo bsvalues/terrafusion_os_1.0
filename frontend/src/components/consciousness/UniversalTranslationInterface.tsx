@@ -17,7 +17,38 @@ import {
   CircularProgress
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { UniversalTranslationProtocol, UniversalMessage, SpeciesType } from '../../../../enhancement-plans/Terrafusion OS_transceded/universal_translation_protocol';
+// Mock types for universal translation protocol
+interface UniversalTranslationProtocol {
+  translate: (message: string, fromSpecies: SpeciesType, toSpecies: SpeciesType) => Promise<string>;
+  detectSpecies: (message: string) => Promise<SpeciesType>;
+}
+
+// Implementation of the UniversalTranslationProtocol
+class UniversalTranslator implements UniversalTranslationProtocol {
+  async translate(message: string, fromSpecies: SpeciesType, toSpecies: SpeciesType): Promise<string> {
+    // Mock translation logic
+    return `[${fromSpecies.toUpperCase()} → ${toSpecies.toUpperCase()}]: ${message}`;
+  }
+
+  async detectSpecies(message: string): Promise<SpeciesType> {
+    // Mock species detection
+    if (message.toLowerCase().includes('quantum')) return 'quantum';
+    if (message.toLowerCase().includes('consciousness')) return 'consciousness';
+    if (message.toLowerCase().includes('ai')) return 'ai';
+    return 'human';
+  }
+}
+
+interface UniversalMessage {
+  id: string;
+  content: string;
+  fromSpecies: SpeciesType;
+  toSpecies: SpeciesType;
+  timestamp: Date;
+  confidence: number;
+}
+
+type SpeciesType = 'human' | 'ai' | 'quantum' | 'consciousness' | 'dimensional';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.05)',
@@ -34,7 +65,7 @@ const UniversalTranslationInterface: React.FC = () => {
   const [translatedMessage, setTranslatedMessage] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const translator = new UniversalTranslationProtocol();
+  const translator = new UniversalTranslator();
 
   const handleTranslate = async () => {
     setIsLoading(true);

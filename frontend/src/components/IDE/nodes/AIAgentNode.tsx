@@ -23,6 +23,9 @@ import {
   CheckCircle
 } from '@mui/icons-material';
 
+// Type assertion to fix React Flow Handle TypeScript compatibility
+const HandleComponent = Handle as any;
+
 interface AIAgentNodeData {
   label: string;
   agentType: 'SUPREME_COMMANDER' | 'FIELD_GENERAL' | 'OPERATIONAL_AGENT';
@@ -45,9 +48,16 @@ interface AIAgentNodeData {
   currentTask?: string;
 }
 
-interface AIAgentNodeProps extends NodeProps {
+interface AIAgentNodeProps {
+  id: string;
   data: AIAgentNodeData;
   selected?: boolean;
+  xPos?: number;
+  yPos?: number;
+  dragHandle?: string;
+  type?: string;
+  zIndex?: number;
+  isConnectable?: boolean;
 }
 
 export const AIAgentNode: React.FC<AIAgentNodeProps> = memo(({ data, selected }) => {
@@ -141,12 +151,12 @@ export const AIAgentNode: React.FC<AIAgentNodeProps> = memo(({ data, selected })
       }}
     >
       {/* Input Handles */}
-      <Handle 
+      <HandleComponent 
         type="target" 
         position={Position.Top}
         style={{ background: '#1976d2', border: '2px solid #fff', width: 12, height: 12 }}
       />
-      <Handle 
+      <HandleComponent 
         type="target" 
         position={Position.Left}
         style={{ background: '#1976d2', border: '2px solid #fff', width: 12, height: 12 }}
@@ -379,12 +389,12 @@ export const AIAgentNode: React.FC<AIAgentNodeProps> = memo(({ data, selected })
       </Box>
 
       {/* Output Handles */}
-      <Handle 
+      <HandleComponent 
         type="source" 
         position={Position.Bottom}
         style={{ background: '#4CAF50', border: '2px solid #fff', width: 12, height: 12 }}
       />
-      <Handle 
+      <HandleComponent 
         type="source" 
         position={Position.Right}
         style={{ background: '#4CAF50', border: '2px solid #fff', width: 12, height: 12 }}

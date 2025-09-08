@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Services.AI;
 using TerraFusion.Core.Services.Monitoring;
+using TerraFusion.Core.Extensions;
 
 namespace TerraFusion.Core.Services.AI;
 
@@ -590,6 +591,10 @@ public class PropertyComparison
 public class MarketPositionAnalysis
 {
     public string PropertyId { get; set; } = string.Empty;
+    public string MarketSegment { get; set; } = string.Empty;
+    public double CompetitiveScore { get; set; }
+    public List<string> CompetitiveStrengths { get; set; } = new();
+    public List<string> CompetitiveWeaknesses { get; set; } = new();
     public Dictionary<string, double> MarketPercentiles { get; set; } = new();
     public PriceDistribution PriceDistribution { get; set; } = new();
     public CompetitivePosition CompetitivePosition { get; set; } = new();
