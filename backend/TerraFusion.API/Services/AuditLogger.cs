@@ -70,12 +70,12 @@ namespace TerraFusion.API.Services
             }
         }
 
-        public async System.Threading.Tasks.Task LogSecurityEventAsync(string eventType, string details, string userId = null)
+        public async System.Threading.Tasks.Task LogSecurityEventAsync(string eventType, string details, string? userId = null)
         {
             await LogEventAsync(eventType, "Security", details, userId: userId);
         }
 
-        public async System.Threading.Tasks.Task LogDataAccessAsync(string resourceType, string resourceId, string action, string userId = null)
+        public async System.Threading.Tasks.Task LogDataAccessAsync(string resourceType, string resourceId, string action, string? userId = null)
         {
             var details = $"Action: {action}, Resource: {resourceType}/{resourceId}";
             await LogEventAsync("DataAccess", "Data", details, userId: userId, resourceType: resourceType, resourceId: resourceId);
@@ -86,12 +86,12 @@ namespace TerraFusion.API.Services
             await LogEventAsync(eventType, "System", details);
         }
 
-        public async System.Threading.Tasks.Task LogUserActionAsync(string action, string userId, string details = null)
+        public async System.Threading.Tasks.Task LogUserActionAsync(string action, string userId, string? details = null)
         {
             await LogEventAsync("UserAction", "User", details ?? action, userId: userId);
         }
 
-        public async System.Threading.Tasks.Task LogErrorAsync(string action, Exception exception, string userId = null)
+        public async System.Threading.Tasks.Task LogErrorAsync(string action, Exception exception, string? userId = null)
         {
             var details = JsonSerializer.Serialize(new
             {
@@ -107,7 +107,7 @@ namespace TerraFusion.API.Services
                 errorMessage: exception.Message);
         }
 
-        public async System.Threading.Tasks.Task LogApiCallAsync(string method, string path, int statusCode, double duration, string userId = null)
+        public async System.Threading.Tasks.Task LogApiCallAsync(string method, string path, int statusCode, double duration, string? userId = null)
         {
             var details = $"{method} {path}";
             await LogEventAsync("ApiCall", "API", details,
@@ -117,7 +117,7 @@ namespace TerraFusion.API.Services
                 duration: duration);
         }
 
-        public async System.Threading.Tasks.Task LogAuthenticationAsync(string userId, bool success, string reason = null)
+        public async System.Threading.Tasks.Task LogAuthenticationAsync(string userId, bool success, string? reason = null)
         {
             var details = success ? "Authentication successful" : $"Authentication failed: {reason}";
             await LogEventAsync("Authentication", "Security", details,
@@ -134,7 +134,7 @@ namespace TerraFusion.API.Services
                 resourceType: resource);
         }
 
-        public async System.Threading.Tasks.Task LogConfigurationChangeAsync(string setting, string oldValue, string newValue, string userId = null)
+        public async System.Threading.Tasks.Task LogConfigurationChangeAsync(string setting, string oldValue, string newValue, string? userId = null)
         {
             var details = $"Configuration changed: {setting}";
             await LogEventAsync("ConfigurationChange", "System", details,
@@ -147,15 +147,15 @@ namespace TerraFusion.API.Services
             string eventType,
             string eventCategory,
             string details,
-            string userId = null,
+            string? userId = null,
             bool success = true,
-            string errorMessage = null,
+            string? errorMessage = null,
             int? responseCode = null,
             double? duration = null,
-            string resourceType = null,
-            string resourceId = null,
-            string oldValue = null,
-            string newValue = null)
+            string? resourceType = null,
+            string? resourceId = null,
+            string? oldValue = null,
+            string? newValue = null)
         {
             if (!_isEnabled) return;
 

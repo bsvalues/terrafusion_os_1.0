@@ -1,0 +1,51 @@
+{
+  "job_id": "aecb36ff-61f2-4bb0-baf1-2a4d77a32be2",
+  "county_id": "benton-wa",
+  "username": "county_analyst",
+  "export_format": "geojson",
+  "area_of_interest": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -119.8,
+          46.1
+        ],
+        [
+          -119.0,
+          46.1
+        ],
+        [
+          -119.0,
+          46.4
+        ],
+        [
+          -119.8,
+          46.4
+        ],
+        [
+          -119.8,
+          46.1
+        ]
+      ]
+    ]
+  },
+  "layers": [
+    "parcels",
+    "zoning",
+    "voting_precincts",
+    "fire_districts"
+  ],
+  "parameters": {
+    "coordinate_system": "EPSG:4326",
+    "precision": 6
+  },
+  "status": "COMPLETED",
+  "created_at": "2025-06-09T18:12:16.401378",
+  "started_at": "2025-06-09T18:12:16.403362",
+  "completed_at": "2025-06-09T18:12:16.404845",
+  "download_url": "/api/v1/gis-export/download/aecb36ff-61f2-4bb0-baf1-2a4d77a32be2",
+  "message": "Export completed successfully with 4 layers.",
+  "file_path": "exports/benton-wa_aecb36ff-61f2-4bb0-baf1-2a4d77a32be2.geojson",
+  "file_size": 3378
+}

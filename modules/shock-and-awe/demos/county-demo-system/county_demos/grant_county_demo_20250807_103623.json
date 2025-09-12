@@ -1,0 +1,165 @@
+{
+  "id": "3dc6aa04-c945-49fb-ba7d-b698bb52fc5c",
+  "county": "Grant County",
+  "generated_at": "2025-08-07T17:36:23.251131+00:00",
+  "customizations": {
+    "primary_color": "#8B4513",
+    "secondary_color": "#D2B48C",
+    "logo_url": null,
+    "contact_info": {
+      "department": "Grant County GIS Department",
+      "phone": "(509) 754-2011",
+      "email": "gis@grantcountywa.gov",
+      "website": "https://www.grantcountywa.gov"
+    },
+    "key_features": [
+      "Large-Scale Agricultural Management",
+      "Irrigation District Coordination",
+      "Site Addressing for Rural Areas",
+      "Agricultural Land Assessment",
+      "Water Rights Management",
+      "Rural Development Planning",
+      "Multi-Language Community Services"
+    ],
+    "demo_scenarios": [
+      {
+        "name": "Agricultural Land Management at Scale",
+        "description": "Manage extensive agricultural operations, irrigation systems, and rural addressing for 100K+ population",
+        "expected_outcome": "Increase agricultural productivity tracking by 40% and streamline rural property management"
+      },
+      {
+        "name": "Irrigation and Water Rights Integration",
+        "description": "Coordinate complex irrigation districts and water rights with property assessments",
+        "expected_outcome": "Optimize water resource allocation and reduce irrigation disputes by 60%"
+      },
+      {
+        "name": "Rural Site Addressing and Development",
+        "description": "Manage site addressing across vast rural areas and coordinate development planning",
+        "expected_outcome": "Improve emergency response times by 30% through better addressing and reduce development approval time"
+      },
+      {
+        "name": "Diverse Community Services",
+        "description": "Serve diverse agricultural communities with multi-language support and cultural sensitivity",
+        "expected_outcome": "Increase community engagement by 45% and improve service accessibility for all residents"
+      }
+    ]
+  },
+  "sample_properties": [],
+  "analytics": {
+    "total_properties": 0,
+    "average_assessed_value": 250000,
+    "total_assessed_value": 0,
+    "median_assessed_value": 250000,
+    "property_type_distribution": {},
+    "value_ranges": {},
+    "data_quality_metrics": {
+      "completeness_score": 0.0,
+      "total_fields_analyzed": 0,
+      "sample_size": 0
+    }
+  },
+  "recommendations": [
+    {
+      "id": "5389fb6c-f7c2-47c1-96d2-07088f87f5e1",
+      "title": "Optimize Grant County Property Assessment Workflow",
+      "description": "Implement TerraFusion's AI-powered assessment tools to improve accuracy and efficiency",
+      "impact": "High",
+      "estimated_revenue_increase": 256695.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "3-6 months"
+    },
+    {
+      "id": "282fa9a8-1aec-4782-a24b-9109b5fc3101",
+      "title": "Deploy Automated Valuation Models (AVM)",
+      "description": "Use machine learning to provide consistent, accurate property valuations",
+      "impact": "Very High",
+      "estimated_revenue_increase": 513390.0,
+      "implementation_complexity": "High",
+      "timeframe": "6-12 months"
+    },
+    {
+      "id": "b7d9aa8a-0ea8-482f-9b92-88614889fd5f",
+      "title": "Implement Real-time Market Analysis",
+      "description": "Track market trends and automatically adjust assessments based on current conditions",
+      "impact": "High",
+      "estimated_revenue_increase": 308034.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "4-8 months"
+    }
+  ],
+  "terrafusion_features": {
+    "core_applications": [
+      {
+        "name": "TerraAgent",
+        "description": "AI-powered government assistant for citizen services",
+        "benefits": [
+          "24/7 citizen support",
+          "Reduced call center load",
+          "Improved service delivery"
+        ]
+      },
+      {
+        "name": "CostForgeAI",
+        "description": "Quantum property valuation and cost analysis",
+        "benefits": [
+          "95%+ valuation accuracy",
+          "Automated assessment updates",
+          "Appeal reduction"
+        ]
+      },
+      {
+        "name": "TerraFlow",
+        "description": "Workflow automation for government processes",
+        "benefits": [
+          "60% faster processing",
+          "Reduced manual errors",
+          "Compliance tracking"
+        ]
+      },
+      {
+        "name": "TerraInsight",
+        "description": "Advanced analytics and reporting dashboard",
+        "benefits": [
+          "Real-time insights",
+          "Predictive analytics",
+          "Custom reporting"
+        ]
+      }
+    ],
+    "county_specific_features": [
+      "Large-Scale Agricultural Management",
+      "Irrigation District Coordination",
+      "Site Addressing for Rural Areas",
+      "Agricultural Land Assessment",
+      "Water Rights Management",
+      "Rural Development Planning",
+      "Multi-Language Community Services"
+    ],
+    "integration_capabilities": [
+      "Existing GIS systems",
+      "Property management software",
+      "Financial systems",
+      "State reporting systems",
+      "Public portals"
+    ]
+  },
+  "roi_projections": {
+    "implementation_cost": {
+      "year_1": 2053560.0,
+      "year_2": 1026780.0,
+      "year_3": 513390.0
+    },
+    "projected_savings": {
+      "year_1": 5133900.0,
+      "year_2": 8214240.0,
+      "year_3": 12321360.0
+    },
+    "roi_percentage": {
+      "year_1": 150,
+      "year_2": 700,
+      "year_3": 2300
+    },
+    "break_even_timeline": "4-6 months",
+    "total_3_year_roi": 25669500.0
+  }
+}

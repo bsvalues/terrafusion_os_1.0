@@ -66,7 +66,7 @@ namespace TerraFusion.API.Controllers
             var email = principal.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
             var roles = new List<string> { "Admin" };
 
-            var newToken = _jwtAuthService.GenerateToken(userId, email, roles);
+            var newToken = _jwtAuthService.GenerateToken(userId ?? "", email ?? "", roles);
             var newRefreshToken = GenerateRefreshToken();
 
             return Ok(new LoginResponse
@@ -123,7 +123,7 @@ namespace TerraFusion.API.Controllers
                 return (true, "demo-001", "demo@terrafusion.com", new List<string> { "User" });
             }
 
-            return (false, null, null, null);
+            return (false, "", "", new List<string>());
         }
 
         private string GenerateRefreshToken()
