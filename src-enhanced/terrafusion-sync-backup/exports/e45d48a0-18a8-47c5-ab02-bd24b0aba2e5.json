@@ -1,0 +1,47 @@
+{
+  "job_id": "e45d48a0-18a8-47c5-ab02-bd24b0aba2e5",
+  "county_id": "benton-wa",
+  "username": "admin@benton.wa.gov",
+  "export_format": "geojson",
+  "area_of_interest": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    ]
+  },
+  "layers": [
+    "parcels",
+    "buildings",
+    "roads"
+  ],
+  "parameters": {},
+  "status": "COMPLETED",
+  "created_at": "2025-05-23T21:51:06.370278",
+  "started_at": "2025-05-23T21:51:06.371285",
+  "completed_at": "2025-05-23T21:51:06.372095",
+  "download_url": "/api/v1/gis-export/download/e45d48a0-18a8-47c5-ab02-bd24b0aba2e5",
+  "message": "Export completed successfully with 3 layers.",
+  "file_path": "exports/benton-wa_e45d48a0-18a8-47c5-ab02-bd24b0aba2e5.geojson",
+  "file_size": 2622
+}

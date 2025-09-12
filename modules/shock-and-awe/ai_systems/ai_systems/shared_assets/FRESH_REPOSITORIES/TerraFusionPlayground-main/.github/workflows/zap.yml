@@ -1,0 +1,83 @@
+name: ZAP Security Scan
+
+on:
+  workflow_call:
+    inputs:
+      target_url:
+        required: true
+        type: string
+        description: 'URL to scan'
+      scan_type:
+        required: false
+        type: string
+        default: 'baseline'
+        description: 'Type of scan to run (baseline, full)'
+      rules_file_path:
+        required: false
+        type: string
+        default: '.zap/rules.tsv'
+        description: 'Path to rules configuration file'
+      fail_on_high:
+        required: false
+        type: boolean
+        default: true
+        description: 'Fail the workflow if high risk vulnerabilities are found'
+
+jobs:
+  zap-scan:
+    name: TerraFusion Security Scan (ZAP)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.7.0
+        with:
+          target: ${{ inputs.target_url }}
+          rules_file_name: ${{ inputs.rules_file_path }}
+          cmd_options: '-a -j'
+          fail_action: ${{ inputs.fail_on_high == true }}
+      
+      - name: Upload ZAP Scan Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-scan-report
+          path: |
+            zap_scan_report.html
+            zap_scan_report.json
+          retention-days: 30
+      
+      - name: Generate Security Report Summary
+        if: ${{ success() || failure() }}
+        run: |
+          echo "# TerraFusion Security Report Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "zap_scan_report.json" ]; then
+            echo "## ZAP Scan Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            HIGH_COUNT=$(cat zap_scan_report.json | grep -o '"High":' | wc -l)
+            MEDIUM_COUNT=$(cat zap_scan_report.json | grep -o '"Medium":' | wc -l)
+            LOW_COUNT=$(cat zap_scan_report.json | grep -o '"Low":' | wc -l)
+            
+            echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🔴 High | $HIGH_COUNT |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🟠 Medium | $MEDIUM_COUNT |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🟡 Low | $LOW_COUNT |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [ $HIGH_COUNT -gt 0 ]; then
+              echo "⚠️ **High severity issues detected. Please review the full report.**" >> $GITHUB_STEP_SUMMARY
+            elif [ $MEDIUM_COUNT -gt 0 ]; then
+              echo "⚠️ **Medium severity issues detected. Please review the full report.**" >> $GITHUB_STEP_SUMMARY
+            elif [ $LOW_COUNT -gt 0 ]; then
+              echo "ℹ️ **Low severity issues detected. Please review when convenient.**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ **No security issues detected.**" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "❌ **Error: ZAP scan report not found.**" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -15,7 +15,7 @@ namespace TerraFusion.Data.Repositories
             _context = context;
         }
 
-        public async Task<Plugin> GetByIdAsync(Guid id)
+        public async Task<Plugin?> GetByIdAsync(Guid id)
         {
             return await _context.Plugins.FindAsync(id);
         }

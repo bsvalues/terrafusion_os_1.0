@@ -1,0 +1,153 @@
+{
+  "type": "FeatureCollection",
+  "name": "benton-wa Export",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "1",
+      "properties": {
+        "layer": "parcels",
+        "county": "benton-wa",
+        "name": "Feature 1",
+        "description": "Sample parcels feature for benton-wa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "2",
+      "properties": {
+        "layer": "buildings",
+        "county": "benton-wa",
+        "name": "Feature 2",
+        "description": "Sample buildings feature for benton-wa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "3",
+      "properties": {
+        "layer": "roads",
+        "county": "benton-wa",
+        "name": "Feature 3",
+        "description": "Sample roads feature for benton-wa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "exported_by": "admin@benton.wa.gov",
+    "exported_at": "2025-05-23T21:51:06.371670",
+    "layers": [
+      "parcels",
+      "buildings",
+      "roads"
+    ],
+    "area_of_interest": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      ]
+    }
+  }
+}

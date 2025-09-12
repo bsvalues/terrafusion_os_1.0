@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using TerraFusion.Core.Services.Monitoring;
 using TerraFusion.Core.Extensions;
+using System.Reflection;
 
 namespace TerraFusion.Api.Controllers;
 

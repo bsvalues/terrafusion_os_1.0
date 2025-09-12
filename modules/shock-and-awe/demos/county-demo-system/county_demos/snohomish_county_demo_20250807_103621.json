@@ -1,0 +1,167 @@
+{
+  "id": "02de7f36-726f-4092-8018-c5652e5d36ca",
+  "county": "Snohomish County",
+  "generated_at": "2025-08-07T17:36:21.626162+00:00",
+  "customizations": {
+    "primary_color": "#003366",
+    "secondary_color": "#4A90E2",
+    "logo_url": null,
+    "contact_info": {
+      "department": "Snohomish County Information Technology",
+      "phone": "(425) 312-0500",
+      "email": "gis@snohomishcountywa.gov",
+      "website": "https://snohomishcountywa.gov"
+    },
+    "key_features": [
+      "Enterprise GIS Collaboration",
+      "Large-Scale Property Assessment (320K+ properties)",
+      "Multi-Departmental Integration",
+      "Advanced Demographics Analytics",
+      "Growth Management Planning",
+      "Buildable Lands Analysis",
+      "Regional Transportation Coordination",
+      "Environmental Impact Assessment"
+    ],
+    "demo_scenarios": [
+      {
+        "name": "Enterprise Property Assessment at Scale",
+        "description": "Manage 320,000+ properties with automated valuation and assessment workflows",
+        "expected_outcome": "Process 30% more assessments with 25% fewer staff through AI automation"
+      },
+      {
+        "name": "Growth Management & Planning",
+        "description": "Advanced buildable lands analysis and growth monitoring for 845K population",
+        "expected_outcome": "Optimize urban growth planning and reduce development approval time by 40%"
+      },
+      {
+        "name": "Multi-Departmental Enterprise Integration",
+        "description": "Coordinate between Assessor, Planning, Public Works, Emergency Management, and IT",
+        "expected_outcome": "Reduce inter-departmental coordination time by 50% and eliminate data silos"
+      },
+      {
+        "name": "Regional Transportation & Infrastructure",
+        "description": "Large-scale infrastructure planning and transportation coordination",
+        "expected_outcome": "Improve infrastructure project delivery by 35% through predictive analytics"
+      }
+    ]
+  },
+  "sample_properties": [],
+  "analytics": {
+    "total_properties": 0,
+    "average_assessed_value": 250000,
+    "total_assessed_value": 0,
+    "median_assessed_value": 250000,
+    "property_type_distribution": {},
+    "value_ranges": {},
+    "data_quality_metrics": {
+      "completeness_score": 0.0,
+      "total_fields_analyzed": 0,
+      "sample_size": 0
+    }
+  },
+  "recommendations": [
+    {
+      "id": "d98d8846-e60f-49d4-90fe-7c799ddc9024",
+      "title": "Optimize Snohomish County Property Assessment Workflow",
+      "description": "Implement TerraFusion's AI-powered assessment tools to improve accuracy and efficiency",
+      "impact": "High",
+      "estimated_revenue_increase": 2111902.5,
+      "implementation_complexity": "Medium",
+      "timeframe": "3-6 months"
+    },
+    {
+      "id": "33f5ebe1-0b1f-40d0-97ba-021a79542d8e",
+      "title": "Deploy Automated Valuation Models (AVM)",
+      "description": "Use machine learning to provide consistent, accurate property valuations",
+      "impact": "Very High",
+      "estimated_revenue_increase": 4223805.0,
+      "implementation_complexity": "High",
+      "timeframe": "6-12 months"
+    },
+    {
+      "id": "170830ce-16ad-473b-b236-0d2aa83a7a41",
+      "title": "Implement Real-time Market Analysis",
+      "description": "Track market trends and automatically adjust assessments based on current conditions",
+      "impact": "High",
+      "estimated_revenue_increase": 2534282.9999999995,
+      "implementation_complexity": "Medium",
+      "timeframe": "4-8 months"
+    }
+  ],
+  "terrafusion_features": {
+    "core_applications": [
+      {
+        "name": "TerraAgent",
+        "description": "AI-powered government assistant for citizen services",
+        "benefits": [
+          "24/7 citizen support",
+          "Reduced call center load",
+          "Improved service delivery"
+        ]
+      },
+      {
+        "name": "CostForgeAI",
+        "description": "Quantum property valuation and cost analysis",
+        "benefits": [
+          "95%+ valuation accuracy",
+          "Automated assessment updates",
+          "Appeal reduction"
+        ]
+      },
+      {
+        "name": "TerraFlow",
+        "description": "Workflow automation for government processes",
+        "benefits": [
+          "60% faster processing",
+          "Reduced manual errors",
+          "Compliance tracking"
+        ]
+      },
+      {
+        "name": "TerraInsight",
+        "description": "Advanced analytics and reporting dashboard",
+        "benefits": [
+          "Real-time insights",
+          "Predictive analytics",
+          "Custom reporting"
+        ]
+      }
+    ],
+    "county_specific_features": [
+      "Enterprise GIS Collaboration",
+      "Large-Scale Property Assessment (320K+ properties)",
+      "Multi-Departmental Integration",
+      "Advanced Demographics Analytics",
+      "Growth Management Planning",
+      "Buildable Lands Analysis",
+      "Regional Transportation Coordination",
+      "Environmental Impact Assessment"
+    ],
+    "integration_capabilities": [
+      "Existing GIS systems",
+      "Property management software",
+      "Financial systems",
+      "State reporting systems",
+      "Public portals"
+    ]
+  },
+  "roi_projections": {
+    "implementation_cost": {
+      "year_1": 16895220.0,
+      "year_2": 8447610.0,
+      "year_3": 4223805.0
+    },
+    "projected_savings": {
+      "year_1": 42238050.0,
+      "year_2": 67580880.0,
+      "year_3": 101371320.0
+    },
+    "roi_percentage": {
+      "year_1": 150,
+      "year_2": 700,
+      "year_3": 2300
+    },
+    "break_even_timeline": "4-6 months",
+    "total_3_year_roi": 211190250.0
+  }
+}

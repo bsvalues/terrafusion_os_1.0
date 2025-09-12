@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Services;
+using TerraFusion.Core.Entities;
+using TerraFusion.Abstractions.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -74,7 +76,7 @@ namespace TerraFusion.API.Controllers
         public async Task<ActionResult<List<AuditTrail>>> GetAuditTrail(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null,
-            [FromQuery] string userId = null)
+            [FromQuery] string? userId = null)
         {
             try
             {

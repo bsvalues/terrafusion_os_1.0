@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Icon Test</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0f1c, #1a2332);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00e5ff;
+            margin-bottom: 3rem;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 229, 255, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .test-card h3 {
+            color: #00e5ff;
+            margin-bottom: 1rem;
+        }
+        
+        .icon-container {
+            background: rgba(0, 229, 255, 0.1);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 1rem 0;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.875rem;
+        }
+        
+        .success {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .error {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>TerraFusion Icon Loading Test</h1>
+    
+    <div class="test-grid">
+        <!-- Test 1: Direct file:// protocol -->
+        <div class="test-card">
+            <h3>Test 1: Direct File Path</h3>
+            <div class="icon-container">
+                <img src="file:///mnt/e/TerraFusion_VM_Production/favicon/favicon-96x96.png" 
+                     alt="TerraFusion Icon" 
+                     onerror="this.parentElement.nextElementSibling.innerHTML='❌ Failed to load via file://'"
+                     onload="this.parentElement.nextElementSibling.innerHTML='✅ Loaded successfully'">
+            </div>
+            <div class="status error">Waiting...</div>
+        </div>
+        
+        <!-- Test 2: Relative path from championship -->
+        <div class="test-card">
+            <h3>Test 2: Relative Path</h3>
+            <div class="icon-container">
+                <img src="../../TerraFusion_VM_Production/favicon/favicon-96x96.png" 
+                     alt="TerraFusion Icon"
+                     onerror="this.parentElement.nextElementSibling.innerHTML='❌ Failed to load via relative path'"
+                     onload="this.parentElement.nextElementSibling.innerHTML='✅ Loaded successfully'">
+            </div>
+            <div class="status error">Waiting...</div>
+        </div>
+        
+        <!-- Test 3: Windows path style -->
+        <div class="test-card">
+            <h3>Test 3: Windows Path</h3>
+            <div class="icon-container">
+                <img src="E:/TerraFusion_VM_Production/favicon/favicon-96x96.png" 
+                     alt="TerraFusion Icon"
+                     onerror="this.parentElement.nextElementSibling.innerHTML='❌ Failed to load via Windows path'"
+                     onload="this.parentElement.nextElementSibling.innerHTML='✅ Loaded successfully'">
+            </div>
+            <div class="status error">Waiting...</div>
+        </div>
+        
+        <!-- Test 4: Copy to local directory first -->
+        <div class="test-card">
+            <h3>Test 4: Local Copy</h3>
+            <div class="icon-container">
+                <img src="./favicon-96x96.png" 
+                     alt="TerraFusion Icon"
+                     onerror="this.parentElement.nextElementSibling.innerHTML='❌ No local copy found - need to copy icon to championship folder'"
+                     onload="this.parentElement.nextElementSibling.innerHTML='✅ Local copy loaded'">
+            </div>
+            <div class="status error">Waiting...</div>
+        </div>
+    </div>
+    
+    <div style="margin-top: 3rem; padding: 2rem; background: rgba(0, 229, 255, 0.1); border-radius: 10px;">
+        <h2 style="color: #00e5ff;">Instructions:</h2>
+        <ol style="line-height: 1.8;">
+            <li>Open this file in your browser</li>
+            <li>Check which method successfully loads the icon</li>
+            <li>If none work, we'll need to:
+                <ul style="margin-top: 0.5rem;">
+                    <li>Copy the icon files to the championship directory</li>
+                    <li>Or embed them as base64 data URLs</li>
+                    <li>Or serve them through a local web server</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <div style="margin-top: 2rem;">
+            <h3 style="color: #00e5ff;">What the icon should look like:</h3>
+            <p>A layered/terraced geometric design in cyan/teal color (#00e5ff) with "TERRAFUSION" text below, on a dark background</p>
+        </div>
+    </div>
+    
+    <script>
+        console.log('Testing TerraFusion icon loading methods...');
+        
+        // Log the current location
+        console.log('Current page location:', window.location.href);
+        console.log('Current protocol:', window.location.protocol);
+        
+        // Check each image after page loads
+        window.addEventListener('load', () => {
+            const images = document.querySelectorAll('img');
+            images.forEach((img, index) => {
+                console.log(`Test ${index + 1}: ${img.complete ? 'Loaded' : 'Failed'} - ${img.src}`);
+            });
+        });
+    </script>
+</body>
+</html>

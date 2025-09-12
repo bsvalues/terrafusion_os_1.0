@@ -1,0 +1,144 @@
+{
+  "id": "13ebb2ad-8b27-45b1-80e6-1babdce5f38a",
+  "county": "Island County",
+  "generated_at": "2025-08-07T17:14:08.560422+00:00",
+  "customizations": {
+    "primary_color": "#2E8B57",
+    "secondary_color": "#90EE90",
+    "logo_url": null,
+    "contact_info": {
+      "department": "Island County GIS",
+      "phone": "(360) 679-7354",
+      "email": "gis@islandcounty.net",
+      "website": "https://www.islandcounty.net"
+    },
+    "key_features": [
+      "Waterfront Property Management",
+      "Environmental Compliance",
+      "Tourism Impact Analysis",
+      "Coastal Zone Planning"
+    ],
+    "demo_scenarios": [
+      {
+        "name": "Coastal Property Management",
+        "description": "Manage coastal and waterfront property assessments",
+        "expected_outcome": "Balance environmental protection with property taxation"
+      }
+    ]
+  },
+  "sample_properties": [],
+  "analytics": {
+    "total_properties": 0,
+    "average_assessed_value": 250000,
+    "total_assessed_value": 0,
+    "median_assessed_value": 250000,
+    "property_type_distribution": {},
+    "value_ranges": {},
+    "data_quality_metrics": {
+      "completeness_score": 0.0,
+      "total_fields_analyzed": 0,
+      "sample_size": 0
+    }
+  },
+  "recommendations": [
+    {
+      "id": "915a3b2d-5c52-4c4b-a64d-2a26d30b26ca",
+      "title": "Optimize Island County Property Assessment Workflow",
+      "description": "Implement TerraFusion's AI-powered assessment tools to improve accuracy and efficiency",
+      "impact": "High",
+      "estimated_revenue_increase": 217142.5,
+      "implementation_complexity": "Medium",
+      "timeframe": "3-6 months"
+    },
+    {
+      "id": "8fd8f036-9b9a-4dd6-ac4e-c7af35fdef56",
+      "title": "Deploy Automated Valuation Models (AVM)",
+      "description": "Use machine learning to provide consistent, accurate property valuations",
+      "impact": "Very High",
+      "estimated_revenue_increase": 434285.0,
+      "implementation_complexity": "High",
+      "timeframe": "6-12 months"
+    },
+    {
+      "id": "6b6d467c-64b1-4c32-afc5-e286bf83caec",
+      "title": "Implement Real-time Market Analysis",
+      "description": "Track market trends and automatically adjust assessments based on current conditions",
+      "impact": "High",
+      "estimated_revenue_increase": 260571.0,
+      "implementation_complexity": "Medium",
+      "timeframe": "4-8 months"
+    }
+  ],
+  "terrafusion_features": {
+    "core_applications": [
+      {
+        "name": "TerraAgent",
+        "description": "AI-powered government assistant for citizen services",
+        "benefits": [
+          "24/7 citizen support",
+          "Reduced call center load",
+          "Improved service delivery"
+        ]
+      },
+      {
+        "name": "CostForgeAI",
+        "description": "Quantum property valuation and cost analysis",
+        "benefits": [
+          "95%+ valuation accuracy",
+          "Automated assessment updates",
+          "Appeal reduction"
+        ]
+      },
+      {
+        "name": "TerraFlow",
+        "description": "Workflow automation for government processes",
+        "benefits": [
+          "60% faster processing",
+          "Reduced manual errors",
+          "Compliance tracking"
+        ]
+      },
+      {
+        "name": "TerraInsight",
+        "description": "Advanced analytics and reporting dashboard",
+        "benefits": [
+          "Real-time insights",
+          "Predictive analytics",
+          "Custom reporting"
+        ]
+      }
+    ],
+    "county_specific_features": [
+      "Waterfront Property Management",
+      "Environmental Compliance",
+      "Tourism Impact Analysis",
+      "Coastal Zone Planning"
+    ],
+    "integration_capabilities": [
+      "Existing GIS systems",
+      "Property management software",
+      "Financial systems",
+      "State reporting systems",
+      "Public portals"
+    ]
+  },
+  "roi_projections": {
+    "implementation_cost": {
+      "year_1": 1737140.0,
+      "year_2": 868570.0,
+      "year_3": 434285.0
+    },
+    "projected_savings": {
+      "year_1": 4342850.0,
+      "year_2": 6948560.0,
+      "year_3": 10422840.0
+    },
+    "roi_percentage": {
+      "year_1": 150,
+      "year_2": 700,
+      "year_3": 2300
+    },
+    "break_even_timeline": "4-6 months",
+    "total_3_year_roi": 21714250.0
+  }
+}

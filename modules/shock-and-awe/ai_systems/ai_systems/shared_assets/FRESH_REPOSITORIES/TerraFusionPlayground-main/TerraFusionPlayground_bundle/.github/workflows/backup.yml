@@ -1,0 +1,166 @@
+name: Backup and Disaster Recovery
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  backup:
+    name: Backup
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Backup database
+      run: npm run backup:database
+      env:
+        NODE_ENV: production
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+
+    - name: Backup files
+      run: npm run backup:files
+      env:
+        NODE_ENV: production
+        STORAGE_PATH: ${{ secrets.STORAGE_PATH }}
+
+    - name: Backup configuration
+      run: npm run backup:config
+      env:
+        NODE_ENV: production
+        CONFIG_PATH: ${{ secrets.CONFIG_PATH }}
+
+    - name: Compress backups
+      run: npm run backup:compress
+      env:
+        NODE_ENV: production
+
+    - name: Upload to S3
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Upload backup to S3
+      run: |
+        aws s3 cp backups/terrafusion-backup-$(date +%Y%m%d).tar.gz s3://${{ secrets.AWS_BACKUP_BUCKET }}/daily/
+        aws s3 cp backups/terrafusion-backup-$(date +%Y%m%d).tar.gz s3://${{ secrets.AWS_BACKUP_BUCKET }}/latest/
+
+    - name: Clean up old backups
+      run: |
+        aws s3 ls s3://${{ secrets.AWS_BACKUP_BUCKET }}/daily/ | sort -r | tail -n +31 | awk '{print $4}' | xargs -I {} aws s3 rm s3://${{ secrets.AWS_BACKUP_BUCKET }}/daily/{}
+
+    - name: Verify backup
+      run: npm run backup:verify
+      env:
+        NODE_ENV: production
+        AWS_BACKUP_BUCKET: ${{ secrets.AWS_BACKUP_BUCKET }}
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  recovery-test:
+    name: Recovery Test
+    needs: backup
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Download latest backup
+      run: |
+        aws s3 cp s3://${{ secrets.AWS_BACKUP_BUCKET }}/latest/terrafusion-backup-latest.tar.gz .
+
+    - name: Extract backup
+      run: npm run backup:extract
+      env:
+        NODE_ENV: test
+
+    - name: Test database recovery
+      run: npm run backup:test:database
+      env:
+        NODE_ENV: test
+        DB_HOST: ${{ secrets.TEST_DB_HOST }}
+        DB_USER: ${{ secrets.TEST_DB_USER }}
+        DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+        DB_NAME: ${{ secrets.TEST_DB_NAME }}
+
+    - name: Test file recovery
+      run: npm run backup:test:files
+      env:
+        NODE_ENV: test
+        TEST_STORAGE_PATH: ${{ secrets.TEST_STORAGE_PATH }}
+
+    - name: Test configuration recovery
+      run: npm run backup:test:config
+      env:
+        NODE_ENV: test
+        TEST_CONFIG_PATH: ${{ secrets.TEST_CONFIG_PATH }}
+
+    - name: Verify recovery
+      run: npm run backup:test:verify
+      env:
+        NODE_ENV: test
+
+    - name: Clean up test environment
+      run: npm run backup:test:cleanup
+      env:
+        NODE_ENV: test
+
+    - name: Create recovery test report
+      run: npm run backup:test:report
+      env:
+        NODE_ENV: test
+
+    - name: Upload recovery test report
+      uses: actions/upload-artifact@v3
+      with:
+        name: recovery-test-report
+        path: reports/recovery
+        retention-days: 30
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

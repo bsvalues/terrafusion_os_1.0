@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Logo Display</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0f1c, #1a2332);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .logo-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+        .logo-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .logo-card:hover {
+            transform: scale(1.05);
+            border-color: #00d2ff;
+            box-shadow: 0 0 40px rgba(0, 210, 255, 0.5);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 1rem;
+        }
+        .logo-title {
+            color: #00d2ff;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #00d2ff, #0891b2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>TerraFusion Brand Icons</h1>
+    <div class="logo-container">
+        <div class="logo-card">
+            <img src="file:///mnt/e/TerraFusion_VM_Production/favicon/favicon.ico" alt="TerraFusion Icon">
+            <div class="logo-title">Main Icon (.ico)</div>
+        </div>
+        <div class="logo-card">
+            <img src="file:///mnt/e/TerraFusion_VM_Production/favicon/favicon.svg" alt="TerraFusion SVG">
+            <div class="logo-title">Vector Logo (.svg)</div>
+        </div>
+        <div class="logo-card">
+            <img src="file:///mnt/e/TerraFusion_VM_Production/favicon/apple-touch-icon.png" alt="Apple Touch Icon">
+            <div class="logo-title">Apple Touch Icon</div>
+        </div>
+        <div class="logo-card">
+            <img src="file:///mnt/e/TerraFusion_VM_Production/favicon/web-app-manifest-192x192.png" alt="192px Icon">
+            <div class="logo-title">Web App 192px</div>
+        </div>
+        <div class="logo-card">
+            <img src="file:///mnt/e/TerraFusion_VM_Production/favicon/web-app-manifest-512x512.png" alt="512px Icon">
+            <div class="logo-title">Web App 512px</div>
+        </div>
+        <div class="logo-card">
+            <img src="file:///mnt/e/TerraFusion_VM_Production/favicon/favicon-96x96.png" alt="96px Icon">
+            <div class="logo-title">Favicon 96px</div>
+        </div>
+    </div>
+</body>
+</html>

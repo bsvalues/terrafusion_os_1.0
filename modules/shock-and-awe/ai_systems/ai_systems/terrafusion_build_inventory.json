@@ -1,0 +1,20 @@
+{
+  "agents": [
+    "replit-agent",
+    "replit-agent",
+    "agent-ledger"
+  ],
+  "models": [],
+  "tools": [
+    "itertools-0.11.0.crate",
+    "rust-toolchain.toml",
+    "rust-toolchain.toml",
+    "rust-toolchain",
+    "tool.rs",
+    "find_tools.rs",
+    "tool.rs",
+    "find_tools.rs"
+  ],
+  "prompts": [],
+  "mcp_systems": []
+}
