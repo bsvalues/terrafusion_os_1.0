@@ -178,3 +178,34 @@ ci-test: ## Fast CI tests: run dotnet and cargo unit tests where available
 
 clean: ## Remove local build artifacts
 	rm -rf backend/api/publish target .data || true
+
+# --- CI helper: build all Rust manifests we know about ---
+# If .ci/rust-manifests.txt exists, it is used as the source of truth.
+# Otherwise we auto-discover Cargo.toml files under backend/*.
+RUST_MANIFESTS_FILE ?= .ci/rust-manifests.txt
+
+.PHONY: build-rust-all
+build-rust-all:  ## Build all Rust crates (CI-friendly)
+	@set -euo pipefail; \
+	if [ -f "$(RUST_MANIFESTS_FILE)" ]; then \
+	  echo "Using manifest list: $(RUST_MANIFESTS_FILE)"; \
+	  mapfile -t MANIFESTS < "$(RUST_MANIFESTS_FILE)"; \
+	else \
+	  echo "Auto-discovering Rust manifests..."; \
+	  mapfile -t MANIFESTS < <(find backend -type f -name Cargo.toml | sort); \
+	fi; \
+	if [ $${#MANIFESTS[@]} -eq 0 ]; then \
+	  echo "No Cargo.toml found. Skipping Rust build."; \
+	  exit 0; \
+	fi; \
+	for mf in "$${MANIFESTS[@]}"; do \
+	  echo "---- building $$mf ----"; \
+	  dir="$$(dirname "$$mf")"; \
+	  (cd "$$dir" && cargo build --release); \
+	done; \
+	echo "All Rust crates built.";
+
+# Optional: CI wrapper so workflows can call one thing
+.PHONY: build-ci
+build-ci: build-api build-images build-rust-all  ## CI build (API, images, all Rust)
+	@echo "CI build complete."

@@ -1,0 +1,3 @@
+backend/services/valuations/Cargo.toml
+backend/services/gis_worker/Cargo.toml
+# Add other manifests here (one per line)
