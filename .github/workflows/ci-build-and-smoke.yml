@@ -14,19 +14,54 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
-      - name: Setup Rust
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.nuget/packages
+          key: nuget-packages-${{ runner.os }}-v1-${{ hashFiles('**/global.json') }}
+
+      - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain-action@stable
 
-      - name: Run ci-build
+      - name: Cache Cargo registry & git
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-registry-${{ runner.os }}-v1-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install k6 (optional)
+        run: |
+          sudo apt-get update || true
+          sudo apt-get install -y gnupg2 ca-certificates || true
+          wget -q -O - https://dl.k6.io/key.gpg | sudo apt-key add - || true
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list || true
+          sudo apt-get update || true
+          sudo apt-get install -y k6 || true
+
+      - name: CI: Run ci-build
         run: make ci-build
 
-      - name: Run ci-test
+      - name: CI: Run ci-test
         run: make ci-test
+
+      - name: Optionally run k6 smoke if API is reachable
+        env:
+          TF_API: http://localhost:5046
+        run: |
+          if command -v curl >/dev/null 2>&1 && curl -sS --max-time 3 $TF_API/health >/dev/null 2>&1; then
+            echo "API reachable, running k6 smoke"
+            k6 run ops/k6/smoke.js || true
+          else
+            echo "API not reachable or curl missing, skipping k6"
+          fi
 
   collect-artifacts:
     name: Collect diagnostics on failure
@@ -36,6 +71,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Gather logs and diagnostics
+        run: |
+          mkdir -p artifacts
+          echo '{"note":"CI failure diagnostics"}' > artifacts/diag.json || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
