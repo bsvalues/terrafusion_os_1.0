@@ -1,4 +1,78 @@
 #!/usr/bin/env python3
+"""tfctl - TerraFusion cOS development helper (dev stack control)
+
+Simple wrapper to bring up/down the docker-compose.dev.yml stack and run
+helper make targets. This is intentionally tiny: it prefers calling Docker
+Compose directly and uses Make for build/migrate/seed tasks.
+"""
+import argparse
+import os
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+def run(cmd, env=None):
+    print("→", " ".join(cmd))
+    try:
+        subprocess.check_call(cmd, cwd=ROOT, env=env or os.environ.copy())
+    except subprocess.CalledProcessError as e:
+        sys.exit(e.returncode)
+
+
+def stack_up(args):
+    compose = ["docker", "compose", "-f", "docker-compose.dev.yml", "up", "-d"]
+    if args.build:
+        run(["make", "build"])
+    run(compose)
+    if args.migrate:
+        run(["make", "migrate"])
+    if args.seed:
+        run(["make", "seed"])
+    print("✅ Stack is up. API at http://localhost:5046")
+
+
+def stack_down(args):
+    run(["docker", "compose", "-f", "docker-compose.dev.yml", "down", "-v"])
+    print("🛑 Stack is down.")
+
+
+def logs(args):
+    tail = ["docker", "compose", "-f", "docker-compose.dev.yml", "logs", "-f", "--tail=200"]
+    run(tail)
+
+
+def build(args):
+    run(["make", "build"])
+
+
+def main():
+    p = argparse.ArgumentParser(prog="tfctl", description="TerraFusion cOS Dev Control")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    up = sub.add_parser("stack-up", help="Start full dev stack")
+    up.add_argument("--build", action="store_true", help="Run make build first")
+    up.add_argument("--migrate", action="store_true", help="Run DB migrations after up")
+    up.add_argument("--seed", action="store_true", help="Seed baseline data after up")
+    up.set_defaults(func=stack_up)
+
+    down = sub.add_parser("stack-down", help="Stop dev stack and remove volumes")
+    down.set_defaults(func=stack_down)
+
+    lg = sub.add_parser("logs", help="Tail compose logs")
+    lg.set_defaults(func=logs)
+
+    b = sub.add_parser("build", help="Build API, workers, images")
+    b.set_defaults(func=build)
+
+    args = p.parse_args()
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()
+#!/usr/bin/env python3
 """
 TerraFusion cOS Control Tool (tfctl) - repo-root copy
 This is functionally the same as terrafusion-cos/tfctl.py but includes a small
