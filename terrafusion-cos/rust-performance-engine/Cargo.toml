@@ -7,32 +7,4 @@ members = [
     "crates/performance-monitor",
     "crates/ffi-bridge",
 ]
-
-[package]
-name = "terrafusion-core"
-version = "1.0.0"
-edition = "2021"
-authors = ["TerraFusion cOS Team"]
-description = "Elite Rust Performance Engine for TerraFusion cOS"
-license = "MIT"
-
-[dependencies]
-tokio = { version = "1.0", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-anyhow = "1.0"
-thiserror = "1.0"
-tracing = "0.1"
-tracing-subscriber = "0.3"
-uuid = { version = "1.0", features = ["v4"] }
-chrono = { version = "0.4", features = ["serde"] }
-parking_lot = "0.12"
-dashmap = "5.4"
-crossbeam = "0.8"
-
-[profile.release]
-opt-level = 3
-lto = true
-codegen-units = 1
-panic = "abort"
-strip = true
+resolver = "2"
