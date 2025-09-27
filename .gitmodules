@@ -31,11 +31,3 @@
 [submodule "modules/shock-and-awe/old_builds/critical_systems/ai-agents/TerraInsight/TerraInsight"]
  	path = modules/shock-and-awe/old_builds/critical_systems/ai-agents/TerraInsight/TerraInsight
  	url = https://github.com/bsvalues/TerraGama.git
-
-# NOTE: The following submodule entry for docs/src-tauri/TerraFusion_Hybrid_Championship
-# was removed/commented out because it had no 'url' entry and caused CI to fail
-# with "No url found for submodule path 'docs/src-tauri/TerraFusion_Hybrid_Championship' in .gitmodules".
-# If you need to re-enable it, add a correct 'url = <git url>' block below.
-# [submodule "docs/src-tauri/TerraFusion_Hybrid_Championship"]
-# 	path = docs/src-tauri/TerraFusion_Hybrid_Championship
-# 	url = https://github.com/terrafusion/TerraFusion_Hybrid_Championship.git
