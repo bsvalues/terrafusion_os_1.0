@@ -2,84 +2,93 @@ name: CI - Build and Smoke
 
 on:
   push:
-    branches: [ main, 'feature/**' ]
-  pull_request:
-    branches: [ main ]
+    name: CI - Build and Smoke
 
-jobs:
-  build:
-    name: Build and Test (dotnet + rust)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    on:
+      push:
+        branches: [ main, 'feature/**' ]
+      pull_request:
+        branches: [ main ]
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
+    jobs:
+      build:
+        name: Build and Test (dotnet + rust)
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
 
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.nuget/packages
-          key: nuget-packages-${{ runner.os }}-v1-${{ hashFiles('**/global.json') }}
+          - name: Setup .NET 8
+            uses: actions/setup-dotnet@v3
+            with:
+              dotnet-version: '8.0.x'
 
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain-action@stable
+          - name: Cache NuGet packages
+            uses: actions/cache@v4
+            with:
+              path: |
+                ~/.nuget/packages
+              key: nuget-packages-${{ runner.os }}-v1-${{ hashFiles('**/global.json') }}
+              restore-keys: |
+                nuget-packages-${{ runner.os }}-v1-
 
-      - name: Cache Cargo registry & git
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: cargo-registry-${{ runner.os }}-v1-${{ hashFiles('**/Cargo.lock') }}
+          - name: Setup Rust toolchain
+            uses: dtolnay/rust-toolchain-action@stable
 
-      - name: Install k6 (optional)
-        run: |
-          sudo apt-get update || true
-          sudo apt-get install -y gnupg2 ca-certificates || true
-          wget -q -O - https://dl.k6.io/key.gpg | sudo apt-key add - || true
-          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list || true
-          sudo apt-get update || true
-          sudo apt-get install -y k6 || true
+          - name: Cache Cargo registry & git
+            uses: actions/cache@v4
+            with:
+              path: |
+                ~/.cargo/registry
+                ~/.cargo/git
+              key: cargo-registry-${{ runner.os }}-v1-${{ hashFiles('**/Cargo.lock') }}
+              restore-keys: |
+                cargo-registry-${{ runner.os }}-v1-
 
-      - name: CI: Run ci-build
-        run: make ci-build
+          - name: Install k6 (optional)
+            run: |
+              sudo apt-get update || true
+              sudo apt-get install -y gnupg2 ca-certificates wget || true
+              wget -q -O - https://dl.k6.io/key.gpg | sudo apt-key add - || true
+              echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list || true
+              sudo apt-get update || true
+              sudo apt-get install -y k6 || true
 
-      - name: CI: Run ci-test
-        run: make ci-test
+          - name: CI: Run ci-build
+            run: make ci-build
 
-      - name: Optionally run k6 smoke if API is reachable
-        env:
-          TF_API: http://localhost:5046
-        run: |
-          if command -v curl >/dev/null 2>&1 && curl -sS --max-time 3 $TF_API/health >/dev/null 2>&1; then
-            echo "API reachable, running k6 smoke"
-            k6 run ops/k6/smoke.js || true
-          else
-            echo "API not reachable or curl missing, skipping k6"
-          fi
+          - name: CI: Run ci-test
+            run: make ci-test
 
-  collect-artifacts:
-    name: Collect diagnostics on failure
-    needs: build
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+          - name: Optionally run k6 smoke if API is reachable
+            env:
+              TF_API: http://localhost:5046
+            run: |
+              if command -v curl >/dev/null 2>&1 && curl -sS --max-time 3 $TF_API/health >/dev/null 2>&1; then
+                echo "API reachable, running k6 smoke"
+                k6 run ops/k6/smoke.js || true
+              else
+                echo "API not reachable or curl missing, skipping k6"
+              fi
 
-      - name: Gather logs and diagnostics
-        run: |
-          mkdir -p artifacts
-          echo '{"note":"CI failure diagnostics"}' > artifacts/diag.json || true
+      collect-artifacts:
+        name: Collect diagnostics on failure
+        needs: build
+        if: failure()
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-diagnostics-${{ github.run_id }}
-          path: artifacts
-          retention-days: 14
+          - name: Gather logs and diagnostics
+            run: |
+              mkdir -p artifacts
+              echo '{"note":"CI failure diagnostics"}' > artifacts/diag.json || true
+
+          - name: Upload artifacts
+            uses: actions/upload-artifact@v4
+            with:
+              name: ci-diagnostics-${{ github.run_id }}
+              path: artifacts
+              retention-days: 14
+            retention-days: 14
