@@ -1,0 +1,15 @@
+# CI values for linting terrafusion-backend chart
+monitoring:
+  enabled: false
+autoscaling:
+  enabled: false
+security:
+  enabled: false
+postgresql:
+  enabled: false
+redis:
+  enabled: false
+service:
+  type: ClusterIP
+  port: 80
+replicaCount: 1

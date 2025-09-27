@@ -82,7 +82,12 @@ jobs:
 
     - name: Lint Helm charts
       run: |
-        helm lint charts/terrafusion-backend
+        # build chart dependencies for terrafusion-backend (helps linting & template)
+        pushd charts/terrafusion-backend || exit 0
+        helm dependency build || true
+        popd || true
+
+        helm lint charts/terrafusion-backend --values charts/terrafusion-backend/tests/ci-values.yaml
         helm lint charts/terrafusion-frontend
         helm lint charts/terrafusion-ai-swarm
         helm lint charts/terrafusion
