@@ -1,0 +1,45 @@
+name: CI - Build and Smoke
+
+on:
+  push:
+    branches: [ main, 'feature/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build and Test (dotnet + rust)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain-action@stable
+
+      - name: Run ci-build
+        run: make ci-build
+
+      - name: Run ci-test
+        run: make ci-test
+
+  collect-artifacts:
+    name: Collect diagnostics on failure
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.run_id }}
+          path: artifacts
+          retention-days: 14
