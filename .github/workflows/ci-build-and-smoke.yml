@@ -79,9 +79,19 @@ jobs:
 
       - name: Build backends & images
         run: |
-          make build
+          make build-ci
         env:
           BUILDKIT_PROGRESS: plain
+
+      - name: Summarize Rust crates built
+        if: always()
+        run: |
+          echo "### CI: Rust crates built" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f .ci/rust-manifests.txt ]; then
+            sed 's/^/- /' .ci/rust-manifests.txt >> "$GITHUB_STEP_SUMMARY"
+          else
+            find backend -type f -name Cargo.toml | sort | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Unit tests (.NET + Rust)
         run: |

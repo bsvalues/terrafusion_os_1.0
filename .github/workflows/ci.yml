@@ -124,7 +124,7 @@ jobs:
         SUBMODS_MISSING: ${{ steps.submods.outputs.missing }}
       run: |
         set -euo pipefail
-        echo "## Quality Gate summary" >> $GITHUB_STEP_SUMMARY
+        echo "### Quality Gate summary" >> $GITHUB_STEP_SUMMARY
         if [ -z "$NODE_LOCK_FOUND" ]; then
           echo "- Node lockfile: not found — Node install steps skipped" >> $GITHUB_STEP_SUMMARY
         else
