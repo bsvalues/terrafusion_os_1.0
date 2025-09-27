@@ -1,6 +1,40 @@
 # TerraFusion cOS – Dev Quickstart
 
 ## Prereqs
+- Docker + Compose v2
+- .NET SDK 8.x
+- Rust + cargo (stable)
+- Node 18+ (optional for web apps)
+
+## First run
+```bash
+make init
+make build-ci
+make up
+make logs
+```
+
+API: http://localhost:5046
+Postgres: localhost:5432 (`terrafusion` / `postgres` / `$POSTGRES_PASSWORD`)
+Keycloak: http://localhost:8080 (admin/admin)
+
+## Useful
+
+```bash
+make migrate   # run DB migrations
+make seed      # seed RBAC/tenants/parcels
+make test      # dotnet + cargo tests
+make perf-smoke
+make down
+```
+
+## CI notes
+
+* PRs: Helm lint+template; Terraform fmt/validate+tflint; Compose smoke runs without cloud creds.
+* main: Adds Terraform plan via AWS OIDC role.
+# TerraFusion cOS – Dev Quickstart
+
+## Prereqs
 - Docker + Docker Compose v2
 - .NET SDK 8.x (`dotnet --version`)
 - Rust toolchain (`rustup`, `cargo --version`)

@@ -1,3 +1,109 @@
+name: Infra • Helm & Terraform
+
+on:
+  pull_request:
+    paths:
+      - 'infrastructure/**'
+      - '.tflint.hcl'
+  push:
+    branches: [ main ]
+    paths:
+      - 'infrastructure/**'
+      - '.tflint.hcl'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  helm-validate:
+    name: Helm lint & render (PR-safe)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'false'
+
+      - name: Helm dependency build
+        run: |
+          cd infrastructure/helm/terrafusion-backend
+          helm dependency build
+
+      - name: Helm lint (CI values)
+        run: |
+          helm lint infrastructure/helm/terrafusion-backend \
+            --values infrastructure/helm/terrafusion-backend/tests/ci-values.yaml
+
+      - name: Helm template render (CI values)
+        run: |
+          helm template ci infrastructure/helm/terrafusion-backend \
+            --values infrastructure/helm/terrafusion-backend/tests/ci-values.yaml > /dev/null
+
+  terraform-validate:
+    name: Terraform fmt/validate (PR-safe)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with: { terraform_version: 1.9.5 }
+
+      - name: Format check
+        run: terraform fmt -check -recursive
+
+      - name: Validate (backend disabled)
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate -no-color
+
+  tflint:
+    name: Terraform lint (PR-safe)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: terraform-linters/setup-tflint@v4
+        with: { tflint_version: v0.53.0 }
+      - name: Init tflint plugins
+        run: tflint --init
+      - name: Run tflint
+        run: tflint -f compact
+
+  terraform-plan:
+    name: Terraform plan (main + OIDC)
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with: { terraform_version: 1.9.5 }
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/TerraformGithubOIDCRole
+          aws-region: us-west-2
+
+      - name: Init + plan
+        run: |
+          terraform init -input=false
+          terraform plan -no-color -input=false -out=tfplan
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: infrastructure/terraform/tfplan
 name: TerraFusion Infrastructure CI/CD
 
 permissions:
