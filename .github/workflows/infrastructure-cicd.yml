@@ -47,6 +47,28 @@ jobs:
           terraform init -backend=false -input=false
           terraform validate -no-color
 
+  tflint:
+    name: Terraform lint (PR-safe)
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request'
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup tflint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.53.0
+
+      - name: Init tflint plugins
+        run: tflint --init
+
+      - name: Run tflint
+        run: tflint -f compact
+
   terraform-plan:
     name: Terraform plan (main + OIDC)
     runs-on: ubuntu-24.04
@@ -113,10 +135,26 @@ jobs:
         helm dependency build || true
         popd || true
 
+        # Lint backend with CI values (disables optional deps)
         helm lint charts/terrafusion-backend --values charts/terrafusion-backend/tests/ci-values.yaml
         helm lint charts/terrafusion-frontend
         helm lint charts/terrafusion-ai-swarm
         helm lint charts/terrafusion
+
+    - name: Helm dependency build (explicit)
+      run: |
+        cd infrastructure/helm/charts/terrafusion-backend || exit 0
+        helm dependency build || true
+
+    - name: Helm lint (CI values)
+      run: |
+        helm lint infrastructure/helm/charts/terrafusion-backend \
+          --values infrastructure/helm/charts/terrafusion-backend/tests/ci-values.yaml
+
+    - name: Helm template render (CI values)
+      run: |
+        helm template ci-render infrastructure/helm/charts/terrafusion-backend \
+          --values infrastructure/helm/charts/terrafusion-backend/tests/ci-values.yaml > /dev/null
 
     - name: Template Helm charts
       run: |
