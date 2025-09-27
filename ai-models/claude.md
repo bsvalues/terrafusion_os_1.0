@@ -1,13 +1,18 @@
 # AI Models - Claude Development Guide
 
 ## Overview
-The `ai-models` directory contains the AI swarm orchestration system managing 1,008 specialized AI agents for government operations. This is a production-ready, government-grade AI infrastructure designed for Benton County and scalable to state/federal deployments.
+
+The `ai-models` directory contains the AI swarm orchestration system managing
+1,008 specialized AI agents for government operations. This is a
+production-ready, government-grade AI infrastructure designed for Benton County
+and scalable to state/federal deployments.
 
 ## Architecture Deep Dive
 
 ### AI Swarm Orchestration Engine
 
 **File**: `swarm/orchestrator.py` (400 lines)
+
 - **FastAPI Application**: High-performance async API server
 - **Agent Management**: 1,008 agents across 6 specialized types
 - **Task Orchestration**: Intelligent task routing and execution
@@ -17,6 +22,7 @@ The `ai-models` directory contains the AI swarm orchestration system managing 1,
 ### Agent Type Specialization
 
 #### Revenue Hunter Agents (200)
+
 ```python
 capabilities = [
     "property_valuation",    # CostForge AI integration
@@ -28,10 +34,11 @@ capabilities = [
 ```
 
 #### Property Assessor Agents (300)
+
 ```python
 capabilities = [
     "property_assessment",   # Core valuation logic
-    "market_analysis",       # Comparative market analysis  
+    "market_analysis",       # Comparative market analysis
     "gis_integration",       # Geographic information systems
     "building_permits",      # Permit tracking and analysis
     "zoning_compliance",     # Regulatory compliance checks
@@ -40,6 +47,7 @@ capabilities = [
 ```
 
 #### Compliance Monitor Agents (150)
+
 ```python
 capabilities = [
     "regulatory_compliance", # Government regulation tracking
@@ -53,12 +61,16 @@ capabilities = [
 ### Performance Optimization Strategies
 
 #### Agent Pool Management
-- **Dynamic Load Balancing**: Tasks routed to highest-performing available agents
+
+- **Dynamic Load Balancing**: Tasks routed to highest-performing available
+  agents
 - **Performance Scoring**: Continuous agent performance tracking (0.5-1.0 scale)
 - **Automatic Recovery**: Error agents automatically recovered and redeployed
-- **Resource Optimization**: Intelligent agent status management (IDLE/ACTIVE/BUSY/ERROR)
+- **Resource Optimization**: Intelligent agent status management
+  (IDLE/ACTIVE/BUSY/ERROR)
 
 #### Scalability Architecture
+
 ```python
 # Horizontal scaling configuration
 agent_distribution = {
@@ -74,13 +86,16 @@ agent_distribution = {
 ## Development Guidelines
 
 ### Adding New Agent Types
+
 1. **Define Agent Type**:
+
    ```python
    class AgentType(Enum):
        NEW_AGENT_TYPE = "new_agent_type"
    ```
 
 2. **Configure Capabilities**:
+
    ```python
    def _get_agent_capabilities(self, agent_type: AgentType):
        capabilities_map[AgentType.NEW_AGENT_TYPE] = [
@@ -99,6 +114,7 @@ agent_distribution = {
 ### Task Processing Patterns
 
 #### Asynchronous Task Execution
+
 ```python
 async def _process_task(self, task: TaskRequest):
     # 1. Find suitable agents by capability matching
@@ -107,22 +123,23 @@ async def _process_task(self, task: TaskRequest):
         if agent.status == AgentStatus.IDLE and
         any(cap in task.task_type.lower() for cap in agent.capabilities)
     ]
-    
+
     # 2. Select best performing agent
     selected_agent = max(suitable_agents, key=lambda a: a.performance_score)
-    
+
     # 3. Execute task with performance tracking
     # 4. Update agent metrics and availability
 ```
 
 #### Government Integration Patterns
+
 ```python
 # Harris PACS Integration
 async def integrate_harris_pacs(self, parcel_data):
     data_processors = self.get_agents_by_capability("harris_pacs_migration")
-    assessors = self.get_agents_by_capability("property_assessment") 
+    assessors = self.get_agents_by_capability("property_assessment")
     compliance = self.get_agents_by_capability("regulatory_compliance")
-    
+
     # Coordinated multi-agent processing
     await self.coordinate_agents([data_processors, assessors, compliance])
 ```
@@ -130,6 +147,7 @@ async def integrate_harris_pacs(self, parcel_data):
 ## API Integration
 
 ### Core Endpoints
+
 ```python
 # Health and Status
 @app.get("/swarm/health")           # System operational status
@@ -143,6 +161,7 @@ async def integrate_harris_pacs(self, parcel_data):
 ```
 
 ### Integration Clients
+
 ```python
 # Claude-Flow Integration
 self.claude_flow_client = httpx.AsyncClient(
@@ -152,7 +171,7 @@ self.claude_flow_client = httpx.AsyncClient(
 
 # Backend API Integration
 self.backend_client = httpx.AsyncClient(
-    base_url="http://backend:5000", 
+    base_url="http://backend:5000",
     timeout=30.0
 )
 
@@ -163,6 +182,7 @@ self.redis_client = redis.from_url("redis://redis:6379")
 ## Monitoring and Observability
 
 ### Structured Logging
+
 ```python
 import structlog
 
@@ -177,6 +197,7 @@ logger.info("Task assigned",
 ```
 
 ### Performance Metrics
+
 ```python
 class SwarmMetrics(BaseModel):
     total_agents: int           # 50,000+ total
@@ -191,6 +212,7 @@ class SwarmMetrics(BaseModel):
 ```
 
 ### Health Monitoring
+
 ```python
 async def _health_monitor(self):
     # Agent timeout detection (5-minute threshold)
@@ -205,6 +227,7 @@ async def _health_monitor(self):
 ## Security and Compliance
 
 ### Government Security Framework
+
 - **FISMA Compliance**: Automated validation and monitoring
 - **Access Control**: Role-based agent capabilities
 - **Audit Trail**: Complete task and agent activity logging
@@ -212,6 +235,7 @@ async def _health_monitor(self):
 - **Secure Deployment**: Container isolation and resource limits
 
 ### Container Security
+
 ```dockerfile
 # Security-hardened container
 FROM python:3.11-alpine     # Minimal attack surface
@@ -223,6 +247,7 @@ HEALTHCHECK --interval=30s  # Continuous health monitoring
 ## Performance Optimization
 
 ### Agent Lifecycle Management
+
 1. **Initialization**: All 1,008 agents initialized in <30 seconds
 2. **Task Routing**: Capability-based intelligent assignment
 3. **Performance Tracking**: Continuous scoring and optimization
@@ -230,6 +255,7 @@ HEALTHCHECK --interval=30s  # Continuous health monitoring
 5. **Resource Management**: Memory and CPU optimization
 
 ### Government Workload Optimization
+
 - **Property Assessment**: 1,000 parcels/hour per assessor agent
 - **Revenue Analysis**: Real-time optimization calculations
 - **Compliance Monitoring**: Continuous regulatory validation
@@ -238,6 +264,7 @@ HEALTHCHECK --interval=30s  # Continuous health monitoring
 ## Testing and Quality Assurance
 
 ### Local Development Testing
+
 ```bash
 # Install dependencies
 pip install -r requirements.txt
@@ -246,10 +273,10 @@ pip install -r requirements.txt
 python -m swarm.orchestrator
 
 # Test agent initialization
-curl http://localhost:9000/swarm/agents | jq '.total'  # Should return 1008
+curl http://localhost:\${{TF_PORT_9000:-9000}}/swarm/agents | jq '.total'  # Should return 1008
 
 # Submit test task
-curl -X POST http://localhost:9000/swarm/tasks \
+curl -X POST http://localhost:\${{TF_PORT_9000:-9000}}/swarm/tasks \
   -H "Content-Type: application/json" \
   -d '{
     "task_type": "property_assessment",
@@ -260,6 +287,7 @@ curl -X POST http://localhost:9000/swarm/tasks \
 ```
 
 ### Production Validation
+
 ```python
 # Agent distribution validation
 assert len(self.agents) == 1008
@@ -274,6 +302,7 @@ assert metrics.total_agents == 50000
 ## Deployment and Operations
 
 ### Container Deployment
+
 ```bash
 # Build AI swarm container
 docker build -f Dockerfile.swarm -t terrafusion-ai-swarm:latest .
@@ -291,40 +320,47 @@ docker run -d \
 ```
 
 ### Scaling Considerations
-- **Horizontal Scaling**: Additional swarm instances for multi-county deployments
-- **Vertical Scaling**: Increased agent counts per instance (tested up to 2,016 agents)
+
+- **Horizontal Scaling**: Additional swarm instances for multi-county
+  deployments
+- **Vertical Scaling**: Increased agent counts per instance (tested up to 2,016
+  agents)
 - **Geographic Distribution**: County-specific swarm deployments
 - **Load Balancing**: Intelligent task distribution across swarm instances
 
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Agent Timeout**: Check network connectivity and resource availability
 2. **Performance Degradation**: Monitor memory usage and agent error rates
 3. **Integration Failures**: Validate Claude-Flow and backend connectivity
 4. **Task Queue Buildup**: Scale agent allocation for specific task types
 
 ### Diagnostic Commands
+
 ```bash
 # Check swarm health
-curl http://localhost:9000/swarm/health
+curl http://localhost:\${{TF_PORT_9000:-9000}}/swarm/health
 
 # Monitor agent performance
-curl http://localhost:9000/swarm/metrics | jq '.average_performance'
+curl http://localhost:\${{TF_PORT_9000:-9000}}/swarm/metrics | jq '.average_performance'
 
 # List error agents
-curl http://localhost:9000/swarm/agents | jq '.agents[] | select(.status == "error")'
+curl http://localhost:\${{TF_PORT_9000:-9000}}/swarm/agents | jq '.agents[] | select(.status == "error")'
 ```
 
 ---
 
 ## Related Documentation
+
 - **[CLAUDE-backend.md](../CLAUDE-backend.md)**: Backend integration patterns
-- **[CLAUDE-api.md](../CLAUDE-api.md)**: API design and endpoints  
-- **[CLAUDE-intelligence.md](../CLAUDE-intelligence.md)**: Analytics and insights
+- **[CLAUDE-api.md](../CLAUDE-api.md)**: API design and endpoints
+- **[CLAUDE-intelligence.md](../CLAUDE-intelligence.md)**: Analytics and
+  insights
 
 ---
 
 **Classification**: Government AI Infrastructure - Production Ready  
 **Last Updated**: August 27, 2025  
-**Version**: Terrafusion OS 1.0  
+**Version**: Terrafusion OS 1.0

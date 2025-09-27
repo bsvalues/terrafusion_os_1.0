@@ -1,0 +1,270 @@
+{
+  "rabbit_version": "3.12.0",
+  "rabbitmq_version": "3.12.0",
+  "product_name": "RabbitMQ",
+  "product_version": "3.12.0",
+  "users": [
+    {
+      "name": "terrafusion",
+      "password_hash": "kI7QUgOjS/HaLUwjQGqWLFGIVvqKr7M7wP5h6n/oN9vWr1Ec",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ["administrator"]
+    },
+    {
+      "name": "ai_agent",
+      "password_hash": "kI7QUgOjS/HaLUwjQGqWLFGIVvqKr7M7wP5h6n/oN9vWr1Ec",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ["management"]
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/terrafusion"
+    },
+    {
+      "name": "/ai_agents"
+    },
+    {
+      "name": "/government_ops"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "terrafusion",
+      "vhost": "/terrafusion",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "ai_agent",
+      "vhost": "/ai_agents",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "terrafusion",
+      "vhost": "/ai_agents",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "terrafusion",
+      "vhost": "/government_ops",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "global_parameters": [
+    {
+      "name": "cluster_name",
+      "value": "terrafusion-cluster"
+    }
+  ],
+  "policies": [
+    {
+      "vhost": "/terrafusion",
+      "name": "government-ha-policy",
+      "pattern": "gov\\.",
+      "apply-to": "all",
+      "definition": {
+        "ha-mode": "all",
+        "ha-sync-mode": "automatic",
+        "message-ttl": 3600000,
+        "max-length": 100000
+      },
+      "priority": 1
+    },
+    {
+      "vhost": "/ai_agents",
+      "name": "ai-agent-policy",
+      "pattern": "agent\\.",
+      "apply-to": "all",
+      "definition": {
+        "ha-mode": "all",
+        "ha-sync-mode": "automatic",
+        "message-ttl": 1800000,
+        "max-length": 1000000
+      },
+      "priority": 1
+    }
+  ],
+  "queues": [
+    {
+      "name": "gov.citizen.events",
+      "vhost": "/terrafusion",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 3600000,
+        "x-max-length": 50000,
+        "x-dead-letter-exchange": "gov.dlx"
+      }
+    },
+    {
+      "name": "gov.permit.events",
+      "vhost": "/terrafusion",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 3600000,
+        "x-max-length": 50000,
+        "x-dead-letter-exchange": "gov.dlx"
+      }
+    },
+    {
+      "name": "gov.tax.events",
+      "vhost": "/terrafusion",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 3600000,
+        "x-max-length": 50000,
+        "x-dead-letter-exchange": "gov.dlx"
+      }
+    },
+    {
+      "name": "agent.commands",
+      "vhost": "/ai_agents",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 1800000,
+        "x-max-length": 1000000,
+        "x-dead-letter-exchange": "agent.dlx"
+      }
+    },
+    {
+      "name": "agent.events",
+      "vhost": "/ai_agents",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 1800000,
+        "x-max-length": 1000000,
+        "x-dead-letter-exchange": "agent.dlx"
+      }
+    },
+    {
+      "name": "agent.supreme.commander",
+      "vhost": "/ai_agents",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 3600000,
+        "x-max-length": 100000,
+        "x-dead-letter-exchange": "agent.dlx"
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "gov.events",
+      "vhost": "/terrafusion",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "gov.dlx",
+      "vhost": "/terrafusion",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "agent.mesh",
+      "vhost": "/ai_agents",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "agent.dlx",
+      "vhost": "/ai_agents",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "agent.broadcast",
+      "vhost": "/ai_agents",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "gov.events",
+      "vhost": "/terrafusion",
+      "destination": "gov.citizen.events",
+      "destination_type": "queue",
+      "routing_key": "citizen.*",
+      "arguments": {}
+    },
+    {
+      "source": "gov.events",
+      "vhost": "/terrafusion",
+      "destination": "gov.permit.events",
+      "destination_type": "queue",
+      "routing_key": "permit.*",
+      "arguments": {}
+    },
+    {
+      "source": "gov.events",
+      "vhost": "/terrafusion",
+      "destination": "gov.tax.events",
+      "destination_type": "queue",
+      "routing_key": "tax.*",
+      "arguments": {}
+    },
+    {
+      "source": "agent.mesh",
+      "vhost": "/ai_agents",
+      "destination": "agent.commands",
+      "destination_type": "queue",
+      "routing_key": "command.*",
+      "arguments": {}
+    },
+    {
+      "source": "agent.mesh",
+      "vhost": "/ai_agents",
+      "destination": "agent.events",
+      "destination_type": "queue",
+      "routing_key": "event.*",
+      "arguments": {}
+    },
+    {
+      "source": "agent.mesh",
+      "vhost": "/ai_agents",
+      "destination": "agent.supreme.commander",
+      "destination_type": "queue",
+      "routing_key": "supreme.*",
+      "arguments": {}
+    },
+    {
+      "source": "agent.broadcast",
+      "vhost": "/ai_agents",
+      "destination": "agent.events",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    }
+  ]
+}

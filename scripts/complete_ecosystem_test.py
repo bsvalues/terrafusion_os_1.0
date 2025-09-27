@@ -14,13 +14,13 @@ import socket
 class TerraFusionCompleteEcosystemTest:
     def __init__(self):
         self.services = {
-            'frontend': {'port': 3000, 'name': 'TerraFusion Frontend', 'url': 'http://localhost:3000'},
-            'main_api': {'port': 5000, 'name': 'TerraFusion Main API', 'url': 'http://localhost:5000'},
-            'gauge_theory_api': {'port': 5001, 'name': 'Gauge Theory API', 'url': 'http://localhost:5001'},
-            'backend_services': {'port': 8000, 'name': 'Backend Services', 'url': 'http://localhost:8000'},
-            'gauge_theory_swarm': {'port': 8001, 'name': 'Gauge Theory AI Swarm', 'url': 'http://localhost:8001'},
-            'claude_flow': {'port': 8002, 'name': 'Claude-Flow Integration', 'url': 'http://localhost:8002'},
-            'quantum_engine': {'port': 8080, 'name': 'Quantum Performance Engine', 'url': 'http://localhost:8080'}
+            'frontend': {"port": \${{TF_FRONTEND_PORT:-3000}}, 'name': 'TerraFusion Frontend', 'url': 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}'},
+            'main_api': {"port": \${{TF_FRONTEND_PORT:-3000}}, 'name': 'TerraFusion Main API', 'url': 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}'},
+            'gauge_theory_api': {"port": \${{TF_FRONTEND_PORT:-3000}}, 'name': 'Gauge Theory API', 'url': 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}'},
+            'backend_services': {"port": \${{TF_FRONTEND_PORT:-3000}}, 'name': 'Backend Services', 'url': 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}'},
+            'gauge_theory_swarm': {"port": \${{TF_FRONTEND_PORT:-3000}}, 'name': 'Gauge Theory AI Swarm', 'url': 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}'},
+            'claude_flow': {"port": \${{TF_FRONTEND_PORT:-3000}}, 'name': 'Claude-Flow Integration', 'url': 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}'},
+            'quantum_engine': {"port": \${{TF_FRONTEND_PORT:-3000}}, 'name': 'Quantum Performance Engine', 'url': 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}'}
         }
         self.results = {}
 
@@ -161,7 +161,7 @@ class TerraFusionCompleteEcosystemTest:
         # Test Gauge Theory AI Swarm
         if self.results.get('gauge_theory_swarm', {}).get('available'):
             try:
-                response = requests.get('http://localhost:8001/api/swarm/status', timeout=5)
+                response = requests.get('http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/swarm/status', timeout=5)
                 if response.status_code == 200:
                     data = response.json()
                     agents = data.get('totalAgents', 0)
@@ -175,7 +175,7 @@ class TerraFusionCompleteEcosystemTest:
         # Test Claude Flow Integration
         if self.results.get('claude_flow', {}).get('available'):
             try:
-                response = requests.get('http://localhost:8002/api/claude/status', timeout=5)
+                response = requests.get('http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/claude/status', timeout=5)
                 if response.status_code == 200:
                     data = response.json()
                     managed_agents = data.get('commanderStatus', {}).get('agentsManaged', 0)
@@ -189,7 +189,7 @@ class TerraFusionCompleteEcosystemTest:
         # Test AI workflows
         if self.results.get('claude_flow', {}).get('available'):
             try:
-                response = requests.get('http://localhost:8002/api/claude/workflows', timeout=5)
+                response = requests.get('http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/claude/workflows', timeout=5)
                 if response.status_code == 200:
                     data = response.json()
                     workflow_count = data.get('count', 0)
@@ -204,7 +204,7 @@ class TerraFusionCompleteEcosystemTest:
         if self.results.get('gauge_theory_swarm', {}).get('available'):
             try:
                 payload = {'countyId': 'benton-wa', 'parameters': {'test': True}}
-                response = requests.post('http://localhost:8001/api/swarm/optimize', json=payload, timeout=10)
+                response = requests.post('http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/swarm/optimize', json=payload, timeout=10)
                 if response.status_code == 200:
                     print("✅ County Optimization: FUNCTIONAL")
                     score += 25

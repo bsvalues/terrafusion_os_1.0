@@ -5,6 +5,7 @@
 ### 1. Metrics Collection
 
 #### Prometheus Configuration
+
 ```yaml
 # prometheus.yml
 global:
@@ -14,20 +15,21 @@ global:
 scrape_configs:
   - job_name: 'terrafusion'
     static_configs:
-      - targets: ['localhost:3000']
+      - targets: ['localhost:\${{TF_FRONTEND_PORT:-3000}}']
     metrics_path: '/metrics'
     scheme: 'http'
 
   - job_name: 'node-exporter'
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['localhost:\${{TF_FRONTEND_PORT:-3000}}']
 
   - job_name: 'redis-exporter'
     static_configs:
-      - targets: ['localhost:9121']
+      - targets: ['localhost:\${{TF_FRONTEND_PORT:-3000}}']
 ```
 
 #### Custom Metrics
+
 ```javascript
 // Application Metrics
 const metrics = {
@@ -68,14 +70,12 @@ app.use((req, res, next) => {
 ### 2. Logging
 
 #### Winston Configuration
+
 ```javascript
 // Logger Setup
 const logger = winston.createLogger({
   level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
+  format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
   transports: [
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
     new winston.transports.File({ filename: 'combined.log' })
@@ -102,31 +102,33 @@ const logEvent = (level, message, metadata) => {
 ### 3. Alerting
 
 #### Alert Rules
+
 ```yaml
 # alert.rules
 groups:
-- name: terrafusion
-  rules:
-  - alert: HighErrorRate
-    expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
-    for: 5m
-    labels:
-      severity: critical
-    annotations:
-      summary: High error rate detected
-      description: Error rate is {{ $value }} for the last 5 minutes
+  - name: terrafusion
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: High error rate detected
+          description: Error rate is {{ $value }} for the last 5 minutes
 
-  - alert: HighLatency
-    expr: http_request_duration_seconds{quantile="0.9"} > 1
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: High latency detected
-      description: 90th percentile latency is {{ $value }}s
+      - alert: HighLatency
+        expr: http_request_duration_seconds{quantile="0.9"} > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High latency detected
+          description: 90th percentile latency is {{ $value }}s
 ```
 
 #### Alert Manager
+
 ```yaml
 # alertmanager.yml
 global:
@@ -141,15 +143,16 @@ route:
   receiver: 'slack-notifications'
 
 receivers:
-- name: 'slack-notifications'
-  slack_configs:
-  - channel: '#alerts'
-    send_resolved: true
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#alerts'
+        send_resolved: true
 ```
 
 ### 4. Dashboards
 
 #### Grafana Configuration
+
 ```json
 {
   "dashboard": {
@@ -222,6 +225,7 @@ receivers:
 ## Monitoring Checklist
 
 ### Daily Tasks
+
 - Review critical alerts
 - Check system health
 - Monitor error rates
@@ -229,6 +233,7 @@ receivers:
 - Check log patterns
 
 ### Weekly Tasks
+
 - Review alert thresholds
 - Analyze trends
 - Check dashboard relevance
@@ -236,6 +241,7 @@ receivers:
 - Update documentation
 
 ### Monthly Tasks
+
 - Capacity planning
 - Performance analysis
 - Alert rule review
@@ -245,6 +251,7 @@ receivers:
 ## Troubleshooting
 
 ### 1. High Error Rates
+
 ```bash
 # Check error logs
 tail -f error.log
@@ -253,10 +260,11 @@ tail -f error.log
 grep "ERROR" error.log | sort | uniq -c | sort -nr
 
 # Check application metrics
-curl localhost:3000/metrics | grep error
+curl localhost:\${{TF_FRONTEND_PORT:-3000}}/metrics | grep error
 ```
 
 ### 2. High Latency
+
 ```bash
 # Check slow queries
 SELECT * FROM pg_stat_activity WHERE state = 'active';
@@ -269,6 +277,7 @@ ping -c 10 localhost
 ```
 
 ### 3. Resource Issues
+
 ```bash
 # Check memory usage
 free -m
@@ -283,6 +292,7 @@ mpstat 1 5
 ## Performance Monitoring
 
 ### 1. Application Metrics
+
 - Request rate
 - Error rate
 - Response time
@@ -290,6 +300,7 @@ mpstat 1 5
 - Queue length
 
 ### 2. System Metrics
+
 - CPU usage
 - Memory usage
 - Disk I/O
@@ -297,6 +308,7 @@ mpstat 1 5
 - Process count
 
 ### 3. Business Metrics
+
 - User activity
 - Feature usage
 - Conversion rates
@@ -306,6 +318,7 @@ mpstat 1 5
 ## Monitoring Tools
 
 ### 1. Prometheus
+
 - Time series database
 - Query language
 - Alert rules
@@ -313,6 +326,7 @@ mpstat 1 5
 - Exporters
 
 ### 2. Grafana
+
 - Dashboard creation
 - Visualization
 - Alert management
@@ -320,6 +334,7 @@ mpstat 1 5
 - User management
 
 ### 3. ELK Stack
+
 - Log aggregation
 - Search capabilities
 - Visualization
@@ -329,6 +344,7 @@ mpstat 1 5
 ## Monitoring Integration
 
 ### 1. CI/CD Pipeline
+
 ```yaml
 # GitHub Actions
 name: Monitoring
@@ -344,27 +360,33 @@ jobs:
         run: npm run coverage
       - name: Upload metrics
         run: |
-          curl -X POST http://localhost:9090/metrics/job/github_actions
+          curl -X POST http://localhost:\${{TF_FRONTEND_PORT:-3000}}/metrics/job/github_actions
 ```
 
 ### 2. Cloud Integration
+
 ```javascript
 // AWS CloudWatch
 const cloudwatch = new AWS.CloudWatch();
 const putMetric = (name, value) => {
-  cloudwatch.putMetricData({
-    MetricData: [{
-      MetricName: name,
-      Value: value,
-      Unit: 'Count',
-      Timestamp: new Date()
-    }],
-    Namespace: 'TerraFusion'
-  }).promise();
+  cloudwatch
+    .putMetricData({
+      MetricData: [
+        {
+          MetricName: name,
+          Value: value,
+          Unit: 'Count',
+          Timestamp: new Date()
+        }
+      ],
+      Namespace: 'TerraFusion'
+    })
+    .promise();
 };
 ```
 
 ### 3. External Services
+
 ```javascript
 // New Relic Integration
 const newrelic = require('newrelic');
@@ -373,4 +395,4 @@ app.use(newrelic.expressMiddleware());
 // Datadog Integration
 const tracer = require('dd-trace').init();
 app.use(tracer.expressMiddleware());
-``` 
+```

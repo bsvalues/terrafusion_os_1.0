@@ -4,34 +4,29 @@
  * Integrates with AIAssistantService, GeniusPromptService, and all backend services
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { aiAssistant } from './services/AIAssistantService';
-import { authService } from './services/AuthenticationService';
-import { performanceService } from './services/PerformanceService';
-import { notificationService } from './services/NotificationService';
+import React, {useState, useEffect, useRef} from 'react';
+import {aiAssistant} from './services/AIAssistantService';
+import {authService} from './services/AuthenticationService';
+import {performanceService} from './services/PerformanceService';
+import {notificationService} from './services/NotificationService';
 import GeniusPromptService from './services/GeniusPromptService';
 
-interface ChatMessage {
-  id: string;
+interface ChatMessage {id: string;
   type: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: string;
   template?: string;
   confidence?: number;
   actions?: any[];
-  followUp?: string[];
-}
+  followUp?: string[];}
 
-interface QuickAction {
-  id: string;
+interface QuickAction {id: string;
   label: string;
   template: string;
   query: string;
-  icon: string;
-}
+  icon: string;}
 
-export const AIAssistant: React.FC = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export const AIAssistant: React.FC = () => {const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('government_copilot');
@@ -48,64 +43,49 @@ export const AIAssistant: React.FC = () => {
       label: 'Deploy Plugin',
       template: 'government_copilot',
       query: 'How do I deploy a plugin to multiple counties?',
-      icon: '🚀'
-    },
-    {
-      id: 'check-compliance',
+      icon: '🚀'},
+    {id: 'check-compliance',
       label: 'Check Compliance',
       template: 'compliance_automation',
       query: 'What is the current compliance status?',
-      icon: '✅'
-    },
-    {
-      id: 'validate-plugin',
+      icon: '✅'},
+    {id: 'validate-plugin',
       label: 'Validate Plugin',
       template: 'plugin_validation_agent',
       query: 'Validate the security of CostForge Professional',
-      icon: '🔍'
-    },
-    {
-      id: 'federation-help',
+      icon: '🔍'},
+    {id: 'federation-help',
       label: 'Federation Setup',
       template: 'federation_manager',
       query: 'How do I set up federation between counties?',
-      icon: '🌐'
-    },
-    {
-      id: 'audit-report',
+      icon: '🌐'},
+    {id: 'audit-report',
       label: 'Generate Audit',
       template: 'audit_trail_generator',
       query: 'Generate a compliance audit report',
-      icon: '📊'
-    },
-    {
-      id: 'onboarding-help',
+      icon: '📊'},
+    {id: 'onboarding-help',
       label: 'User Onboarding',
       template: 'user_onboarding',
       query: 'Help me onboard a new county staff member',
-      icon: '👥'
-    }
+      icon: '👥'}
   ];
 
   const templateOptions = [
-    { value: 'government_copilot', label: 'Government Copilot', icon: '🏛️' },
-    { value: 'plugin_validation_agent', label: 'Plugin Validator', icon: '🔍' },
-    { value: 'compliance_automation', label: 'Compliance Assistant', icon: '✅' },
-    { value: 'federation_manager', label: 'Federation Manager', icon: '🌐' },
-    { value: 'user_onboarding', label: 'Onboarding Helper', icon: '👥' },
-    { value: 'audit_trail_generator', label: 'Audit Generator', icon: '📊' },
-    { value: 'ai_confidence_explainer', label: 'AI Explainer', icon: '🤖' }
+    {value: 'government_copilot', label: 'Government Copilot', icon: '🏛️'},
+    {value: 'plugin_validation_agent', label: 'Plugin Validator', icon: '🔍'},
+    {value: 'compliance_automation', label: 'Compliance Assistant', icon: '✅'},
+    {value: 'federation_manager', label: 'Federation Manager', icon: '🌐'},
+    {value: 'user_onboarding', label: 'Onboarding Helper', icon: '👥'},
+    {value: 'audit_trail_generator', label: 'Audit Generator', icon: '📊'},
+    {value: 'ai_confidence_explainer', label: 'AI Explainer', icon: '🤖'}
   ];
 
-  useEffect(() => {
-    initializeAssistant();
-    scrollToBottom();
-  }, [messages]);
+  useEffect(() =>{initializeAssistant();
+    scrollToBottom();}, [messages]);
 
-  useEffect(() => {
-    if (isExpanded && inputRef.current) {
-      inputRef.current.focus();
-    }
+  useEffect(() => {if (isExpanded && inputRef.current) {
+      inputRef.current.focus();}
   }, [isExpanded]);
 
   const initializeAssistant = async () => {
@@ -141,8 +121,7 @@ export const AIAssistant: React.FC = () => {
     setIsLoading(true);
     setTypingIndicator(true);
 
-    try {
-      // Genius UX: Immediate feedback with delightful animation
+    try {// Genius UX: Immediate feedback with delightful animation
       await new Promise(resolve => setTimeout(resolve, 800));
       
       // Get genius-enhanced prompt for current context
@@ -151,8 +130,7 @@ export const AIAssistant: React.FC = () => {
       const response = await aiAssistant.askAssistant({
         template: selectedTemplate,
         userQuery: inputValue,
-        priority: 'medium'
-      });
+        priority: 'medium'});
 
       // Enhance response with genius principles
       const enhancedContent = GeniusPromptService.enhanceResponse(
@@ -184,13 +162,11 @@ export const AIAssistant: React.FC = () => {
       setFollowUpSuggestions(aiMessage.followUp || []);
 
       // Celebrate successful interactions
-      if (validation.isGenius && validation.score > 90) {
-        notificationService.showNotification({
+      if (validation.isGenius && validation.score > 90) {notificationService.showNotification({
           type: 'success',
           title: '✨ Magical Response Generated',
           message: 'AI assistance optimized for your delight!',
-          duration: 2000
-        });
+          duration: 2000});
       }
 
     } catch (error) {
@@ -215,20 +191,16 @@ export const AIAssistant: React.FC = () => {
         ]
       };
       setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-      setTypingIndicator(false);
-    }
+    } finally {setIsLoading(false);
+      setTypingIndicator(false);}
   };
 
-  const handleQuickAction = async (action: QuickAction) => {
-    setSelectedTemplate(action.template);
+  const handleQuickAction = async (action: QuickAction) => {setSelectedTemplate(action.template);
     setInputValue(action.query);
     
     // Auto-send the quick action
     setTimeout(() => {
-      handleSendMessage();
-    }, 100);
+      handleSendMessage();}, 100);
   };
 
   const handleActionClick = async (action: any) => {
@@ -255,218 +227,89 @@ export const AIAssistant: React.FC = () => {
     }
   };
 
-  const handleFollowUpClick = (followUp: string) => {
-    setInputValue(followUp);
+  const handleFollowUpClick = (followUp: string) => {setInputValue(followUp);
     if (inputRef.current) {
-      inputRef.current.focus();
-    }
+      inputRef.current.focus();}
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyPress = (e: React.KeyboardEvent) => {if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
-    }
+      handleSendMessage();}
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = () => {messagesEndRef.current?.scrollIntoView({ behavior: 'smooth'});
   };
 
-  const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
+  const formatTimestamp = (timestamp: string) => {return new Date(timestamp).toLocaleTimeString([], { 
       hour: '2-digit', 
-      minute: '2-digit' 
-    });
+      minute: '2-digit'});
   };
 
-  const getConfidenceColor = (confidence?: number) => {
-    if (!confidence) return 'var(--tf-text-secondary)';
+  const getConfidenceColor = (confidence?: number) => {if (!confidence) return 'var(--tf-text-secondary)';
     if (confidence >= 0.9) return 'var(--tf-success)';
     if (confidence >= 0.7) return 'var(--tf-warning)';
-    return 'var(--tf-error)';
-  };
+    return 'var(--tf-error)';};
 
-  const clearConversation = () => {
-    setMessages([]);
+  const clearConversation = () => {setMessages([]);
     aiAssistant.clearConversationHistory();
     setConversationHistory([]);
-    initializeAssistant();
-  };
+    initializeAssistant();};
 
-  return (
-    <div className={`ai-assistant ${isExpanded ? 'expanded' : 'collapsed'}`}>
-      {/* Assistant Toggle Button */}
-      <button 
+  return (<div className={`ai-assistant ${isExpanded ? 'expanded' : 'collapsed'}`}>{/* Assistant Toggle Button */}<button 
         className="ai-toggle-btn"
         onClick={() => setIsExpanded(!isExpanded)}
         title="Terrafusion AI Assistant"
-      >
-        <span className="ai-icon">🤖</span>
-        {!isExpanded && <span className="ai-label">AI Assistant</span>}
-      </button>
-
-      {/* Assistant Panel */}
-      {isExpanded && (
-        <div className="ai-panel">
-          {/* Header */}
-          <div className="ai-header">
-            <div className="ai-title"><>
-
-              <span className="ai-icon">🤖</span>
-              <h3
-</>
-</>>Terrafusion AI Assistant</h3>
-            </div>
-            <div className="ai-controls">
-              <select 
+      ><span className="ai-icon">🤖</span>{!isExpanded &&<span className="ai-label">AI Assistant</span>}
+      </button>{/* Assistant Panel */}
+      {isExpanded && (<div className="ai-panel">{/* Header */}<div className="ai-header"><div className="ai-title"><><span className="ai-icon">🤖</span><h3
+</></>>Terrafusion AI Assistant</h3></div><div className="ai-controls"><select 
                 value={selectedTemplate} 
-                onChange={(e) => setSelectedTemplate(e.target.value)}
+                onChange={(e) =>setSelectedTemplate(e.target.value)}
                 className="template-selector"
                 title="Select AI Assistant Mode"
               >
-                {templateOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.icon} {option.label}
-                  </option>
-                ))}
-              </select><>
-
-              <button 
+                {templateOptions.map(option => (<option key={option.value} value={option.value}>{option.icon} {option.label}</option>))}</select><><button 
                 onClick={clearConversation}
                 className="clear-btn"
                 title="Clear Conversation"
-              >
-                🗑️
-              </button>
-              <button
-</>
-
-                onClick={() => setIsExpanded(false)}
+              >🗑️</button><button
+</>onClick={() => setIsExpanded(false)}
                 className="close-btn"
                 title="Close Assistant"
               >
-                ✕
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="quick-actions"><>
-
-            <div className="quick-actions-label">Quick Actions:</div>
-            <div
-</>
-className="quick-actions-grid">
-              {quickActions.map(action => (
-                <button
+                ✕</button></div></div>{/* Quick Actions */}<div className="quick-actions"><><div className="quick-actions-label">Quick Actions:</div><div
+</>className="quick-actions-grid">
+              {quickActions.map(action => (<button
                   key={action.id}
                   className="quick-action-btn"
                   onClick={() => handleQuickAction(action)}
                   title={action.query}
-                ><>
-
-                  <span className="action-icon">{action.icon}</span>
-                  <span
+                ><><span className="action-icon">{action.icon}</span><span
 </>
-className="action-label">{action.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div className="ai-messages">
-            {messages.map(message => (
-              <div key={message.id} className={`message ${message.type}`}>
-                <div className="message-content">
-                  <div className="message-text">
-                    {message.content.split('\n').map((line /* , index */) => (
-                      <div key={index}>
-                        {line.startsWith('##') ? (
-                          <h4 className="message-heading">{line.replace('##', '').trim()}</h4>
-                        ) : line.startsWith('**') && line.endsWith('**') ? (
-                          <strong>{line.replace(/\*\*/g, '')}</strong>
-                        ) : (
+className="action-label">{action.label}</span></button>))}</div></div>{/* Messages */}<div className="ai-messages">{messages.map(message => (<div key={message.id} className={`message ${message.type}`}><div className="message-content"><div className="message-text">{message.content.split('\n').map((line /* , index */) => (<div key={index}>{line.startsWith('##') ? (<h4 className="message-heading">{line.replace('##', '').trim()}</h4>) : line.startsWith('**') && line.endsWith('**') ? (<strong>{line.replace(/\*\*/g, '')}</strong>) : (
                           line
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Message Metadata */}
-                  <div className="message-meta">
-                    <span className="message-time">{formatTimestamp(message.timestamp)}</span>
-                    {message.confidence && (
-                      <span 
+                        )}</div>))}</div>{/* Message Metadata */}<div className="message-meta"><span className="message-time">{formatTimestamp(message.timestamp)}</span>{message.confidence && (<span 
                         className="message-confidence"
-                        style={{ color: getConfidenceColor(message.confidence) }}
-                      >
-                        {(message.confidence * 100).toFixed(0)}% confidence
-                      </span>
-                    )}
-                    {message.template && (
-                      <span className="message-template">{message.template}</span>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  {message.actions && message.actions.length > 0 && (
-                    <div className="message-actions">
-                      {message.actions.map(action => (
-                        <button
+                        style={{ color: getConfidenceColor(message.confidence)}}
+                      >{(message.confidence * 100).toFixed(0)}% confidence</span>)}
+                    {message.template && (<span className="message-template">{message.template}</span>)}</div>{/* Actions */}
+                  {message.actions && message.actions.length > 0 && (<div className="message-actions">{message.actions.map(action => (<button
                           key={action.id}
                           className="action-btn"
-                          onClick={() => handleActionClick(action)}
+                          onClick={() =>handleActionClick(action)}
                         >
-                          {action.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                          {action.label}</button>))}</div>)}
 
                   {/* Follow-up Questions */}
-                  {message.followUp && message.followUp.length > 0 && (
-                    <div className="follow-up-questions">
-                      <div className="follow-up-label">Suggested follow-ups:</div>
-                      {message.followUp.map((followUp /* , index */) => (
-                        <button
+                  {message.followUp && message.followUp.length > 0 && (<div className="follow-up-questions"><div className="follow-up-label">Suggested follow-ups:</div>{message.followUp.map((followUp /* , index */) => (<button
                           key={index}
                           className="follow-up-btn"
-                          onClick={() => handleFollowUpClick(followUp)}
+                          onClick={() =>handleFollowUpClick(followUp)}
                         >
-                          {followUp}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                          {followUp}</button>))}</div>)}</div></div>))}
             
-            {isLoading && (
-              <div className="message assistant loading">
-                <div className="message-content">
-                  <div className="typing-indicator"><>
-
-                    <span></span>
-                    <span
-</>
-</>></span>
-                    <span></span>
-                  </div>
-                  <div className="message-text">AI Assistant is thinking...</div>
-                </div>
-              </div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input */}
-          <div className="ai-input">
-            <div className="input-container">
-              <input
+            {isLoading && (<div className="message assistant loading"><div className="message-content"><div className="typing-indicator"><><span></span><span
+</></>></span><span></span></div><div className="message-text">AI Assistant is thinking...</div></div></div>)}<div ref={messagesEndRef} /></div>{/* Input */}<div className="ai-input"><div className="input-container"><input
                 ref={inputRef}
                 type="text"
                 value={inputValue}
@@ -475,32 +318,14 @@ className="action-label">{action.label}</span>
                 placeholder="Ask me about government operations, compliance, plugins..."
                 className="message-input"
                 disabled={isLoading}
-              />
-              <button
+              /><button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || isLoading}
                 className="send-btn"
                 title="Send Message"
-              >
-                {isLoading ? '⏳' : '📤'}
-              </button>
-            </div>
-            
-            <div className="input-help"><>
-
-              <span className="current-mode">
-                Mode: {templateOptions.find(t => t.value === selectedTemplate)?.label}
-              </span>
-              <span
-</>
-className="input-hint">
-                Press Enter to send, Shift+Enter for new line
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+              >{isLoading ? '⏳' : '📤'}</button></div><div className="input-help"><><span className="current-mode">Mode: {templateOptions.find(t => t.value === selectedTemplate)?.label}</span><span
+</>className="input-hint">
+                Press Enter to send, Shift+Enter for new line</span></div></div></div>)}</div>
   );
 };
 

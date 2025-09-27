@@ -28,7 +28,7 @@ class UnstoppableTerraFusionLauncher:
         # Core TerraFusion Applications with AI Enhancement
         self.applications = {
             "TerraFusion_Build": {
-                "port": 5000,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraFusion_Build_PRODUCTION",
                 "script": "app.py",
                 "description": "🏗️ Core Property Data Layer with AI Optimization",
@@ -36,7 +36,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["property_valuation_ai", "market_analysis", "data_optimization"]
             },
             "TerraFlow": {
-                "port": 5001,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraFlow_PRODUCTION", 
                 "script": "app.py",
                 "description": "⚡ Workflow Orchestration Engine with Predictive Intelligence",
@@ -44,7 +44,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["workflow_prediction", "process_automation", "efficiency_optimization"]
             },
             "TerraFusionSync": {
-                "port": 5002,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraFusionSync_PRODUCTION",
                 "script": "app.py", 
                 "description": "🔄 Data Sync Hub with AI Processing Engine",
@@ -52,7 +52,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["data_quality_ai", "sync_optimization", "predictive_maintenance"]
             },
             "TerraAgent": {
-                "port": 5003,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraAgent_PRODUCTION",
                 "script": "app_enterprise.py",
                 "description": "🤖 AI Management System with Autonomous Coordination", 
@@ -60,7 +60,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["ai_orchestration", "intelligent_automation", "system_coordination"]
             },
             "TerraFusionAssessor": {
-                "port": 5004,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraFusionAssessor_PRODUCTION",
                 "script": "app.py",
                 "description": "📊 Enterprise Assessment Platform with AI Accuracy",
@@ -68,7 +68,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["assessment_ai", "accuracy_optimization", "compliance_automation"]
             },
             "TerraFusionDashboard": {
-                "port": 5005,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraFusionDashboard_PRODUCTION",
                 "script": "app.py",
                 "description": "📈 Executive Command Center with Predictive Analytics",
@@ -76,7 +76,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["executive_insights", "predictive_analytics", "decision_support"]
             },
             "TerraMiner": {
-                "port": 5006,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraMiner_PRODUCTION",
                 "script": "app.py",
                 "description": "⛏️ Advanced Data Mining with AI Pattern Recognition",
@@ -84,7 +84,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["pattern_recognition", "data_discovery", "insight_generation"]
             },
             "BSIncomeValuation": {
-                "port": 5007,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "BSIncomeValuation_PRODUCTION",
                 "script": "app.py",
                 "description": "💵 Income Valuation with AI Precision Modeling",
@@ -92,7 +92,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["valuation_ai", "income_modeling", "precision_optimization"]
             },
             "TerraFusionPro": {
-                "port": 5008,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraFusionPro_PRODUCTION",
                 "script": "app.py",
                 "description": "💼 Professional Services with AI Enhancement",
@@ -100,7 +100,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["service_optimization", "client_intelligence", "revenue_maximization"]
             },
             "TerraFusionPilt": {
-                "port": 5009,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "TerraFusionPilt_PRODUCTION",
                 "script": "app.py",
                 "description": "🏛️ PILT Management with AI Automation",
@@ -108,7 +108,7 @@ class UnstoppableTerraFusionLauncher:
                 "capabilities": ["pilt_automation", "compliance_ai", "funding_optimization"]
             },
             "BCBSGISPRO": {
-                "port": 5010,
+                "port": \${{TF_API_PORT:-5000}},
                 "path": "BCBSGISPRO_PRODUCTION",
                 "script": "app.py",
                 "description": "🗺️ GIS Professional Tools with Spatial AI",

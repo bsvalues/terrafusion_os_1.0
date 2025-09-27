@@ -3,6 +3,7 @@
 ## Quick Start (Development)
 
 ### Prerequisites
+
 - **Node.js**: 18.x or higher
 - **Rust**: 1.60 or higher
 - **System Dependencies**:
@@ -11,6 +12,7 @@
   - macOS: Xcode Command Line Tools
 
 ### Development Setup
+
 ```bash
 # Clone and navigate
 cd apps/01-terra-agent
@@ -25,6 +27,7 @@ npm run tauri:dev
 ## Production Build
 
 ### Build Commands
+
 ```bash
 # Build for current platform
 npm run tauri:build
@@ -36,12 +39,14 @@ npm run tauri:build
 ### Platform-Specific Builds
 
 #### Windows
+
 ```bash
 # Generates MSI installer
 npm run tauri:build -- --target x86_64-pc-windows-msvc
 ```
 
 #### macOS
+
 ```bash
 # Generates DMG and APP bundle
 npm run tauri:build -- --target x86_64-apple-darwin
@@ -49,6 +54,7 @@ npm run tauri:build -- --target aarch64-apple-darwin  # Apple Silicon
 ```
 
 #### Linux
+
 ```bash
 # Generates AppImage and DEB
 npm run tauri:build -- --target x86_64-unknown-linux-gnu
@@ -57,6 +63,7 @@ npm run tauri:build -- --target x86_64-unknown-linux-gnu
 ## Application Configuration
 
 ### Tauri Configuration (`src-tauri/tauri.conf.json`)
+
 ```json
 {
   "package": {
@@ -68,13 +75,15 @@ npm run tauri:build -- --target x86_64-unknown-linux-gnu
       "identifier": "com.terrafusion.terra-agent",
       "targets": "all"
     },
-    "windows": [{
-      "title": "TerraAgent - AI Assistant",
-      "width": 1200,
-      "height": 800,
-      "minWidth": 800,
-      "minHeight": 600
-    }]
+    "windows": [
+      {
+        "title": "TerraAgent - AI Assistant",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600
+      }
+    ]
   }
 }
 ```
@@ -82,22 +91,26 @@ npm run tauri:build -- --target x86_64-unknown-linux-gnu
 ## Distribution
 
 ### Windows
+
 - **Format**: MSI installer
 - **Signing**: Code signing certificate recommended
 - **Auto-update**: Built-in Tauri updater support
 
 ### macOS
+
 - **Format**: DMG disk image
 - **Notarization**: Required for distribution
 - **App Store**: Compatible with Mac App Store guidelines
 
 ### Linux
+
 - **Formats**: AppImage (portable), DEB (Debian/Ubuntu)
 - **Distribution**: Direct download or package repositories
 
 ## System Requirements
 
 ### Minimum Requirements
+
 - **RAM**: 512MB available
 - **Storage**: 100MB free space
 - **OS Versions**:
@@ -106,6 +119,7 @@ npm run tauri:build -- --target x86_64-unknown-linux-gnu
   - Ubuntu 18.04 or equivalent Linux distribution
 
 ### Recommended Requirements
+
 - **RAM**: 2GB available
 - **Storage**: 500MB free space
 - **Network**: Internet connection for AI features (optional)
@@ -113,12 +127,14 @@ npm run tauri:build -- --target x86_64-unknown-linux-gnu
 ## Security Features
 
 ### Application Security
+
 - **Sandboxed Runtime**: Tauri security model
 - **IPC Validation**: All frontend-backend communication validated
 - **No External Dependencies**: Self-contained executable
 - **Local Data Storage**: No cloud dependencies
 
 ### Privacy
+
 - **Offline Operation**: Core functionality works without internet
 - **Local AI Processing**: No data sent to external services
 - **Conversation History**: Stored locally, user-controlled
@@ -126,12 +142,14 @@ npm run tauri:build -- --target x86_64-unknown-linux-gnu
 ## Performance Optimization
 
 ### Bundle Size Optimization
+
 ```bash
 # Optimize Rust binary
 cargo build --release --target x86_64-unknown-linux-gnu
 ```
 
 ### Runtime Performance
+
 - **Memory Usage**: Typically 15-30MB
 - **CPU Usage**: Minimal when idle
 - **Startup Time**: < 1.5 seconds cold start
@@ -141,18 +159,21 @@ cargo build --release --target x86_64-unknown-linux-gnu
 ### Common Build Issues
 
 #### OpenSSL Errors (Linux)
+
 ```bash
 # Install development packages
 sudo apt-get install libssl-dev pkg-config
 ```
 
 #### Windows Build Tools
+
 ```bash
 # Install Visual Studio Build Tools
 npm install --global windows-build-tools
 ```
 
 #### macOS Xcode Issues
+
 ```bash
 # Install Xcode command line tools
 xcode-select --install
@@ -161,11 +182,13 @@ xcode-select --install
 ### Runtime Issues
 
 #### Application Won't Start
+
 1. Check system requirements
 2. Verify all dependencies installed
 3. Run from terminal to see error messages
 
 #### Performance Issues
+
 1. Check available RAM
 2. Close other applications
 3. Verify disk space availability
@@ -173,12 +196,14 @@ xcode-select --install
 ## Development Workflow
 
 ### Hot Reload Development
+
 ```bash
 # Start development server with hot reload
 npm run tauri:dev
 ```
 
 ### Debugging
+
 ```bash
 # Enable Rust debug logging
 RUST_LOG=debug npm run tauri:dev
@@ -187,6 +212,7 @@ RUST_LOG=debug npm run tauri:dev
 ```
 
 ### Testing
+
 ```bash
 # Run frontend tests
 npm test
@@ -198,7 +224,9 @@ cd src-tauri && cargo test
 ## Advanced Configuration
 
 ### Custom IPC Commands
+
 Add new commands in `src-tauri/src/main.rs`:
+
 ```rust
 #[tauri::command]
 fn my_custom_command() -> String {
@@ -213,7 +241,9 @@ fn my_custom_command() -> String {
 ```
 
 ### Custom Menu
+
 Modify `src-tauri/src/main.rs` to add custom menu items:
+
 ```rust
 use tauri::{Menu, MenuItem, Submenu};
 
@@ -225,6 +255,7 @@ let menu = Menu::new()
 ## Deployment Checklist
 
 ### Pre-Release
+
 - [ ] All tests passing
 - [ ] Performance benchmarks met
 - [ ] Security review completed
@@ -232,6 +263,7 @@ let menu = Menu::new()
 - [ ] Icons and assets finalized
 
 ### Release Process
+
 - [ ] Version number updated
 - [ ] Build for all target platforms
 - [ ] Sign executables (Windows/macOS)
@@ -239,6 +271,7 @@ let menu = Menu::new()
 - [ ] Create release notes
 
 ### Post-Release
+
 - [ ] Monitor crash reports
 - [ ] User feedback collection
 - [ ] Performance monitoring
@@ -247,11 +280,13 @@ let menu = Menu::new()
 ## Support and Maintenance
 
 ### Update Strategy
+
 - **Automatic Updates**: Tauri updater for patch releases
 - **Manual Updates**: Major version upgrades
 - **Rollback Plan**: Previous version availability
 
 ### Monitoring
+
 - **Crash Reporting**: Built-in Tauri crash handling
 - **Performance Metrics**: Memory and CPU usage tracking
 - **User Analytics**: Privacy-respecting usage statistics

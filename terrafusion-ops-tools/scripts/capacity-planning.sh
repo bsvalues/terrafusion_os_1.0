@@ -111,7 +111,7 @@ get_prometheus_metrics() {
         return 1
     fi
     
-    local query_url="http://localhost:9090/api/v1/query_range"
+    local query_url="http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/api/v1/query_range"
     local end_time=$(date +%s)
     local start_time=$((end_time - time_range))
     

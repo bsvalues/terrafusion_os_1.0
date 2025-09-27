@@ -1,12 +1,14 @@
 # Terrafusion Developer Onboarding Guide
 
-## Welcome to Terrafusion Development Team! 
+## Welcome to Terrafusion Development Team!
 
-This guide will help you set up your development environment and understand the Terrafusion ecosystem.
+This guide will help you set up your development environment and understand the
+Terrafusion ecosystem.
 
 ## Prerequisites
 
 ### Required Software
+
 - **Git** (latest version)
 - **Python 3.11+** with pip
 - **Node.js 18+** with npm
@@ -16,7 +18,9 @@ This guide will help you set up your development environment and understand the 
 - **VS Code or PyCharm** (recommended IDEs)
 
 ### Access Requirements
+
 Before starting, ensure you have:
+
 - [ ] GitHub/GitLab access to Terrafusion repositories
 - [ ] Access to team communication channels (Slack/Teams)
 - [ ] Access to project documentation (Confluence/Wiki)
@@ -133,9 +137,9 @@ docker run -d \
 docker-compose up -d
 
 # Services will be available at:
-# - Frontend: http://localhost:3003
-# - Backend API: http://localhost:8080
-# - AI Engine: http://localhost:8001
+# - Frontend: http://localhost:\${{TF_DESKTOP_PORT:-3003}}
+# - Backend API: http://localhost:\${{TF_DESKTOP_PORT:-3003}}
+# - AI Engine: http://localhost:\${{TF_DESKTOP_PORT:-3003}}
 ```
 
 ### Option 2: Manual Start
@@ -144,12 +148,12 @@ docker-compose up -d
 # Terminal 1: Backend
 cd backend
 source venv/bin/activate
-uvicorn main:app --reload --port 8080
+uvicorn main:app --reload --port \${{TF_ADMIN_PORT:-8080}}
 
 # Terminal 2: AI Engine
 cd ai_engine
 source venv/bin/activate
-python app.py  # or uvicorn main:app --port 8001
+python app.py  # or uvicorn main:app --port \${{TF_ADMIN_PORT:-8080}}
 
 # Terminal 3: Frontend
 cd frontend
@@ -175,6 +179,7 @@ git push origin feature/your-feature-name
 ### 2. Code Standards
 
 #### Python (Backend & AI Engine)
+
 - Follow PEP 8
 - Use type hints
 - Run `black` for formatting
@@ -193,6 +198,7 @@ mypy .
 ```
 
 #### TypeScript/React (Frontend)
+
 - Follow ESLint rules
 - Use TypeScript strictly
 - Run Prettier for formatting
@@ -222,17 +228,20 @@ python run_integration_tests.py
 ## Key Development Areas
 
 ### 1. API Development (Backend)
+
 - FastAPI routes in `backend/api/`
 - Database models in `backend/models/`
 - Business logic in `backend/services/`
 - Authentication in `backend/auth/`
 
 ### 2. AI Engine Development
+
 - Cost calculation algorithms in `ai_engine/calculators/`
 - ML models in `ai_engine/models/`
 - API endpoints in `ai_engine/api/`
 
 ### 3. Frontend Development
+
 - Components in `frontend/src/components/`
 - Pages in `frontend/src/pages/`
 - State management in `frontend/src/store/`
@@ -267,17 +276,20 @@ python run_integration_tests.py
 ## Debugging Tips
 
 ### Backend Debugging
+
 - Use `import pdb; pdb.set_trace()` for breakpoints
 - Check logs in `backend/logs/`
 - Use FastAPI's automatic `/docs` endpoint
 
 ### Frontend Debugging
+
 - Use React Developer Tools
 - Check browser console
 - Use Redux DevTools (if using Redux)
 - Network tab for API calls
 
 ### Database Debugging
+
 - Use `psql` or pgAdmin
 - Check query logs
 - Use EXPLAIN for slow queries
@@ -320,7 +332,7 @@ pytest --cov=backend tests/
 ## Important Links
 
 - [Project Wiki](https://wiki.company.com/terrafusion)
-- [API Documentation](http://localhost:8080/docs)
+- [API Documentation](http://localhost:\${{TF_DESKTOP_PORT:-3003}}/docs)
 - [Design System](https://design.company.com/terrafusion)
 - [Issue Tracker](https://jira.company.com/terrafusion)
 - [CI/CD Pipeline](https://jenkins.company.com/terrafusion)
@@ -351,7 +363,8 @@ pytest --cov=backend tests/
 
 ## Welcome Aboard!
 
-Remember: 
+Remember:
+
 - Ask questions early and often
 - Read existing code before writing new code
 - Test your changes thoroughly

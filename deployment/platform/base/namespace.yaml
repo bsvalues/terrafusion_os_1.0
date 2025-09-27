@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-platform
+  labels:
+    name: terrafusion-platform
+    app.kubernetes.io/name: terrafusion-cos
+    app.kubernetes.io/component: platform
+    terrafusion.gov/tier: platform
+    terrafusion.gov/security-level: government
+    istio-injection: enabled
+  annotations:
+    terrafusion.gov/description: "TerraFusion County Operating System Platform Namespace"
+    terrafusion.gov/owner: "platform-team"
+    terrafusion.gov/environment: "{{ .Values.environment }}"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-vendor-modules
+  labels:
+    name: terrafusion-vendor-modules
+    app.kubernetes.io/name: terrafusion-cos
+    app.kubernetes.io/component: vendor-modules
+    terrafusion.gov/tier: application
+    terrafusion.gov/security-level: government
+    terrafusion.gov/sidecar-injection: enabled
+    istio-injection: enabled
+  annotations:
+    terrafusion.gov/description: "Namespace for vendor application modules"
+    terrafusion.gov/owner: "vendor-integration-team"
+    terrafusion.gov/sidecar-inject: "true"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-observability
+  labels:
+    name: terrafusion-observability
+    app.kubernetes.io/name: terrafusion-cos
+    app.kubernetes.io/component: observability
+    terrafusion.gov/tier: infrastructure
+    terrafusion.gov/security-level: internal
+  annotations:
+    terrafusion.gov/description: "Observability and monitoring infrastructure"
+    terrafusion.gov/owner: "platform-team"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-security
+  labels:
+    name: terrafusion-security
+    app.kubernetes.io/name: terrafusion-cos
+    app.kubernetes.io/component: security
+    terrafusion.gov/tier: infrastructure
+    terrafusion.gov/security-level: restricted
+  annotations:
+    terrafusion.gov/description: "Security mesh and policy enforcement"
+    terrafusion.gov/owner: "security-team"

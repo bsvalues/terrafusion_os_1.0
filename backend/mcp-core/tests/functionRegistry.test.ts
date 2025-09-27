@@ -1,6 +1,6 @@
 /**
  * Function Registry Tests
- * 
+ *
  * This file contains tests for the MCP Function Registry functionality
  * which validates the registration, retrieval, and execution capabilities
  * of functions within the MCP framework.
@@ -15,10 +15,10 @@ const calculateBuildingCostMock = async (params: any) => {
   if (!params.region || !params.buildingType || !params.squareFootage) {
     throw new Error('Invalid parameters');
   }
-  
+
   return {
     baseCost: 100 * params.squareFootage,
-    totalCost: 100 * params.squareFootage * 1.2
+    totalCost: 100 * params.squareFootage * 1.2,
   };
 };
 
@@ -30,7 +30,7 @@ describe('FunctionRegistry', () => {
     schemaRegistry = new SchemaRegistry();
     schemaRegistry.register('BuildingCalculationInput', buildingCalculationInputSchema);
     schemaRegistry.register('BuildingCalculationResult', buildingCalculationResultSchema);
-    
+
     registry = new FunctionRegistry(schemaRegistry);
   });
 
@@ -40,9 +40,9 @@ describe('FunctionRegistry', () => {
       description: 'Calculate building cost based on parameters',
       inputSchema: 'BuildingCalculationInput',
       outputSchema: 'BuildingCalculationResult',
-      fn: calculateBuildingCostMock
+      fn: calculateBuildingCostMock,
     });
-    
+
     const func = registry.get('calculateBuildingCost');
     expect(func).toBeDefined();
     expect(func.name).toBe('calculateBuildingCost');
@@ -58,9 +58,9 @@ describe('FunctionRegistry', () => {
       description: 'Calculate building cost based on parameters',
       inputSchema: 'BuildingCalculationInput',
       outputSchema: 'BuildingCalculationResult',
-      fn: calculateBuildingCostMock
+      fn: calculateBuildingCostMock,
     });
-    
+
     expect(registry.exists('calculateBuildingCost')).toBe(true);
     expect(registry.exists('nonExistentFunction')).toBe(false);
   });
@@ -71,17 +71,17 @@ describe('FunctionRegistry', () => {
       description: 'Calculate building cost based on parameters',
       inputSchema: 'BuildingCalculationInput',
       outputSchema: 'BuildingCalculationResult',
-      fn: calculateBuildingCostMock
+      fn: calculateBuildingCostMock,
     });
-    
+
     registry.register({
       name: 'calculateDepreciation',
       description: 'Calculate depreciation based on year',
       inputSchema: 'BuildingCalculationInput',
       outputSchema: 'BuildingCalculationResult',
-      fn: calculateBuildingCostMock // Using same mock function for simplicity
+      fn: calculateBuildingCostMock, // Using same mock function for simplicity
     });
-    
+
     const functionList = registry.listAll();
     expect(functionList).toHaveLength(2);
     expect(functionList).toContain('calculateBuildingCost');
@@ -104,16 +104,16 @@ describe('FunctionExecutor', () => {
     schemaRegistry = new SchemaRegistry();
     schemaRegistry.register('BuildingCalculationInput', buildingCalculationInputSchema);
     schemaRegistry.register('BuildingCalculationResult', buildingCalculationResultSchema);
-    
+
     functionRegistry = new FunctionRegistry(schemaRegistry);
     functionRegistry.register({
       name: 'calculateBuildingCost',
       description: 'Calculate building cost based on parameters',
       inputSchema: 'BuildingCalculationInput',
       outputSchema: 'BuildingCalculationResult',
-      fn: calculateBuildingCostMock
+      fn: calculateBuildingCostMock,
     });
-    
+
     executor = new FunctionExecutor(functionRegistry, schemaRegistry);
   });
 
@@ -124,9 +124,9 @@ describe('FunctionExecutor', () => {
       squareFootage: 2000,
       complexityFactor: 1.1,
       conditionFactor: 1.0,
-      yearBuilt: 2020
+      yearBuilt: 2020,
     };
-    
+
     const result = await executor.execute('calculateBuildingCost', validParams);
     expect(result).toBeDefined();
     expect(result.baseCost).toBe(200000); // 100 * 2000
@@ -137,20 +137,20 @@ describe('FunctionExecutor', () => {
     const invalidParams = {
       // Missing required fields
       region: 'Western',
-      buildingType: 'residential'
+      buildingType: 'residential',
       // No squareFootage, etc.
     };
-    
-    await expect(executor.execute('calculateBuildingCost', invalidParams))
-      .rejects
-      .toThrow();
+
+    await expect(executor.execute('calculateBuildingCost', invalidParams)).rejects.toThrow();
   });
 
   test('should throw error when executing non-existent function', async () => {
-    const params = { /* valid params */ };
-    
-    await expect(executor.execute('nonExistentFunction', params))
-      .rejects
-      .toThrow('Function nonExistentFunction not found in registry');
+    const params = {
+      /* valid params */
+    };
+
+    await expect(executor.execute('nonExistentFunction', params)).rejects.toThrow(
+      'Function nonExistentFunction not found in registry'
+    );
   });
 });

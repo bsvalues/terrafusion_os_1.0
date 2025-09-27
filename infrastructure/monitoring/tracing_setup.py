@@ -45,8 +45,8 @@ class TerraFusionTracing:
         
     def setup_tracing(
         self,
-        jaeger_endpoint: str = "http://localhost:14268/api/traces",
-        otlp_endpoint: str = "localhost:4317",
+        jaeger_endpoint: str = "http://localhost:\${{TF_PORT_4317:-4317}}/api/traces",
+        otlp_endpoint: str = "localhost:\${{TF_PORT_4317:-4317}}",
         enable_console_export: bool = False
     ):
         """Setup distributed tracing"""
@@ -91,7 +91,7 @@ class TerraFusionTracing:
     def setup_metrics(
         self,
         prometheus_port: int = 9090,
-        otlp_endpoint: str = "localhost:4317"
+        otlp_endpoint: str = "localhost:\${{TF_PORT_4317:-4317}}"
     ):
         """Setup metrics collection"""
         # Prometheus exporter

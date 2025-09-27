@@ -2,9 +2,11 @@
 
 ## ✅ THE CORRECT ARCHITECTURE
 
-The championship system uses a **MODULE LAUNCHER** architecture, not direct imports!
+The championship system uses a **MODULE LAUNCHER** architecture, not direct
+imports!
 
 ### How Modules Work:
+
 1. **Each module is a standalone app** with its own:
    - `package.json`
    - `vite.config.ts`
@@ -44,11 +46,13 @@ modules/costforge/
 ## 🚀 HOW TO RUN
 
 ### Option 1: Run Everything
+
 ```bash
 ./RUN_CHAMPIONSHIP_WITH_MODULES.sh
 ```
 
 ### Option 2: Run Manually
+
 ```bash
 # Terminal 1 - Main Championship
 npm run dev
@@ -61,10 +65,10 @@ npm run dev
 
 ## 🌐 ACCESSING MODULES
 
-1. **Championship**: http://localhost:3000
-2. **CostForge Direct**: http://localhost:5174
-3. **CostForge via Championship**: 
-   - Open http://localhost:3000
+1. **Championship**: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+2. **CostForge Direct**: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+3. **CostForge via Championship**:
+   - Open http://localhost:\${{TF_FRONTEND_PORT:-3000}}
    - Click "CostForge" in sidebar
    - Module loads in iframe
 

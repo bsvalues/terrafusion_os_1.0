@@ -1,0 +1,375 @@
+# TerraFusion Frontend Refactoring: Unified Execution Plan
+
+## Current State Analysis
+
+Your frontend architecture currently has:
+- **3 Active Frontends**: Desktop (5070), Command Center (5060), Digital Workspace (5220)
+- **33 Backend Services**: With 0.912 average trust score
+- **Direct Service Coupling**: Frontends calling services directly
+- **No Unified State Management**: Each frontend manages its own state
+- **Static Service Discovery**: Hardcoded endpoints
+
+## Target Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│         Micro-Frontend Shell                │
+│    (Single-SPA + Module Federation)         │
+├─────────────────────────────────────────────┤
+│  Desktop │ Command │ Analytics │ Citizen   │
+└────┬─────┴────┬────┴─────┬────┴─────┬──────┘
+     │          │          │          │
+     └──────────┼──────────┼──────────┘
+                │          │
+    ┌───────────▼──────────▼──────────┐
+    │   Unified API Layer (5002)      │
+    │  • GraphQL Reads (port 4000)    │
+    │  • REST Writes                  │
+    │  • WebSocket Events              │
+    └──────────────┬───────────────────┘
+                   │
+    ┌──────────────▼───────────────────┐
+    │   Enhanced Trust Fabric (5000)   │
+    │  • Service Registry + Discovery  │
+    │  • Heartbeat & Lease Management  │
+    │  • Trust Score Validation        │
+    └──────────────────────────────────┘
+```
+
+## Phase-by-Phase Execution Plan
+
+### Phase 1: Foundation (Week 1-2)
+**Goal**: Parallel infrastructure without breaking existing
+
+#### 1.1 Enhanced Trust Fabric
+```python
+# services/trust-fabric-enhanced.py
+class ServiceRegistration:
+    service_name: str
+    port: int
+    version: str = "1.0.0"
+    capabilities: List[str] = []
+    lease_ttl_sec: int = 30
+    instance_id: str = field(init=False)
+    
+    def __post_init__(self):
+        self.instance_id = f"{self.service_name}-{int(time.time())}-{uuid4().hex[:8]}"
+```
+
+**Implementation Tasks**:
+- [ ] Add heartbeat endpoint
+- [ ] Implement lease-based GC
+- [ ] Add deduplication logic
+- [ ] Version negotiation support
+
+#### 1.2 API Gateway v2 (Parallel)
+```typescript
+// services/gateway-v2/src/index.ts
+const gatewayConfig = {
+  port: 5002,  // Parallel to 5001
+  canaryPercentage: 10,
+  rateLimits: {
+    anonymous: 100,
+    authenticated: 1000
+  },
+  circuitBreaker: {
+    threshold: 0.5,
+    timeout: 30000,
+    resetTimeout: 60000
+  }
+};
+```
+
+**Implementation Tasks**:
+- [ ] Set up Express/Fastify base
+- [ ] Add middleware stack (auth, rate-limit, circuit-breaker)
+- [ ] Implement canary routing
+- [ ] Add version negotiation
+
+### Phase 2: State & Data Layer (Week 3-4)
+**Goal**: Unified state management and read optimization
+
+#### 2.1 RTK Query Setup
+```typescript
+// frontend/packages/shared/src/api/baseApi.ts
+export const baseApi = createApi({
+  reducerPath: 'api',
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_API_GATEWAY || 'http://localhost:5002',
+    prepareHeaders: (headers, { getState }) => {
+      headers.set('Accept', 'application/vnd.terrafusion.tf+json;version=1');
+      const state = getState() as RootState;
+      if (state.auth.token) {
+        headers.set('Authorization', `Bearer ${state.auth.token}`);
+      }
+      if (state.trust.score) {
+        headers.set('X-Trust-Score', state.trust.score.toFixed(3));
+      }
+      headers.set('X-Request-ID', generateRequestId());
+      return headers;
+    }
+  }),
+  tagTypes: ['Service', 'Property', 'Tax', 'GIS'],
+  endpoints: () => ({})
+});
+```
+
+#### 2.2 GraphQL Read Gateway
+```graphql
+# services/graphql-gateway/schema.graphql
+type Query {
+  # Service Discovery
+  services(filter: ServiceFilter): ServiceConnection!
+  
+  # Government Data
+  properties(parcelIds: [ID!]): [Property!]!
+  taxRecords(year: Int!): TaxRecordConnection!
+  
+  # Analytics
+  systemMetrics: SystemMetrics!
+  countyDashboard: CountyDashboard!
+}
+
+type Subscription {
+  serviceHealth: ServiceHealthUpdate!
+  trustScoreChanges: TrustScoreUpdate!
+}
+```
+
+**Implementation Tasks**:
+- [ ] Apollo Server setup
+- [ ] Federation configuration
+- [ ] Redis caching layer
+- [ ] Subscription infrastructure
+
+### Phase 3: Micro-Frontend Architecture (Week 5-6)
+**Goal**: Modularize frontends with security
+
+#### 3.1 Shell Application
+```typescript
+// frontend/shell/src/index.tsx
+import { registerApplication, start } from 'single-spa';
+
+// Manifest with integrity checking
+async function loadMicroFrontend(name: string, url: string) {
+  const manifest = await fetch(`/api/manifests/${name}`).then(r => r.json());
+  
+  // Verify signature
+  if (!await verifySignature(manifest)) {
+    throw new Error(`Invalid signature for ${name}`);
+  }
+  
+  // Load with SRI
+  return System.import(url);
+}
+
+registerApplication({
+  name: '@terrafusion/desktop',
+  app: () => loadMicroFrontend('desktop', 'http://localhost:5070/desktop.js'),
+  activeWhen: ['/desktop']
+});
+
+registerApplication({
+  name: '@terrafusion/command',
+  app: () => loadMicroFrontend('command', 'http://localhost:5060/command.js'),
+  activeWhen: ['/operations']
+});
+
+start();
+```
+
+#### 3.2 Module Federation Config
+```javascript
+// webpack.config.js for each micro-frontend
+new ModuleFederationPlugin({
+  name: 'desktop',
+  filename: 'remoteEntry.js',
+  exposes: {
+    './Desktop': './src/Desktop',
+  },
+  shared: {
+    react: { singleton: true, requiredVersion: '^18.0.0' },
+    'react-dom': { singleton: true, requiredVersion: '^18.0.0' },
+    '@reduxjs/toolkit': { singleton: true },
+    '@terrafusion/shared': { singleton: true }
+  }
+})
+```
+
+### Phase 4: Performance & Security (Week 7-8)
+**Goal**: Optimize and harden
+
+#### 4.1 WASM Trust Calculator
+```rust
+// wasm/trust-calculator/src/lib.rs
+#[wasm_bindgen]
+pub struct TrustCalculator {
+    weights: Vec<f64>,
+}
+
+#[wasm_bindgen]
+impl TrustCalculator {
+    pub fn calculate(&self, metrics: &[f64]) -> f64 {
+        metrics.iter()
+            .zip(&self.weights)
+            .map(|(m, w)| m * w)
+            .sum::<f64>()
+            .clamp(0.0, 1.0)
+    }
+}
+```
+
+#### 4.2 Security Headers & CSP
+```typescript
+// middleware/security.ts
+export const securityHeaders = {
+  'Content-Security-Policy': [
+    "default-src 'self'",
+    "script-src 'self' 'wasm-unsafe-eval' https://localhost:*",
+    "connect-src 'self' ws://localhost:* wss://localhost:*",
+    "style-src 'self' 'unsafe-inline'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'"
+  ].join('; '),
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+};
+```
+
+## Migration Strategy for Existing Frontends
+
+### Desktop Environment (5070) Migration
+```typescript
+// Step 1: Wrap existing desktop in adapter
+class DesktopAdapter {
+  private legacyDesktop: LegacyDesktop;
+  private newApi: typeof baseApi;
+  
+  async initialize() {
+    // Keep all existing functionality
+    this.legacyDesktop = new LegacyDesktop();
+    
+    // Gradually migrate to new API
+    this.newApi = baseApi;
+  }
+  
+  // Proxy pattern: new calls use new API, fallback to legacy
+  async loadServices() {
+    try {
+      return await this.newApi.endpoints.getServices.query();
+    } catch {
+      return this.legacyDesktop.loadServices();
+    }
+  }
+}
+```
+
+### Command Center (5060) Migration
+```typescript
+// Step 2: Feature flag migration
+const CommandCenter: React.FC = () => {
+  const useNewArchitecture = useFeatureFlag('command-center-v2');
+  
+  if (useNewArchitecture) {
+    return <CommandCenterV2 />; // New micro-frontend
+  }
+  
+  return <LegacyCommandCenter />; // Existing
+};
+```
+
+## Implementation Checklist
+
+### Week 1-2: Foundation
+- [ ] Deploy enhanced Trust Fabric with heartbeat
+- [ ] Launch Gateway v2 on port 5002
+- [ ] Set up Redis for caching
+- [ ] Implement API versioning
+- [ ] Add canary routing (10% traffic)
+
+### Week 3-4: Data Layer
+- [ ] Implement RTK Query base
+- [ ] Deploy GraphQL gateway (read-only)
+- [ ] Set up event streaming (Kafka/NATS)
+- [ ] Create materialized views in Redis
+- [ ] Add WebSocket support
+
+### Week 5-6: Micro-Frontends
+- [ ] Create shell application
+- [ ] Implement Module Federation
+- [ ] Add SRI and signature verification
+- [ ] Migrate Command Center as first MF
+- [ ] Set up feature flags
+
+### Week 7-8: Optimization
+- [ ] Deploy WASM trust calculator
+- [ ] Implement bundle splitting
+- [ ] Add Brotli compression
+- [ ] Set up CDN
+- [ ] Complete security hardening
+
+## Success Metrics
+
+```typescript
+const successCriteria = {
+  performance: {
+    p95_latency: 300,  // ms, down from 850
+    bundle_size: 200,  // KB per MF
+    time_to_interactive: 2000  // ms
+  },
+  reliability: {
+    error_rate: 0.001,  // 0.1%
+    uptime: 0.999,      // 99.9%
+    rollback_time: 300  // seconds
+  },
+  quality: {
+    test_coverage: 0.85,
+    mutation_score: 0.95,
+    trust_avg: 0.96  // Up from 0.912
+  }
+};
+```
+
+## Risk Mitigation
+
+| Risk | Mitigation | Fallback |
+|------|------------|----------|
+| Service disruption | Parallel deployment, canary | Instant rollback via feature flag |
+| State inconsistency | Event sourcing, CQRS | Replay events from source |
+| Performance regression | Continuous monitoring | Revert to legacy path |
+| Security vulnerability | CSP, SRI, signatures | Kill switch per MF |
+
+## Daily Execution Commands
+
+```bash
+# Day 1: Foundation
+make deploy-trust-fabric-enhanced
+make deploy-gateway-v2
+make test-canary
+
+# Day 2-3: Data Layer
+make setup-graphql
+make test-rtk-query
+
+# Day 4-5: First Micro-Frontend
+make build-shell
+make migrate-command-center
+
+# Day 6-7: Validation
+make run-e2e-tests
+make verify-metrics
+make chaos-test
+
+# Day 8: Production
+make switch-traffic percentage=50
+make monitor-dashboard
+```
+
+## The Path Forward
+
+This plan preserves **100% of existing functionality** while systematically upgrading to a world-class architecture. Every step is reversible, measurable, and adds immediate value.
+
+**Start with Week 1-2 Foundation. Everything else builds on that.**
+
+Ready to execute?

@@ -23,17 +23,21 @@ const PluginSchema = z.object({
   compatibility: z.object({
     minVersion: z.string(),
     maxVersion: z.string().optional(),
-    platforms: z.array(z.enum(['windows', 'macos', 'linux'])).optional()
+    platforms: z.array(z.enum(['windows', 'macos', 'linux'])).optional(),
   }),
-  dependencies: z.array(z.object({
-    name: z.string(),
-    version: z.string()
-  })).optional(),
+  dependencies: z
+    .array(
+      z.object({
+        name: z.string(),
+        version: z.string(),
+      })
+    )
+    .optional(),
   manifest: z.object({
     main: z.string(),
     activationEvents: z.array(z.string()).optional(),
-    contributes: z.any().optional()
-  })
+    contributes: z.any().optional(),
+  }),
 });
 
 export type Plugin = z.infer<typeof PluginSchema>;
@@ -51,15 +55,15 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
+    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
     cb(null, uniqueName);
-  }
+  },
 });
 
 const upload = multer({
   storage,
   limits: {
-    fileSize: 50 * 1024 * 1024 // 50MB max
+    fileSize: 50 * 1024 * 1024, // 50MB max
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['.zip', '.tar.gz', '.tgz'];
@@ -69,7 +73,7 @@ const upload = multer({
     } else {
       cb(new Error('Invalid file type. Only .zip, .tar.gz, and .tgz files are allowed.'));
     }
-  }
+  },
 });
 
 export function createMarketplaceRouter(): Router {
@@ -83,7 +87,7 @@ export function createMarketplaceRouter(): Router {
       sort = 'downloads',
       order = 'desc',
       page = '1',
-      limit = '20'
+      limit = '20',
     } = req.query;
 
     let pluginList = Array.from(plugins.values());
@@ -96,17 +100,18 @@ export function createMarketplaceRouter(): Router {
     // Search
     if (search && typeof search === 'string') {
       const searchLower = search.toLowerCase();
-      pluginList = pluginList.filter(p =>
-        p.name.toLowerCase().includes(searchLower) ||
-        p.description.toLowerCase().includes(searchLower) ||
-        p.tags.some(tag => tag.toLowerCase().includes(searchLower))
+      pluginList = pluginList.filter(
+        p =>
+          p.name.toLowerCase().includes(searchLower) ||
+          p.description.toLowerCase().includes(searchLower) ||
+          p.tags.some(tag => tag.toLowerCase().includes(searchLower))
       );
     }
 
     // Sort
     pluginList.sort((a, b) => {
       let compareValue = 0;
-      
+
       switch (sort) {
         case 'downloads':
           compareValue = (downloads.get(b.id!) || 0) - (downloads.get(a.id!) || 0);
@@ -143,7 +148,7 @@ export function createMarketplaceRouter(): Router {
         const rating = ratings.get(plugin.id!);
         return rating ? rating.total / rating.count : 0;
       })(),
-      ratingCount: ratings.get(plugin.id!)?.count || 0
+      ratingCount: ratings.get(plugin.id!)?.count || 0,
     }));
 
     res.json({
@@ -152,26 +157,26 @@ export function createMarketplaceRouter(): Router {
         page: pageNum,
         limit: limitNum,
         total: pluginList.length,
-        pages: Math.ceil(pluginList.length / limitNum)
-      }
+        pages: Math.ceil(pluginList.length / limitNum),
+      },
     });
   });
 
   // Get single plugin
   router.get('/plugins/:id', (req, res) => {
     const plugin = plugins.get(req.params.id);
-    
+
     if (!plugin) {
       return res.status(404).json({ error: 'Plugin not found' });
     }
 
     const rating = ratings.get(plugin.id!);
-    
+
     res.json({
       ...plugin,
       downloads: downloads.get(plugin.id!) || 0,
       rating: rating ? rating.total / rating.count : 0,
-      ratingCount: rating?.count || 0
+      ratingCount: rating?.count || 0,
     });
   });
 
@@ -179,7 +184,7 @@ export function createMarketplaceRouter(): Router {
   router.post('/plugins', upload.single('package'), async (req, res) => {
     try {
       const pluginData = PluginSchema.parse(JSON.parse(req.body.metadata));
-      
+
       // Generate unique ID
       const id = createHash('sha256')
         .update(`${pluginData.name}-${pluginData.version}`)
@@ -194,7 +199,7 @@ export function createMarketplaceRouter(): Router {
       // Save plugin metadata
       const plugin: Plugin = {
         ...pluginData,
-        id
+        id,
       };
 
       plugins.set(id, plugin);
@@ -205,7 +210,7 @@ export function createMarketplaceRouter(): Router {
         // In production, would extract and validate the plugin package
         plugin.manifest = {
           main: 'index.js',
-          ...plugin.manifest
+          ...plugin.manifest,
         };
       }
 
@@ -221,7 +226,7 @@ export function createMarketplaceRouter(): Router {
   // Update plugin
   router.put('/plugins/:id', async (req, res) => {
     const plugin = plugins.get(req.params.id);
-    
+
     if (!plugin) {
       return res.status(404).json({ error: 'Plugin not found' });
     }
@@ -230,7 +235,7 @@ export function createMarketplaceRouter(): Router {
       const updates = PluginSchema.partial().parse(req.body);
       const updatedPlugin = { ...plugin, ...updates };
       plugins.set(req.params.id, updatedPlugin);
-      
+
       res.json(updatedPlugin);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -256,7 +261,7 @@ export function createMarketplaceRouter(): Router {
   // Download plugin
   router.post('/plugins/:id/download', async (req, res) => {
     const plugin = plugins.get(req.params.id);
-    
+
     if (!plugin) {
       return res.status(404).json({ error: 'Plugin not found' });
     }
@@ -267,20 +272,20 @@ export function createMarketplaceRouter(): Router {
     // In production, would serve the actual plugin file
     res.json({
       downloadUrl: `/marketplace/downloads/${plugin.id}/${plugin.name}-${plugin.version}.zip`,
-      checksum: createHash('sha256').update(plugin.id!).digest('hex')
+      checksum: createHash('sha256').update(plugin.id!).digest('hex'),
     });
   });
 
   // Rate plugin
   router.post('/plugins/:id/rate', (req, res) => {
     const plugin = plugins.get(req.params.id);
-    
+
     if (!plugin) {
       return res.status(404).json({ error: 'Plugin not found' });
     }
 
     const { rating } = req.body;
-    
+
     if (typeof rating !== 'number' || rating < 1 || rating > 5) {
       return res.status(400).json({ error: 'Rating must be between 1 and 5' });
     }
@@ -288,7 +293,7 @@ export function createMarketplaceRouter(): Router {
     const currentRating = ratings.get(plugin.id!) || { total: 0, count: 0 };
     ratings.set(plugin.id!, {
       total: currentRating.total + rating,
-      count: currentRating.count + 1
+      count: currentRating.count + 1,
     });
 
     res.json({ success: true });
@@ -305,7 +310,7 @@ export function createMarketplaceRouter(): Router {
         rating: (() => {
           const rating = ratings.get(plugin.id!);
           return rating ? rating.total / rating.count : 0;
-        })()
+        })(),
       }));
 
     res.json(featured);
@@ -314,7 +319,7 @@ export function createMarketplaceRouter(): Router {
   // Get categories with counts
   router.get('/categories', (req, res) => {
     const categoryCounts = new Map<string, number>();
-    
+
     for (const plugin of plugins.values()) {
       categoryCounts.set(plugin.category, (categoryCounts.get(plugin.category) || 0) + 1);
     }
@@ -322,7 +327,7 @@ export function createMarketplaceRouter(): Router {
     const categories = Array.from(categoryCounts.entries()).map(([name, count]) => ({
       name,
       count,
-      icon: getCategoryIcon(name)
+      icon: getCategoryIcon(name),
     }));
 
     res.json(categories);
@@ -331,7 +336,7 @@ export function createMarketplaceRouter(): Router {
   // Search suggestions
   router.get('/search/suggestions', (req, res) => {
     const { q } = req.query;
-    
+
     if (!q || typeof q !== 'string' || q.length < 2) {
       return res.json([]);
     }
@@ -344,7 +349,7 @@ export function createMarketplaceRouter(): Router {
       if (plugin.name.toLowerCase().includes(searchLower)) {
         suggestions.add(plugin.name);
       }
-      
+
       for (const tag of plugin.tags) {
         if (tag.toLowerCase().includes(searchLower)) {
           suggestions.add(tag);
@@ -366,7 +371,7 @@ function getCategoryIcon(category: string): string {
     analysis: '🔍',
     integration: '🔌',
     utility: '🛠️',
-    ai: '🤖'
+    ai: '🤖',
   };
   return icons[category] || '📦';
 }
@@ -384,15 +389,15 @@ export function seedMarketplace() {
       tags: ['charts', 'd3', 'graphs', 'analytics'],
       license: 'MIT',
       compatibility: {
-        minVersion: '2.0.0'
+        minVersion: '2.0.0',
       },
       manifest: {
         main: 'index.js',
         contributes: {
           views: ['chart-view'],
-          commands: ['charts.create']
-        }
-      }
+          commands: ['charts.create'],
+        },
+      },
     },
     {
       id: '2',
@@ -404,11 +409,11 @@ export function seedMarketplace() {
       tags: ['ai', 'machine-learning', 'property', 'analysis'],
       license: 'Commercial',
       compatibility: {
-        minVersion: '2.0.0'
+        minVersion: '2.0.0',
       },
       manifest: {
-        main: 'index.js'
-      }
+        main: 'index.js',
+      },
     },
     {
       id: '3',
@@ -420,12 +425,12 @@ export function seedMarketplace() {
       tags: ['gis', 'maps', 'geospatial', 'integration'],
       license: 'Apache-2.0',
       compatibility: {
-        minVersion: '1.5.0'
+        minVersion: '1.5.0',
       },
       manifest: {
-        main: 'index.js'
-      }
-    }
+        main: 'index.js',
+      },
+    },
   ];
 
   samplePlugins.forEach(plugin => {
@@ -433,7 +438,7 @@ export function seedMarketplace() {
     downloads.set(plugin.id!, Math.floor(Math.random() * 10000));
     ratings.set(plugin.id!, {
       total: Math.floor(Math.random() * 500) + 100,
-      count: Math.floor(Math.random() * 100) + 20
+      count: Math.floor(Math.random() * 100) + 20,
     });
   });
 }

@@ -40,14 +40,14 @@ class ImplementationPhase:
 class AISwarmOrchestrator:
     def __init__(self):
         self.redis_client = None
-        self.ai_swarm_url = "http://localhost:8001"
-        self.claude_flow_url = "http://localhost:8002"
-        self.backend_api_url = "http://localhost:5000"
+        self.ai_swarm_url = "http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}"
+        self.claude_flow_url = "http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}"
+        self.backend_api_url = "http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}"
         
     async def initialize(self):
         """Initialize AI orchestration infrastructure"""
         try:
-            self.redis_client = redis.from_url("redis://localhost:6379")
+            self.redis_client = redis.from_url("redis://localhost:\${{TF_SERVICE_8001_PORT:-8001}}")
             await self.redis_client.ping()
             logger.info("✅ Redis connection established")
             

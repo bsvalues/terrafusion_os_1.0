@@ -135,7 +135,7 @@ jobs:
         env:
           ASPNETCORE_ENVIRONMENT: Testing
           CONNECTION_STRING: "Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres"
-          REDIS_CONNECTION: "localhost:6379"
+          REDIS_CONNECTION: "localhost:\${{TF_REDIS_PORT:-6379}}"
         run: |
           mkdir -p backend/coverage
           
@@ -198,7 +198,7 @@ EOF
         env:
           ASPNETCORE_ENVIRONMENT: Testing
           CONNECTION_STRING: "Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres"
-          REDIS_CONNECTION: "localhost:6379"
+          REDIS_CONNECTION: "localhost:\${{TF_REDIS_PORT:-6379}}"
         continue-on-error: true
         run: |
           echo "🔗 Running integration tests with live services..."

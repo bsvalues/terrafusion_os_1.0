@@ -1,0 +1,535 @@
+/*
+⚛️ TerraFusion Quantum Animation System
+PhD-Level CSS Houdini & Advanced Animation Architecture
+Reliability Through Quantum-Inspired Motion Design
+*/
+
+/* ===== QUANTUM PHYSICS-INSPIRED ANIMATIONS ===== */
+
+/* CSS Custom Properties for Animation Control */
+:root {
+  /* Quantum States */
+  --tf-quantum-superposition: 0.5;
+  --tf-quantum-entanglement: 1.618; /* Golden ratio */
+  --tf-quantum-decoherence: 0.97;
+  --tf-quantum-tunneling-speed: 300ms;
+  
+  /* Neural Network Parameters */
+  --tf-neural-activation: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --tf-neural-backprop: cubic-bezier(0.23, 1, 0.32, 1);
+  --tf-neural-learning-rate: 0.001;
+  
+  /* AI Agent Dynamics */
+  --tf-agent-coherence-freq: 2.5s;
+  --tf-agent-communication-delay: 50ms;
+  --tf-swarm-synchronization: calc(var(--tf-agent-coherence-freq) / 1008);
+  
+  /* Government Reliability Constants */
+  --tf-system-stability: 0.9999;
+  --tf-fault-tolerance: 0.95;
+  --tf-recovery-time: 100ms;
+}
+
+/* ===== AI AGENT SWARM ANIMATIONS ===== */
+
+/* Master AI Command Brain Pulsing */
+@keyframes quantum-command-brain-pulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: var(--tf-quantum-decoherence);
+    filter: 
+      blur(0px) 
+      hue-rotate(0deg) 
+      brightness(1);
+    box-shadow: 
+      0 0 20px hsl(207 100% 50% / 0.3),
+      0 0 40px hsl(207 100% 50% / 0.2),
+      inset 0 0 20px hsl(207 100% 50% / 0.1);
+  }
+  
+  25% {
+    transform: scale(1.05) rotate(90deg);
+    opacity: 1;
+    filter: 
+      blur(0.5px) 
+      hue-rotate(90deg) 
+      brightness(1.1);
+    box-shadow: 
+      0 0 30px hsl(207 100% 50% / 0.5),
+      0 0 60px hsl(207 100% 50% / 0.3),
+      inset 0 0 30px hsl(207 100% 50% / 0.2);
+  }
+  
+  50% {
+    transform: scale(1.08) rotate(180deg);
+    opacity: var(--tf-system-stability);
+    filter: 
+      blur(1px) 
+      hue-rotate(180deg) 
+      brightness(1.2);
+    box-shadow: 
+      0 0 40px hsl(180 100% 50% / 0.6),
+      0 0 80px hsl(180 100% 50% / 0.4),
+      inset 0 0 40px hsl(180 100% 50% / 0.3);
+  }
+  
+  75% {
+    transform: scale(1.05) rotate(270deg);
+    opacity: 1;
+    filter: 
+      blur(0.5px) 
+      hue-rotate(270deg) 
+      brightness(1.1);
+    box-shadow: 
+      0 0 30px hsl(120 100% 50% / 0.5),
+      0 0 60px hsl(120 100% 50% / 0.3),
+      inset 0 0 30px hsl(120 100% 50% / 0.2);
+  }
+  
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: var(--tf-quantum-decoherence);
+    filter: 
+      blur(0px) 
+      hue-rotate(360deg) 
+      brightness(1);
+    box-shadow: 
+      0 0 20px hsl(207 100% 50% / 0.3),
+      0 0 40px hsl(207 100% 50% / 0.2),
+      inset 0 0 20px hsl(207 100% 50% / 0.1);
+  }
+}
+
+/* Individual AI Agent Quantum States */
+@keyframes quantum-agent-superposition {
+  0%, 100% {
+    transform: 
+      translateX(0) 
+      translateY(0) 
+      scale(1) 
+      rotate(0deg);
+    opacity: var(--tf-quantum-superposition);
+    background: radial-gradient(circle, 
+      hsl(120 100% 50% / 0.8) 0%, 
+      hsl(120 100% 50% / 0.4) 50%, 
+      transparent 100%);
+  }
+  
+  20% {
+    transform: 
+      translateX(calc(sin(72deg) * 3px)) 
+      translateY(calc(cos(72deg) * 3px)) 
+      scale(0.95) 
+      rotate(72deg);
+    opacity: 0.8;
+    background: radial-gradient(circle, 
+      hsl(144 100% 50% / 0.8) 0%, 
+      hsl(144 100% 50% / 0.4) 50%, 
+      transparent 100%);
+  }
+  
+  40% {
+    transform: 
+      translateX(calc(sin(144deg) * 3px)) 
+      translateY(calc(cos(144deg) * 3px)) 
+      scale(1.05) 
+      rotate(144deg);
+    opacity: 1;
+    background: radial-gradient(circle, 
+      hsl(168 100% 50% / 0.8) 0%, 
+      hsl(168 100% 50% / 0.4) 50%, 
+      transparent 100%);
+  }
+  
+  60% {
+    transform: 
+      translateX(calc(sin(216deg) * 3px)) 
+      translateY(calc(cos(216deg) * 3px)) 
+      scale(0.98) 
+      rotate(216deg);
+    opacity: 0.9;
+    background: radial-gradient(circle, 
+      hsl(192 100% 50% / 0.8) 0%, 
+      hsl(192 100% 50% / 0.4) 50%, 
+      transparent 100%);
+  }
+  
+  80% {
+    transform: 
+      translateX(calc(sin(288deg) * 3px)) 
+      translateY(calc(cos(288deg) * 3px)) 
+      scale(1.02) 
+      rotate(288deg);
+    opacity: 0.85;
+    background: radial-gradient(circle, 
+      hsl(216 100% 50% / 0.8) 0%, 
+      hsl(216 100% 50% / 0.4) 50%, 
+      transparent 100%);
+  }
+}
+
+/* Quantum Entanglement Between Agents */
+@keyframes quantum-entanglement-wave {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  
+  10% {
+    opacity: var(--tf-quantum-entanglement);
+  }
+  
+  90% {
+    opacity: var(--tf-quantum-entanglement);
+  }
+  
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* ===== NEURAL NETWORK VISUALIZATIONS ===== */
+
+/* Synaptic Firing Patterns */
+@keyframes neural-synaptic-fire {
+  0% {
+    background: radial-gradient(circle, 
+      transparent 0%, 
+      transparent 40%, 
+      hsl(207 100% 50% / 0.1) 41%, 
+      hsl(207 100% 50% / 0.3) 50%, 
+      hsl(207 100% 50% / 0.1) 59%, 
+      transparent 60%, 
+      transparent 100%);
+    transform: scale(0.8);
+  }
+  
+  50% {
+    background: radial-gradient(circle, 
+      hsl(207 100% 50% / 0.2) 0%, 
+      hsl(207 100% 50% / 0.4) 30%, 
+      hsl(207 100% 50% / 0.8) 40%, 
+      hsl(180 100% 50% / 1) 50%, 
+      hsl(207 100% 50% / 0.8) 60%, 
+      hsl(207 100% 50% / 0.4) 70%, 
+      hsl(207 100% 50% / 0.2) 100%);
+    transform: scale(1.2);
+  }
+  
+  100% {
+    background: radial-gradient(circle, 
+      transparent 0%, 
+      transparent 40%, 
+      hsl(120 100% 50% / 0.1) 41%, 
+      hsl(120 100% 50% / 0.3) 50%, 
+      hsl(120 100% 50% / 0.1) 59%, 
+      transparent 60%, 
+      transparent 100%);
+    transform: scale(0.8);
+  }
+}
+
+/* Neural Pathway Activation */
+@keyframes neural-pathway-activation {
+  0% {
+    stroke-dashoffset: 1000;
+    stroke: hsl(207 100% 50% / 0.2);
+    filter: blur(2px);
+  }
+  
+  50% {
+    stroke: hsl(180 100% 50% / 0.8);
+    filter: blur(0px) glow(5px);
+  }
+  
+  100% {
+    stroke-dashoffset: 0;
+    stroke: hsl(120 100% 50% / 1);
+    filter: blur(0px) glow(10px);
+  }
+}
+
+/* ===== SYSTEM RELIABILITY ANIMATIONS ===== */
+
+/* System Health Monitoring Pulse */
+@keyframes system-health-monitor {
+  0%, 100% {
+    background: linear-gradient(90deg, 
+      hsl(120 100% 50% / 0.1) 0%,
+      hsl(120 100% 50% / 0.3) 50%,
+      hsl(120 100% 50% / 0.1) 100%);
+    border-color: hsl(120 100% 50% / 0.3);
+    box-shadow: 
+      inset 0 0 20px hsl(120 100% 50% / 0.1),
+      0 0 20px hsl(120 100% 50% / 0.2);
+  }
+  
+  50% {
+    background: linear-gradient(90deg, 
+      hsl(120 100% 50% / 0.2) 0%,
+      hsl(120 100% 50% / 0.6) 50%,
+      hsl(120 100% 50% / 0.2) 100%);
+    border-color: hsl(120 100% 50% / 0.6);
+    box-shadow: 
+      inset 0 0 40px hsl(120 100% 50% / 0.2),
+      0 0 40px hsl(120 100% 50% / 0.4);
+  }
+}
+
+/* Fault Tolerance Recovery Animation */
+@keyframes fault-tolerance-recovery {
+  0% {
+    background: hsl(0 100% 50% / 0.3);
+    border-color: hsl(0 100% 50% / 0.6);
+    transform: scale(0.9);
+    filter: blur(3px);
+  }
+  
+  25% {
+    background: hsl(30 100% 50% / 0.4);
+    border-color: hsl(30 100% 50% / 0.7);
+    transform: scale(0.95);
+    filter: blur(2px);
+  }
+  
+  50% {
+    background: hsl(60 100% 50% / 0.5);
+    border-color: hsl(60 100% 50% / 0.8);
+    transform: scale(1);
+    filter: blur(1px);
+  }
+  
+  75% {
+    background: hsl(90 100% 50% / 0.6);
+    border-color: hsl(90 100% 50% / 0.9);
+    transform: scale(1.02);
+    filter: blur(0.5px);
+  }
+  
+  100% {
+    background: hsl(120 100% 50% / 0.3);
+    border-color: hsl(120 100% 50% / 0.6);
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+/* ===== ADVANCED COMPONENT ANIMATIONS ===== */
+
+/* Module Transcendence Loading */
+@keyframes module-transcendence-load {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      transparent 360deg
+    );
+    transform: rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  
+  25% {
+    background: conic-gradient(
+      from 0deg,
+      hsl(207 100% 50% / 0.3) 0deg,
+      hsl(207 100% 50% / 0.1) 90deg,
+      transparent 91deg,
+      transparent 360deg
+    );
+    transform: rotate(90deg) scale(0.9);
+    opacity: 0.5;
+  }
+  
+  50% {
+    background: conic-gradient(
+      from 0deg,
+      hsl(207 100% 50% / 0.4) 0deg,
+      hsl(180 100% 50% / 0.3) 90deg,
+      hsl(180 100% 50% / 0.1) 180deg,
+      transparent 181deg,
+      transparent 360deg
+    );
+    transform: rotate(180deg) scale(1);
+    opacity: 0.7;
+  }
+  
+  75% {
+    background: conic-gradient(
+      from 0deg,
+      hsl(207 100% 50% / 0.5) 0deg,
+      hsl(180 100% 50% / 0.4) 90deg,
+      hsl(120 100% 50% / 0.3) 180deg,
+      hsl(120 100% 50% / 0.1) 270deg,
+      transparent 271deg,
+      transparent 360deg
+    );
+    transform: rotate(270deg) scale(1.05);
+    opacity: 0.9;
+  }
+  
+  100% {
+    background: conic-gradient(
+      from 0deg,
+      hsl(207 100% 50% / 0.3) 0deg,
+      hsl(180 100% 50% / 0.3) 90deg,
+      hsl(120 100% 50% / 0.3) 180deg,
+      hsl(60 100% 50% / 0.3) 270deg,
+      hsl(207 100% 50% / 0.3) 360deg
+    );
+    transform: rotate(360deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Data Flow Visualization */
+@keyframes quantum-data-flow {
+  0% {
+    background-position: 0% 50%;
+    opacity: 0.3;
+  }
+  
+  50% {
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+  
+  100% {
+    background-position: 200% 50%;
+    opacity: 0.3;
+  }
+}
+
+/* ===== COMPONENT CLASSES ===== */
+
+/* AI Command Brain */
+.tf-ai-command-brain {
+  animation: quantum-command-brain-pulse var(--tf-agent-coherence-freq) var(--tf-neural-activation) infinite;
+  transform-origin: center;
+  will-change: transform, opacity, filter, box-shadow;
+  isolation: isolate;
+}
+
+/* AI Agent Nodes */
+.tf-ai-agent-node {
+  animation: 
+    quantum-agent-superposition calc(var(--tf-agent-coherence-freq) * 0.8) var(--tf-neural-activation) infinite,
+    neural-synaptic-fire calc(var(--tf-agent-coherence-freq) * 1.2) linear infinite;
+  transform-origin: center;
+  will-change: transform, opacity, background;
+  contain: layout style paint;
+}
+
+/* Staggered animation delays for natural swarm behavior */
+.tf-ai-agent-node:nth-child(3n+1) {
+  animation-delay: calc(var(--tf-swarm-synchronization) * 1);
+}
+
+.tf-ai-agent-node:nth-child(3n+2) {
+  animation-delay: calc(var(--tf-swarm-synchronization) * 2);
+}
+
+.tf-ai-agent-node:nth-child(3n) {
+  animation-delay: calc(var(--tf-swarm-synchronization) * 3);
+}
+
+/* Quantum Entanglement Lines */
+.tf-quantum-entanglement-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-quantum-entanglement-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    hsl(180 100% 50% / 0.6) 30%, 
+    hsl(180 100% 50% / 1) 50%, 
+    hsl(180 100% 50% / 0.6) 70%, 
+    transparent 100%);
+  animation: quantum-entanglement-wave var(--tf-agent-communication-delay) linear infinite;
+}
+
+/* System Health Indicator */
+.tf-system-health-optimal {
+  animation: system-health-monitor calc(var(--tf-agent-coherence-freq) * 2) ease-in-out infinite;
+  border: 2px solid hsl(120 100% 50% / 0.3);
+}
+
+.tf-system-health-degraded {
+  animation: fault-tolerance-recovery var(--tf-recovery-time) var(--tf-neural-backprop) forwards;
+}
+
+/* Module Loading States */
+.tf-module-transcending {
+  animation: module-transcendence-load var(--tf-quantum-tunneling-speed) var(--tf-neural-activation) forwards;
+  background-size: 200% 200%;
+}
+
+/* Data Flow Connections */
+.tf-data-flow-active {
+  background: linear-gradient(45deg, 
+    transparent 0%, 
+    hsl(207 100% 50% / 0.1) 25%, 
+    hsl(180 100% 50% / 0.3) 50%, 
+    hsl(207 100% 50% / 0.1) 75%, 
+    transparent 100%);
+  background-size: 200% 200%;
+  animation: quantum-data-flow 2s linear infinite;
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/* GPU Acceleration for Critical Animations */
+.tf-ai-command-brain,
+.tf-ai-agent-node {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .tf-ai-command-brain,
+  .tf-ai-agent-node,
+  .tf-quantum-entanglement-line::after,
+  .tf-system-health-optimal,
+  .tf-module-transcending,
+  .tf-data-flow-active {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  
+  .tf-ai-command-brain {
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* High Performance Mode */
+@media (prefers-reduced-motion: no-preference) {
+  .tf-performance-mode .tf-ai-agent-node {
+    animation-duration: calc(var(--tf-agent-coherence-freq) * 0.5);
+  }
+  
+  .tf-performance-mode .tf-quantum-entanglement-line::after {
+    animation-duration: calc(var(--tf-agent-communication-delay) * 0.5);
+  }
+}
+
+/* Battery Optimization */
+@media (prefers-reduced-data: reduce) {
+  .tf-ai-command-brain {
+    animation: none;
+    filter: none;
+  }
+  
+  .tf-ai-agent-node {
+    animation: quantum-agent-superposition var(--tf-agent-coherence-freq) linear infinite;
+  }
+}

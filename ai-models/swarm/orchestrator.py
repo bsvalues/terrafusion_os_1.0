@@ -1,3 +1,4 @@
+# NO HARDCODED PORTS! Use environment variables.
 #!/usr/bin/env python3
 """
 TerraFusion AI Swarm Orchestrator
@@ -314,13 +315,13 @@ class SwarmOrchestrator:
             
             # Initialize Claude-Flow client
             self.claude_flow_client = httpx.AsyncClient(
-                base_url="http://claude-flow:8080",
+                base_url="http://claude-flow:${TF_STATIC_PORT:-8080}",
                 timeout=30.0
             )
             
             # Initialize backend client
             self.backend_client = httpx.AsyncClient(
-                base_url="http://backend:5000",
+                base_url="http://backend:${TF_API_PORT:-5046}",
                 timeout=30.0
             )
             
@@ -393,7 +394,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "orchestrator:orchestrator.app",
         host="0.0.0.0",
-        port=9000,
+        port=\${{TF_PORT_9000:-9000}},
         reload=False,
         log_level="info"
     )

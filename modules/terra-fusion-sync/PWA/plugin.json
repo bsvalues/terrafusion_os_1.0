@@ -1,0 +1,35 @@
+{
+  "name": "terra-fusion-sync",
+  "displayName": "Terra Fusion Sync",
+  "description": "Data synchronization and integration system for TerraFusion OS",
+  "version": "1.0.0",
+  "status": "active",
+  "tier": "Tier 1",
+  "category": "synchronization",
+  "author": "TerraFusion OS",
+  "port": 5139,
+  "pricing": {
+    "basePrice": 199,
+    "subscriptionModel": "monthly",
+    "enterprise": true
+  },
+  "endpoints": {
+    "health": "/health",
+    "api": "/api",
+    "ui": "/ui"
+  },
+  "dependencies": [],
+  "capabilities": [
+    "data-synchronization",
+    "system-integration",
+    "real-time-sync",
+    "data-consistency",
+    "cross-system-communication"
+  ],
+  "configuration": {
+    "autoStart": true,
+    "hotSwappable": true,
+    "governmentCompliant": true,
+    "security": "government-grade"
+  }
+}

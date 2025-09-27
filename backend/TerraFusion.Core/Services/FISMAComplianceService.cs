@@ -26,7 +26,7 @@ namespace TerraFusion.Core.Services
             _implementedControls = LoadImplementedControls();
         }
 
-        public async Task<FISMAComplianceReport> GetComplianceStatusAsync()
+        public Task<FISMAComplianceReport> GetComplianceStatusAsync()
         {
             _logger.LogInformation("Generating FISMA compliance status report");
 
@@ -54,7 +54,7 @@ namespace TerraFusion.Core.Services
                 NextAssessmentDate = DateTime.UtcNow.AddMonths(3)
             };
 
-            return report;
+            return Task.FromResult(report);
         }
 
         public async Task<FISMAComplianceReport> RunComplianceAssessmentAsync()
@@ -74,7 +74,7 @@ namespace TerraFusion.Core.Services
             return report;
         }
 
-        public async Task<List<SecurityControl>> GetMissingControlsAsync()
+        public Task<List<SecurityControl>> GetMissingControlsAsync()
         {
             var missingControls = _allControls.Values
                 .Where(c => !_implementedControls.ContainsKey(c.ControlId))
@@ -82,7 +82,7 @@ namespace TerraFusion.Core.Services
                 .ThenBy(c => c.Family)
                 .ToList();
 
-            return missingControls;
+            return Task.FromResult(missingControls);
         }
 
         public async Task<bool> ImplementControlAsync(string controlId)

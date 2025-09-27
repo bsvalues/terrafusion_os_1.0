@@ -24,7 +24,7 @@ const MIT_PHD_DEV_CONFIG = {
             path: 'frontend'
         },
         backend: {
-            port: process.env.BACKEND_PORT || 5000,
+            port: process.env.TF_API_PORT || 5046,
             name: 'TerraFusion API',
             path: 'backend'
         },
@@ -395,7 +395,7 @@ export const TEST_SCENARIOS = [
         
         <h2>🔗 Development Links</h2>
         <a href="http://localhost:3000" class="button">Frontend</a>
-        <a href="http://localhost:5000" class="button">Backend API</a>
+        <a href="http://localhost:${MIT_PHD_DEV_CONFIG.services.backend.port}" class="button">Backend API</a>
         <a href="http://localhost:3001" class="button">Dashboard</a>
         <a href="http://localhost:3002" class="button">AI Monitor</a>
         <a href="http://localhost:3003" class="button">Visual Tests</a>
@@ -465,7 +465,7 @@ ${Object.entries(this.config.features).map(([feature, enabled]) => `
 
 ## Development Workflow
 1. **Frontend Development:** http://localhost:3000
-2. **Backend API Testing:** http://localhost:5000
+2. **Backend API Testing:** http://localhost:${MIT_PHD_DEV_CONFIG.services.backend.port}
 3. **Dashboard Testing:** http://localhost:3001
 4. **AI Monitoring:** http://localhost:3002
 5. **Visual Testing:** http://localhost:3003
@@ -519,7 +519,7 @@ ${Object.entries(this.config.features).map(([feature, enabled]) => `
             console.log('════════════════════════════════════════════');
             console.log('');
             console.log('✅ Frontend Development: http://localhost:3000');
-            console.log('✅ Backend API: http://localhost:5000');
+            console.log(`✅ Backend API: http://localhost:${MIT_PHD_DEV_CONFIG.services.backend.port}`);
             console.log('✅ Government Dashboard: http://localhost:3001');
             console.log('✅ AI Agent Monitor: http://localhost:3002');
             console.log('✅ Visual Test Suite: http://localhost:3003');

@@ -1,16 +1,18 @@
 # 🏆 BENTON COUNTY → PRODUCTION DEPLOYMENT PLAN
+
 ## Terrafusion OS 1.0 - Government AI Operating System
 
 **Date**: January 10, 2025  
 **Version**: 1.0.0  
 **Status**: 🟢 READY FOR EXECUTION  
-**Confidence Level**: 97%  
+**Confidence Level**: 97%
 
 ---
 
 ## 🎯 DEPLOYMENT OBJECTIVES
 
 ### **Production Target**
+
 - **Stable Benton County tenant** with SSO enabled
 - **Real-time data sync** with Harris PACS (89,247 properties)
 - **Government-grade security** (FISMA + Section 508 compliance)
@@ -18,6 +20,7 @@
 - **Zero-downtime deployment** with rollback capability
 
 ### **Development Parity**
+
 - **Identical local environment** with one-command startup
 - **Same container images** and configuration
 - **Hot-reload development** with production parity
@@ -28,6 +31,7 @@
 ## 🚀 PHASE 1: RELEASE CANDIDATE FREEZE
 
 ### **Step 1.1: Tag Release Candidate**
+
 ```bash
 # Tag the exact commit for production
 git checkout main
@@ -40,6 +44,7 @@ git log --oneline $(git describe --tags --abbrev=0)..HEAD > CHANGELOG_BENTON_1.0
 ```
 
 ### **Step 1.2: Build Immutable Images**
+
 ```bash
 # Build production images
 docker build -t registry.terrafusion.com/terrafusion/api:benton-1.0 ./backend
@@ -58,6 +63,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 ```
 
 ### **Step 1.3: Run Full Test Suite**
+
 ```bash
 # Execute complete test validation
 ./scripts/validate-complete-system.sh --environment=production --county=benton
@@ -69,16 +75,18 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 ## 🏗️ PHASE 2: INFRASTRUCTURE SETUP
 
 ### **Step 2.1: Choose Landing Zone**
+
 **RECOMMENDED: Option A (Docker Compose) for first go-live**
 
 #### **Infrastructure Requirements**
+
 ```yaml
 # Minimum Production Infrastructure
 compute:
-  api_ui_servers: 2  # 2 vCPU, 8GB RAM each
-  database_server: 1  # 4 vCPU, 32GB RAM, SSD
-  cache_server: 1     # 2 vCPU, 8GB RAM
-  monitoring: 1       # 2 vCPU, 4GB RAM
+  api_ui_servers: 2 # 2 vCPU, 8GB RAM each
+  database_server: 1 # 4 vCPU, 32GB RAM, SSD
+  cache_server: 1 # 2 vCPU, 8GB RAM
+  monitoring: 1 # 2 vCPU, 4GB RAM
 
 storage:
   database: 500GB SSD
@@ -87,13 +95,14 @@ storage:
   artifacts: 200GB
 
 network:
-  internal_domain: "*.benton.terrafusion.local"
-  public_fqdn: "assessor.bentoncounty.gov"
-  reverse_proxy: "nginx"
+  internal_domain: '*.benton.terrafusion.local'
+  public_fqdn: 'assessor.bentoncounty.gov'
+  reverse_proxy: 'nginx'
   ssl_certificates: "Let's Encrypt"
 ```
 
 ### **Step 2.2: Network Configuration**
+
 ```bash
 # DNS Configuration
 # Add to /etc/hosts or DNS server
@@ -113,37 +122,39 @@ sudo certbot certonly --standalone -d api.bentoncounty.gov
 ## 🔐 PHASE 3: SECURITY & COMPLIANCE
 
 ### **Step 3.1: SSO Configuration**
+
 ```yaml
 # Azure AD / Entra ID Configuration
-sso_provider: "azure_ad"
-tenant_id: "benton-county-gov.onmicrosoft.com"
-client_id: "${AZURE_CLIENT_ID}"
-client_secret: "${AZURE_CLIENT_SECRET}"
+sso_provider: 'azure_ad'
+tenant_id: 'benton-county-gov.onmicrosoft.com'
+client_id: '${AZURE_CLIENT_ID}'
+client_secret: '${AZURE_CLIENT_SECRET}'
 
 # RBAC Role Mapping
 roles:
   public:
-    permissions: ["read:public_data"]
-    azure_groups: ["Benton-Public"]
-  
+    permissions: ['read:public_data']
+    azure_groups: ['Benton-Public']
+
   user:
-    permissions: ["read:property_data", "write:own_data"]
-    azure_groups: ["Benton-Users"]
-  
+    permissions: ['read:property_data', 'write:own_data']
+    azure_groups: ['Benton-Users']
+
   assessor:
-    permissions: ["read:all_data", "write:assessments"]
-    azure_groups: ["Benton-Assessors"]
-  
+    permissions: ['read:all_data', 'write:assessments']
+    azure_groups: ['Benton-Assessors']
+
   county_admin:
-    permissions: ["read:all_data", "write:all_data", "admin:system"]
-    azure_groups: ["Benton-Administrators"]
-  
+    permissions: ['read:all_data', 'write:all_data', 'admin:system']
+    azure_groups: ['Benton-Administrators']
+
   enterprise_admin:
-    permissions: ["*"]
-    azure_groups: ["Terrafusion-Enterprise"]
+    permissions: ['*']
+    azure_groups: ['Terrafusion-Enterprise']
 ```
 
 ### **Step 3.2: Security Hardening**
+
 ```bash
 # JWT Key Rotation
 openssl rand -base64 64 > jwt-secret-benton-1.0.key
@@ -165,25 +176,27 @@ sudo ufw enable
 ## 📊 PHASE 4: DATA INTEGRATION
 
 ### **Step 4.1: Harris PACS Connection**
+
 ```yaml
 # Harris PACS Configuration
 harris_pacs:
-  connection_string: "${HARRIS_PACS_CONNECTION}"
-  api_endpoint: "${HARRIS_PACS_API_ENDPOINT}"
-  api_key: "${HARRIS_PACS_API_KEY}"
-  sync_interval: "15 minutes"
+  connection_string: '${HARRIS_PACS_CONNECTION}'
+  api_endpoint: '${HARRIS_PACS_API_ENDPOINT}'
+  api_key: '${HARRIS_PACS_API_KEY}'
+  sync_interval: '15 minutes'
   batch_size: 1000
   timeout: 300
-  
+
 # Data Validation
 validation:
-  property_count: 89447  # Expected Benton County properties
-  sync_lag_threshold: "10 minutes"
+  property_count: 89447 # Expected Benton County properties
+  sync_lag_threshold: '10 minutes'
   data_integrity_checks: true
   reconciliation_reports: true
 ```
 
 ### **Step 4.2: Initial Data Load**
+
 ```bash
 # Create staging database
 sudo -u postgres createdb terrafusion_benton_staging
@@ -206,6 +219,7 @@ sudo -u postgres createdb terrafusion_benton_production
 ## ⚙️ PHASE 5: CONFIGURATION MANAGEMENT
 
 ### **Step 5.1: Environment Configuration**
+
 ```bash
 # .env.prod (NEVER commit to git)
 cat > .env.prod << 'EOF'
@@ -216,14 +230,14 @@ TERRAFUSION_VERSION=1.0.0
 
 # Database Configuration
 DATABASE_HOST=db.benton.terrafusion.local
-DATABASE_PORT=5432
+DATABASE_PORT=\${{TF_POSTGRES_PORT:-5432}}
 DATABASE_NAME=terrafusion_benton_production
 DATABASE_USER=terrafusion_db
 DATABASE_PASSWORD=CHANGE_ME_SECURE_PASSWORD
 
 # Redis Configuration
 REDIS_HOST=cache.benton.terrafusion.local
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 REDIS_PASSWORD=CHANGE_ME_REDIS_PASSWORD
 
 # JWT Configuration
@@ -254,18 +268,19 @@ chmod 600 .env.prod
 ```
 
 ### **Step 5.2: County-Specific Configuration**
+
 ```yaml
 # tenant.benton.yaml
 county:
-  name: "Benton County"
-  state: "Washington"
-  fips_code: "53005"
-  timezone: "America/Los_Angeles"
-  fiscal_year_start: "January 1"
+  name: 'Benton County'
+  state: 'Washington'
+  fips_code: '53005'
+  timezone: 'America/Los_Angeles'
+  fiscal_year_start: 'January 1'
 
 deployment:
-  environment: "production"
-  domain: "assessor.bentoncounty.gov"
+  environment: 'production'
+  domain: 'assessor.bentoncounty.gov'
   ssl_enabled: true
   high_availability: true
 
@@ -291,6 +306,7 @@ rate_limits:
 ```
 
 ### **Step 5.3: Docker Compose Production**
+
 ```yaml
 # compose.prod.yaml
 version: '3.8'
@@ -300,8 +316,8 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
@@ -312,7 +328,7 @@ services:
       - terrafusion-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -328,7 +344,7 @@ services:
       - terrafusion-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -357,7 +373,7 @@ services:
       - HarrisPacs__ApiEndpoint=${HARRIS_PACS_API_ENDPOINT}
       - HarrisPacs__ApiKey=${HARRIS_PACS_API_KEY}
     ports:
-      - "5000:5000"
+      - '5000:5000'
     depends_on:
       - postgres
       - redis
@@ -365,7 +381,7 @@ services:
       - terrafusion-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -392,7 +408,7 @@ services:
       - terrafusion-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -422,7 +438,7 @@ services:
       - terrafusion-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U terrafusion_db"]
+      test: ['CMD-SHELL', 'pg_isready -U terrafusion_db']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -445,7 +461,7 @@ services:
       - terrafusion-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -462,7 +478,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -481,7 +497,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3009:3000"
+      - '3009:3000'
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=terrafusion2025
     volumes:
@@ -508,60 +524,64 @@ networks:
 ## 📈 PHASE 6: MONITORING & OBSERVABILITY
 
 ### **Step 6.1: SLO Definition**
+
 ```yaml
 # SLO Configuration
 service_level_objectives:
   api_availability:
     target: 99.9
-    measurement: "monthly"
+    measurement: 'monthly'
     error_budget: 0.1
-    
+
   p95_latency:
     target: 150
-    unit: "milliseconds"
-    measurement: "5-minute"
-    
+    unit: 'milliseconds'
+    measurement: '5-minute'
+
   sync_lag:
     target: 10
-    unit: "minutes"
-    measurement: "real-time"
-    
+    unit: 'minutes'
+    measurement: 'real-time'
+
   error_rate:
     target: 0.1
-    unit: "percent"
-    measurement: "5-minute"
+    unit: 'percent'
+    measurement: '5-minute'
 ```
 
 ### **Step 6.2: Alert Configuration**
+
 ```yaml
 # Alertmanager Configuration
 alerts:
   p1_critical:
-    - name: "API Down"
-      condition: "up == 0"
-      notification: "sms,email,slack"
-      
-    - name: "Database Connection Failed"
-      condition: "pg_up == 0"
-      notification: "sms,email"
-      
+    - name: 'API Down'
+      condition: 'up == 0'
+      notification: 'sms,email,slack'
+
+    - name: 'Database Connection Failed'
+      condition: 'pg_up == 0'
+      notification: 'sms,email'
+
   p2_degraded:
-    - name: "High Latency"
-      condition: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.15"
-      notification: "email,slack"
-      
-    - name: "Sync Lag High"
-      condition: "harris_pacs_sync_lag_seconds > 600"
-      notification: "email"
-      
+    - name: 'High Latency'
+      condition:
+        'histogram_quantile(0.95,
+        rate(http_request_duration_seconds_bucket[5m])) > 0.15'
+      notification: 'email,slack'
+
+    - name: 'Sync Lag High'
+      condition: 'harris_pacs_sync_lag_seconds > 600'
+      notification: 'email'
+
   p3_capacity:
-    - name: "High CPU Usage"
-      condition: "rate(process_cpu_seconds_total[5m]) > 0.8"
-      notification: "email"
-      
-    - name: "High Memory Usage"
-      condition: "process_resident_memory_bytes / process_heap_size_bytes > 0.9"
-      notification: "email"
+    - name: 'High CPU Usage'
+      condition: 'rate(process_cpu_seconds_total[5m]) > 0.8'
+      notification: 'email'
+
+    - name: 'High Memory Usage'
+      condition: 'process_resident_memory_bytes / process_heap_size_bytes > 0.9'
+      notification: 'email'
 ```
 
 ---
@@ -569,6 +589,7 @@ alerts:
 ## 🚀 PHASE 7: DEPLOYMENT EXECUTION
 
 ### **Step 7.1: Pre-Deployment Checklist**
+
 ```bash
 # Pre-deployment validation
 ./scripts/pre-deployment-check.sh --environment=production --county=benton
@@ -581,6 +602,7 @@ alerts:
 ```
 
 ### **Step 7.2: Production Deployment**
+
 ```bash
 # Deploy to production
 docker-compose -f compose.prod.yaml --env-file .env.prod pull
@@ -597,6 +619,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod up -d
 ```
 
 ### **Step 7.3: Post-Deployment Validation**
+
 ```bash
 # Health checks
 curl -f https://assessor.bentoncounty.gov/health
@@ -617,6 +640,7 @@ curl -f https://api.bentoncounty.gov/health
 ## 🔄 PHASE 8: UAT & PILOT
 
 ### **Step 8.1: User Acceptance Testing**
+
 ```bash
 # UAT Environment Setup
 docker-compose -f compose.uat.yaml --env-file .env.uat up -d
@@ -629,6 +653,7 @@ docker-compose -f compose.uat.yaml --env-file .env.uat up -d
 ```
 
 ### **Step 8.2: Pilot Program**
+
 ```bash
 # Pilot deployment (one office)
 ./scripts/pilot-deployment.sh --office="Benton County Assessor Main Office"
@@ -645,6 +670,7 @@ docker-compose -f compose.uat.yaml --env-file .env.uat up -d
 ## 🎯 PHASE 9: GO-LIVE
 
 ### **Step 9.1: Go-Live Execution**
+
 ```bash
 # Freeze source systems (if needed)
 ./scripts/freeze-source-systems.sh --systems=harris_pacs
@@ -663,6 +689,7 @@ docker-compose -f compose.uat.yaml --env-file .env.uat up -d
 ```
 
 ### **Step 9.2: Rollback Plan**
+
 ```bash
 # Rollback procedure (if needed)
 ./scripts/rollback.sh --reason="performance_issues" --target=previous_version
@@ -676,6 +703,7 @@ docker-compose -f compose.uat.yaml --env-file .env.uat up -d
 ## 🛡️ PHASE 10: HYPERCARE & HANDOVER
 
 ### **Step 10.1: Hypercare Period**
+
 ```bash
 # First 2 weeks monitoring
 ./scripts/hypercare-monitoring.sh --duration=14d --alert-threshold=high
@@ -688,6 +716,7 @@ docker-compose -f compose.uat.yaml --env-file .env.uat up -d
 ```
 
 ### **Step 10.2: Knowledge Transfer**
+
 ```bash
 # Generate documentation
 ./scripts/generate-documentation.sh --comprehensive --output=production-runbook.md
@@ -704,6 +733,7 @@ docker-compose -f compose.uat.yaml --env-file .env.uat up -d
 ## 🎯 YOUR DEVELOPMENT ENVIRONMENT PARITY
 
 ### **One-Command Dev Setup**
+
 ```bash
 # dev-up.sh
 #!/bin/bash
@@ -720,28 +750,30 @@ cd frontend && npm run dev &
 cd backend && dotnet run &
 
 echo "✅ Development environment ready!"
-echo "Frontend: http://localhost:3000"
-echo "Backend: http://localhost:5000"
-echo "Grafana: http://localhost:3009"
+echo "Frontend: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "Backend: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "Grafana: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
 ```
 
 ### **Development Configuration**
+
 ```bash
 # .env.dev.example
 TERRAFUSION_ENV=development
 TERRAFUSION_COUNTY=benton
 DATABASE_HOST=localhost
-DATABASE_PORT=5432
+DATABASE_PORT=\${{TF_POSTGRES_PORT:-5432}}
 DATABASE_NAME=terrafusion_benton_dev
 DATABASE_USER=terrafusion_dev
 DATABASE_PASSWORD=dev_password
 REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 JWT_SECRET=dev_jwt_secret_key
 HARRIS_PACS_CONNECTION=dev_connection_string
 ```
 
 ### **Development Docker Compose**
+
 ```yaml
 # compose.dev.yaml
 version: '3.8'
@@ -750,19 +782,19 @@ services:
   frontend-dev:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_API_URL=http://localhost:\${{TF_FRONTEND_PORT:-3000}}
       - REACT_APP_ENV=development
     command: npm run dev
 
   backend-dev:
     build: ./backend
     ports:
-      - "5000:5000"
+      - '5000:5000'
     volumes:
       - ./backend:/app
     environment:
@@ -773,7 +805,7 @@ services:
   postgres-dev:
     image: postgres:15-alpine
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       - POSTGRES_USER=terrafusion_dev
       - POSTGRES_PASSWORD=dev_password
@@ -784,7 +816,7 @@ services:
   redis-dev:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
 volumes:
   postgres-dev-data:
@@ -795,6 +827,7 @@ volumes:
 ## 📋 48-HOUR ACTIONABLE CHECKLIST
 
 ### **Day 1: Infrastructure & Security**
+
 - [ ] **Confirm Option A (Docker Compose)** for week-1 go-live
 - [ ] **Select exact RC commit** and tag `benton-1.0`
 - [ ] **Approve SSO provider** and RBAC mapping
@@ -805,6 +838,7 @@ volumes:
 - [ ] **Create service accounts** and rotate secrets
 
 ### **Day 2: Data & Configuration**
+
 - [ ] **Provide Harris PACS connection** details for staging
 - [ ] **Name FQDNs** and configure TLS certificates
 - [ ] **Nominate on-call contacts** for Alertmanager
@@ -819,6 +853,7 @@ volumes:
 ## 🎯 GATE CHECKS BEFORE "PRODUCTION-READY" STAMP
 
 ### **Technical Validation**
+
 - [ ] **RC fixed and tagged** with SBOM + image digest recorded
 - [ ] **Secrets rotated** and SSO enforced with MFA
 - [ ] **Backups & restores** verified end-to-end
@@ -827,6 +862,7 @@ volumes:
 - [ ] **Data parity** pass with sync SLA observed for 72 hours
 
 ### **Process Validation**
+
 - [ ] **UAT sign-off** completed with stakeholder approval
 - [ ] **Pilot completed** with successful user feedback
 - [ ] **Rollback drill** passed with documented procedures
@@ -838,6 +874,7 @@ volumes:
 ## 🚀 EXECUTION COMMAND MAP
 
 ### **Production Deployment**
+
 ```bash
 # Build and tag release
 git tag -a RC-Benton-1.0 -m "Benton County Production Release"
@@ -853,6 +890,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod up -d
 ```
 
 ### **Development Environment**
+
 ```bash
 # Start development environment
 ./scripts/dev-up.sh
@@ -871,6 +909,7 @@ dotnet watch run  # Backend
 ## 🏆 SUCCESS METRICS
 
 ### **Technical Metrics**
+
 - **API Availability**: ≥ 99.9% monthly
 - **P95 Latency**: ≤ 150ms for core endpoints
 - **Sync Lag**: ≤ 10 minutes from Harris PACS
@@ -878,6 +917,7 @@ dotnet watch run  # Backend
 - **Deployment Time**: ≤ 30 minutes with zero downtime
 
 ### **Business Metrics**
+
 - **User Adoption**: 100% of Benton County assessors onboarded
 - **Data Accuracy**: 100% parity with Harris PACS
 - **Compliance**: 100% FISMA + Section 508 compliance
@@ -886,4 +926,5 @@ dotnet watch run  # Backend
 
 ---
 
-**🎯 This deployment plan provides everything needed to take Benton County to production with identical development parity. Execute with excellence!**
+**🎯 This deployment plan provides everything needed to take Benton County to
+production with identical development parity. Execute with excellence!**

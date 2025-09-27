@@ -1,0 +1,72 @@
+# Prometheus Configuration for TerraFusion OS Monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "terrafusion_rules.yml"
+
+scrape_configs:
+  # TerraFusion Backend API
+  - job_name: 'terrafusion-backend'
+    static_configs:
+      - targets: ['terrafusion-backend:${TF_STATIC_PORT:-8080}']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Trust Fabric Attestation Service
+  - job_name: 'trust-fabric'
+    static_configs:
+      - targets: ['trust-fabric:7000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Consul Service Mesh
+  - job_name: 'consul'
+    static_configs:
+      - targets: ['consul:8500']
+    metrics_path: '/v1/agent/metrics'
+    params:
+      format: ['prometheus']
+    scrape_interval: 30s
+
+  # PostgreSQL Database
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+
+  # Redis Cache
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  # SPIRE Server
+  - job_name: 'spire-server'
+    static_configs:
+      - targets: ['spire-server:8081']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # HashiCorp Vault
+  - job_name: 'vault'
+    static_configs:
+      - targets: ['vault:8200']
+    metrics_path: '/v1/sys/metrics'
+    params:
+      format: ['prometheus']
+    scrape_interval: 30s
+    bearer_token: '${VAULT_ROOT_TOKEN}'
+
+  # Docker containers
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['host.docker.internal:9323']
+    scrape_interval: 30s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093

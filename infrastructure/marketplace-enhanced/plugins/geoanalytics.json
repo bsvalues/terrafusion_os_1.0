@@ -32,11 +32,7 @@
       "icon": "☸️"
     }
   },
-  "permissions": [
-    "property:read",
-    "analytics:execute",
-    "export:data"
-  ],
+  "permissions": ["property:read", "analytics:execute", "export:data"],
   "config": {
     "defaultRadius": 1000,
     "maxRadius": 10000,

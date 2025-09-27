@@ -190,7 +190,7 @@ openai_oss:
 
 # Local Ollama Configuration
 ollama:
-  host: "localhost:11434"
+  host: "localhost:\${{TF_POSTGRES_PORT:-5432}}"
   models:
     - "llama2:7b"
     - "codellama:13b"
@@ -336,8 +336,8 @@ ANTHROPIC_API_KEY=your_anthropic_key_here
 GOOGLE_API_KEY=your_google_key_here
 
 # Database Configuration
-DATABASE_URL=postgresql://benton_ai:championship2024@localhost:5432/benton_county_ai
-REDIS_URL=redis://localhost:6379/1
+DATABASE_URL=postgresql://benton_ai:championship2024@localhost:\${{TF_POSTGRES_PORT:-5432}}/benton_county_ai
+REDIS_URL=redis://localhost:\${{TF_POSTGRES_PORT:-5432}}/1
 
 # Security
 SECRET_KEY=your_super_secret_key_here_change_in_production
@@ -354,9 +354,9 @@ CACHE_SIZE=1000
 RATE_LIMIT=1000
 
 # Monitoring
-PROMETHEUS_PORT=9091
+PROMETHEUS_PORT=\${{TF_PORT_9091:-9091}}
 METRICS_ENABLED=true
-HEALTH_CHECK_PORT=8080
+HEALTH_CHECK_PORT=\${{TF_PORT_9091:-9091}}
 EOF
 
     # Set secure permissions for environment file
@@ -542,7 +542,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "api_service:app",
         host="0.0.0.0",
-        port=8080,
+        port=\${{TF_ADMIN_PORT:-8080}},
         log_level="info",
         reload=False
     )
@@ -640,7 +640,7 @@ echo "Timestamp: $(date)"
 echo ""
 
 # Check API service
-check_service "OpenAI OSS API" "http://localhost:8080/health"
+check_service "OpenAI OSS API" "http://localhost:\${{TF_POSTGRES_PORT:-5432}}/health"
 
 # Check system resources
 echo ""
@@ -707,7 +707,7 @@ start_services() {
     fi
     
     # Test API endpoint
-    if curl -s "http://localhost:8080/health" > /dev/null; then
+    if curl -s "http://localhost:\${{TF_POSTGRES_PORT:-5432}}/health" > /dev/null; then
         log_success "✅ API endpoint responding"
     else
         log_error "❌ API endpoint not responding"
@@ -732,7 +732,7 @@ async def test_api_endpoint():
     """Test the API endpoint"""
     async with aiohttp.ClientSession() as session:
         # Test health check
-        async with session.get("http://localhost:8080/health") as response:
+        async with session.get("http://localhost:\${{TF_POSTGRES_PORT:-5432}}/health") as response:
             if response.status == 200:
                 print("✅ Health check: PASSED")
                 return True
@@ -761,7 +761,7 @@ async def test_query_routing():
         for i, test_case in enumerate(test_queries, 1):
             headers = {"Authorization": "Bearer test_token"}
             async with session.post(
-                "http://localhost:8080/query",
+                "http://localhost:\${{TF_POSTGRES_PORT:-5432}}/query",
                 json=test_case,
                 headers=headers
             ) as response:
@@ -888,7 +888,7 @@ display_deployment_summary() {
     echo ""
     echo -e "${GREEN}📋 DEPLOYMENT SUMMARY${NC}"
     echo "• OpenAI OSS Integration: ✅ DEPLOYED"
-    echo "• API Service: ✅ RUNNING on port 8080"
+    echo "• API Service: ✅ RUNNING on port \${{TF_ADMIN_PORT:-8080}}"
     echo "• Monitoring: ✅ CONFIGURED"
     echo "• Management Scripts: ✅ INSTALLED"
     echo "• Integration Tests: ✅ PASSED"
@@ -902,10 +902,10 @@ display_deployment_summary() {
     echo "• Run tests: openai-oss-manage test"
     echo ""
     echo -e "${GREEN}🌐 API ENDPOINTS${NC}"
-    echo "• Health Check: http://localhost:8080/health"
-    echo "• Query Processing: http://localhost:8080/query"
-    echo "• Statistics: http://localhost:8080/stats"
-    echo "• Metrics: http://localhost:8080/metrics"
+    echo "• Health Check: http://localhost:\${{TF_POSTGRES_PORT:-5432}}/health"
+    echo "• Query Processing: http://localhost:\${{TF_POSTGRES_PORT:-5432}}/query"
+    echo "• Statistics: http://localhost:\${{TF_POSTGRES_PORT:-5432}}/stats"
+    echo "• Metrics: http://localhost:\${{TF_POSTGRES_PORT:-5432}}/metrics"
     echo ""
     echo -e "${GREEN}📁 IMPORTANT FILES${NC}"
     echo "• Configuration: $INTEGRATION_DIR/config/production.yaml"

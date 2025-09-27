@@ -1,0 +1,10 @@
+
+[package]
+name = "golden-opt"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+golden-core = { path = "../golden-core" }
+serde = { workspace = true, features = ["derive"] }
+anyhow = { workspace = true }

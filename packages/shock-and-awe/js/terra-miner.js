@@ -4,23 +4,23 @@
  */
 
 class TerraMinerDashboard {
-    constructor() {
-        this.isAnalyzing = false;
-        this.datasets = [];
-        this.init();
-    }
+  constructor() {
+    this.isAnalyzing = false;
+    this.datasets = [];
+    this.init();
+  }
 
-    init() {
-        this.createMinerInterface();
-        this.bindEvents();
-    }
+  init() {
+    this.createMinerInterface();
+    this.bindEvents();
+  }
 
-    createMinerInterface() {
-        const minerContainer = document.createElement('div');
-        minerContainer.id = 'terra-miner';
-        minerContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
-        minerContainer.style.display = 'none';
-        minerContainer.innerHTML = `
+  createMinerInterface() {
+    const minerContainer = document.createElement('div');
+    minerContainer.id = 'terra-miner';
+    minerContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
+    minerContainer.style.display = 'none';
+    minerContainer.innerHTML = `
             <div class="miner-container">
                 <div class="miner-header">
                     <div class="miner-title">
@@ -129,92 +129,92 @@ class TerraMinerDashboard {
                 </div>
             </div>
         `;
-        
-        document.body.appendChild(minerContainer);
+
+    document.body.appendChild(minerContainer);
+  }
+
+  bindEvents() {
+    // Close button
+    document.addEventListener('click', e => {
+      if (e.target.closest('#miner-close')) {
+        this.close();
+      }
+    });
+
+    // Widget interactions
+    document.addEventListener('click', e => {
+      const widget = e.target.closest('.miner-widget');
+      if (widget) {
+        this.handleWidgetClick(widget);
+      }
+    });
+
+    // Close on backdrop click
+    document.addEventListener('click', e => {
+      if (e.target.id === 'terra-miner') {
+        this.close();
+      }
+    });
+  }
+
+  handleWidgetClick(widget) {
+    const title = widget.querySelector('h3').textContent;
+    console.log(`📊 Terra-Miner Widget Clicked: ${title}`);
+
+    // Add visual feedback
+    widget.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      widget.style.transform = '';
+    }, 150);
+
+    // Simulate widget interaction
+    switch (title) {
+      case 'Property Data Mining':
+        console.log('🏠 Opening property data mining interface...');
+        break;
+      case 'Market Analysis':
+        console.log('📈 Loading market analysis dashboard...');
+        break;
+      case 'Valuation Models':
+        console.log('🤖 Accessing AI valuation models...');
+        break;
+      case 'Data Sources':
+        console.log('🔗 Managing data source connections...');
+        break;
+      case 'Predictive Analytics':
+        console.log('🔮 Launching predictive analytics engine...');
+        break;
+      case 'Performance Monitor':
+        console.log('⚡ Opening system performance monitor...');
+        break;
     }
+  }
 
-    bindEvents() {
-        // Close button
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('#miner-close')) {
-                this.close();
-            }
-        });
-
-        // Widget interactions
-        document.addEventListener('click', (e) => {
-            const widget = e.target.closest('.miner-widget');
-            if (widget) {
-                this.handleWidgetClick(widget);
-            }
-        });
-
-        // Close on backdrop click
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'terra-miner') {
-                this.close();
-            }
-        });
+  show() {
+    const container = document.getElementById('terra-miner');
+    if (container) {
+      container.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      console.log('📊 Terra-Miner Data Intelligence launched - FULL SCREEN');
+      this.startDataProcessing();
     }
+  }
 
-    handleWidgetClick(widget) {
-        const title = widget.querySelector('h3').textContent;
-        console.log(`📊 Terra-Miner Widget Clicked: ${title}`);
-        
-        // Add visual feedback
-        widget.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            widget.style.transform = '';
-        }, 150);
-
-        // Simulate widget interaction
-        switch(title) {
-            case 'Property Data Mining':
-                console.log('🏠 Opening property data mining interface...');
-                break;
-            case 'Market Analysis':
-                console.log('📈 Loading market analysis dashboard...');
-                break;
-            case 'Valuation Models':
-                console.log('🤖 Accessing AI valuation models...');
-                break;
-            case 'Data Sources':
-                console.log('🔗 Managing data source connections...');
-                break;
-            case 'Predictive Analytics':
-                console.log('🔮 Launching predictive analytics engine...');
-                break;
-            case 'Performance Monitor':
-                console.log('⚡ Opening system performance monitor...');
-                break;
-        }
+  close() {
+    const container = document.getElementById('terra-miner');
+    if (container) {
+      container.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      console.log('📊 Data intelligence dashboard closed');
     }
+  }
 
-    show() {
-        const container = document.getElementById('terra-miner');
-        if (container) {
-            container.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            console.log('📊 Terra-Miner Data Intelligence launched - FULL SCREEN');
-            this.startDataProcessing();
-        }
-    }
-
-    close() {
-        const container = document.getElementById('terra-miner');
-        if (container) {
-            container.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            console.log('📊 Data intelligence dashboard closed');
-        }
-    }
-
-    startDataProcessing() {
-        console.log('📊 Starting Terra-Miner data processing...');
-        console.log('🔍 Analyzing property market patterns...');
-        console.log('📈 Generating predictive insights...');
-        console.log('⚡ All 1,008 AI agents actively mining data...');
-    }
+  startDataProcessing() {
+    console.log('📊 Starting Terra-Miner data processing...');
+    console.log('🔍 Analyzing property market patterns...');
+    console.log('📈 Generating predictive insights...');
+    console.log('⚡ All 1,008 AI agents actively mining data...');
+  }
 }
 
 // Export for use in main application

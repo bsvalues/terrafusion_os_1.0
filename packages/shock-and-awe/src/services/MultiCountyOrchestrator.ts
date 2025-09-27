@@ -76,25 +76,27 @@ export class MultiCountyOrchestrator {
    */
   async initializeFederatedDeployment(topology: DeploymentTopology): Promise<void> {
     console.log('🌐 Initializing Multi-County Deployment Architecture');
-    
+
     // Validate compliance across all counties
     await this.validateComplianceRequirements(topology);
-    
+
     // Establish secure inter-county communication
     await this.establishSecureChannels(topology);
-    
+
     // Deploy AI agents with jurisdiction awareness
     await this.deployJurisdictionalAIAgents(topology);
-    
+
     // Configure data residency and sovereignty
     await this.configureDataSovereignty(topology);
-    
+
     // Start continuous compliance monitoring
     this.startComplianceMonitoring(topology);
-    
+
     this.deployments.set(topology.primaryCounty.id, topology);
-    
-    console.log(`✅ Federated deployment initialized for ${topology.federatedCounties.length + 1} counties`);
+
+    console.log(
+      `✅ Federated deployment initialized for ${topology.federatedCounties.length + 1} counties`
+    );
   }
 
   /**
@@ -102,22 +104,24 @@ export class MultiCountyOrchestrator {
    */
   private async validateComplianceRequirements(topology: DeploymentTopology): Promise<void> {
     const allCounties = [topology.primaryCounty, ...topology.federatedCounties];
-    
+
     for (const county of allCounties) {
       // Validate security clearance levels
       if (!this.isSecurityClearanceCompatible(county, topology)) {
-        throw new Error(`County ${county.name} security clearance incompatible with federation requirements`);
+        throw new Error(
+          `County ${county.name} security clearance incompatible with federation requirements`
+        );
       }
-      
+
       // Validate compliance framework compatibility
       if (!this.isComplianceFrameworkCompatible(county, topology)) {
         throw new Error(`County ${county.name} compliance framework incompatible with federation`);
       }
-      
+
       // Validate data residency requirements
       await this.validateDataResidencyCompliance(county, topology);
     }
-    
+
     console.log('✅ All counties meet compliance requirements for federation');
   }
 
@@ -126,21 +130,20 @@ export class MultiCountyOrchestrator {
    */
   private async establishSecureChannels(topology: DeploymentTopology): Promise<void> {
     const primaryCounty = topology.primaryCounty;
-    
+
     for (const county of topology.federatedCounties) {
       try {
         // Create encrypted WebSocket connection
         const connection = await this.createSecureConnection(primaryCounty, county);
         this.activeConnections.set(county.id, connection);
-        
+
         // Establish mutual authentication
         await this.establishMutualAuthentication(connection, county);
-        
+
         // Configure encryption keys
         await this.configureEncryptionKeys(connection, county);
-        
+
         console.log(`🔐 Secure channel established with ${county.name}`);
-        
       } catch (error) {
         console.error(`❌ Failed to establish secure channel with ${county.name}:`, error);
         throw error;
@@ -152,22 +155,26 @@ export class MultiCountyOrchestrator {
    * Deploy AI agents with jurisdiction-specific configurations
    */
   private async deployJurisdictionalAIAgents(topology: DeploymentTopology): Promise<void> {
-    const totalAgentQuota = [topology.primaryCounty, ...topology.federatedCounties]
-      .reduce((sum, county) => sum + county.aiAgentQuota, 0);
-    
-    console.log(`🤖 Deploying ${totalAgentQuota.toLocaleString()} AI agents across ${topology.federatedCounties.length + 1} counties`);
-    
+    const totalAgentQuota = [topology.primaryCounty, ...topology.federatedCounties].reduce(
+      (sum, county) => sum + county.aiAgentQuota,
+      0
+    );
+
+    console.log(
+      `🤖 Deploying ${totalAgentQuota.toLocaleString()} AI agents across ${topology.federatedCounties.length + 1} counties`
+    );
+
     // Deploy primary county agents
     await this.deployCountySpecificAgents(topology.primaryCounty, topology);
-    
+
     // Deploy federated county agents
     for (const county of topology.federatedCounties) {
       await this.deployCountySpecificAgents(county, topology);
     }
-    
+
     // Configure cross-jurisdictional coordination
     await this.configureCrossJurisdictionalCoordination(topology);
-    
+
     console.log('✅ All jurisdictional AI agents deployed and coordinated');
   }
 
@@ -178,14 +185,14 @@ export class MultiCountyOrchestrator {
     for (const county of [topology.primaryCounty, ...topology.federatedCounties]) {
       // Configure data residency zones
       await this.dataResidencyManager.configureResidencyZone(county);
-      
+
       // Set up data classification policies
       await this.configureDataClassificationPolicies(county, topology);
-      
+
       // Establish audit trails for cross-border data movement
       await this.configureAuditTrails(county, topology);
     }
-    
+
     console.log('🛡️ Data sovereignty configuration complete');
   }
 
@@ -193,7 +200,7 @@ export class MultiCountyOrchestrator {
    * Deploy county-specific AI agent configurations
    */
   private async deployCountySpecificAgents(
-    county: CountyConfiguration, 
+    county: CountyConfiguration,
     topology: DeploymentTopology
   ): Promise<void> {
     const agentConfig = {
@@ -203,9 +210,9 @@ export class MultiCountyOrchestrator {
       complianceRequirements: this.getComplianceRequirements(county),
       quantumEnabled: county.quantumProcessingEnabled,
       federationAccess: county.federatedNetworkAccess,
-      jurisdictionalPolicies: this.getApplicablePolicies(county, topology)
+      jurisdictionalPolicies: this.getApplicablePolicies(county, topology),
     };
-    
+
     // Deploy specialized agent types based on county characteristics
     if (county.population > 500000) {
       await this.deployLargeCountyAgents(agentConfig);
@@ -214,7 +221,7 @@ export class MultiCountyOrchestrator {
     } else {
       await this.deploySmallCountyAgents(agentConfig);
     }
-    
+
     console.log(`✅ Deployed ${county.aiAgentQuota} AI agents for ${county.name}`);
   }
 
@@ -224,15 +231,16 @@ export class MultiCountyOrchestrator {
   async getFederatedDeploymentStatus(): Promise<FederatedDeploymentStatus> {
     const allTopologies = Array.from(this.deployments.values());
     const allCounties = allTopologies.flatMap(t => [t.primaryCounty, ...t.federatedCounties]);
-    
+
     const totalAIAgents = allCounties.reduce((sum, county) => sum + county.aiAgentQuota, 0);
     const activeDeployments = this.activeConnections.size;
     const quantumEnabledCounties = allCounties.filter(c => c.quantumProcessingEnabled);
-    
+
     // Calculate aggregate quantum coherence
-    const aggregateQuantumCoherence = quantumEnabledCounties.length > 0 
-      ? (quantumEnabledCounties.length / allCounties.length) * 94.7
-      : 0;
+    const aggregateQuantumCoherence =
+      quantumEnabledCounties.length > 0
+        ? (quantumEnabledCounties.length / allCounties.length) * 94.7
+        : 0;
 
     return {
       totalCounties: allCounties.length,
@@ -243,7 +251,7 @@ export class MultiCountyOrchestrator {
       aggregateQuantumCoherence,
       crossJurisdictionDataFlows: this.calculateDataFlows(allTopologies),
       complianceStatus: await this.complianceMonitor.getOverallStatus(),
-      lastSynchronization: new Date()
+      lastSynchronization: new Date(),
     };
   }
 
@@ -256,23 +264,23 @@ export class MultiCountyOrchestrator {
     operationConfig: any
   ): Promise<any> {
     console.log(`🌐 Coordinating cross-jurisdictional operation: ${operation}`);
-    
+
     // Validate operation permissions across counties
     await this.validateOperationPermissions(operation, participatingCounties);
-    
+
     // Coordinate AI agents across jurisdictions
     const results = await Promise.all(
-      participatingCounties.map(countyId => 
+      participatingCounties.map(countyId =>
         this.executeCountyOperation(countyId, operation, operationConfig)
       )
     );
-    
+
     // Aggregate and reconcile results
     const aggregatedResults = this.aggregateOperationResults(results);
-    
+
     // Log for compliance audit
     await this.logCrossJurisdictionalActivity(operation, participatingCounties, aggregatedResults);
-    
+
     return aggregatedResults;
   }
 
@@ -284,51 +292,72 @@ export class MultiCountyOrchestrator {
     if (!topology) {
       throw new Error(`Deployment topology ${topologyId} not found`);
     }
-    
+
     console.log('🔒 Initiating secure federated deployment shutdown');
-    
+
     // Gracefully disconnect all inter-county connections
     for (const [countyId, connection] of this.activeConnections) {
       await this.gracefulDisconnect(connection, countyId);
     }
-    
+
     // Secure data migration and cleanup
     await this.secureDataMigration(topology);
-    
+
     // Final compliance audit
     await this.complianceMonitor.finalAudit(topology);
-    
+
     // Remove from active deployments
     this.deployments.delete(topologyId);
-    
+
     console.log('✅ Federated deployment shutdown complete');
   }
 
   // Helper methods for multi-county operations
-  private isSecurityClearanceCompatible(county: CountyConfiguration, topology: DeploymentTopology): boolean {
+  private isSecurityClearanceCompatible(
+    county: CountyConfiguration,
+    topology: DeploymentTopology
+  ): boolean {
     const requiredClearance = this.getMinimumSecurityClearance(topology);
-    return this.securityOrchestrator.validateClearanceLevel(county.securityClearance, requiredClearance);
+    return this.securityOrchestrator.validateClearanceLevel(
+      county.securityClearance,
+      requiredClearance
+    );
   }
 
-  private isComplianceFrameworkCompatible(county: CountyConfiguration, topology: DeploymentTopology): boolean {
+  private isComplianceFrameworkCompatible(
+    county: CountyConfiguration,
+    topology: DeploymentTopology
+  ): boolean {
     return this.complianceMonitor.validateFrameworkCompatibility(county.complianceLevel, topology);
   }
 
-  private async validateDataResidencyCompliance(county: CountyConfiguration, topology: DeploymentTopology): Promise<void> {
+  private async validateDataResidencyCompliance(
+    county: CountyConfiguration,
+    topology: DeploymentTopology
+  ): Promise<void> {
     await this.dataResidencyManager.validateResidencyRequirements(county, topology);
   }
 
-  private async createSecureConnection(primary: CountyConfiguration, secondary: CountyConfiguration): Promise<WebSocket> {
+  private async createSecureConnection(
+    primary: CountyConfiguration,
+    secondary: CountyConfiguration
+  ): Promise<WebSocket> {
     // Implementation would create encrypted WebSocket with mutual TLS
     const wsUrl = `wss://secure-bridge.${primary.id}-${secondary.id}.terrafusion.gov`;
     return new WebSocket(wsUrl);
   }
 
-  private async establishMutualAuthentication(connection: WebSocket, county: CountyConfiguration): Promise<void> {
+  private async establishMutualAuthentication(
+    connection: WebSocket,
+    county: CountyConfiguration
+  ): Promise<void> {
     // Implementation would handle certificate-based mutual authentication
   }
 
-  private async configureEncryptionKeys(connection: WebSocket, county: CountyConfiguration): Promise<void> {
+  private async configureEncryptionKeys(
+    connection: WebSocket,
+    county: CountyConfiguration
+  ): Promise<void> {
     // Implementation would establish end-to-end encryption keys
   }
 
@@ -342,8 +371,11 @@ export class MultiCountyOrchestrator {
     return ['FISMA', 'NIST', 'State-Specific'];
   }
 
-  private getApplicablePolicies(county: CountyConfiguration, topology: DeploymentTopology): CrossJurisdictionPolicy[] {
-    return topology.crossJurisdictionPolicies.filter(policy => 
+  private getApplicablePolicies(
+    county: CountyConfiguration,
+    topology: DeploymentTopology
+  ): CrossJurisdictionPolicy[] {
+    return topology.crossJurisdictionPolicies.filter(policy =>
       policy.applicableCounties.includes(county.id)
     );
   }
@@ -362,15 +394,22 @@ export class MultiCountyOrchestrator {
 
   private calculateDataFlows(topologies: DeploymentTopology[]): number {
     // Calculate cross-jurisdictional data flow metrics
-    return topologies.reduce((sum, topology) => 
-      sum + topology.crossJurisdictionPolicies.length * topology.federatedCounties.length, 0);
+    return topologies.reduce(
+      (sum, topology) =>
+        sum + topology.crossJurisdictionPolicies.length * topology.federatedCounties.length,
+      0
+    );
   }
 
   private async validateOperationPermissions(operation: string, counties: string[]): Promise<void> {
     // Validate that operation is permitted across all specified counties
   }
 
-  private async executeCountyOperation(countyId: string, operation: string, config: any): Promise<any> {
+  private async executeCountyOperation(
+    countyId: string,
+    operation: string,
+    config: any
+  ): Promise<any> {
     // Execute operation on specific county's AI agents
     return { countyId, operation, status: 'success', result: {} };
   }
@@ -380,7 +419,11 @@ export class MultiCountyOrchestrator {
     return { aggregated: true, counties: results.length, status: 'success' };
   }
 
-  private async logCrossJurisdictionalActivity(operation: string, counties: string[], results: any): Promise<void> {
+  private async logCrossJurisdictionalActivity(
+    operation: string,
+    counties: string[],
+    results: any
+  ): Promise<void> {
     // Log activity for compliance audit trails
   }
 
@@ -394,15 +437,23 @@ export class MultiCountyOrchestrator {
     // Securely migrate or purge sensitive data
   }
 
-  private async configureCrossJurisdictionalCoordination(topology: DeploymentTopology): Promise<void> {
+  private async configureCrossJurisdictionalCoordination(
+    topology: DeploymentTopology
+  ): Promise<void> {
     // Configure AI agent coordination across jurisdictions
   }
 
-  private async configureDataClassificationPolicies(county: CountyConfiguration, topology: DeploymentTopology): Promise<void> {
+  private async configureDataClassificationPolicies(
+    county: CountyConfiguration,
+    topology: DeploymentTopology
+  ): Promise<void> {
     // Configure data classification and handling policies
   }
 
-  private async configureAuditTrails(county: CountyConfiguration, topology: DeploymentTopology): Promise<void> {
+  private async configureAuditTrails(
+    county: CountyConfiguration,
+    topology: DeploymentTopology
+  ): Promise<void> {
     // Configure audit trail requirements
   }
 
@@ -443,7 +494,10 @@ class DataResidencyManager {
     // Configure data residency zone for county
   }
 
-  async validateResidencyRequirements(county: CountyConfiguration, topology: DeploymentTopology): Promise<void> {
+  async validateResidencyRequirements(
+    county: CountyConfiguration,
+    topology: DeploymentTopology
+  ): Promise<void> {
     // Validate data residency requirements
   }
 }

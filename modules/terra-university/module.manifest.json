@@ -1,0 +1,16 @@
+{
+  "Name": "terra-university",
+  "DisplayName": "Terra University",
+  "Description": "TerraFusion university module for training and education management",
+  "Version": "1.0.0",
+  "Status": "active",
+  "Tier": "Tier 3",
+  "Category": "education",
+  "Author": "TerraFusion OS",
+  "Dependencies": [],
+  "Capabilities": [
+    "training-management",
+    "education-systems",
+    "knowledge-base"
+  ]
+}

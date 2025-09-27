@@ -1,6 +1,7 @@
 # Minikube Overlay for Terrafusion Local Development
 
-This overlay provides Minikube-compatible Kubernetes manifests and configurations for running the full Terrafusion stack locally, with:
+This overlay provides Minikube-compatible Kubernetes manifests and
+configurations for running the full Terrafusion stack locally, with:
 
 - NodePort and Ingress for easy service access
 - Local persistent volumes for databases
@@ -24,4 +25,5 @@ This overlay provides Minikube-compatible Kubernetes manifests and configuration
    - Use `minikube service list` or `minikube tunnel` for NodePort/Ingress URLs.
 
 ## Next Steps
+
 - Add `kustomization.yaml` and service manifests for your stack.

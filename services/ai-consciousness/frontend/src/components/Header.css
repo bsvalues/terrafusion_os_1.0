@@ -1,0 +1,580 @@
+/* TerraFusion AI Consciousness Service Header Styles */
+
+.ai-consciousness-header {
+  background: linear-gradient(135deg, #0b1020 0%, #1a1f3a 100%);
+  border-bottom: 3px solid var(--tf-primary);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Government Authority Banner */
+.government-banner {
+  background: linear-gradient(90deg, #000080 0%, #003d7a 100%);
+  color: white;
+  padding: 8px 0;
+  border-bottom: 2px solid var(--tf-primary);
+}
+
+.banner-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.government-seal {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.seal-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.government-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.government-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.government-classification {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.ai-authority-badges {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.authority-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.authority-badge:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 153, 255, 0.3);
+}
+
+.authority-badge.ai-coordination {
+  border-color: var(--tf-primary);
+}
+
+.authority-badge.consciousness-level {
+  border-color: var(--tf-accent);
+}
+
+.authority-badge.trust-fabric {
+  border-color: var(--tf-transcend);
+}
+
+.badge-icon {
+  font-size: 16px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.badge-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.badge-title {
+  font-size: 10px;
+  font-weight: bold;
+  color: #ffd700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-status {
+  font-size: 11px;
+  color: white;
+  font-weight: 600;
+}
+
+/* Main Header */
+.main-header {
+  background: linear-gradient(135deg, #0b1020 0%, #1a1f3a 50%, #0b1020 100%);
+  padding: 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.terrafusion-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 32px;
+  background: var(--tf-primary);
+  background: linear-gradient(135deg, var(--tf-primary), var(--tf-accent));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 153, 255, 0.3));
+  animation: consciousnessGlow 4s ease-in-out infinite alternate;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.service-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--tf-primary);
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 153, 255, 0.3);
+}
+
+.service-subtitle {
+  font-size: 12px;
+  color: var(--tf-accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.ai-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 255, 170, 0.1);
+  border: 1px solid var(--tf-accent);
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.status-light {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px currentColor;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.status-light.consciousness-active {
+  background: var(--tf-accent);
+  color: var(--tf-accent);
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-label {
+  font-size: 10px;
+  color: var(--tf-accent);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-value {
+  font-size: 12px;
+  color: white;
+  font-weight: 600;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.consciousness-metrics {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.metric {
+  text-align: center;
+  padding: 8px 16px;
+  background: rgba(0, 153, 255, 0.1);
+  border: 1px solid rgba(0, 153, 255, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.metric:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 153, 255, 0.4);
+  background: rgba(0, 153, 255, 0.15);
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--tf-primary);
+  text-shadow: 0 1px 3px rgba(0, 153, 255, 0.5);
+  font-family: 'Courier New', monospace;
+}
+
+.metric-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ai-emergency-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.emergency-stop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #dc143c, #8b0000);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(220, 20, 60, 0.5);
+}
+
+.emergency-stop:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 20, 60, 0.6);
+  background: linear-gradient(135deg, #ff1744, #dc143c);
+}
+
+.emergency-stop .button-icon {
+  font-size: 14px;
+  animation: emergencyPulse 1.5s ease-in-out infinite;
+}
+
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-indicator.operational {
+  color: var(--tf-accent);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tf-accent);
+  box-shadow: 0 0 8px var(--tf-accent);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+/* Navigation Tabs */
+.consciousness-navigation {
+  background: rgba(11, 16, 32, 0.95);
+  border-bottom: 1px solid rgba(0, 153, 255, 0.3);
+  backdrop-filter: blur(20px);
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nav-tab:hover {
+  color: var(--tf-primary);
+  background: rgba(0, 153, 255, 0.1);
+  border-bottom-color: var(--tf-primary);
+}
+
+.nav-tab.active {
+  color: var(--tf-primary);
+  background: rgba(0, 153, 255, 0.15);
+  border-bottom-color: var(--tf-primary);
+  box-shadow: 0 4px 12px rgba(0, 153, 255, 0.3);
+}
+
+.tab-icon {
+  font-size: 16px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.consciousness-level-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.level-bar {
+  width: 120px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 153, 255, 0.3);
+}
+
+.level-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tf-primary), var(--tf-accent));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px rgba(0, 153, 255, 0.5);
+}
+
+.level-text {
+  font-size: 12px;
+  color: var(--tf-primary);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Quick Actions Bar */
+.quick-actions-bar {
+  background: linear-gradient(90deg, rgba(11, 16, 32, 0.9), rgba(26, 31, 58, 0.9));
+  border-bottom: 1px solid rgba(0, 153, 255, 0.2);
+  padding: 8px 0;
+}
+
+.actions-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.action-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.group-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 153, 255, 0.1);
+  color: var(--tf-primary);
+  border: 1px solid rgba(0, 153, 255, 0.3);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.quick-action:hover {
+  background: rgba(0, 153, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 153, 255, 0.4);
+}
+
+.action-icon {
+  font-size: 12px;
+}
+
+.system-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-display {
+  text-align: right;
+}
+
+.current-time {
+  font-size: 14px;
+  color: var(--tf-primary);
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 1px 2px rgba(0, 153, 255, 0.3);
+}
+
+.time-zone {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Animations */
+@keyframes consciousnessGlow {
+  0% { filter: drop-shadow(0 2px 4px rgba(0, 153, 255, 0.3)); }
+  100% { filter: drop-shadow(0 4px 8px rgba(0, 255, 170, 0.5)) drop-shadow(0 0 20px rgba(0, 255, 170, 0.3)); }
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+@keyframes emergencyPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .consciousness-metrics {
+    gap: 20px;
+  }
+  
+  .metric {
+    padding: 6px 12px;
+  }
+  
+  .metric-value {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px 20px;
+  }
+  
+  .header-center {
+    order: 3;
+  }
+  
+  .consciousness-metrics {
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+  
+  .nav-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .nav-tab {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+  
+  .actions-container {
+    justify-content: center;
+  }
+  
+  .action-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

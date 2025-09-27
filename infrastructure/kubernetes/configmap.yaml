@@ -25,7 +25,7 @@ data:
         default_type application/octet-stream;
         
         upstream backend {
-            server terrafusion-backend-service:8080;
+            server terrafusion-backend-service:${TF_STATIC_PORT:-8080};
         }
         
         server {

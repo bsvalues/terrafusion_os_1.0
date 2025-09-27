@@ -137,13 +137,12 @@ export class PluginTestFramework {
       if (suite.teardown) {
         await suite.teardown();
       }
-
     } catch (error) {
       testResults.push({
         passed: false,
         message: `Suite setup/teardown failed: ${error.message}`,
         duration: Date.now() - startTime,
-        errors: [error as Error]
+        errors: [error as Error],
       });
     }
 
@@ -155,7 +154,7 @@ export class PluginTestFramework {
       passedTests: testResults.filter(result => result.passed).length,
       failedTests: testResults.filter(result => !result.passed).length,
       duration: Date.now() - startTime,
-      results: testResults
+      results: testResults,
     };
   }
 
@@ -175,15 +174,14 @@ export class PluginTestFramework {
       return {
         passed: true,
         message: `Test passed: ${testCase.name}`,
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
-
     } catch (error) {
       return {
         passed: false,
         message: `Test failed: ${testCase.name} - ${error.message}`,
         duration: Date.now() - startTime,
-        errors: [error as Error]
+        errors: [error as Error],
       };
     }
   }
@@ -195,7 +193,7 @@ export class PluginTestFramework {
         info: jest.fn(),
         error: jest.fn(),
         warn: jest.fn(),
-        debug: jest.fn()
+        debug: jest.fn(),
       }),
 
       getAPI: () => ({
@@ -205,7 +203,7 @@ export class PluginTestFramework {
         delete: jest.fn(),
         getProperties: jest.fn().mockResolvedValue([]),
         getAssessments: jest.fn().mockResolvedValue([]),
-        getAnalytics: jest.fn().mockResolvedValue({})
+        getAnalytics: jest.fn().mockResolvedValue({}),
       }),
 
       getStorage: () => ({
@@ -213,14 +211,14 @@ export class PluginTestFramework {
         set: jest.fn(),
         delete: jest.fn(),
         clear: jest.fn(),
-        keys: jest.fn().mockResolvedValue([])
+        keys: jest.fn().mockResolvedValue([]),
       }),
 
       getUI: () => ({
         registerComponent: jest.fn(),
         updateDashboard: jest.fn(),
         showNotification: jest.fn(),
-        openModal: jest.fn()
+        openModal: jest.fn(),
       }),
 
       getCounty: () => ({
@@ -228,7 +226,7 @@ export class PluginTestFramework {
         name: 'Test County',
         type: 'urban',
         size: 'medium',
-        population: 150000
+        population: 150000,
       }),
 
       getUser: () => ({
@@ -236,14 +234,14 @@ export class PluginTestFramework {
         name: 'Test User',
         email: 'test@county.gov',
         role: 'admin',
-        permissions: ['data_read', 'data_write', 'admin']
+        permissions: ['data_read', 'data_write', 'admin'],
       }),
 
       getEvents: () => ({
         emit: jest.fn(),
         on: jest.fn(),
-        off: jest.fn()
-      })
+        off: jest.fn(),
+      }),
     };
   }
 
@@ -260,7 +258,7 @@ export class PluginTestFramework {
             const plugin = new PluginClass(this.mockSDK);
             expect(plugin).toBeDefined();
             return { passed: true, message: 'Plugin constructed successfully', duration: 0 };
-          }
+          },
         },
         {
           name: 'Plugin Activation',
@@ -270,7 +268,7 @@ export class PluginTestFramework {
             await plugin.onActivate();
             expect(this.mockSDK.getLogger().info).toHaveBeenCalled();
             return { passed: true, message: 'Plugin activated successfully', duration: 0 };
-          }
+          },
         },
         {
           name: 'Plugin Deactivation',
@@ -280,9 +278,9 @@ export class PluginTestFramework {
             await plugin.onActivate();
             await plugin.onDeactivate();
             return { passed: true, message: 'Plugin deactivated successfully', duration: 0 };
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
   }
 
@@ -298,7 +296,7 @@ export class PluginTestFramework {
             expect(manifest.terrafusion.permissions).toBeDefined();
             expect(manifest.terrafusion.permissions.length).toBeGreaterThan(0);
             return { passed: true, message: 'Permissions properly declared', duration: 0 };
-          }
+          },
         },
         {
           name: 'Permission Scope Validation',
@@ -309,9 +307,9 @@ export class PluginTestFramework {
               expect(validScopes).toContain(permission.scope);
             }
             return { passed: true, message: 'Permission scopes are valid', duration: 0 };
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
   }
 
@@ -326,14 +324,14 @@ export class PluginTestFramework {
           // Mock API call based on method
           const mockMethod = this.mockSDK.getAPI()[endpoint.method.toLowerCase()];
           mockMethod.mockResolvedValue({ success: true });
-          
+
           // Simulate API call
           const result = await mockMethod(endpoint.path);
           expect(result.success).toBe(true);
-          
+
           return { passed: true, message: `API endpoint ${endpoint.path} working`, duration: 0 };
-        }
-      }))
+        },
+      })),
     };
   }
 
@@ -351,7 +349,7 @@ export class PluginTestFramework {
               expect(manifest[field]).toBeDefined();
             }
             return { passed: true, message: 'Manifest structure is valid', duration: 0 };
-          }
+          },
         },
         {
           name: 'Version Compatibility',
@@ -360,7 +358,7 @@ export class PluginTestFramework {
             expect(manifest.terrafusion.minVersion).toBeDefined();
             expect(manifest.terrafusion.minVersion).toMatch(/^\d+\.\d+\.\d+$/);
             return { passed: true, message: 'Version compatibility specified', duration: 0 };
-          }
+          },
         },
         {
           name: 'Security Standards',
@@ -370,9 +368,9 @@ export class PluginTestFramework {
             expect(manifest.terrafusion.permissions).toBeDefined();
             expect(manifest.terrafusion.compliance).toBeDefined();
             return { passed: true, message: 'Security standards met', duration: 0 };
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
   }
 
@@ -397,10 +395,10 @@ export class PluginTestFramework {
         passedTests,
         failedTests,
         successRate: totalTests > 0 ? (passedTests / totalTests) * 100 : 0,
-        totalDuration
+        totalDuration,
       },
       suites: results,
-      recommendations: this.generateRecommendations(results)
+      recommendations: this.generateRecommendations(results),
     };
   }
 
@@ -412,19 +410,21 @@ export class PluginTestFramework {
       recommendations.push('Review and fix failing test cases before deployment');
     }
 
-    const slowTests = results.flatMap(suite => 
-      suite.results.filter(test => test.duration > 1000)
-    );
+    const slowTests = results.flatMap(suite => suite.results.filter(test => test.duration > 1000));
 
     if (slowTests.length > 0) {
       recommendations.push('Consider optimizing slow-running tests for better performance');
     }
 
-    const totalSuccessRate = results.reduce((sum, suite) => sum + suite.passedTests, 0) / 
-                            results.reduce((sum, suite) => sum + suite.totalTests, 0) * 100;
+    const totalSuccessRate =
+      (results.reduce((sum, suite) => sum + suite.passedTests, 0) /
+        results.reduce((sum, suite) => sum + suite.totalTests, 0)) *
+      100;
 
     if (totalSuccessRate < 90) {
-      recommendations.push('Improve test coverage and fix failing tests to achieve >90% success rate');
+      recommendations.push(
+        'Improve test coverage and fix failing tests to achieve >90% success rate'
+      );
     }
 
     if (recommendations.length === 0) {

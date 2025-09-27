@@ -12,12 +12,12 @@ services:
       - DOCUMENT_PROCESSOR_URL=http://document-processor-api-gateway-1:8000
       - REDIS_URL=redis://document-processor-redis-1:6379
     ports:
-      - "8100:8080"
+      - "8100:${TF_STATIC_PORT:-8080}"
     networks:
       - terrafusion-network
       - document-processor_default
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -30,13 +30,13 @@ services:
     environment:
       - MCP_SERVER_NAME=office365-toolkit
       - MCP_SERVER_VERSION=1.0.0
-      - OFFICE365_API_URL=http://office365-api:8080
+      - OFFICE365_API_URL=http://office365-api:${TF_STATIC_PORT:-8080}
     ports:
-      - "8101:8080"
+      - "8101:${TF_STATIC_PORT:-8080}"
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -49,14 +49,14 @@ services:
     environment:
       - MCP_SERVER_NAME=property-analytics
       - MCP_SERVER_VERSION=1.0.0
-      - TERRAFUSION_API_URL=http://gateway:8080
+      - TERRAFUSION_API_URL=http://gateway:${TF_STATIC_PORT:-8080}
       - POSTGRES_URL=postgresql://postgres:password@postgres:5432/terrafusion
     ports:
-      - "8102:8080"
+      - "8102:${TF_STATIC_PORT:-8080}"
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -71,7 +71,7 @@ services:
       - CORS_ENABLED=true
       - AUTH_ENABLED=true
     ports:
-      - "8200:8080"
+      - "8200:${TF_STATIC_PORT:-8080}"
     depends_on:
       - mcp-document-server
       - mcp-office365-server
@@ -79,7 +79,7 @@ services:
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3

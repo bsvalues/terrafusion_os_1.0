@@ -14,19 +14,16 @@ const __dirname = path.dirname(__filename);
 
 const PACKAGES_TO_MOVE = [
   'government-edition',
-  'government-edition-enhanced-MARKED-FOR-REVIEW', 
-  'shock-and-awe'
+  'government-edition-enhanced-MARKED-FOR-REVIEW',
+  'shock-and-awe',
 ];
 
-const BACKUP_FOLDERS = [
-  'terra-agent-backup-20250906-234105',
-  'terra-levy-backup-20250906-233232'
-];
+const BACKUP_FOLDERS = ['terra-agent-backup-20250906-234105', 'terra-levy-backup-20250906-233232'];
 
 const ENHANCED_MARKED_FOR_REVIEW = [
   'terra-agent-champion-MARKED-FOR-REVIEW',
   'terra-agent-enhanced-MARKED-FOR-REVIEW',
-  'terra-levy-enhanced-MARKED-FOR-REVIEW'
+  'terra-levy-enhanced-MARKED-FOR-REVIEW',
 ];
 
 console.log('🧹 TerraFusion OS - Module Directory Cleanup');
@@ -51,7 +48,7 @@ console.log('\n📦 Moving deployment packages to packages/');
 PACKAGES_TO_MOVE.forEach(packageName => {
   const sourcePath = path.join(__dirname, '..', 'modules', packageName);
   const targetPath = path.join(packagesDir, packageName);
-  
+
   if (fs.existsSync(sourcePath)) {
     fs.renameSync(sourcePath, targetPath);
     console.log(`✅ Moved ${packageName} to packages/`);
@@ -65,7 +62,7 @@ console.log('\n🗄️  Moving backup folders to archived-modules/');
 BACKUP_FOLDERS.forEach(backupName => {
   const sourcePath = path.join(__dirname, '..', 'modules', backupName);
   const targetPath = path.join(archivedDir, backupName);
-  
+
   if (fs.existsSync(sourcePath)) {
     fs.renameSync(sourcePath, targetPath);
     console.log(`✅ Moved ${backupName} to archived-modules/`);
@@ -79,7 +76,7 @@ console.log('\n📋 Moving enhanced marked-for-review to archived-modules/');
 ENHANCED_MARKED_FOR_REVIEW.forEach(enhancedName => {
   const sourcePath = path.join(__dirname, '..', 'modules', enhancedName);
   const targetPath = path.join(archivedDir, enhancedName);
-  
+
   if (fs.existsSync(sourcePath)) {
     fs.renameSync(sourcePath, targetPath);
     console.log(`✅ Moved ${enhancedName} to archived-modules/`);
@@ -92,7 +89,8 @@ ENHANCED_MARKED_FOR_REVIEW.forEach(enhancedName => {
 console.log('\n📊 Generating cleanup report...');
 
 const modulesDir = path.join(__dirname, '..', 'modules');
-const remainingModules = fs.readdirSync(modulesDir)
+const remainingModules = fs
+  .readdirSync(modulesDir)
   .filter(item => {
     const itemPath = path.join(modulesDir, item);
     return fs.statSync(itemPath).isDirectory();

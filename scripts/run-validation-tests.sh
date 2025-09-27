@@ -62,7 +62,7 @@ echo "Checking required services..."
 check_service "Backend API" "5000" || {
     echo -e "${YELLOW}⚠️  Starting backend API...${NC}"
     cd backend/api-unified
-    dotnet run --urls="http://localhost:5000" &
+    dotnet run --urls="http://localhost:${TF_STATIC_PORT:-8080}" &
     BACKEND_PID=$!
     sleep 10
     cd ../..
@@ -91,15 +91,15 @@ run_test "Phase B: React Error Boundaries" \
 
 # Phase C: Input Validation
 run_test "Phase C: FluentValidation API Endpoints" \
-    "curl -s -X POST 'http://localhost:5000/api/properties' -H 'Content-Type: application/json' -d '{}' | grep -q 'validation'"
+    "curl -s -X POST 'http://localhost:${TF_STATIC_PORT:-8080}/api/properties' -H 'Content-Type: application/json' -d '{}' | grep -q 'validation'"
 
 # Phase D: CORS Policies
 run_test "Phase D: CORS Security Policies" \
-    "curl -s -H 'Origin: https://malicious-site.com' 'http://localhost:5000/api/properties' | grep -v 'Access-Control-Allow-Origin: *'"
+    "curl -s -H 'Origin: https://malicious-site.com' 'http://localhost:${TF_STATIC_PORT:-8080}/api/properties' | grep -v 'Access-Control-Allow-Origin: *'"
 
 # Phase E: Swagger Documentation
 run_test "Phase E: Swagger/OpenAPI Documentation" \
-    "curl -s 'http://localhost:5000/swagger/v1/swagger.json' | jq -e '.info.title' | grep -q 'TerraFusion'"
+    "curl -s 'http://localhost:${TF_STATIC_PORT:-8080}/swagger/v1/swagger.json' | jq -e '.info.title' | grep -q 'TerraFusion'"
 
 # Phase F: Structured Logging
 run_test "Phase F: Structured Logging System" \
@@ -107,7 +107,7 @@ run_test "Phase F: Structured Logging System" \
 
 # Phase G: Health Check Endpoints
 run_test "Phase G: Health Check Endpoints" \
-    "curl -s 'http://localhost:5000/health' | jq -e '.OverallHealth' | grep -q 'Healthy'"
+    "curl -s 'http://localhost:${TF_STATIC_PORT:-8080}/health' | jq -e '.OverallHealth' | grep -q 'Healthy'"
 
 # Phase H: Database Connection Pooling
 run_test "Phase H: Database Connection Pooling" \
@@ -122,7 +122,7 @@ run_test "Complete System Integration" \
 
 # Load Testing
 run_test "Load Testing (100 Concurrent Users)" \
-    "curl -s 'http://localhost:5000/health' && echo 'Load test placeholder - would use k6 or similar'"
+    "curl -s 'http://localhost:${TF_STATIC_PORT:-8080}/health' && echo 'Load test placeholder - would use k6 or similar'"
 
 # Performance Benchmarking
 run_test "Performance Benchmarking" \
@@ -133,41 +133,41 @@ echo "============================="
 
 # Validate specific performance claims
 run_test "Validate 15x Minimum Improvement" \
-    "curl -s 'http://localhost:5000/api/performance/metrics' | jq -e '.improvementFactor >= 15'"
+    "curl -s 'http://localhost:${TF_STATIC_PORT:-8080}/api/performance/metrics' | jq -e '.improvementFactor >= 15'"
 
 # Validate response time targets
 run_test "Validate <85ms Response Time Target" \
-    "time curl -s 'http://localhost:5000/health/live' | grep -q 'Healthy'"
+    "time curl -s 'http://localhost:${TF_STATIC_PORT:-8080}/health/live' | grep -q 'Healthy'"
 
 # Validate cache hit ratio
 run_test "Validate >80% Cache Hit Ratio" \
-    "curl -s 'http://localhost:5000/api/performance/metrics' | jq -e '.cacheHitRatio >= 80'"
+    "curl -s 'http://localhost:${TF_STATIC_PORT:-8080}/api/performance/metrics' | jq -e '.cacheHitRatio >= 80'"
 
 # Validate error rate
 run_test "Validate <1% Error Rate" \
-    "curl -s 'http://localhost:5000/api/performance/metrics' | jq -e '.errorRate < 1'"
+    "curl -s 'http://localhost:${TF_STATIC_PORT:-8080}/api/performance/metrics' | jq -e '.errorRate < 1'"
 
 echo "🔐 SECURITY & COMPLIANCE TESTS"
 echo "=============================="
 
 # Security validation
 run_test "JWT Authentication Required" \
-    "curl -s -w '%{http_code}' 'http://localhost:5000/api/admin' | grep -q '401'"
+    "curl -s -w '%{http_code}' 'http://localhost:${TF_STATIC_PORT:-8080}/api/admin' | grep -q '401'"
 
 # CORS validation
 run_test "CORS Policy Enforcement" \
-    "curl -s -H 'Origin: https://malicious-site.com' -w '%{http_code}' 'http://localhost:5000/api/properties' | grep -q '403\\|401'"
+    "curl -s -H 'Origin: https://malicious-site.com' -w '%{http_code}' 'http://localhost:${TF_STATIC_PORT:-8080}/api/properties' | grep -q '403\\|401'"
 
 # Input validation
 run_test "Input Validation Security" \
-    "curl -s -X POST 'http://localhost:5000/api/properties' -H 'Content-Type: application/json' -d '{\"parcelId\":\"\",\"landValue\":-1000}' -w '%{http_code}' | grep -q '400'"
+    "curl -s -X POST 'http://localhost:${TF_STATIC_PORT:-8080}/api/properties' -H 'Content-Type: application/json' -d '{\"parcelId\":\"\",\"landValue\":-1000}' -w '%{http_code}' | grep -q '400'"
 
 echo "📊 GOVERNMENT REQUIREMENTS VALIDATION"
 echo "====================================="
 
 # Government-specific requirements
 run_test "FISMA Compliance Logging" \
-    "curl -s 'http://localhost:5000/health' | jq -e '.ComplianceScore >= 95'"
+    "curl -s 'http://localhost:${TF_STATIC_PORT:-8080}/health' | jq -e '.ComplianceScore >= 95'"
 
 # Audit trail validation
 run_test "Audit Trail Functionality" \
@@ -201,8 +201,8 @@ CURRENT_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 echo "Validation completed at: $CURRENT_TIME"
 
 # Get actual performance metrics if available
-if curl -s "http://localhost:5000/api/performance/metrics" > /dev/null 2>&1; then
-    METRICS=$(curl -s "http://localhost:5000/api/performance/metrics")
+if curl -s "http://localhost:${TF_STATIC_PORT:-8080}/api/performance/metrics" > /dev/null 2>&1; then
+    METRICS=$(curl -s "http://localhost:${TF_STATIC_PORT:-8080}/api/performance/metrics")
     echo "Current Performance Metrics:"
     echo "$METRICS" | jq -r '
         "  • Improvement Factor: " + (.improvementFactor | tostring) + "x",

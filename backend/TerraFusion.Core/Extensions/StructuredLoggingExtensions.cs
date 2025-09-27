@@ -161,7 +161,7 @@ public class StructuredLogger : IStructuredLogger
         _logger.Information("Performance Metric: {MetricName} = {Value} {@Properties}", metricName, value, properties);
 
         // Track custom metric
-        var stringProperties = properties?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString()) ?? new Dictionary<string, string>();
+        var stringProperties = properties?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString() ?? "") ?? new Dictionary<string, string>();
         _telemetryService.TrackMetric(metricName, value, stringProperties);
     }
 
@@ -247,8 +247,8 @@ public class LogEnricher : ILogEnricher
             ["StatusCode"] = statusCode,
             ["UserId"] = userId ?? "Anonymous",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString(),
-            ["SpanId"] = System.Diagnostics.Activity.Current?.SpanId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown" ?? "unknown",
+            ["SpanId"] = System.Diagnostics.Activity.Current?.SpanId.ToString() ?? "unknown"
         };
     }
 
@@ -261,7 +261,7 @@ public class LogEnricher : ILogEnricher
             ["EventData"] = eventData,
             ["UserId"] = userId ?? "Anonymous",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown"
         };
     }
 
@@ -273,10 +273,10 @@ public class LogEnricher : ILogEnricher
             ["ExceptionType"] = exception.GetType().Name,
             ["Message"] = message,
             ["StackTrace"] = exception.StackTrace ?? "",
-            ["InnerException"] = exception.InnerException?.Message,
-            ["Context"] = context,
+            ["InnerException"] = exception.InnerException?.Message ?? "",
+            ["Context"] = context ?? "",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown"
         };
     }
 
@@ -288,7 +288,7 @@ public class LogEnricher : ILogEnricher
             ["MetricName"] = metricName,
             ["Value"] = value,
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown"
         };
 
         if (properties != null)
@@ -310,9 +310,9 @@ public class LogEnricher : ILogEnricher
             ["EventType"] = eventType,
             ["Description"] = description,
             ["UserId"] = userId ?? "Anonymous",
-            ["Context"] = context,
+            ["Context"] = context ?? "",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString(),
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown",
             ["Severity"] = "Warning"
         };
     }
@@ -327,7 +327,7 @@ public class LogEnricher : ILogEnricher
             ["DurationMs"] = duration.TotalMilliseconds,
             ["Success"] = success,
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown"
         };
     }
 
@@ -341,7 +341,7 @@ public class LogEnricher : ILogEnricher
             ["DurationMs"] = duration.TotalMilliseconds,
             ["Hit"] = hit,
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown"
         };
     }
 
@@ -352,9 +352,9 @@ public class LogEnricher : ILogEnricher
             ["LogType"] = "SystemHealth",
             ["Component"] = component,
             ["Status"] = status,
-            ["Metrics"] = metrics,
+            ["Metrics"] = metrics ?? "",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown"
         };
     }
 
@@ -364,9 +364,9 @@ public class LogEnricher : ILogEnricher
         {
             ["LogType"] = "OperationScope",
             ["Operation"] = operation,
-            ["Context"] = context,
+            ["Context"] = context ?? "",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "unknown"
         };
     }
 }

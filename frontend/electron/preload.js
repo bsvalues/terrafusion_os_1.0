@@ -7,18 +7,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
   minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
   maximizeWindow: () => ipcRenderer.invoke('maximize-window'),
   closeWindow: () => ipcRenderer.invoke('close-window'),
-  
+
   // Module operations
   launchModule: (moduleId) => ipcRenderer.invoke('launch-module', moduleId),
   stopModule: (moduleId) => ipcRenderer.invoke('stop-module', moduleId),
-  
+
   // System health
   getSystemHealth: () => ipcRenderer.invoke('get-system-health'),
-  
+
   // File operations
   selectFile: () => ipcRenderer.invoke('select-file'),
   selectDirectory: () => ipcRenderer.invoke('select-directory'),
-  
+
   // Notifications
   showNotification: (title, body) => ipcRenderer.invoke('show-notification', title, body),
 
@@ -36,19 +36,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getCountyConfig: () => ipcRenderer.invoke('os:county-config'),
 
   // Auth envelope creation
-  createAuthEnvelope: (countyId, legacySystem) => 
+  createAuthEnvelope: (countyId, legacySystem) =>
     ipcRenderer.invoke('create-auth-envelope', { countyId, legacySystem }),
 
   // Plugin messaging
-  invokePlugin: (moduleName, method, payload) => 
+  invokePlugin: (moduleName, method, payload) =>
     ipcRenderer.invoke('plugin-invoke', { moduleName, method, payload }),
-  
-  emitPlugin: (moduleName, event, data) => 
+
+  emitPlugin: (moduleName, event, data) =>
     ipcRenderer.send('plugin-emit', { moduleName, event, data }),
 
   // System monitoring
   getSystemMetrics: () => ipcRenderer.invoke('get-system-metrics'),
-  
+
   // Backend API access
   getBackendUrl: () => ipcRenderer.invoke('os:backend-url'),
 
@@ -60,12 +60,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
 contextBridge.exposeInMainWorld('terrafusion', {
   shell: {
     minimize: () => ipcRenderer.invoke('minimize-window'),
-    maximize: () => ipcRenderer.invoke('maximize-window'), 
+    maximize: () => ipcRenderer.invoke('maximize-window'),
     close: () => ipcRenderer.invoke('close-window'),
     openExternal: (url) => {
       const { shell } = require('electron');
       shell.openExternal(url);
-    }
+    },
   },
   api: {
     getPort: async () => {
@@ -73,8 +73,8 @@ contextBridge.exposeInMainWorld('terrafusion', {
       const match = url.match(/:([0-9]+)/);
       return match ? parseInt(match[1]) : 5000;
     },
-    getBaseUrl: () => ipcRenderer.invoke('os:backend-url')
+    getBaseUrl: () => ipcRenderer.invoke('os:backend-url'),
   },
   isDesktop: true,
-  platform: process.platform
+  platform: process.platform,
 });

@@ -20,9 +20,9 @@ echo -e "${NC}"
 
 # Check if services are running
 echo -e "${YELLOW}[1/5] Checking existing services...${NC}"
-DEMO_PORT=3005
-DASHBOARD_PORT=3000
-API_PORT=5000
+DEMO_PORT=\${{TF_FRONTEND_3005_PORT:-3005}}
+DASHBOARD_PORT=\${{TF_FRONTEND_3005_PORT:-3005}}
+API_PORT=\${{TF_FRONTEND_3005_PORT:-3005}}
 
 # Kill any existing processes on our ports
 for PORT in $DEMO_PORT $DASHBOARD_PORT $API_PORT; do
@@ -60,16 +60,16 @@ echo -e "${NC}"
 echo -e "${GREEN}Access Points for Visual Testing:${NC}"
 echo ""
 echo -e "${BOLD}🏛️  Benton County Demo Portal:${NC}"
-echo -e "   ${BLUE}http://localhost:3005${NC}"
+echo -e "   ${BLUE}http://localhost:\${{TF_FRONTEND_3005_PORT:-3005}}${NC}"
 echo ""
 echo -e "${BOLD}📊 TerraFusion Dashboard:${NC}"
-echo -e "   ${BLUE}http://localhost:3000${NC}"
+echo -e "   ${BLUE}http://localhost:\${{TF_FRONTEND_3005_PORT:-3005}}${NC}"
 echo ""
 echo -e "${BOLD}🔧 API Documentation:${NC}"
-echo -e "   ${BLUE}http://localhost:3005/api-docs${NC}"
+echo -e "   ${BLUE}http://localhost:\${{TF_FRONTEND_3005_PORT:-3005}}/api-docs${NC}"
 echo ""
 echo -e "${BOLD}📈 Sample Property Lookup:${NC}"
-echo -e "   ${BLUE}http://localhost:3005/property/123456${NC}"
+echo -e "   ${BLUE}http://localhost:\${{TF_FRONTEND_3005_PORT:-3005}}/property/123456${NC}"
 echo ""
 
 echo -e "${YELLOW}Test Scenarios Available:${NC}"

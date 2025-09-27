@@ -13,7 +13,11 @@
           "display_name": "Property Assessment Suite",
           "path": "modules/government-edition/",
           "status": "production",
-          "features": ["Property valuation", "Assessment tracking", "Harris PACS integration"],
+          "features": [
+            "Property valuation",
+            "Assessment tracking",
+            "Harris PACS integration"
+          ],
           "database": "PostgreSQL with 89,247 parcel records",
           "priority": 1
         },
@@ -24,7 +28,11 @@
           "path": "modules/costforge-ai-champion/",
           "status": "production",
           "features": ["AI-powered cost estimation", "Budget forecasting"],
-          "ai_models": ["PropertyValuation", "MarketAnalysis", "RiskAssessment"],
+          "ai_models": [
+            "PropertyValuation",
+            "MarketAnalysis",
+            "RiskAssessment"
+          ],
           "priority": 2
         },
         {

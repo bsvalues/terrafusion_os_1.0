@@ -10,7 +10,14 @@
     },
     "filesystem": {
       "command": "npx",
-      "args": ["@modelcontextprotocol/server-filesystem", "--allowed-directories", "./frontend/src", "./frontend/tests", "./deployment/advanced/packages", "./modules"],
+      "args": [
+        "@modelcontextprotocol/server-filesystem",
+        "--allowed-directories",
+        "./frontend/src",
+        "./frontend/tests",
+        "./deployment/advanced/packages",
+        "./modules"
+      ],
       "description": "Filesystem access for frontend source and test files"
     },
     "git": {

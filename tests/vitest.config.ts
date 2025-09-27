@@ -18,8 +18,8 @@ export default defineConfig({
           branches: 90,
           functions: 90,
           lines: 90,
-          statements: 90
-        }
+          statements: 90,
+        },
       },
       exclude: [
         'node_modules/',
@@ -28,8 +28,8 @@ export default defineConfig({
         '**/*.spec.{ts,tsx}',
         '**/electron/**',
         '**/dist/**',
-        '**/.next/**'
-      ]
+        '**/.next/**',
+      ],
     },
     testTimeout: 10000,
     hookTimeout: 10000,
@@ -40,14 +40,14 @@ export default defineConfig({
     reporters: ['default', 'json', 'html'],
     outputFile: {
       json: './test-results/vitest-results.json',
-      html: './test-results/vitest-report.html'
-    }
+      html: './test-results/vitest-report.html',
+    },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './frontend/src'),
       '@/tests': path.resolve(__dirname, './tests'),
-      '@/fixtures': path.resolve(__dirname, './tests/fixtures')
-    }
-  }
+      '@/fixtures': path.resolve(__dirname, './tests/fixtures'),
+    },
+  },
 });

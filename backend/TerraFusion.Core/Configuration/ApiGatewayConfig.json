@@ -13,7 +13,14 @@
         },
         "Cors": {
           "AllowedOrigins": ["*"],
-          "AllowedMethods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+          "AllowedMethods": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
+          ],
           "AllowedHeaders": ["*"],
           "ExposeHeaders": ["*"]
         },
@@ -83,7 +90,7 @@
           },
           {
             "Name": "GetProperty",
-            "Method": "GET", 
+            "Method": "GET",
             "UrlTemplate": "/properties/{id}",
             "Description": "Get a specific property by ID"
           },

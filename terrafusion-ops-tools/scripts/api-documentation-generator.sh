@@ -14,7 +14,7 @@ DOCS_USER="${DB_USER:-tfapidocs}"
 DOCS_PASS="${DB_PASS:-$(generate_password)}"
 SWAGGER_UI_PORT="${SWAGGER_UI_PORT:-8080}"
 REDOC_PORT="${REDOC_PORT:-8081}"
-API_GATEWAY_URL="${API_GATEWAY_URL:-http://localhost:3000}"
+API_GATEWAY_URL="${API_GATEWAY_URL:-http://localhost:\${{TF_FRONTEND_PORT:-3000}}}"
 
 # Initialize database
 init_docs_database() {
@@ -823,7 +823,7 @@ services:
     image: swaggerapi/swagger-ui:latest
     container_name: terrafusion-swagger-ui
     ports:
-      - "${SWAGGER_UI_PORT}:8080"
+      - "${SWAGGER_UI_PORT}:${TF_STATIC_PORT:-8080}"
     environment:
       - SWAGGER_JSON=/docs/${service_name}-openapi.json
       - BASE_URL=/swagger
@@ -1102,7 +1102,7 @@ EOF
     log_success "Documentation UI deployed"
     echo "  - Swagger UI: http://localhost:${SWAGGER_UI_PORT}"
     echo "  - ReDoc: http://localhost:${REDOC_PORT}"
-    echo "  - API Docs Site: http://localhost:8082"
+    echo "  - API Docs Site: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
 }
 
 # Test API endpoints
@@ -1277,7 +1277,7 @@ case ${1:-} in
         echo ""
         echo "Examples:"
         echo "  $0 init"
-        echo "  $0 scan api-service http://localhost:3000"
+        echo "  $0 scan api-service http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
         echo "  $0 generate api-service all"
         echo "  $0 deploy api-service"
         echo "  $0 test api-service"

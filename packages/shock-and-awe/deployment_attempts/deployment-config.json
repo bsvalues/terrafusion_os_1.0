@@ -34,7 +34,7 @@
   },
   "applications": [
     "01-terra-agent",
-    "02-terra-flow", 
+    "02-terra-flow",
     "03-web-audit-tracker",
     "04-terra-levy",
     "05-terra-miner",

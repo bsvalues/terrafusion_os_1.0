@@ -409,7 +409,7 @@ public class ComparativeMarketAnalysisService : IComparativeMarketAnalysisServic
 Subject Property: {subject.PropertyType} at {subject.Address}
 Comparable Properties: {comparables.Count} analyzed
 Market Position: {position.PricePositioning}
-Recommended Price: ${pricing.RecommendedPrice:N0}
+Recommended Price: {pricing.RecommendedPrice:N0}
 
 Provide insights on:
 1. Market competitiveness and positioning
@@ -440,7 +440,7 @@ Provide insights on:
         }
     }
 
-    private async Task<string> GenerateExecutiveSummaryAsync(CMARequest request, MarketPositionAnalysis position, PricingRecommendation pricing)
+    private Task<string> GenerateExecutiveSummaryAsync(CMARequest request, MarketPositionAnalysis position, PricingRecommendation pricing)
     {
         try
         {
@@ -452,8 +452,8 @@ Analysis Purpose: {request.Purpose}
 Analysis Date: {DateTime.UtcNow:MMMM dd, yyyy}
 
 KEY FINDINGS:
-• Recommended Market Value: ${pricing.RecommendedPrice:N0}
-• Price Range: ${pricing.PriceRange.MinPrice:N0} - ${pricing.PriceRange.MaxPrice:N0}
+• Recommended Market Value: {pricing.RecommendedPrice:N0}
+• Price Range: {pricing.PriceRange.MinPrice:N0} - {pricing.PriceRange.MaxPrice:N0}
 • Market Position: {position.PricePositioning}
 • Market Confidence: {pricing.ConfidenceInterval.Lower:P0} - {pricing.ConfidenceInterval.Upper:P0}
 
@@ -467,12 +467,12 @@ RECOMMENDATIONS:
 4. Address any property-specific concerns highlighted in the analysis
 ";
 
-            return summary;
+            return Task.FromResult(summary);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to generate executive summary");
-            return "Executive summary unavailable";
+            return Task.FromResult("Executive summary unavailable");
         }
     }
 
@@ -667,3 +667,4 @@ public class CompetitiveMetrics { }
 public class ValidationCheck { public bool Passed { get; set; } }
 public class AccuracyAssessment { }
 public class PropertyAdjustment { }
+

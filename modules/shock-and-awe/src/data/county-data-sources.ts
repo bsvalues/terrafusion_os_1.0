@@ -135,7 +135,7 @@ export const countyDataSources: Record<string, Record<string, CountyDataSource>>
 
   texas: {
     harris: {
-      name: "Harris County",
+      name: "Benton County Washington",
       state: "Texas",
       openDataPortal: "https://www.hcad.org/",
       apiEndpoints: {

@@ -1,9 +1,9 @@
 /**
  * Database Service Template - Production Implementation Required
- * 
+ *
  * This template provides the structure for implementing the actual DatabaseService
  * that is currently missing from the codebase.
- * 
+ *
  * @version 2.0.0
  * @classification Production-Ready Template
  */
@@ -81,7 +81,7 @@ export interface DatabaseConfig {
 
 /**
  * Production Database Service Implementation
- * 
+ *
  * Implements all database operations required by the API endpoints.
  * Provides connection pooling, error handling, and transaction support.
  */
@@ -160,7 +160,7 @@ export class DatabaseService {
           JSON.stringify(assessment.propertyData),
           JSON.stringify(assessment.assessmentResult),
           assessment.processingTime,
-          assessment.status || 'completed'
+          assessment.status || 'completed',
         ]
       );
 
@@ -168,7 +168,7 @@ export class DatabaseService {
         ...assessment,
         id: result.rows[0].id,
         userId: result.rows[0].user_id,
-        createdAt: result.rows[0].created_at
+        createdAt: result.rows[0].created_at,
       };
     } catch (error) {
       throw new Error(`Failed to save assessment: ${error.message}`);
@@ -202,7 +202,7 @@ export class DatabaseService {
         assessmentResult: row.assessment_result,
         processingTime: row.processing_time,
         status: row.status,
-        createdAt: row.created_at
+        createdAt: row.created_at,
       };
     } catch (error) {
       throw new Error(`Failed to get assessment: ${error.message}`);
@@ -290,14 +290,14 @@ export class DatabaseService {
         assessmentResult: row.assessment_result,
         processingTime: row.processing_time,
         status: row.status,
-        createdAt: row.created_at
+        createdAt: row.created_at,
       }));
 
       return {
         assessments,
         total,
         page,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
       };
     } catch (error) {
       throw new Error(`Failed to get user assessments: ${error.message}`);
@@ -309,7 +309,9 @@ export class DatabaseService {
   /**
    * Save bulk assessment job
    */
-  async saveBulkAssessment(bulkJob: BulkAssessmentJob): Promise<BulkAssessmentJob & { id: string }> {
+  async saveBulkAssessment(
+    bulkJob: BulkAssessmentJob
+  ): Promise<BulkAssessmentJob & { id: string }> {
     const client = await this.pool.connect();
     try {
       const result = await client.query(
@@ -322,14 +324,14 @@ export class DatabaseService {
           bulkJob.propertyCount,
           bulkJob.resultsCount,
           bulkJob.processingTime,
-          bulkJob.status || 'completed'
+          bulkJob.status || 'completed',
         ]
       );
 
       return {
         ...bulkJob,
         id: result.rows[0].id,
-        createdAt: result.rows[0].created_at
+        createdAt: result.rows[0].created_at,
       };
     } catch (error) {
       throw new Error(`Failed to save bulk assessment job: ${error.message}`);
@@ -459,8 +461,8 @@ export class DatabaseService {
         recentTrends: trendsResult.rows.map(row => ({
           date: row.date,
           count: parseInt(row.count),
-          avgValue: parseFloat(row.avg_value) || 0
-        }))
+          avgValue: parseFloat(row.avg_value) || 0,
+        })),
       };
     } catch (error) {
       throw new Error(`Failed to get assessment stats: ${error.message}`);
@@ -511,12 +513,12 @@ export class DatabaseService {
       const migrations = [
         {
           version: '001_initial_schema',
-          sql: this.getInitialSchemaMigration()
+          sql: this.getInitialSchemaMigration(),
         },
         {
           version: '002_add_indexes',
-          sql: this.getIndexesMigration()
-        }
+          sql: this.getIndexesMigration(),
+        },
       ];
 
       // Apply pending migrations
@@ -524,10 +526,9 @@ export class DatabaseService {
         if (!appliedMigrations.includes(migration.version)) {
           console.log(`Applying migration: ${migration.version}`);
           await client.query(migration.sql);
-          await client.query(
-            'INSERT INTO schema_migrations (version) VALUES ($1)',
-            [migration.version]
-          );
+          await client.query('INSERT INTO schema_migrations (version) VALUES ($1)', [
+            migration.version,
+          ]);
         }
       }
     } catch (error) {
@@ -620,8 +621,7 @@ export class DatabaseService {
   }
 
   private generateRandomToken(): string {
-    return Math.random().toString(36).substr(2, 15) + 
-           Math.random().toString(36).substr(2, 15);
+    return Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15);
   }
 
   private calculateDateFromPeriod(period: string): Date {

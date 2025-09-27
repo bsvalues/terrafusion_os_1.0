@@ -1,13 +1,15 @@
 # 🌐 TERRAFUSION API DOCUMENTATION
+
 ## The $100B Empire API Reference
 
 ---
 
 ## 🚀 BASE URL
+
 ```
 Production: https://api.terrafusion.io
 Staging:    https://staging-api.terrafusion.io
-Local:      http://localhost:3000
+Local:      http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 ```
 
 ---
@@ -22,6 +24,7 @@ curl -H "Authorization: Bearer YOUR_API_KEY" \
 ```
 
 ### Get API Key
+
 ```http
 POST /api/v1/auth/token
 Content-Type: application/json
@@ -33,6 +36,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIs...",
@@ -48,6 +52,7 @@ Content-Type: application/json
 ### 1. Property Valuation (379M× Faster)
 
 #### Single Property Valuation
+
 ```http
 POST /api/v1/valuation
 Authorization: Bearer YOUR_API_KEY
@@ -61,6 +66,7 @@ Content-Type: application/json
 ```
 
 **Response (< 100ms):**
+
 ```json
 {
   "property_id": "BEN-2025-001",
@@ -95,6 +101,7 @@ Content-Type: application/json
 ```
 
 #### Batch Valuation (Up to 10,000 properties)
+
 ```http
 POST /api/v1/valuation/batch
 Authorization: Bearer YOUR_API_KEY
@@ -111,12 +118,14 @@ Content-Type: application/json
 ### 2. Property Data Management
 
 #### Get Property Details
+
 ```http
 GET /api/v1/properties/{property_id}
 Authorization: Bearer YOUR_API_KEY
 ```
 
 **Response:**
+
 ```json
 {
   "property_id": "BEN-2025-001",
@@ -148,6 +157,7 @@ Authorization: Bearer YOUR_API_KEY
 ```
 
 #### Search Properties
+
 ```http
 GET /api/v1/properties/search
 Authorization: Bearer YOUR_API_KEY
@@ -167,6 +177,7 @@ Query Parameters:
 ### 3. AI-Powered Analytics
 
 #### Market Analysis
+
 ```http
 POST /api/v1/ai/market-analysis
 Authorization: Bearer YOUR_API_KEY
@@ -180,6 +191,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "market_trends": {
@@ -202,6 +214,7 @@ Content-Type: application/json
 ```
 
 #### Risk Assessment
+
 ```http
 POST /api/v1/ai/risk-assessment
 Authorization: Bearer YOUR_API_KEY
@@ -218,6 +231,7 @@ Content-Type: application/json
 ### 4. Reporting & Export
 
 #### Generate Valuation Report (PDF)
+
 ```http
 POST /api/v1/reports/valuation
 Authorization: Bearer YOUR_API_KEY
@@ -232,6 +246,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "report_id": "RPT-2025-123456",
@@ -245,6 +260,7 @@ Content-Type: application/json
 ### 5. Marketplace API
 
 #### Browse Plugins
+
 ```http
 GET /api/v1/marketplace/plugins
 Authorization: Bearer YOUR_API_KEY
@@ -256,6 +272,7 @@ Query Parameters:
 ```
 
 #### Install Plugin
+
 ```http
 POST /api/v1/marketplace/install
 Authorization: Bearer YOUR_API_KEY
@@ -272,6 +289,7 @@ Content-Type: application/json
 ## 📊 WEBHOOKS
 
 ### Register Webhook
+
 ```http
 POST /api/v1/webhooks
 Authorization: Bearer YOUR_API_KEY
@@ -285,6 +303,7 @@ Content-Type: application/json
 ```
 
 ### Webhook Payload Example
+
 ```json
 {
   "event": "valuation.completed",
@@ -302,12 +321,12 @@ Content-Type: application/json
 
 ## 🔄 RATE LIMITS
 
-| Plan | Requests/Hour | Batch Size | Concurrent |
-|------|--------------|------------|------------|
-| Trial | 100 | 10 | 1 |
-| Starter | 1,000 | 100 | 5 |
-| Professional | 10,000 | 1,000 | 20 |
-| Enterprise | Unlimited | 10,000 | 100 |
+| Plan         | Requests/Hour | Batch Size | Concurrent |
+| ------------ | ------------- | ---------- | ---------- |
+| Trial        | 100           | 10         | 1          |
+| Starter      | 1,000         | 100        | 5          |
+| Professional | 10,000        | 1,000      | 20         |
+| Enterprise   | Unlimited     | 10,000     | 100        |
 
 ---
 
@@ -325,6 +344,7 @@ Content-Type: application/json
 ```
 
 ### Common Error Codes
+
 - `401` - Unauthorized (invalid/expired token)
 - `403` - Forbidden (insufficient permissions)
 - `404` - Resource not found
@@ -337,11 +357,13 @@ Content-Type: application/json
 ## 🧪 TESTING
 
 ### Test Endpoint
+
 ```http
 GET /api/v1/test
 ```
 
 **Response:**
+
 ```json
 {
   "status": "operational",
@@ -352,6 +374,7 @@ GET /api/v1/test
 ```
 
 ### Sandbox Environment
+
 ```
 Base URL: https://sandbox-api.terrafusion.io
 API Key:  sandbox_key_123456789
@@ -362,6 +385,7 @@ API Key:  sandbox_key_123456789
 ## 📚 SDKs & LIBRARIES
 
 ### JavaScript/TypeScript
+
 ```bash
 npm install @terrafusion/sdk
 ```
@@ -376,6 +400,7 @@ console.log(`Value: $${valuation.amount}`);
 ```
 
 ### Python
+
 ```bash
 pip install terrafusion
 ```
@@ -389,6 +414,7 @@ print(f"Value: ${valuation['amount']}")
 ```
 
 ### Go
+
 ```bash
 go get github.com/terrafusion/terrafusion-go
 ```
@@ -425,7 +451,7 @@ curl -X POST https://api.terrafusion.io/api/v1/valuation \
 
 ---
 
-*"379 million times faster. Not a typo. A revolution."*
+_"379 million times faster. Not a typo. A revolution."_
 
 **API Version**: v1.0.0  
 **Last Updated**: August 8, 2025

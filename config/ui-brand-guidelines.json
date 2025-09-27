@@ -11,14 +11,14 @@
       "color_system": {
         "primary_palette": {
           "tf_trust_blue": "#0099ff",
-          "tf_transcend_cyan": "#00ffee", 
+          "tf_transcend_cyan": "#00ffee",
           "tf_success_green": "#00ffaa",
           "tf_deep_space": "#0b1020",
           "tf_midnight": "#1a1f3a"
         },
         "semantic_colors": {
           "operational": "#00ff88",
-          "warning": "#ffaa00", 
+          "warning": "#ffaa00",
           "critical": "#ff4444",
           "neutral": "#8892b0"
         },
@@ -33,7 +33,7 @@
         "hierarchy": {
           "display": "72px, weight: 900, gradient text, 'Government. Transcended.' emphasis",
           "heading_1": "48px, weight: 700, key section headers",
-          "heading_2": "36px, weight: 600, subsection headers", 
+          "heading_2": "36px, weight: 600, subsection headers",
           "heading_3": "28px, weight: 600, component headers",
           "body": "16px, weight: 400, readable content",
           "caption": "14px, weight: 500, metadata and status",
@@ -49,7 +49,7 @@
         "style": "Minimal, geometric, futuristic",
         "system_icons": {
           "operational": "⚡ Lightning for performance",
-          "ai_agents": "🤖 Robot for AI systems", 
+          "ai_agents": "🤖 Robot for AI systems",
           "government": "🏛️ Building for government functions",
           "analytics": "📊 Chart for data visualization",
           "security": "🛡️ Shield for protection",
@@ -57,7 +57,7 @@
         },
         "custom_icon_requirements": [
           "2px stroke weight minimum",
-          "Rounded corners for approachability", 
+          "Rounded corners for approachability",
           "Scalable vector format",
           "Consistent optical alignment",
           "Subtle glow effects for interactive states"
@@ -212,7 +212,7 @@
   },
   "implementation_checklist": [
     "Import Terrafusion CSS theme variables",
-    "Apply consistent spacing using CSS custom properties", 
+    "Apply consistent spacing using CSS custom properties",
     "Use glass morphism patterns for all cards",
     "Implement hover states with 4px lift standard",
     "Add scan-line animations for interactive elements",

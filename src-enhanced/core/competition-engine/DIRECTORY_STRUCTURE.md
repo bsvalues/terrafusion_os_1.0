@@ -40,15 +40,18 @@ championship/
 ## 🎯 KEY LOCATIONS:
 
 ### For Deployment:
+
 - **Hostinger**: `/hostinger-deploy/public_html/`
 - **Local Dev**: Run `npm run dev` from root
 
 ### For Development:
+
 - **Source Code**: `/src/`
 - **Modules**: `/modules/`
 - **Scripts**: `/scripts/`
 
 ### For Documentation:
+
 - **Deployment Docs**: `/docs/deployment/`
 - **Reports**: `/docs/reports/`
 - **Guides**: `/docs/guides/`
@@ -56,20 +59,24 @@ championship/
 ## ✨ WHAT WAS CLEANED:
 
 ### Moved to `/scripts/`:
+
 - All 43 `.sh` shell scripts
 
 ### Moved to `/docs/`:
+
 - All deployment guides
 - All reports (Belichick, audits, etc.)
 - All instruction files
 
 ### Moved to `/ARCHIVE/loose-files/`:
+
 - Duplicate HTML files
 - Test/demo HTML files
 - Loose JSON files
 - Old index.php
 
 ### Removed:
+
 - Misplaced .htaccess from root
 - Duplicate files
 

@@ -1,7 +1,8 @@
+// NO HARDCODED PORTS! Use environment variables.
 /**
  * TerraFusion Environment Configuration Template
  * Comprehensive environment management for all deployment scenarios
- * 
+ *
  * Supports:
  * - Development, staging, production environments
  * - Government security requirements
@@ -116,7 +117,7 @@ export interface TerraFusionConfig {
   port: number;
   host: string;
   baseUrl: string;
-  
+
   database: DatabaseConfig;
   redis: RedisConfig;
   ai: AIServiceConfig;
@@ -124,7 +125,7 @@ export interface TerraFusionConfig {
   county: CountyConfig;
   features: FeatureFlags;
   monitoring: MonitoringConfig;
-  
+
   // Government compliance settings
   compliance: {
     fismaLevel: 'low' | 'moderate' | 'high';
@@ -177,7 +178,7 @@ export class ConfigManager {
 
   private loadConfiguration(): TerraFusionConfig {
     const env = process.env.NODE_ENV || 'development';
-    
+
     switch (env) {
       case 'production':
         return this.createProductionConfig();
@@ -194,7 +195,7 @@ export class ConfigManager {
       version: process.env.npm_package_version || '1.0.0',
       port: parseInt(process.env.PORT || '5000'),
       host: process.env.HOST || 'localhost',
-      baseUrl: process.env.BASE_URL || 'http://localhost:5000',
+      baseUrl: process.env.BASE_URL || 'http://localhost:${TF_STATIC_PORT:-8080}',
 
       database: {
         host: process.env.DB_HOST || 'localhost',
@@ -204,7 +205,7 @@ export class ConfigManager {
         password: process.env.DB_PASSWORD || 'password',
         ssl: false,
         connectionLimit: 10,
-        migrationPath: './migrations'
+        migrationPath: './migrations',
       },
 
       redis: {
@@ -213,7 +214,7 @@ export class ConfigManager {
         password: process.env.REDIS_PASSWORD,
         database: 0,
         keyPrefix: 'tf:dev:',
-        ttl: 3600
+        ttl: 3600,
       },
 
       ai: {
@@ -221,7 +222,7 @@ export class ConfigManager {
         model: 'gpt-3.5-turbo',
         maxTokens: 2000,
         temperature: 0.3,
-        enabled: false // Disabled in development by default
+        enabled: false, // Disabled in development by default
       },
 
       security: {
@@ -230,9 +231,9 @@ export class ConfigManager {
         bcryptRounds: 10,
         rateLimitWindowMs: 15 * 60 * 1000, // 15 minutes
         rateLimitMaxRequests: 1000,
-        corsOrigins: ['http://localhost:3000', 'http://localhost:5173'],
+        corsOrigins: ['http://localhost:${TF_STATIC_PORT:-8080}', 'http://localhost:${TF_STATIC_PORT:-8080}'],
         enableAuditLogging: true,
-        requireHttps: false
+        requireHttps: false,
       },
 
       county: {
@@ -245,11 +246,11 @@ export class ConfigManager {
         taxYear: new Date().getFullYear(),
         legacySystems: {
           harris: {
-            endpoint: 'http://localhost:8080/harris',
+            endpoint: 'http://localhost:${TF_STATIC_PORT:-8080}/harris',
             apiKey: 'dev-harris-key',
-            version: '12.4.7'
-          }
-        }
+            version: '12.4.7',
+          },
+        },
       },
 
       features: {
@@ -260,29 +261,29 @@ export class ConfigManager {
         mobileApp: false,
         apiV2: true,
         betaFeatures: true,
-        maintenanceMode: false
+        maintenanceMode: false,
       },
 
       monitoring: {
         prometheus: {
           enabled: true,
           port: 9090,
-          path: '/metrics'
+          path: '/metrics',
         },
         grafana: {
-          enabled: false
+          enabled: false,
         },
         logging: {
           level: 'debug',
           format: 'text',
           destination: 'console',
-          rotateFiles: false
+          rotateFiles: false,
         },
         healthCheck: {
           interval: 30000,
           timeout: 5000,
-          endpoints: ['/api/health', '/api/health/database']
-        }
+          endpoints: ['/api/health', '/api/health/database'],
+        },
       },
 
       compliance: {
@@ -291,8 +292,8 @@ export class ConfigManager {
         encryptionInTransit: false,
         dataRetentionDays: 30,
         auditRetentionYears: 1,
-        requireMultiFactorAuth: false
-      }
+        requireMultiFactorAuth: false,
+      },
     };
   }
 
@@ -308,35 +309,35 @@ export class ConfigManager {
         host: process.env.DB_HOST || 'staging-db.terrafusion.internal',
         database: process.env.DB_NAME || 'terrafusion_staging',
         ssl: true,
-        connectionLimit: 20
+        connectionLimit: 20,
       },
 
       redis: {
         ...this.createDevelopmentConfig().redis,
         host: process.env.REDIS_HOST || 'staging-redis.terrafusion.internal',
         keyPrefix: 'tf:staging:',
-        password: process.env.REDIS_PASSWORD
+        password: process.env.REDIS_PASSWORD,
       },
 
       ai: {
         ...this.createDevelopmentConfig().ai,
         enabled: true,
         provider: 'openai',
-        apiKey: process.env.OPENAI_API_KEY
+        apiKey: process.env.OPENAI_API_KEY,
       },
 
       security: {
         ...this.createDevelopmentConfig().security,
         jwtSecret: process.env.JWT_SECRET || '',
         corsOrigins: ['https://staging.terrafusion.gov'],
-        requireHttps: true
+        requireHttps: true,
       },
 
       features: {
         ...this.createDevelopmentConfig().features,
         aiAssessment: true,
         realTimeSync: true,
-        betaFeatures: false
+        betaFeatures: false,
       },
 
       monitoring: {
@@ -345,12 +346,12 @@ export class ConfigManager {
           level: 'info',
           format: 'json',
           destination: 'file',
-          rotateFiles: true
+          rotateFiles: true,
         },
         grafana: {
           enabled: true,
-          url: 'https://grafana-staging.terrafusion.internal'
-        }
+          url: 'https://grafana-staging.terrafusion.internal',
+        },
       },
 
       compliance: {
@@ -359,8 +360,8 @@ export class ConfigManager {
         encryptionInTransit: true,
         dataRetentionDays: 90,
         auditRetentionYears: 3,
-        requireMultiFactorAuth: false
-      }
+        requireMultiFactorAuth: false,
+      },
     };
   }
 
@@ -378,7 +379,7 @@ export class ConfigManager {
         password: process.env.DB_PASSWORD || '',
         ssl: true,
         connectionLimit: 50,
-        migrationPath: './dist/migrations'
+        migrationPath: './dist/migrations',
       },
 
       redis: {
@@ -387,7 +388,7 @@ export class ConfigManager {
         password: process.env.REDIS_PASSWORD || '',
         database: 0,
         keyPrefix: 'tf:prod:',
-        ttl: 7200
+        ttl: 7200,
       },
 
       ai: {
@@ -397,7 +398,7 @@ export class ConfigManager {
         model: 'gpt-4',
         maxTokens: 4000,
         temperature: 0.2,
-        enabled: true
+        enabled: true,
       },
 
       security: {
@@ -408,7 +409,7 @@ export class ConfigManager {
         rateLimitMaxRequests: 100,
         corsOrigins: [process.env.FRONTEND_URL || ''],
         enableAuditLogging: true,
-        requireHttps: true
+        requireHttps: true,
       },
 
       county: {
@@ -423,17 +424,17 @@ export class ConfigManager {
           harris: {
             endpoint: process.env.HARRIS_ENDPOINT || '',
             apiKey: process.env.HARRIS_API_KEY || '',
-            version: process.env.HARRIS_VERSION || '12.4.7'
+            version: process.env.HARRIS_VERSION || '12.4.7',
           },
           tyler: {
             endpoint: process.env.TYLER_ENDPOINT || '',
-            apiKey: process.env.TYLER_API_KEY || ''
+            apiKey: process.env.TYLER_API_KEY || '',
           },
           aumentum: {
             endpoint: process.env.AUMENTUM_ENDPOINT || '',
-            credentials: process.env.AUMENTUM_CREDENTIALS || ''
-          }
-        }
+            credentials: process.env.AUMENTUM_CREDENTIALS || '',
+          },
+        },
       },
 
       features: {
@@ -444,35 +445,30 @@ export class ConfigManager {
         mobileApp: true,
         apiV2: true,
         betaFeatures: false,
-        maintenanceMode: process.env.MAINTENANCE_MODE === 'true'
+        maintenanceMode: process.env.MAINTENANCE_MODE === 'true',
       },
 
       monitoring: {
         prometheus: {
           enabled: true,
           port: 9090,
-          path: '/metrics'
+          path: '/metrics',
         },
         grafana: {
           enabled: true,
-          url: process.env.GRAFANA_URL
+          url: process.env.GRAFANA_URL,
         },
         logging: {
           level: 'warn',
           format: 'json',
           destination: 'database',
-          rotateFiles: true
+          rotateFiles: true,
         },
         healthCheck: {
           interval: 60000,
           timeout: 10000,
-          endpoints: [
-            '/api/health',
-            '/api/health/database',
-            '/api/health/redis',
-            '/api/health/ai'
-          ]
-        }
+          endpoints: ['/api/health', '/api/health/database', '/api/health/redis', '/api/health/ai'],
+        },
       },
 
       compliance: {
@@ -481,8 +477,8 @@ export class ConfigManager {
         encryptionInTransit: true,
         dataRetentionDays: 2555, // 7 years
         auditRetentionYears: 10,
-        requireMultiFactorAuth: true
-      }
+        requireMultiFactorAuth: true,
+      },
     };
   }
 }
@@ -562,24 +558,17 @@ export class EnvironmentUtils {
   public static saveToFile(config: TerraFusionConfig, filePath: string): void {
     const fs = require('fs');
     const configCopy = { ...config };
-    
+
     // Remove sensitive information from saved config
     configCopy.database.password = '[REDACTED]';
     configCopy.security.jwtSecret = '[REDACTED]';
     if (configCopy.ai.apiKey) configCopy.ai.apiKey = '[REDACTED]';
-    
+
     fs.writeFileSync(filePath, JSON.stringify(configCopy, null, 2));
   }
 
   public static getRequiredEnvVars(environment: string): string[] {
-    const baseVars = [
-      'NODE_ENV',
-      'PORT',
-      'DB_HOST',
-      'DB_NAME',
-      'DB_USER',
-      'DB_PASSWORD'
-    ];
+    const baseVars = ['NODE_ENV', 'PORT', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
 
     if (environment === 'production') {
       return [
@@ -588,7 +577,7 @@ export class EnvironmentUtils {
         'COUNTY_ID',
         'COUNTY_NAME',
         'COUNTY_STATE',
-        'FRONTEND_URL'
+        'FRONTEND_URL',
       ];
     }
 
@@ -617,19 +606,19 @@ export const CountyConfigs = {
     legacySystems: {
       harris: {
         endpoint: 'https://harris.co.benton.wa.us',
-        version: '12.4.7'
-      }
-    }
+        version: '12.4.7',
+      },
+    },
   },
-  
+
   franklin: {
     countyId: 'franklin-wa',
     countyName: 'Franklin County',
     state: 'WA',
     assessorOffice: 'Franklin County Assessor',
     contactEmail: 'assessor@co.franklin.wa.us',
-    timezone: 'America/Los_Angeles'
-  }
+    timezone: 'America/Los_Angeles',
+  },
 };
 
 // =============================================
@@ -674,17 +663,17 @@ if (missing.length > 0) {
 
 // Example .env file for development:
 NODE_ENV=development
-PORT=5000
+PORT = process.env.TF_DESKTOP_PORT || 3104
 HOST=localhost
 
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT = process.env.TF_DESKTOP_PORT || 3104
 DB_NAME=terrafusion_dev
 DB_USER=postgres
 DB_PASSWORD=password
 
 REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_PORT = process.env.TF_DESKTOP_PORT || 3104
 
 JWT_SECRET=your-development-secret-change-in-production
 

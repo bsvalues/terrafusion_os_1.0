@@ -28,7 +28,11 @@ graph TB
 
 ### Description
 
-The Terrafusion Platform serves as a comprehensive government operations platform that evolves from traditional enterprise systems to cosmic governance capabilities. It integrates with various identity providers for authentication, leverages cloud services for scalability, and connects to quantum computing services for advanced computations.
+The Terrafusion Platform serves as a comprehensive government operations
+platform that evolves from traditional enterprise systems to cosmic governance
+capabilities. It integrates with various identity providers for authentication,
+leverages cloud services for scalability, and connects to quantum computing
+services for advanced computations.
 
 ## Level 2: Container Diagram
 
@@ -489,15 +493,18 @@ graph LR
 ### ADR-001: Multi-Tenant Architecture
 
 - **Status**: Accepted
-- **Context**: Need to support multiple government entities with strict data isolation
+- **Context**: Need to support multiple government entities with strict data
+  isolation
 - **Decision**: Implement schema-based multi-tenancy with row-level security
-- **Consequences**: Simplified deployment, shared resources, complex access control
+- **Consequences**: Simplified deployment, shared resources, complex access
+  control
 
 ### ADR-002: Event-Driven Architecture
 
 - **Status**: Accepted
 - **Context**: Need for scalable, loosely coupled services
-- **Decision**: Use event bus pattern with RabbitMQ for inter-service communication
+- **Decision**: Use event bus pattern with RabbitMQ for inter-service
+  communication
 - **Consequences**: Better scalability, eventual consistency, complex debugging
 
 ### ADR-003: Quantum Integration Strategy
@@ -512,4 +519,5 @@ graph LR
 - **Status**: Proposed
 - **Context**: Need for distributed edge computing with central coordination
 - **Decision**: Implement custom federation protocol with eventual consistency
-- **Consequences**: Offline capability, sync complexity, conflict resolution needed
+- **Consequences**: Offline capability, sync complexity, conflict resolution
+  needed

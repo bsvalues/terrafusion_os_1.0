@@ -60,7 +60,7 @@ spec:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
         - name: ASPNETCORE_URLS
-          value: "http://+:5000"
+          value: "http://+:${TF_API_PORT:-5046}"
         - name: DB_HOST
           valueFrom:
             secretKeyRef:

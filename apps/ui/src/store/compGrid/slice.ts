@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
 
 type Row = {
-  id: string;                // real id (server) or temp-*
+  id: string; // real id (server) or temp-*
   address: string;
   price: number;
   optimistic?: boolean;
@@ -28,12 +28,16 @@ export const createRow = createAsyncThunk<
   { tempId: string; id?: string; error?: string },
   // arg type
   { tempId: string; address: string; price: number; forceConflict?: boolean }
->('compGrid/createRow', async (args) => {
+>('compGrid/createRow', async args => {
   try {
     const res = await fetch('/api/comp-grid/rows', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address: args.address, price: args.price, forceConflict: args.forceConflict }),
+      body: JSON.stringify({
+        address: args.address,
+        price: args.price,
+        forceConflict: args.forceConflict,
+      }),
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
@@ -51,7 +55,10 @@ const slice = createSlice({
   name: 'compGrid',
   initialState,
   reducers: {
-    addRow: (state, action: PayloadAction<{ id: string; address: string; price: number; optimistic?: boolean }>) => {
+    addRow: (
+      state,
+      action: PayloadAction<{ id: string; address: string; price: number; optimistic?: boolean }>
+    ) => {
       const r = action.payload;
       state.rows.byId[r.id] = r;
       state.rows.allIds.push(r.id);
@@ -62,23 +69,26 @@ const slice = createSlice({
       if (!temp) return;
       delete state.rows.byId[tempId];
       state.rows.byId[id] = { ...temp, id, optimistic: false };
-      state.rows.allIds = state.rows.allIds.map((x) => (x === tempId ? id : x));
+      state.rows.allIds = state.rows.allIds.map(x => (x === tempId ? id : x));
     },
     addRowFailed: (state, action: PayloadAction<{ tempId: string; error: string }>) => {
       const { tempId, error } = action.payload;
       // rollback
       if (state.rows.byId[tempId]?.optimistic) {
         delete state.rows.byId[tempId];
-        state.rows.allIds = state.rows.allIds.filter((x) => x !== tempId);
+        state.rows.allIds = state.rows.allIds.filter(x => x !== tempId);
       }
       state.lastError = error;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder.addCase(createRow.fulfilled, (state, action) => {
       const { tempId, id, error } = action.payload;
       if (error || !id) {
-        slice.caseReducers.addRowFailed(state, { type: 'x', payload: { tempId, error: error || 'UNKNOWN' } });
+        slice.caseReducers.addRowFailed(state, {
+          type: 'x',
+          payload: { tempId, error: error || 'UNKNOWN' },
+        });
       } else {
         slice.caseReducers.addRowCommitted(state, { type: 'x', payload: { tempId, id } });
       }
@@ -92,17 +102,18 @@ export default slice.reducer;
 // ---- Selectors (memoized) ----------------------------------------------------
 const selectSelf = (s: any) => (s.compGrid as CompGridState) ?? initialState;
 
-export const selectRows = createSelector(selectSelf, (s) => s.rows.allIds.map((id) => s.rows.byId[id]));
-export const selectScore = createSelector(selectRows, (rows) => {
+export const selectRows = createSelector(selectSelf, s => s.rows.allIds.map(id => s.rows.byId[id]));
+export const selectScore = createSelector(selectRows, rows => {
   if (!rows.length) return 0;
 
   // Weighted score: quantity, price dispersion, and recency placeholder
   const prices = rows.map(r => r.price || 0);
   const avg = prices.reduce((s, p) => s + p, 0) / prices.length;
-  const variance = prices.reduce((s, p) => s + Math.pow(p - avg, 2), 0) / Math.max(1, prices.length - 1);
+  const variance =
+    prices.reduce((s, p) => s + Math.pow(p - avg, 2), 0) / Math.max(1, prices.length - 1);
   const stdev = Math.sqrt(variance);
 
-  const quantityScore = Math.min(1, rows.length / 6);        // 6 comps = 100%
+  const quantityScore = Math.min(1, rows.length / 6); // 6 comps = 100%
   const dispersionScore = 1 - Math.min(1, stdev / Math.max(1, avg * 0.25)); // tighter spread = better
   const base = 0.55 * quantityScore + 0.45 * dispersionScore;
 

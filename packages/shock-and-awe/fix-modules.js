@@ -5,178 +5,178 @@
 
 // Enhanced module launcher with better timing and error handling
 function enhancedLaunchDemo(demoId) {
-    console.log(`🚀 Enhanced launch: ${demoId}`);
-    
-    // First show the transcendence loading
-    if (window.terraFusionOS && window.terraFusionOS.launchDemo) {
-        window.terraFusionOS.launchDemo(demoId);
+  console.log(`🚀 Enhanced launch: ${demoId}`);
+
+  // First show the transcendence loading
+  if (window.terraFusionOS && window.terraFusionOS.launchDemo) {
+    window.terraFusionOS.launchDemo(demoId);
+  }
+
+  // Then launch the actual module with proper timing
+  setTimeout(() => {
+    try {
+      switch (demoId) {
+        case 'costforge':
+          launchCostForgeEnhanced();
+          break;
+
+        case 'ai-swarm':
+          launchAISwarmEnhanced();
+          break;
+
+        case 'gis-transcended':
+          launchGISEnhanced();
+          break;
+
+        case 'quantum-core':
+          launchQuantumEnhanced();
+          break;
+
+        case 'hybrid-intelligence':
+          launchHybridEnhanced();
+          break;
+
+        case 'levy-optimizer':
+          launchLevyEnhanced();
+          break;
+
+        default:
+          console.log(`Unknown demo: ${demoId}`);
+          alert(`Demo "${demoId}" is being prepared. Please try again in a moment.`);
+      }
+    } catch (error) {
+      console.error('Enhanced launch error:', error);
+      alert(`Error launching ${demoId}: ${error.message}`);
     }
-    
-    // Then launch the actual module with proper timing
-    setTimeout(() => {
-        try {
-            switch(demoId) {
-                case 'costforge':
-                    launchCostForgeEnhanced();
-                    break;
-                    
-                case 'ai-swarm':
-                    launchAISwarmEnhanced();
-                    break;
-                    
-                case 'gis-transcended':
-                    launchGISEnhanced();
-                    break;
-                    
-                case 'quantum-core':
-                    launchQuantumEnhanced();
-                    break;
-                    
-                case 'hybrid-intelligence':
-                    launchHybridEnhanced();
-                    break;
-                    
-                case 'levy-optimizer':
-                    launchLevyEnhanced();
-                    break;
-                    
-                default:
-                    console.log(`Unknown demo: ${demoId}`);
-                    alert(`Demo "${demoId}" is being prepared. Please try again in a moment.`);
-            }
-        } catch (error) {
-            console.error('Enhanced launch error:', error);
-            alert(`Error launching ${demoId}: ${error.message}`);
-        }
-    }, 3500); // Wait for loading animation to complete
+  }, 3500); // Wait for loading animation to complete
 }
 
 // Enhanced CostForge launcher
 function launchCostForgeEnhanced() {
-    console.log('🏗️ Launching CostForge AI with enhanced integration...');
-    
-    try {
-        // First try the class-based approach
-        if (typeof CostForgeWizard !== 'undefined') {
-            if (!window.costForgeInstance) {
-                window.costForgeInstance = new CostForgeWizard();
-            }
-            window.costForgeInstance.show();
-            console.log('✅ CostForge launched via class');
-        }
-        // Fallback to function-based approach
-        else if (typeof window.launchCostForgeWizard === 'function') {
-            window.launchCostForgeWizard();
-            console.log('✅ CostForge launched via function');
-        }
-        // Final fallback - create simple demo
-        else {
-            createSimpleCostForgeDemo();
-            console.log('✅ CostForge launched via fallback');
-        }
-    } catch (error) {
-        console.error('CostForge launch error:', error);
-        createSimpleCostForgeDemo();
+  console.log('🏗️ Launching CostForge AI with enhanced integration...');
+
+  try {
+    // First try the class-based approach
+    if (typeof CostForgeWizard !== 'undefined') {
+      if (!window.costForgeInstance) {
+        window.costForgeInstance = new CostForgeWizard();
+      }
+      window.costForgeInstance.show();
+      console.log('✅ CostForge launched via class');
     }
+    // Fallback to function-based approach
+    else if (typeof window.launchCostForgeWizard === 'function') {
+      window.launchCostForgeWizard();
+      console.log('✅ CostForge launched via function');
+    }
+    // Final fallback - create simple demo
+    else {
+      createSimpleCostForgeDemo();
+      console.log('✅ CostForge launched via fallback');
+    }
+  } catch (error) {
+    console.error('CostForge launch error:', error);
+    createSimpleCostForgeDemo();
+  }
 }
 
 // Enhanced AI Swarm launcher
 function launchAISwarmEnhanced() {
-    console.log('🤖 Launching AI Swarm with enhanced integration...');
-    
-    try {
-        // First try the class-based approach
-        if (typeof AISwarmVisualization !== 'undefined') {
-            if (!window.aiSwarmInstance) {
-                window.aiSwarmInstance = new AISwarmVisualization();
-            }
-            window.aiSwarmInstance.show();
-            console.log('✅ AI Swarm launched via class');
-        }
-        // Fallback to function-based approach
-        else if (typeof window.showAISwarmViz === 'function') {
-            window.showAISwarmViz();
-            console.log('✅ AI Swarm launched via function');
-        }
-        // Final fallback - create simple demo
-        else {
-            createSimpleAISwarmDemo();
-            console.log('✅ AI Swarm launched via fallback');
-        }
-    } catch (error) {
-        console.error('AI Swarm launch error:', error);
-        createSimpleAISwarmDemo();
+  console.log('🤖 Launching AI Swarm with enhanced integration...');
+
+  try {
+    // First try the class-based approach
+    if (typeof AISwarmVisualization !== 'undefined') {
+      if (!window.aiSwarmInstance) {
+        window.aiSwarmInstance = new AISwarmVisualization();
+      }
+      window.aiSwarmInstance.show();
+      console.log('✅ AI Swarm launched via class');
     }
+    // Fallback to function-based approach
+    else if (typeof window.showAISwarmViz === 'function') {
+      window.showAISwarmViz();
+      console.log('✅ AI Swarm launched via function');
+    }
+    // Final fallback - create simple demo
+    else {
+      createSimpleAISwarmDemo();
+      console.log('✅ AI Swarm launched via fallback');
+    }
+  } catch (error) {
+    console.error('AI Swarm launch error:', error);
+    createSimpleAISwarmDemo();
+  }
 }
 
 // Enhanced GIS launcher
 function launchGISEnhanced() {
-    console.log('🗺️ Launching GIS Transcended...');
-    
-    try {
-        if (typeof window.launchGISViewer === 'function') {
-            window.launchGISViewer();
-        } else {
-            createSimpleGISDemo();
-        }
-    } catch (error) {
-        console.error('GIS launch error:', error);
-        createSimpleGISDemo();
+  console.log('🗺️ Launching GIS Transcended...');
+
+  try {
+    if (typeof window.launchGISViewer === 'function') {
+      window.launchGISViewer();
+    } else {
+      createSimpleGISDemo();
     }
+  } catch (error) {
+    console.error('GIS launch error:', error);
+    createSimpleGISDemo();
+  }
 }
 
 // Enhanced Quantum launcher (this one works)
 function launchQuantumEnhanced() {
-    console.log('⚡ Launching Quantum Performance...');
-    
-    try {
-        if (typeof launchQuantumPerformanceDemo === 'function') {
-            launchQuantumPerformanceDemo();
-        } else {
-            createSimpleQuantumDemo();
-        }
-    } catch (error) {
-        console.error('Quantum launch error:', error);
-        createSimpleQuantumDemo();
+  console.log('⚡ Launching Quantum Performance...');
+
+  try {
+    if (typeof launchQuantumPerformanceDemo === 'function') {
+      launchQuantumPerformanceDemo();
+    } else {
+      createSimpleQuantumDemo();
     }
+  } catch (error) {
+    console.error('Quantum launch error:', error);
+    createSimpleQuantumDemo();
+  }
 }
 
 // Enhanced Hybrid Intelligence launcher
 function launchHybridEnhanced() {
-    console.log('🔒 Launching Hybrid Intelligence...');
-    
-    try {
-        if (typeof window.launchHybridLLMSecurity === 'function') {
-            window.launchHybridLLMSecurity();
-        } else {
-            createSimpleHybridDemo();
-        }
-    } catch (error) {
-        console.error('Hybrid launch error:', error);
-        createSimpleHybridDemo();
+  console.log('🔒 Launching Hybrid Intelligence...');
+
+  try {
+    if (typeof window.launchHybridLLMSecurity === 'function') {
+      window.launchHybridLLMSecurity();
+    } else {
+      createSimpleHybridDemo();
     }
+  } catch (error) {
+    console.error('Hybrid launch error:', error);
+    createSimpleHybridDemo();
+  }
 }
 
 // Enhanced Levy Optimizer launcher
 function launchLevyEnhanced() {
-    console.log('💰 Launching Terra-Levy Optimizer...');
-    
-    try {
-        if (typeof window.launchTerraLevy === 'function') {
-            window.launchTerraLevy();
-        } else {
-            createSimpleLevyDemo();
-        }
-    } catch (error) {
-        console.error('Levy launch error:', error);
-        createSimpleLevyDemo();
+  console.log('💰 Launching Terra-Levy Optimizer...');
+
+  try {
+    if (typeof window.launchTerraLevy === 'function') {
+      window.launchTerraLevy();
+    } else {
+      createSimpleLevyDemo();
     }
+  } catch (error) {
+    console.error('Levy launch error:', error);
+    createSimpleLevyDemo();
+  }
 }
 
 // Fallback demo creators
 function createSimpleCostForgeDemo() {
-    const modal = createTerraFusionModal('CostForge AI', '🏗️');
-    modal.querySelector('.tf-modal-content').innerHTML += `
+  const modal = createTerraFusionModal('CostForge AI', '🏗️');
+  modal.querySelector('.tf-modal-content').innerHTML += `
         <div style="padding: 2rem;">
             <h3 style="color: var(--tf-transcend); margin-bottom: 1rem;">Property Valuation Wizard</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
@@ -199,12 +199,12 @@ function createSimpleCostForgeDemo() {
             </div>
         </div>
     `;
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 }
 
 function createSimpleAISwarmDemo() {
-    const modal = createTerraFusionModal('AI Swarm Intelligence', '🤖');
-    modal.querySelector('.tf-modal-content').innerHTML += `
+  const modal = createTerraFusionModal('AI Swarm Intelligence', '🤖');
+  modal.querySelector('.tf-modal-content').innerHTML += `
         <div style="padding: 2rem;">
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem;">
                 <div style="text-align: center; padding: 2rem; background: rgba(0, 255, 238, 0.1); border-radius: 8px;">
@@ -226,12 +226,12 @@ function createSimpleAISwarmDemo() {
             </div>
         </div>
     `;
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 }
 
 function createSimpleGISDemo() {
-    const modal = createTerraFusionModal('GIS Transcended', '🗺️');
-    modal.querySelector('.tf-modal-content').innerHTML += `
+  const modal = createTerraFusionModal('GIS Transcended', '🗺️');
+  modal.querySelector('.tf-modal-content').innerHTML += `
         <div style="padding: 2rem;">
             <p style="color: var(--tf-gray-light); margin-bottom: 2rem;">Advanced Geographic Information System with AI-powered insights</p>
             <div style="background: var(--tf-dark); border: 2px solid var(--tf-transcend); border-radius: 8px; padding: 2rem; text-align: center;">
@@ -241,12 +241,12 @@ function createSimpleGISDemo() {
             </div>
         </div>
     `;
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 }
 
 function createSimpleQuantumDemo() {
-    const modal = createTerraFusionModal('Quantum Performance Core', '⚡');
-    modal.querySelector('.tf-modal-content').innerHTML += `
+  const modal = createTerraFusionModal('Quantum Performance Core', '⚡');
+  modal.querySelector('.tf-modal-content').innerHTML += `
         <div style="padding: 2rem;">
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
                 <div style="text-align: center; padding: 2rem; background: rgba(0, 255, 238, 0.1); border-radius: 8px;">
@@ -260,12 +260,12 @@ function createSimpleQuantumDemo() {
             </div>
         </div>
     `;
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 }
 
 function createSimpleHybridDemo() {
-    const modal = createTerraFusionModal('Hybrid Intelligence Engine', '🔒');
-    modal.querySelector('.tf-modal-content').innerHTML += `
+  const modal = createTerraFusionModal('Hybrid Intelligence Engine', '🔒');
+  modal.querySelector('.tf-modal-content').innerHTML += `
         <div style="padding: 2rem;">
             <p style="color: var(--tf-gray-light); margin-bottom: 2rem;">Multi-layer AI security and intelligence coordination</p>
             <div style="text-align: center; padding: 2rem; background: rgba(0, 255, 238, 0.1); border-radius: 8px;">
@@ -274,12 +274,12 @@ function createSimpleHybridDemo() {
             </div>
         </div>
     `;
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 }
 
 function createSimpleLevyDemo() {
-    const modal = createTerraFusionModal('Terra-Levy Optimizer', '💰');
-    modal.querySelector('.tf-modal-content').innerHTML += `
+  const modal = createTerraFusionModal('Terra-Levy Optimizer', '💰');
+  modal.querySelector('.tf-modal-content').innerHTML += `
         <div style="padding: 2rem;">
             <p style="color: var(--tf-gray-light); margin-bottom: 2rem;">Intelligent tax levy optimization and analysis</p>
             <div style="text-align: center; padding: 2rem; background: rgba(0, 255, 170, 0.1); border-radius: 8px;">
@@ -288,13 +288,13 @@ function createSimpleLevyDemo() {
             </div>
         </div>
     `;
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 }
 
 // Utility function to create Terrafusion-branded modals
 function createTerraFusionModal(title, icon) {
-    const modal = document.createElement('div');
-    modal.style.cssText = `
+  const modal = document.createElement('div');
+  modal.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
@@ -307,8 +307,8 @@ function createTerraFusionModal(title, icon) {
         align-items: center;
         justify-content: center;
     `;
-    
-    modal.innerHTML = `
+
+  modal.innerHTML = `
         <div class="tf-modal-content" style="
             background: var(--tf-surface);
             border: 2px solid var(--tf-transcend);
@@ -342,8 +342,8 @@ function createTerraFusionModal(title, icon) {
             </div>
         </div>
     `;
-    
-    return modal;
+
+  return modal;
 }
 
 // Override the main launch function

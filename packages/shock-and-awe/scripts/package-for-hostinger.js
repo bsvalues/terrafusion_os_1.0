@@ -21,9 +21,9 @@ async function createHostingerPackage() {
     // Clean and create deployment directory
     await fs.remove(DEPLOYMENT_DIR);
     await fs.ensureDir(DEPLOYMENT_DIR);
-    
+
     console.log('📁 Setting up deployment directory structure...');
-    
+
     // Create directory structure
     const dirs = [
       'public_html',
@@ -34,13 +34,13 @@ async function createHostingerPackage() {
       'public_html/api',
       'database',
       'config',
-      'docs'
+      'docs',
     ];
-    
+
     for (const dir of dirs) {
       await fs.ensureDir(path.join(DEPLOYMENT_DIR, dir));
     }
-    
+
     // Copy built React application
     console.log('⚛️ Copying React build files...');
     if (await fs.pathExists(BUILD_DIR)) {
@@ -48,40 +48,39 @@ async function createHostingerPackage() {
     } else {
       console.warn('⚠️ Build directory not found. Run "npm run build" first.');
     }
-    
+
     // Create index.html for Hostinger
     console.log('🌐 Creating Hostinger-compatible index.html...');
     await createHostingerIndex();
-    
+
     // Create PHP API files
     console.log('🔧 Creating PHP API endpoints...');
     await createPHPAPIs();
-    
+
     // Create database setup files
     console.log('💾 Creating database setup files...');
     await createDatabaseSetup();
-    
+
     // Create configuration files
     console.log('⚙️ Creating configuration files...');
     await createConfigFiles();
-    
+
     // Create .htaccess for routing
     console.log('🛣️ Creating .htaccess for routing...');
     await createHtaccess();
-    
+
     // Create documentation
     console.log('📖 Creating deployment documentation...');
     await createDocumentation();
-    
+
     // Create deployment package zip
     console.log('📦 Creating deployment package...');
     await createDeploymentZip();
-    
+
     console.log('✅ Hostinger deployment package created successfully!');
     console.log(`📁 Package location: ${DEPLOYMENT_DIR}/`);
     console.log(`📦 Zip file: ${PACKAGE_NAME}.zip`);
     console.log('\n🚀 Ready to upload to terrafusionmarket.io on Hostinger!');
-    
   } catch (error) {
     console.error('❌ Error creating deployment package:', error);
     process.exit(1);
@@ -777,7 +776,7 @@ async function createDeploymentZip() {
       resolve();
     });
 
-    archive.on('error', (err) => {
+    archive.on('error', err => {
       reject(err);
     });
 

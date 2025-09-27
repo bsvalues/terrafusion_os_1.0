@@ -237,7 +237,7 @@ public class CostForgeService : ICostForgeService
                 EstimatedValue = finalValue,
                 Confidence = confidence,
                 ValuationMethod = "CostForge AI Analysis",
-                Notes = $"Base: ${baseValue:N0}, Adjusted: ${adjustedValue:N0}, Market Factor: {marketAdjustment:P1}",
+                Notes = $"Base: {baseValue:N0}, Adjusted: {adjustedValue:N0}, Market Factor: {marketAdjustment:P1}",
                 CreatedAt = DateTime.UtcNow,
                 IsReviewed = false
             };
@@ -411,10 +411,10 @@ public class CostForgeService : ICostForgeService
         var differences = new List<string>();
         
         var landDiff = Math.Abs(analysis2.LandValue - analysis1.LandValue);
-        if (landDiff > 10000) differences.Add($"Land value difference: ${landDiff:N0}");
+        if (landDiff > 10000) differences.Add($"Land value difference: {landDiff:N0}");
         
         var improvementDiff = Math.Abs(analysis2.ImprovementValue - analysis1.ImprovementValue);
-        if (improvementDiff > 20000) differences.Add($"Improvement value difference: ${improvementDiff:N0}");
+        if (improvementDiff > 20000) differences.Add($"Improvement value difference: {improvementDiff:N0}");
         
         var confidenceDiff = Math.Abs(analysis2.ConfidenceScore - analysis1.ConfidenceScore);
         if (confidenceDiff > 0.1) differences.Add($"Confidence score difference: {confidenceDiff:P1}");
@@ -499,3 +499,4 @@ public class CostForgeService : ICostForgeService
         };
     }
 }
+

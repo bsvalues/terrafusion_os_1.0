@@ -6,7 +6,7 @@
     "slogan": "Turn Complexity into Clarity.",
     "motto": "We do it right the first time.",
     "promise": "Every user, every action, every day: simplicity, mastery, and confidence—delivered without compromise.",
-    
+
     "colors": {
       "primary": "#0099ff",
       "primaryDark": "#0077cc",
@@ -23,7 +23,7 @@
       "warning": "#ffaa00",
       "clarity": "#e0f7ff"
     },
-    
+
     "microcopy": {
       "confirmation": [
         "Transcendence complete.",
@@ -68,7 +68,7 @@
         "Transform your county today."
       ]
     },
-    
+
     "ai_copilot": {
       "personality": "Professional yet approachable, confident yet supportive",
       "tone": "Clear, encouraging, solution-focused",
@@ -96,7 +96,7 @@
         }
       }
     },
-    
+
     "ui_patterns": {
       "animations": {
         "transcendPulse": "Gentle glow effect for important elements",
@@ -119,7 +119,7 @@
         "emphasis": "Subtle, purposeful, elegant"
       }
     },
-    
+
     "deployment": {
       "homepage": "Tagline and slogan above the fold",
       "appShell": "Brand essence in loading states",
@@ -128,7 +128,7 @@
       "onboarding": "Welcome messages that inspire confidence",
       "notifications": "Dynamic copy based on user context"
     },
-    
+
     "vision": {
       "oneSentence": "When counties use Terrafusion, government transcends—complexity becomes clarity, users become champions, and progress feels inevitable.",
       "elevator": "Terrafusion transforms how counties operate by turning overwhelming complexity into crystal clarity, making every user feel like an expert from day one.",

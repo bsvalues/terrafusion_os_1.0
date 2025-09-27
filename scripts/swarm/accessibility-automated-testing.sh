@@ -621,7 +621,7 @@ function parseA11yFromTestResult(result) {
 
 function generateMockRouteA11y(pathname, violations, passes, incomplete) {
     return {
-        url: `http://localhost:3000${pathname}`,
+        url: `http://localhost:\${{TF_FRONTEND_PORT:-3000}}${pathname}`,
         pathname,
         violations,
         passes,

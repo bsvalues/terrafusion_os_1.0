@@ -1,7 +1,8 @@
+// NO HARDCODED PORTS! Use environment variables.
 /**
  * TerraFusion Deployment Configuration Template
  * Infrastructure as Code configurations for all deployment scenarios
- * 
+ *
  * Includes:
  * - Docker configurations
  * - Kubernetes manifests
@@ -70,7 +71,7 @@ USER terrafusion
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \\
-    CMD curl -f http://localhost:5000/api/health || exit 1
+    CMD curl -f http://localhost:${TF_STATIC_PORT:-8080}/api/health || exit 1
 
 # Expose port
 EXPOSE 5000
@@ -88,7 +89,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5000:${TF_API_PORT:-5046}"
     environment:
       - NODE_ENV=production
       - DB_HOST=postgres
@@ -164,7 +165,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=\${GRAFANA_PASSWORD}
     volumes:
@@ -426,7 +427,7 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
-`
+`,
 };
 
 // =============================================
@@ -728,7 +729,7 @@ resource "aws_elasticache_replication_group" "terrafusion_redis" {
   description               = "TerraFusion Redis cluster"
   
   node_type            = var.redis_node_type
-  port                 = 6379
+  port=\${{TF_REDIS_PORT:-6379}}
   parameter_group_name = "default.redis7"
   
   num_cache_clusters         = var.redis_num_cache_nodes
@@ -938,7 +939,7 @@ sleep 30
 docker-compose exec -T terrafusion-app npm run migrate
 
 # Verify deployment
-curl -f http://localhost:5000/api/health || exit 1
+curl -f http://localhost:${TF_STATIC_PORT:-8080}/api/health || exit 1
 
 echo "Deployment completed successfully!"
 `;
@@ -986,29 +987,36 @@ export const ComplianceConfigs = {
     encryption: {
       atRest: true,
       inTransit: true,
-      keyRotation: '90d'
+      keyRotation: '90d',
     },
     monitoring: {
       auditLogging: true,
       accessLogging: true,
       performanceMonitoring: true,
-      securityEventMonitoring: true
+      securityEventMonitoring: true,
     },
     access: {
       multiFactorAuth: true,
       roleBasedAccess: true,
       privilegedAccessManagement: true,
-      sessionTimeouts: '8h'
+      sessionTimeouts: '8h',
     },
     dataRetention: {
       auditLogs: '7y',
       transactionLogs: '3y',
-      systemLogs: '1y'
-    }
-  }
+      systemLogs: '1y',
+    },
+  },
 };
 
-export { DockerfileTemplate, DockerComposeTemplate, KubernetesManifests, GitHubActionsWorkflow, TerraformConfig, DeploymentManager };
+export {
+  DockerfileTemplate,
+  DockerComposeTemplate,
+  KubernetesManifests,
+  GitHubActionsWorkflow,
+  TerraformConfig,
+  DeploymentManager,
+};
 
 // Usage Example:
 /*

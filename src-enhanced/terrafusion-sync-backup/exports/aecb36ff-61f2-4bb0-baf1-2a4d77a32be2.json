@@ -7,35 +7,15 @@
     "type": "Polygon",
     "coordinates": [
       [
-        [
-          -119.8,
-          46.1
-        ],
-        [
-          -119.0,
-          46.1
-        ],
-        [
-          -119.0,
-          46.4
-        ],
-        [
-          -119.8,
-          46.4
-        ],
-        [
-          -119.8,
-          46.1
-        ]
+        [-119.8, 46.1],
+        [-119.0, 46.1],
+        [-119.0, 46.4],
+        [-119.8, 46.4],
+        [-119.8, 46.1]
       ]
     ]
   },
-  "layers": [
-    "parcels",
-    "zoning",
-    "voting_precincts",
-    "fire_districts"
-  ],
+  "layers": ["parcels", "zoning", "voting_precincts", "fire_districts"],
   "parameters": {
     "coordinate_system": "EPSG:4326",
     "precision": 6

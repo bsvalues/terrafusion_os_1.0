@@ -1,0 +1,413 @@
+/* Public Records Portal Header Styles */
+.public-records-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(0, 17, 34, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 2px solid rgba(0, 153, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 153, 255, 0.2);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 30px;
+}
+
+/* Brand Section */
+.header-brand {
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 2rem;
+  background: linear-gradient(45deg, var(--tf-primary), var(--tf-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.service-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--tf-white);
+  line-height: 1.2;
+}
+
+.service-tagline {
+  font-size: 0.85rem;
+  color: var(--tf-light-blue);
+  font-style: italic;
+  line-height: 1;
+}
+
+/* Navigation */
+.header-navigation {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 153, 255, 0.1);
+  border-radius: 12px;
+  padding: 6px;
+  backdrop-filter: blur(10px);
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  color: var(--tf-light-blue);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  min-width: 85px;
+}
+
+.nav-tab:hover {
+  background: rgba(0, 153, 255, 0.2);
+  color: var(--tf-primary);
+  transform: translateY(-1px);
+}
+
+.nav-tab.active {
+  background: var(--tf-primary);
+  color: var(--tf-dark);
+  box-shadow: 0 4px 15px rgba(0, 153, 255, 0.4);
+}
+
+.tab-icon {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.tab-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Status Section */
+.header-status {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid;
+  backdrop-filter: blur(10px);
+}
+
+.connection-status.connected .status-indicator {
+  border-color: #00ff88;
+  background: rgba(0, 255, 136, 0.1);
+}
+
+.connection-status.disconnected .status-indicator {
+  border-color: #ff3333;
+  background: rgba(255, 51, 51, 0.1);
+  animation: pulse 2s infinite;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.connection-status.connected .status-dot {
+  background: #00ff88;
+}
+
+.connection-status.disconnected .status-dot {
+  background: #ff3333;
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.status-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--tf-white);
+}
+
+.status-latency {
+  font-size: 0.7rem;
+  color: var(--tf-light-blue);
+}
+
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(0, 255, 170, 0.1);
+  border: 1px solid rgba(0, 255, 170, 0.3);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.badge-icon {
+  font-size: 1rem;
+  color: var(--tf-accent);
+}
+
+.badge-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.powered-by {
+  font-size: 0.7rem;
+  color: var(--tf-light-blue);
+  line-height: 1;
+}
+
+.terrafusion-brand {
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, var(--tf-accent), var(--tf-transcend));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+/* Government Notice Banner */
+.government-notice {
+  background: linear-gradient(90deg, rgba(0, 153, 255, 0.15), rgba(0, 255, 170, 0.15));
+  border-top: 1px solid rgba(0, 153, 255, 0.3);
+  padding: 8px 0;
+}
+
+.notice-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  gap: 20px;
+}
+
+.notice-icon {
+  font-size: 1.2rem;
+  color: var(--tf-primary);
+  flex-shrink: 0;
+}
+
+.notice-content {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--tf-white);
+  line-height: 1.4;
+}
+
+.notice-content strong {
+  color: var(--tf-accent);
+}
+
+.notice-compliance {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.compliance-badge {
+  padding: 3px 8px;
+  background: rgba(0, 255, 170, 0.2);
+  border: 1px solid rgba(0, 255, 170, 0.4);
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--tf-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .header-container {
+    gap: 20px;
+    padding: 10px 15px;
+  }
+  
+  .nav-tabs {
+    gap: 6px;
+  }
+  
+  .nav-tab {
+    min-width: 75px;
+    padding: 8px 12px;
+  }
+  
+  .tab-label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 15px;
+  }
+  
+  .header-navigation {
+    order: -1;
+    width: 100%;
+  }
+  
+  .nav-tabs {
+    width: 100%;
+    justify-content: space-between;
+    gap: 4px;
+  }
+  
+  .nav-tab {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 6px;
+  }
+  
+  .tab-label {
+    font-size: 0.7rem;
+    line-height: 1.1;
+  }
+  
+  .header-status {
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .notice-container {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .notice-compliance {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-name {
+    font-size: 1.1rem;
+  }
+  
+  .service-tagline {
+    font-size: 0.8rem;
+  }
+  
+  .nav-tab {
+    padding: 6px 4px;
+  }
+  
+  .tab-icon {
+    font-size: 1rem;
+  }
+  
+  .tab-label {
+    font-size: 0.65rem;
+  }
+  
+  .status-info,
+  .badge-text {
+    display: none;
+  }
+  
+  .notice-content {
+    font-size: 0.8rem;
+  }
+  
+  .compliance-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .public-records-header {
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom: 3px solid var(--tf-primary);
+  }
+  
+  .nav-tab.active {
+    background: var(--tf-accent);
+    color: var(--tf-dark);
+  }
+  
+  .government-notice {
+    background: rgba(0, 153, 255, 0.3);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .logo-icon,
+  .status-dot,
+  .connection-status.disconnected .status-indicator {
+    animation: none;
+  }
+  
+  .nav-tab:hover {
+    transform: none;
+  }
+}

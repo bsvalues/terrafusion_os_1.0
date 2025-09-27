@@ -1,13 +1,19 @@
 # Terrafusion OS - File Organization Standards
 
 ## 🎯 Purpose
-This document establishes clear rules for file organization to prevent the root directory from becoming cluttered with temporary files, prototypes, and experiments.
+
+This document establishes clear rules for file organization to prevent the root
+directory from becoming cluttered with temporary files, prototypes, and
+experiments.
 
 ## 📁 Directory Structure
 
 ### Root Directory - KEEP CLEAN!
+
 **Only these files belong in root:**
-- Core documentation: `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`
+
+- Core documentation: `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`,
+  `SECURITY.md`
 - Development guides: `START_HERE.md`, `TEST_REGISTRY.md`, `CLAUDE*.md`
 - Essential config: `package.json`, `tsconfig.json`, `vitest.config.ts`, etc.
 - Build files: `Makefile`, `.editorconfig`, `.gitignore`
@@ -15,6 +21,7 @@ This document establishes clear rules for file organization to prevent the root 
 ### Organized Directories
 
 #### `/backend/` - .NET Backend Services
+
 ```
 backend/
 ├── Terrafusion.API/          # Main API project
@@ -25,6 +32,7 @@ backend/
 ```
 
 #### `/frontend/` - React Frontend
+
 ```
 frontend/
 ├── src/                      # React source code
@@ -34,6 +42,7 @@ frontend/
 ```
 
 #### `/modules/` - Government Applications
+
 ```
 modules/
 ├── [module-name]/            # Individual modules
@@ -42,6 +51,7 @@ modules/
 ```
 
 #### `/docs/` - Documentation
+
 ```
 docs/
 ├── reports/                  # Analysis and audit reports
@@ -51,6 +61,7 @@ docs/
 ```
 
 #### `/tools/` - Development Tools
+
 ```
 tools/
 ├── prototypes/               # Quick prototypes and standalone tests
@@ -59,6 +70,7 @@ tools/
 ```
 
 #### `/config/` - Configuration Files
+
 ```
 config/
 ├── mcp/                      # MCP configuration
@@ -67,6 +79,7 @@ config/
 ```
 
 #### `/archive/` - Archived Content
+
 ```
 archive/
 ├── experiments/              # Failed experiments and old code
@@ -75,6 +88,7 @@ archive/
 ```
 
 #### `/testing/` - Test Infrastructure
+
 ```
 testing/
 ├── config/                   # Test configurations
@@ -83,6 +97,7 @@ testing/
 ```
 
 #### `/scripts/` - Build and Automation
+
 ```
 scripts/
 ├── production/               # Production deployment scripts
@@ -93,6 +108,7 @@ scripts/
 ## 🚫 What NOT to Put in Root
 
 ### Absolutely Forbidden in Root:
+
 - ❌ Temporary files (`*.tmp.*`, `debug-*.js`)
 - ❌ Test discovery dumps (`test-discovery-*/`)
 - ❌ Experimental TypeScript files (`experimental-*.ts`)
@@ -103,6 +119,7 @@ scripts/
 - ❌ Loose TypeScript orchestrator files
 
 ### Use These Locations Instead:
+
 - 🔧 **Prototypes** → `/tools/prototypes/`
 - 🎨 **Demos** → `/tools/demos/`
 - 🧪 **Experiments** → `/archive/experiments/`
@@ -112,11 +129,13 @@ scripts/
 ## 📝 File Naming Conventions
 
 ### Good File Names:
+
 - `PropertyService.cs` (clear, descriptive)
 - `user-management.component.ts` (kebab-case for frontend)
 - `benton-county-config.json` (specific purpose)
 
 ### Bad File Names:
+
 - `temp-file.js` (temporary)
 - `test123.ts` (non-descriptive)
 - `experimental-quantum-consciousness.ts` (belongs in archive)
@@ -125,13 +144,16 @@ scripts/
 ## 🛡️ Enforcement
 
 ### Git Ignore Rules
+
 The `.gitignore` file now prevents adding loose files to root:
+
 - Blocks `/*.ts`, `/*.js`, `/*.cs` in root
 - Allows specific essential files like `package.json`
 - Prevents test discovery dumps
 - Blocks temporary and experimental files
 
 ### Development Workflow
+
 1. **Before creating files in root** → Ask: "Does this belong here?"
 2. **For prototypes** → Use `/tools/prototypes/`
 3. **For experiments** → Use `/archive/experiments/`
@@ -141,18 +163,21 @@ The `.gitignore` file now prevents adding loose files to root:
 ## 🎯 Benefits of This Organization
 
 ### Clean Root Directory
+
 - Professional appearance
 - Easy navigation
 - Clear project structure
 - Faster file location
 
 ### Better Development Experience
+
 - No hunting through clutter
 - Clear separation of concerns
 - Easier onboarding for new developers
 - Maintainable codebase
 
 ### Prevented Issues
+
 - ❌ Jest haste map collisions
 - ❌ Build tool confusion
 - ❌ Package resolution issues
@@ -162,7 +187,8 @@ The `.gitignore` file now prevents adding loose files to root:
 
 If root gets cluttered again:
 
-1. **Audit files**: `find . -maxdepth 1 -type f -name "*.ts" -o -name "*.js" -o -name "*.cs"`
+1. **Audit files**:
+   `find . -maxdepth 1 -type f -name "*.ts" -o -name "*.js" -o -name "*.cs"`
 2. **Move to appropriate locations** using this guide
 3. **Update .gitignore** if needed
 4. **Document any new patterns** to prevent recurrence

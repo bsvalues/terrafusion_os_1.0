@@ -1,7 +1,9 @@
 # 🏆 TERRAFUSION CHAMPIONSHIP - COMPLETE SYSTEM DOCUMENTATION
-*Version 1.0.0 - August 8, 2025*
+
+_Version 1.0.0 - August 8, 2025_
 
 ## 📋 TABLE OF CONTENTS
+
 1. [System Overview](#system-overview)
 2. [Architecture](#architecture)
 3. [All Integrated Systems](#all-integrated-systems)
@@ -17,11 +19,14 @@
 ## 🎯 SYSTEM OVERVIEW
 
 ### What is Terrafusion Championship?
+
 The complete, unified property valuation platform that serves both:
+
 - **Government Market**: County assessors, tax collectors, GIS departments
 - **Private Market**: Fee appraisers, AMCs, banks, real estate professionals
 
 ### Key Statistics
+
 - **6 Production Systems** integrated into one platform
 - **94,149 Properties** from Benton County loaded
 - **379M times faster** than Marshall & Swift (CostForge AI)
@@ -29,6 +34,7 @@ The complete, unified property valuation platform that serves both:
 - **Live Production** systems from D: and F: drives consolidated
 
 ### Core Value Propositions
+
 1. **For Government**: Replace Tyler Technologies, ESRI, Marshall & Swift
 2. **For Private**: Faster appraisals with FNMA/FHA/VA compliance
 3. **For Both**: Unified data, AI valuation, seamless integration
@@ -38,6 +44,7 @@ The complete, unified property valuation platform that serves both:
 ## 🏗️ ARCHITECTURE
 
 ### System Architecture Diagram
+
 ```
 ┌──────────────────────────────────────────────────────────┐
 │                   Terrafusion Championship                │
@@ -64,6 +71,7 @@ The complete, unified property valuation platform that serves both:
 ```
 
 ### Technology Stack
+
 - **Core**: Rust + Tauri (performance + security)
 - **Government**: Python Flask + React (proven reliability)
 - **Private**: React + Rust Axum (modern SaaS)
@@ -79,6 +87,7 @@ The complete, unified property valuation platform that serves both:
 ### 1. GOVERNMENT SYSTEMS (D: Drive Production)
 
 #### BCBSLevy_PRODUCTION
+
 - **Location**: `/mnt/d/TF_File_8_25/DEPLOYED_APPLICATIONS/BCBSLevy_PRODUCTION`
 - **Purpose**: Tax levy calculation and management
 - **Technology**: Flask + SQLAlchemy + PostgreSQL
@@ -94,7 +103,9 @@ The complete, unified property valuation platform that serves both:
 - **Status**: ✅ PRODUCTION READY
 
 #### BCBSGISPRO_PRODUCTION
-- **Location**: `/mnt/d/TF_File_8_25/DEPLOYED_APPLICATIONS/BCBSGISPRO_PRODUCTION`
+
+- **Location**:
+  `/mnt/d/TF_File_8_25/DEPLOYED_APPLICATIONS/BCBSGISPRO_PRODUCTION`
 - **Purpose**: Professional GIS mapping and spatial analysis
 - **Technology**: Flask + React + PostGIS
 - **Port**: 5002
@@ -108,7 +119,9 @@ The complete, unified property valuation platform that serves both:
 - **Status**: ✅ ACTIVE DEPLOYMENT
 
 #### BSIncomeValuation_PRODUCTION
-- **Location**: `/mnt/d/TF_File_8_25/DEPLOYED_APPLICATIONS/BSIncomeValuation_PRODUCTION`
+
+- **Location**:
+  `/mnt/d/TF_File_8_25/DEPLOYED_APPLICATIONS/BSIncomeValuation_PRODUCTION`
 - **Purpose**: Income approach property valuation
 - **Technology**: Flask + React + Agent Architecture
 - **Port**: 5003
@@ -121,6 +134,7 @@ The complete, unified property valuation platform that serves both:
 - **Status**: ✅ ENTERPRISE READY
 
 #### TerraFusion_Quantum (GAMA)
+
 - **Location**: `/mnt/d/TF_File_8_25/TerraFusion_Quantum`
 - **Purpose**: Sacred geometry and quantum analysis
 - **Technology**: Next.js 15 + FastAPI + Rust
@@ -136,6 +150,7 @@ The complete, unified property valuation platform that serves both:
 ### 2. PRIVATE SYSTEM (F: Drive Production)
 
 #### Terrafusion Appraisal Suite
+
 - **Location**: `/mnt/f/TerraFusion_Appraisal_Suite`
 - **Purpose**: Private fee appraiser workflows
 - **Technology**: React + Rust Axum + PostgreSQL
@@ -158,6 +173,7 @@ The complete, unified property valuation platform that serves both:
 ### 3. CORE CHAMPIONSHIP SYSTEM (E: Drive)
 
 #### Terrafusion County OS
+
 - **Location**: `/mnt/e/TerraFusion_Tauri_Master_Workspace/championship`
 - **Purpose**: Unified control center for all modules
 - **Technology**: Rust + Tauri
@@ -177,6 +193,7 @@ The complete, unified property valuation platform that serves both:
 ### Module System Architecture
 
 #### Module Interface
+
 ```rust
 #[async_trait]
 pub trait Module: Send + Sync {
@@ -189,48 +206,50 @@ pub trait Module: Send + Sync {
 ```
 
 #### IPC Protocol
+
 ```typescript
 interface IPCMessage {
-    id: string;              // UUID
-    source: string;          // Module sending
-    target: string;          // Module receiving
-    action: string;          // Action to perform
-    payload: any;           // Data payload
-    timestamp: number;      // Unix timestamp
-    auth?: AuthToken;       // Optional auth
+  id: string; // UUID
+  source: string; // Module sending
+  target: string; // Module receiving
+  action: string; // Action to perform
+  payload: any; // Data payload
+  timestamp: number; // Unix timestamp
+  auth?: AuthToken; // Optional auth
 }
 ```
 
 ### Database Schema
 
 #### Unified Property Table
+
 ```sql
 CREATE TABLE properties (
     property_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     parcel_number VARCHAR(50) UNIQUE NOT NULL,
     address TEXT NOT NULL,
     owner_name TEXT,
-    
+
     -- Valuation fields
     assessed_value DECIMAL(15,2),
     land_value DECIMAL(15,2),
     improvement_value DECIMAL(15,2),
     market_value DECIMAL(15,2),
-    
+
     -- Government fields
     tax_district_id UUID,
     levy_rate DECIMAL(6,4),
     last_assessment_date DATE,
-    
+
     -- Private fields
     appraisal_id UUID,
     lender_id UUID,
     appraisal_type VARCHAR(50),
-    
+
     -- GIS fields
     geometry GEOMETRY(POINT, 4326),
     parcel_geometry GEOMETRY(POLYGON, 4326),
-    
+
     -- Metadata
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
@@ -247,6 +266,7 @@ CREATE INDEX idx_properties_geometry ON properties USING GIST(geometry);
 ### API Endpoints
 
 #### Government API
+
 ```yaml
 # Assessment
 POST   /api/gov/assessment/batch
@@ -271,6 +291,7 @@ POST   /api/gov/gis/spatial-query
 ```
 
 #### Private API
+
 ```yaml
 # Appraisal
 POST   /api/private/appraisal/create
@@ -296,6 +317,7 @@ POST   /api/private/comps/search
 ## 🚀 DEPLOYMENT GUIDE
 
 ### Prerequisites
+
 ```bash
 # System requirements
 - Ubuntu 22.04 LTS or Windows Server 2022
@@ -307,6 +329,7 @@ POST   /api/private/comps/search
 ```
 
 ### Quick Start
+
 ```bash
 # 1. Clone championship repository
 git clone https://github.com/terrafusion/championship.git
@@ -327,14 +350,15 @@ cp .env.example .env
 docker-compose up -d
 
 # 6. Access the system
-# Government: http://localhost:5000
-# Private: http://localhost:3000
-# Admin: http://localhost:8080
+# Government: http://localhost:\${{TF_API_PORT:-5000}}
+# Private: http://localhost:\${{TF_API_PORT:-5000}}
+# Admin: http://localhost:\${{TF_API_PORT:-5000}}
 ```
 
 ### Production Deployment
 
 #### Docker Compose
+
 ```yaml
 version: '3.8'
 
@@ -343,7 +367,7 @@ services:
   terrafusion-core:
     image: terrafusion/championship:latest
     ports:
-      - "8000:8000"
+      - '8000:8000'
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/terrafusion
       - REDIS_URL=redis://redis:6379
@@ -355,16 +379,16 @@ services:
   government-portal:
     image: terrafusion/government:latest
     ports:
-      - "5000:5000"
+      - '5000:5000'
     environment:
       - API_URL=http://terrafusion-core:8000
       - AUTH_TYPE=SAML
 
-  # Private Portal  
+  # Private Portal
   private-portal:
     image: terrafusion/private:latest
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - API_URL=http://terrafusion-core:8000
       - AUTH_TYPE=OAuth2
@@ -395,19 +419,20 @@ volumes:
 ## 🔧 CONFIGURATION
 
 ### Environment Variables
+
 ```bash
 # Core Configuration
 TERRAFUSION_ENV=production
 LOG_LEVEL=info
-PORT=8000
+PORT=\${{TF_DOCS_PORT:-8000}}
 
 # Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/terrafusion
+DATABASE_URL=postgresql://user:pass@localhost:\${{TF_API_PORT:-5000}}/terrafusion
 DATABASE_POOL_SIZE=20
 DATABASE_TIMEOUT=30
 
 # Redis
-REDIS_URL=redis://localhost:6379
+REDIS_URL=redis://localhost:\${{TF_API_PORT:-5000}}
 REDIS_POOL_SIZE=10
 
 # Authentication
@@ -423,37 +448,38 @@ COSTFORGE_MODEL_PATH=/models/costforge.bin
 COSTFORGE_WORKERS=4
 
 # Government Systems
-GOV_LEVY_PORT=5001
-GOV_GIS_PORT=5002
-GOV_INCOME_PORT=5003
-GOV_QUANTUM_PORT=9000
+GOV_LEVY_PORT=\${{TF_DOCS_PORT:-8000}}
+GOV_GIS_PORT=\${{TF_DOCS_PORT:-8000}}
+GOV_INCOME_PORT=\${{TF_DOCS_PORT:-8000}}
+GOV_QUANTUM_PORT=\${{TF_DOCS_PORT:-8000}}
 
 # Private System
-PRIVATE_FRONTEND_PORT=3000
-PRIVATE_BACKEND_PORT=3002
+PRIVATE_FRONTEND_PORT=\${{TF_DOCS_PORT:-8000}}
+PRIVATE_BACKEND_PORT=\${{TF_DOCS_PORT:-8000}}
 STRIPE_PUBLISHABLE_KEY=pk_live_xxx
 STRIPE_SECRET_KEY=sk_live_xxx
 
 # Monitoring
-PROMETHEUS_PORT=9090
-GRAFANA_PORT=3001
+PROMETHEUS_PORT=\${{TF_DOCS_PORT:-8000}}
+GRAFANA_PORT=\${{TF_DOCS_PORT:-8000}}
 SENTRY_DSN=https://xxx@sentry.io/xxx
 ```
 
 ### Module Configuration
+
 ```json
 {
   "modules": {
     "government": {
       "levy": {
         "enabled": true,
-        "port": 5001,
+        "port": \${{TF_API_HTTPS_PORT:-5001}},
         "database": "levy_db",
         "features": ["calculation", "billing", "tracking"]
       },
       "gis": {
         "enabled": true,
-        "port": 5002,
+        "port": \${{TF_API_HTTPS_PORT:-5001}},
         "map_server": "mapbox",
         "features": ["parcels", "spatial", "districts"]
       }
@@ -461,7 +487,7 @@ SENTRY_DSN=https://xxx@sentry.io/xxx
     "private": {
       "appraisal": {
         "enabled": true,
-        "port": 3002,
+        "port": \${{TF_API_HTTPS_PORT:-5001}},
         "features": ["fnma", "fha", "va", "mobile"],
         "pricing": {
           "individual": 99,
@@ -479,6 +505,7 @@ SENTRY_DSN=https://xxx@sentry.io/xxx
 ## 🧪 TESTING
 
 ### Unit Tests
+
 ```bash
 # Rust tests
 cd src-tauri
@@ -493,6 +520,7 @@ pytest
 ```
 
 ### Integration Tests
+
 ```bash
 # Run integration test suite
 ./scripts/run_integration_tests.sh
@@ -505,6 +533,7 @@ pytest
 ```
 
 ### Load Testing
+
 ```bash
 # Install k6
 brew install k6
@@ -515,6 +544,7 @@ k6 run tests/load/appraisal.js
 ```
 
 ### Performance Benchmarks
+
 ```
 Assessment Processing:
 - Single property: < 50ms
@@ -539,51 +569,56 @@ System Requirements:
 ### Common Issues
 
 #### OpenSSL Compilation Error
+
 ```bash
 # Solution: Use vendored OpenSSL
 cargo add openssl --features vendored
 ```
 
 #### Module Won't Load
+
 ```bash
 # Check module status
-curl http://localhost:8000/api/modules/status
+curl http://localhost:\${{TF_API_PORT:-5000}}/api/modules/status
 
 # Restart module
-curl -X POST http://localhost:8000/api/modules/levy/restart
+curl -X POST http://localhost:\${{TF_API_PORT:-5000}}/api/modules/levy/restart
 
 # Check logs
 docker logs terrafusion-core | grep levy
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Test connection
 psql $DATABASE_URL -c "SELECT 1"
 
 # Check pool status
-curl http://localhost:8000/health/database
+curl http://localhost:\${{TF_API_PORT:-5000}}/health/database
 
 # Reset connections
 docker-compose restart db
 ```
 
 #### IPC Communication Failures
+
 ```bash
 # Monitor IPC messages
 ./scripts/monitor_ipc.sh
 
 # Check router status
-curl http://localhost:8000/api/ipc/status
+curl http://localhost:\${{TF_API_PORT:-5000}}/api/ipc/status
 
 # Clear message queue
 redis-cli FLUSHALL
 ```
 
 ### Health Checks
+
 ```bash
 # Overall system health
-curl http://localhost:8000/health
+curl http://localhost:\${{TF_API_PORT:-5000}}/health
 
 # Response:
 {
@@ -604,17 +639,20 @@ curl http://localhost:8000/health
 ## 📚 ADDITIONAL RESOURCES
 
 ### Documentation
+
 - [API Reference](./docs/api/)
 - [Module Development Guide](./docs/modules/)
 - [Deployment Guide](./docs/deployment/)
 - [Security Guide](./docs/security/)
 
 ### Support
+
 - GitHub Issues: https://github.com/terrafusion/championship/issues
 - Email: support@terrafusion.gov
 - Documentation: https://docs.terrafusion.gov
 
 ### License
+
 © 2025 Terrafusion - All Rights Reserved
 
 ---
@@ -622,14 +660,17 @@ curl http://localhost:8000/health
 ## 🎯 CONCLUSION
 
 Terrafusion Championship represents the complete consolidation of:
+
 - **6 production systems** from D:, E:, and F: drives
 - **94,149 properties** with real assessment data
 - **Government and Private** markets in one platform
 - **379M times faster** valuation than competitors
 
-The system is **95% complete** and ready for final deployment. All core functionality is implemented, tested, and documented.
+The system is **95% complete** and ready for final deployment. All core
+functionality is implemented, tested, and documented.
 
 **Next Steps:**
+
 1. Final compilation and testing
 2. Deploy to production environment
 3. Begin user onboarding
@@ -637,4 +678,4 @@ The system is **95% complete** and ready for final deployment. All core function
 
 ---
 
-*End of Complete System Documentation*
+_End of Complete System Documentation_

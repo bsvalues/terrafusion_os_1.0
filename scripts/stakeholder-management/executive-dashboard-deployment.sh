@@ -6,7 +6,7 @@ echo "📊 DEPLOYING EXECUTIVE STAKEHOLDER DASHBOARD"
 echo "═══════════════════════════════════════════════════════════"
 
 # Dashboard Configuration
-DASHBOARD_PORT=3000
+DASHBOARD_PORT=\${{TF_FRONTEND_PORT:-3000}}
 REFRESH_INTERVAL=30
 ACCESS_LEVEL="executive"
 
@@ -156,7 +156,7 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.TF_FRONTEND_PORT || 3000;
 server.listen(PORT, () => {
   console.log(`📊 Executive Dashboard running on port ${PORT}`);
   console.log(`🌐 Access: http://localhost:${PORT}`);
@@ -504,7 +504,7 @@ ExecStart=/usr/bin/node server.js
 Restart=always
 RestartSec=10
 Environment=NODE_ENV=production
-Environment=PORT=3000
+Environment=PORT=\${{TF_FRONTEND_PORT:-3000}}
 
 [Install]
 WantedBy=multi-user.target
@@ -522,7 +522,7 @@ server {
     server_name dashboard.terrafusion.gov;
     
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:\${{TF_FRONTEND_PORT:-3000}};
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -534,7 +534,7 @@ server {
     }
     
     location /socket.io/ {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:\${{TF_FRONTEND_PORT:-3000}};
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -552,7 +552,7 @@ sudo nginx -t && sudo systemctl reload nginx
 echo ""
 echo "📊 EXECUTIVE DASHBOARD DEPLOYMENT: COMPLETE"
 echo "═══════════════════════════════════════════════════════════"
-echo "🌐 Dashboard URL: http://localhost:3000"
+echo "🌐 Dashboard URL: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
 echo "🌐 Production URL: http://dashboard.terrafusion.gov"
 echo "📱 Mobile Responsive: Yes"
 echo "🔄 Real-time Updates: 5-second intervals"

@@ -1,0 +1,365 @@
+/* TerraFusion Transcendence Brand Styles */
+/* Government. Transcended. */
+
+/* Transcendence Effects */
+.transcend-glow {
+    box-shadow: 
+        0 0 20px rgba(0, 255, 238, 0.4),
+        0 0 40px rgba(0, 153, 255, 0.3),
+        0 0 60px rgba(0, 255, 170, 0.2);
+    transition: all 0.3s ease;
+}
+
+.transcend-glow:hover {
+    box-shadow: 
+        0 0 30px rgba(0, 255, 238, 0.6),
+        0 0 60px rgba(0, 153, 255, 0.4),
+        0 0 90px rgba(0, 255, 170, 0.3);
+}
+
+/* Clarity Gradient */
+.clarity-gradient {
+    background: linear-gradient(135deg, 
+        var(--tf-primary) 0%, 
+        var(--tf-transcend) 50%, 
+        var(--tf-accent) 100%);
+}
+
+.clarity-gradient-text {
+    background: linear-gradient(135deg, 
+        var(--tf-primary) 0%, 
+        var(--tf-transcend) 50%, 
+        var(--tf-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Intelligence Pulse */
+@keyframes intelligencePulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+.intelligence-pulse {
+    animation: intelligencePulse 3s ease-in-out infinite;
+}
+
+/* Transcendence Animations */
+@keyframes transcendenceReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+        filter: blur(5px);
+    }
+    50% {
+        filter: blur(2px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+.transcend-reveal {
+    animation: transcendenceReveal 0.8s ease-out forwards;
+}
+
+/* Clarity Ripple Effect */
+@keyframes clarityRipple {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.clarity-ripple {
+    position: relative;
+}
+
+.clarity-ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, 
+        rgba(0, 255, 238, 0.3) 0%, 
+        transparent 70%);
+    border-radius: 50%;
+    transform-origin: center;
+    animation: clarityRipple 0.6s ease-out;
+    pointer-events: none;
+}
+
+/* Government Transcended Badge */
+.transcended-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, 
+        rgba(0, 153, 255, 0.1) 0%, 
+        rgba(0, 255, 238, 0.1) 100%);
+    border: 1px solid var(--tf-transcend);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--tf-transcend);
+}
+
+/* Module Transcendence States */
+.module-transcending {
+    position: relative;
+    overflow: hidden;
+}
+
+.module-transcending::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        var(--tf-primary), 
+        var(--tf-transcend), 
+        var(--tf-accent), 
+        var(--tf-transcend), 
+        var(--tf-primary));
+    background-size: 400% 400%;
+    animation: transcendenceFlow 3s ease infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.module-transcending:hover::before {
+    opacity: 1;
+}
+
+@keyframes transcendenceFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Success State - Transcendence Complete */
+.transcendence-complete {
+    position: relative;
+    overflow: hidden;
+}
+
+.transcendence-complete::after {
+    content: '✨';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2) rotate(180deg);
+    }
+}
+
+/* Loading States - Path to Clarity */
+.clarity-loading {
+    position: relative;
+    color: var(--tf-transcend);
+}
+
+.clarity-loading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        var(--tf-transcend), 
+        transparent);
+    animation: clarityProgress 1.5s ease-in-out infinite;
+}
+
+@keyframes clarityProgress {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Empty State - Future Begins */
+.future-begins {
+    text-align: center;
+    padding: 60px 40px;
+    background: radial-gradient(circle at center, 
+        rgba(0, 255, 238, 0.05) 0%, 
+        transparent 70%);
+    border: 2px dashed rgba(0, 255, 238, 0.2);
+    border-radius: 12px;
+    position: relative;
+}
+
+.future-begins::before {
+    content: '🚀';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px;
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(-50%, -50%) translateY(0);
+    }
+    50% {
+        transform: translate(-50%, -50%) translateY(-20px);
+    }
+}
+
+/* Button States - Call to Transcendence */
+.btn-transcend {
+    background: linear-gradient(135deg, 
+        var(--tf-primary) 0%, 
+        var(--tf-transcend) 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-transcend:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 10px 20px rgba(0, 255, 238, 0.3),
+        0 6px 6px rgba(0, 153, 255, 0.2);
+}
+
+.btn-transcend::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-transcend:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* Motto Display */
+.motto-display {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--tf-gray-light);
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.motto-display:hover {
+    color: var(--tf-transcend);
+    opacity: 1;
+}
+
+/* Transcendence Complete Notification */
+.notification-transcendence {
+    background: linear-gradient(135deg, 
+        rgba(0, 255, 238, 0.1) 0%, 
+        rgba(0, 255, 170, 0.1) 100%);
+    border-left: 4px solid var(--tf-transcend);
+    padding: 16px 20px;
+    border-radius: 8px;
+    position: relative;
+    animation: slideInRight 0.5s ease-out;
+}
+
+.notification-transcendence::before {
+    content: '✨';
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+}
+
+/* Focus States - Path to Clarity */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--tf-transcend);
+    box-shadow: 
+        0 0 0 3px rgba(0, 255, 238, 0.1),
+        0 0 20px rgba(0, 255, 238, 0.1);
+}
+
+/* Scrollbar - Transcendence Theme */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--tf-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, 
+        var(--tf-primary) 0%, 
+        var(--tf-transcend) 100%);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, 
+        var(--tf-transcend) 0%, 
+        var(--tf-accent) 100%);
+}

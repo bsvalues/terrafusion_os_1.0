@@ -449,6 +449,12 @@ namespace TerraFusion.Core.Services
         // Quantum cryptography methods
         private async Task InitializeQuantumKeyDistribution()
         {
+            if (!_quantumCryptographyEnabled)
+            {
+                _logger.LogWarning("[QKD] Quantum cryptography not enabled, skipping key distribution initialization");
+                return;
+            }
+            
             await Task.Delay(60);
             _logger.LogInformation("[QKD] Quantum key distribution initialized");
         }

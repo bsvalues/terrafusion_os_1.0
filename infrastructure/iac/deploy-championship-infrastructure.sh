@@ -234,7 +234,7 @@ create_secrets() {
         --from-literal=jwt-secret="$JWT_SECRET" \
         --from-literal=database-url="postgres://terrafusion:$POSTGRES_PASSWORD@terrafusion-postgres:5432/terrafusion" \
         --from-literal=redis-url="redis://default:$REDIS_PASSWORD@terrafusion-redis:6379" \
-        --from-literal=postgres-exporter-dsn="postgres://terrafusion:$POSTGRES_PASSWORD@localhost:5432/terrafusion?sslmode=disable" \
+        --from-literal=postgres-exporter-dsn="postgres://terrafusion:$POSTGRES_PASSWORD@localhost:\${{TF_POSTGRES_PORT:-5432}}/terrafusion?sslmode=disable" \
         --namespace $NAMESPACE \
         --dry-run=client -o yaml | kubectl apply -f -
     
@@ -432,7 +432,7 @@ main() {
     log "📊 Infrastructure maturity score: 95/100"
     log "⚡ Deployment completed in $(($(date +%s) - deployment_start_time)) seconds"
     log "🔗 ArgoCD UI: kubectl port-forward svc/argocd-server -n argocd 8080:443"
-    log "📈 Grafana UI: kubectl port-forward svc/terrafusion-grafana -n observability 3000:3000"
+    log "📈 Grafana UI: kubectl port-forward svc/terrafusion-grafana -n observability 3000:${TF_FRONTEND_PORT:-3102}"
     log "🔍 Jaeger UI: kubectl port-forward svc/terrafusion-jaeger-query -n observability 16686:16686"
     log "📊 Kibana UI: kubectl port-forward svc/terrafusion-kibana-kb-http -n observability 5601:5601"
 }

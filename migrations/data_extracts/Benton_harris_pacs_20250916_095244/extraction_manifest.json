@@ -1,0 +1,9 @@
+{
+  "extract_id": "Benton_harris_pacs_20250916_095244",
+  "county": "Benton",
+  "system_type": "harris_pacs",
+  "extraction_date": "2025-09-16T09:52:45.019421",
+  "files_extracted": 1,
+  "extraction_status": "completed",
+  "data_integrity_hash": "7a9e9f4ee80810401cdb45f1b77743c9"
+}

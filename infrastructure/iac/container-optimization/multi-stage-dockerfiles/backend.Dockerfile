@@ -61,7 +61,7 @@ COPY --from=security-scanner /scan/security-report.json /app/security-report.jso
 # Set up health check script
 COPY --chown=appuser:appgroup <<EOF /app/healthcheck.sh
 #!/bin/sh
-curl -f http://localhost:8080/health || exit 1
+curl -f http://localhost:\${{TF_ADMIN_PORT:-8080}}/health || exit 1
 EOF
 
 RUN chmod +x /app/healthcheck.sh

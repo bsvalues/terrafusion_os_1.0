@@ -37,10 +37,10 @@ readonly DB_NAME="terrafusion_production"
 readonly BACKUP_BUCKET="terrafusion-backups"
 
 # Service Ports
-readonly API_PORT=8080
-readonly WEB_PORT=3000
-readonly METRICS_PORT=9090
-readonly GRAFANA_PORT=3001
+readonly API_PORT=\${{TF_ADMIN_PORT:-8080}}
+readonly WEB_PORT=\${{TF_ADMIN_PORT:-8080}}
+readonly METRICS_PORT=\${{TF_ADMIN_PORT:-8080}}
+readonly GRAFANA_PORT=\${{TF_ADMIN_PORT:-8080}}
 
 # ==================================================================================
 # UTILITY FUNCTIONS
@@ -185,23 +185,23 @@ rule_files:
 scrape_configs:
   - job_name: 'terrafusion-api'
     static_configs:
-      - targets: ['localhost:8080']
+      - targets: ['localhost:\${{TF_ADMIN_PORT:-8080}}']
     metrics_path: '/metrics'
     scrape_interval: 5s
 
   - job_name: 'terrafusion-web'
     static_configs:
-      - targets: ['localhost:3000']
+      - targets: ['localhost:\${{TF_ADMIN_PORT:-8080}}']
     metrics_path: '/metrics'
     scrape_interval: 10s
 
   - job_name: 'node-exporter'
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['localhost:\${{TF_ADMIN_PORT:-8080}}']
 
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['localhost:\${{TF_ADMIN_PORT:-8080}}']
 
 alerting:
   alertmanagers:
@@ -273,7 +273,7 @@ EOF
     # Create Grafana configuration
     cat > "$WORKSPACE/monitoring/grafana/grafana.ini" << 'EOF'
 [server]
-http_port = 3001
+http_port=\${{TF_SHELL_PORT:-3001}}
 domain = grafana.terrafusion.io
 root_url = https://grafana.terrafusion.io
 
@@ -558,7 +558,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "production_server:app",
         host="0.0.0.0",
-        port=8080,
+        port=\${{TF_SHELL_PORT:-3001}},
         reload=False,
         access_log=True,
         log_level="info"
@@ -601,7 +601,7 @@ const cors = require('cors');
 const prometheus = require('prom-client');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.TF_FRONTEND_PORT || 3000;
 
 // Metrics
 const httpRequestsTotal = new prometheus.Counter({
@@ -787,17 +787,17 @@ check_service "grafana" || true
 echo ""
 echo "🌐 Service URLs:"
 echo "================================"
-echo "Web Application: http://localhost:3000"
-echo "API Server:      http://localhost:8080"
-echo "API Health:      http://localhost:8080/health"
-echo "Prometheus:      http://localhost:9090"
-echo "Grafana:         http://localhost:3001"
+echo "Web Application: http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+echo "API Server:      http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+echo "API Health:      http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
+echo "Prometheus:      http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+echo "Grafana:         http://localhost:\${{TF_ADMIN_PORT:-8080}}"
 
 echo ""
 echo "📊 Monitoring:"
 echo "================================"
-echo "API Metrics:     http://localhost:8080/metrics"
-echo "Web Metrics:     http://localhost:3000/metrics"
+echo "API Metrics:     http://localhost:\${{TF_ADMIN_PORT:-8080}}/metrics"
+echo "Web Metrics:     http://localhost:\${{TF_ADMIN_PORT:-8080}}/metrics"
 
 echo ""
 echo "🏆 TerraFusion Production Environment is LIVE!"
@@ -850,7 +850,7 @@ echo "🏥 TerraFusion Health Check"
 echo "=========================="
 
 # Check API health
-api_health=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health 2>/dev/null)
+api_health=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:\${{TF_ADMIN_PORT:-8080}}/health 2>/dev/null)
 if [ "$api_health" = "200" ]; then
     echo "✅ API Server: Healthy"
 else
@@ -858,7 +858,7 @@ else
 fi
 
 # Check web service
-web_health=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/health 2>/dev/null)
+web_health=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:\${{TF_ADMIN_PORT:-8080}}/health 2>/dev/null)
 if [ "$web_health" = "200" ]; then
     echo "✅ Web Server: Healthy"
 else
@@ -869,7 +869,7 @@ fi
 echo ""
 echo "⚡ Speed Test:"
 start_time=$(date +%s%N)
-valuation_result=$(curl -s http://localhost:8080/api/valuation/test 2>/dev/null)
+valuation_result=$(curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/valuation/test 2>/dev/null)
 end_time=$(date +%s%N)
 duration=$((($end_time - $start_time) / 1000000))
 
@@ -1697,8 +1697,8 @@ free -h
 df -h
 
 # Check service health
-curl http://localhost:8080/health
-curl http://localhost:3000/health
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
 
 # Check logs for errors
 tail -100 logs/api.log | grep -i error
@@ -2083,10 +2083,10 @@ The TerraFusion County OS has been successfully deployed to production with all 
 ## 🔧 OPERATIONAL INFRASTRUCTURE
 
 ### Production Environment
-- **Web Application**: http://localhost:3000
-- **API Server**: http://localhost:8080  
-- **Monitoring**: http://localhost:9090 (Prometheus)
-- **Dashboards**: http://localhost:3001 (Grafana)
+- **Web Application**: http://localhost:\${{TF_ADMIN_PORT:-8080}}
+- **API Server**: http://localhost:\${{TF_ADMIN_PORT:-8080}}  
+- **Monitoring**: http://localhost:\${{TF_ADMIN_PORT:-8080}} (Prometheus)
+- **Dashboards**: http://localhost:\${{TF_ADMIN_PORT:-8080}} (Grafana)
 - **Health Checks**: Automated every 30 seconds
 
 ### Database Infrastructure
@@ -2297,10 +2297,10 @@ The TerraFusion County OS is now live in production with:
 - **Executive**: executive@terrafusion.io
 
 ### System URLs
-- **Production App**: http://localhost:3000
-- **API Documentation**: http://localhost:8080/docs
-- **System Health**: http://localhost:8080/health
-- **Monitoring**: http://localhost:9090
+- **Production App**: http://localhost:\${{TF_ADMIN_PORT:-8080}}
+- **API Documentation**: http://localhost:\${{TF_ADMIN_PORT:-8080}}/docs
+- **System Health**: http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
+- **Monitoring**: http://localhost:\${{TF_ADMIN_PORT:-8080}}
 
 ---
 
@@ -2383,12 +2383,12 @@ main() {
     echo -e "${NC}"
     
     echo -e "\n${CYAN}🌐 PRODUCTION URLS:${NC}"
-    echo -e "  • Web Application:    http://localhost:3000"
-    echo -e "  • API Server:         http://localhost:8080"
-    echo -e "  • API Documentation:  http://localhost:8080/docs"
-    echo -e "  • Health Check:       http://localhost:8080/health"
-    echo -e "  • Monitoring:         http://localhost:9090"
-    echo -e "  • Grafana Dashboard:  http://localhost:3001"
+    echo -e "  • Web Application:    http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+    echo -e "  • API Server:         http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+    echo -e "  • API Documentation:  http://localhost:\${{TF_ADMIN_PORT:-8080}}/docs"
+    echo -e "  • Health Check:       http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
+    echo -e "  • Monitoring:         http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+    echo -e "  • Grafana Dashboard:  http://localhost:\${{TF_ADMIN_PORT:-8080}}"
     
     echo -e "\n${PURPLE}🛠️ MANAGEMENT COMMANDS:${NC}"
     echo -e "  • Start Services:     ./start_production.sh"

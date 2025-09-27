@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion ROI Calculator - See Your Savings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .calculator-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        
+        .calculator-body {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-body {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section, .results-section {
+            padding: 20px;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .results-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+        }
+        
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .range-value {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .result-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .result-value.highlight {
+            color: #10b981;
+        }
+        
+        .result-value.savings {
+            color: #667eea;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            margin-top: 30px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .metric-old {
+            color: #ef4444;
+        }
+        
+        .metric-new {
+            color: #10b981;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+        
+        .cta-section h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-btn {
+            padding: 15px 30px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .savings-chart {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .bar {
+            height: 30px;
+            background: #10b981;
+            border-radius: 4px;
+            margin: 10px 0;
+            transition: width 1s ease-out;
+        }
+        
+        .bar-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <h1>TerraFusion ROI Calculator</h1>
+            <p>See how much time and money you'll save with 600× faster valuations</p>
+        </div>
+        
+        <div class="calculator-body">
+            <div class="input-section">
+                <h2>Your Current Process</h2>
+                
+                <div class="input-group">
+                    <label for="valuations-per-day">Properties You Value Per Day:</label>
+                    <input type="range" id="valuations-per-day" min="1" max="100" value="20" oninput="updateRange(this)">
+                    <div class="range-value" id="range-value">20</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="minutes-per-valuation">Minutes Per Valuation (Current):</label>
+                    <input type="number" id="minutes-per-valuation" value="30" min="10" max="120">
+                </div>
+                
+                <div class="input-group">
+                    <label for="hourly-rate">Your Hourly Rate ($):</label>
+                    <input type="number" id="hourly-rate" value="150" min="50" max="500">
+                </div>
+                
+                <div class="input-group">
+                    <label for="employees">Number of Employees:</label>
+                    <input type="number" id="employees" value="5" min="1" max="100">
+                </div>
+                
+                <div class="input-group">
+                    <label for="work-days">Work Days Per Year:</label>
+                    <input type="number" id="work-days" value="250" min="200" max="365">
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateROI()">Calculate My Savings</button>
+            </div>
+            
+            <div class="results-section">
+                <h2>Your Savings with TerraFusion</h2>
+                
+                <div class="result-card">
+                    <div class="result-label">Annual Time Saved</div>
+                    <div class="result-value highlight" id="time-saved">-</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Annual Cost Savings</div>
+                    <div class="result-value savings" id="cost-savings">-</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Additional Capacity</div>
+                    <div class="result-value" id="capacity-increase">-</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">ROI in First Year</div>
+                    <div class="result-value highlight" id="roi-percentage">-</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Payback Period</div>
+                    <div class="result-value" id="payback-period">-</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="comparison-table" style="margin: 0 40px 40px 40px;">
+            <h2 style="padding: 20px 20px 0 20px;">Detailed Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current Process</th>
+                        <th>With TerraFusion</th>
+                        <th>Improvement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Time per Valuation</td>
+                        <td class="metric-old" id="current-time">30 minutes</td>
+                        <td class="metric-new">3 seconds</td>
+                        <td>600× faster</td>
+                    </tr>
+                    <tr>
+                        <td>Daily Capacity</td>
+                        <td class="metric-old" id="current-daily">20 properties</td>
+                        <td class="metric-new" id="new-daily">-</td>
+                        <td id="daily-improvement">-</td>
+                    </tr>
+                    <tr>
+                        <td>Annual Revenue Potential</td>
+                        <td id="current-revenue">-</td>
+                        <td class="metric-new" id="new-revenue">-</td>
+                        <td id="revenue-increase">-</td>
+                    </tr>
+                    <tr>
+                        <td>Cost per Valuation</td>
+                        <td class="metric-old" id="current-cost">-</td>
+                        <td class="metric-new" id="new-cost">-</td>
+                        <td id="cost-reduction">-</td>
+                    </tr>
+                    <tr>
+                        <td>Accuracy/Confidence</td>
+                        <td>Variable</td>
+                        <td class="metric-new">94% confidence</td>
+                        <td>Consistent & Higher</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="cta-section">
+            <h3>Ready to Transform Your Business?</h3>
+            <p style="margin-bottom: 30px; font-size: 18px;">
+                Start your 30-day free trial today. No credit card required.
+            </p>
+            <div class="cta-buttons">
+                <a href="#" class="cta-btn" onclick="startTrial()">Start Free Trial</a>
+                <a href="#" class="cta-btn" onclick="scheduleDemo()">Schedule Demo</a>
+                <a href="#" class="cta-btn" onclick="downloadResults()">Download Results</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateRange(slider) {
+            document.getElementById('range-value').textContent = slider.value;
+            calculateROI();
+        }
+        
+        function calculateROI() {
+            // Get input values
+            const valuationsPerDay = parseInt(document.getElementById('valuations-per-day').value);
+            const minutesPerValuation = parseInt(document.getElementById('minutes-per-valuation').value);
+            const hourlyRate = parseInt(document.getElementById('hourly-rate').value);
+            const employees = parseInt(document.getElementById('employees').value);
+            const workDays = parseInt(document.getElementById('work-days').value);
+            
+            // Calculate current state
+            const hoursPerDay = (valuationsPerDay * minutesPerValuation) / 60;
+            const annualHours = hoursPerDay * workDays * employees;
+            const annualLaborCost = annualHours * hourlyRate;
+            
+            // Calculate with TerraFusion (3 seconds per valuation)
+            const terrafusionMinutesPerValuation = 0.05; // 3 seconds = 0.05 minutes
+            const terrafusionHoursPerDay = (valuationsPerDay * terrafusionMinutesPerValuation) / 60;
+            const terrafusionAnnualHours = terrafusionHoursPerDay * workDays * employees;
+            const terrafusionLaborCost = terrafusionAnnualHours * hourlyRate;
+            
+            // Calculate savings
+            const timeSaved = annualHours - terrafusionAnnualHours;
+            const costSaved = annualLaborCost - terrafusionLaborCost;
+            
+            // Calculate increased capacity (same hours, more valuations)
+            const currentDailyCapacity = valuationsPerDay;
+            const potentialDailyCapacity = Math.floor((hoursPerDay * 60) / terrafusionMinutesPerValuation);
+            const capacityIncrease = potentialDailyCapacity - currentDailyCapacity;
+            
+            // Calculate ROI (assuming $5,000/month for Professional plan)
+            const annualTerraFusionCost = 5000 * 12; // $60,000/year
+            const netSavings = costSaved - annualTerraFusionCost;
+            const roi = ((netSavings / annualTerraFusionCost) * 100).toFixed(0);
+            const paybackMonths = (annualTerraFusionCost / (costSaved / 12)).toFixed(1);
+            
+            // Calculate revenue potential (assuming $200 per valuation)
+            const revenuePerValuation = 200;
+            const currentAnnualRevenue = currentDailyCapacity * workDays * employees * revenuePerValuation;
+            const potentialAnnualRevenue = potentialDailyCapacity * workDays * employees * revenuePerValuation;
+            const revenueIncrease = potentialAnnualRevenue - currentAnnualRevenue;
+            
+            // Update results
+            document.getElementById('time-saved').textContent = formatNumber(timeSaved) + ' hours';
+            document.getElementById('cost-savings').textContent = '$' + formatNumber(costSaved);
+            document.getElementById('capacity-increase').textContent = formatNumber(capacityIncrease * workDays * employees) + ' more/year';
+            document.getElementById('roi-percentage').textContent = roi + '%';
+            document.getElementById('payback-period').textContent = paybackMonths + ' months';
+            
+            // Update comparison table
+            document.getElementById('current-time').textContent = minutesPerValuation + ' minutes';
+            document.getElementById('current-daily').textContent = currentDailyCapacity + ' properties';
+            document.getElementById('new-daily').textContent = formatNumber(potentialDailyCapacity) + ' properties';
+            document.getElementById('daily-improvement').textContent = (potentialDailyCapacity / currentDailyCapacity).toFixed(0) + '× more';
+            
+            document.getElementById('current-revenue').textContent = '$' + formatNumber(currentAnnualRevenue);
+            document.getElementById('new-revenue').textContent = '$' + formatNumber(potentialAnnualRevenue);
+            document.getElementById('revenue-increase').textContent = '+$' + formatNumber(revenueIncrease);
+            
+            const currentCostPerValuation = (minutesPerValuation / 60) * hourlyRate;
+            const newCostPerValuation = (terrafusionMinutesPerValuation / 60) * hourlyRate;
+            document.getElementById('current-cost').textContent = '$' + currentCostPerValuation.toFixed(2);
+            document.getElementById('new-cost').textContent = '$' + newCostPerValuation.toFixed(2);
+            document.getElementById('cost-reduction').textContent = '-' + ((1 - newCostPerValuation/currentCostPerValuation) * 100).toFixed(0) + '%';
+        }
+        
+        function formatNumber(num) {
+            return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+        }
+        
+        function startTrial() {
+            alert('Redirecting to trial download page...');
+            window.location.href = '/download';
+        }
+        
+        function scheduleDemo() {
+            alert('Opening calendar to schedule demo...');
+            window.open('https://calendly.com/terrafusion-demo', '_blank');
+        }
+        
+        function downloadResults() {
+            const results = {
+                timeSaved: document.getElementById('time-saved').textContent,
+                costSavings: document.getElementById('cost-savings').textContent,
+                roi: document.getElementById('roi-percentage').textContent,
+                payback: document.getElementById('payback-period').textContent
+            };
+            
+            const text = `TerraFusion ROI Analysis
+=======================
+Annual Time Saved: ${results.timeSaved}
+Annual Cost Savings: ${results.costSavings}
+First Year ROI: ${results.roi}
+Payback Period: ${results.payback}
+
+Start your free trial: https://terrafusion.com/download`;
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'TerraFusion_ROI_Analysis.txt';
+            a.click();
+        }
+        
+        // Calculate on page load
+        window.onload = function() {
+            calculateROI();
+        };
+    </script>
+</body>
+</html>

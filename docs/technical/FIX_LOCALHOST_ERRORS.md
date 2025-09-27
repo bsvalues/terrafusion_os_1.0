@@ -1,31 +1,38 @@
 # Terrafusion OS 1.0 - Fix for Localhost:3000 Errors
 
 ## Problem Summary
-When navigating to http://localhost:3000/, you're experiencing:
-1. **Backend API not running** - GET http://localhost:5000/api/health returns 404
+
+When navigating to http://localhost:\${{TF_FRONTEND_PORT:-3000}}/, you're experiencing:
+
+1. **Backend API not running** - GET http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/health returns
+   404
 2. **Frontend repeatedly trying to connect** - Multiple failed fetch attempts
 3. **No unified startup process** - Services need to be started separately
 
 ## Root Causes
-1. **Backend API server is not running** on port 5000
+
+1. **Backend API server is not running** on port \${{TF_API_PORT:-5000}}
 2. **Frontend is running** but can't connect to backend
 3. **No orchestrated startup script** to ensure both services run together
 
 ## Immediate Fix - Quick Start
 
 ### Option 1: Windows (PowerShell)
+
 ```powershell
 # Run this from the project root directory
 .\start-terrafusion.ps1
 ```
 
 ### Option 2: Windows (Command Prompt)
+
 ```batch
 # Run this from the project root directory
 START_TERRAFUSION.bat
 ```
 
 ### Option 3: Mac/Linux
+
 ```bash
 # Make the script executable (first time only)
 chmod +x start-terrafusion.sh
@@ -35,10 +42,11 @@ chmod +x start-terrafusion.sh
 ```
 
 ### Option 4: Manual Start (Any OS)
+
 ```bash
 # Terminal 1 - Start Backend
 cd backend/Terrafusion.API
-dotnet run --urls "http://localhost:5000"
+dotnet run --urls "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
 
 # Terminal 2 - Start Frontend
 cd frontend
@@ -49,8 +57,9 @@ npm start
 ## Verification Steps
 
 1. **Check Backend Health**
-   - Navigate to: http://localhost:5000/health
+   - Navigate to: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health
    - Expected response:
+
    ```json
    {
      "status": "healthy",
@@ -65,13 +74,14 @@ npm start
    ```
 
 2. **Check Frontend**
-   - Navigate to: http://localhost:3000
+   - Navigate to: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
    - Should load without console errors
    - API connection status should show "Connected"
 
 ## Troubleshooting
 
 ### If Backend Won't Start
+
 ```bash
 # Check if .NET SDK is installed
 dotnet --version
@@ -86,6 +96,7 @@ dotnet build
 ```
 
 ### If Frontend Won't Start
+
 ```bash
 # Check Node.js version
 node --version  # Should be >= 18.0.0
@@ -98,12 +109,13 @@ npm install
 ```
 
 ### If Ports Are Already In Use
+
 ```bash
-# Windows - Find and kill process on port 5000
+# Windows - Find and kill process on port \${{TF_API_PORT:-5000}}
 netstat -ano | findstr :5000
 taskkill /PID <PID> /F
 
-# Mac/Linux - Find and kill process on port 5000
+# Mac/Linux - Find and kill process on port \${{TF_API_PORT:-5000}}
 lsof -i :5000
 kill -9 <PID>
 ```
@@ -112,10 +124,10 @@ kill -9 <PID>
 
 ```
 Terrafusion OS 1.0
-├── Frontend (React) - Port 3000
+├── Frontend (React) - Port \${{TF_FRONTEND_PORT:-3000}}
 │   └── OSShellWindow Component
 │       └── Connects to Backend API
-├── Backend (.NET Core) - Port 5000
+├── Backend (.NET Core) - Port \${{TF_FRONTEND_PORT:-3000}}
 │   ├── /health - System health endpoint
 │   ├── /api/test - Test endpoint
 │   ├── /api/modules - Module management
@@ -125,11 +137,13 @@ Terrafusion OS 1.0
 ## Development Configuration
 
 ### Backend Configuration (`backend/Terrafusion.API/appsettings.Development.json`)
-- API runs on port 5000
-- CORS enabled for localhost:3000
+
+- API runs on port \${{TF_API_PORT:-5000}}
+- CORS enabled for localhost:\${{TF_FRONTEND_PORT:-3000}}
 - SQLite database for development
 
 ### Frontend Configuration
+
 - Proxy configured for API calls
 - Health checks every 30 seconds
 - Automatic retry on connection failure
@@ -139,7 +153,8 @@ Terrafusion OS 1.0
 1. **Connection Pooling** - Reuses HTTP connections
 2. **Health Check Intervals** - Optimized to 30-second intervals
 3. **Timeout Settings** - 2-second timeout for health checks
-4. **Offline Mode** - Frontend continues with limited functionality if API unavailable
+4. **Offline Mode** - Frontend continues with limited functionality if API
+   unavailable
 
 ## Security Considerations
 
@@ -151,12 +166,14 @@ Terrafusion OS 1.0
 ## Next Steps
 
 1. **Production Deployment**
+
    ```bash
    npm run build
    npm run deploy:docker
    ```
 
 2. **Enable SSL/TLS**
+
    ```bash
    dotnet dev-certs https --trust
    ```
@@ -164,19 +181,19 @@ Terrafusion OS 1.0
 3. **Configure Environment Variables**
    ```bash
    # Create .env file
-   echo "REACT_APP_API_URL=http://localhost:5000" > frontend/.env
+   echo "REACT_APP_API_URL=http://localhost:\${{TF_FRONTEND_PORT:-3000}}" > frontend/.env
    echo "ASPNETCORE_ENVIRONMENT=Development" > backend/.env
    ```
 
 ## Support
 
 For additional help:
+
 1. Check logs: `logs/terrafusion-*.txt`
 2. Run diagnostics: `npm run validate`
 3. View full documentation: `docs/API_DOCUMENTATION.md`
 
 ---
 
-**Terrafusion OS 1.0** - Excellence in Government AI Infrastructure
-Version: 1.0.0 | Build: Production-Ready | Status: 🟢 Operational
-
+**Terrafusion OS 1.0** - Excellence in Government AI Infrastructure Version:
+1.0.0 | Build: Production-Ready | Status: 🟢 Operational

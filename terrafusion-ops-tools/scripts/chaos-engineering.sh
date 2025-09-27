@@ -44,7 +44,7 @@ LITMUS_NAMESPACE="litmus"
 
 # Monitoring Configuration
 PROMETHEUS_URL="${PROMETHEUS_URL:-http://prometheus:9090}"
-GRAFANA_URL="${GRAFANA_URL:-http://grafana:3000}"
+GRAFANA_URL="${GRAFANA_URL:-http://grafana:${TF_FRONTEND_PORT:-3102}}"
 SLACK_WEBHOOK="${SLACK_WEBHOOK:-}"
 
 # Safety Thresholds

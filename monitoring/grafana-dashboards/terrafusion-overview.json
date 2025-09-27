@@ -144,9 +144,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -288,9 +286,7 @@
       "options": {
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -429,9 +425,7 @@
         },
         "pieType": "pie",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -731,11 +725,7 @@
   ],
   "schemaVersion": 27,
   "style": "dark",
-  "tags": [
-    "terrafusion",
-    "government",
-    "monitoring"
-  ],
+  "tags": ["terrafusion", "government", "monitoring"],
   "templating": {
     "list": [
       {

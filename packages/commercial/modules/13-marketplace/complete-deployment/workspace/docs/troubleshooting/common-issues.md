@@ -1,16 +1,18 @@
 # Terrafusion Common Issues & Solutions
 
-This guide covers the most frequently encountered issues and their solutions. Issues are organized by category and severity level.
+This guide covers the most frequently encountered issues and their solutions.
+Issues are organized by category and severity level.
 
 ## 🔍 Quick Diagnostic Tools
 
 ### System Health Check
+
 ```bash
 # Check all services status
 curl http://localhost/health | jq
 
 # Check individual service health
-curl http://localhost:8080/health/detailed | jq
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health/detailed | jq
 
 # Check database connectivity
 psql $DATABASE_URL -c "SELECT version();"
@@ -20,6 +22,7 @@ redis-cli -u $REDIS_URL ping
 ```
 
 ### Log Analysis
+
 ```bash
 # View recent application logs
 docker-compose logs --tail=100 api
@@ -38,11 +41,13 @@ docker-compose logs -f api
 ### 1. Service Completely Down
 
 **Symptoms:**
+
 - Application not responding
 - 502/503 error messages
 - Health check failures
 
 **Quick Fix:**
+
 ```bash
 # Restart all services
 docker-compose restart
@@ -55,6 +60,7 @@ docker-compose logs api frontend
 ```
 
 **Root Cause Analysis:**
+
 ```bash
 # Check system resources
 free -h
@@ -69,7 +75,9 @@ docker stats
 ```
 
 **Solutions:**
+
 1. **Insufficient Memory:**
+
    ```bash
    # Increase memory allocation
    # Edit docker-compose.yml
@@ -84,10 +92,11 @@ docker stats
    ```
 
 2. **Disk Full:**
+
    ```bash
    # Clean up Docker resources
    docker system prune -a
-   
+
    # Clean up logs
    docker-compose logs --tail=1000 > /tmp/logs.txt
    docker-compose down
@@ -95,13 +104,14 @@ docker stats
    ```
 
 3. **Database Connection Issues:**
+
    ```bash
    # Restart database
    docker-compose restart postgres
-   
+
    # Check database logs
    docker-compose logs postgres
-   
+
    # Verify connection string
    echo $DATABASE_URL
    ```
@@ -109,11 +119,13 @@ docker stats
 ### 2. Database Connection Failures
 
 **Symptoms:**
+
 - "Connection refused" errors
 - "ECONNRESET" in logs
 - API endpoints returning 500 errors
 
 **Diagnostic Steps:**
+
 ```bash
 # Test database connection
 psql $DATABASE_URL -c "SELECT NOW();"
@@ -131,26 +143,29 @@ docker-compose exec api psql $DATABASE_URL -c "SELECT 1;"
 **Solutions:**
 
 1. **Database Not Running:**
+
    ```bash
    docker-compose up -d postgres
    docker-compose logs postgres
    ```
 
 2. **Connection Pool Exhausted:**
+
    ```bash
    # Increase pool size in .env
    DATABASE_POOL_SIZE=25
    DATABASE_POOL_TIMEOUT=30000
-   
+
    # Restart API service
    docker-compose restart api
    ```
 
 3. **Database Corruption:**
+
    ```bash
    # Check database integrity
    docker-compose exec postgres pg_dump --schema-only terrafusion > schema_backup.sql
-   
+
    # Restore from backup if needed
    docker-compose exec postgres psql terrafusion < backup.sql
    ```
@@ -158,17 +173,19 @@ docker-compose exec api psql $DATABASE_URL -c "SELECT 1;"
 ### 3. Authentication System Failure
 
 **Symptoms:**
+
 - Users cannot login
 - "Invalid token" errors
 - JWT verification failures
 
 **Diagnostic Steps:**
+
 ```bash
 # Check JWT secret configuration
 echo $JWT_SECRET | wc -c  # Should be >= 32 characters
 
 # Test token generation
-curl -X POST http://localhost:8080/auth/login \
+curl -X POST http://localhost:\${{TF_ADMIN_PORT:-8080}}/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password"}'
 
@@ -179,22 +196,24 @@ redis-cli -u $REDIS_URL keys "session:*"
 **Solutions:**
 
 1. **Invalid JWT Secret:**
+
    ```bash
    # Generate new JWT secret
    openssl rand -base64 32
-   
+
    # Update .env file
    JWT_SECRET=generated_secret_here
-   
+
    # Restart API service
    docker-compose restart api
    ```
 
 2. **Redis Session Storage Issues:**
+
    ```bash
    # Clear Redis cache
    redis-cli -u $REDIS_URL FLUSHALL
-   
+
    # Restart Redis
    docker-compose restart redis
    ```
@@ -206,20 +225,22 @@ redis-cli -u $REDIS_URL keys "session:*"
 ### 1. Slow API Response Times
 
 **Symptoms:**
+
 - API responses > 5 seconds
 - Timeout errors
 - Poor user experience
 
 **Diagnostic Steps:**
+
 ```bash
 # Monitor API response times
-curl -w "Response time: %{time_total}s\n" -s http://localhost:8080/api/v1/properties/search
+curl -w "Response time: %{time_total}s\n" -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/v1/properties/search
 
 # Check database query performance
 docker-compose exec postgres psql terrafusion -c "
-  SELECT query, mean_time, calls 
-  FROM pg_stat_statements 
-  ORDER BY mean_time DESC 
+  SELECT query, mean_time, calls
+  FROM pg_stat_statements
+  ORDER BY mean_time DESC
   LIMIT 10;"
 
 # Monitor system resources
@@ -230,34 +251,37 @@ iotop
 **Solutions:**
 
 1. **Database Query Optimization:**
+
    ```sql
    -- Add missing indexes
-   CREATE INDEX CONCURRENTLY idx_properties_location 
+   CREATE INDEX CONCURRENTLY idx_properties_location
    ON properties USING GIN(location);
-   
-   CREATE INDEX CONCURRENTLY idx_properties_price_type 
+
+   CREATE INDEX CONCURRENTLY idx_properties_price_type
    ON properties(price, property_type);
-   
+
    -- Analyze query performance
    EXPLAIN ANALYZE SELECT * FROM properties WHERE location @> '{"city": "Seattle"}';
    ```
 
 2. **Enable Caching:**
+
    ```bash
    # Update .env
    CACHE_ENABLED=true
    CACHE_TTL=3600
    REDIS_URL=redis://redis:6379
-   
+
    # Restart services
    docker-compose restart api
    ```
 
 3. **Scale Services:**
+
    ```bash
    # Scale API service
    docker-compose up -d --scale api=3
-   
+
    # Add load balancer configuration
    # Edit nginx.conf for upstream load balancing
    ```
@@ -265,17 +289,19 @@ iotop
 ### 2. Memory Leaks
 
 **Symptoms:**
+
 - Gradually increasing memory usage
 - Out of memory errors
 - Container restarts
 
 **Diagnostic Steps:**
+
 ```bash
 # Monitor memory usage over time
 docker stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
 
 # Check for memory leaks in Node.js
-docker-compose exec api node --inspect=0.0.0.0:9229 server.js
+docker-compose exec api node --inspect=0.0.0.0:\${{TF_PORT_9229:-9229}} server.js
 
 # Analyze heap dumps
 docker-compose exec api kill -USR2 $(pgrep node)
@@ -284,24 +310,26 @@ docker-compose exec api kill -USR2 $(pgrep node)
 **Solutions:**
 
 1. **Enable Memory Monitoring:**
+
    ```javascript
    // Add to server.js
    const memoryUsage = process.memoryUsage();
    console.log('Memory usage:', {
      rss: Math.round(memoryUsage.rss / 1024 / 1024) + ' MB',
      heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024) + ' MB',
-     heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024) + ' MB'
+     heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024) + ' MB',
    });
    ```
 
 2. **Fix Common Memory Issues:**
+
    ```javascript
    // Properly close database connections
    process.on('SIGTERM', async () => {
      await pool.end();
      process.exit(0);
    });
-   
+
    // Clear large objects from memory
    largeDataArray = null;
    if (global.gc) {
@@ -312,11 +340,13 @@ docker-compose exec api kill -USR2 $(pgrep node)
 ### 3. File Upload Issues
 
 **Symptoms:**
+
 - Upload timeouts
 - "File too large" errors
 - Corrupted files
 
 **Diagnostic Steps:**
+
 ```bash
 # Check nginx upload limits
 docker-compose exec nginx cat /etc/nginx/nginx.conf | grep client_max_body_size
@@ -325,12 +355,13 @@ docker-compose exec nginx cat /etc/nginx/nginx.conf | grep client_max_body_size
 df -h
 
 # Test upload directly
-curl -X POST -F "file=@test.jpg" http://localhost:8080/upload
+curl -X POST -F "file=@test.jpg" http://localhost:\${{TF_ADMIN_PORT:-8080}}/upload
 ```
 
 **Solutions:**
 
 1. **Increase Upload Limits:**
+
    ```nginx
    # nginx.conf
    client_max_body_size 50M;
@@ -351,31 +382,34 @@ curl -X POST -F "file=@test.jpg" http://localhost:8080/upload
 ### 1. Search Results Inconsistency
 
 **Symptoms:**
+
 - Different results for same query
 - Missing properties in results
 - Outdated information
 
 **Diagnostic Steps:**
+
 ```bash
 # Check search index status
-curl http://localhost:8080/admin/search/status
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/admin/search/status
 
 # Compare database vs search results
 psql $DATABASE_URL -c "SELECT COUNT(*) FROM properties WHERE city='Seattle';"
 
 # Check Elasticsearch/search service
-curl http://localhost:9200/_cluster/health
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/_cluster/health
 ```
 
 **Solutions:**
 
 1. **Rebuild Search Index:**
+
    ```bash
    # Trigger index rebuild
-   curl -X POST http://localhost:8080/admin/search/rebuild
-   
+   curl -X POST http://localhost:\${{TF_ADMIN_PORT:-8080}}/admin/search/rebuild
+
    # Monitor rebuild progress
-   curl http://localhost:8080/admin/search/rebuild/status
+   curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/admin/search/rebuild/status
    ```
 
 2. **Fix Index Synchronization:**
@@ -393,11 +427,13 @@ curl http://localhost:9200/_cluster/health
 ### 2. Email Notifications Not Working
 
 **Symptoms:**
+
 - Users not receiving emails
 - Email delivery failures
 - SMTP connection errors
 
 **Diagnostic Steps:**
+
 ```bash
 # Test SMTP configuration
 docker-compose exec api node -e "
@@ -420,24 +456,26 @@ redis-cli -u $REDIS_URL llen email_queue
 **Solutions:**
 
 1. **Fix SMTP Configuration:**
+
    ```bash
    # Update .env with correct SMTP settings
    SMTP_HOST=smtp.sendgrid.net
    SMTP_PORT=587
    SMTP_USER=apikey
    SMTP_PASSWORD=your_sendgrid_api_key
-   
+
    # Restart services
    docker-compose restart api
    ```
 
 2. **Implement Email Queue Processing:**
+
    ```javascript
    // Add email worker
    const Queue = require('bull');
    const emailQueue = new Queue('email processing', process.env.REDIS_URL);
-   
-   emailQueue.process(async (job) => {
+
+   emailQueue.process(async job => {
      const { to, subject, body } = job.data;
      await sendEmail(to, subject, body);
    });
@@ -450,17 +488,19 @@ redis-cli -u $REDIS_URL llen email_queue
 ### 1. UI/UX Issues
 
 **Symptoms:**
+
 - Layout problems
 - Slow page loads
 - JavaScript errors
 
 **Diagnostic Steps:**
+
 ```bash
 # Check frontend build
 docker-compose logs frontend
 
 # Test frontend directly
-curl http://localhost:3000
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}
 
 # Check browser console errors
 # Open DevTools → Console
@@ -469,26 +509,30 @@ curl http://localhost:3000
 **Solutions:**
 
 1. **Fix Build Issues:**
+
    ```bash
    # Rebuild frontend
    docker-compose build frontend
    docker-compose up -d frontend
-   
+
    # Clear browser cache
    # Ctrl+Shift+R (hard refresh)
    ```
 
 2. **Optimize Frontend Performance:**
+
    ```javascript
    // Add compression middleware
    const compression = require('compression');
    app.use(compression());
-   
+
    // Enable browser caching
-   app.use(express.static('public', {
-     maxAge: '1y',
-     etag: false
-   }));
+   app.use(
+     express.static('public', {
+       maxAge: '1y',
+       etag: false,
+     })
+   );
    ```
 
 ---
@@ -496,6 +540,7 @@ curl http://localhost:3000
 ## 🛠️ Self-Service Diagnostic Tools
 
 ### Automated Health Check Script
+
 ```bash
 #!/bin/bash
 # health-check.sh
@@ -519,7 +564,7 @@ df -h | grep -E "(Filesystem|/dev/)"
 
 echo ""
 echo "API Health:"
-curl -s http://localhost:8080/health | jq . || echo "API not responding"
+curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/health | jq . || echo "API not responding"
 
 echo ""
 echo "Database Status:"
@@ -535,6 +580,7 @@ echo "Health check complete"
 ```
 
 ### Performance Monitoring Script
+
 ```bash
 #!/bin/bash
 # performance-monitor.sh
@@ -545,14 +591,14 @@ echo "============================="
 # API response times
 echo "API Response Times:"
 for endpoint in "/health" "/api/v1/properties/search?limit=10" "/api/v1/market/trends"; do
-  time=$(curl -w "%{time_total}" -s -o /dev/null http://localhost:8080$endpoint)
+  time=$(curl -w "%{time_total}" -s -o /dev/null http://localhost:\${{TF_ADMIN_PORT:-8080}}$endpoint)
   echo "$endpoint: ${time}s"
 done
 
 echo ""
 echo "Database Performance:"
 psql $DATABASE_URL -c "
-  SELECT 
+  SELECT
     schemaname,
     tablename,
     n_tup_ins as inserts,
@@ -575,12 +621,12 @@ redis-cli -u $REDIS_URL info stats | grep -E "(instantaneous_ops_per_sec|used_me
 
 ### When to Escalate
 
-| Issue Type | Escalate If | Contact |
-|------------|-------------|---------|
-| **Critical System Down** | > 15 minutes downtime | Emergency: +1-800-TERRA-911 |
+| Issue Type               | Escalate If              | Contact                           |
+| ------------------------ | ------------------------ | --------------------------------- |
+| **Critical System Down** | > 15 minutes downtime    | Emergency: +1-800-TERRA-911       |
 | **Data Loss/Corruption** | Any data integrity issue | Critical: critical@terrafusion.ai |
-| **Security Incident** | Suspected breach | Security: security@terrafusion.ai |
-| **Performance Issues** | > 1 hour degradation | Support: support@terrafusion.ai |
+| **Security Incident**    | Suspected breach         | Security: security@terrafusion.ai |
+| **Performance Issues**   | > 1 hour degradation     | Support: support@terrafusion.ai   |
 
 ### Escalation Information to Provide
 
@@ -596,6 +642,7 @@ redis-cli -u $REDIS_URL info stats | grep -E "(instantaneous_ops_per_sec|used_me
 ## 📋 Issue Prevention Checklist
 
 ### Daily Monitoring
+
 - [ ] Check system resource usage
 - [ ] Review error logs
 - [ ] Monitor API response times
@@ -603,6 +650,7 @@ redis-cli -u $REDIS_URL info stats | grep -E "(instantaneous_ops_per_sec|used_me
 - [ ] Check database performance
 
 ### Weekly Reviews
+
 - [ ] Analyze performance trends
 - [ ] Review security logs
 - [ ] Update documentation
@@ -610,6 +658,7 @@ redis-cli -u $REDIS_URL info stats | grep -E "(instantaneous_ops_per_sec|used_me
 - [ ] Test disaster recovery procedures
 
 ### Monthly Maintenance
+
 - [ ] Update dependencies
 - [ ] Optimize database indexes
 - [ ] Clean up old logs and data
@@ -628,4 +677,4 @@ redis-cli -u $REDIS_URL info stats | grep -E "(instantaneous_ops_per_sec|used_me
 
 ---
 
-*Troubleshooting guide last updated: August 3, 2025*
+_Troubleshooting guide last updated: August 3, 2025_

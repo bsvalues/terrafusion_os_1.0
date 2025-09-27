@@ -3,7 +3,7 @@
  * Implements and optimizes surface code for fault-tolerant quantum computing
  */
 
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 
 export class SurfaceCodeBot extends EventEmitter {
   private isActive: boolean = false;
@@ -18,7 +18,7 @@ export class SurfaceCodeBot extends EventEmitter {
 
   private initializeLattice(): void {
     this.latticeConfiguration = {
-      type: "rotated_surface_code",
+      type: 'rotated_surface_code',
       dimensions: [this.codeDistance, this.codeDistance],
       data_qubits: Math.pow(this.codeDistance, 2),
       ancilla_qubits: Math.pow(this.codeDistance, 2) - 1,
@@ -30,13 +30,13 @@ export class SurfaceCodeBot extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    console.log("🏁 Initializing Surface Code Bot...");
+    console.log('🏁 Initializing Surface Code Bot...');
     this.isActive = true;
-    this.emit("initialized");
+    this.emit('initialized');
   }
 
   async deploy(): Promise<void> {
-    console.log("🚀 Deploying surface code error correction...");
+    console.log('🚀 Deploying surface code error correction...');
     this.startErrorDetectionLoop();
   }
 
@@ -52,7 +52,7 @@ export class SurfaceCodeBot extends EventEmitter {
     const syndrome = this.measureSyndrome();
 
     if (syndrome.hasError) {
-      this.emit("error-detected", {
+      this.emit('error-detected', {
         type: syndrome.errorType,
         location: syndrome.location,
         severity: syndrome.severity,
@@ -60,7 +60,7 @@ export class SurfaceCodeBot extends EventEmitter {
       });
 
       const correction = this.decodeAndCorrect(syndrome);
-      this.emit("error-corrected", {
+      this.emit('error-corrected', {
         correction: correction,
         success: correction.success,
         fidelity: correction.fidelityRecovered,
@@ -74,10 +74,8 @@ export class SurfaceCodeBot extends EventEmitter {
 
     return {
       hasError,
-      errorType: hasError ? (Math.random() > 0.5 ? "X" : "Z") : null,
-      location: hasError
-        ? Math.floor(Math.random() * this.latticeConfiguration.data_qubits)
-        : null,
+      errorType: hasError ? (Math.random() > 0.5 ? 'X' : 'Z') : null,
+      location: hasError ? Math.floor(Math.random() * this.latticeConfiguration.data_qubits) : null,
       severity: hasError ? Math.random() : 0,
       stabilizer_outcomes: this.generateStabilizerOutcomes(),
     };
@@ -86,8 +84,7 @@ export class SurfaceCodeBot extends EventEmitter {
   private generateStabilizerOutcomes(): number[] {
     const outcomes = [];
     const totalStabilizers =
-      this.latticeConfiguration.stabilizers.X_type +
-      this.latticeConfiguration.stabilizers.Z_type;
+      this.latticeConfiguration.stabilizers.X_type + this.latticeConfiguration.stabilizers.Z_type;
 
     for (let i = 0; i < totalStabilizers; i++) {
       outcomes.push(Math.random() > 0.95 ? 1 : 0);
@@ -116,31 +113,29 @@ export class SurfaceCodeBot extends EventEmitter {
   }
 
   async implementForDistributedSystem(config: any): Promise<any> {
-    console.log(
-      "🌐 Implementing surface code for distributed quantum system...",
-    );
+    console.log('🌐 Implementing surface code for distributed quantum system...');
 
     return {
       distributed_lattice: await this.createDistributedLattice(config),
-      communication_protocol: "lattice_surgery",
-      logical_qubit_encoding: "distributed_stabilizers",
+      communication_protocol: 'lattice_surgery',
+      logical_qubit_encoding: 'distributed_stabilizers',
       fault_tolerance_threshold: 0.01,
-      scalability: "modular_architecture",
+      scalability: 'modular_architecture',
     };
   }
 
   private async createDistributedLattice(config: any): Promise<any> {
     return {
       nodes: config.logical_qubits,
-      lattice_size_per_node: config.lattice_size || "adaptive",
-      inter_node_connections: "quantum_channels",
-      synchronization: "distributed_syndrome_extraction",
+      lattice_size_per_node: config.lattice_size || 'adaptive',
+      inter_node_connections: 'quantum_channels',
+      synchronization: 'distributed_syndrome_extraction',
       code_distance: config.code_distance,
     };
   }
 
   increaseCodeDistance(): void {
-    console.log("📏 Increasing surface code distance for better protection...");
+    console.log('📏 Increasing surface code distance for better protection...');
     this.codeDistance += 2; // Always increase by even numbers
     this.initializeLattice();
   }
@@ -158,6 +153,6 @@ export class SurfaceCodeBot extends EventEmitter {
 
   async shutdown(): Promise<void> {
     this.isActive = false;
-    this.emit("shutdown");
+    this.emit('shutdown');
   }
 }

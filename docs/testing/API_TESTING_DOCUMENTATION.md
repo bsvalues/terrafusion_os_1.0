@@ -4,11 +4,12 @@
 
 ## Overview
 
-This document provides comprehensive API documentation for all testing endpoints used in the PHASE 6 Week 10 comprehensive testing framework.
+This document provides comprehensive API documentation for all testing endpoints
+used in the PHASE 6 Week 10 comprehensive testing framework.
 
 ## Base URLs
 
-- **Development**: `http://localhost:5000`
+- **Development**: `http://localhost:\${{TF_API_PORT:-5000}}`
 - **Staging**: `https://staging.terrafusion.gov`
 - **Production**: `https://api.terrafusion.gov`
 
@@ -23,6 +24,7 @@ Authorization: Bearer <jwt_token>
 ### Authentication Endpoints
 
 #### Login
+
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -34,6 +36,7 @@ Content-Type: application/json
 ```
 
 **Response**:
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -47,6 +50,7 @@ Content-Type: application/json
 ```
 
 #### Jurisdiction Login
+
 ```http
 POST /api/auth/jurisdiction-login
 Content-Type: application/json
@@ -61,11 +65,13 @@ Content-Type: application/json
 ## System Health Endpoints
 
 ### Comprehensive Health Check
+
 ```http
 GET /api/health/comprehensive
 ```
 
 **Response**:
+
 ```json
 {
   "status": "healthy|degraded|unhealthy",
@@ -95,6 +101,7 @@ GET /api/health/comprehensive
 ```
 
 ### Component Health Checks
+
 ```http
 GET /api/health/system
 GET /api/health/database
@@ -108,6 +115,7 @@ GET /api/health/security
 ## Performance Testing Endpoints
 
 ### Classical Benchmark
+
 ```http
 POST /api/performance/classical-benchmark
 Content-Type: application/json
@@ -119,6 +127,7 @@ Content-Type: application/json
 ```
 
 ### Quantum Benchmark
+
 ```http
 POST /api/performance/quantum-benchmark
 Content-Type: application/json
@@ -131,6 +140,7 @@ Content-Type: application/json
 ```
 
 ### Query Performance
+
 ```http
 GET /api/performance/slow-queries
 POST /api/performance/optimize-query
@@ -143,6 +153,7 @@ Content-Type: application/json
 ```
 
 ### Cache Configuration
+
 ```http
 POST /api/cache/configure
 Content-Type: application/json
@@ -166,6 +177,7 @@ Content-Type: application/json
 ```
 
 ### Performance Configuration
+
 ```http
 POST /api/performance/gc-config
 Content-Type: application/json
@@ -190,6 +202,7 @@ Content-Type: application/json
 ## Security Testing Endpoints
 
 ### Security Status
+
 ```http
 GET /api/security/access-control-status
 GET /api/security/audit-status
@@ -201,6 +214,7 @@ GET /api/security/integrity
 ```
 
 **Example Response**:
+
 ```json
 {
   "rbac_enabled": true,
@@ -214,6 +228,7 @@ GET /api/security/integrity
 ```
 
 ### Rate Limiting
+
 ```http
 POST /api/security/rate-limit
 Content-Type: application/json
@@ -229,6 +244,7 @@ Content-Type: application/json
 ## AI Swarm Testing Endpoints
 
 ### Swarm Intelligence
+
 ```http
 POST /api/swarmintelligence/initialize
 Content-Type: application/json
@@ -267,6 +283,7 @@ GET /api/swarmintelligence/monitor
 ```
 
 ### AI Processing
+
 ```http
 POST /api/ai/swarm-optimization
 Content-Type: application/json
@@ -286,6 +303,7 @@ X-Jurisdiction-ID: string
 ## Phase Integration Endpoints
 
 ### Omniscient Orchestrator
+
 ```http
 POST /api/omniscientorchestrator/initialize
 Content-Type: application/json
@@ -305,11 +323,13 @@ PUT /api/omniscientorchestrator/configuration
 ```
 
 ### Consciousness Status
+
 ```http
 GET /api/consciousness/status
 ```
 
 **Response**:
+
 ```json
 {
   "emergenceLevel": 0.89,
@@ -319,6 +339,7 @@ GET /api/consciousness/status
 ```
 
 ### Advanced Phase Endpoints
+
 ```http
 GET /api/multiversal/status
 GET /api/cosmic/consciousness-level
@@ -332,11 +353,13 @@ GET /api/singularity/transcendence-status
 ## Harris PACS Integration
 
 ### Connectivity
+
 ```http
 GET /api/harris-pacs/health
 ```
 
 **Response**:
+
 ```json
 {
   "connected": true,
@@ -346,6 +369,7 @@ GET /api/harris-pacs/health
 ```
 
 ### Data Operations
+
 ```http
 GET /api/harris-pacs/properties/{parcelId}
 POST /api/harris-pacs/sync
@@ -360,6 +384,7 @@ Content-Type: application/json
 ## Data Management Endpoints
 
 ### Data Ingestion
+
 ```http
 POST /api/data-ingestion/property
 Content-Type: application/json
@@ -371,6 +396,7 @@ Content-Type: application/json
 ```
 
 ### Analytics
+
 ```http
 GET /api/analytics/property/{parcelId}
 GET /api/analytics/dashboard
@@ -380,11 +406,13 @@ X-Jurisdiction-ID: string
 ## Administrative Endpoints
 
 ### System Metrics
+
 ```http
 GET /api/admin/system/metrics
 ```
 
 **Response**:
+
 ```json
 {
   "activeUsers": 1500,
@@ -399,11 +427,13 @@ GET /api/admin/system/metrics
 ```
 
 ### Database Metrics
+
 ```http
 GET /api/admin/database/metrics
 ```
 
 **Response**:
+
 ```json
 {
   "activeConnections": 150,
@@ -420,6 +450,7 @@ GET /api/admin/database/metrics
 ```
 
 ### Jurisdiction Management
+
 ```http
 POST /api/admin/jurisdiction/initialize
 Content-Type: application/json
@@ -445,6 +476,7 @@ Content-Type: application/json
 ```
 
 ### Audit Logs
+
 ```http
 GET /api/admin/audit-logs
 ```
@@ -452,12 +484,14 @@ GET /api/admin/audit-logs
 ## WebSocket Endpoints
 
 ### System Hub
+
 ```
-ws://localhost:5000/hubs/system
+ws://localhost:\${{TF_API_PORT:-5000}}/hubs/system
 wss://staging.terrafusion.gov/hubs/system
 ```
 
 **Message Format**:
+
 ```json
 {
   "type": "system-status|performance-update|security-alert",
@@ -469,13 +503,15 @@ wss://staging.terrafusion.gov/hubs/system
 ```
 
 ### Omniscient Hub
+
 ```
-ws://localhost:5000/hubs/omniscient
+ws://localhost:\${{TF_API_PORT:-5000}}/hubs/omniscient
 ```
 
 ## Error Responses
 
 ### Standard Error Format
+
 ```json
 {
   "error": {
@@ -503,6 +539,7 @@ ws://localhost:5000/hubs/omniscient
 ## Rate Limiting
 
 ### Default Limits
+
 - **Authentication**: 10 requests per minute
 - **Health Checks**: 60 requests per minute
 - **Performance Tests**: 5 requests per minute
@@ -510,6 +547,7 @@ ws://localhost:5000/hubs/omniscient
 - **General API**: 1000 requests per 15 minutes
 
 ### Rate Limit Headers
+
 ```http
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -519,7 +557,9 @@ X-RateLimit-Reset: 1755555600
 ## Testing Best Practices
 
 ### Request Headers
+
 Always include:
+
 ```http
 Content-Type: application/json
 Authorization: Bearer <token>
@@ -528,12 +568,15 @@ User-Agent: Terrafusion-Testing/1.0
 ```
 
 ### Retry Logic
+
 Implement exponential backoff for failed requests:
+
 - Initial delay: 1 second
 - Maximum delay: 30 seconds
 - Maximum retries: 3
 
 ### Timeout Configuration
+
 - **Health checks**: 5 seconds
 - **Performance tests**: 30 seconds
 - **Security tests**: 60 seconds

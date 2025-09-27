@@ -1,0 +1,99 @@
+{
+  "name": "TerraBank",
+  "version": "1.0.0",
+  "description": "Government Financial Infrastructure - Banking, payments, and compliance for county operations",
+  "author": "TerraFusion Engineering Team",
+  "category": "financial",
+  "tier": "tier-1-core",
+  "government_grade": true,
+  "classification": "sensitive",
+  "requires_certification": true,
+  
+  "pricing": {
+    "base_monthly": 89.00,
+    "per_transaction": 0.25,
+    "compliance_tier": "government",
+    "volume_discounts": true
+  },
+  
+  "capabilities": [
+    "government_payments",
+    "fund_accounting", 
+    "compliance_reporting",
+    "sponsor_bank_integration",
+    "fednow_payments",
+    "ach_processing",
+    "wire_transfers",
+    "audit_trails",
+    "dual_approval_workflows",
+    "real_time_reconciliation"
+  ],
+  
+  "integrations": {
+    "rust_engine": "financial-engine",
+    "backend_services": [
+      "TerraFusion.Banking",
+      "TerraFusion.Payments", 
+      "TerraFusion.Compliance"
+    ],
+    "external_apis": [
+      "treasury_prime",
+      "unit_banking",
+      "fednow_rails",
+      "ach_networks"
+    ]
+  },
+  
+  "compliance": {
+    "frameworks": ["FISMA", "SOC2", "PCI_DSS"],
+    "audit_retention": "7_years",
+    "encryption": "AES_256_GCM",
+    "access_control": "role_based"
+  },
+  
+  "performance_standards": {
+    "payment_processing": "500ms",
+    "compliance_reporting": "real_time", 
+    "reconciliation": "1s_per_10k_transactions",
+    "availability": "99.99%"
+  },
+  
+  "dependencies": {
+    "government-core": ">=1.0.0",
+    "security-layer": ">=1.0.0", 
+    "ai-swarm": ">=1.0.0"
+  },
+  
+  "endpoints": {
+    "health": "/modules/terra-bank/health",
+    "api": "/modules/terra-bank/api",
+    "ui": "/modules/terra-bank/ui"
+  },
+  
+  "features": {
+    "sponsor_bank_mvp": {
+      "description": "Banking-as-a-Service through sponsor bank partnerships",
+      "ready": true
+    },
+    "government_payments": {
+      "description": "Secure citizen payment processing with PCI compliance",
+      "ready": true  
+    },
+    "fund_accounting": {
+      "description": "Multi-fund government accounting with automated reconciliation",
+      "ready": true
+    },
+    "compliance_automation": {
+      "description": "Automated regulatory reporting and audit trail generation",
+      "ready": true
+    },
+    "real_time_payments": {
+      "description": "FedNow and ACH payment processing with real-time settlement",
+      "ready": true
+    },
+    "dual_approval": {
+      "description": "Configurable dual approval workflows for large transactions",
+      "ready": true
+    }
+  }
+}

@@ -1,0 +1,101 @@
+# TerraFusion OS Production Infrastructure
+# Helmfile - One-Command Government Deployment
+# Government. Transcended.
+
+repositories:
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: kong
+    url: https://charts.konghq.com
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+
+environments:
+  production:
+    values:
+      - values/production.yaml
+  staging:
+    values:
+      - values/staging.yaml
+  development:
+    values:
+      - values/development.yaml
+
+releases:
+  # Certificate Management for app.terrafusion.gov
+  - name: cert-manager
+    namespace: cert-manager
+    chart: jetstack/cert-manager
+    version: v1.15.3
+    createNamespace: true
+    values:
+      - values/cert-manager.yaml
+    hooks:
+      - events: ["prepare"]
+        command: "kubectl"
+        args: ["apply", "-f", "https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.crds.yaml"]
+
+  # API Gateway & Ingress
+  - name: kong
+    namespace: kong
+    chart: kong/kong
+    version: 2.39.3
+    createNamespace: true
+    values:
+      - values/kong.yaml
+    needs:
+      - cert-manager
+
+  # Monitoring Stack
+  - name: kube-prometheus-stack
+    namespace: monitoring
+    chart: prometheus-community/kube-prometheus-stack
+    version: 61.8.0
+    createNamespace: true
+    values:
+      - values/prometheus.yaml
+
+  # Observability Dashboard
+  - name: grafana
+    namespace: monitoring
+    chart: grafana/grafana
+    version: 8.4.2
+    values:
+      - values/grafana.yaml
+    needs:
+      - kube-prometheus-stack
+
+  # TerraFusion Application Stack
+  - name: terrafusion-os
+    namespace: terrafusion
+    chart: ./charts/terrafusion-umbrella
+    createNamespace: true
+    values:
+      - values/terrafusion.yaml
+    needs:
+      - kong
+      - cert-manager
+    hooks:
+      - events: ["postsync"]
+        command: "kubectl"
+        args: ["apply", "-f", "manifests/cluster-issuer-prod.yaml"]
+      - events: ["postsync"]
+        command: "kubectl"
+        args: ["apply", "-f", "manifests/certificate-app.yaml"]
+
+# Helmfile Configuration
+helmDefaults:
+  createNamespace: true
+  timeout: 600
+  wait: true
+  waitForJobs: true
+  historyMax: 5
+  cleanupOnFail: true
+  atomic: true
+
+# Government Compliance & Security
+# FISMA, NIST-800-53, Section508, WCAG2.1, SOC2

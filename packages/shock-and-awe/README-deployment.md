@@ -18,12 +18,14 @@ npm run health-check
 ## 📋 Prerequisites
 
 ### System Requirements
-- **Node.js**: 18.0+ 
+
+- **Node.js**: 18.0+
 - **npm**: 9.0+
 - **lftp**: For FTP deployment (auto-installed)
 - **Hostinger Account**: With FTP access
 
 ### Domain Setup
+
 - Domain: `terrafusionmarket.io`
 - DNS pointed to Hostinger servers
 - SSL certificate enabled (automatic with Hostinger)
@@ -33,6 +35,7 @@ npm run health-check
 ### Step 1: Environment Setup
 
 1. **Configure Environment Variables**
+
 ```bash
 # Copy production environment template
 cp hostinger-config/.env.production .env
@@ -42,13 +45,14 @@ nano .env
 ```
 
 2. **Required Environment Variables**
+
 ```env
 # FTP Configuration
 FTP_HOST=files.000webhost.com
 FTP_USER=your_hostinger_username
 FTP_PASS=your_hostinger_password
 
-# Database Configuration  
+# Database Configuration
 DB_HOST=localhost
 DB_NAME=your_database_name
 DB_USER=your_database_user
@@ -63,12 +67,14 @@ DB_PASS=your_database_password
    - Create new MySQL database
 
 2. **Import Database Schema**
+
 ```sql
 -- Execute hostinger-config/database-setup.sql in Hostinger MySQL panel
 -- This creates all required tables and initial data
 ```
 
 3. **Verify Database Connection**
+
 ```bash
 # Test database connectivity
 mysql -h localhost -u your_user -p your_database
@@ -88,6 +94,7 @@ ls -la dist/
 ```
 
 **Build Output Structure:**
+
 ```
 dist/
 ├── index.html              # Main application
@@ -114,6 +121,7 @@ dist/
 ```
 
 **Deployment Process:**
+
 1. ✅ Environment validation
 2. ✅ Pre-deployment checks
 3. ✅ Create backup of current site
@@ -149,6 +157,7 @@ npm run security
 ## 🔧 Configuration Files
 
 ### Apache Configuration (.htaccess)
+
 - ✅ HTTPS redirect enforcement
 - ✅ Security headers (HSTS, CSP, XSS protection)
 - ✅ Gzip compression
@@ -157,6 +166,7 @@ npm run security
 - ✅ Security hardening
 
 ### Environment Configuration
+
 ```bash
 # Production settings
 NODE_ENV=production
@@ -184,7 +194,7 @@ shock-and-awe/
 ├── build-production.sh                 # Production build script
 ├── webpack.config.js                   # Build configuration
 ├── postcss.config.js                   # CSS processing
-├── 
+├──
 ├── hostinger-config/                   # Hosting configuration
 │   ├── .env.production                # Environment variables
 │   ├── maintenance.html               # Maintenance page
@@ -192,17 +202,17 @@ shock-and-awe/
 │   ├── database-update.sql            # Database migrations
 │   ├── ssl-setup.sh                   # SSL configuration
 │   └── backup-restore.sh              # Backup system
-├── 
+├──
 ├── js/                                 # JavaScript source
 │   ├── main.js                        # Main application logic
 │   ├── demo.js                        # Demo functionality
 │   ├── animations.js                  # UI animations
 │   └── quantum-viz.js                 # Quantum visualization
-├── 
+├──
 ├── styles/                            # CSS source
 │   ├── main.css                       # Main styles
 │   └── components.css                 # Component styles
-├── 
+├──
 └── assets/                            # Static assets
     ├── logo.svg                       # Brand logo
     ├── favicon.ico                    # Site icon
@@ -212,6 +222,7 @@ shock-and-awe/
 ## 🛠️ Maintenance Commands
 
 ### Backup Management
+
 ```bash
 # Create full backup
 ./hostinger-config/backup-restore.sh --full
@@ -233,6 +244,7 @@ shock-and-awe/
 ```
 
 ### Maintenance Mode
+
 ```bash
 # Enable maintenance mode
 ./hostinger-config/backup-restore.sh --maintenance-on
@@ -242,6 +254,7 @@ shock-and-awe/
 ```
 
 ### Monitoring
+
 ```bash
 # SSL certificate monitoring
 ./hostinger-config/ssl-setup.sh
@@ -261,6 +274,7 @@ npm run status
 ### Common Issues
 
 #### 1. FTP Connection Failed
+
 ```bash
 # Check FTP credentials
 echo $FTP_USER $FTP_HOST
@@ -270,6 +284,7 @@ lftp -u $FTP_USER,$FTP_PASS $FTP_HOST
 ```
 
 #### 2. Build Errors
+
 ```bash
 # Clear node modules and reinstall
 rm -rf node_modules package-lock.json
@@ -281,6 +296,7 @@ npm run build:production
 ```
 
 #### 3. SSL Issues
+
 ```bash
 # Check SSL status
 curl -I https://terrafusionmarket.io
@@ -293,6 +309,7 @@ curl -I https://terrafusionmarket.io | grep -i security
 ```
 
 #### 4. Database Connection Issues
+
 ```bash
 # Test database connection
 mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME
@@ -302,6 +319,7 @@ mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SHOW TABLES;"
 ```
 
 #### 5. Performance Issues
+
 ```bash
 # Analyze bundle size
 npm run analyze
@@ -314,6 +332,7 @@ curl -w "@curl-format.txt" -o /dev/null -s "https://terrafusionmarket.io"
 ```
 
 ### Debug Mode
+
 ```bash
 # Enable detailed logging
 DEBUG=true ./deploy.sh
@@ -328,6 +347,7 @@ npm run logs
 ## 🔄 Update Procedures
 
 ### Application Updates
+
 ```bash
 # 1. Create backup
 ./hostinger-config/backup-restore.sh --full
@@ -347,6 +367,7 @@ npm run health-check
 ```
 
 ### Database Updates
+
 ```bash
 # Run database migrations
 mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME < hostinger-config/database-update.sql
@@ -358,6 +379,7 @@ mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SELECT setting_value FROM 
 ## 📊 Performance Optimization
 
 ### Hostinger-Specific Optimizations
+
 - ✅ Gzip compression enabled
 - ✅ Browser caching configured
 - ✅ Image optimization
@@ -366,6 +388,7 @@ mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SELECT setting_value FROM 
 - ✅ Resource preloading
 
 ### Monitoring Metrics
+
 - Page load time: < 3 seconds
 - First contentful paint: < 1.5 seconds
 - Lighthouse score: > 90
@@ -375,6 +398,7 @@ mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SELECT setting_value FROM 
 ## 🔐 Security Features
 
 ### Implemented Security
+
 - ✅ HTTPS enforcement
 - ✅ Security headers (HSTS, CSP, XSS)
 - ✅ SQL injection prevention
@@ -385,6 +409,7 @@ mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SELECT setting_value FROM 
 - ✅ Hotlinking prevention
 
 ### Security Monitoring
+
 ```bash
 # Security audit
 npm run security
@@ -399,17 +424,20 @@ npm audit --audit-level=moderate
 ## 📞 Support & Resources
 
 ### Hostinger Resources
+
 - **Control Panel**: https://hpanel.hostinger.com
 - **Documentation**: https://support.hostinger.com
 - **Support**: Live chat in control panel
 
 ### Application Support
+
 - **Domain**: https://terrafusionmarket.io
 - **Status Page**: https://status.terrafusionmarket.io
 - **Documentation**: This README
 - **Logs**: `./logs/` directory
 
 ### Emergency Procedures
+
 1. **Site Down**: Check Hostinger status, verify DNS
 2. **SSL Issues**: Contact Hostinger support
 3. **Database Issues**: Check connection, run diagnostics
@@ -436,7 +464,7 @@ After deployment, verify:
 ## 🚀 Next Steps
 
 1. **Configure Monitoring**: Set up uptime monitoring
-2. **SEO Optimization**: Submit sitemap to search engines  
+2. **SEO Optimization**: Submit sitemap to search engines
 3. **Analytics**: Configure Google Analytics
 4. **CDN**: Consider CloudFlare integration
 5. **Backup Schedule**: Set up automated backups

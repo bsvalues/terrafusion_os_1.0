@@ -3,6 +3,7 @@
 ## Prerequisites
 
 ### Required Software
+
 - **.NET 8 SDK** - For backend API development
 - **Node.js 18+** - For frontend development and mock backend
 - **Docker Desktop** - For containerized development (optional)
@@ -11,6 +12,7 @@
 ### Installation Commands
 
 #### Windows (PowerShell)
+
 ```powershell
 # Install .NET 8 SDK
 winget install Microsoft.DotNet.SDK.8
@@ -30,14 +32,17 @@ docker --version
 ## Backend Setup
 
 ### Option 1: .NET Development Server
+
 ```bash
 cd backend
 dotnet restore
 dotnet run --project Terrafusion.API
 ```
-Backend will be available at: `https://localhost:5001`
+
+Backend will be available at: `https://localhost:\${{TF_API_HTTPS_PORT:-5001}}`
 
 ### Option 2: Docker Compose
+
 ```bash
 # Start all services
 docker-compose -f docker-compose.dev.yml up
@@ -47,6 +52,7 @@ docker-compose -f docker-compose.dev.yml up backend
 ```
 
 ### Option 3: Mock Backend (Development Only)
+
 ```bash
 # Install dependencies
 npm install express cors
@@ -62,42 +68,45 @@ cd frontend
 npm install
 npm run dev
 ```
-Frontend will be available at: `http://localhost:3000`
+
+Frontend will be available at: `http://localhost:\${{TF_API_HTTPS_PORT:-5001}}`
 
 ## Environment Variables
 
 ### Frontend (.env.local)
+
 ```env
-VITE_API_URL=https://localhost:5001/api
+VITE_API_URL=https://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api
 VITE_ENVIRONMENT=development
 ```
 
 ### Backend (appsettings.Development.json)
+
 ```json
 {
   "ConnectionStrings": {
     "DefaultConnection": "Data Source=./data/terrafusion.db"
   },
-  "AllowedOrigins": [
-    "http://localhost:3000",
-    "https://localhost:3001"
-  ]
+  "AllowedOrigins": ["http://localhost:\${{TF_API_HTTPS_PORT:-5001}}", "https://localhost:\${{TF_API_HTTPS_PORT:-5001}}"]
 }
 ```
 
 ## Common Issues & Solutions
 
 ### Backend Connection Errors
+
 - **Error**: `ERR_CONNECTION_REFUSED`
 - **Solution**: Start backend server or use mock backend
 - **Fallback**: Frontend APIs include mock data fallbacks
 
 ### Process Environment Errors
+
 - **Error**: `process is not defined`
 - **Solution**: Use `import.meta.env` instead of `process.env` in frontend
 - **Fixed**: Already resolved in systemAPI.ts and moduleAPI.ts
 
 ### React Router Warnings
+
 - **Warning**: Future flag warnings
 - **Solution**: Update router configuration (pending)
 
@@ -119,10 +128,16 @@ VITE_ENVIRONMENT=development
 ## Troubleshooting
 
 ### No Backend Available
-The frontend is designed to work without a backend using mock data. All API services include fallback responses for offline development.
+
+The frontend is designed to work without a backend using mock data. All API
+services include fallback responses for offline development.
 
 ### Module Launch Issues
-Module launching is simulated when backend is unavailable. Real module launching requires the full .NET backend and Tauri runtime.
+
+Module launching is simulated when backend is unavailable. Real module launching
+requires the full .NET backend and Tauri runtime.
 
 ### Database Issues
-For development, SQLite database is created automatically. For production deployment, use the migration scripts in the `database/` directory.
+
+For development, SQLite database is created automatically. For production
+deployment, use the migration scripts in the `database/` directory.

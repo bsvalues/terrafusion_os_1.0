@@ -278,7 +278,7 @@ main() {
         # Verify application health
         log "Verifying application health..."
         sleep 5
-        if curl -f http://localhost:8080/health &>/dev/null; then
+        if curl -f http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &>/dev/null; then
             log "Application health check passed"
         else
             log "WARNING: Application health check failed"

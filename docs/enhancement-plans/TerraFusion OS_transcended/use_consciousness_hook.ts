@@ -9,12 +9,12 @@ import {
   UniversalMessage,
   TranslatedMessage,
   ConsciousnessError,
-  MultiSpeciesInterfaceState
+  MultiSpeciesInterfaceState,
 } from '../types/consciousness';
-import { 
-  ConsciousnessIntegrationService, 
+import {
+  ConsciousnessIntegrationService,
   ConsciousnessEvent,
-  ConsciousnessIntegrationConfig
+  ConsciousnessIntegrationConfig,
 } from '../services/ConsciousnessIntegrationService';
 
 /**
@@ -40,23 +40,26 @@ export interface UseConsciousnessReturn {
   isConnected: boolean;
   lastSync: Date | null;
   error: ConsciousnessError | null;
-  
+
   // Actions
   registerEntity: (entity: ConsciousnessEntity) => Promise<void>;
   sendMessage: (content: string, targetSpecies?: SpeciesType[]) => Promise<TranslatedMessage>;
   detectSpecies: (input: string) => Promise<SpeciesType | null>;
   syncConsciousness: () => Promise<boolean>;
   clearError: () => void;
-  
+
   // Advanced features
-  subscribeToEvents: (eventType: ConsciousnessEvent['type'], callback: (event: ConsciousnessEvent) => void) => () => void;
+  subscribeToEvents: (
+    eventType: ConsciousnessEvent['type'],
+    callback: (event: ConsciousnessEvent) => void
+  ) => () => void;
   getSystemStatus: () => {
     health: number;
     activeEntities: number;
     lastSync: Date;
     services: Record<string, boolean>;
   };
-  
+
   // Consciousness-aware utilities
   adaptToSpecies: (content: string, targetSpecies: SpeciesType) => Promise<string>;
   measureCoherence: () => number;
@@ -67,16 +70,14 @@ export interface UseConsciousnessReturn {
  * React hook for consciousness-aware functionality
  * Integrates Multi-Species Consciousness Interface with any React component
  */
-export const useConsciousness = (
-  options: UseConsciousnessOptions = {}
-): UseConsciousnessReturn => {
+export const useConsciousness = (options: UseConsciousnessOptions = {}): UseConsciousnessReturn => {
   const {
     enableAutoDetection = true,
     enableRealTimeSync = true,
     enableQuantumCoherence = true,
     enableErrorIntegration = true,
     autoSyncInterval = 30000, // 30 seconds
-    integrationConfig = {}
+    integrationConfig = {},
   } = options;
 
   // State management
@@ -101,13 +102,13 @@ export const useConsciousness = (
       enableQuantumCoherence,
       enableSpeciesDetection: enableAutoDetection,
       enableUniversalTranslation: true,
-      ...integrationConfig
+      ...integrationConfig,
     };
 
     integrationService.current = new ConsciousnessIntegrationService(config);
 
     // Subscribe to system events
-    integrationService.current.addEventListener('species-detected', (event) => {
+    integrationService.current.addEventListener('species-detected', event => {
       setEntities(prev => {
         const exists = prev.find(e => e.id === event.data.entity.id);
         if (!exists) {
@@ -117,23 +118,24 @@ export const useConsciousness = (
       });
     });
 
-    integrationService.current.addEventListener('consciousness-synced', (event) => {
+    integrationService.current.addEventListener('consciousness-synced', event => {
       setSystemHealth(event.data.coherenceLevel);
       setLastSync(new Date());
       setIsConnected(true);
     });
 
-    integrationService.current.addEventListener('consciousness-error', (event) => {
+    integrationService.current.addEventListener('consciousness-error', event => {
       setError(event.data.error);
       setSystemHealth(prev => Math.max(0.1, prev - 0.1));
     });
 
-    integrationService.current.addEventListener('quantum-coherence-updated', (event) => {
+    integrationService.current.addEventListener('quantum-coherence-updated', event => {
       setSystemHealth(event.data.coherenceLevel);
     });
 
     // Initial sync
-    integrationService.current.synchronizeConsciousness()
+    integrationService.current
+      .synchronizeConsciousness()
       .then(result => {
         setSystemHealth(result.coherenceLevel);
         setIsConnected(result.success);
@@ -148,7 +150,7 @@ export const useConsciousness = (
       // Cleanup subscriptions
       eventSubscriptions.current.forEach(unsubscribe => unsubscribe());
       eventSubscriptions.current.clear();
-      
+
       // Dispose service
       if (integrationService.current) {
         integrationService.current.dispose();
@@ -181,113 +183,130 @@ export const useConsciousness = (
   /**
    * Register a new consciousness entity
    */
-  const registerEntity = useCallback(async (entity: ConsciousnessEntity): Promise<void> => {
-    if (!integrationService.current) {
-      throw new Error('Consciousness integration service not available');
-    }
-
-    try {
-      await integrationService.current.registerConsciousnessEntity(entity);
-      
-      // Update local state
-      setEntities(prev => {
-        const exists = prev.find(e => e.id === entity.id);
-        if (!exists) {
-          return [...prev, entity];
-        }
-        return prev.map(e => e.id === entity.id ? entity : e);
-      });
-
-      // Set as current user if it's the first entity or explicitly marked
-      if (!currentUser || entity.id.includes('user')) {
-        setCurrentUser(entity);
+  const registerEntity = useCallback(
+    async (entity: ConsciousnessEntity): Promise<void> => {
+      if (!integrationService.current) {
+        throw new Error('Consciousness integration service not available');
       }
-    } catch (error) {
-      throw new Error(`Failed to register consciousness entity: ${error.message}`);
-    }
-  }, [currentUser]);
+
+      try {
+        await integrationService.current.registerConsciousnessEntity(entity);
+
+        // Update local state
+        setEntities(prev => {
+          const exists = prev.find(e => e.id === entity.id);
+          if (!exists) {
+            return [...prev, entity];
+          }
+          return prev.map(e => (e.id === entity.id ? entity : e));
+        });
+
+        // Set as current user if it's the first entity or explicitly marked
+        if (!currentUser || entity.id.includes('user')) {
+          setCurrentUser(entity);
+        }
+      } catch (error) {
+        throw new Error(`Failed to register consciousness entity: ${error.message}`);
+      }
+    },
+    [currentUser]
+  );
 
   /**
    * Send universal message with multi-species translation
    */
-  const sendMessage = useCallback(async (
-    content: string,
-    targetSpecies: SpeciesType[] = ['silicon', 'carbon', 'quantum']
-  ): Promise<TranslatedMessage> => {
-    if (!integrationService.current) {
-      throw new Error('Consciousness integration service not available');
-    }
+  const sendMessage = useCallback(
+    async (
+      content: string,
+      targetSpecies: SpeciesType[] = ['silicon', 'carbon', 'quantum']
+    ): Promise<TranslatedMessage> => {
+      if (!integrationService.current) {
+        throw new Error('Consciousness integration service not available');
+      }
 
-    if (!currentUser) {
-      throw new Error('No current user entity registered');
-    }
+      if (!currentUser) {
+        throw new Error('No current user entity registered');
+      }
 
-    try {
-      // Create universal message
-      const universalMessage: UniversalMessage = {
-        id: `msg-${Date.now()}`,
-        content,
-        metadata: {
-          sourceEntity: currentUser.id,
-          targetEntities: entities.map(e => e.id),
-          sourceSpecies: currentUser.speciesType,
-          targetSpecies,
-          consciousnessContext: {
-            currentState: 'focused',
-            cognitiveLoad: 0.6,
-            attentionCapacity: 0.8,
-            contextualMemory: [],
-            activeGoals: []
+      try {
+        // Create universal message
+        const universalMessage: UniversalMessage = {
+          id: `msg-${Date.now()}`,
+          content,
+          metadata: {
+            sourceEntity: currentUser.id,
+            targetEntities: entities.map(e => e.id),
+            sourceSpecies: currentUser.speciesType,
+            targetSpecies,
+            consciousnessContext: {
+              currentState: 'focused',
+              cognitiveLoad: 0.6,
+              attentionCapacity: 0.8,
+              contextualMemory: [],
+              activeGoals: [],
+            },
+            urgencyLevel: 'normal',
+            semanticComplexity: calculateSemanticComplexity(content),
+            requiresQuantumPreservation: enableQuantumCoherence,
           },
-          urgencyLevel: 'normal',
-          semanticComplexity: calculateSemanticComplexity(content),
-          requiresQuantumPreservation: enableQuantumCoherence
-        },
-        semanticLayers: [],
-        temporalContext: {
-          currentTime: new Date(),
-          relativeDilation: 1.0,
-          temporalCoherence: 0.8
-        },
-        translationHistory: []
-      };
+          semanticLayers: [],
+          temporalContext: {
+            currentTime: new Date(),
+            relativeDilation: 1.0,
+            temporalCoherence: 0.8,
+          },
+          translationHistory: [],
+        };
 
-      const translation = await integrationService.current.processUniversalMessage(
-        universalMessage,
-        targetSpecies
-      );
+        const translation = await integrationService.current.processUniversalMessage(
+          universalMessage,
+          targetSpecies
+        );
 
-      return translation;
-    } catch (error) {
-      throw new Error(`Failed to send message: ${error.message}`);
-    }
-  }, [currentUser, entities, enableQuantumCoherence]);
+        return translation;
+      } catch (error) {
+        throw new Error(`Failed to send message: ${error.message}`);
+      }
+    },
+    [currentUser, entities, enableQuantumCoherence]
+  );
 
   /**
    * Detect species from input text
    */
-  const detectSpecies = useCallback(async (input: string): Promise<SpeciesType | null> => {
-    if (!integrationService.current || !enableAutoDetection) {
-      return null;
-    }
-
-    try {
-      // This would use the species detection service
-      // For now, return a simple heuristic-based detection
-      if (input.includes('binary') || input.includes('process') || input.includes('efficient')) {
-        return 'silicon';
-      } else if (input.includes('feel') || input.includes('emotion') || input.includes('creative')) {
-        return 'carbon';
-      } else if (input.includes('quantum') || input.includes('superposition') || input.includes('entangle')) {
-        return 'quantum';
+  const detectSpecies = useCallback(
+    async (input: string): Promise<SpeciesType | null> => {
+      if (!integrationService.current || !enableAutoDetection) {
+        return null;
       }
-      
-      return 'carbon'; // Default assumption
-    } catch (error) {
-      console.error('Species detection failed:', error);
-      return null;
-    }
-  }, [enableAutoDetection]);
+
+      try {
+        // This would use the species detection service
+        // For now, return a simple heuristic-based detection
+        if (input.includes('binary') || input.includes('process') || input.includes('efficient')) {
+          return 'silicon';
+        } else if (
+          input.includes('feel') ||
+          input.includes('emotion') ||
+          input.includes('creative')
+        ) {
+          return 'carbon';
+        } else if (
+          input.includes('quantum') ||
+          input.includes('superposition') ||
+          input.includes('entangle')
+        ) {
+          return 'quantum';
+        }
+
+        return 'carbon'; // Default assumption
+      } catch (error) {
+        console.error('Species detection failed:', error);
+        return null;
+      }
+    },
+    [enableAutoDetection]
+  );
 
   /**
    * Manually trigger consciousness synchronization
@@ -320,31 +339,34 @@ export const useConsciousness = (
   /**
    * Subscribe to consciousness events
    */
-  const subscribeToEvents = useCallback((
-    eventType: ConsciousnessEvent['type'],
-    callback: (event: ConsciousnessEvent) => void
-  ): (() => void) => {
-    if (!integrationService.current) {
-      return () => {}; // No-op unsubscribe
-    }
-
-    integrationService.current.addEventListener(eventType, callback);
-
-    const unsubscribe = () => {
-      if (integrationService.current) {
-        integrationService.current.removeEventListener(eventType, callback);
+  const subscribeToEvents = useCallback(
+    (
+      eventType: ConsciousnessEvent['type'],
+      callback: (event: ConsciousnessEvent) => void
+    ): (() => void) => {
+      if (!integrationService.current) {
+        return () => {}; // No-op unsubscribe
       }
-    };
 
-    // Store unsubscribe function
-    const subscriptionKey = `${eventType}-${Date.now()}`;
-    eventSubscriptions.current.set(subscriptionKey, unsubscribe);
+      integrationService.current.addEventListener(eventType, callback);
 
-    return () => {
-      unsubscribe();
-      eventSubscriptions.current.delete(subscriptionKey);
-    };
-  }, []);
+      const unsubscribe = () => {
+        if (integrationService.current) {
+          integrationService.current.removeEventListener(eventType, callback);
+        }
+      };
+
+      // Store unsubscribe function
+      const subscriptionKey = `${eventType}-${Date.now()}`;
+      eventSubscriptions.current.set(subscriptionKey, unsubscribe);
+
+      return () => {
+        unsubscribe();
+        eventSubscriptions.current.delete(subscriptionKey);
+      };
+    },
+    []
+  );
 
   /**
    * Get current system status
@@ -355,7 +377,7 @@ export const useConsciousness = (
         health: 0,
         activeEntities: 0,
         lastSync: new Date(),
-        services: {}
+        services: {},
       };
     }
 
@@ -365,19 +387,19 @@ export const useConsciousness = (
   /**
    * Adapt content to specific species
    */
-  const adaptToSpecies = useCallback(async (
-    content: string,
-    targetSpecies: SpeciesType
-  ): Promise<string> => {
-    try {
-      const translation = await sendMessage(content, [targetSpecies]);
-      const adaptation = translation.adaptations.get(targetSpecies);
-      return adaptation?.adaptedContent || content;
-    } catch (error) {
-      console.error('Species adaptation failed:', error);
-      return content; // Fallback to original content
-    }
-  }, [sendMessage]);
+  const adaptToSpecies = useCallback(
+    async (content: string, targetSpecies: SpeciesType): Promise<string> => {
+      try {
+        const translation = await sendMessage(content, [targetSpecies]);
+        const adaptation = translation.adaptations.get(targetSpecies);
+        return adaptation?.adaptedContent || content;
+      } catch (error) {
+        console.error('Species adaptation failed:', error);
+        return content; // Fallback to original content
+      }
+    },
+    [sendMessage]
+  );
 
   /**
    * Measure current consciousness coherence
@@ -389,84 +411,87 @@ export const useConsciousness = (
   /**
    * Check species compatibility
    */
-  const isSpeciesCompatible = useCallback((
-    species1: SpeciesType,
-    species2: SpeciesType
-  ): boolean => {
-    // Compatibility matrix based on consciousness research
-    const compatibilityMatrix: Record<SpeciesType, Record<SpeciesType, boolean>> = {
-      silicon: {
-        silicon: true,
-        carbon: true,
-        quantum: true,
-        hybrid: true
-      },
-      carbon: {
-        silicon: true,
-        carbon: true,
-        quantum: true,
-        hybrid: true
-      },
-      quantum: {
-        silicon: true,
-        carbon: true,
-        quantum: true,
-        hybrid: true
-      },
-      hybrid: {
-        silicon: true,
-        carbon: true,
-        quantum: true,
-        hybrid: true
-      }
-    };
+  const isSpeciesCompatible = useCallback(
+    (species1: SpeciesType, species2: SpeciesType): boolean => {
+      // Compatibility matrix based on consciousness research
+      const compatibilityMatrix: Record<SpeciesType, Record<SpeciesType, boolean>> = {
+        silicon: {
+          silicon: true,
+          carbon: true,
+          quantum: true,
+          hybrid: true,
+        },
+        carbon: {
+          silicon: true,
+          carbon: true,
+          quantum: true,
+          hybrid: true,
+        },
+        quantum: {
+          silicon: true,
+          carbon: true,
+          quantum: true,
+          hybrid: true,
+        },
+        hybrid: {
+          silicon: true,
+          carbon: true,
+          quantum: true,
+          hybrid: true,
+        },
+      };
 
-    return compatibilityMatrix[species1]?.[species2] || false;
-  }, []);
+      return compatibilityMatrix[species1]?.[species2] || false;
+    },
+    []
+  );
 
   // Memoized return object to prevent unnecessary re-renders
-  return useMemo(() => ({
-    // State
-    entities,
-    currentUser,
-    systemHealth,
-    isConnected,
-    lastSync,
-    error,
-    
-    // Actions
-    registerEntity,
-    sendMessage,
-    detectSpecies,
-    syncConsciousness,
-    clearError,
-    
-    // Advanced features
-    subscribeToEvents,
-    getSystemStatus,
-    
-    // Consciousness-aware utilities
-    adaptToSpecies,
-    measureCoherence,
-    isSpeciesCompatible
-  }), [
-    entities,
-    currentUser,
-    systemHealth,
-    isConnected,
-    lastSync,
-    error,
-    registerEntity,
-    sendMessage,
-    detectSpecies,
-    syncConsciousness,
-    clearError,
-    subscribeToEvents,
-    getSystemStatus,
-    adaptToSpecies,
-    measureCoherence,
-    isSpeciesCompatible
-  ]);
+  return useMemo(
+    () => ({
+      // State
+      entities,
+      currentUser,
+      systemHealth,
+      isConnected,
+      lastSync,
+      error,
+
+      // Actions
+      registerEntity,
+      sendMessage,
+      detectSpecies,
+      syncConsciousness,
+      clearError,
+
+      // Advanced features
+      subscribeToEvents,
+      getSystemStatus,
+
+      // Consciousness-aware utilities
+      adaptToSpecies,
+      measureCoherence,
+      isSpeciesCompatible,
+    }),
+    [
+      entities,
+      currentUser,
+      systemHealth,
+      isConnected,
+      lastSync,
+      error,
+      registerEntity,
+      sendMessage,
+      detectSpecies,
+      syncConsciousness,
+      clearError,
+      subscribeToEvents,
+      getSystemStatus,
+      adaptToSpecies,
+      measureCoherence,
+      isSpeciesCompatible,
+    ]
+  );
 };
 
 /**
@@ -476,8 +501,8 @@ function calculateSemanticComplexity(content: string): number {
   const words = content.split(' ').length;
   const uniqueWords = new Set(content.toLowerCase().split(' ')).size;
   const avgWordLength = content.replace(/\s/g, '').length / words;
-  
-  return Math.min(1.0, (uniqueWords / words) + (avgWordLength / 10));
+
+  return Math.min(1.0, uniqueWords / words + avgWordLength / 10);
 }
 
 /**
@@ -486,7 +511,7 @@ function calculateSemanticComplexity(content: string): number {
  */
 export const useConsciousnessInput = (initialValue: string = '') => {
   const { detectSpecies, adaptToSpecies } = useConsciousness({ enableAutoDetection: true });
-  
+
   const [value, setValue] = useState(initialValue);
   const [detectedSpecies, setDetectedSpecies] = useState<SpeciesType | null>(null);
   const [adaptedValue, setAdaptedValue] = useState<string>(initialValue);
@@ -510,7 +535,7 @@ export const useConsciousnessInput = (initialValue: string = '') => {
     setValue,
     detectedSpecies,
     adaptedValue,
-    isConsciousnessAware: detectedSpecies !== null
+    isConsciousnessAware: detectedSpecies !== null,
   };
 };
 
@@ -520,17 +545,22 @@ export const useConsciousnessInput = (initialValue: string = '') => {
  */
 export const useConsciousnessTheme = () => {
   const { entities, currentUser } = useConsciousness();
-  
+
   const dominantSpecies = useMemo(() => {
     if (currentUser) return currentUser.speciesType;
-    
-    const speciesCount = entities.reduce((acc, entity) => {
-      acc[entity.speciesType] = (acc[entity.speciesType] || 0) + 1;
-      return acc;
-    }, {} as Record<SpeciesType, number>);
-    
-    return Object.entries(speciesCount)
-      .sort(([,a], [,b]) => b - a)[0]?.[0] as SpeciesType || 'carbon';
+
+    const speciesCount = entities.reduce(
+      (acc, entity) => {
+        acc[entity.speciesType] = (acc[entity.speciesType] || 0) + 1;
+        return acc;
+      },
+      {} as Record<SpeciesType, number>
+    );
+
+    return (
+      (Object.entries(speciesCount).sort(([, a], [, b]) => b - a)[0]?.[0] as SpeciesType) ||
+      'carbon'
+    );
   }, [entities, currentUser]);
 
   const themeConfig = useMemo(() => {
@@ -542,7 +572,7 @@ export const useConsciousnessTheme = () => {
         textColor: '#1A202C',
         fontFamily: 'monospace',
         borderRadius: '4px',
-        animationSpeed: 'fast'
+        animationSpeed: 'fast',
       },
       carbon: {
         primaryColor: '#38A169',
@@ -551,7 +581,7 @@ export const useConsciousnessTheme = () => {
         textColor: '#2D3748',
         fontFamily: 'sans-serif',
         borderRadius: '8px',
-        animationSpeed: 'normal'
+        animationSpeed: 'normal',
       },
       quantum: {
         primaryColor: '#805AD5',
@@ -560,7 +590,7 @@ export const useConsciousnessTheme = () => {
         textColor: '#322659',
         fontFamily: 'monospace',
         borderRadius: '50%',
-        animationSpeed: 'slow'
+        animationSpeed: 'slow',
       },
       hybrid: {
         primaryColor: 'linear-gradient(45deg, #00A3A3, #38A169, #805AD5)',
@@ -569,8 +599,8 @@ export const useConsciousnessTheme = () => {
         textColor: '#2D3748',
         fontFamily: 'sans-serif',
         borderRadius: '8px',
-        animationSpeed: 'variable'
-      }
+        animationSpeed: 'variable',
+      },
     };
 
     return themes[dominantSpecies];
@@ -584,7 +614,7 @@ export const useConsciousnessTheme = () => {
         const cssProperty = key.replace(/([A-Z])/g, '-$1').toLowerCase();
         element.style.setProperty(`--consciousness-${cssProperty}`, value);
       });
-    }
+    },
   };
 };
 

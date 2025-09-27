@@ -1,0 +1,69 @@
+modules = ["nodejs-20", "bash", "web", "python-3.11", "python3"]
+run = "npm run dev"
+hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["glibcLocales", "libxcrypt"]
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "run", "start"]
+build = ["npm", "run", "build"]
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
+exposeLocalhost = true
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 8000
+externalPort = 8000
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Run Core Tests"
+author = 37274620
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node test/run-core-tests.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node test/verify-startup.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node test/advanced-circuit-breaker-tests.js all"

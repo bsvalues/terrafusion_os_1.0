@@ -1,0 +1,32 @@
+{
+  "name": "gispro-frontend",
+  "version": "1.0.0",
+  "description": "TerraFusion OS GIS Pro - Advanced Geographic Information System",
+  "main": "src/index.tsx",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "styled-components": "^6.0.7",
+    "react-router-dom": "^6.15.0",
+    "lucide-react": "^0.284.0",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "@turf/turf": "^6.5.0",
+    "proj4": "^2.9.0",
+    "geojson": "^0.5.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@types/leaflet": "^1.9.5",
+    "@types/geojson": "^7946.0.10",
+    "@vitejs/plugin-react": "^4.0.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}

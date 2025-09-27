@@ -38,8 +38,7 @@
 
 # Infrastructure Monitoring Report
 
-Generated: 2025-07-30T01:26:54.226574
-Status: stopped
+Generated: 2025-07-30T01:26:54.226574 Status: stopped
 
 ## Active Monitoring Bots
 
@@ -83,8 +82,7 @@ Status: stopped
 
 # Application Monitoring Report
 
-Generated: 2025-07-30T01:26:54.226597
-Status: stopped
+Generated: 2025-07-30T01:26:54.226597 Status: stopped
 
 ## Monitoring Summary
 
@@ -148,9 +146,8 @@ Status: stopped
 
 # Security Monitoring Report
 
-Generated: 2025-07-30T01:26:54.226683
-Status: stopped
-Security Posture: **CRITICAL**
+Generated: 2025-07-30T01:26:54.226683 Status: stopped Security Posture:
+**CRITICAL**
 
 ## Executive Summary
 
@@ -261,10 +258,8 @@ Total Responses Initiated: 7
 
 # Quantum Monitoring Report
 
-Generated: 2025-07-30T01:26:54.226876
-Status: stopped
-Quantum Health Score: **67.0/100**
-Health Status: **FAIR**
+Generated: 2025-07-30T01:26:54.226876 Status: stopped Quantum Health Score:
+**67.0/100** Health Status: **FAIR**
 
 ## Executive Summary
 

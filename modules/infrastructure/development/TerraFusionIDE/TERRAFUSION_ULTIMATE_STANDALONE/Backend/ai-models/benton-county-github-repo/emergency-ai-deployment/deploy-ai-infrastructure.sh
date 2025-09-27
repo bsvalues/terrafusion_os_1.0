@@ -187,7 +187,7 @@ spec:
         - name: DEFAULT_VECTORIZER_MODULE
           value: "text2vec-transformers"
         - name: TRANSFORMERS_INFERENCE_API
-          value: "http://t2v-transformers:8080"
+          value: "http://t2v-transformers:${TF_STATIC_PORT:-8080}"
         - name: PERSISTENCE_DATA_PATH
           value: "/var/lib/weaviate"
         volumeMounts:
@@ -425,7 +425,7 @@ spec:
         - name: OLLAMA_HOST
           value: "http://ollama-service:11434"
         - name: WEAVIATE_HOST
-          value: "http://weaviate:8080"
+          value: "http://weaviate:${TF_STATIC_PORT:-8080}"
         - name: MCP_HOST
           value: "http://mcp-server:8090"
         volumeMounts:

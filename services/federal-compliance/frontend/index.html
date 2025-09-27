@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TerraFusion Federal Compliance Service - Government regulatory compliance tracking and oversight dashboard for FISMA, NIST, FedRAMP, and comprehensive federal standards." />
+    <meta name="keywords" content="TerraFusion, Federal Compliance, FISMA, NIST, FedRAMP, Government, Regulatory, Compliance, Audit, Security" />
+    <meta name="author" content="TerraFusion OS Government Solutions" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' ws: wss:;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Government Compliance -->
+    <meta name="government-compliance" content="FISMA High, NIST Cybersecurity Framework Level 4, FedRAMP Authorized" />
+    <meta name="accessibility" content="Section 508 Compliant, WCAG 2.1 AA" />
+    <meta name="data-classification" content="Controlled Unclassified Information (CUI)" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#003d7a" />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Government Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet" />
+    
+    <title>TerraFusion Federal Compliance Service | Government Regulatory Oversight Dashboard</title>
+    
+    <!-- Structured Data for Government Services -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "GovernmentService",
+      "name": "TerraFusion Federal Compliance Service",
+      "description": "Comprehensive federal regulatory compliance tracking and oversight dashboard for government agencies",
+      "provider": {
+        "@type": "GovernmentOrganization",
+        "name": "TerraFusion OS Government Solutions"
+      },
+      "serviceType": "Federal Compliance Management",
+      "areaServed": "United States",
+      "availableChannel": {
+        "@type": "ServiceChannel",
+        "serviceUrl": "https://federal-compliance.terrafusion.gov",
+        "availableLanguage": "English"
+      }
+    }
+    </script>
+    
+    <!-- Performance and Analytics -->
+    <script>
+      // Government Analytics Tracking (Privacy Compliant)
+      window.governmentAnalytics = {
+        agency: 'TerraFusion',
+        service: 'Federal Compliance',
+        classification: 'CUI',
+        version: '1.0.0'
+      };
+    </script>
+  </head>
+  <body>
+    <!-- Government Banner (Required for Federal Sites) -->
+    <div id="government-banner" style="background: #003d7a; color: white; padding: 4px 0; font-size: 12px; text-align: center;">
+      <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        🏛️ <strong>Official U.S. Government System</strong> - Authorized Use Only | 
+        <strong>FISMA High</strong> | <strong>NIST Level 4</strong> | <strong>FedRAMP Authorized</strong>
+      </div>
+    </div>
+    
+    <!-- Skip Navigation for Accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only" style="position: absolute; top: 20px; left: 20px; background: #ffd700; color: #003d7a; padding: 8px 16px; text-decoration: none; border-radius: 4px; z-index: 9999;">
+      Skip to main content
+    </a>
+    
+    <!-- Main Application Container -->
+    <div id="root" aria-label="TerraFusion Federal Compliance Service Application"></div>
+    
+    <!-- Government Footer Information -->
+    <noscript>
+      <div style="background: #dc143c; color: white; padding: 20px; text-align: center;">
+        <h2>JavaScript Required</h2>
+        <p>This government application requires JavaScript to function properly. Please enable JavaScript in your browser and refresh the page.</p>
+        <p><strong>Classification:</strong> Controlled Unclassified Information (CUI)</p>
+        <p><strong>Compliance:</strong> FISMA High | NIST Cybersecurity Framework | FedRAMP Authorized</p>
+      </div>
+    </noscript>
+    
+    <!-- Emergency Contact Information -->
+    <div id="emergency-contact" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #dc143c; color: white; padding: 10px; text-align: center; z-index: 10000;">
+      <strong>Security Emergency:</strong> Contact IT Security at 
+      <a href="tel:+1-800-SECURITY" style="color: #ffd700; font-weight: bold;">1-800-SECURITY</a> | 
+      <strong>System Issues:</strong> 
+      <a href="mailto:support@terrafusion.gov" style="color: #ffd700; font-weight: bold;">support@terrafusion.gov</a>
+    </div>
+    
+    <!-- Application Script -->
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Government Performance Monitoring -->
+    <script>
+      // Basic performance monitoring for government systems
+      window.addEventListener('load', function() {
+        const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+        console.log('TerraFusion Federal Compliance Service loaded in', loadTime, 'ms');
+        
+        // Report performance to government monitoring systems
+        if (window.governmentAnalytics) {
+          window.governmentAnalytics.loadTime = loadTime;
+          window.governmentAnalytics.timestamp = new Date().toISOString();
+        }
+      });
+      
+      // Accessibility compliance check
+      if (!window.speechSynthesis && !window.navigator.userAgent.includes('HeadlessChrome')) {
+        console.warn('Accessibility Warning: Speech synthesis not available in this browser');
+      }
+    </script>
+    
+    <!-- Government Compliance Watermark -->
+    <div style="position: fixed; bottom: 10px; right: 10px; font-size: 10px; color: rgba(255, 255, 255, 0.3); z-index: 1000; pointer-events: none;">
+      FISMA High | NIST L4 | FedRAMP
+    </div>
+  </body>
+</html>

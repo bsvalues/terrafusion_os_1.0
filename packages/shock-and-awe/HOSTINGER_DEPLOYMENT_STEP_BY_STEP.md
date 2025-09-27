@@ -1,7 +1,9 @@
 # 🚀 Complete Hostinger Deployment Guide for Beginners
+
 ## Deploying TerraFusion Shock & Awe to terrafusionmarket.io
 
 ### Prerequisites Checklist
+
 - [ ] Hostinger hosting account (shared, premium, or business plan)
 - [ ] Domain terrafusionmarket.io configured in Hostinger
 - [ ] Access to Hostinger control panel (hPanel)
@@ -78,7 +80,8 @@
    - Click "phpMyAdmin" next to your new database
    - In phpMyAdmin, click your database name on the left
    - Click "Import" tab at the top
-   - Click "Choose File" and select `database/schema.sql` from the extracted files
+   - Click "Choose File" and select `database/schema.sql` from the extracted
+     files
    - Click "Go" to import
    - You should see "Import has been successfully finished"
 
@@ -100,6 +103,7 @@
    $username = 'your_username';                       // Replace with actual username
    $password = 'your_database_password';              // Replace with actual password
    ```
+
    - Click "Save Changes"
 
 ---
@@ -121,24 +125,32 @@
 ## Step 7: Troubleshooting Common Issues
 
 ### Issue: "Database Connection Error"
+
 **Solution**:
+
 - Check database credentials in `config/database.php`
 - Verify database name includes your username prefix
 - Ensure database user has proper permissions
 
 ### Issue: "404 Not Found" for API calls
+
 **Solution**:
+
 - Check that `.htaccess` file is in the root directory
 - Verify mod_rewrite is enabled (contact Hostinger support)
 
 ### Issue: "500 Internal Server Error"
+
 **Solution**:
+
 - Check file permissions (should be 644 for files, 755 for folders)
 - Look at error logs in Hostinger control panel
 - Verify PHP version is 7.4 or higher
 
 ### Issue: Website shows Hostinger default page
+
 **Solution**:
+
 - Ensure files are in the correct directory (`public_html`)
 - Check that `index.html` exists in the root
 - Clear browser cache and try again
@@ -148,15 +160,18 @@
 ## Step 8: Optional Enhancements
 
 ### Enable HTTPS (SSL)
+
 1. In Hostinger control panel, find "SSL/TLS"
 2. Enable "Let's Encrypt SSL" for terrafusionmarket.io
 3. Wait 10-15 minutes for activation
 
 ### Set Up Email (if needed)
+
 1. Go to "Email Accounts" in control panel
 2. Create email addresses like admin@terrafusionmarket.io
 
 ### Monitor Performance
+
 1. Use "Analytics" in Hostinger control panel
 2. Monitor visitor statistics and performance
 
@@ -165,6 +180,7 @@
 ## Quick Reference: File Structure
 
 After deployment, your website should have this structure:
+
 ```
 public_html/
 ├── index.html                 # Main website entry
@@ -214,4 +230,5 @@ If you encounter issues:
 
 ---
 
-*Need help? Each step includes troubleshooting tips. Take your time and don't hesitate to contact Hostinger support if needed.*
+_Need help? Each step includes troubleshooting tips. Take your time and don't
+hesitate to contact Hostinger support if needed._

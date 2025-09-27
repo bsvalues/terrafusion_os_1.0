@@ -2,7 +2,7 @@
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:5173",
+    "devPath": "http://localhost:\${{TF_PORT_5173:-5173}}",
     "distDir": "../dist",
     "withGlobalTauri": false
   },

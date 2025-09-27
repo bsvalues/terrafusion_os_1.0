@@ -1,4 +1,5 @@
 # 🚀 Terrafusion Deployment Guide
+
 ## Benton County Championship Demo - Complete Deployment Documentation
 
 ---
@@ -6,6 +7,7 @@
 ## 📋 Deployment Overview
 
 ### Deployment Options
+
 1. **Quick Development**: Single-command local setup
 2. **Docker Compose**: Containerized multi-service deployment
 3. **Production Deployment**: Enterprise-grade with monitoring
@@ -15,6 +17,7 @@
 ### System Requirements
 
 #### Minimum Requirements
+
 - **CPU**: 2 cores, 2.4GHz
 - **RAM**: 4GB
 - **Disk**: 20GB free space
@@ -22,6 +25,7 @@
 - **OS**: Linux, macOS, or Windows 10/11
 
 #### Recommended (Production)
+
 - **CPU**: 8+ cores, 3.0GHz+
 - **RAM**: 16GB+
 - **Disk**: 100GB+ SSD
@@ -29,6 +33,7 @@
 - **OS**: Ubuntu 20.04 LTS or RHEL 8+
 
 #### Software Dependencies
+
 - **Node.js**: v18.x or higher
 - **Docker**: v20.10+ with Docker Compose
 - **Git**: v2.30+
@@ -39,6 +44,7 @@
 ## 🎯 Quick Development Deployment
 
 ### One-Command Setup
+
 ```bash
 # Clone and start in one command
 git clone <repository-url>
@@ -47,6 +53,7 @@ cd BENTON_COUNTY_CHAMPIONSHIP_DEMO
 ```
 
 ### Manual Development Setup
+
 ```bash
 # 1. Install dependencies
 npm install
@@ -55,16 +62,17 @@ npm install
 node demo-server.js
 
 # 3. Verify deployment
-curl http://localhost:3000/api/demo/health
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health
 ```
 
 ### Development Environment Verification
+
 ```bash
 # Check all endpoints
-curl http://localhost:3000/api/demo/overview
-curl http://localhost:3000/api/demo/properties
-curl http://localhost:3000/api/demo/scenarios
-curl http://localhost:3000/api/monitoring/performance
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/overview
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/properties
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/scenarios
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/performance
 ```
 
 **Expected Response Time**: <10ms  
@@ -76,6 +84,7 @@ curl http://localhost:3000/api/monitoring/performance
 ## 🐳 Docker Compose Deployment
 
 ### Prerequisites
+
 ```bash
 # Install Docker and Docker Compose
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -87,6 +96,7 @@ chmod +x /usr/local/bin/docker-compose
 ```
 
 ### Environment Configuration
+
 ```bash
 # 1. Create environment file
 cp .env.example .env
@@ -101,6 +111,7 @@ nano .env
 ```
 
 ### Docker Deployment Process
+
 ```bash
 # 1. Build and start all services
 docker-compose up -d
@@ -112,20 +123,21 @@ docker-compose ps
 docker-compose logs -f benton-county-demo
 
 # 4. Verify service health
-curl http://localhost:3000/api/demo/health
-curl http://localhost:3001  # Grafana dashboard
-curl http://localhost:9090  # Prometheus metrics
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}  # Grafana dashboard
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}  # Prometheus metrics
 ```
 
 ### Service Architecture
+
 ```yaml
 Services Deployed:
-- benton-county-demo:3000   # Main application
-- postgres:5432             # Database
-- redis:6379               # Cache
-- prometheus:9090          # Metrics collection
-- grafana:3001            # Dashboard
-- traefik:80,443,8080     # Reverse proxy
+  - benton-county-demo:3000 # Main application
+  - postgres:5432 # Database
+  - redis:6379 # Cache
+  - prometheus:9090 # Metrics collection
+  - grafana:3001 # Dashboard
+  - traefik:80,443,8080 # Reverse proxy
 ```
 
 ---
@@ -133,6 +145,7 @@ Services Deployed:
 ## 🏆 Production Deployment
 
 ### Automated Production Setup
+
 ```bash
 # 1. Run the championship deployment script
 ./deploy-championship.sh
@@ -149,6 +162,7 @@ Services Deployed:
 ### Manual Production Steps
 
 #### 1. Infrastructure Preparation
+
 ```bash
 # Create production directories
 mkdir -p /opt/terrafusion/{data,logs,backups,config}
@@ -165,6 +179,7 @@ ufw enable
 ```
 
 #### 2. SSL/TLS Configuration
+
 ```bash
 # Generate SSL certificates (Let's Encrypt recommended)
 certbot --nginx -d your-domain.com
@@ -176,6 +191,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 ```
 
 #### 3. Database Setup
+
 ```bash
 # Initialize PostgreSQL
 docker run --name terrafusion-postgres \
@@ -190,6 +206,7 @@ docker exec -it terrafusion-postgres psql -U terrafusion -d terrafusion_benton -
 ```
 
 #### 4. Application Deployment
+
 ```bash
 # Deploy with production configuration
 ENVIRONMENT=production docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
@@ -199,6 +216,7 @@ docker-compose up -d --scale benton-county-demo=3
 ```
 
 ### Production Verification Checklist
+
 - [ ] All services running and healthy
 - [ ] SSL certificates installed and valid
 - [ ] Database connectivity verified
@@ -215,6 +233,7 @@ docker-compose up -d --scale benton-county-demo=3
 ### GitHub Actions Setup
 
 #### 1. Repository Configuration
+
 ```bash
 # Create GitHub repository secrets
 GITHUB_TOKEN        # For container registry access
@@ -225,6 +244,7 @@ REDIS_PASSWORD      # Redis password
 ```
 
 #### 2. Automated Deployment Trigger
+
 ```yaml
 # Deployment triggers:
 - Push to main branch
@@ -234,6 +254,7 @@ REDIS_PASSWORD      # Redis password
 ```
 
 #### 3. Pipeline Stages
+
 ```yaml
 Stages:
 1. Test & Quality Check
@@ -262,6 +283,7 @@ Stages:
 ```
 
 ### Manual Pipeline Trigger
+
 ```bash
 # Trigger deployment via GitHub CLI
 gh workflow run championship-deploy.yml \
@@ -274,6 +296,7 @@ gh workflow run championship-deploy.yml \
 ## ☸️ Kubernetes Deployment
 
 ### Prerequisites
+
 ```bash
 # Install kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -286,6 +309,7 @@ mv linux-amd64/helm /usr/local/bin/
 ```
 
 ### Kubernetes Configuration
+
 ```yaml
 # Create namespace
 kubectl create namespace terrafusion
@@ -300,6 +324,7 @@ kubectl apply -f k8s/ingress.yaml
 ```
 
 ### Scaling Configuration
+
 ```yaml
 # Horizontal Pod Autoscaler
 apiVersion: autoscaling/v2
@@ -314,12 +339,12 @@ spec:
   minReplicas: 2
   maxReplicas: 20
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
 ```
 
 ---
@@ -329,22 +354,23 @@ spec:
 ### Environment Variables
 
 #### Required Variables
+
 ```bash
 # Application Configuration
 NODE_ENV=production
-PORT=3000
+PORT=\${{TF_FRONTEND_PORT:-3000}}
 DEMO_MODE=championship
 
 # Database Configuration
 POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
+POSTGRES_PORT=\${{TF_FRONTEND_PORT:-3000}}
 POSTGRES_DB=terrafusion_benton
 POSTGRES_USER=terrafusion
 POSTGRES_PASSWORD=secure_password
 
 # Redis Configuration
 REDIS_HOST=redis
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_FRONTEND_PORT:-3000}}
 REDIS_PASSWORD=secure_password
 
 # Security Configuration
@@ -353,6 +379,7 @@ API_KEY=api_key_for_integrations
 ```
 
 #### Optional Variables
+
 ```bash
 # Monitoring Configuration
 GRAFANA_PASSWORD=monitoring_password
@@ -368,6 +395,7 @@ CACHE_TTL_SECONDS=3600
 ### Configuration Files
 
 #### Docker Compose Override
+
 ```yaml
 # docker-compose.override.yml
 version: '3.8'
@@ -379,22 +407,23 @@ services:
     volumes:
       - ./logs:/app/logs
     ports:
-      - "3000:3000"
-      - "9229:9229"  # Debug port
+      - '3000:3000'
+      - '9229:9229' # Debug port
 ```
 
 #### Nginx Configuration
+
 ```nginx
 # nginx.conf for reverse proxy
 upstream terrafusion_backend {
-    server localhost:3000;
-    server localhost:3001 backup;
+    server localhost:\${{TF_FRONTEND_PORT:-3000}};
+    server localhost:\${{TF_FRONTEND_PORT:-3000}} backup;
 }
 
 server {
     listen 80;
     server_name your-domain.com;
-    
+
     location / {
         proxy_pass http://terrafusion_backend;
         proxy_set_header Host $host;
@@ -410,18 +439,20 @@ server {
 ## 📊 Monitoring and Observability
 
 ### Health Check Endpoints
+
 ```bash
 # Application health
-curl http://localhost:3000/api/demo/health
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health
 
 # Detailed metrics
-curl http://localhost:3000/api/monitoring/performance
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/performance
 
 # System alerts
-curl http://localhost:3000/api/monitoring/alerts
+curl http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/alerts
 ```
 
 ### Prometheus Metrics
+
 ```yaml
 # Key metrics monitored:
 - http_requests_total
@@ -432,12 +463,14 @@ curl http://localhost:3000/api/monitoring/alerts
 ```
 
 ### Grafana Dashboards
+
 - **System Overview**: High-level health and performance
 - **Application Metrics**: Request rates, response times, errors
 - **Infrastructure**: CPU, memory, disk, network usage
 - **Business Metrics**: User activity, data processing rates
 
 ### Log Management
+
 ```bash
 # View application logs
 docker-compose logs -f benton-county-demo
@@ -454,6 +487,7 @@ logrotate -d /etc/logrotate.d/terrafusion
 ## 🔒 Security Configuration
 
 ### SSL/TLS Setup
+
 ```bash
 # Generate production certificates
 certbot --nginx -d your-domain.com -d www.your-domain.com
@@ -463,6 +497,7 @@ echo "0 12 * * * /usr/bin/certbot renew --quiet" | crontab -
 ```
 
 ### Security Headers
+
 ```nginx
 # Security headers in Nginx
 add_header X-Frame-Options DENY;
@@ -473,6 +508,7 @@ add_header Content-Security-Policy "default-src 'self'";
 ```
 
 ### Database Security
+
 ```bash
 # PostgreSQL security configuration
 # In postgresql.conf:
@@ -487,6 +523,7 @@ ssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL'
 ## 💾 Backup and Disaster Recovery
 
 ### Automated Backup Setup
+
 ```bash
 # Backup service configuration
 systemctl enable terrafusion-backup.timer
@@ -500,6 +537,7 @@ systemctl start terrafusion-backup.timer
 ```
 
 ### Disaster Recovery Procedure
+
 ```bash
 # 1. Stop services
 docker-compose down
@@ -518,6 +556,7 @@ docker-compose up -d
 ```
 
 ### Backup Storage Options
+
 - **Local Storage**: `/opt/terrafusion/backups`
 - **Network Storage**: NFS, SMB shares
 - **Cloud Storage**: AWS S3, Azure Blob, Google Cloud
@@ -528,6 +567,7 @@ docker-compose up -d
 ## 🎯 Performance Optimization
 
 ### Application Tuning
+
 ```javascript
 // Node.js optimization
 process.env.UV_THREADPOOL_SIZE = 128;
@@ -540,6 +580,7 @@ app.set('trust proxy', 1);
 ```
 
 ### Database Optimization
+
 ```sql
 -- PostgreSQL performance tuning
 ALTER SYSTEM SET shared_buffers = '256MB';
@@ -551,16 +592,17 @@ SELECT pg_reload_conf();
 ```
 
 ### Caching Strategy
+
 ```javascript
 // Redis caching configuration
 const redis = require('redis');
 const client = redis.createClient({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    password: process.env.REDIS_PASSWORD,
-    retry_strategy: (options) => {
-        return Math.min(options.attempt * 100, 3000);
-    }
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+  retry_strategy: options => {
+    return Math.min(options.attempt * 100, 3000);
+  },
 });
 ```
 
@@ -571,6 +613,7 @@ const client = redis.createClient({
 ### Common Issues
 
 #### Service Won't Start
+
 ```bash
 # Check Docker daemon
 systemctl status docker
@@ -586,6 +629,7 @@ docker-compose logs benton-county-demo
 ```
 
 #### Performance Issues
+
 ```bash
 # Check resource usage
 docker stats
@@ -598,6 +642,7 @@ free -h
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Test database connectivity
 docker exec -it terrafusion-postgres psql -U terrafusion -d terrafusion_benton -c "SELECT 1;"
@@ -610,22 +655,25 @@ docker-compose restart benton-county-demo
 ```
 
 ### Support Resources
+
 - **System Logs**: `/var/log/terrafusion/`
 - **Application Logs**: `docker-compose logs`
-- **Health Dashboard**: `http://localhost:3000/health-dashboard`
-- **Metrics Dashboard**: `http://localhost:3001`
+- **Health Dashboard**: `http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health-dashboard`
+- **Metrics Dashboard**: `http://localhost:\${{TF_FRONTEND_PORT:-3000}}`
 
 ---
 
 ## 📚 Additional Resources
 
 ### Documentation Links
+
 - **API Reference**: `/docs/api/API_REFERENCE.md`
 - **User Manual**: `/docs/user-guides/USER_MANUAL.md`
 - **Troubleshooting**: `/docs/troubleshooting/TROUBLESHOOTING.md`
 - **Security Guide**: `/docs/security/SECURITY.md`
 
 ### External Resources
+
 - **Docker Documentation**: https://docs.docker.com
 - **Node.js Best Practices**: https://nodejs.org/en/docs/guides/
 - **PostgreSQL Documentation**: https://www.postgresql.org/docs/
@@ -633,5 +681,5 @@ docker-compose restart benton-county-demo
 
 ---
 
-*Built with championship precision for government excellence*  
-*Terrafusion Deployment Guide v3.0.0 - Empowering Reliable Deployments*
+_Built with championship precision for government excellence_  
+_Terrafusion Deployment Guide v3.0.0 - Empowering Reliable Deployments_

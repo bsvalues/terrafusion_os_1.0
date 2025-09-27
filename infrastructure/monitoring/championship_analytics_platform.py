@@ -153,13 +153,13 @@ class ChampionshipAnalyticsPlatform:
         
         # Define services to monitor
         services = [
-            {"name": "CostForge", "url": "http://localhost:3002"},
-            {"name": "PropertyWorkbench", "url": "http://localhost:3001"},
-            {"name": "TerraInsight", "url": "http://localhost:3000"},
-            {"name": "TerraFlow", "url": "http://localhost:8001"},
-            {"name": "TerraAgent", "url": "http://localhost:8002"},
-            {"name": "TerraLevy", "url": "http://localhost:8003"},
-            {"name": "TerraMiner", "url": "http://localhost:8004"}
+            {"name": "CostForge", "url": "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"},
+            {"name": "PropertyWorkbench", "url": "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"},
+            {"name": "TerraInsight", "url": "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"},
+            {"name": "TerraFlow", "url": "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"},
+            {"name": "TerraAgent", "url": "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"},
+            {"name": "TerraLevy", "url": "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"},
+            {"name": "TerraMiner", "url": "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"}
         ]
         
         for service in services:

@@ -1,0 +1,38 @@
+{
+  "name": "Sample Government Plugin",
+  "version": "1.0.0",
+  "description": "Template for TerraFusion government plugins",
+  "author": "Your Name",
+  "email": "developer@example.com",
+  "category": "government-core",
+  "price": 29.99,
+  "currency": "USD",
+  "billing": "monthly",
+  "compliance": [
+    "FISMA",
+    "NIST-800-53",
+    "SECTION-508"
+  ],
+  "api": {
+    "version": "2.0",
+    "endpoints": [
+      "/health",
+      "/api/data",
+      "/api/reports"
+    ]
+  },
+  "permissions": [
+    "data.read",
+    "reports.generate",
+    "settings.configure"
+  ],
+  "dependencies": {
+    "terrafusion-core": "^2.0.0"
+  },
+  "government": {
+    "securityLevel": "FISMA-Moderate",
+    "dataClassification": "Government-Use",
+    "auditTrail": true,
+    "encryptionRequired": true
+  }
+}

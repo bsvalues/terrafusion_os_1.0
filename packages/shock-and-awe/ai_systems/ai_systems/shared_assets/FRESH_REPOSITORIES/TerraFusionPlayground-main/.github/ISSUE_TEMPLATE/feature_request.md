@@ -19,4 +19,4 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context or screenshots about the feature request here.
 
 **Implementation Notes**
-Any specific technical considerations or implementation details you'd like to share. 
+Any specific technical considerations or implementation details you'd like to share.

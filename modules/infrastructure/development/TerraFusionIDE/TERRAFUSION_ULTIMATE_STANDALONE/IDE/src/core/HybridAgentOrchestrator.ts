@@ -54,7 +54,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Maintains context across sessions and conversations',
       category: 'communication',
       priority: 95,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'advanced-search',
@@ -62,7 +62,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Semantic codebase search with context understanding',
       category: 'search',
       priority: 90,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'deployment',
@@ -70,7 +70,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Automated deployment to platforms like Netlify',
       category: 'deployment',
       priority: 85,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'browser-integration',
@@ -78,8 +78,8 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Web development with live browser preview',
       category: 'development',
       priority: 80,
-      dependencies: []
-    }
+      dependencies: [],
+    },
   ],
   devin: [
     {
@@ -88,7 +88,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Long-term project planning and architecture design',
       category: 'planning',
       priority: 95,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'autonomous-execution',
@@ -96,7 +96,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Self-directed development without constant supervision',
       category: 'development',
       priority: 90,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'environment-management',
@@ -104,7 +104,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Smart handling of development environment issues',
       category: 'development',
       priority: 85,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'testing-integration',
@@ -112,8 +112,8 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Built-in CI/CD and testing awareness',
       category: 'development',
       priority: 80,
-      dependencies: []
-    }
+      dependencies: [],
+    },
   ],
   cursor: [
     {
@@ -122,7 +122,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: '3-5x faster execution through parallel tool calls',
       category: 'optimization',
       priority: 98,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'context-optimization',
@@ -130,7 +130,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Intelligent information gathering and context management',
       category: 'optimization',
       priority: 92,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'performance-tuning',
@@ -138,8 +138,8 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Continuous performance optimization and monitoring',
       category: 'optimization',
       priority: 88,
-      dependencies: []
-    }
+      dependencies: [],
+    },
   ],
   replit: [
     {
@@ -148,7 +148,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Automated dependency installation and management',
       category: 'development',
       priority: 85,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'database-setup',
@@ -156,7 +156,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Automated database creation and configuration',
       category: 'development',
       priority: 80,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'language-installation',
@@ -164,7 +164,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Programming language and runtime setup',
       category: 'development',
       priority: 75,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'workflow-management',
@@ -172,8 +172,8 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Development workflow automation and management',
       category: 'development',
       priority: 70,
-      dependencies: []
-    }
+      dependencies: [],
+    },
   ],
   manus: [
     {
@@ -182,7 +182,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Intelligent user interaction and feedback',
       category: 'communication',
       priority: 90,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'file-operations',
@@ -190,7 +190,7 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Advanced file reading, writing, and manipulation',
       category: 'development',
       priority: 85,
-      dependencies: []
+      dependencies: [],
     },
     {
       id: 'system-integration',
@@ -198,9 +198,9 @@ export const AGENT_CAPABILITIES: Record<string, AgentCapability[]> = {
       description: 'Deep OS-level access and system operations',
       category: 'development',
       priority: 80,
-      dependencies: []
-    }
-  ]
+      dependencies: [],
+    },
+  ],
 };
 
 export class HybridAgentOrchestrator extends EventEmitter {
@@ -213,7 +213,7 @@ export class HybridAgentOrchestrator extends EventEmitter {
     disk: 0,
     network: 0,
     temperature: 0,
-    timestamp: new Date()
+    timestamp: new Date(),
   };
   private isRunning: boolean = false;
 
@@ -232,7 +232,7 @@ export class HybridAgentOrchestrator extends EventEmitter {
         status: 'online',
         performance: 95,
         currentTask: null,
-        taskQueue: []
+        taskQueue: [],
       });
     });
   }
@@ -250,8 +250,11 @@ export class HybridAgentOrchestrator extends EventEmitter {
       memory: Math.max(0, Math.min(100, this.systemMetrics.memory + (Math.random() - 0.5) * 8)),
       disk: Math.max(0, Math.min(100, this.systemMetrics.disk + (Math.random() - 0.5) * 5)),
       network: Math.max(0, Math.min(100, this.systemMetrics.network + (Math.random() - 0.5) * 15)),
-      temperature: Math.max(30, Math.min(80, this.systemMetrics.temperature + (Math.random() - 0.5) * 3)),
-      timestamp: new Date()
+      temperature: Math.max(
+        30,
+        Math.min(80, this.systemMetrics.temperature + (Math.random() - 0.5) * 3)
+      ),
+      timestamp: new Date(),
     };
 
     this.emit('metrics-updated', this.systemMetrics);
@@ -271,15 +274,15 @@ export class HybridAgentOrchestrator extends EventEmitter {
       assignedAgent: '',
       status: 'pending',
       priority,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     this.tasks.set(taskId, task);
     this.emit('task-created', task);
-    
+
     // Auto-assign task to best available agent
     this.assignTaskToAgent(taskId);
-    
+
     return taskId;
   }
 
@@ -293,7 +296,7 @@ export class HybridAgentOrchestrator extends EventEmitter {
       task.assignedAgent = bestAgent;
       task.status = 'in-progress';
       task.startedAt = new Date();
-      
+
       const agent = this.agents.get(bestAgent);
       if (agent) {
         agent.currentTask = taskId;
@@ -329,9 +332,8 @@ export class HybridAgentOrchestrator extends EventEmitter {
     let score = agent.performance;
 
     // Bonus for relevant capabilities
-    const relevantCapabilities = agent.capabilities.filter((cap: AgentCapability) => 
-      cap.category === task.type || 
-      cap.category === 'development' // Fallback for development tasks
+    const relevantCapabilities = agent.capabilities.filter(
+      (cap: AgentCapability) => cap.category === task.type || cap.category === 'development' // Fallback for development tasks
     );
 
     score += relevantCapabilities.length * 5;
@@ -353,7 +355,7 @@ export class HybridAgentOrchestrator extends EventEmitter {
     try {
       // Simulate task execution
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-      
+
       task.status = 'completed';
       task.completedAt = new Date();
       task.result = { success: true, message: 'Task completed successfully' };
@@ -390,7 +392,7 @@ export class HybridAgentOrchestrator extends EventEmitter {
       timestamp: new Date(),
       priority,
       relatedTasks: [],
-      context
+      context,
     };
 
     this.memories.set(memoryId, memory);
@@ -400,20 +402,20 @@ export class HybridAgentOrchestrator extends EventEmitter {
 
   public searchMemories(query: string, tags?: string[]): MemoryItem[] {
     const results: MemoryItem[] = [];
-    
+
     for (const memory of this.memories.values()) {
       let score = 0;
-      
+
       // Text search
       if (memory.title.toLowerCase().includes(query.toLowerCase())) score += 10;
       if (memory.content.toLowerCase().includes(query.toLowerCase())) score += 5;
-      
+
       // Tag matching
       if (tags) {
         const matchingTags = tags.filter(tag => memory.tags.includes(tag));
         score += matchingTags.length * 3;
       }
-      
+
       if (score > 0) {
         results.push({ ...memory, score });
       }
@@ -467,10 +469,10 @@ export class HybridAgentOrchestrator extends EventEmitter {
   public optimizePerformance(): void {
     // Parallel task execution
     const pendingTasks = Array.from(this.tasks.values()).filter(task => task.status === 'pending');
-    
+
     // Group tasks by type for parallel execution
     const taskGroups = this.groupTasksByType(pendingTasks);
-    
+
     // Execute each group in parallel
     Object.values(taskGroups).forEach(tasks => {
       tasks.forEach(task => {
@@ -483,14 +485,14 @@ export class HybridAgentOrchestrator extends EventEmitter {
 
   private groupTasksByType(tasks: AgentTask[]): Record<string, AgentTask[]> {
     const groups: Record<string, AgentTask[]> = {};
-    
+
     tasks.forEach(task => {
       if (!groups[task.type]) {
         groups[task.type] = [];
       }
       groups[task.type].push(task);
     });
-    
+
     return groups;
   }
 

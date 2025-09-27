@@ -16,7 +16,7 @@ if command -v inotifywait &> /dev/null; then
         echo "📦 Plugin change detected!"
         touch "$RELOAD_TRIGGER"
         # Send websocket notification if available
-        curl -X POST http://localhost:8080/api/plugins/reload 2>/dev/null || true
+        curl -X POST http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/plugins/reload 2>/dev/null || true
     done
 else
     echo "Using polling mode (checking every 5 seconds)"
@@ -26,7 +26,7 @@ else
         if [ "$CURRENT_HASH" != "$LAST_HASH" ]; then
             echo "📦 Plugin change detected!"
             touch "$RELOAD_TRIGGER"
-            curl -X POST http://localhost:8080/api/plugins/reload 2>/dev/null || true
+            curl -X POST http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/plugins/reload 2>/dev/null || true
             LAST_HASH=$CURRENT_HASH
         fi
         sleep 5

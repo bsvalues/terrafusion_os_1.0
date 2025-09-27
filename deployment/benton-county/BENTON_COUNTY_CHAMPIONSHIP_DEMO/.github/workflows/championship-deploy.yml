@@ -61,7 +61,7 @@ jobs:
       run: |
         timeout 30s node demo-server.js &
         sleep 10
-        curl -f http://localhost:3000/api/demo/health || exit 1
+        curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health || exit 1
 
   # 🏗️ Build Container Images
   build:
@@ -142,7 +142,7 @@ jobs:
     - name: ⏳ Wait for services
       run: |
         for i in {1..30}; do
-          if curl -s -f http://localhost:3000/api/demo/health > /dev/null; then
+          if curl -s -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health > /dev/null; then
             echo "✅ Staging deployment successful"
             break
           fi
@@ -152,9 +152,9 @@ jobs:
     - name: 🧪 Run integration tests
       run: |
         # Basic API tests
-        curl -f http://localhost:3000/api/demo/overview
-        curl -f http://localhost:3000/api/demo/properties
-        curl -f http://localhost:3000/api/monitoring/performance
+        curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/overview
+        curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/properties
+        curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/performance
 
   # 🏆 Deploy to Production
   deploy-production:
@@ -196,9 +196,9 @@ jobs:
     - name: 📊 Validate deployment
       run: |
         # Comprehensive health checks
-        curl -f http://localhost:3000/api/demo/health
-        curl -f http://localhost:3000/api/demo/overview
-        curl -f http://localhost:3000/api/monitoring/performance
+        curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health
+        curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/overview
+        curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/performance
         
         # Check all services
         docker-compose ps | grep -q "Up"
@@ -206,8 +206,8 @@ jobs:
     - name: 🎉 Deployment success notification
       run: |
         echo "🏆 CHAMPIONSHIP DEPLOYMENT SUCCESSFUL! 🏆"
-        echo "Demo URL: http://localhost:3000"
-        echo "Monitoring: http://localhost:3001"
+        echo "Demo URL: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+        echo "Monitoring: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
 
   # 📋 Create Release
   release:

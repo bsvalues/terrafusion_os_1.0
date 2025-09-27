@@ -42,7 +42,7 @@ namespace TerraFusion.Core.Services
             _frameworkControls = InitializeFrameworkControls();
         }
 
-        public async Task<AuditTrail> CreateAuditTrailAsync(string action, string userId, object data, string entityType = null)
+        public async Task<AuditTrail> CreateAuditTrailAsync(string action, string userId, object data, string? entityType = null)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace TerraFusion.Core.Services
                     UserId = userId,
                     EntityType = entityType,
                     Data = JsonSerializer.Serialize(data),
-                    ApplicableFrameworks = DetermineApplicableFrameworks(action, entityType)
+                    ApplicableFrameworks = DetermineApplicableFrameworks(action, entityType ?? "")
                 };
 
                 // Store in cache for quick access
@@ -73,7 +73,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<List<AuditTrail>> GetAuditTrailAsync(DateTime? startDate = null, DateTime? endDate = null, string userId = null)
+        public async Task<List<AuditTrail>> GetAuditTrailAsync(DateTime? startDate = null, DateTime? endDate = null, string? userId = null)
         {
             try
             {
@@ -123,6 +123,11 @@ namespace TerraFusion.Core.Services
                 var metrics = CalculateComplianceMetrics(auditTrails, violations);
                 var recommendations = GenerateRecommendations(controls, violations);
 
+                var complianceStatus = await ValidateComplianceAsync(framework);
+                var overallStatusType = complianceStatus.ComplianceScore >= 90 ? ComplianceStatusType.Compliant :
+                                      complianceStatus.ComplianceScore >= 70 ? ComplianceStatusType.PartiallyCompliant :
+                                      ComplianceStatusType.NonCompliant;
+
                 var report = new ComplianceReport
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -130,7 +135,7 @@ namespace TerraFusion.Core.Services
                     GeneratedAt = DateTime.UtcNow,
                     PeriodStart = startDate,
                     PeriodEnd = endDate,
-                    OverallStatus = await ValidateComplianceAsync(framework),
+                    OverallStatus = overallStatusType,
                     Controls = controls,
                     Violations = violations,
                     Metrics = metrics,
@@ -140,7 +145,7 @@ namespace TerraFusion.Core.Services
                 await _cacheService.SetAsync(cacheKey, report, TimeSpan.FromHours(4));
                 
                 _logger.LogInformation("Compliance report generated for {Framework}: {Score}% compliance", 
-                    framework, report.OverallStatus.ComplianceScore);
+                    framework, complianceStatus.ComplianceScore);
                 
                 return report;
             }
@@ -303,18 +308,18 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<bool> UpdateComplianceControlAsync(string controlId, ComplianceControlStatus status, string evidence)
+        public Task<bool> UpdateComplianceControlAsync(string controlId, ComplianceControlStatus status, string evidence)
         {
             try
             {
                 // Update control status and evidence
                 _logger.LogInformation("Compliance control {ControlId} updated to {Status}", controlId, status);
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating compliance control {ControlId}", controlId);
-                return false;
+                return Task.FromResult(false);
             }
         }
 

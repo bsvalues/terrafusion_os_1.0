@@ -15,9 +15,9 @@ class MonitoringPipelineTest:
     """Test suite for the complete monitoring pipeline"""
     
     def __init__(self):
-        self.prometheus_url = "http://localhost:9090"
-        self.grafana_url = "http://localhost:3000"
-        self.alertmanager_url = "http://localhost:9093"
+        self.prometheus_url = "http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}"
+        self.grafana_url = "http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}"
+        self.alertmanager_url = "http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}"
         self.test_results = []
         
     def log_test(self, test_name: str, status: str, details: str = ""):
@@ -307,8 +307,8 @@ class MonitoringPipelineTest:
         print(f"Prometheus: {self.prometheus_url}")
         print(f"Grafana: {self.grafana_url} (admin/admin)")
         print(f"Alertmanager: {self.alertmanager_url}")
-        print("Node Exporter: http://localhost:9100")
-        print("cAdvisor: http://localhost:8080")
+        print("Node Exporter: http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}")
+        print("cAdvisor: http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}")
         
         if failed_tests == 0:
             print("\n🎉 ALL TESTS PASSED! Monitoring pipeline is operational.")
@@ -330,8 +330,8 @@ class MonitoringPipelineTest:
                 "prometheus": self.prometheus_url,
                 "grafana": self.grafana_url,
                 "alertmanager": self.alertmanager_url,
-                "node_exporter": "http://localhost:9100",
-                "cadvisor": "http://localhost:8080"
+                "node_exporter": "http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}",
+                "cadvisor": "http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}"
             }
         }
 

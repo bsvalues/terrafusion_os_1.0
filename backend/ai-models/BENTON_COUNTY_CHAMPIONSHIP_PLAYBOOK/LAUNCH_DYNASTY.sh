@@ -130,10 +130,10 @@ ANTHROPIC_API_KEY=your-anthropic-key-here
 BENTON_ASSESSOR_KEY=your-benton-county-key-here
 
 # Database
-DATABASE_URL=postgresql://dynasty_user:championship_password_2024@localhost:5432/benton_dynasty
+DATABASE_URL=postgresql://dynasty_user:championship_password_2024@localhost:\${{TF_POSTGRES_PORT:-5432}}/benton_dynasty
 
 # Redis
-REDIS_URL=redis://localhost:6379
+REDIS_URL=redis://localhost:\${{TF_POSTGRES_PORT:-5432}}
 
 # Features
 ENABLE_CONSCIOUSNESS=false
@@ -141,8 +141,8 @@ ENABLE_QUANTUM=true
 ENABLE_EVOLUTION=true
 
 # Monitoring
-PROMETHEUS_PORT=9090
-GRAFANA_PORT=3000
+PROMETHEUS_PORT=\${{TF_PROMETHEUS_PORT:-9090}}
+GRAFANA_PORT=\${{TF_PROMETHEUS_PORT:-9090}}
 EOF
         print_warning "Created .env file - please update with your API keys"
     else
@@ -190,8 +190,8 @@ deploy_native() {
     fi
     
     print_status "Native deployment complete!"
-    print_info "Dashboard: http://localhost:8090/championship_ui.html"
-    print_info "API: http://localhost:8000"
+    print_info "Dashboard: http://localhost:\${{TF_POSTGRES_PORT:-5432}}/championship_ui.html"
+    print_info "API: http://localhost:\${{TF_POSTGRES_PORT:-5432}}"
 }
 
 # Health check
@@ -199,8 +199,8 @@ health_check() {
     print_step "Performing health check..."
     
     endpoints=(
-        "http://localhost:8090/championship_ui.html:Dashboard"
-        "http://localhost:11434/api/tags:Ollama"
+        "http://localhost:\${{TF_POSTGRES_PORT:-5432}}/championship_ui.html:Dashboard"
+        "http://localhost:\${{TF_POSTGRES_PORT:-5432}}/api/tags:Ollama"
     )
     
     for endpoint in "${endpoints[@]}"; do
@@ -235,8 +235,8 @@ show_status() {
     
     echo
     echo "🌐 Access Points:"
-    echo "   Dashboard: http://localhost:8090/championship_ui.html"
-    echo "   API: http://localhost:8000"
+    echo "   Dashboard: http://localhost:\${{TF_POSTGRES_PORT:-5432}}/championship_ui.html"
+    echo "   API: http://localhost:\${{TF_POSTGRES_PORT:-5432}}"
     echo
     echo "📊 Logs:"
     echo "   Orchestrator: tail -f logs/orchestrator.log"
@@ -314,6 +314,6 @@ case "${1:-start}" in
         echo "  logs        - View dynasty logs"
         echo "  consciousness - Enable neural consciousness (experimental)"
         echo
-        echo "🌐 Access the dashboard at: http://localhost:8090/championship_ui.html"
+        echo "🌐 Access the dashboard at: http://localhost:\${{TF_POSTGRES_PORT:-5432}}/championship_ui.html"
         ;;
 esac

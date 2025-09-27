@@ -2,13 +2,16 @@
 
 ## 🎯 **COMPLETE DEPLOYMENT GUIDE FOR REVOLUTIONARY GOVERNMENT AI PLATFORM**
 
-**Terrafusion OS** deployment requires careful orchestration of **quantum computing infrastructure**, **AI swarm coordination**, and **gauge field theory implementation**. This guide provides step-by-step deployment procedures.
+**Terrafusion OS** deployment requires careful orchestration of **quantum
+computing infrastructure**, **AI swarm coordination**, and **gauge field theory
+implementation**. This guide provides step-by-step deployment procedures.
 
 ---
 
 ## 🌟 **DEPLOYMENT OVERVIEW**
 
 ### **System Requirements**
+
 - **Operating System**: Windows 10/11, Linux (Ubuntu 20.04+), macOS 12+
 - **Python**: 3.12+ with pip
 - **Node.js**: 18+ with npm
@@ -18,17 +21,19 @@
 - **Network**: Stable internet connection for AI model downloads
 
 ### **Architecture Components**
+
 - **Core Services**: Port management, AI coordination
-- **Gauge Theory API**: Port 5001 (Main API)
-- **Frontend**: Port 3000 (React/Next.js)
-- **Backend**: Port 8000 (.NET services)
-- **Quantum Engine**: Port 8080 (Performance optimization)
+- **Gauge Theory API**: Port \${{TF_API_HTTPS_PORT:-5001}} (Main API)
+- **Frontend**: Port \${{TF_API_HTTPS_PORT:-5001}} (React/Next.js)
+- **Backend**: Port \${{TF_API_HTTPS_PORT:-5001}} (.NET services)
+- **Quantum Engine**: Port \${{TF_API_HTTPS_PORT:-5001}} (Performance optimization)
 
 ---
 
 ## 🚀 **PHASE 1: FOUNDATION DEPLOYMENT**
 
 ### **Step 1: Environment Setup**
+
 ```bash
 # 1. Clone Repository
 git clone https://github.com/bsvalues/terrafusion_os_1.0.git
@@ -44,6 +49,7 @@ pip install -r requirements.txt
 ```
 
 ### **Step 2: Port Configuration**
+
 ```bash
 # 1. Validate Port Configuration
 python -c "from backend.core.port_management_service import validate_port_configuration; print(validate_port_configuration())"
@@ -56,6 +62,7 @@ netstat -an | Select-String ":5001|:3000|:8000|:8080"
 ```
 
 ### **Step 3: AI Swarm Activation**
+
 ```bash
 # 1. Start AI Coordination
 python backend/mcp-core/ai_coordination_activator.py
@@ -72,18 +79,20 @@ python backend/mcp-core/ai_coordination_activator.py
 ## 🔧 **PHASE 2: CORE SERVICES DEPLOYMENT**
 
 ### **Step 4: Gauge Theory API**
+
 ```bash
 # 1. Start Gauge Theory API
 python backend/core/gauge-theory/gauge_theory_api.py
 
 # 2. Validate API Health
-curl http://localhost:5001/health
+curl http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/health
 
 # 3. Check API Documentation
-# Visit http://localhost:5001/docs
+# Visit http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/docs
 ```
 
 ### **Step 5: Frontend Deployment**
+
 ```bash
 # 1. Navigate to Frontend
 cd frontend
@@ -95,10 +104,11 @@ npm install
 npm run dev
 
 # 4. Validate Frontend
-# Visit http://localhost:3000
+# Visit http://localhost:\${{TF_API_HTTPS_PORT:-5001}}
 ```
 
 ### **Step 6: Backend Services**
+
 ```bash
 # 1. Navigate to Backend
 cd backend/Terrafusion.API
@@ -110,7 +120,7 @@ dotnet build --configuration Release
 dotnet run --configuration Release
 
 # 4. Validate Backend
-# Check if port 8000 is active
+# Check if port \${{TF_DOCS_PORT:-8000}} is active
 ```
 
 ---
@@ -118,6 +128,7 @@ dotnet run --configuration Release
 ## 🚀 **PHASE 3: ADVANCED SERVICES DEPLOYMENT**
 
 ### **Step 7: Quantum Performance Engine**
+
 ```bash
 # 1. Start Quantum Engine
 python backend/quantum-performance/quantum_performance_engine.py
@@ -130,6 +141,7 @@ python backend/quantum-performance/quantum_performance_engine.py --benchmark
 ```
 
 ### **Step 8: AI Models Deployment**
+
 ```bash
 # 1. Deploy County Models
 python backend/ai-models/deploy_models.py --county=benton
@@ -146,6 +158,7 @@ python backend/ai-models/test_integration.py
 ## 🔐 **PHASE 4: SECURITY & COMPLIANCE**
 
 ### **Step 9: FISMA Compliance**
+
 ```bash
 # 1. Run Security Validation
 python scripts/validation/production-readiness-validator.py --security-only
@@ -158,6 +171,7 @@ python scripts/validation/production-readiness-validator.py --security-only
 ```
 
 ### **Step 10: Access Control**
+
 ```bash
 # 1. Configure JWT Settings
 # Edit backend/Terrafusion.API/appsettings.json
@@ -174,6 +188,7 @@ python scripts/validation/production-readiness-validator.py --security-only
 ## 📊 **PHASE 5: VALIDATION & TESTING**
 
 ### **Step 11: Production Readiness**
+
 ```bash
 # 1. Run Complete Validation
 python scripts/validation/production-readiness-validator.py
@@ -186,6 +201,7 @@ python scripts/validation/production-readiness-validator.py
 ```
 
 ### **Step 12: Performance Testing**
+
 ```bash
 # 1. Load Testing
 python scripts/testing/load_test.py --users=2000 --duration=300
@@ -204,6 +220,7 @@ python backend/mcp-core/ai_coordination_activator.py --test-coordination
 ### **Common Issues & Solutions**
 
 #### **Port Conflicts**
+
 ```bash
 # Issue: Port already in use
 # Solution: Check and kill conflicting processes
@@ -212,6 +229,7 @@ taskkill /PID <PID> /F
 ```
 
 #### **Python Dependencies**
+
 ```bash
 # Issue: Missing packages
 # Solution: Install requirements
@@ -220,6 +238,7 @@ pip install fastapi uvicorn pydantic
 ```
 
 #### **.NET Build Errors**
+
 ```bash
 # Issue: Build failures
 # Solution: Clean and rebuild
@@ -229,6 +248,7 @@ dotnet build --configuration Release
 ```
 
 #### **AI Swarm Issues**
+
 ```bash
 # Issue: Agents not deploying
 # Solution: Reset coordination
@@ -241,6 +261,7 @@ python backend/mcp-core/ai_coordination_activator.py
 ## 📈 **DEPLOYMENT MONITORING**
 
 ### **Key Metrics to Track**
+
 - **Service Status**: All critical services running
 - **Port Availability**: All required ports active
 - **AI Agent Count**: 1,269 agents deployed
@@ -248,6 +269,7 @@ python backend/mcp-core/ai_coordination_activator.py
 - **Security**: 100% FISMA compliance
 
 ### **Health Check Commands**
+
 ```bash
 # 1. Service Status
 netstat -an | Select-String ":5001|:3000|:8000|:8080"
@@ -256,8 +278,8 @@ netstat -an | Select-String ":5001|:3000|:8000|:8080"
 Get-Process | Where-Object {$_.ProcessName -like "*python*" -or $_.ProcessName -like "*node*" -or $_.ProcessName -like "*dotnet*"}
 
 # 3. API Health
-curl http://localhost:5001/health
-curl http://localhost:5001/status
+curl http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/health
+curl http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/status
 ```
 
 ---
@@ -265,26 +287,31 @@ curl http://localhost:5001/status
 ## 🎯 **DEPLOYMENT ROADMAP**
 
 ### **Phase 1: Foundation (✅ Complete)**
+
 - Environment setup
 - Port configuration
 - AI swarm activation
 
 ### **Phase 2: Core Services (✅ Complete)**
+
 - Gauge Theory API
 - Frontend deployment
 - Backend services
 
 ### **Phase 3: Advanced Services (✅ Complete)**
+
 - Quantum performance engine
 - AI models deployment
 - Advanced features
 
 ### **Phase 4: Security & Compliance (✅ Complete)**
+
 - FISMA compliance
 - Access control
 - Security validation
 
 ### **Phase 5: Validation & Testing (🔄 In Progress)**
+
 - Production readiness
 - Performance testing
 - System validation
@@ -293,7 +320,8 @@ curl http://localhost:5001/status
 
 ## 🏆 **DEPLOYMENT ACHIEVEMENTS**
 
-**Terrafusion OS Deployment** represents the **MOST ADVANCED GOVERNMENT DEPLOYMENT** ever created:
+**Terrafusion OS Deployment** represents the **MOST ADVANCED GOVERNMENT
+DEPLOYMENT** ever created:
 
 1. **First Quantum Deployment**: Quantum computing infrastructure in government
 2. **Largest AI Swarm**: 1,269 agent deployment
@@ -306,6 +334,7 @@ curl http://localhost:5001/status
 ## 🚀 **GO-LIVE CHECKLIST**
 
 ### **Pre-Go-Live**
+
 - [ ] All services running on correct ports
 - [ ] AI swarm fully operational (1,269 agents)
 - [ ] Quantum performance engine active
@@ -314,6 +343,7 @@ curl http://localhost:5001/status
 - [ ] Documentation complete (5/5 files)
 
 ### **Go-Live**
+
 - [ ] Switch to production configuration
 - [ ] Enable monitoring and alerting
 - [ ] Activate backup systems
@@ -321,6 +351,7 @@ curl http://localhost:5001/status
 - [ ] Monitor system performance
 
 ### **Post-Go-Live**
+
 - [ ] Performance optimization
 - [ ] User feedback collection
 - [ ] System scaling preparation

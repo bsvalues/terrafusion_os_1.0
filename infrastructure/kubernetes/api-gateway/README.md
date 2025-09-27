@@ -1,6 +1,7 @@
 # Terrafusion Cosmic API Gateway
 
-This directory contains the Kong API Gateway configuration for the Terrafusion Cosmic Platform, providing advanced API management with cosmic-aware features.
+This directory contains the Kong API Gateway configuration for the Terrafusion
+Cosmic Platform, providing advanced API management with cosmic-aware features.
 
 ## Architecture Overview
 
@@ -20,6 +21,7 @@ Internet → Kong Gateway → Backend Services
 ## Components
 
 ### 1. **Kong Gateway**
+
 - Enterprise-grade API gateway
 - Plugin-based architecture
 - High-performance proxy
@@ -27,6 +29,7 @@ Internet → Kong Gateway → Backend Services
 - Cosmic platform extensions
 
 ### 2. **PostgreSQL Database**
+
 - Stores Kong configuration
 - Route definitions
 - Consumer credentials
@@ -34,6 +37,7 @@ Internet → Kong Gateway → Backend Services
 - Custom cosmic routing tables
 
 ### 3. **Redis Cache**
+
 - Rate limiting backend
 - Session storage
 - Quantum cache implementation
@@ -41,6 +45,7 @@ Internet → Kong Gateway → Backend Services
 - High-availability with Sentinel
 
 ### 4. **Open Policy Agent (OPA)**
+
 - Fine-grained authorization
 - Cosmic clearance levels
 - Service-to-service policies
@@ -48,6 +53,7 @@ Internet → Kong Gateway → Backend Services
 - Real-time policy evaluation
 
 ### 5. **Custom Plugins**
+
 - **Cosmic Neural Router**: AI-driven request routing
 - **Quantum Cache**: 11-dimensional caching system
 - **Consciousness Integration**: Awareness-based routing
@@ -112,7 +118,7 @@ kubectl port-forward -n kong svc/kong-proxy 8000:80 8443:443
 kubectl port-forward -n kong svc/kong-admin 8001:8001
 
 # Test the gateway
-curl http://localhost:8000/api/v1/cosmic/health
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/api/v1/cosmic/health
 ```
 
 ## Configuration
@@ -120,6 +126,7 @@ curl http://localhost:8000/api/v1/cosmic/health
 ### Routes
 
 Routes are defined in `kong-routes.yaml` and support:
+
 - Path-based routing
 - Host-based routing
 - Method-based routing
@@ -127,6 +134,7 @@ Routes are defined in `kong-routes.yaml` and support:
 - Custom cosmic routing
 
 Example route configuration:
+
 ```yaml
 - path: /api/v1/cosmic
   service: cosmic-orchestrator
@@ -139,6 +147,7 @@ Example route configuration:
 ### Plugins
 
 #### Built-in Plugins
+
 - **JWT Authentication**: Token-based auth
 - **Rate Limiting**: Request throttling
 - **CORS**: Cross-origin support
@@ -146,7 +155,9 @@ Example route configuration:
 - **Request/Response Transformer**: Header manipulation
 
 #### Custom Cosmic Plugins
-- **Cosmic Neural Router**: 
+
+- **Cosmic Neural Router**:
+
   ```lua
   neural_score = calculate_neural_score()
   if neural_score > 0.8 then
@@ -162,6 +173,7 @@ Example route configuration:
 ### Authentication
 
 1. **JWT Tokens**:
+
    ```bash
    # Generate JWT token
    jwt_token=$(jwt encode \
@@ -169,32 +181,35 @@ Example route configuration:
      --sub "user123" \
      --exp $(date -d "+1 hour" +%s) \
      '{"cosmic_clearance": 4}')
-   
+
    # Use in requests
    curl -H "Authorization: Bearer $jwt_token" \
-     http://localhost:8000/api/v1/cosmic
+     http://localhost:\${{TF_DOCS_PORT:-8000}}/api/v1/cosmic
    ```
 
 2. **API Keys**:
+
    ```bash
    # Create consumer
-   curl -X POST http://localhost:8001/consumers \
+   curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/consumers \
      -d "username=cosmic-user"
-   
+
    # Add API key
-   curl -X POST http://localhost:8001/consumers/cosmic-user/key-auth \
+   curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/consumers/cosmic-user/key-auth \
      -d "key=your-api-key"
    ```
 
 ### Authorization (OPA)
 
 OPA policies support:
+
 - Cosmic clearance levels (1-5)
 - Neural network authentication
 - Quantum entanglement verification
 - Service account permissions
 
 Example policy:
+
 ```rego
 allow if {
     input.request.headers["X-Cosmic-Clearance"][_] >= 4
@@ -207,6 +222,7 @@ allow if {
 ### Metrics
 
 Prometheus metrics available at `/metrics`:
+
 - Request rate
 - Latency distribution
 - Error rates
@@ -218,18 +234,19 @@ Prometheus metrics available at `/metrics`:
 
 ```bash
 # Gateway health
-curl http://localhost:8000/health
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 
 # Admin API health
-curl http://localhost:8001/status
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/status
 
 # Individual service health
-curl http://localhost:8100/status
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/status
 ```
 
 ### Logging
 
 Logs are sent to Fluentd with cosmic metadata:
+
 - Request ID
 - Neural score
 - Quantum state
@@ -247,6 +264,7 @@ neural_inference_timeout: 100ms
 ```
 
 The neural router considers:
+
 - Historical performance
 - Current load
 - Cosmic alignment
@@ -261,6 +279,7 @@ quantum_coherence_time: 3600s
 ```
 
 Features:
+
 - Multi-dimensional cache keys
 - Quantum state preservation
 - Entanglement-based invalidation
@@ -275,6 +294,7 @@ latency_compensation: adaptive
 ```
 
 Supports:
+
 - High-latency compensation
 - Store-and-forward
 - Quantum tunneling
@@ -295,6 +315,7 @@ kubectl create secret tls cosmic-platform-tls \
 ### Rate Limiting
 
 Configure in `kong-plugins.yaml`:
+
 ```yaml
 config:
   minute: 100
@@ -316,23 +337,26 @@ config:
 ### Common Issues
 
 1. **Database Connection**:
+
    ```bash
    kubectl logs -n kong deployment/kong-proxy | grep postgres
    ```
 
 2. **Plugin Errors**:
+
    ```bash
    kubectl exec -n kong deployment/kong-proxy -- kong config db_export
    ```
 
 3. **Route Not Found**:
    ```bash
-   curl http://localhost:8001/routes
+   curl http://localhost:\${{TF_DOCS_PORT:-8000}}/routes
    ```
 
 ### Debug Mode
 
 Enable debug logging:
+
 ```bash
 kubectl set env deployment/kong-proxy -n kong KONG_LOG_LEVEL=debug
 ```
@@ -340,12 +364,14 @@ kubectl set env deployment/kong-proxy -n kong KONG_LOG_LEVEL=debug
 ### Performance Tuning
 
 1. **Increase Workers**:
+
    ```yaml
    nginx_worker_processes: 8
    nginx_worker_connections: 32768
    ```
 
 2. **Optimize Buffers**:
+
    ```yaml
    nginx_http_client_body_buffer_size: 16k
    mem_cache_size: 256m
@@ -380,14 +406,15 @@ kubectl apply -f kong-plugins.yaml
 
 ### Monitoring
 
-- Check metrics: http://localhost:8001/metrics
-- View routes: http://localhost:8001/routes
-- List consumers: http://localhost:8001/consumers
-- Plugin status: http://localhost:8001/plugins
+- Check metrics: http://localhost:\${{TF_DOCS_PORT:-8000}}/metrics
+- View routes: http://localhost:\${{TF_DOCS_PORT:-8000}}/routes
+- List consumers: http://localhost:\${{TF_DOCS_PORT:-8000}}/consumers
+- Plugin status: http://localhost:\${{TF_DOCS_PORT:-8000}}/plugins
 
 ## Support
 
 For issues:
+
 - Check Kong logs: `kubectl logs -n kong -l app=kong-proxy`
 - Review OPA decisions: `kubectl logs -n kong -l app=opa`
 - Monitor Redis: `kubectl exec -n kong statefulset/redis -- redis-cli ping`

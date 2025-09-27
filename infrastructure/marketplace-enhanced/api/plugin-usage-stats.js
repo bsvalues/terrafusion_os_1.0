@@ -32,7 +32,8 @@ router.get('/', limiter, (req, res) => {
 // POST /api/plugin-usage-stats { pluginId, timestamp }
 router.post('/', limiter, (req, res) => {
   const { pluginId, timestamp } = req.body;
-  if (!pluginId || !timestamp) return res.status(400).json({ error: 'pluginId and timestamp required' });
+  if (!pluginId || !timestamp)
+    return res.status(400).json({ error: 'pluginId and timestamp required' });
   db.run(
     `INSERT INTO usage (pluginId, count, lastLaunched) VALUES (?, 1, ?)
      ON CONFLICT(pluginId) DO UPDATE SET count = count + 1, lastLaunched = excluded.lastLaunched`,

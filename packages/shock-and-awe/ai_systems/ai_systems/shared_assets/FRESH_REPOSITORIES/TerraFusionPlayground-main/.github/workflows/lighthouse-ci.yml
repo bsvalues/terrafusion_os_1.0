@@ -35,9 +35,9 @@ jobs:
         uses: treosh/lighthouse-ci-action@v10
         with:
           urls: |
-            http://localhost:3000/
-            http://localhost:3000/dashboard
-            http://localhost:3000/fields
+            http://localhost:\${{TF_FRONTEND_PORT:-3000}}/
+            http://localhost:\${{TF_FRONTEND_PORT:-3000}}/dashboard
+            http://localhost:\${{TF_FRONTEND_PORT:-3000}}/fields
           budgets: ./lighthouse-ci/budget.json
           uploadArtifacts: true
           temporaryPublicStorage: true

@@ -2,9 +2,11 @@
 
 ## ❌ WHAT I'VE BEEN DOING WRONG
 
-I've been treating this as a web application when it's actually a **TAURI DESKTOP APPLICATION**!
+I've been treating this as a web application when it's actually a **TAURI
+DESKTOP APPLICATION**!
 
 ### My Mistakes:
+
 1. Running `npm run dev` (starts only the web frontend)
 2. Trying to access it in a browser
 3. Attempting to load modules via React imports
@@ -16,6 +18,7 @@ I've been treating this as a web application when it's actually a **TAURI DESKTO
 Championship is a **TAURI DESKTOP APPLICATION** with:
 
 ### Architecture:
+
 ```
 ┌─────────────────────────────────────┐
 │     TAURI DESKTOP APPLICATION       │
@@ -118,7 +121,8 @@ pub async fn load_module(name: String) -> Result<String> {
 
 ## 🎮 THE LAUNCHER/MARKETPLACE
 
-The "launcher" IS the Tauri application itself! The marketplace is integrated into the Rust backend and manages plugins through the module system.
+The "launcher" IS the Tauri application itself! The marketplace is integrated
+into the Rust backend and manages plugins through the module system.
 
 ## 💡 BOTTOM LINE
 

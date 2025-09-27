@@ -4,62 +4,67 @@
  */
 
 class InterfaceManager {
-    constructor() {
-        this.originalContent = null;
-        this.currentFeature = null;
-        this.init();
+  constructor() {
+    this.originalContent = null;
+    this.currentFeature = null;
+    this.init();
+  }
+
+  init() {
+    // Store the original interface content
+    this.originalContent = document.body.innerHTML;
+  }
+
+  // Replace the entire interface with a feature
+  showFeature(featureName, featureHTML) {
+    console.log(`🔄 Switching to ${featureName} interface (full replacement)`);
+
+    // Store current feature
+    this.currentFeature = featureName;
+
+    // Replace entire body content
+    document.body.innerHTML = featureHTML;
+
+    // Reset body styles
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'hidden';
+    document.body.style.background =
+      'linear-gradient(135deg, #0b1020 0%, #1a0b2e 50%, #0b1020 100%)';
+
+    console.log(`✅ ${featureName} interface loaded successfully`);
+
+    // Enable fuzzy search on any address inputs in the new interface
+    setTimeout(() => {
+      if (typeof window.enableFuzzySearchOnInput === 'function') {
+        const addressInputs = document.querySelectorAll(
+          'input[id*="address"], input[placeholder*="address" i]'
+        );
+        addressInputs.forEach(input => {
+          window.enableFuzzySearchOnInput(input);
+        });
+        console.log(
+          `🔍 Fuzzy search enabled for ${addressInputs.length} address inputs in ${featureName}`
+        );
+      }
+    }, 100); // Small delay to ensure DOM is ready
+  }
+
+  // Return to the original shock-and-awe interface
+  returnToMain() {
+    console.log('🔄 Returning to main interface');
+
+    document.body.innerHTML = this.originalContent;
+    document.body.style.overflow = 'auto';
+    this.currentFeature = null;
+
+    // Reinitialize the main application
+    if (window.terraFusionMarket) {
+      window.terraFusionMarket.setupEventListeners();
     }
 
-    init() {
-        // Store the original interface content
-        this.originalContent = document.body.innerHTML;
-    }
-
-    // Replace the entire interface with a feature
-    showFeature(featureName, featureHTML) {
-        console.log(`🔄 Switching to ${featureName} interface (full replacement)`);
-        
-        // Store current feature
-        this.currentFeature = featureName;
-        
-        // Replace entire body content
-        document.body.innerHTML = featureHTML;
-        
-        // Reset body styles
-        document.body.style.margin = '0';
-        document.body.style.padding = '0';
-        document.body.style.overflow = 'hidden';
-        document.body.style.background = 'linear-gradient(135deg, #0b1020 0%, #1a0b2e 50%, #0b1020 100%)';
-        
-        console.log(`✅ ${featureName} interface loaded successfully`);
-        
-        // Enable fuzzy search on any address inputs in the new interface
-        setTimeout(() => {
-            if (typeof window.enableFuzzySearchOnInput === 'function') {
-                const addressInputs = document.querySelectorAll('input[id*="address"], input[placeholder*="address" i]');
-                addressInputs.forEach(input => {
-                    window.enableFuzzySearchOnInput(input);
-                });
-                console.log(`🔍 Fuzzy search enabled for ${addressInputs.length} address inputs in ${featureName}`);
-            }
-        }, 100); // Small delay to ensure DOM is ready
-    }
-
-    // Return to the original shock-and-awe interface
-    returnToMain() {
-        console.log('🔄 Returning to main interface');
-        
-        document.body.innerHTML = this.originalContent;
-        document.body.style.overflow = 'auto';
-        this.currentFeature = null;
-        
-        // Reinitialize the main application
-        if (window.terraFusionMarket) {
-            window.terraFusionMarket.setupEventListeners();
-        }
-        
-        console.log('✅ Main interface restored');
-    }
+    console.log('✅ Main interface restored');
+  }
 }
 
 // Create global interface manager
@@ -67,7 +72,7 @@ window.interfaceManager = new InterfaceManager();
 
 // Feature interface templates
 const FEATURE_INTERFACES = {
-    costforge: `
+  costforge: `
         <div style="width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b1020 0%, #1a0b2e 50%, #0b1020 100%); display: flex; flex-direction: column; font-family: 'Inter', sans-serif;">
             <!-- Header -->
             <div style="padding: 2rem; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
@@ -140,8 +145,8 @@ const FEATURE_INTERFACES = {
             </div>
         </div>
     `,
-    
-    gis: `
+
+  gis: `
         <div style="width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b1020 0%, #1a0b2e 50%, #0b1020 100%); display: flex; flex-direction: column; font-family: 'Inter', sans-serif;">
             <!-- Header -->
             <div style="padding: 2rem; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
@@ -196,8 +201,8 @@ const FEATURE_INTERFACES = {
             </div>
         </div>
     `,
-    
-    levy: `
+
+  levy: `
         <div style="width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b1020 0%, #1a0b2e 50%, #0b1020 100%); display: flex; flex-direction: column; font-family: 'Inter', sans-serif;">
             <!-- Header -->
             <div style="padding: 2rem; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
@@ -292,8 +297,8 @@ const FEATURE_INTERFACES = {
             </div>
         </div>
     `,
-    
-    miner: `
+
+  miner: `
         <div style="width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b1020 0%, #1a0b2e 50%, #0b1020 100%); display: flex; flex-direction: column; font-family: 'Inter', sans-serif;">
             <!-- Header -->
             <div style="padding: 2rem; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
@@ -387,8 +392,8 @@ const FEATURE_INTERFACES = {
             </div>
         </div>
     `,
-    
-    swarm: `
+
+  swarm: `
         <div style="width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b1020 0%, #1a0b2e 50%, #0b1020 100%); display: flex; flex-direction: column; font-family: 'Inter', sans-serif;">
             <!-- Header -->
             <div style="padding: 2rem; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
@@ -513,8 +518,8 @@ const FEATURE_INTERFACES = {
             </div>
         </div>
     `,
-    
-    security: `
+
+  security: `
         <div style="width: 100vw; height: 100vh; background: linear-gradient(135deg, #0b1020 0%, #1a0b2e 50%, #0b1020 100%); display: flex; flex-direction: column; font-family: 'Inter', sans-serif;">
             <!-- Header -->
             <div style="padding: 2rem; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
@@ -627,36 +632,36 @@ const FEATURE_INTERFACES = {
                 </div>
             </div>
         </div>
-    `
+    `,
 };
 
 // Updated launch functions that replace the entire interface
-window.launchCostForgeWizard = function() {
-    console.log('🚀 Launching CostForge AI Wizard (full interface replacement)');
-    window.interfaceManager.showFeature('CostForge AI Wizard', FEATURE_INTERFACES.costforge);
+window.launchCostForgeWizard = function () {
+  console.log('🚀 Launching CostForge AI Wizard (full interface replacement)');
+  window.interfaceManager.showFeature('CostForge AI Wizard', FEATURE_INTERFACES.costforge);
 };
 
-window.launchGISViewer = function() {
-    console.log('🚀 Launching Terrafusion GIS Pro (full interface replacement)');
-    window.interfaceManager.showFeature('Terrafusion GIS Pro', FEATURE_INTERFACES.gis);
+window.launchGISViewer = function () {
+  console.log('🚀 Launching Terrafusion GIS Pro (full interface replacement)');
+  window.interfaceManager.showFeature('Terrafusion GIS Pro', FEATURE_INTERFACES.gis);
 };
 
-window.launchTerraLevy = function() {
-    console.log('🚀 Launching Terra-Levy Tax Optimizer (full interface replacement)');
-    window.interfaceManager.showFeature('Terra-Levy Tax Optimizer', FEATURE_INTERFACES.levy);
+window.launchTerraLevy = function () {
+  console.log('🚀 Launching Terra-Levy Tax Optimizer (full interface replacement)');
+  window.interfaceManager.showFeature('Terra-Levy Tax Optimizer', FEATURE_INTERFACES.levy);
 };
 
-window.launchTerraMiner = function() {
-    console.log('🚀 Launching Terra-Miner Intelligence (full interface replacement)');
-    window.interfaceManager.showFeature('Terra-Miner Intelligence', FEATURE_INTERFACES.miner);
+window.launchTerraMiner = function () {
+  console.log('🚀 Launching Terra-Miner Intelligence (full interface replacement)');
+  window.interfaceManager.showFeature('Terra-Miner Intelligence', FEATURE_INTERFACES.miner);
 };
 
-window.showAISwarmViz = function() {
-    console.log('🚀 Launching AI Swarm Visualization (full interface replacement)');
-    window.interfaceManager.showFeature('AI Swarm Command Center', FEATURE_INTERFACES.swarm);
+window.showAISwarmViz = function () {
+  console.log('🚀 Launching AI Swarm Visualization (full interface replacement)');
+  window.interfaceManager.showFeature('AI Swarm Command Center', FEATURE_INTERFACES.swarm);
 };
 
-window.launchHybridLLMSecurity = function() {
-    console.log('🚀 Launching Hybrid LLM Security (full interface replacement)');
-    window.interfaceManager.showFeature('Hybrid LLM Security Center', FEATURE_INTERFACES.security);
+window.launchHybridLLMSecurity = function () {
+  console.log('🚀 Launching Hybrid LLM Security (full interface replacement)');
+  window.interfaceManager.showFeature('Hybrid LLM Security Center', FEATURE_INTERFACES.security);
 };

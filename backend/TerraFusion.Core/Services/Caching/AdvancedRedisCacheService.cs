@@ -58,7 +58,15 @@ public class AdvancedRedisCacheService : RedisCacheService, IAdvancedCacheServic
                 {
                     try
                     {
-                        result[key] = JsonSerializer.Deserialize<T>(values[i], _jsonOptions);
+                        var jsonValue = values[i].ToString();
+                        if (!string.IsNullOrEmpty(jsonValue))
+                        {
+                            result[key] = JsonSerializer.Deserialize<T>(jsonValue, _jsonOptions);
+                        }
+                        else
+                        {
+                            result[key] = default;
+                        }
                     }
                     catch (Exception ex)
                     {

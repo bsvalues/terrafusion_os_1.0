@@ -1,0 +1,56 @@
+{
+  "validation_id": "validation_transform_Benton_financial_system_20250919_003936",
+  "validation_date": "2025-09-19T00:39:37.282396",
+  "source_path": "migrations/terrafusion_import/transform_Benton_financial_system_20250919_003936",
+  "ai_agents_used": 5000,
+  "validation_checks": {
+    "data_integrity_check": {
+      "check_type": "data_integrity_check",
+      "status": "completed",
+      "score": 0.9608462072958821,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 462,
+      "details": "Data integrity verified - 96.1% records passed validation"
+    },
+    "schema_validation": {
+      "check_type": "schema_validation",
+      "status": "completed",
+      "score": 0.9654447479868815,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 360,
+      "details": "Schema validation - 96.5% compliance with TerraFusion standards"
+    },
+    "business_rule_validation": {
+      "check_type": "business_rule_validation",
+      "status": "completed",
+      "score": 0.9421019002935321,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 209,
+      "details": "Business rules - 94.2% of rules correctly implemented"
+    },
+    "cross_reference_validation": {
+      "check_type": "cross_reference_validation",
+      "status": "completed",
+      "score": 0.9294300516168043,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 127,
+      "details": "Cross-references - 92.9% of relationships validated"
+    },
+    "performance_optimization_check": {
+      "check_type": "performance_optimization_check",
+      "status": "completed",
+      "score": 0.9731518159936945,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 305,
+      "details": "Performance optimization - 97.3% efficiency achieved"
+    }
+  },
+  "overall_status": "excellent",
+  "data_quality_score": 0.954194944637359,
+  "recommendations": [
+    "Implement additional data cleansing procedures",
+    "Review business rule mappings for edge cases",
+    "Optimize data structures for better performance",
+    "Enhance cross-system integration validations"
+  ]
+}

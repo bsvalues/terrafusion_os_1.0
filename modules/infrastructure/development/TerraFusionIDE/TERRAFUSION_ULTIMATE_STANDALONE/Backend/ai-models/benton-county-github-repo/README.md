@@ -1,4 +1,5 @@
 # 🏆 Benton County Production Deployment
+
 ## Terrafusion Enterprise Government Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -8,7 +9,10 @@
 
 ### 🎯 Overview
 
-This repository contains the complete production deployment for Benton County, Washington - Terrafusion's flagship implementation. Benton County receives the entire Terrafusion ecosystem with lifetime free licensing as our championship partner.
+This repository contains the complete production deployment for Benton County,
+Washington - Terrafusion's flagship implementation. Benton County receives the
+entire Terrafusion ecosystem with lifetime free licensing as our championship
+partner.
 
 ### 🚀 Quick Links
 
@@ -50,12 +54,14 @@ graph TB
 ### 🚀 Applications Included
 
 #### Tier 1: Enterprise Core
+
 - **CostForgeAI** - AI-Powered Property Valuation
 - **TerraFusionSync** - Data Synchronization Platform
 - **TerraFlow** - Workflow Automation Engine
 - **TerraMiner** - Advanced Analytics Suite
 
 #### Tier 2: Advanced Solutions
+
 - **GISPRO** - Professional GIS Platform
 - **PropertyWorkbench** - Complete Property Management
 - **TerraInsight** - Assessment Intelligence
@@ -64,6 +70,7 @@ graph TB
 - **TerraAgent** - AI Assistant Platform
 
 #### Tier 3: Innovation Lab
+
 - **Terrafusion PILT** - Federal PILT System
 - **TerraFusionPermit** - AI Permit Processing
 - **Blockchain Records** - Next-Gen Property Records
@@ -103,6 +110,7 @@ benton-county-production/
 ### 🚀 Getting Started
 
 #### Prerequisites
+
 - Kubernetes 1.28+
 - PostgreSQL 15+
 - Redis 7+
@@ -131,9 +139,9 @@ npm run db:migrate
 npm run dev
 
 # Access applications
-# CostForgeAI: http://localhost:8080
-# GISPRO: http://localhost:8081
-# PropertyWorkbench: http://localhost:8082
+# CostForgeAI: http://localhost:\${{TF_ADMIN_PORT:-8080}}
+# GISPRO: http://localhost:\${{TF_ADMIN_PORT:-8080}}
+# PropertyWorkbench: http://localhost:\${{TF_ADMIN_PORT:-8080}}
 # ... (see docs/ports.md for full list)
 ```
 
@@ -186,23 +194,28 @@ npm run test:staging
 ### 📞 Support
 
 #### For Benton County Staff
+
 - **Hotline**: 1-800-CHAMPION (24/7)
 - **Email**: benton@terrafusion.io
 - **Slack**: #benton-county-vip
 
 #### For Developers
-- **Issues**: [GitHub Issues](https://github.com/Terrafusion/benton-county-production/issues)
-- **Wiki**: [GitHub Wiki](https://github.com/Terrafusion/benton-county-production/wiki)
-- **Discussions**: [GitHub Discussions](https://github.com/Terrafusion/benton-county-production/discussions)
+
+- **Issues**:
+  [GitHub Issues](https://github.com/Terrafusion/benton-county-production/issues)
+- **Wiki**:
+  [GitHub Wiki](https://github.com/Terrafusion/benton-county-production/wiki)
+- **Discussions**:
+  [GitHub Discussions](https://github.com/Terrafusion/benton-county-production/discussions)
 
 ### 📈 Performance Metrics
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Uptime | 99.99% | 100% |
-| Response Time | <200ms | 87ms |
-| Concurrent Users | 10,000 | ✓ |
-| Data Accuracy | 99.9% | 99.97% |
+| Metric           | Target | Current |
+| ---------------- | ------ | ------- |
+| Uptime           | 99.99% | 100%    |
+| Response Time    | <200ms | 87ms    |
+| Concurrent Users | 10,000 | ✓       |
+| Data Accuracy    | 99.9%  | 99.97%  |
 
 ### 🏆 Achievements
 
@@ -214,11 +227,13 @@ npm run test:staging
 
 ### 🤝 Contributing
 
-This is a private repository for Benton County production systems. For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+This is a private repository for Benton County production systems. For
+contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### 📜 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
 
 ### 🙏 Acknowledgments
 
@@ -229,6 +244,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-*"Excellence in public service through technology"*
+_"Excellence in public service through technology"_
 
 **Benton County + Terrafusion = Championship! 🏆**

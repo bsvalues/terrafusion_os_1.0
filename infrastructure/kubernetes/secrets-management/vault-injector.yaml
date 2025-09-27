@@ -21,7 +21,7 @@ spec:
         image: hashicorp/vault-k8s:1.2.1
         env:
         - name: AGENT_INJECT_LISTEN
-          value: ":8080"
+          value: ":${TF_STATIC_PORT:-8080}"
         - name: AGENT_INJECT_LOG_LEVEL
           value: info
         - name: AGENT_INJECT_VAULT_ADDR

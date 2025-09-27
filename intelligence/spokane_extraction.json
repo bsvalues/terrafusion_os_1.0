@@ -1,10 +1,10 @@
 {
-    "county": "Spokane",
-    "extraction_date": "2025-08-12",
-    "properties_analyzed": 225000,
-    "portfolio_value": "68B",
-    "extraction_time": "187.5 hours",
-    "their_time": "638 months",
-    "speed_advantage": "379,000,000×",
-    "status": "INFILTRATED"
+  "county": "Spokane",
+  "extraction_date": "2025-08-12",
+  "properties_analyzed": 225000,
+  "portfolio_value": "68B",
+  "extraction_time": "187.5 hours",
+  "their_time": "638 months",
+  "speed_advantage": "379,000,000×",
+  "status": "INFILTRATED"
 }

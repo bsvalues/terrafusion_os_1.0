@@ -2,6 +2,17 @@
 
 set -e
 
+# Load environment variables from .env.ports
+if [ -f "../.env.ports" ]; then
+    echo "📋 Loading dynamic port configuration..."
+    export $(grep -v '^#' ../.env.ports | xargs)
+elif [ -f ".env.ports" ]; then
+    echo "📋 Loading dynamic port configuration..."
+    export $(grep -v '^#' .env.ports | xargs)
+else
+    echo "❌ Warning: .env.ports file not found, using defaults"
+fi
+
 CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
 GREEN='\033[0;32m'
@@ -16,7 +27,7 @@ echo ""
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 start_backend() {
-    echo -e "${YELLOW}[BACKEND] Starting API server on port 5000...${NC}"
+    echo -e "${YELLOW}[BACKEND] Starting API server on port ${TF_API_PORT:-5046}...${NC}"
     
     BACKEND_PATH="$SCRIPT_DIR/backend/TerraFusion.API"
     
@@ -26,15 +37,15 @@ start_backend() {
     fi
     
     cd "$BACKEND_PATH"
-    dotnet run --urls "http://localhost:5000" &
+    dotnet run --urls "http://localhost:${TF_STATIC_PORT:-8080}" &
     BACKEND_PID=$!
     
     sleep 3
     
     MAX_ATTEMPTS=30
     for i in $(seq 1 $MAX_ATTEMPTS); do
-        if curl -s http://localhost:5000/health > /dev/null 2>&1; then
-            RESPONSE=$(curl -s http://localhost:5000/health)
+        if curl -s http://localhost:${TF_STATIC_PORT:-8080}/health > /dev/null 2>&1; then
+            RESPONSE=$(curl -s http://localhost:${TF_STATIC_PORT:-8080}/health)
             echo -e "${GREEN}[BACKEND] ✅ API server is running!${NC}"
             echo -e "[BACKEND] Response: $RESPONSE"
             return 0
@@ -49,7 +60,7 @@ start_backend() {
 
 start_frontend() {
     echo ""
-    echo -e "${YELLOW}[FRONTEND] Starting React application on port 3000...${NC}"
+    echo -e "${YELLOW}[FRONTEND] Starting React application on port \${{TF_API_PORT:-5000}}...${NC}"
     
     FRONTEND_PATH="$SCRIPT_DIR/frontend"
     
@@ -71,14 +82,14 @@ start_frontend() {
     sleep 5
     
     echo -e "${GREEN}[FRONTEND] ✅ React application starting...${NC}"
-    echo -e "${CYAN}[FRONTEND] Opening browser at http://localhost:3000${NC}"
+    echo -e "${CYAN}[FRONTEND] Opening browser at http://localhost:${TF_STATIC_PORT:-8080}${NC}"
     
     sleep 3
     
     if command -v xdg-open > /dev/null; then
-        xdg-open http://localhost:3000
+        xdg-open http://localhost:${TF_STATIC_PORT:-8080}
     elif command -v open > /dev/null; then
-        open http://localhost:3000
+        open http://localhost:${TF_STATIC_PORT:-8080}
     fi
     
     return 0
@@ -90,10 +101,10 @@ show_status() {
     echo -e "   TerraFusion OS 1.0 - Running!       "
     echo -e "========================================${NC}"
     echo ""
-    echo -e "${CYAN}🌐 Frontend: http://localhost:3000${NC}"
-    echo -e "${CYAN}🚀 Backend API: http://localhost:5000${NC}"
-    echo -e "${CYAN}📊 Health Check: http://localhost:5000/health${NC}"
-    echo -e "${CYAN}📡 API Test: http://localhost:5000/api/test${NC}"
+    echo -e "${CYAN}🌐 Frontend: http://localhost:${TF_STATIC_PORT:-8080}${NC}"
+    echo -e "${CYAN}🚀 Backend API: http://localhost:${TF_STATIC_PORT:-8080}${NC}"
+    echo -e "${CYAN}📊 Health Check: http://localhost:${TF_STATIC_PORT:-8080}/health${NC}"
+    echo -e "${CYAN}📡 API Test: http://localhost:${TF_STATIC_PORT:-8080}/api/test${NC}"
     echo ""
     echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
     echo ""

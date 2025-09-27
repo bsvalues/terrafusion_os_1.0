@@ -287,8 +287,8 @@ Quality: Championship-level throughout
 ./LAUNCH_DYNASTY.sh --help     # View all options
 
 # Documentation URLs
-http://localhost:8090/championship_ui.html  # Interactive dashboard
-http://localhost:8000/docs                  # Live API documentation
+http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html  # Interactive dashboard
+http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/docs                  # Live API documentation
 ```
 
 ---

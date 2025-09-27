@@ -12,11 +12,11 @@ source "${SCRIPT_DIR}/common-functions.sh"
 RCA_DB="${RCA_DB:-terrafusion_rca}"
 RCA_USER="${DB_USER:-tfrca}"
 RCA_PASS="${DB_PASS:-$(generate_password)}"
-ELASTICSEARCH_URL="${ELASTICSEARCH_URL:-http://localhost:9200}"
-NEO4J_URL="${NEO4J_URL:-bolt://localhost:7687}"
+ELASTICSEARCH_URL="${ELASTICSEARCH_URL:-http://localhost:\${{TF_ELASTICSEARCH_PORT:-9200}}}"
+NEO4J_URL="${NEO4J_URL:-bolt://localhost:\${{TF_ELASTICSEARCH_PORT:-9200}}}"
 NEO4J_USER="${NEO4J_USER:-neo4j}"
 NEO4J_PASS="${NEO4J_PASS:-password}"
-ML_SERVICE_URL="${ML_SERVICE_URL:-http://localhost:5000}"
+ML_SERVICE_URL="${ML_SERVICE_URL:-http://localhost:\${{TF_ELASTICSEARCH_PORT:-9200}}}"
 
 # Initialize database
 init_rca_database() {
@@ -646,7 +646,7 @@ def health():
     return jsonify({'status': 'healthy', 'models_loaded': len(analyzer.models)}), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port = process.env.TF_DESKTOP_PORT || 3104, debug=False)
 EOF
     
     # Create requirements file
@@ -678,7 +678,7 @@ EOF
     
     # Build and run ML service
     docker build -f Dockerfile.ml-service -t terrafusion-ml-rca .
-    docker run -d --name terrafusion-ml-rca -p 5000:5000 terrafusion-ml-rca
+    docker run -d --name terrafusion-ml-rca -p 5000:${TF_API_PORT:-5046} terrafusion-ml-rca
     
     log_success "ML service deployed"
 }
@@ -740,7 +740,7 @@ try:
     # Get CPU metrics
     prom_query = f'avg(rate(cpu_usage_seconds_total{{service="{service}"}}[5m]))'
     response = requests.get(
-        'http://localhost:9090/api/v1/query_range',
+        'http://localhost:\${{TF_ELASTICSEARCH_PORT:-9200}}/api/v1/query_range',
         params={
             'query': prom_query,
             'start': (start_time - timedelta(hours=1)).timestamp(),
@@ -758,7 +758,7 @@ try:
     # Get memory metrics
     prom_query = f'avg(memory_usage_bytes{{service="{service}"}}) / avg(memory_limit_bytes{{service="{service}"}})'
     response = requests.get(
-        'http://localhost:9090/api/v1/query_range',
+        'http://localhost:\${{TF_ELASTICSEARCH_PORT:-9200}}/api/v1/query_range',
         params={
             'query': prom_query,
             'start': (start_time - timedelta(hours=1)).timestamp(),
@@ -776,7 +776,7 @@ try:
     # Get error rate
     prom_query = f'sum(rate(http_requests_total{{service="{service}",status=~"5.."}}[5m])) / sum(rate(http_requests_total{{service="{service}"}}[5m]))'
     response = requests.get(
-        'http://localhost:9090/api/v1/query_range',
+        'http://localhost:\${{TF_ELASTICSEARCH_PORT:-9200}}/api/v1/query_range',
         params={
             'query': prom_query,
             'start': (start_time - timedelta(hours=1)).timestamp(),

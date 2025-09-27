@@ -4,24 +4,24 @@
  */
 
 class HybridLLMSecurity {
-    constructor() {
-        this.securityLevel = 'HIGH';
-        this.threatsDetected = 0;
-        this.securityScore = 98.7;
-        this.init();
-    }
+  constructor() {
+    this.securityLevel = 'HIGH';
+    this.threatsDetected = 0;
+    this.securityScore = 98.7;
+    this.init();
+  }
 
-    init() {
-        this.createSecurityInterface();
-        this.bindEvents();
-    }
+  init() {
+    this.createSecurityInterface();
+    this.bindEvents();
+  }
 
-    createSecurityInterface() {
-        const securityContainer = document.createElement('div');
-        securityContainer.id = 'hybrid-llm-security';
-        securityContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
-        securityContainer.style.display = 'none';
-        securityContainer.innerHTML = `
+  createSecurityInterface() {
+    const securityContainer = document.createElement('div');
+    securityContainer.id = 'hybrid-llm-security';
+    securityContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
+    securityContainer.style.display = 'none';
+    securityContainer.innerHTML = `
             <div class="security-container">
                 <div class="security-header">
                     <div class="security-title">
@@ -130,92 +130,92 @@ class HybridLLMSecurity {
                 </div>
             </div>
         `;
-        
-        document.body.appendChild(securityContainer);
+
+    document.body.appendChild(securityContainer);
+  }
+
+  bindEvents() {
+    // Close button
+    document.addEventListener('click', e => {
+      if (e.target.closest('#security-close')) {
+        this.close();
+      }
+    });
+
+    // Widget interactions
+    document.addEventListener('click', e => {
+      const widget = e.target.closest('.security-widget');
+      if (widget) {
+        this.handleWidgetClick(widget);
+      }
+    });
+
+    // Close on backdrop click
+    document.addEventListener('click', e => {
+      if (e.target.id === 'hybrid-llm-security') {
+        this.close();
+      }
+    });
+  }
+
+  handleWidgetClick(widget) {
+    const title = widget.querySelector('h3').textContent;
+    console.log(`🛡️ Security Widget Clicked: ${title}`);
+
+    // Add visual feedback
+    widget.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      widget.style.transform = '';
+    }, 150);
+
+    // Simulate widget interaction
+    switch (title) {
+      case 'Security Status':
+        console.log('🛡️ Opening system security overview...');
+        break;
+      case 'Threat Detection':
+        console.log('🚨 Accessing threat detection monitoring...');
+        break;
+      case 'AI Model Security':
+        console.log('🤖 Showing AI model integrity dashboard...');
+        break;
+      case 'Data Classification':
+        console.log('📊 Displaying 3-tier data classification system...');
+        break;
+      case 'Encryption Status':
+        console.log('🔐 Showing encryption and security protocols...');
+        break;
+      case 'Local vs Cloud':
+        console.log('☁️ Managing hybrid LLM architecture...');
+        break;
     }
+  }
 
-    bindEvents() {
-        // Close button
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('#security-close')) {
-                this.close();
-            }
-        });
-
-        // Widget interactions
-        document.addEventListener('click', (e) => {
-            const widget = e.target.closest('.security-widget');
-            if (widget) {
-                this.handleWidgetClick(widget);
-            }
-        });
-
-        // Close on backdrop click
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'hybrid-llm-security') {
-                this.close();
-            }
-        });
+  show() {
+    const container = document.getElementById('hybrid-llm-security');
+    if (container) {
+      container.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      console.log('🛡️ Hybrid LLM Security launched - FULL SCREEN');
+      this.startSecurityMonitoring();
     }
+  }
 
-    handleWidgetClick(widget) {
-        const title = widget.querySelector('h3').textContent;
-        console.log(`🛡️ Security Widget Clicked: ${title}`);
-        
-        // Add visual feedback
-        widget.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            widget.style.transform = '';
-        }, 150);
-
-        // Simulate widget interaction
-        switch(title) {
-            case 'Security Status':
-                console.log('🛡️ Opening system security overview...');
-                break;
-            case 'Threat Detection':
-                console.log('🚨 Accessing threat detection monitoring...');
-                break;
-            case 'AI Model Security':
-                console.log('🤖 Showing AI model integrity dashboard...');
-                break;
-            case 'Data Classification':
-                console.log('📊 Displaying 3-tier data classification system...');
-                break;
-            case 'Encryption Status':
-                console.log('🔐 Showing encryption and security protocols...');
-                break;
-            case 'Local vs Cloud':
-                console.log('☁️ Managing hybrid LLM architecture...');
-                break;
-        }
+  close() {
+    const container = document.getElementById('hybrid-llm-security');
+    if (container) {
+      container.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      console.log('🛡️ Security dashboard closed');
     }
+  }
 
-    show() {
-        const container = document.getElementById('hybrid-llm-security');
-        if (container) {
-            container.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            console.log('🛡️ Hybrid LLM Security launched - FULL SCREEN');
-            this.startSecurityMonitoring();
-        }
-    }
-
-    close() {
-        const container = document.getElementById('hybrid-llm-security');
-        if (container) {
-            container.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            console.log('🛡️ Security dashboard closed');
-        }
-    }
-
-    startSecurityMonitoring() {
-        console.log('🛡️ Initializing Hybrid LLM Security monitoring...');
-        console.log('🔒 Activating 3-tier data classification (RED/YELLOW/GREEN)...');
-        console.log('☁️ Local Ollama models: SECURE | Cloud LLMs: ENCRYPTED');
-        console.log('🚨 Threat detection active - monitoring all AI interactions...');
-    }
+  startSecurityMonitoring() {
+    console.log('🛡️ Initializing Hybrid LLM Security monitoring...');
+    console.log('🔒 Activating 3-tier data classification (RED/YELLOW/GREEN)...');
+    console.log('☁️ Local Ollama models: SECURE | Cloud LLMs: ENCRYPTED');
+    console.log('🚨 Threat detection active - monitoring all AI interactions...');
+  }
 }
 
 // Export for use in main application

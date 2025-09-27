@@ -99,16 +99,22 @@ public static class CorsConfiguration
                 else
                 {
                     // Even in development, be restrictive in non-dev environments
+                    var apiPort = Environment.GetEnvironmentVariable("TF_API_PORT") ?? "5000";
+                    var desktopPort = Environment.GetEnvironmentVariable("TF_DESKTOP_PORT") ?? "3102";
+                    var frontendPort = Environment.GetEnvironmentVariable("TF_FRONTEND_PORT") ?? "3103";
+                    var adminPort = Environment.GetEnvironmentVariable("TF_ADMIN_PORT") ?? "3104";
+                    var swarmPort = Environment.GetEnvironmentVariable("TF_SWARM_PORT") ?? "5047";
+                    
                     var devOrigins = new[]
                     {
-                        "http://localhost:3000",
-                        "http://localhost:3001",
-                        "http://localhost:5000",
-                        "http://localhost:5001",
-                        "https://localhost:3000",
-                        "https://localhost:3001",
-                        "https://localhost:5000",
-                        "https://localhost:5001"
+                        $"http://localhost:{desktopPort}",
+                        $"http://localhost:{frontendPort}", 
+                        $"http://localhost:{adminPort}",
+                        $"http://localhost:{swarmPort}",
+                        $"https://localhost:{desktopPort}",
+                        $"https://localhost:{frontendPort}",
+                        $"https://localhost:{adminPort}", 
+                        $"https://localhost:{swarmPort}"
                     };
                     
                     policy.WithOrigins(devOrigins)
@@ -145,8 +151,8 @@ public static class CorsConfiguration
                 },
                 _ => new[]
                 {
-                    "http://localhost:3000",
-                    "https://localhost:3000"
+                    $"http://localhost:{Environment.GetEnvironmentVariable("TF_DESKTOP_PORT") ?? "3102"}",
+                    $"https://localhost:{Environment.GetEnvironmentVariable("TF_DESKTOP_PORT") ?? "3102"}"
                 }
             };
         }

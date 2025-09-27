@@ -7,10 +7,10 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-backend
     ports:
-      - "5000:5000"
+      - "5000:${TF_API_PORT:-5046}"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:${TF_API_PORT:-5046}
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/terrafusion.db
     volumes:
       - terrafusion_data:/app/data
@@ -19,7 +19,7 @@ services:
       - terrafusion-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${TF_STATIC_PORT:-8080}/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -31,9 +31,9 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-frontend
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     environment:
-      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_API_URL=http://localhost:${TF_STATIC_PORT:-8080}
       - NODE_ENV=production
     depends_on:
       terrafusion-backend:

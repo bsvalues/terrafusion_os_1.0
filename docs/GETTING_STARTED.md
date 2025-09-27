@@ -2,15 +2,18 @@
 
 ## 🚀 **Quick Start Installation**
 
-This guide will get you up and running with Terrafusion OS 1.0 in under 15 minutes.
+This guide will get you up and running with Terrafusion OS 1.0 in under 15
+minutes.
 
 ---
 
 ## **Prerequisites**
 
-Before installing Terrafusion OS 1.0, ensure your system meets the following requirements:
+Before installing Terrafusion OS 1.0, ensure your system meets the following
+requirements:
 
 ### **System Requirements**
+
 - **OS**: Windows 10/11, macOS 10.15+, or Ubuntu 20.04+
 - **RAM**: 8GB minimum, 16GB recommended
 - **Storage**: 10GB free space
@@ -18,6 +21,7 @@ Before installing Terrafusion OS 1.0, ensure your system meets the following req
 - **Network**: Broadband internet connection
 
 ### **Required Software**
+
 - **Node.js**: Version 18.0 or higher
 - **Docker**: Latest stable version
 - **Git**: Version 2.0 or higher
@@ -33,13 +37,14 @@ Choose your preferred installation method:
 ### **Method 1: Quick Install (Recommended)**
 
 1. **Download the Installer**
+
    ```bash
    # Windows
    curl -O https://releases.terrafusion.gov/v1.0.0/Terrafusion-OS-1.0.0-Setup.exe
-   
+
    # macOS
    curl -O https://releases.terrafusion.gov/v1.0.0/Terrafusion-OS-1.0.0.dmg
-   
+
    # Linux
    curl -O https://releases.terrafusion.gov/v1.0.0/Terrafusion-OS-1.0.0.AppImage
    ```
@@ -47,7 +52,8 @@ Choose your preferred installation method:
 2. **Run the Installer**
    - **Windows**: Double-click `Terrafusion-OS-1.0.0-Setup.exe`
    - **macOS**: Mount the DMG and drag to Applications
-   - **Linux**: Make executable and run `chmod +x Terrafusion-OS-1.0.0.AppImage && ./Terrafusion-OS-1.0.0.AppImage`
+   - **Linux**: Make executable and run
+     `chmod +x Terrafusion-OS-1.0.0.AppImage && ./Terrafusion-OS-1.0.0.AppImage`
 
 3. **Launch Terrafusion OS**
    - The application will appear in your system's application menu
@@ -56,11 +62,13 @@ Choose your preferred installation method:
 ### **Method 2: Docker Installation**
 
 1. **Pull the Docker Image**
+
    ```bash
    docker pull terrafusion/os:1.0.0
    ```
 
 2. **Run the Container**
+
    ```bash
    docker run -d \
      --name terrafusion-os \
@@ -71,45 +79,49 @@ Choose your preferred installation method:
    ```
 
 3. **Access the Application**
-   - Open your browser to `http://localhost:3000`
+   - Open your browser to `http://localhost:\${{TF_FRONTEND_PORT:-3000}}`
    - Default credentials: `admin` / `TerraFusion2025!`
 
 ### **Method 3: Development Installation**
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/terrafusion/os-1.0.git
    cd os-1.0
    ```
 
 2. **Install Dependencies**
+
    ```bash
    # Backend dependencies
    cd backend
    dotnet restore
-   
+
    # Frontend dependencies
    cd ../frontend
    npm install
-   
+
    # Return to root
    cd ..
    ```
 
 3. **Configure Environment**
+
    ```bash
    # Copy environment template
    cp .env.example .env
-   
+
    # Edit configuration (use your preferred editor)
    nano .env
    ```
 
 4. **Start Development Services**
+
    ```bash
    # Start all services
    npm run dev
-   
+
    # Or start individually
    npm run dev:backend    # .NET API server
    npm run dev:frontend   # React development server
@@ -157,32 +169,35 @@ When you first launch Terrafusion OS, you'll be guided through a setup wizard:
 For advanced users, you can manually configure the system:
 
 1. **Edit Configuration Files**
+
    ```bash
    # Backend configuration
    backend/appsettings.json
-   
+
    # Frontend configuration
    frontend/.env.local
-   
+
    # Electron configuration
    frontend/electron/config.json
    ```
 
 2. **Database Setup**
+
    ```bash
    # Run database migrations
    cd backend
    dotnet ef database update
-   
+
    # Seed initial data
    dotnet run --seed-data
    ```
 
 3. **AI Swarm Initialization**
+
    ```bash
    # Initialize AI swarm
    npm run ai:init
-   
+
    # Verify swarm status
    npm run ai:status
    ```
@@ -194,10 +209,11 @@ For advanced users, you can manually configure the system:
 ### **System Health Check**
 
 1. **Run Health Check**
+
    ```bash
    # Full system health check
    npm run health:check
-   
+
    # Or check individual components
    npm run health:backend
    npm run health:frontend
@@ -206,6 +222,7 @@ For advanced users, you can manually configure the system:
    ```
 
 2. **Expected Output**
+
    ```
    ✅ Backend API: Healthy (Response: 45ms)
    ✅ Frontend PWA: Healthy (Load: 1.2s)
@@ -213,13 +230,14 @@ For advanced users, you can manually configure the system:
    ✅ AI Swarm: Healthy (1,008 agents active)
    ✅ Quantum Engine: Healthy (98.7% efficiency)
    ✅ Security: Healthy (All checks passed)
-   
+
    🎉 Terrafusion OS 1.0 is ready for use!
    ```
 
 ### **Performance Benchmark**
 
 1. **Run Benchmark Suite**
+
    ```bash
    npm run benchmark
    ```
@@ -234,12 +252,14 @@ For advanced users, you can manually configure the system:
 ### **Sample Operations**
 
 1. **Create Test Property**
+
    ```bash
    # Add sample property data
    npm run demo:add-property
    ```
 
 2. **Run Assessment**
+
    ```bash
    # Perform quantum-speed assessment
    npm run demo:assess-property
@@ -258,6 +278,7 @@ For advanced users, you can manually configure the system:
 ### **Installation Issues**
 
 **Issue**: "Node.js version not supported"
+
 ```bash
 # Solution: Update Node.js
 nvm install 18
@@ -265,6 +286,7 @@ nvm use 18
 ```
 
 **Issue**: "Docker daemon not running"
+
 ```bash
 # Solution: Start Docker service
 # Windows/macOS: Start Docker Desktop
@@ -272,6 +294,7 @@ nvm use 18
 ```
 
 **Issue**: "Port already in use"
+
 ```bash
 # Solution: Change ports in configuration
 # Edit .env file and change PORT values
@@ -280,6 +303,7 @@ nvm use 18
 ### **Runtime Issues**
 
 **Issue**: "Database connection failed"
+
 ```bash
 # Solution: Check database configuration
 npm run db:check
@@ -287,6 +311,7 @@ npm run db:migrate
 ```
 
 **Issue**: "AI Swarm not responding"
+
 ```bash
 # Solution: Restart AI services
 npm run ai:restart
@@ -294,6 +319,7 @@ npm run ai:health
 ```
 
 **Issue**: "Performance below expectations"
+
 ```bash
 # Solution: Optimize system resources
 npm run optimize:system
@@ -303,11 +329,13 @@ npm run optimize:database
 ### **Authentication Issues**
 
 **Issue**: "Login failed"
+
 - Check username/password
 - Verify MFA settings
 - Reset password if needed: `npm run auth:reset-password`
 
 **Issue**: "Session expired"
+
 - Refresh the application
 - Check system time synchronization
 - Verify JWT configuration
@@ -382,4 +410,5 @@ npm run optimize:database
 **Last Updated**: August 17, 2025  
 **Next Update**: September 17, 2025
 
-🎉 **Welcome to Terrafusion OS 1.0 - The Future of Government Technology!**atforms!
+🎉 **Welcome to Terrafusion OS 1.0 - The Future of Government
+Technology!**atforms!

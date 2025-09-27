@@ -105,11 +105,11 @@ launch_hub() {
         
         # Open in default browser
         if [[ "$OSTYPE" == "darwin"* ]]; then
-            open "http://localhost:8888"
+            open "http://localhost:\${{TF_PORT_8888:-8888}}"
         elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            xdg-open "http://localhost:8888"
+            xdg-open "http://localhost:\${{TF_PORT_8888:-8888}}"
         elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-            start "http://localhost:8888"
+            start "http://localhost:\${{TF_PORT_8888:-8888}}"
         fi
     else
         echo -e "${RED}❌ No launcher found! Please run setup first.${NC}"
@@ -131,7 +131,7 @@ show_status() {
     
     # Check each application
     apps=(
-        "CostForgeAI:8080"
+        "CostForgeAI:${TF_STATIC_PORT:-8080}"
         "PropertyWorkbench:8082"
         "GISPRO:8081"
         "TerraInsight:8083"
@@ -171,7 +171,7 @@ main() {
             sleep 3
             show_status
             echo -e "\n${GREEN}🏆 TerraFusion Hub is ready for championship operations!${NC}"
-            echo -e "${BLUE}🌐 Access the hub at: http://localhost:8888${NC}"
+            echo -e "${BLUE}🌐 Access the hub at: http://localhost:\${{TF_PORT_8888:-8888}}${NC}"
             ;;
         stop)
             if [ -f "$PID_FILE" ]; then

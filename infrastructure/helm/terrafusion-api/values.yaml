@@ -109,7 +109,7 @@ ingress:
 # Environment variables
 env:
   ASPNETCORE_ENVIRONMENT: "Production"
-  ASPNETCORE_URLS: "http://+:5000"
+  ASPNETCORE_URLS: "http://+:${TF_API_PORT:-5046}"
   ConnectionStrings__DefaultConnection: "Server=postgresql;Database=terrafusion;Username=terrafusion;Password=${POSTGRES_PASSWORD}"
   ConnectionStrings__Redis: "redis:6379"
   Logging__LogLevel__Default: "Information"

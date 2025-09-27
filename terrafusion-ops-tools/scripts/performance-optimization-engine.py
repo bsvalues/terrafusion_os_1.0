@@ -101,7 +101,7 @@ class PerformanceOptimizationEngine:
     def __init__(self):
         self.session_id = f"perf_optimization_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         
         # Performance monitoring configuration
         self.performance_metrics = {}
@@ -384,9 +384,9 @@ class PerformanceOptimizationEngine:
         try:
             # API response time metrics
             api_endpoints = [
-                'http://localhost:8000/api/health',
-                'http://localhost:8000/api/users',
-                'http://localhost:8000/api/models'
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/health',
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/users',
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/models'
             ]
             
             async with aiohttp.ClientSession() as session:

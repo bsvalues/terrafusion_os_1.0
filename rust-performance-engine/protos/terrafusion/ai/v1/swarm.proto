@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package terrafusion.ai.v1;
+
+service SwarmCoordinationService {
+  // Coordinate AI agent swarm activities
+  rpc CoordinateSwarm(SwarmCoordinationRequest) returns (SwarmCoordinationResponse);
+  
+  // Stream real-time swarm status
+  rpc StreamSwarmStatus(SwarmStatusRequest) returns (stream SwarmStatusResponse);
+  
+  // Deploy agents to specific tasks
+  rpc DeployAgents(AgentDeploymentRequest) returns (AgentDeploymentResponse);
+  
+  // Get swarm performance metrics
+  rpc GetSwarmMetrics(SwarmMetricsRequest) returns (SwarmMetricsResponse);
+}
+
+message SwarmCoordinationRequest {
+  string mission_id = 1;
+  SwarmMission mission = 2;
+  repeated AgentCapability required_capabilities = 3;
+  int32 priority_level = 4;
+}
+
+message SwarmCoordinationResponse {
+  string coordination_id = 1;
+  repeated AgentAssignment assignments = 2;
+  CoordinationStatus status = 3;
+  string estimated_completion = 4;
+}
+
+message SwarmStatusRequest {
+  string coordination_id = 1;
+  bool include_agent_details = 2;
+  int32 update_interval_seconds = 3;
+}
+
+message SwarmStatusResponse {
+  string coordination_id = 1;
+  SwarmHealth health = 2;
+  repeated AgentStatus agent_statuses = 3;
+  PerformanceMetrics metrics = 4;
+  string timestamp = 5;
+}
+
+message AgentDeploymentRequest {
+  repeated string agent_ids = 1;
+  string target_mission = 2;
+  map<string, string> deployment_config = 3;
+}
+
+message AgentDeploymentResponse {
+  repeated AgentDeploymentResult results = 1;
+  DeploymentSummary summary = 2;
+}
+
+message SwarmMetricsRequest {
+  string time_range = 1;
+  repeated string metric_types = 2;
+  bool include_historical = 3;
+}
+
+message SwarmMetricsResponse {
+  OverallMetrics overall = 1;
+  repeated AgentMetrics agent_metrics = 2;
+  repeated PerformanceSnapshot snapshots = 3;
+}
+
+message SwarmMission {
+  string mission_type = 1;
+  string description = 2;
+  map<string, string> parameters = 3;
+  string deadline = 4;
+  int32 required_agents = 5;
+}
+
+message AgentAssignment {
+  string agent_id = 1;
+  string agent_role = 2;
+  repeated string tasks = 3;
+  map<string, string> configuration = 4;
+}
+
+message AgentStatus {
+  string agent_id = 1;
+  string agent_type = 2;
+  AgentState state = 3;
+  string current_task = 4;
+  double cpu_usage = 5;
+  double memory_usage = 6;
+  int32 tasks_completed = 7;
+  string last_heartbeat = 8;
+}
+
+message SwarmHealth {
+  int32 total_agents = 1;
+  int32 active_agents = 2;
+  int32 idle_agents = 3;
+  int32 failed_agents = 4;
+  double overall_efficiency = 5;
+  string supreme_commander_status = 6;
+}
+
+message PerformanceMetrics {
+  double coordination_latency_ms = 1;
+  double task_completion_rate = 2;
+  double resource_utilization = 3;
+  int32 tasks_per_second = 4;
+}
+
+message AgentDeploymentResult {
+  string agent_id = 1;
+  bool deployment_successful = 2;
+  string status_message = 3;
+  string deployment_time = 4;
+}
+
+message DeploymentSummary {
+  int32 total_agents = 1;
+  int32 successful_deployments = 2;
+  int32 failed_deployments = 3;
+  double average_deployment_time_ms = 4;
+}
+
+message OverallMetrics {
+  int32 total_missions_completed = 1;
+  double average_mission_time_ms = 2;
+  double success_rate = 3;
+  double system_uptime_percent = 4;
+}
+
+message AgentMetrics {
+  string agent_id = 1;
+  int32 tasks_completed = 2;
+  double average_task_time_ms = 3;
+  double efficiency_score = 4;
+  string specialization = 5;
+}
+
+message PerformanceSnapshot {
+  string timestamp = 1;
+  int32 active_agents = 2;
+  double coordination_latency = 3;
+  double throughput = 4;
+  double resource_usage = 5;
+}
+
+enum AgentCapability {
+  AGENT_CAPABILITY_UNSPECIFIED = 0;
+  AGENT_CAPABILITY_PROPERTY_ANALYSIS = 1;
+  AGENT_CAPABILITY_MARKET_RESEARCH = 2;
+  AGENT_CAPABILITY_DATA_PROCESSING = 3;
+  AGENT_CAPABILITY_VALUATION_MODELING = 4;
+  AGENT_CAPABILITY_COMPLIANCE_CHECK = 5;
+  AGENT_CAPABILITY_COORDINATION = 6;
+}
+
+enum AgentState {
+  AGENT_STATE_UNSPECIFIED = 0;
+  AGENT_STATE_IDLE = 1;
+  AGENT_STATE_ACTIVE = 2;
+  AGENT_STATE_BUSY = 3;
+  AGENT_STATE_ERROR = 4;
+  AGENT_STATE_MAINTENANCE = 5;
+}
+
+enum CoordinationStatus {
+  COORDINATION_STATUS_UNSPECIFIED = 0;
+  COORDINATION_STATUS_PENDING = 1;
+  COORDINATION_STATUS_IN_PROGRESS = 2;
+  COORDINATION_STATUS_COMPLETED = 3;
+  COORDINATION_STATUS_FAILED = 4;
+  COORDINATION_STATUS_CANCELLED = 5;
+}

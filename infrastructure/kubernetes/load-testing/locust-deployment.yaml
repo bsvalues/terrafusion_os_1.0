@@ -310,7 +310,7 @@ data:
     
     # Distribution
     expect-workers = 5
-    master-bind-port = 5557
+    master-bind-port=\${{TF_PORT_5557:-5557}}
     master-bind-host = *
 ---
 apiVersion: apps/v1

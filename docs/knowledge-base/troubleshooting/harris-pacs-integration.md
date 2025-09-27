@@ -1,16 +1,21 @@
 # Harris PACS Integration Troubleshooting Guide
 
 ## Overview
-Comprehensive troubleshooting guide for Harris PACS (Property Assessment and Collection System) integration with Terrafusion OS, covering common issues, diagnostic procedures, and resolution strategies.
+
+Comprehensive troubleshooting guide for Harris PACS (Property Assessment and
+Collection System) integration with Terrafusion OS, covering common issues,
+diagnostic procedures, and resolution strategies.
 
 ## Quick Reference
 
 ### Emergency Contacts
+
 - **Harris PACS Support**: 1-800-HARRIS-1 (24/7)
 - **Terrafusion Technical Support**: support@terrafusion.gov
 - **System Administrator**: sysadmin@county.gov
 
 ### Critical Service Status
+
 ```bash
 # Check all Harris PACS services
 ./scripts/harris-pacs-health-check.sh --full-diagnostic
@@ -21,12 +26,15 @@ Comprehensive troubleshooting guide for Harris PACS (Property Assessment and Col
 ### 1. Connection and Authentication Problems
 
 #### Issue: Authentication Token Expired
-**Symptoms**: 
+
+**Symptoms**:
+
 - HTTP 401 Unauthorized errors
 - "Invalid or expired token" messages
 - API calls failing intermittently
 
 **Diagnostic Steps**:
+
 ```bash
 # Check token expiration
 curl -X GET "https://harris-pacs.county.gov/api/auth/validate" \
@@ -38,6 +46,7 @@ echo $HARRIS_TOKEN | base64 -d | jq '.'
 ```
 
 **Resolution**:
+
 ```typescript
 // Refresh authentication token
 POST /api/harris-pacs/auth/refresh
@@ -52,12 +61,15 @@ export HARRIS_REFRESH_TOKEN="new-refresh-token"
 ```
 
 #### Issue: SSL/TLS Certificate Problems
+
 **Symptoms**:
+
 - "SSL certificate verify failed" errors
 - Connection timeouts
 - Handshake failures
 
 **Diagnostic Steps**:
+
 ```bash
 # Test SSL connection
 openssl s_client -connect harris-pacs.county.gov:443 -servername harris-pacs.county.gov
@@ -67,6 +79,7 @@ curl -vI https://harris-pacs.county.gov/api/health
 ```
 
 **Resolution**:
+
 ```bash
 # Update certificate store
 sudo apt-get update && sudo apt-get install ca-certificates
@@ -79,12 +92,15 @@ sudo update-ca-certificates
 ### 2. Data Synchronization Issues
 
 #### Issue: Property Data Sync Failures
+
 **Symptoms**:
+
 - Incomplete property records
 - Missing assessment data
 - Sync status showing "failed"
 
 **Diagnostic Steps**:
+
 ```typescript
 // Check sync status
 GET /api/harris-pacs/sync/status/benton-county
@@ -99,6 +115,7 @@ Response: {
 ```
 
 **Resolution**:
+
 ```bash
 # Run incremental sync with error recovery
 ./scripts/harris-sync-recovery.sh \
@@ -111,15 +128,18 @@ tail -f /var/log/terrafusion/harris-sync.log
 ```
 
 #### Issue: Tax Record Discrepancies
+
 **Symptoms**:
+
 - Tax amounts don't match between systems
 - Missing payment records
 - Duplicate transactions
 
 **Diagnostic Steps**:
+
 ```sql
 -- Compare tax records between systems
-SELECT 
+SELECT
   tf.parcel_id,
   tf.tax_amount as terrafusion_amount,
   hp.tax_amount as harris_amount,
@@ -130,6 +150,7 @@ WHERE ABS(tf.tax_amount - hp.tax_amount) > 0.01;
 ```
 
 **Resolution**:
+
 ```typescript
 // Force data reconciliation
 POST /api/harris-pacs/reconcile
@@ -144,12 +165,15 @@ POST /api/harris-pacs/reconcile
 ### 3. Performance and Timeout Issues
 
 #### Issue: API Response Timeouts
+
 **Symptoms**:
+
 - Requests timing out after 30+ seconds
 - "Gateway timeout" errors
 - Slow dashboard loading
 
 **Diagnostic Steps**:
+
 ```bash
 # Test API response times
 time curl -X GET "https://harris-pacs.county.gov/api/properties?jurisdiction=benton-county&limit=100"
@@ -160,6 +184,7 @@ traceroute harris-pacs.county.gov
 ```
 
 **Resolution**:
+
 ```typescript
 // Implement request batching
 const batchSize = 50; // Reduce from default 100
@@ -169,17 +194,20 @@ const timeout = 60000; // Increase timeout to 60 seconds
 const httpAgent = new HttpAgent({
   keepAlive: true,
   maxSockets: 10,
-  timeout: 60000
+  timeout: 60000,
 });
 ```
 
 #### Issue: Memory Leaks in Integration Service
+
 **Symptoms**:
+
 - Increasing memory usage over time
 - Service crashes with "out of memory" errors
 - Performance degradation
 
 **Diagnostic Steps**:
+
 ```bash
 # Monitor memory usage
 ps aux | grep terrafusion-harris-integration
@@ -190,6 +218,7 @@ valgrind --tool=memcheck --leak-check=full ./terrafusion-harris-integration
 ```
 
 **Resolution**:
+
 ```bash
 # Restart integration service
 systemctl restart terrafusion-harris-integration
@@ -205,21 +234,25 @@ systemctl restart terrafusion-harris-integration
 ### Database Connection Issues
 
 #### Issue: Harris PACS Database Connectivity
+
 **Symptoms**:
+
 - "Connection refused" errors
 - Database query timeouts
 - Stale connection errors
 
 **Diagnostic Steps**:
+
 ```bash
 # Test database connectivity
 psql -h harris-db.county.gov -U harris_user -d harris_pacs -c "SELECT version();"
 
 # Check connection pool status
-curl -X GET "http://localhost:8080/api/harris-pacs/connection-pool/status"
+curl -X GET "http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/harris-pacs/connection-pool/status"
 ```
 
 **Resolution**:
+
 ```javascript
 // Configure connection pool settings
 const poolConfig = {
@@ -229,32 +262,36 @@ const poolConfig = {
   user: 'harris_user',
   password: process.env.HARRIS_DB_PASSWORD,
   max: 20, // Maximum connections
-  min: 5,  // Minimum connections
+  min: 5, // Minimum connections
   idle: 10000, // Idle timeout
   acquire: 60000, // Acquire timeout
-  evict: 1000 // Eviction interval
+  evict: 1000, // Eviction interval
 };
 ```
 
 ### Message Queue Problems
 
 #### Issue: Event Processing Backlog
+
 **Symptoms**:
+
 - Delayed property updates
 - Growing message queue size
 - Processing lag indicators
 
 **Diagnostic Steps**:
+
 ```bash
 # Check message queue status
 rabbitmqctl list_queues name messages consumers
 redis-cli llen harris_pacs_events
 
 # Monitor processing rates
-curl -X GET "http://localhost:8080/api/harris-pacs/queue/metrics"
+curl -X GET "http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/harris-pacs/queue/metrics"
 ```
 
 **Resolution**:
+
 ```bash
 # Scale up message processors
 kubectl scale deployment harris-pacs-processor --replicas=5
@@ -267,6 +304,7 @@ rabbitmqctl purge_queue harris_pacs_updates
 ## Monitoring and Alerting
 
 ### Health Check Endpoints
+
 ```typescript
 // System health check
 GET /api/harris-pacs/health
@@ -274,7 +312,7 @@ Response: {
   "status": "healthy",
   "components": {
     "database": "healthy",
-    "api": "healthy", 
+    "api": "healthy",
     "messageQueue": "healthy",
     "authentication": "healthy"
   },
@@ -283,9 +321,10 @@ Response: {
 ```
 
 ### Performance Metrics
+
 ```bash
 # Key metrics to monitor
-curl -X GET "http://localhost:8080/metrics" | grep harris_pacs
+curl -X GET "http://localhost:\${{TF_ADMIN_PORT:-8080}}/metrics" | grep harris_pacs
 
 # Critical thresholds
 - API Response Time: < 2 seconds
@@ -295,6 +334,7 @@ curl -X GET "http://localhost:8080/metrics" | grep harris_pacs
 ```
 
 ### Alerting Rules
+
 ```yaml
 # Prometheus alerting rules
 groups:
@@ -306,20 +346,21 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Harris PACS API is down"
-          
+          summary: 'Harris PACS API is down'
+
       - alert: HarrisPACSSyncFailure
         expr: harris_pacs_sync_success_rate < 0.95
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: "Harris PACS sync success rate below 95%"
+          summary: 'Harris PACS sync success rate below 95%'
 ```
 
 ## Recovery Procedures
 
 ### Complete System Recovery
+
 ```bash
 #!/bin/bash
 # harris-pacs-recovery.sh
@@ -348,12 +389,13 @@ echo "Recovery complete. Check logs for any remaining issues."
 ```
 
 ### Data Recovery from Backup
+
 ```bash
 # Restore from Harris PACS backup
 pg_restore -h harris-db.county.gov -U harris_user -d harris_pacs /backups/harris_pacs_backup.dump
 
 # Resync Terrafusion data
-curl -X POST "http://localhost:8080/api/harris-pacs/sync/full" \
+curl -X POST "http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/harris-pacs/sync/full" \
   -H "Content-Type: application/json" \
   -d '{"jurisdiction": "benton-county", "force": true}'
 ```
@@ -361,6 +403,7 @@ curl -X POST "http://localhost:8080/api/harris-pacs/sync/full" \
 ## Configuration Management
 
 ### Environment Variables
+
 ```bash
 # Required Harris PACS environment variables
 export HARRIS_PACS_API_URL="https://harris-pacs.county.gov/api"
@@ -373,6 +416,7 @@ export HARRIS_PACS_DB_PASSWORD="your-db-password"
 ```
 
 ### Configuration Files
+
 ```json
 // harris-pacs-config.json
 {
@@ -397,18 +441,21 @@ export HARRIS_PACS_DB_PASSWORD="your-db-password"
 ## Preventive Maintenance
 
 ### Daily Tasks
+
 - [ ] Check sync status for all jurisdictions
 - [ ] Review error logs for anomalies
 - [ ] Verify API response times
 - [ ] Monitor queue depths
 
 ### Weekly Tasks
+
 - [ ] Run full system health check
 - [ ] Update Harris PACS certificates if needed
 - [ ] Review performance metrics
 - [ ] Test backup and recovery procedures
 
 ### Monthly Tasks
+
 - [ ] Coordinate with Harris PACS team on updates
 - [ ] Review and update integration documentation
 - [ ] Conduct disaster recovery testing
@@ -417,34 +464,42 @@ export HARRIS_PACS_DB_PASSWORD="your-db-password"
 ## Escalation Procedures
 
 ### Level 1: Automated Recovery
+
 - Automatic retry mechanisms
 - Circuit breaker patterns
 - Failover to cached data
 
 ### Level 2: Operations Team
+
 - Manual service restarts
 - Configuration adjustments
 - Log analysis and diagnosis
 
 ### Level 3: Development Team
+
 - Code-level debugging
 - Integration architecture review
 - Performance optimization
 
 ### Level 4: Vendor Support
+
 - Harris PACS technical support
 - Joint troubleshooting sessions
 - System architecture consultation
 
 ## Related Documentation
+
 - [Property Assessment Workflow](../workflows/property-assessment-workflow.md)
 - [Tax Collection Workflow](../workflows/tax-collection-workflow.md)
 - [System Architecture Guide](../best-practices/system-architecture.md)
 
 ## Revision History
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2024-08-18 | Terrafusion Team | Initial troubleshooting guide |
+
+| Version | Date       | Author           | Changes                       |
+| ------- | ---------- | ---------------- | ----------------------------- |
+| 1.0     | 2024-08-18 | Terrafusion Team | Initial troubleshooting guide |
 
 ---
-*For immediate assistance with Harris PACS integration issues, contact the Terrafusion support team at support@terrafusion.gov*
+
+_For immediate assistance with Harris PACS integration issues, contact the
+Terrafusion support team at support@terrafusion.gov_

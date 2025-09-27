@@ -16,6 +16,7 @@ curl -I https://terrafusionmarket.io
 ## 📋 Complete Deployment Commands
 
 ### Initial Setup
+
 ```bash
 # Clone and setup
 git clone https://github.com/terrafusion/terrafusion-market
@@ -30,6 +31,7 @@ nano hostinger-config/.env.production
 ```
 
 ### Production Build
+
 ```bash
 # Full production build
 npm run build:production
@@ -48,6 +50,7 @@ npm run clean && npm run build:production
 ```
 
 ### Deployment Commands
+
 ```bash
 # Standard deployment
 ./deploy.sh
@@ -69,6 +72,7 @@ DEBUG=true ./deploy.sh
 ```
 
 ### SSL/HTTPS Setup
+
 ```bash
 # Configure SSL and security
 ./hostinger-config/ssl-setup.sh
@@ -84,6 +88,7 @@ openssl s_client -connect terrafusionmarket.io:443 -servername terrafusionmarket
 ```
 
 ### Database Management
+
 ```bash
 # Setup database (run in Hostinger MySQL panel)
 mysql -h localhost -u your_user -p your_database < hostinger-config/database-setup.sql
@@ -102,6 +107,7 @@ mysql -h localhost -u your_user -p your_database -e "SELECT setting_value FROM t
 ```
 
 ### Backup & Restore
+
 ```bash
 # Create full backup
 ./hostinger-config/backup-restore.sh --full
@@ -123,6 +129,7 @@ mysql -h localhost -u your_user -p your_database -e "SELECT setting_value FROM t
 ```
 
 ### Maintenance Mode
+
 ```bash
 # Enable maintenance mode
 ./hostinger-config/backup-restore.sh --maintenance-on
@@ -135,6 +142,7 @@ curl -I https://terrafusionmarket.io
 ```
 
 ### Monitoring & Health Checks
+
 ```bash
 # Application health check
 npm run health-check
@@ -156,6 +164,7 @@ npm run security
 ```
 
 ### Development & Testing
+
 ```bash
 # Local development server
 npm run dev
@@ -177,6 +186,7 @@ npm run analyze
 ```
 
 ### Code Quality
+
 ```bash
 # Lint JavaScript
 npm run lint
@@ -195,6 +205,7 @@ npm run validate
 ```
 
 ### Asset Optimization
+
 ```bash
 # Optimize images
 npm run optimize:images
@@ -210,6 +221,7 @@ npm run gzip:assets
 ```
 
 ### Configuration Management
+
 ```bash
 # Setup Hostinger environment
 npm run setup:hostinger
@@ -225,6 +237,7 @@ npm run setup:db
 ```
 
 ### Logging & Debugging
+
 ```bash
 # View deployment logs
 tail -f logs/deployment-*.log
@@ -243,6 +256,7 @@ DEBUG=true npm run build:production
 ```
 
 ### File Management
+
 ```bash
 # Copy configuration files
 npm run copy:config
@@ -264,6 +278,7 @@ npm run restore
 ```
 
 ### FTP Operations
+
 ```bash
 # Test FTP connection
 lftp -u $FTP_USER,$FTP_PASS $FTP_HOST -e "ls; quit"
@@ -282,6 +297,7 @@ lftp -u $FTP_USER,$FTP_PASS $FTP_HOST -e "chmod 644 /public_html/*.html; quit"
 ```
 
 ### Security Operations
+
 ```bash
 # Update dependencies
 npm update
@@ -300,6 +316,7 @@ npm run update
 ```
 
 ### Performance Optimization
+
 ```bash
 # Analyze bundle size
 npm run analyze
@@ -320,6 +337,7 @@ curl -H "Accept-Encoding: gzip" -I https://terrafusionmarket.io
 ## 🔧 Environment-Specific Commands
 
 ### Staging Environment
+
 ```bash
 # Deploy to staging
 npm run deploy:staging
@@ -332,6 +350,7 @@ curl -I https://staging.terrafusionmarket.io
 ```
 
 ### Production Environment
+
 ```bash
 # Deploy to production
 npm run deploy:production
@@ -346,6 +365,7 @@ curl -s https://terrafusionmarket.io/api/status | json_pp
 ## 🚨 Emergency Commands
 
 ### Quick Rollback
+
 ```bash
 # Restore from latest backup
 ./hostinger-config/backup-restore.sh --restore $(ls -t backups/*.tar.gz | head -1)
@@ -358,6 +378,7 @@ lftp -u $FTP_USER,$FTP_PASS $FTP_HOST -e "mv /public_html/index.html /public_htm
 ```
 
 ### Diagnostics
+
 ```bash
 # Full system check
 npm run validate && npm run health-check && npm run test:performance
@@ -376,6 +397,7 @@ curl -I https://terrafusionmarket.io
 ## 📱 Mobile Commands
 
 ### Quick Mobile Test
+
 ```bash
 # Mobile-first Lighthouse test
 lighthouse https://terrafusionmarket.io --preset=mobile --output=html --output-path=mobile-report.html
@@ -390,6 +412,7 @@ curl -A "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)" https://terrafu
 ## 🔄 Automation Commands
 
 ### Automated Deployment Pipeline
+
 ```bash
 # Full automated deployment
 npm run validate && npm run build:production && ./deploy.sh && npm run health-check
@@ -402,6 +425,7 @@ npm run validate && npm run build:production && ./deploy.sh && npm run health-ch
 ```
 
 ### CI/CD Integration
+
 ```bash
 # GitHub Actions deployment
 git tag v1.0.0 && git push origin v1.0.0
@@ -416,15 +440,16 @@ curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
 
 ## 📚 Command Reference Summary
 
-| Command | Purpose |
-|---------|---------|
-| `npm run build:production` | Build optimized production version |
-| `./deploy.sh` | Deploy to Hostinger |
-| `npm run health-check` | Verify deployment |
-| `./hostinger-config/ssl-setup.sh` | Configure SSL/HTTPS |
-| `./hostinger-config/backup-restore.sh --full` | Create backup |
-| `npm run monitor` | Performance monitoring |
-| `npm run security` | Security audit |
-| `npm run validate` | Code quality check |
+| Command                                       | Purpose                            |
+| --------------------------------------------- | ---------------------------------- |
+| `npm run build:production`                    | Build optimized production version |
+| `./deploy.sh`                                 | Deploy to Hostinger                |
+| `npm run health-check`                        | Verify deployment                  |
+| `./hostinger-config/ssl-setup.sh`             | Configure SSL/HTTPS                |
+| `./hostinger-config/backup-restore.sh --full` | Create backup                      |
+| `npm run monitor`                             | Performance monitoring             |
+| `npm run security`                            | Security audit                     |
+| `npm run validate`                            | Code quality check                 |
 
-**All commands are production-ready and optimized for Hostinger shared hosting environment.**
+**All commands are production-ready and optimized for Hostinger shared hosting
+environment.**

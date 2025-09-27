@@ -400,7 +400,7 @@ spec:
         - containerPort: 3000
         env:
         - name: REACT_APP_API_URL
-          value: "http://terrafusion-backend-service:5000"
+          value: "http://terrafusion-backend-service:${TF_API_PORT:-5046}"
         resources:
           requests:
             memory: "1Gi"
@@ -518,10 +518,10 @@ validate_environment() {
     
     # Access information
     echo -e "${CYAN}🌟 Access Points:${NC}"
-    echo "   • Kubernetes Dashboard: kubectl proxy & http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/"
-    echo "   • Grafana: kubectl port-forward -n monitoring svc/prometheus-grafana 3001:80 & http://localhost:3001 (admin/admin)"
-    echo "   • TerraFusion Backend: kubectl port-forward -n terrafusion svc/terrafusion-backend-service 5000:5000"
-    echo "   • TerraFusion Frontend: kubectl port-forward -n terrafusion svc/terrafusion-frontend-service 3000:3000"
+    echo "   • Kubernetes Dashboard: kubectl proxy & http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/"
+    echo "   • Grafana: kubectl port-forward -n monitoring svc/prometheus-grafana 3001:80 & http://localhost:\${{TF_SERVICE_8001_PORT:-8001}} (admin/admin)"
+    echo "   • TerraFusion Backend: kubectl port-forward -n terrafusion svc/terrafusion-backend-service 5000:${TF_API_PORT:-5046}"
+    echo "   • TerraFusion Frontend: kubectl port-forward -n terrafusion svc/terrafusion-frontend-service 3000:${TF_FRONTEND_PORT:-3102}"
     echo ""
     
     echo -e "${CYAN}🚀 Development Commands:${NC}"

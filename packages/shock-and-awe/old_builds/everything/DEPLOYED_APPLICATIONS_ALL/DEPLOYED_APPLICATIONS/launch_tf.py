@@ -16,12 +16,12 @@ class TerraFusionLauncher:
     def __init__(self):
         self.base_path = Path(__file__).parent
         self.applications = [
-            {'name': 'TerraFusionPilt', 'port': 5009, 'path': 'TerraFusionPilt_PRODUCTION'},
-            {'name': 'TerraFlow', 'port': 5001, 'path': 'TerraFlow_PRODUCTION'},
-            {'name': 'TerraFusionSync', 'port': 5002, 'path': 'TerraFusionSync_PRODUCTION'},
-            {'name': 'TerraAgent', 'port': 5003, 'path': 'TerraAgent_PRODUCTION'},
-            {'name': 'TerraMiner', 'port': 5006, 'path': 'TerraMiner_PRODUCTION'},
-            {'name': 'TerraFusionPlayground', 'port': 3000, 'path': 'TerraFusionPlayground_PRODUCTION'}
+            {'name': 'TerraFusionPilt', "port": \${{TF_API_5009_PORT:-5009}}, 'path': 'TerraFusionPilt_PRODUCTION'},
+            {'name': 'TerraFlow', "port": \${{TF_API_5009_PORT:-5009}}, 'path': 'TerraFlow_PRODUCTION'},
+            {'name': 'TerraFusionSync', "port": \${{TF_API_5009_PORT:-5009}}, 'path': 'TerraFusionSync_PRODUCTION'},
+            {'name': 'TerraAgent', "port": \${{TF_API_5009_PORT:-5009}}, 'path': 'TerraAgent_PRODUCTION'},
+            {'name': 'TerraMiner', "port": \${{TF_API_5009_PORT:-5009}}, 'path': 'TerraMiner_PRODUCTION'},
+            {'name': 'TerraFusionPlayground', "port": \${{TF_API_5009_PORT:-5009}}, 'path': 'TerraFusionPlayground_PRODUCTION'}
         ]
         
     def print_header(self):
@@ -38,7 +38,7 @@ class TerraFusionLauncher:
         
         try:
             # Test health endpoint
-            health_response = requests.get("http://localhost:5009/api/health", timeout=10)
+            health_response = requests.get("http://localhost:\${{TF_API_5009_PORT:-5009}}/api/health", timeout=10)
             if health_response.status_code == 200:
                 print("✅ Health API: OPERATIONAL")
                 health_data = health_response.json()
@@ -54,7 +54,7 @@ class TerraFusionLauncher:
             
         try:
             # Test districts endpoint (the one that was failing)
-            districts_response = requests.get("http://localhost:5009/api/pilt/districts?year=2024", timeout=10)
+            districts_response = requests.get("http://localhost:\${{TF_API_5009_PORT:-5009}}/api/pilt/districts?year=2024", timeout=10)
             if districts_response.status_code == 200:
                 districts_data = districts_response.json()
                 if districts_data.get('success') and districts_data.get('data'):
@@ -79,9 +79,9 @@ class TerraFusionLauncher:
         print("-" * 50)
         
         endpoints = [
-            ("PILT Status", "http://localhost:5009/api/pilt/status"),
-            ("Benton County Config", "http://localhost:5009/api/pilt/benton-county/config"),
-            ("Sample Data", "http://localhost:5009/api/pilt/benton-county/sample-data")
+            ("PILT Status", "http://localhost:\${{TF_API_5009_PORT:-5009}}/api/pilt/status"),
+            ("Benton County Config", "http://localhost:\${{TF_API_5009_PORT:-5009}}/api/pilt/benton-county/config"),
+            ("Sample Data", "http://localhost:\${{TF_API_5009_PORT:-5009}}/api/pilt/benton-county/sample-data")
         ]
         
         for name, url in endpoints:

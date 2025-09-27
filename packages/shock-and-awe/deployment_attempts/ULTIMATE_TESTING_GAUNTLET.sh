@@ -122,7 +122,7 @@ test.describe('TerraFusion Dynasty E2E Tests', () => {
 
   test('Inter-app communication', async ({ page }) => {
     // Test IPC between apps
-    await page.goto('http://localhost:3001');
+    await page.goto('http://localhost:\${{TF_SHELL_PORT:-3001}}');
     await page.evaluate(() => {
       window.postMessage({ type: 'PING', source: 'terra-agent' }, '*');
     });

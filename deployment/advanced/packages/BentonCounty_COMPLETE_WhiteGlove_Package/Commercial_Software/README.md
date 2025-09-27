@@ -2,7 +2,8 @@
 
 ## 🚀 379,000,000× Faster Than Marshall & Swift
 
-The complete enterprise real estate technology platform for commercial appraisers, firms, and enterprises.
+The complete enterprise real estate technology platform for commercial
+appraisers, firms, and enterprises.
 
 ## Quick Start
 
@@ -23,21 +24,25 @@ npm start
 ## Key Components
 
 ### 🏆 CostForge AI Engine
+
 - 3-second valuations (vs 30 minutes traditional)
 - 94% accuracy with confidence scores
 - 94,149 pre-loaded properties
 
 ### 🌐 Marketplace Launcher
+
 - Full app marketplace with 14+ modules
 - Hot-swappable components
 - 30% commission on all transactions
 
 ### 🎨 Terrafusion Branding
+
 - Complete brand system included
 - Championship theme
 - "Government. Transcended." tagline
 
 ### 🏢 Enterprise Features
+
 - Multi-tenant architecture
 - Role-based access control
 - SSO/SAML authentication
@@ -62,6 +67,7 @@ commercial/
 ## Deployment Options
 
 ### Standalone
+
 ```bash
 node scripts/package-platform.js
 cd dist/terrafusion-commercial
@@ -69,20 +75,22 @@ node launcher.js
 ```
 
 ### Docker
+
 ```bash
 docker-compose up -d
 ```
 
 ### Cloud (AWS/Azure/GCP)
+
 See deployment guide in `docs/deployment.md`
 
 ## Revenue Model
 
-| Tier | Price/Month | Users | Features |
-|------|------------|-------|----------|
-| Individual | $99 | 1 | 100 valuations/mo |
-| Small Firm | $399 | 5 | 1,000 valuations/mo |
-| Enterprise | $1,999 | 50 | Unlimited valuations |
+| Tier       | Price/Month | Users | Features             |
+| ---------- | ----------- | ----- | -------------------- |
+| Individual | $99         | 1     | 100 valuations/mo    |
+| Small Firm | $399        | 5     | 1,000 valuations/mo  |
+| Enterprise | $1,999      | 50    | Unlimited valuations |
 
 Plus 30% marketplace commission on all app sales.
 

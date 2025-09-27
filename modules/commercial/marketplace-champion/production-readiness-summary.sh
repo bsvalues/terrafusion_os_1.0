@@ -109,13 +109,13 @@ TerraFusion marketplace ecosystem has successfully passed all production deploym
 ### Deployment Simulator
 - **Upload Process Simulation**: ✅ Completed successfully
 - **CDN Distribution**: ✅ Multi-region deployment verified
-- **Local Test Server**: ✅ Operational on port 3000
+- **Local Test Server**: ✅ Operational on port \${{TF_FRONTEND_PORT:-3000}}
 - **Component Accessibility**: ✅ All components accessible
 - **API Endpoints**: ✅ Functional and responsive
 
 ### Health Monitoring System
 - **Health Check Endpoints**: ✅ 7 endpoints operational
-- **Real-time Dashboard**: ✅ Available at localhost:3001/health/status
+- **Real-time Dashboard**: ✅ Available at localhost:\${{TF_SHELL_PORT:-3001}}/health/status
 - **Automated Alerts**: ✅ Configured with smart thresholds
 - **Metrics Collection**: ✅ Continuous monitoring active
 - **Performance Tracking**: ✅ Historical data retention
@@ -197,10 +197,10 @@ The TerraFusion marketplace ecosystem has achieved a perfect production readines
 - **Emergency Response**: 24/7 monitoring with automated alerting
 
 ### Monitoring Dashboards
-- **Real-time Health**: http://localhost:3001/health/status
-- **System Metrics**: http://localhost:3001/health/system  
-- **Application Status**: http://localhost:3001/health/apps
-- **Alert Management**: http://localhost:3001/health/alerts
+- **Real-time Health**: http://localhost:\${{TF_SHELL_PORT:-3001}}/health/status
+- **System Metrics**: http://localhost:\${{TF_SHELL_PORT:-3001}}/health/system  
+- **Application Status**: http://localhost:\${{TF_SHELL_PORT:-3001}}/health/apps
+- **Alert Management**: http://localhost:\${{TF_SHELL_PORT:-3001}}/health/alerts
 
 ---
 

@@ -31,14 +31,14 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": null},
-                {"color": "yellow", "value": 0.8},
-                {"color": "green", "value": 0.95}
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 0.8 },
+                { "color": "green", "value": 0.95 }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
       },
       {
         "id": 2,
@@ -71,20 +71,20 @@
               "insertNulls": false,
               "showPoints": "never",
               "pointSize": 5,
-              "stacking": {"mode": "none", "group": "A"},
+              "stacking": { "mode": "none", "group": "A" },
               "axisPlacement": "auto",
               "axisLabel": "",
               "axisColorMode": "text",
-              "scaleDistribution": {"type": "linear"},
+              "scaleDistribution": { "type": "linear" },
               "axisCenteredZero": false,
-              "hideFrom": {"legend": false, "tooltip": false, "vis": false},
-              "thresholdsStyle": {"mode": "off"}
+              "hideFrom": { "legend": false, "tooltip": false, "vis": false },
+              "thresholdsStyle": { "mode": "off" }
             },
-            "color": {"mode": "palette-classic"},
+            "color": { "mode": "palette-classic" },
             "unit": "short"
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
       },
       {
         "id": 3,
@@ -96,7 +96,7 @@
             "legendFormat": "{{ module_name }}"
           }
         ],
-        "gridPos": {"h": 10, "w": 24, "x": 0, "y": 8}
+        "gridPos": { "h": 10, "w": 24, "x": 0, "y": 8 }
       },
       {
         "id": 4,
@@ -116,7 +116,7 @@
             "legendFormat": "Requests/sec"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 18}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 }
       },
       {
         "id": 5,
@@ -136,7 +136,7 @@
             "legendFormat": "Query Time 95th (ms)"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 18}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 }
       },
       {
         "id": 6,
@@ -158,18 +158,18 @@
         ],
         "fieldConfig": {
           "defaults": {
-            "color": {"mode": "thresholds"},
+            "color": { "mode": "thresholds" },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": null},
-                {"color": "yellow", "value": 80},
-                {"color": "green", "value": 95}
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 80 },
+                { "color": "green", "value": 95 }
               ]
             },
             "unit": "short"
           }
         },
-        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 26}
+        "gridPos": { "h": 6, "w": 24, "x": 0, "y": 26 }
       },
       {
         "id": 7,
@@ -193,7 +193,7 @@
             "legendFormat": "Network Out"
           }
         ],
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32}
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 32 }
       }
     ],
     "time": {

@@ -1,3 +1,4 @@
+// NO HARDCODED PORTS! Use environment variables.
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -25,38 +26,38 @@ export default defineConfig({
           {
             src: 'pwa-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
-          }
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
         ],
         categories: ['government', 'business', 'productivity'],
         shortcuts: [
           {
             name: 'New Ticket',
             url: '/ticket/new',
-            description: 'Create a new support ticket'
+            description: 'Create a new support ticket',
           },
           {
             name: 'AI Chat',
             url: '/chat',
-            description: 'Chat with AI agents'
+            description: 'Chat with AI agents',
           },
           {
             name: 'Dashboard',
             url: '/dashboard',
-            description: 'View support dashboard'
-          }
-        ]
+            description: 'View support dashboard',
+          },
+        ],
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
@@ -68,12 +69,12 @@ export default defineConfig({
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 5 // 5 minutes
+                maxAgeSeconds: 60 * 5, // 5 minutes
               },
               cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
+                statuses: [0, 200],
+              },
+            },
           },
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com/,
@@ -82,9 +83,9 @@ export default defineConfig({
               cacheName: 'font-cache',
               expiration: {
                 maxEntries: 30,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              }
-            }
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
           },
           {
             urlPattern: /\.(?:png|gif|jpg|jpeg|svg|webp)$/,
@@ -93,21 +94,21 @@ export default defineConfig({
               cacheName: 'image-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-              }
-            }
-          }
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
         ],
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        navigationPreload: true
+        navigationPreload: true,
       },
       devOptions: {
         enabled: true,
-        type: 'module'
-      }
-    })
+        type: 'module',
+      },
+    }),
   ],
   resolve: {
     alias: {
@@ -115,8 +116,8 @@ export default defineConfig({
       '@components': path.resolve(__dirname, './src/components'),
       '@agents': path.resolve(__dirname, './src/agents'),
       '@services': path.resolve(__dirname, './src/services'),
-      '@utils': path.resolve(__dirname, './src/utils')
-    }
+      '@utils': path.resolve(__dirname, './src/utils'),
+    },
   },
   server: {
     port: 3000,
@@ -125,16 +126,16 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:${TF_STATIC_PORT:-8080}',
         changeOrigin: true,
-        secure: false
+        secure: false,
       },
       '/hubs': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:${TF_STATIC_PORT:-8080}',
         changeOrigin: true,
-        ws: true
-      }
-    }
+        ws: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',
@@ -143,21 +144,21 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: true,
-        drop_debugger: true
-      }
+        drop_debugger: true,
+      },
     },
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui': ['lucide-react'],
-          'state': ['zustand', '@tanstack/react-query'],
-          'communication': ['axios', '@microsoft/signalr'],
-          'pwa': ['workbox-window', 'idb']
-        }
-      }
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['lucide-react'],
+          state: ['zustand', '@tanstack/react-query'],
+          communication: ['axios', '@microsoft/signalr'],
+          pwa: ['workbox-window', 'idb'],
+        },
+      },
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
     include: [
@@ -169,7 +170,7 @@ export default defineConfig({
       '@microsoft/signalr',
       'workbox-window',
       'idb',
-      'zustand'
-    ]
-  }
+      'zustand',
+    ],
+  },
 });

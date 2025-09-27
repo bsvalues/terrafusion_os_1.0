@@ -4,24 +4,24 @@
  */
 
 class AISwarmVisualization {
-    constructor() {
-        this.agents = 1008;
-        this.activeAgents = 0;
-        this.swarmHealth = 100;
-        this.init();
-    }
+  constructor() {
+    this.agents = 1008;
+    this.activeAgents = 0;
+    this.swarmHealth = 100;
+    this.init();
+  }
 
-    init() {
-        this.createSwarmInterface();
-        this.bindEvents();
-    }
+  init() {
+    this.createSwarmInterface();
+    this.bindEvents();
+  }
 
-    createSwarmInterface() {
-        const swarmContainer = document.createElement('div');
-        swarmContainer.id = 'ai-swarm';
-        swarmContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
-        swarmContainer.style.display = 'none';
-        swarmContainer.innerHTML = `
+  createSwarmInterface() {
+    const swarmContainer = document.createElement('div');
+    swarmContainer.id = 'ai-swarm';
+    swarmContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
+    swarmContainer.style.display = 'none';
+    swarmContainer.innerHTML = `
             <div class="swarm-container">
                 <div class="swarm-header">
                     <div class="swarm-title">
@@ -130,92 +130,92 @@ class AISwarmVisualization {
                 </div>
             </div>
         `;
-        
-        document.body.appendChild(swarmContainer);
+
+    document.body.appendChild(swarmContainer);
+  }
+
+  bindEvents() {
+    // Close button
+    document.addEventListener('click', e => {
+      if (e.target.closest('#swarm-close')) {
+        this.close();
+      }
+    });
+
+    // Widget interactions
+    document.addEventListener('click', e => {
+      const widget = e.target.closest('.swarm-widget');
+      if (widget) {
+        this.handleWidgetClick(widget);
+      }
+    });
+
+    // Close on backdrop click
+    document.addEventListener('click', e => {
+      if (e.target.id === 'ai-swarm') {
+        this.close();
+      }
+    });
+  }
+
+  handleWidgetClick(widget) {
+    const title = widget.querySelector('h3').textContent;
+    console.log(`🤖 AI Swarm Widget Clicked: ${title}`);
+
+    // Add visual feedback
+    widget.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      widget.style.transform = '';
+    }, 150);
+
+    // Simulate widget interaction
+    switch (title) {
+      case 'Agent Status':
+        console.log('🤖 Opening agent status monitor...');
+        break;
+      case 'Swarm Health':
+        console.log('💚 Displaying swarm health metrics...');
+        break;
+      case 'Processing Power':
+        console.log('⚡ Showing processing power analytics...');
+        break;
+      case 'Task Distribution':
+        console.log('📊 Opening task distribution dashboard...');
+        break;
+      case 'Learning Rate':
+        console.log('🧠 Accessing learning rate analytics...');
+        break;
+      case 'Agent Networks':
+        console.log('🌐 Visualizing agent network topology...');
+        break;
     }
+  }
 
-    bindEvents() {
-        // Close button
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('#swarm-close')) {
-                this.close();
-            }
-        });
-
-        // Widget interactions
-        document.addEventListener('click', (e) => {
-            const widget = e.target.closest('.swarm-widget');
-            if (widget) {
-                this.handleWidgetClick(widget);
-            }
-        });
-
-        // Close on backdrop click
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'ai-swarm') {
-                this.close();
-            }
-        });
+  show() {
+    const container = document.getElementById('ai-swarm');
+    if (container) {
+      container.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      console.log('🤖 AI Swarm Intelligence launched - FULL SCREEN');
+      this.startSwarmVisualization();
     }
+  }
 
-    handleWidgetClick(widget) {
-        const title = widget.querySelector('h3').textContent;
-        console.log(`🤖 AI Swarm Widget Clicked: ${title}`);
-        
-        // Add visual feedback
-        widget.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            widget.style.transform = '';
-        }, 150);
-
-        // Simulate widget interaction
-        switch(title) {
-            case 'Agent Status':
-                console.log('🤖 Opening agent status monitor...');
-                break;
-            case 'Swarm Health':
-                console.log('💚 Displaying swarm health metrics...');
-                break;
-            case 'Processing Power':
-                console.log('⚡ Showing processing power analytics...');
-                break;
-            case 'Task Distribution':
-                console.log('📊 Opening task distribution dashboard...');
-                break;
-            case 'Learning Rate':
-                console.log('🧠 Accessing learning rate analytics...');
-                break;
-            case 'Agent Networks':
-                console.log('🌐 Visualizing agent network topology...');
-                break;
-        }
+  close() {
+    const container = document.getElementById('ai-swarm');
+    if (container) {
+      container.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      console.log('🤖 AI Swarm dashboard closed');
     }
+  }
 
-    show() {
-        const container = document.getElementById('ai-swarm');
-        if (container) {
-            container.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            console.log('🤖 AI Swarm Intelligence launched - FULL SCREEN');
-            this.startSwarmVisualization();
-        }
-    }
-
-    close() {
-        const container = document.getElementById('ai-swarm');
-        if (container) {
-            container.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            console.log('🤖 AI Swarm dashboard closed');
-        }
-    }
-
-    startSwarmVisualization() {
-        console.log('🤖 Initializing AI Swarm visualization...');
-        console.log('🧠 Loading 1,008 agent neural networks...');
-        console.log('⚡ Swarm intelligence active and learning...');
-        console.log('🌐 All agents connected and synchronized...');
-    }
+  startSwarmVisualization() {
+    console.log('🤖 Initializing AI Swarm visualization...');
+    console.log('🧠 Loading 1,008 agent neural networks...');
+    console.log('⚡ Swarm intelligence active and learning...');
+    console.log('🌐 All agents connected and synchronized...');
+  }
 }
 
 // Export for use in main application

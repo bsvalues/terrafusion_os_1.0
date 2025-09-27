@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Terrafusion API provides programmatic access to property valuation services, enabling integration with your existing systems. Commercial edition includes rate-limited API access based on your subscription tier.
+The Terrafusion API provides programmatic access to property valuation services,
+enabling integration with your existing systems. Commercial edition includes
+rate-limited API access based on your subscription tier.
 
 **Base URL**: `https://api.terrafusion.com/v1`  
 **Authentication**: Bearer token (JWT)
@@ -23,6 +25,7 @@ curl -X POST https://api.terrafusion.com/v1/auth/token \
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIs...",
@@ -48,7 +51,8 @@ curl -X POST https://api.terrafusion.com/v1/valuations \
 
 ## Authentication
 
-All API requests require authentication using a Bearer token in the Authorization header:
+All API requests require authentication using a Bearer token in the
+Authorization header:
 
 ```http
 Authorization: Bearer YOUR_ACCESS_TOKEN
@@ -56,21 +60,22 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ### Token Management
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/auth/token` | POST | Get access token |
-| `/auth/refresh` | POST | Refresh expiring token |
-| `/auth/revoke` | POST | Revoke token |
+| Endpoint        | Method | Description            |
+| --------------- | ------ | ---------------------- |
+| `/auth/token`   | POST   | Get access token       |
+| `/auth/refresh` | POST   | Refresh expiring token |
+| `/auth/revoke`  | POST   | Revoke token           |
 
 ### Rate Limits
 
-| Plan | Requests/Hour | Burst Limit | Concurrent |
-|------|--------------|-------------|------------|
-| **Starter** | 100 | 10/second | 2 |
-| **Professional** | 1,000 | 50/second | 10 |
-| **Enterprise** | 10,000 | 200/second | 50 |
+| Plan             | Requests/Hour | Burst Limit | Concurrent |
+| ---------------- | ------------- | ----------- | ---------- |
+| **Starter**      | 100           | 10/second   | 2          |
+| **Professional** | 1,000         | 50/second   | 10         |
+| **Enterprise**   | 10,000        | 200/second  | 50         |
 
 Rate limit headers:
+
 ```http
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -90,6 +95,7 @@ POST /valuations
 ```
 
 **Request Body:**
+
 ```json
 {
   "address": "123 Main St, Seattle, WA 98101",
@@ -106,6 +112,7 @@ POST /valuations
 ```
 
 **Response:**
+
 ```json
 {
   "valuation_id": "val_1234567890",
@@ -147,6 +154,7 @@ POST /valuations/bulk
 ```
 
 **Request Body:**
+
 ```json
 {
   "properties": [
@@ -155,7 +163,7 @@ POST /valuations/bulk
       "address": "123 Main St, Seattle, WA 98101"
     },
     {
-      "id": "prop_002", 
+      "id": "prop_002",
       "address": "456 Oak Ave, Bellevue, WA 98004"
     }
   ],
@@ -164,6 +172,7 @@ POST /valuations/bulk
 ```
 
 **Response:**
+
 ```json
 {
   "batch_id": "batch_abc123",
@@ -183,6 +192,7 @@ GET /properties/search
 ```
 
 **Query Parameters:**
+
 - `q` - Search query (address, parcel ID)
 - `county` - County name
 - `state` - State code
@@ -193,6 +203,7 @@ GET /properties/search
 - `limit` - Results per page (max: 100)
 
 **Example:**
+
 ```bash
 curl "https://api.terrafusion.com/v1/properties/search?county=King&state=WA&type=residential&min_value=500000&max_value=1000000&limit=20"
 ```
@@ -206,6 +217,7 @@ POST /reports/valuation
 ```
 
 **Request Body:**
+
 ```json
 {
   "valuation_id": "val_1234567890",
@@ -220,6 +232,7 @@ POST /reports/valuation
 ```
 
 **Response:**
+
 ```json
 {
   "report_id": "rpt_xyz789",
@@ -247,6 +260,7 @@ POST /export/properties
 ```
 
 **Request Body:**
+
 ```json
 {
   "filters": {
@@ -272,12 +286,14 @@ GET /analytics/market-trends
 ```
 
 **Query Parameters:**
+
 - `county` - County name
 - `state` - State code
 - `period` - Time period (1m, 3m, 6m, 1y, 5y)
 - `property_type` - Property type filter
 
 **Response:**
+
 ```json
 {
   "location": {
@@ -308,12 +324,12 @@ Configure webhooks to receive real-time updates:
 
 ### Webhook Events
 
-| Event | Description |
-|-------|-------------|
-| `valuation.completed` | Single valuation finished |
-| `batch.completed` | Bulk valuation finished |
-| `report.ready` | Report generation complete |
-| `export.ready` | Data export complete |
+| Event                 | Description                |
+| --------------------- | -------------------------- |
+| `valuation.completed` | Single valuation finished  |
+| `batch.completed`     | Bulk valuation finished    |
+| `report.ready`        | Report generation complete |
+| `export.ready`        | Data export complete       |
 
 ### Webhook Payload
 
@@ -363,12 +379,12 @@ npm install @terrafusion/sdk
 import { Terrafusion } from '@terrafusion/sdk';
 
 const client = new Terrafusion({
-  apiKey: 'YOUR_API_KEY'
+  apiKey: 'YOUR_API_KEY',
 });
 
 const valuation = await client.valuations.create({
   address: '123 Main St, Seattle, WA 98101',
-  propertyType: 'residential'
+  propertyType: 'residential',
 });
 
 console.log(`Value: $${valuation.estimatedValue}`);
@@ -435,15 +451,15 @@ Console.WriteLine($"Value: ${valuation.EstimatedValue:N0}");
 
 ### Common Error Codes
 
-| Code | HTTP Status | Description |
-|------|------------|-------------|
-| `UNAUTHORIZED` | 401 | Invalid or expired token |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `NOT_FOUND` | 404 | Resource not found |
-| `VALIDATION_ERROR` | 400 | Invalid request data |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
-| `INTERNAL_ERROR` | 500 | Server error |
-| `SERVICE_UNAVAILABLE` | 503 | Temporary outage |
+| Code                  | HTTP Status | Description              |
+| --------------------- | ----------- | ------------------------ |
+| `UNAUTHORIZED`        | 401         | Invalid or expired token |
+| `FORBIDDEN`           | 403         | Insufficient permissions |
+| `NOT_FOUND`           | 404         | Resource not found       |
+| `VALIDATION_ERROR`    | 400         | Invalid request data     |
+| `RATE_LIMIT_EXCEEDED` | 429         | Too many requests        |
+| `INTERNAL_ERROR`      | 500         | Server error             |
+| `SERVICE_UNAVAILABLE` | 503         | Temporary outage         |
 
 ### Retry Strategy
 
@@ -477,6 +493,7 @@ async function makeRequestWithRetry(fn, maxRetries = 3) {
 ### 1. Batch Operations
 
 Instead of making individual requests:
+
 ```javascript
 // ❌ Don't do this
 for (const address of addresses) {
@@ -484,14 +501,15 @@ for (const address of addresses) {
 }
 
 // ✅ Do this
-await client.valuations.createBatch({ 
-  properties: addresses.map(a => ({ address: a }))
+await client.valuations.createBatch({
+  properties: addresses.map(a => ({ address: a })),
 });
 ```
 
 ### 2. Cache Responses
 
 Cache valuations to reduce API calls:
+
 ```javascript
 const cache = new Map();
 
@@ -502,13 +520,13 @@ async function getValuation(address) {
       return cached.data;
     }
   }
-  
+
   const valuation = await client.valuations.create({ address });
   cache.set(address, {
     data: valuation,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
-  
+
   return valuation;
 }
 ```
@@ -522,17 +540,17 @@ class RateLimiter {
     this.window = window;
     this.calls = [];
   }
-  
+
   async throttle() {
     const now = Date.now();
     this.calls = this.calls.filter(t => t > now - this.window);
-    
+
     if (this.calls.length >= this.limit) {
       const oldestCall = this.calls[0];
       const waitTime = this.window - (now - oldestCall);
       await sleep(waitTime);
     }
-    
+
     this.calls.push(Date.now());
   }
 }
@@ -550,23 +568,25 @@ async function makeRequest() {
 ## Support
 
 ### Commercial Support
+
 - Email: api-support@terrafusion.com
 - Phone: 1-888-TERRA-API
 - Slack: terrafusion.slack.com (Professional+)
 
 ### Resources
+
 - API Status: status.terrafusion.com
 - Changelog: docs.terrafusion.com/changelog
 - Community: community.terrafusion.com
 
 ### SLA
 
-| Plan | Uptime SLA | Support Response |
-|------|------------|-----------------|
-| Starter | 99.5% | 24 hours |
-| Professional | 99.9% | 4 hours |
-| Enterprise | 99.99% | 1 hour |
+| Plan         | Uptime SLA | Support Response |
+| ------------ | ---------- | ---------------- |
+| Starter      | 99.5%      | 24 hours         |
+| Professional | 99.9%      | 4 hours          |
+| Enterprise   | 99.99%     | 1 hour           |
 
 ---
 
-*API Version: 1.0.0 | Last Updated: January 2025*
+_API Version: 1.0.0 | Last Updated: January 2025_

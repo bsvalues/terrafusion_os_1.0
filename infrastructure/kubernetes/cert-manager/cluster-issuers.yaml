@@ -1,0 +1,150 @@
+# TerraFusion OS - Cert-Manager Configuration
+# Government. Transcended.
+# Automated TLS certificate management for government compliance
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: terrafusion-letsencrypt-prod
+  namespace: cert-manager
+spec:
+  acme:
+    # Let's Encrypt production server
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@terrafusion.gov
+    privateKeySecretRef:
+      name: terrafusion-letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: kong
+          podTemplate:
+            metadata:
+              labels:
+                app: terrafusion-cert-solver
+                government: "true"
+                compliance: "fisma"
+            spec:
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 65534
+                fsGroup: 65534
+              containers:
+              - name: acme-solver
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                    - ALL
+                  readOnlyRootFilesystem: true
+                resources:
+                  requests:
+                    memory: "64Mi"
+                    cpu: "50m"
+                  limits:
+                    memory: "128Mi"
+                    cpu: "100m"
+
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: terrafusion-letsencrypt-staging
+  namespace: cert-manager
+spec:
+  acme:
+    # Let's Encrypt staging server for testing
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: admin@terrafusion.gov
+    privateKeySecretRef:
+      name: terrafusion-letsencrypt-staging
+    solvers:
+    - http01:
+        ingress:
+          class: kong
+          podTemplate:
+            metadata:
+              labels:
+                app: terrafusion-cert-solver-staging
+                government: "true"
+                compliance: "fisma"
+
+---
+# TerraFusion Government Certificate Template
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: terrafusion-gov-tls
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os
+    component: tls-certificate
+    government: "true"
+    compliance: "fisma"
+spec:
+  secretName: terrafusion-gov-tls-secret
+  issuerRef:
+    name: terrafusion-letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - terrafusion.gov
+  - api.terrafusion.gov
+  - console.terrafusion.gov
+  - benton.terrafusion.gov
+  - yakima.terrafusion.gov
+  - "*.terrafusion.gov"
+  duration: 2160h # 90 days
+  renewBefore: 360h # 15 days before expiry
+  subject:
+    organizationalUnits:
+    - "Government Technology Division"
+    organizations:
+    - "TerraFusion Government Services"
+    countries:
+    - "US"
+    provinces:
+    - "Washington"
+    localities:
+    - "Richland"
+  privateKey:
+    algorithm: RSA
+    size: 4096
+    rotationPolicy: Always
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth
+
+---
+# Government compliance certificate for internal services
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: terrafusion-internal-tls
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os
+    component: internal-tls
+    government: "true"
+    compliance: "fisma"
+spec:
+  secretName: terrafusion-internal-tls-secret
+  issuerRef:
+    name: terrafusion-letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - terrafusion-api.internal
+  - terrafusion-console.internal
+  - terrafusion-agents.internal
+  - prometheus.terrafusion.internal
+  - grafana.terrafusion.internal
+  duration: 2160h # 90 days
+  renewBefore: 360h # 15 days before expiry
+  privateKey:
+    algorithm: RSA
+    size: 4096
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth

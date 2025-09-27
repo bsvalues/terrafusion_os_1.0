@@ -1,0 +1,48 @@
+{
+  "title": "Golden UI \u2014 Product",
+  "templating": {
+    "list": [
+      {
+        "name": "host",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(nginx_ingress_controller_requests, host)",
+        "current": {
+          "text": "golden.example.gov",
+          "value": "golden.example.gov"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Traffic by path",
+      "targets": [
+        {
+          "expr": "sum by (ingress, path) (rate(nginx_ingress_controller_requests{host=\"$host\"}[1m]))"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "p95 latency",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{host=\"$host\"}[5m])) by (le))"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "HTTP 4xx/5xx %",
+      "targets": [
+        {
+          "expr": "(sum(rate(nginx_ingress_controller_requests{host=\"$host\",status=~\"4..|5..\"}[5m]))/sum(rate(nginx_ingress_controller_requests{host=\"$host\"}[5m])))"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

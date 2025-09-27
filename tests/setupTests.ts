@@ -5,12 +5,12 @@ import { server } from './msw/server';
 import { configureAxe } from 'jest-axe';
 import { cleanup } from '@testing-library/react';
 
-export const axe = configureAxe({ 
-  rules: { 
+export const axe = configureAxe({
+  rules: {
     region: { enabled: false },
     'color-contrast': { enabled: true },
-    'keyboard-navigation': { enabled: true }
-  } 
+    'keyboard-navigation': { enabled: true },
+  },
 });
 
 // Mock implementations for Terrafusion-specific APIs
@@ -22,9 +22,9 @@ vi.mock('@microsoft/signalr', () => ({
       start: vi.fn().mockResolvedValue(undefined),
       stop: vi.fn().mockResolvedValue(undefined),
       invoke: vi.fn().mockResolvedValue({}),
-      on: vi.fn()
-    })
-  }))
+      on: vi.fn(),
+    }),
+  })),
 }));
 
 // Mock next-auth for government authentication
@@ -34,14 +34,14 @@ vi.mock('next-auth/react', () => ({
       user: {
         id: 'u-admin',
         roles: ['EnterpriseAdmin'],
-        permissions: ['read', 'write', 'delete', 'export']
-      }
+        permissions: ['read', 'write', 'delete', 'export'],
+      },
     },
-    status: 'authenticated'
+    status: 'authenticated',
   })),
   signIn: vi.fn(),
   signOut: vi.fn(),
-  SessionProvider: ({ children }: { children: React.ReactNode }) => children
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock Electron APIs
@@ -49,15 +49,15 @@ global.electron = {
   ipcRenderer: {
     invoke: vi.fn().mockResolvedValue({}),
     send: vi.fn(),
-    on: vi.fn()
-  }
+    on: vi.fn(),
+  },
 };
 
 // Mock ResizeObserver for responsive components
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
-  disconnect: vi.fn()
+  disconnect: vi.fn(),
 }));
 
 // Setup MSW
@@ -86,14 +86,14 @@ global.testUtils = {
       expect(document.querySelector('[data-testid="loading"]')).toBeNull();
     });
   },
-  
+
   simulateNetworkError: () => {
     // MSW network error simulation
   },
-  
+
   simulateSlowNetwork: (delay = 2000) => {
     // MSW slow network simulation
-  }
+  },
 };
 
 // Government compliance test utilities
@@ -101,33 +101,33 @@ global.complianceUtils = {
   checkFISMACompliance: async (element: HTMLElement) => {
     const results = await axe(element);
     expect(results).toHaveNoViolations();
-    
+
     // FISMA-specific checks
     expect(element).toHaveAttribute('data-testid');
-    
+
     const forms = element.querySelectorAll('form');
     forms.forEach(form => {
       expect(form).toHaveAttribute('novalidate', 'false');
     });
   },
-  
+
   checkSection508Compliance: async (element: HTMLElement) => {
     const results = await axe(element, {
-      tags: ['section508', 'wcag2a', 'wcag2aa']
+      tags: ['section508', 'wcag2a', 'wcag2aa'],
     });
     expect(results).toHaveNoViolations();
   },
-  
+
   checkKeyboardNavigation: async (element: HTMLElement) => {
     const focusableElements = element.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    
+
     expect(focusableElements.length).toBeGreaterThan(0);
-    
+
     focusableElements.forEach(el => {
       expect(el).toBeVisible();
       expect(el).not.toHaveAttribute('tabindex', '-1');
     });
-  }
+  },
 };

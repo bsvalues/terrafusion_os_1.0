@@ -1,8 +1,10 @@
 # 🌐 TerraFusionMarket.io Complete Setup Guide
 
 ## Your Assets:
+
 - **Domain**: `terrafusionmarket.io` (owned by you, registered at Hostinger)
-- **GitHub Repo**: `github.com/bsvalues/terrafusion-market` (for hosting website files)
+- **GitHub Repo**: `github.com/bsvalues/terrafusion-market` (for hosting website
+  files)
 
 ## How They Work Together:
 
@@ -32,6 +34,7 @@ git push -u origin main
 Log into your Hostinger account and add these DNS records:
 
 ### For apex domain (terrafusionmarket.io):
+
 ```
 Type: A
 Name: @
@@ -55,6 +58,7 @@ TTL: 14400
 ```
 
 ### For www subdomain (www.terrafusionmarket.io):
+
 ```
 Type: CNAME
 Name: www
@@ -76,17 +80,17 @@ TTL: 14400
 
 ## Final Result:
 
-✅ **https://terrafusionmarket.io** - Your professional domain showing your website
-✅ **https://www.terrafusionmarket.io** - Also works with www
-✅ **Free hosting** via GitHub Pages
-✅ **Free SSL certificate** from GitHub
-✅ **Global CDN** for fast loading
+✅ **https://terrafusionmarket.io** - Your professional domain showing your
+website ✅ **https://www.terrafusionmarket.io** - Also works with www ✅ **Free
+hosting** via GitHub Pages ✅ **Free SSL certificate** from GitHub ✅ **Global
+CDN** for fast loading
 
 ---
 
 ## Quick Status Check:
 
 After setup, these should all work:
+
 - [ ] https://bsvalues.github.io/terrafusion-market (GitHub Pages URL)
 - [ ] https://terrafusionmarket.io (Your custom domain)
 - [ ] https://www.terrafusionmarket.io (WWW version)
@@ -112,16 +116,19 @@ Changes will automatically appear on terrafusionmarket.io within minutes!
 ## Troubleshooting:
 
 **"Page not found" error?**
+
 - Make sure you pushed to GitHub first
 - Check GitHub Pages is enabled
 - Verify CNAME file exists in your repository
 
 **Domain not working?**
+
 - DNS can take up to 48 hours (usually much faster)
 - Verify DNS records in Hostinger are correct
 - Check custom domain setting in GitHub Pages
 
 **SSL certificate error?**
+
 - GitHub automatically provides SSL
 - May take up to 24 hours after domain setup
 - Make sure "Enforce HTTPS" is checked in GitHub Pages settings

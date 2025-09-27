@@ -33,10 +33,10 @@ export class InteractiveCommandInterface {
     this.rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
-      prompt: '🤖 Terrafusion> '
+      prompt: '🤖 Terrafusion> ',
     });
     this.naturalLanguageProcessor = new NaturalLanguageProcessor();
-    
+
     // Set up event listeners
     this.setupEventListeners();
   }
@@ -49,7 +49,7 @@ export class InteractiveCommandInterface {
       console.log('🎉 Agent activated successfully!');
     });
 
-    this.agent.on('file-changed', (change) => {
+    this.agent.on('file-changed', change => {
       console.log(`📝 File change detected: ${change.filename} (${change.action})`);
     });
 
@@ -74,10 +74,10 @@ export class InteractiveCommandInterface {
     }
 
     this.isRunning = true;
-    
+
     // Activate the agent first
     await this.agent.activate();
-    
+
     console.log('');
     console.log('🎯 Interactive Command Interface Started');
     console.log('Type commands or ask questions naturally');
@@ -95,9 +95,9 @@ export class InteractiveCommandInterface {
   private startCommandLoop(): void {
     this.rl.prompt();
 
-    this.rl.on('line', async (input) => {
+    this.rl.on('line', async input => {
       const trimmedInput = input.trim();
-      
+
       if (trimmedInput === '') {
         this.rl.prompt();
         return;
@@ -109,10 +109,9 @@ export class InteractiveCommandInterface {
       try {
         // Process the command
         const result = await this.processCommand(trimmedInput);
-        
+
         // Display result
         this.displayResult(result);
-        
       } catch (error) {
         console.error('❌ Error processing command:', error);
       }
@@ -146,38 +145,38 @@ export class InteractiveCommandInterface {
    */
   private async processDotCommand(input: string): Promise<CommandResult> {
     const { name, args } = this.parseArgsForDotCommand(input.substring(1));
-    
+
     switch (name) {
       case 'status':
         return await this.handleStatusCommand();
-      
+
       case 'health':
         return await this.handleHealthCommand();
-      
+
       case 'ai-swarm':
         return await this.handleAISwarmCommand();
-      
+
       case 'capabilities':
         return await this.handleCapabilitiesCommand();
-      
+
       case 'ai-generate':
         return await this.handleAIGenerateCommand(args);
-      
+
       case 'ai-review':
         return await this.handleAIReviewCommand(args);
-      
+
       case 'ai-test':
         return await this.handleAITestCommand(args);
-      
+
       case 'ai-refactor':
         return await this.handleAIRefactorCommand(args);
-      
+
       case 'ai-solve':
         return await this.handleAISolveCommand(args);
-      
+
       case 'ai-architecture':
         return await this.handleAIArchitectureCommand(args);
-      
+
       case 'ai-compliance':
         return await this.handleAIComplianceCommand(args);
 
@@ -201,25 +200,25 @@ export class InteractiveCommandInterface {
 
       case 'help':
         return await this.handleHelpCommand();
-      
+
       case 'deactivate':
         return await this.handleDeactivateCommand();
-      
+
       case 'exit':
       case 'quit':
         return await this.handleExitCommand();
-      
+
       case 'clear':
         return await this.handleClearCommand();
-      
+
       case 'history':
         return await this.handleHistoryCommand();
-      
+
       default:
         return {
           success: false,
           message: `Unknown command: ${name}`,
-          suggestions: ['Type .help for available commands']
+          suggestions: ['Type .help for available commands'],
         };
     }
   }
@@ -243,7 +242,7 @@ export class InteractiveCommandInterface {
     let quoteChar = '';
     for (let i = 0; i < input.length; i++) {
       const ch = input[i] || '';
-      if ((ch === '"' || ch === '\'') && (!inQuotes || ch === quoteChar)) {
+      if ((ch === '"' || ch === "'") && (!inQuotes || ch === quoteChar)) {
         if (!inQuotes) {
           inQuotes = true;
           quoteChar = ch;
@@ -273,7 +272,7 @@ export class InteractiveCommandInterface {
     try {
       // Parse natural language
       const parsed = this.naturalLanguageProcessor.parse(input);
-      
+
       if (parsed.confidence > 0.7) {
         // High confidence - execute the action
         return await this.executeNaturalLanguageAction(parsed);
@@ -282,7 +281,7 @@ export class InteractiveCommandInterface {
         return {
           success: false,
           message: `I'm not sure I understood. Did you mean: ${parsed.action}?`,
-          suggestions: ['Please rephrase your request', 'Use .help for available commands']
+          suggestions: ['Please rephrase your request', 'Use .help for available commands'],
         };
       } else {
         // Low confidence - provide help
@@ -293,15 +292,15 @@ export class InteractiveCommandInterface {
             'Ask about system status: "How is the system doing?"',
             'Check AI swarm: "Show me the AI agents"',
             'Get help: "What can you do?"',
-            'Use .help for command list'
-          ]
+            'Use .help for command list',
+          ],
         };
       }
     } catch (error) {
       return {
         success: false,
         message: 'Error processing natural language input',
-        suggestions: ['Try using dot commands (.help) or rephrase your request']
+        suggestions: ['Try using dot commands (.help) or rephrase your request'],
       };
     }
   }
@@ -309,37 +308,39 @@ export class InteractiveCommandInterface {
   /**
    * Execute natural language actions
    */
-  private async executeNaturalLanguageAction(parsed: NaturalLanguageCommand): Promise<CommandResult> {
+  private async executeNaturalLanguageAction(
+    parsed: NaturalLanguageCommand
+  ): Promise<CommandResult> {
     switch (parsed.action) {
       case 'check_status':
         return await this.handleStatusCommand();
-      
+
       case 'check_health':
         return await this.handleHealthCommand();
-      
+
       case 'check_ai_swarm':
         return await this.handleAISwarmCommand();
-      
+
       case 'show_capabilities':
         return await this.handleCapabilitiesCommand();
-      
+
       case 'get_help':
         return await this.handleHelpCommand();
-      
+
       case 'optimize_performance':
         return await this.handleOptimizePerformanceCommand();
-      
+
       case 'run_tests':
         return await this.handleRunTestsCommand();
-      
+
       case 'check_compliance':
         return await this.handleCheckComplianceCommand();
-      
+
       default:
         return {
           success: false,
           message: `Action not implemented: ${parsed.action}`,
-          suggestions: ['Use .help for available commands']
+          suggestions: ['Use .help for available commands'],
         };
     }
   }
@@ -349,7 +350,7 @@ export class InteractiveCommandInterface {
    */
   private async handleStatusCommand(): Promise<CommandResult> {
     const status = this.agent.getStatus();
-    
+
     return {
       success: true,
       message: 'Current Workspace Status',
@@ -361,8 +362,8 @@ export class InteractiveCommandInterface {
         uncommittedChanges: status.gitStatus.uncommittedChanges.length,
         systemHealth: status.systemHealth.overallHealth,
         aiAgents: `${status.aiSwarmStatus.activeAgents}/${status.aiSwarmStatus.totalAgents}`,
-        recentChanges: status.recentChanges.slice(0, 5)
-      }
+        recentChanges: status.recentChanges.slice(0, 5),
+      },
     };
   }
 
@@ -371,7 +372,7 @@ export class InteractiveCommandInterface {
    */
   private async handleHealthCommand(): Promise<CommandResult> {
     const health = await this.agent.performHealthCheck();
-    
+
     return {
       success: true,
       message: 'System Health Check Results',
@@ -381,8 +382,8 @@ export class InteractiveCommandInterface {
         frontend: health.frontendStatus,
         database: health.databaseStatus,
         aiSwarm: health.aiSwarmStatus,
-        quantumEngine: health.quantumEngineStatus
-      }
+        quantumEngine: health.quantumEngineStatus,
+      },
     };
   }
 
@@ -391,7 +392,7 @@ export class InteractiveCommandInterface {
    */
   private async handleAISwarmCommand(): Promise<CommandResult> {
     const aiSwarm = await this.agent.getAISwarmStatus();
-    
+
     return {
       success: true,
       message: 'AI Swarm Status',
@@ -399,8 +400,8 @@ export class InteractiveCommandInterface {
         totalAgents: aiSwarm.totalAgents,
         activeAgents: aiSwarm.activeAgents,
         agentTypes: aiSwarm.agentTypes,
-        performance: aiSwarm.performanceMetrics
-      }
+        performance: aiSwarm.performanceMetrics,
+      },
     };
   }
 
@@ -409,11 +410,11 @@ export class InteractiveCommandInterface {
    */
   private async handleCapabilitiesCommand(): Promise<CommandResult> {
     const capabilities = this.agent.getCapabilities();
-    
+
     return {
       success: true,
       message: 'Agent Capabilities',
-      data: capabilities
+      data: capabilities,
     };
   }
 
@@ -422,7 +423,7 @@ export class InteractiveCommandInterface {
    */
   private async handleHelpCommand(): Promise<CommandResult> {
     this.agent.showHelp();
-    
+
     console.log('');
     console.log('🤖 AI TOOLS COMMANDS:');
     console.log('   .ai-generate <lang> <prompt>     - Generate code using AI');
@@ -441,15 +442,15 @@ export class InteractiveCommandInterface {
     console.log('   .compliance-status               - Get compliance validation status');
     console.log('   .audit-trail                     - Review security audit trail');
     console.log('');
-    console.log('💡 AI Tools powered by Terrafusion\'s advanced capabilities:');
+    console.log("💡 AI Tools powered by Terrafusion's advanced capabilities:");
     console.log('   • OpenAI GPT-4 integration with quantum optimization');
     console.log('   • Government compliance validation (FISMA, NIST, Section 508)');
     console.log('   • Enterprise security & audit trails');
     console.log('   • 949x performance optimization algorithms');
-    
+
     return {
       success: true,
-      message: 'Help information displayed above'
+      message: 'Help information displayed above',
     };
   }
 
@@ -458,10 +459,10 @@ export class InteractiveCommandInterface {
    */
   private async handleDeactivateCommand(): Promise<CommandResult> {
     await this.agent.deactivate();
-    
+
     return {
       success: true,
-      message: 'Agent deactivated'
+      message: 'Agent deactivated',
     };
   }
 
@@ -470,10 +471,10 @@ export class InteractiveCommandInterface {
    */
   private async handleExitCommand(): Promise<CommandResult> {
     this.rl.close();
-    
+
     return {
       success: true,
-      message: 'Exiting...'
+      message: 'Exiting...',
     };
   }
 
@@ -482,10 +483,10 @@ export class InteractiveCommandInterface {
    */
   private async handleClearCommand(): Promise<CommandResult> {
     console.clear();
-    
+
     return {
       success: true,
-      message: 'Screen cleared'
+      message: 'Screen cleared',
     };
   }
 
@@ -494,11 +495,11 @@ export class InteractiveCommandInterface {
    */
   private async handleHistoryCommand(): Promise<CommandResult> {
     const recentHistory = this.commandHistory.slice(-10);
-    
+
     return {
       success: true,
       message: 'Recent Command History',
-      data: recentHistory
+      data: recentHistory,
     };
   }
 
@@ -515,9 +516,9 @@ export class InteractiveCommandInterface {
           'Optimize AI swarm coordination',
           'Implement advanced caching',
           'Use parallel processing',
-          'Monitor performance metrics'
-        ]
-      }
+          'Monitor performance metrics',
+        ],
+      },
     };
   }
 
@@ -534,9 +535,9 @@ export class InteractiveCommandInterface {
           'npm run test:ci - Run tests with coverage',
           'npm run test:real - Run real system tests',
           'npm run test:ai-swarm - Test AI swarm',
-          'npm run test:quantum - Test quantum performance'
-        ]
-      }
+          'npm run test:quantum - Test quantum performance',
+        ],
+      },
     };
   }
 
@@ -553,14 +554,14 @@ export class InteractiveCommandInterface {
           'Section 508 accessibility (WCAG 2.1 AA)',
           'Government data protection',
           'Audit trail requirements',
-          'Security controls'
+          'Security controls',
         ],
         commands: [
           'npm run compliance:audit - Run compliance audit',
           'npm run security:scan - Security vulnerability scan',
-          'npm run mcp:validate - MCP validation'
-        ]
-      }
+          'npm run mcp:validate - MCP validation',
+        ],
+      },
     };
   }
 
@@ -574,7 +575,7 @@ export class InteractiveCommandInterface {
       if (!args || args.length < 2) {
         return {
           success: false,
-          message: 'Usage: .ai-generate <language> <prompt>'
+          message: 'Usage: .ai-generate <language> <prompt>',
         };
       }
       const language = args[0] || 'typescript';
@@ -583,13 +584,13 @@ export class InteractiveCommandInterface {
       return {
         success: true,
         message: 'AI Code Generation result',
-        data: { language, prompt, code }
+        data: { language, prompt, code },
       };
     } catch (error) {
       return {
         success: false,
         message: 'AI Code Generation failed',
-        suggestions: ['Check your input format', 'Ensure the agent is active']
+        suggestions: ['Check your input format', 'Ensure the agent is active'],
       };
     }
   }
@@ -602,7 +603,7 @@ export class InteractiveCommandInterface {
       if (!args || args.length < 2) {
         return {
           success: false,
-          message: 'Usage: .ai-review <language> <code>'
+          message: 'Usage: .ai-review <language> <code>',
         };
       }
       const language = args[0] || 'typescript';
@@ -611,13 +612,13 @@ export class InteractiveCommandInterface {
       return {
         success: true,
         message: 'AI Code Review result',
-        data: { language, review }
+        data: { language, review },
       };
     } catch (error) {
       return {
         success: false,
         message: 'AI Code Review failed',
-        suggestions: ['Check your input format', 'Ensure the agent is active']
+        suggestions: ['Check your input format', 'Ensure the agent is active'],
       };
     }
   }
@@ -630,24 +631,26 @@ export class InteractiveCommandInterface {
       if (!args || args.length < 2) {
         return {
           success: false,
-          message: 'Usage: .ai-test <language> <code> [framework]'
+          message: 'Usage: .ai-test <language> <code> [framework]',
         };
       }
       const language = args[0] || 'typescript';
       const hasFramework = args.length >= 3;
       const framework = hasFramework ? args[args.length - 1] : undefined;
-      const codeSnippet = hasFramework ? args.slice(1, -1).join(' ') : args.slice(1).join(' ') || 'class Example { method() {} }';
+      const codeSnippet = hasFramework
+        ? args.slice(1, -1).join(' ')
+        : args.slice(1).join(' ') || 'class Example { method() {} }';
       const tests = await this.agent.generateTests(codeSnippet, language, framework);
       return {
         success: true,
         message: 'AI Test Generation result',
-        data: { language, framework: framework || null, tests }
+        data: { language, framework: framework || null, tests },
       };
     } catch (error) {
       return {
         success: false,
         message: 'AI Test Generation failed',
-        suggestions: ['Check your input format', 'Ensure the agent is active']
+        suggestions: ['Check your input format', 'Ensure the agent is active'],
       };
     }
   }
@@ -660,7 +663,7 @@ export class InteractiveCommandInterface {
       if (!args || args.length < 2) {
         return {
           success: false,
-          message: 'Usage: .ai-refactor <language> <code>'
+          message: 'Usage: .ai-refactor <language> <code>',
         };
       }
       const language = args[0] || 'typescript';
@@ -669,13 +672,13 @@ export class InteractiveCommandInterface {
       return {
         success: true,
         message: 'AI Refactoring result',
-        data: { language, refactoring }
+        data: { language, refactoring },
       };
     } catch (error) {
       return {
         success: false,
         message: 'AI Refactoring Analysis failed',
-        suggestions: ['Check your input format', 'Ensure the agent is active']
+        suggestions: ['Check your input format', 'Ensure the agent is active'],
       };
     }
   }
@@ -688,23 +691,25 @@ export class InteractiveCommandInterface {
       if (!args || args.length < 1) {
         return {
           success: false,
-          message: 'Usage: .ai-solve <description> [error-logs]'
+          message: 'Usage: .ai-solve <description> [error-logs]',
         };
       }
       const hasLogs = args.length >= 2;
-      const description = hasLogs ? (args[0] || 'API is returning errors') : (args.join(' ') || 'API is returning errors');
+      const description = hasLogs
+        ? args[0] || 'API is returning errors'
+        : args.join(' ') || 'API is returning errors';
       const logs = hasLogs ? args.slice(1).join(' ') : undefined;
       const solution = await this.agent.solveProblem(description, logs);
       return {
         success: true,
         message: 'AI Problem Solver result',
-        data: { description, logs: logs || null, solution }
+        data: { description, logs: logs || null, solution },
       };
     } catch (error) {
       return {
         success: false,
         message: 'AI Problem Solver failed',
-        suggestions: ['Check your input format', 'Ensure the agent is active']
+        suggestions: ['Check your input format', 'Ensure the agent is active'],
       };
     }
   }
@@ -717,7 +722,7 @@ export class InteractiveCommandInterface {
       if (!args || args.length < 1) {
         return {
           success: false,
-          message: 'Usage: .ai-architecture <component> <requirements...>'
+          message: 'Usage: .ai-architecture <component> <requirements...>',
         };
       }
       const component = args[0] || 'UserService';
@@ -726,13 +731,13 @@ export class InteractiveCommandInterface {
       return {
         success: true,
         message: 'AI Architecture Advisor result',
-        data: { component, requirements, advice }
+        data: { component, requirements, advice },
       };
     } catch (error) {
       return {
         success: false,
         message: 'AI Architecture Advisor failed',
-        suggestions: ['Check your input format', 'Ensure the agent is active']
+        suggestions: ['Check your input format', 'Ensure the agent is active'],
       };
     }
   }
@@ -745,7 +750,7 @@ export class InteractiveCommandInterface {
       if (!args || args.length < 1) {
         return {
           success: false,
-          message: 'Usage: .ai-compliance <code> [standards...]'
+          message: 'Usage: .ai-compliance <code> [standards...]',
         };
       }
       const codeSnippet = args[0] || 'function processData() { return true; }';
@@ -754,13 +759,16 @@ export class InteractiveCommandInterface {
       return {
         success: true,
         message: 'AI Compliance Validation result',
-        data: { standards: standards.length ? standards : ['FISMA', 'NIST-800-53', 'Section-508'], validation }
+        data: {
+          standards: standards.length ? standards : ['FISMA', 'NIST-800-53', 'Section-508'],
+          validation,
+        },
       };
     } catch (error) {
       return {
         success: false,
         message: 'AI Compliance Validator failed',
-        suggestions: ['Check your input format', 'Ensure the agent is active']
+        suggestions: ['Check your input format', 'Ensure the agent is active'],
       };
     }
   }
@@ -784,14 +792,14 @@ export class InteractiveCommandInterface {
           complianceStatus: diagnostics.complianceStatus.overallStatus,
           quantumOptimization: diagnostics.quantumMetrics.optimizationLevel,
           aiSwarm: `${diagnostics.ecosystemStatus.aiSwarm.activeAgents}/${diagnostics.ecosystemStatus.aiSwarm.totalAgents} agents`,
-          recommendations: diagnostics.recommendations
-        }
+          recommendations: diagnostics.recommendations,
+        },
       };
     } catch (error) {
       return {
         success: false,
         message: 'Diagnostics failed',
-        suggestions: ['Check agent initialization', 'Verify workspace configuration']
+        suggestions: ['Check agent initialization', 'Verify workspace configuration'],
       };
     }
   }
@@ -815,14 +823,14 @@ export class InteractiveCommandInterface {
           auditEntries: security.auditEntries,
           encryptionStatus: security.encryptionStatus,
           accessControl: security.accessControl,
-          auditLogging: security.auditLogging
-        }
+          auditLogging: security.auditLogging,
+        },
       };
     } catch (error) {
       return {
         success: false,
         message: 'Security metrics retrieval failed',
-        suggestions: ['Check agent security configuration']
+        suggestions: ['Check agent security configuration'],
       };
     }
   }
@@ -845,14 +853,14 @@ export class InteractiveCommandInterface {
           averageGain: quantum.averageGain,
           successRate: quantum.successRate,
           processingMode: quantum.processingMode,
-          efficiency: quantum.efficiency
-        }
+          efficiency: quantum.efficiency,
+        },
       };
     } catch (error) {
       return {
         success: false,
         message: 'Quantum metrics retrieval failed',
-        suggestions: ['Check quantum engine configuration']
+        suggestions: ['Check quantum engine configuration'],
       };
     }
   }
@@ -873,14 +881,14 @@ export class InteractiveCommandInterface {
           modules: ecosystem.modules,
           marketplace: ecosystem.marketplace,
           quantumEngine: ecosystem.quantumEngine,
-          compliance: ecosystem.compliance
-        }
+          compliance: ecosystem.compliance,
+        },
       };
     } catch (error) {
       return {
         success: false,
         message: 'Ecosystem status retrieval failed',
-        suggestions: ['Check Terrafusion configuration']
+        suggestions: ['Check Terrafusion configuration'],
       };
     }
   }
@@ -903,14 +911,14 @@ export class InteractiveCommandInterface {
           recommendations: compliance.recommendations,
           riskLevel: compliance.riskLevel,
           lastValidation: compliance.lastValidation,
-          certificationStatus: compliance.certificationStatus
-        }
+          certificationStatus: compliance.certificationStatus,
+        },
       };
     } catch (error) {
       return {
         success: false,
         message: 'Compliance status retrieval failed',
-        suggestions: ['Check compliance configuration']
+        suggestions: ['Check compliance configuration'],
       };
     }
   }
@@ -931,7 +939,7 @@ export class InteractiveCommandInterface {
         resource: entry.resource,
         compliance: entry.compliance,
         riskLevel: entry.riskLevel,
-        quantumOptimized: entry.quantumOptimized
+        quantumOptimized: entry.quantumOptimized,
       }));
 
       return {
@@ -943,15 +951,15 @@ export class InteractiveCommandInterface {
           summary: {
             compliantActions: auditTrail.filter(e => e.compliance).length,
             highRiskActions: auditTrail.filter(e => e.riskLevel === 'high').length,
-            quantumOptimizedActions: auditTrail.filter(e => e.quantumOptimized).length
-          }
-        }
+            quantumOptimizedActions: auditTrail.filter(e => e.quantumOptimized).length,
+          },
+        },
       };
     } catch (error) {
       return {
         success: false,
         message: 'Audit trail retrieval failed',
-        suggestions: ['Check audit logging configuration']
+        suggestions: ['Check audit logging configuration'],
       };
     }
   }
@@ -962,14 +970,14 @@ export class InteractiveCommandInterface {
   private displayResult(result: CommandResult): void {
     if (result.success) {
       console.log(`✅ ${result.message}`);
-      
+
       if (result.data) {
         console.log('📊 Data:');
         console.log(JSON.stringify(result.data, null, 2));
       }
     } else {
       console.log(`❌ ${result.message}`);
-      
+
       if (result.suggestions && result.suggestions.length > 0) {
         console.log('💡 Suggestions:');
         result.suggestions.forEach(suggestion => {
@@ -977,7 +985,7 @@ export class InteractiveCommandInterface {
         });
       }
     }
-    
+
     console.log(''); // Add spacing
   }
 
@@ -1013,7 +1021,7 @@ export class NaturalLanguageProcessor {
       /what('s| is) the status/i,
       /show me the status/i,
       /current status/i,
-      /workspace status/i
+      /workspace status/i,
     ]);
     this.actionMapping.set('check_status', 'check_status');
 
@@ -1023,7 +1031,7 @@ export class NaturalLanguageProcessor {
       /system health/i,
       /health check/i,
       /is everything working/i,
-      /any problems/i
+      /any problems/i,
     ]);
     this.actionMapping.set('check_health', 'check_health');
 
@@ -1033,7 +1041,7 @@ export class NaturalLanguageProcessor {
       /how many agents/i,
       /agent status/i,
       /swarm status/i,
-      /ai status/i
+      /ai status/i,
     ]);
     this.actionMapping.set('check_ai_swarm', 'check_ai_swarm');
 
@@ -1043,17 +1051,12 @@ export class NaturalLanguageProcessor {
       /your capabilities/i,
       /show capabilities/i,
       /agent capabilities/i,
-      /help me/i
+      /help me/i,
     ]);
     this.actionMapping.set('show_capabilities', 'show_capabilities');
 
     // Help patterns
-    this.intentPatterns.set('get_help', [
-      /help/i,
-      /assist/i,
-      /support/i,
-      /guide/i
-    ]);
+    this.intentPatterns.set('get_help', [/help/i, /assist/i, /support/i, /guide/i]);
     this.actionMapping.set('get_help', 'get_help');
 
     // Performance optimization patterns
@@ -1062,7 +1065,7 @@ export class NaturalLanguageProcessor {
       /performance/i,
       /speed up/i,
       /make faster/i,
-      /improve performance/i
+      /improve performance/i,
     ]);
     this.actionMapping.set('optimize_performance', 'optimize_performance');
 
@@ -1071,7 +1074,7 @@ export class NaturalLanguageProcessor {
       /run tests/i,
       /test the system/i,
       /execute tests/i,
-      /testing/i
+      /testing/i,
     ]);
     this.actionMapping.set('run_tests', 'run_tests');
 
@@ -1081,7 +1084,7 @@ export class NaturalLanguageProcessor {
       /fisma/i,
       /section 508/i,
       /government standards/i,
-      /audit/i
+      /audit/i,
     ]);
     this.actionMapping.set('check_compliance', 'check_compliance');
   }
@@ -1095,7 +1098,7 @@ export class NaturalLanguageProcessor {
       confidence: 0,
       entities: [],
       action: 'unknown',
-      parameters: {}
+      parameters: {},
     };
 
     // Check each intent pattern
@@ -1103,14 +1106,14 @@ export class NaturalLanguageProcessor {
       for (const pattern of patterns) {
         if (pattern.test(input)) {
           const confidence = this.calculateConfidence(input, pattern);
-          
+
           if (confidence > bestMatch.confidence) {
             bestMatch = {
               intent,
               confidence,
               entities: this.extractEntities(input),
               action: this.actionMapping.get(intent) || 'unknown',
-              parameters: this.extractParameters(input)
+              parameters: this.extractParameters(input),
             };
           }
         }
@@ -1126,11 +1129,11 @@ export class NaturalLanguageProcessor {
   private calculateConfidence(input: string, pattern: RegExp): number {
     const match = input.match(pattern);
     if (!match) return 0;
-    
+
     // Base confidence on match length and input length
     const matchLength = match[0].length;
     const inputLength = input.length;
-    
+
     return Math.min(1.0, (matchLength / inputLength) * 1.5);
   }
 
@@ -1139,30 +1142,30 @@ export class NaturalLanguageProcessor {
    */
   private extractEntities(input: string): string[] {
     const entities: string[] = [];
-    
+
     // Extract common entities
     const systemWords = ['system', 'workspace', 'project', 'backend', 'frontend'];
     const healthWords = ['health', 'status', 'working', 'problems'];
     const aiWords = ['ai', 'agents', 'swarm', 'intelligence'];
-    
+
     systemWords.forEach(word => {
       if (input.toLowerCase().includes(word)) {
         entities.push(word);
       }
     });
-    
+
     healthWords.forEach(word => {
       if (input.toLowerCase().includes(word)) {
         entities.push(word);
       }
     });
-    
+
     aiWords.forEach(word => {
       if (input.toLowerCase().includes(word)) {
         entities.push(word);
       }
     });
-    
+
     return entities;
   }
 
@@ -1171,19 +1174,19 @@ export class NaturalLanguageProcessor {
    */
   private extractParameters(input: string): Record<string, any> {
     const params: Record<string, any> = {};
-    
+
     // Extract urgency indicators
     if (input.toLowerCase().includes('urgent') || input.toLowerCase().includes('asap')) {
       params['urgency'] = 'high';
     }
-    
+
     // Extract detail level
     if (input.toLowerCase().includes('detailed') || input.toLowerCase().includes('full')) {
       params['detailLevel'] = 'detailed';
     } else if (input.toLowerCase().includes('summary') || input.toLowerCase().includes('brief')) {
       params['detailLevel'] = 'summary';
     }
-    
+
     return params;
   }
 }

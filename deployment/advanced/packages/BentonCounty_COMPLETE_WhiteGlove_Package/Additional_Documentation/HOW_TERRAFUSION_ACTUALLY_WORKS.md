@@ -2,21 +2,23 @@
 
 ## The Reality Check:
 
-**terrafusionmarket.io** = Marketing website (like apple.com)
-**Terrafusion Apps** = Desktop applications users install (like Microsoft Office)
+**terrafusionmarket.io** = Marketing website (like apple.com) **Terrafusion
+Apps** = Desktop applications users install (like Microsoft Office)
 
 ---
 
 ## 🖥️ What Terrafusion Really Is:
 
-Terrafusion is a suite of **14 DESKTOP APPLICATIONS** built with Tauri (Rust + React).
-These are **NOT web apps** - they're native Windows/Mac/Linux programs that users download and install.
+Terrafusion is a suite of **14 DESKTOP APPLICATIONS** built with Tauri (Rust +
+React). These are **NOT web apps** - they're native Windows/Mac/Linux programs
+that users download and install.
 
 ---
 
 ## 📦 How Users Actually Get Terrafusion:
 
 ### Option 1: Direct Download (Simplest)
+
 ```
 1. User visits terrafusionmarket.io
 2. Clicks "Download Terrafusion Suite"
@@ -28,6 +30,7 @@ These are **NOT web apps** - they're native Windows/Mac/Linux programs that user
 ```
 
 ### Option 2: Microsoft Store / Mac App Store
+
 ```
 1. User searches "Terrafusion" in app store
 2. Clicks Install
@@ -35,6 +38,7 @@ These are **NOT web apps** - they're native Windows/Mac/Linux programs that user
 ```
 
 ### Option 3: Enterprise Deployment
+
 ```
 1. IT department downloads enterprise package
 2. Deploys via Group Policy/SCCM/MDM
@@ -46,6 +50,7 @@ These are **NOT web apps** - they're native Windows/Mac/Linux programs that user
 ## 🚀 MUCH EASIER DEPLOYMENT OPTIONS:
 
 ### 1. **Simple Hosting on Hostinger Directly** (EASIEST)
+
 Instead of GitHub Pages, just upload directly to Hostinger:
 
 ```bash
@@ -60,6 +65,7 @@ Instead of GitHub Pages, just upload directly to Hostinger:
 ```
 
 ### 2. **Use Dropbox/Google Drive for Downloads**
+
 ```html
 <!-- In your website -->
 <a href="https://www.dropbox.com/s/xyz/Terrafusion-Setup.exe?dl=1">
@@ -68,6 +74,7 @@ Instead of GitHub Pages, just upload directly to Hostinger:
 ```
 
 ### 3. **GitHub Releases** (Professional)
+
 ```
 1. Create releases on GitHub
 2. Upload built applications as release assets
@@ -117,6 +124,7 @@ Instead of GitHub Pages, just upload directly to Hostinger:
 ## 📁 What We Need to Build:
 
 ### 1. **Installer Package** (Priority #1)
+
 ```bash
 # For Windows (using Tauri's built-in bundler):
 cd apps/13-marketplace
@@ -128,50 +136,52 @@ npm run tauri build
 ```
 
 ### 2. **Simple Download Website**
+
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Terrafusion - Download</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Download Terrafusion</h1>
-    
+
     <div class="download-section">
-        <h2>For Government Agencies</h2>
-        
-        <!-- Windows -->
-        <a href="/downloads/Terrafusion-Setup.exe" class="download-btn">
-            Download for Windows (Recommended)
-            <small>Windows 10 or later • 150MB</small>
-        </a>
-        
-        <!-- Mac -->
-        <a href="/downloads/Terrafusion.dmg" class="download-btn">
-            Download for macOS
-            <small>macOS 10.15 or later • 140MB</small>
-        </a>
-        
-        <!-- Linux -->
-        <a href="/downloads/terrafusion.deb" class="download-btn">
-            Download for Linux (Ubuntu/Debian)
-            <small>64-bit • 130MB</small>
-        </a>
+      <h2>For Government Agencies</h2>
+
+      <!-- Windows -->
+      <a href="/downloads/Terrafusion-Setup.exe" class="download-btn">
+        Download for Windows (Recommended)
+        <small>Windows 10 or later • 150MB</small>
+      </a>
+
+      <!-- Mac -->
+      <a href="/downloads/Terrafusion.dmg" class="download-btn">
+        Download for macOS
+        <small>macOS 10.15 or later • 140MB</small>
+      </a>
+
+      <!-- Linux -->
+      <a href="/downloads/terrafusion.deb" class="download-btn">
+        Download for Linux (Ubuntu/Debian)
+        <small>64-bit • 130MB</small>
+      </a>
     </div>
-    
+
     <div class="requirements">
-        <h3>System Requirements:</h3>
-        <ul>
-            <li>4GB RAM minimum (8GB recommended)</li>
-            <li>2GB free disk space</li>
-            <li>Internet connection for AI features</li>
-        </ul>
+      <h3>System Requirements:</h3>
+      <ul>
+        <li>4GB RAM minimum (8GB recommended)</li>
+        <li>2GB free disk space</li>
+        <li>Internet connection for AI features</li>
+      </ul>
     </div>
-</body>
+  </body>
 </html>
 ```
 
 ### 3. **Auto-Update Server** (Later)
+
 ```json
 // tauri.conf.json already configured for updates
 {
@@ -189,7 +199,9 @@ npm run tauri build
 ## 🎯 SIMPLEST PATH FORWARD:
 
 ### This Week:
+
 1. **Build the installer**
+
    ```bash
    ./BUILD_ALL_PRODUCTION.sh
    ```
@@ -206,6 +218,7 @@ npm run tauri build
    - Verify apps work
 
 ### Result:
+
 - terrafusionmarket.io = Where users download Terrafusion
 - Users install it like any other software (Office, Chrome, etc.)
 - Apps run locally on their computer
@@ -216,12 +229,14 @@ npm run tauri build
 ## 💡 Why This Is Actually BETTER:
 
 ### For Government:
+
 - **Security**: Runs locally, data stays on-premise
 - **Performance**: Native apps, not slow web apps
 - **Reliability**: Works without internet (except AI features)
 - **Control**: IT department manages deployment
 
 ### For You:
+
 - **Simpler**: No complex cloud infrastructure
 - **Cheaper**: No hosting costs for app execution
 - **Faster**: Direct downloads, no accounts needed
@@ -234,16 +249,18 @@ npm run tauri build
 **Forget GitHub Pages!** Just:
 
 1. Build the desktop installer
-2. Upload to Hostinger 
+2. Upload to Hostinger
 3. Create simple download page
 4. Users download and install like any software
 5. Done!
 
-The apps run on users' computers, not on your website. The website is just for marketing and downloads.
+The apps run on users' computers, not on your website. The website is just for
+marketing and downloads.
 
 ---
 
 ## Want me to:
+
 1. ✅ Create the simple Hostinger deployment? (RECOMMENDED)
 2. Build the Windows installer first?
 3. Skip the website and use GitHub Releases?

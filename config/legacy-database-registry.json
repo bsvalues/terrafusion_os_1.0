@@ -6,7 +6,7 @@
       "tier_1_fully_supported": {
         "harris_pacs": {
           "name": "Harris PACS",
-          "vendor": "Harris Computer Systems", 
+          "vendor": "Harris Computer Systems",
           "versions": ["v12.4.7", "v12.3.x", "v11.x"],
           "market_share": "35%",
           "detection_confidence": 95,
@@ -17,7 +17,7 @@
           "name": "Tyler iasWorld",
           "vendor": "Tyler Technologies",
           "versions": ["v2023.1", "v2022.x", "v2021.x"],
-          "market_share": "25%", 
+          "market_share": "25%",
           "detection_confidence": 90,
           "sample_counties": ["King County, WA", "Clark County, WA"],
           "schema_identifiers": ["DWELLINGS", "PARCEL_BASE", "APPRAISAL"]
@@ -49,7 +49,7 @@
           "detection_confidence": 70
         },
         "appraisal_vision": {
-          "name": "Appraisal Vision", 
+          "name": "Appraisal Vision",
           "vendor": "Various Vendors",
           "market_share": "2%",
           "detection_confidence": 65
@@ -76,7 +76,7 @@
           "adapter": "generic_sql"
         },
         "csv_excel_imports": {
-          "name": "CSV/Excel Import Systems", 
+          "name": "CSV/Excel Import Systems",
           "description": "Manual CSV or Excel-based property data",
           "market_share": "2%",
           "detection_confidence": 30,
@@ -95,7 +95,7 @@
       },
       "king_county": {
         "legacy_system": "tyler_iasworld",
-        "version": "v2023.1", 
+        "version": "v2023.1",
         "total_parcels": 725000,
         "connection_type": "oracle",
         "data_quality": "excellent"
@@ -104,7 +104,7 @@
         "legacy_system": "harris_pacs",
         "version": "v12.3.2",
         "total_parcels": 425000,
-        "connection_type": "sql_server", 
+        "connection_type": "sql_server",
         "data_quality": "good"
       },
       "spokane_county": {

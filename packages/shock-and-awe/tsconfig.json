@@ -46,13 +46,7 @@
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src-tauri"
-  ],
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "src-tauri"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

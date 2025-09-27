@@ -390,11 +390,11 @@ analyze_monitoring_costs() {
     fi
     
     # Check Grafana usage
-    if command -v curl &> /dev/null && curl -sf http://localhost:3000/api/health &>/dev/null; then
+    if command -v curl &> /dev/null && curl -sf http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/health &>/dev/null; then
         MONITORING_COSTS["grafana"]="Grafana is running"
         
         # Check if Grafana is being used (this is a simplified check)
-        local dashboard_count=$(curl -sf -H "Authorization: Bearer admin:admin" http://localhost:3000/api/search 2>/dev/null | jq '. | length' || echo "0")
+        local dashboard_count=$(curl -sf -H "Authorization: Bearer admin:admin" http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/search 2>/dev/null | jq '. | length' || echo "0")
         if [ "$dashboard_count" -eq 0 ]; then
             OPTIMIZATION_RECOMMENDATIONS["grafana_unused"]="Grafana has no dashboards configured. Consider if Grafana is necessary."
         fi

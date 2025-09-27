@@ -1,3 +1,4 @@
+// NO HARDCODED PORTS! Use environment variables.
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import axios from 'axios';
 import { performance } from 'perf_hooks';
@@ -37,7 +38,7 @@ class PerformanceTuner {
 
   async runLoadTest(): Promise<PerformanceMetrics> {
     console.log(`Starting load test with ${this.config.maxConcurrentUsers} concurrent users`);
-    
+
     const startTime = performance.now();
     const promises: Promise<any>[] = [];
     let successCount = 0;
@@ -46,7 +47,7 @@ class PerformanceTuner {
     // Ramp up users gradually
     for (let i = 0; i < this.config.maxConcurrentUsers; i++) {
       const delay = (i / this.config.maxConcurrentUsers) * this.config.rampUpTime;
-      
+
       const userPromise = new Promise(resolve => {
         setTimeout(async () => {
           try {
@@ -59,16 +60,16 @@ class PerformanceTuner {
           resolve(null);
         }, delay);
       });
-      
+
       promises.push(userPromise);
     }
 
     // Wait for all users to complete
     await Promise.all(promises);
-    
+
     const endTime = performance.now();
     const totalTime = endTime - startTime;
-    
+
     return {
       responseTime: totalTime / this.config.maxConcurrentUsers,
       throughput: (successCount / totalTime) * 1000, // requests per second
@@ -77,30 +78,30 @@ class PerformanceTuner {
       concurrentUsers: this.config.maxConcurrentUsers,
       errorRate: (errorCount / (successCount + errorCount)) * 100,
       quantumSpeedup: await this.measureQuantumSpeedup(),
-      aiProcessingTime: await this.measureAIProcessingTime()
+      aiProcessingTime: await this.measureAIProcessingTime(),
     };
   }
 
   private async simulateUserSession(): Promise<void> {
     const sessionDuration = Math.random() * this.config.testDuration + 1000;
     const sessionStart = performance.now();
-    
+
     while (performance.now() - sessionStart < sessionDuration) {
       // Random endpoint selection
-      const endpoint = this.config.endpoints[Math.floor(Math.random() * this.config.endpoints.length)];
-      
+      const endpoint =
+        this.config.endpoints[Math.floor(Math.random() * this.config.endpoints.length)];
+
       try {
         const response = await axios.get(`${this.config.baseUrl}${endpoint}`, {
-          timeout: 30000
+          timeout: 30000,
         });
-        
+
         if (response.status !== 200) {
           throw new Error(`HTTP ${response.status}`);
         }
-        
+
         // Simulate user think time
         await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 500));
-        
       } catch (error) {
         throw error;
       }
@@ -109,45 +110,45 @@ class PerformanceTuner {
 
   private async measureQuantumSpeedup(): Promise<number> {
     const classicalStart = performance.now();
-    
+
     // Simulate classical processing
     await axios.post(`${this.config.baseUrl}/api/performance/classical-benchmark`, {
       complexity: 'high',
-      iterations: 1000
+      iterations: 1000,
     });
-    
+
     const classicalTime = performance.now() - classicalStart;
-    
+
     const quantumStart = performance.now();
-    
+
     // Simulate quantum-enhanced processing
     await axios.post(`${this.config.baseUrl}/api/performance/quantum-benchmark`, {
       complexity: 'high',
       iterations: 1000,
-      quantumEnhanced: true
+      quantumEnhanced: true,
     });
-    
+
     const quantumTime = performance.now() - quantumStart;
-    
+
     return classicalTime / quantumTime;
   }
 
   private async measureAIProcessingTime(): Promise<number> {
     const start = performance.now();
-    
+
     await axios.post(`${this.config.baseUrl}/api/ai/swarm-optimization`, {
       jurisdiction: 'test-county',
       agentCount: 1000,
-      optimizationTarget: 'revenue'
+      optimizationTarget: 'revenue',
     });
-    
+
     return performance.now() - start;
   }
 
   async optimizeDatabaseQueries(): Promise<void> {
     // Test current query performance
     const slowQueries = await this.identifySlowQueries();
-    
+
     for (const query of slowQueries) {
       await this.optimizeQuery(query);
     }
@@ -161,7 +162,7 @@ class PerformanceTuner {
   private async optimizeQuery(queryId: string): Promise<void> {
     await axios.post(`${this.config.baseUrl}/api/performance/optimize-query`, {
       queryId,
-      optimizations: ['indexing', 'caching', 'partitioning']
+      optimizations: ['indexing', 'caching', 'partitioning'],
     });
   }
 
@@ -171,7 +172,7 @@ class PerformanceTuner {
       strategy: 'redis',
       ttl: 3600, // 1 hour
       maxMemory: '2gb',
-      evictionPolicy: 'allkeys-lru'
+      evictionPolicy: 'allkeys-lru',
     });
 
     // Cache frequently accessed endpoints
@@ -179,13 +180,13 @@ class PerformanceTuner {
       '/api/properties/search',
       '/api/analytics/dashboard',
       '/api/reports/executive',
-      '/api/ai/predictions'
+      '/api/ai/predictions',
     ];
 
     for (const endpoint of cacheableEndpoints) {
       await axios.post(`${this.config.baseUrl}/api/cache/enable`, {
         endpoint,
-        duration: 1800 // 30 minutes
+        duration: 1800, // 30 minutes
       });
     }
   }
@@ -195,13 +196,13 @@ class PerformanceTuner {
     await axios.post(`${this.config.baseUrl}/api/performance/gc-config`, {
       strategy: 'generational',
       heapSize: '8gb',
-      gcInterval: 30000
+      gcInterval: 30000,
     });
 
     // Optimize object pooling
     await axios.post(`${this.config.baseUrl}/api/performance/object-pooling`, {
       enabled: true,
-      poolSize: 10000
+      poolSize: 10000,
     });
   }
 
@@ -211,7 +212,7 @@ class PerformanceTuner {
       windowMs: 900000, // 15 minutes
       max: 1000, // requests per window
       skipSuccessfulRequests: false,
-      skipFailedRequests: false
+      skipFailedRequests: false,
     });
   }
 
@@ -221,7 +222,7 @@ class PerformanceTuner {
     }
 
     const latest = this.metrics[this.metrics.length - 1];
-    
+
     return `
 # Performance Tuning Report
 
@@ -270,17 +271,19 @@ ${this.generateRecommendations(latest)}
       recommendations.push('- Implement memory leak detection');
     }
 
-    return recommendations.length > 0 ? recommendations.join('\n') : '- System performance is optimal';
+    return recommendations.length > 0
+      ? recommendations.join('\n')
+      : '- System performance is optimal';
   }
 }
 
 // Test Suite
 describe('Performance Tuning Tests', () => {
   let tuner: PerformanceTuner;
-  
+
   beforeAll(() => {
     tuner = new PerformanceTuner({
-      baseUrl: process.env.TEST_API_URL || 'http://localhost:5000',
+      baseUrl: process.env.TEST_API_URL || 'http://localhost:${TF_STATIC_PORT:-8080}',
       maxConcurrentUsers: 1000,
       testDuration: 60000, // 1 minute
       rampUpTime: 30000, // 30 seconds
@@ -289,14 +292,14 @@ describe('Performance Tuning Tests', () => {
         '/api/properties/search',
         '/api/analytics/dashboard',
         '/api/ai/predictions',
-        '/api/reports/executive'
-      ]
+        '/api/reports/executive',
+      ],
     });
   });
 
   test('Load Test - 1000 Concurrent Users', async () => {
     const metrics = await tuner.runLoadTest();
-    
+
     expect(metrics.concurrentUsers).toBe(1000);
     expect(metrics.responseTime).toBeLessThan(2000); // < 2 seconds
     expect(metrics.throughput).toBeGreaterThan(100); // > 100 req/sec
@@ -306,49 +309,58 @@ describe('Performance Tuning Tests', () => {
 
   test('Database Query Optimization', async () => {
     await tuner.optimizeDatabaseQueries();
-    
+
     // Verify optimization took effect
-    const response = await axios.get(`${process.env.TEST_API_URL || 'http://localhost:5000'}/api/performance/query-stats`);
+    const response = await axios.get(
+      `${process.env.TEST_API_URL || 'http://localhost:${TF_STATIC_PORT:-8080}'}/api/performance/query-stats`
+    );
     expect(response.data.averageQueryTime).toBeLessThan(100); // < 100ms
   });
 
   test('Redis Caching Implementation', async () => {
     await tuner.implementCaching();
-    
+
     // Test cache hit
-    const response1 = await axios.get(`${process.env.TEST_API_URL || 'http://localhost:5000'}/api/properties/search?q=test`);
-    const response2 = await axios.get(`${process.env.TEST_API_URL || 'http://localhost:5000'}/api/properties/search?q=test`);
-    
+    const response1 = await axios.get(
+      `${process.env.TEST_API_URL || 'http://localhost:${TF_STATIC_PORT:-8080}'}/api/properties/search?q=test`
+    );
+    const response2 = await axios.get(
+      `${process.env.TEST_API_URL || 'http://localhost:${TF_STATIC_PORT:-8080}'}/api/properties/search?q=test`
+    );
+
     expect(response1.headers['x-cache']).toBeUndefined();
     expect(response2.headers['x-cache']).toBe('HIT');
   });
 
   test('Memory Usage Optimization', async () => {
     const initialMemory = process.memoryUsage().heapUsed;
-    
+
     await tuner.optimizeMemoryUsage();
-    
+
     // Force garbage collection and measure
     if (global.gc) {
       global.gc();
     }
-    
+
     const optimizedMemory = process.memoryUsage().heapUsed;
     expect(optimizedMemory).toBeLessThanOrEqual(initialMemory);
   });
 
   test('API Rate Limiting', async () => {
     await tuner.implementRateLimiting();
-    
+
     // Test rate limiting
-    const promises = Array(1100).fill(null).map(() => 
-      axios.get(`${process.env.TEST_API_URL || 'http://localhost:5000'}/api/health`)
-        .catch(error => error.response)
-    );
-    
+    const promises = Array(1100)
+      .fill(null)
+      .map(() =>
+        axios
+          .get(`${process.env.TEST_API_URL || 'http://localhost:${TF_STATIC_PORT:-8080}'}/api/health`)
+          .catch(error => error.response)
+      );
+
     const responses = await Promise.all(promises);
     const rateLimitedResponses = responses.filter(r => r.status === 429);
-    
+
     expect(rateLimitedResponses.length).toBeGreaterThan(0);
   });
 

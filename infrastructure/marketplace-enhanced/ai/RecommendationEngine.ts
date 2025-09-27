@@ -107,7 +107,8 @@ export class AIRecommendationEngine {
       }
 
       const recommendation = await this.analyzePluginFit(plugin, profile, similarCounties);
-      if (recommendation.confidence > 0.3) { // Minimum confidence threshold
+      if (recommendation.confidence > 0.3) {
+        // Minimum confidence threshold
         recommendations.push(recommendation);
       }
     }
@@ -124,8 +125,8 @@ export class AIRecommendationEngine {
 
   // Analyze plugin fit for specific county
   private async analyzePluginFit(
-    plugin: any, 
-    profile: CountyProfile, 
+    plugin: any,
+    profile: CountyProfile,
     similarCounties: CountyProfile[]
   ): Promise<PluginRecommendation> {
     const factors = {
@@ -136,7 +137,7 @@ export class AIRecommendationEngine {
       techMaturityMatch: this.analyzeTechMaturityMatch(plugin, profile),
       similarCountySuccess: this.analyzeSimilarCountySuccess(plugin, similarCounties),
       complianceAlignment: this.analyzeComplianceAlignment(plugin, profile),
-      currentGaps: this.analyzeCurrentGaps(plugin, profile)
+      currentGaps: this.analyzeCurrentGaps(plugin, profile),
     };
 
     const confidence = this.calculateConfidence(factors);
@@ -156,19 +157,19 @@ export class AIRecommendationEngine {
       similarCounties: similarCounties.slice(0, 3).map(c => c.name),
       category: plugin.category,
       tier: plugin.tier,
-      priority: this.determinePriority(confidence, factors, profile)
+      priority: this.determinePriority(confidence, factors, profile),
     };
   }
 
   // Find counties with similar profiles
   private async findSimilarCounties(profile: CountyProfile): Promise<CountyProfile[]> {
     const allProfiles = Array.from(this.countyProfiles.values());
-    
+
     return allProfiles
       .filter(p => p.id !== profile.id)
       .map(p => ({
         profile: p,
-        similarity: this.calculateSimilarity(profile, p)
+        similarity: this.calculateSimilarity(profile, p),
       }))
       .filter(item => item.similarity > 0.6) // Minimum similarity threshold
       .sort((a, b) => b.similarity - a.similarity)
@@ -190,20 +191,22 @@ export class AIRecommendationEngine {
     factors++;
 
     // Population similarity (within 50% range)
-    const popRatio = Math.min(profile1.population, profile2.population) / 
-                     Math.max(profile1.population, profile2.population);
+    const popRatio =
+      Math.min(profile1.population, profile2.population) /
+      Math.max(profile1.population, profile2.population);
     similarity += popRatio * 0.2;
     factors++;
 
     // Budget similarity (within 50% range)
-    const budgetRatio = Math.min(profile1.budget, profile2.budget) / 
-                        Math.max(profile1.budget, profile2.budget);
+    const budgetRatio =
+      Math.min(profile1.budget, profile2.budget) / Math.max(profile1.budget, profile2.budget);
     similarity += budgetRatio * 0.15;
     factors++;
 
     // Specialty overlap
     const commonSpecialties = profile1.specialties.filter(s => profile2.specialties.includes(s));
-    const specialtyScore = commonSpecialties.length / Math.max(profile1.specialties.length, profile2.specialties.length);
+    const specialtyScore =
+      commonSpecialties.length / Math.max(profile1.specialties.length, profile2.specialties.length);
     similarity += specialtyScore * 0.15;
     factors++;
 
@@ -256,7 +259,7 @@ export class AIRecommendationEngine {
       adoptionForecast: await this.predictPluginAdoption(profile),
       budgetOptimization: await this.optimizeBudgetAllocation(profile),
       riskAssessment: await this.assessRisks(profile),
-      performanceProjections: await this.projectPerformanceGains(profile)
+      performanceProjections: await this.projectPerformanceGains(profile),
     };
   }
 
@@ -290,7 +293,7 @@ export class AIRecommendationEngine {
         duration: usageData.duration,
         efficiency: usageData.efficiency,
         userSatisfaction: usageData.userSatisfaction,
-        lastUsed: new Date().toISOString()
+        lastUsed: new Date().toISOString(),
       });
     }
 
@@ -304,19 +307,19 @@ export class AIRecommendationEngine {
     this.mlModels.set('plugin_adoption', {
       type: 'collaborative_filtering',
       accuracy: 0.85,
-      lastTrained: new Date().toISOString()
+      lastTrained: new Date().toISOString(),
     });
 
     this.mlModels.set('budget_optimization', {
       type: 'linear_regression',
       accuracy: 0.78,
-      lastTrained: new Date().toISOString()
+      lastTrained: new Date().toISOString(),
     });
 
     this.mlModels.set('risk_assessment', {
       type: 'random_forest',
       accuracy: 0.82,
-      lastTrained: new Date().toISOString()
+      lastTrained: new Date().toISOString(),
     });
   }
 
@@ -332,7 +335,7 @@ export class AIRecommendationEngine {
         targetCountySizes: ['medium', 'large'],
         specialties: ['data-analysis', 'reporting'],
         cost: 5000,
-        complexity: 'medium'
+        complexity: 'medium',
       },
       {
         id: 'workflow-automation-pro',
@@ -343,7 +346,7 @@ export class AIRecommendationEngine {
         targetCountySizes: ['large', 'mega'],
         specialties: ['automation', 'efficiency'],
         cost: 15000,
-        complexity: 'high'
+        complexity: 'high',
       },
       {
         id: 'citizen-portal',
@@ -354,8 +357,8 @@ export class AIRecommendationEngine {
         targetCountySizes: ['small', 'medium', 'large'],
         specialties: ['citizen-services', 'accessibility'],
         cost: 2000,
-        complexity: 'low'
-      }
+        complexity: 'low',
+      },
     ];
   }
 
@@ -384,18 +387,16 @@ export class AIRecommendationEngine {
   private analyzeTechMaturityMatch(plugin: any, profile: CountyProfile): number {
     const maturityLevels = { basic: 1, intermediate: 2, advanced: 3, 'cutting-edge': 4 };
     const complexityLevels = { low: 1, medium: 2, high: 3 };
-    
+
     const profileLevel = maturityLevels[profile.techMaturity];
     const pluginLevel = complexityLevels[plugin.complexity] || 2;
-    
+
     return Math.max(0, 1 - Math.abs(profileLevel - pluginLevel) / 3);
   }
 
   private analyzeSimilarCountySuccess(plugin: any, similarCounties: CountyProfile[]): number {
-    const adoptionCount = similarCounties.filter(c => 
-      c.currentPlugins.includes(plugin.id)
-    ).length;
-    
+    const adoptionCount = similarCounties.filter(c => c.currentPlugins.includes(plugin.id)).length;
+
     return similarCounties.length > 0 ? adoptionCount / similarCounties.length : 0.5;
   }
 
@@ -414,12 +415,12 @@ export class AIRecommendationEngine {
     const weights = {
       sizeCompatibility: 0.15,
       typeCompatibility: 0.15,
-      budgetFit: 0.20,
+      budgetFit: 0.2,
       specialtyAlignment: 0.15,
-      techMaturityMatch: 0.10,
+      techMaturityMatch: 0.1,
       similarCountySuccess: 0.15,
       complianceAlignment: 0.05,
-      currentGaps: 0.05
+      currentGaps: 0.05,
     };
 
     return Object.entries(factors).reduce((sum, [key, value]) => {
@@ -455,7 +456,7 @@ export class AIRecommendationEngine {
       'Improved operational efficiency',
       'Enhanced citizen services',
       'Better data-driven decision making',
-      'Streamlined workflows'
+      'Streamlined workflows',
     ];
   }
 
@@ -466,7 +467,10 @@ export class AIRecommendationEngine {
     return ((baseSavings * 12) / cost) * 100; // Annual ROI percentage
   }
 
-  private assessImplementationComplexity(plugin: any, profile: CountyProfile): 'low' | 'medium' | 'high' {
+  private assessImplementationComplexity(
+    plugin: any,
+    profile: CountyProfile
+  ): 'low' | 'medium' | 'high' {
     return plugin.complexity || 'medium';
   }
 
@@ -476,70 +480,84 @@ export class AIRecommendationEngine {
     return timeMap[complexity];
   }
 
-  private determinePriority(confidence: number, factors: any, profile: CountyProfile): 'high' | 'medium' | 'low' {
+  private determinePriority(
+    confidence: number,
+    factors: any,
+    profile: CountyProfile
+  ): 'high' | 'medium' | 'low' {
     if (confidence > 0.8 && factors.currentGaps > 0.6) return 'high';
     if (confidence > 0.6) return 'medium';
     return 'low';
   }
 
   private async analyzeOptimizationOpportunities(profile: CountyProfile): Promise<AIInsight[]> {
-    return [{
-      type: 'optimization',
-      title: 'Plugin Usage Optimization',
-      description: 'Identified underutilized plugins that could provide additional value',
-      impact: 'medium',
-      actionable: true,
-      recommendations: ['Review plugin configurations', 'Provide additional training'],
-      dataPoints: []
-    }];
+    return [
+      {
+        type: 'optimization',
+        title: 'Plugin Usage Optimization',
+        description: 'Identified underutilized plugins that could provide additional value',
+        impact: 'medium',
+        actionable: true,
+        recommendations: ['Review plugin configurations', 'Provide additional training'],
+        dataPoints: [],
+      },
+    ];
   }
 
   private async analyzeEfficiencyOpportunities(profile: CountyProfile): Promise<AIInsight[]> {
-    return [{
-      type: 'efficiency',
-      title: 'Workflow Automation Opportunity',
-      description: 'Manual processes identified that could be automated',
-      impact: 'high',
-      actionable: true,
-      recommendations: ['Implement workflow automation', 'Standardize processes'],
-      dataPoints: []
-    }];
+    return [
+      {
+        type: 'efficiency',
+        title: 'Workflow Automation Opportunity',
+        description: 'Manual processes identified that could be automated',
+        impact: 'high',
+        actionable: true,
+        recommendations: ['Implement workflow automation', 'Standardize processes'],
+        dataPoints: [],
+      },
+    ];
   }
 
   private async analyzeCostSavingOpportunities(profile: CountyProfile): Promise<AIInsight[]> {
-    return [{
-      type: 'cost-saving',
-      title: 'License Optimization',
-      description: 'Potential savings through license consolidation',
-      impact: 'medium',
-      actionable: true,
-      recommendations: ['Review license usage', 'Consolidate overlapping tools'],
-      dataPoints: []
-    }];
+    return [
+      {
+        type: 'cost-saving',
+        title: 'License Optimization',
+        description: 'Potential savings through license consolidation',
+        impact: 'medium',
+        actionable: true,
+        recommendations: ['Review license usage', 'Consolidate overlapping tools'],
+        dataPoints: [],
+      },
+    ];
   }
 
   private async analyzeComplianceGaps(profile: CountyProfile): Promise<AIInsight[]> {
-    return [{
-      type: 'compliance',
-      title: 'Security Compliance Enhancement',
-      description: 'Opportunities to strengthen security posture',
-      impact: 'high',
-      actionable: true,
-      recommendations: ['Update security policies', 'Implement additional monitoring'],
-      dataPoints: []
-    }];
+    return [
+      {
+        type: 'compliance',
+        title: 'Security Compliance Enhancement',
+        description: 'Opportunities to strengthen security posture',
+        impact: 'high',
+        actionable: true,
+        recommendations: ['Update security policies', 'Implement additional monitoring'],
+        dataPoints: [],
+      },
+    ];
   }
 
   private async analyzeInnovationOpportunities(profile: CountyProfile): Promise<AIInsight[]> {
-    return [{
-      type: 'innovation',
-      title: 'Emerging Technology Adoption',
-      description: 'New technologies that could benefit the county',
-      impact: 'medium',
-      actionable: false,
-      recommendations: ['Evaluate AI capabilities', 'Consider pilot programs'],
-      dataPoints: []
-    }];
+    return [
+      {
+        type: 'innovation',
+        title: 'Emerging Technology Adoption',
+        description: 'New technologies that could benefit the county',
+        impact: 'medium',
+        actionable: false,
+        recommendations: ['Evaluate AI capabilities', 'Consider pilot programs'],
+        dataPoints: [],
+      },
+    ];
   }
 
   private async predictPluginAdoption(profile: CountyProfile): Promise<any[]> {
@@ -548,8 +566,8 @@ export class AIRecommendationEngine {
         pluginId: 'advanced-analytics',
         predictedAdoption: 0.75,
         timeframe: '6 months',
-        confidence: 0.82
-      }
+        confidence: 0.82,
+      },
     ];
   }
 
@@ -558,7 +576,7 @@ export class AIRecommendationEngine {
       currentSpend: profile.budget * 0.1,
       optimizedSpend: profile.budget * 0.08,
       savings: profile.budget * 0.02,
-      recommendations: ['Consolidate overlapping tools', 'Negotiate volume discounts']
+      recommendations: ['Consolidate overlapping tools', 'Negotiate volume discounts'],
     };
   }
 
@@ -567,16 +585,16 @@ export class AIRecommendationEngine {
       securityRisks: ['Outdated plugins', 'Insufficient access controls'],
       complianceRisks: ['Missing audit trails', 'Data retention policies'],
       operationalRisks: ['Single points of failure', 'Insufficient backup'],
-      mitigation: ['Regular security updates', 'Implement redundancy']
+      mitigation: ['Regular security updates', 'Implement redundancy'],
     };
   }
 
   private async projectPerformanceGains(profile: CountyProfile): Promise<any> {
     return {
       efficiency: 15, // 15% improvement
-      costSavings: 8,  // 8% cost reduction
+      costSavings: 8, // 8% cost reduction
       timeReduction: 25, // 25% time savings
-      qualityImprovement: 12 // 12% quality increase
+      qualityImprovement: 12, // 12% quality increase
     };
   }
 

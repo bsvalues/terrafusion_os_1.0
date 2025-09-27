@@ -31,7 +31,7 @@ services:
       - terrafusion-api-3
       - redis-master
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8404/stats"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:\${{TF_PORT_8404:-8404}}/stats"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -47,7 +47,7 @@ services:
     labels:
       - "traefik.enable=false"
       - "monitoring.prometheus.scrape=true"
-      - "monitoring.prometheus.port=8404"
+      - "monitoring.prometheus.port=\${{TF_PORT_8404:-8404}}"
       - "component=load-balancer"
       - "tier=infrastructure"
 
@@ -67,7 +67,7 @@ services:
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:${TF_API_PORT:-5046}
       - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
       - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
       - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
@@ -92,7 +92,7 @@ services:
       - postgres-primary
       - redis-master
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health/negative-cache-status"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_PORT_8404:-8404}}/health/negative-cache-status"]
       interval: 15s
       timeout: 10s
       retries: 3
@@ -122,7 +122,7 @@ services:
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:${TF_API_PORT:-5046}
       - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
       - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
       - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
@@ -144,7 +144,7 @@ services:
       - postgres-primary
       - redis-master
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health/negative-cache-status"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_PORT_8404:-8404}}/health/negative-cache-status"]
       interval: 15s
       timeout: 10s
       retries: 3
@@ -174,7 +174,7 @@ services:
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:${TF_API_PORT:-5046}
       - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
       - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
       - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
@@ -196,7 +196,7 @@ services:
       - postgres-primary
       - redis-master
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health/negative-cache-status"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_PORT_8404:-8404}}/health/negative-cache-status"]
       interval: 15s
       timeout: 10s
       retries: 3
@@ -485,7 +485,7 @@ services:
     container_name: terrafusion-grafana
     restart: always
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=TerraFusion_Grafana_2025!

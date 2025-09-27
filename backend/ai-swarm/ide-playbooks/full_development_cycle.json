@@ -1,0 +1,487 @@
+{
+  "id": "full_development_cycle_v1",
+  "name": "Complete Development Cycle Automation",
+  "version": "1.0.0",
+  "domain": "BUILD_AUTOMATION",
+  "description": "End-to-end development workflow: analyze code → build → test → review → deploy → document",
+  "estimatedDuration": 300000,
+  "riskLevel": "medium",
+  "requiredCapabilities": [
+    "code_analysis",
+    "build_management",
+    "test_execution",
+    "code_review",
+    "deployment",
+    "documentation_generation"
+  ],
+  "humanEscalationPoints": [
+    "critical_security_vulnerability",
+    "build_failure_unrecoverable",
+    "test_failure_critical",
+    "deployment_rollback_required"
+  ],
+  "steps": [
+    {
+      "id": "code_quality_analysis",
+      "name": "Comprehensive Code Quality Analysis",
+      "action": "analyze_code_quality",
+      "description": "Run full static analysis, complexity analysis, and security scan",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectPath": { "type": "string" },
+          "analysisDepth": { "type": "string", "enum": ["surface", "deep", "comprehensive"] },
+          "includeTests": { "type": "boolean" }
+        },
+        "required": ["projectPath"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "qualityScore": { "type": "number", "minimum": 0, "maximum": 100 },
+          "issues": { "type": "array" },
+          "securityVulnerabilities": { "type": "array" },
+          "complexityMetrics": { "type": "object" },
+          "recommendations": { "type": "array" }
+        }
+      },
+      "timeoutMs": 60000,
+      "retryPolicy": {
+        "maxAttempts": 2,
+        "backoffStrategy": "exponential",
+        "retryableErrors": ["timeout", "memory_limit"],
+        "exponentialBase": 2,
+        "maxBackoffMs": 10000
+      },
+      "requiredRole": "CODE_ANALYZER",
+      "parallelExecution": false,
+      "dependencies": [],
+      "conditions": [
+        {
+          "type": "pre_condition",
+          "expression": "projectPath !== null && projectPath !== ''",
+          "errorMessage": "Project path must be specified"
+        }
+      ]
+    },
+    {
+      "id": "dependency_optimization",
+      "name": "Dependency Analysis & Optimization",
+      "action": "optimize_dependencies",
+      "description": "Analyze and optimize project dependencies for security and performance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "packageFile": { "type": "string" },
+          "optimizationLevel": { "type": "string", "enum": ["conservative", "aggressive"] }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "vulnerableDependencies": { "type": "array" },
+          "outdatedDependencies": { "type": "array" },
+          "optimizationSuggestions": { "type": "array" },
+          "bundleSizeImpact": { "type": "object" }
+        }
+      },
+      "timeoutMs": 45000,
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffStrategy": "linear",
+        "retryableErrors": ["network_error", "registry_timeout"],
+        "exponentialBase": 2,
+        "maxBackoffMs": 5000
+      },
+      "requiredRole": "BUILD_ORCHESTRATOR",
+      "parallelExecution": true,
+      "dependencies": ["code_quality_analysis"],
+      "conditions": []
+    },
+    {
+      "id": "intelligent_build",
+      "name": "Intelligent Build with Optimization",
+      "action": "execute_intelligent_build",
+      "description": "Build project with intelligent caching, parallel compilation, and optimization",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "buildMode": { "type": "string", "enum": ["development", "production"] },
+          "optimization": { "type": "boolean" },
+          "sourceMap": { "type": "boolean" },
+          "parallelism": { "type": "number", "minimum": 1, "maximum": 8 }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "buildSuccess": { "type": "boolean" },
+          "buildTime": { "type": "number" },
+          "outputSize": { "type": "number" },
+          "optimizationStats": { "type": "object" },
+          "errors": { "type": "array" },
+          "warnings": { "type": "array" }
+        }
+      },
+      "timeoutMs": 180000,
+      "retryPolicy": {
+        "maxAttempts": 2,
+        "backoffStrategy": "fixed",
+        "retryableErrors": ["compilation_memory_limit"],
+        "exponentialBase": 2,
+        "maxBackoffMs": 5000
+      },
+      "requiredRole": "BUILD_ORCHESTRATOR",
+      "parallelExecution": false,
+      "dependencies": ["dependency_optimization"],
+      "conditions": [
+        {
+          "type": "pre_condition",
+          "expression": "codeQualityAnalysis.qualityScore > 60",
+          "errorMessage": "Code quality score too low for production build"
+        }
+      ]
+    },
+    {
+      "id": "comprehensive_testing",
+      "name": "Comprehensive Test Suite Execution",
+      "action": "execute_comprehensive_tests",
+      "description": "Run unit tests, integration tests, and performance tests in parallel",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "testTypes": { "type": "array", "items": { "type": "string" } },
+          "coverage": { "type": "boolean" },
+          "parallelExecution": { "type": "boolean" },
+          "performanceBaseline": { "type": "object" }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "testResults": { "type": "object" },
+          "coverage": { "type": "object" },
+          "performanceMetrics": { "type": "object" },
+          "passRate": { "type": "number" },
+          "regressions": { "type": "array" }
+        }
+      },
+      "timeoutMs": 120000,
+      "retryPolicy": {
+        "maxAttempts": 1,
+        "backoffStrategy": "fixed",
+        "retryableErrors": [],
+        "exponentialBase": 2,
+        "maxBackoffMs": 1000
+      },
+      "requiredRole": "TEST_RUNNER",
+      "parallelExecution": true,
+      "dependencies": ["intelligent_build"],
+      "conditions": [
+        {
+          "type": "pre_condition",
+          "expression": "intelligentBuild.buildSuccess === true",
+          "errorMessage": "Cannot run tests on failed build"
+        }
+      ]
+    },
+    {
+      "id": "security_audit",
+      "name": "Security Vulnerability Audit",
+      "action": "execute_security_audit",
+      "description": "Comprehensive security audit including SAST, dependency scan, and runtime analysis",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "auditDepth": { "type": "string", "enum": ["basic", "comprehensive"] },
+          "includeDependencies": { "type": "boolean" },
+          "runtimeAnalysis": { "type": "boolean" }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "vulnerabilities": { "type": "array" },
+          "riskScore": { "type": "number" },
+          "recommendations": { "type": "array" },
+          "complianceStatus": { "type": "object" }
+        }
+      },
+      "timeoutMs": 90000,
+      "retryPolicy": {
+        "maxAttempts": 2,
+        "backoffStrategy": "exponential",
+        "retryableErrors": ["scan_timeout", "api_limit"],
+        "exponentialBase": 2,
+        "maxBackoffMs": 15000
+      },
+      "requiredRole": "CODE_ANALYZER",
+      "parallelExecution": true,
+      "dependencies": ["intelligent_build"],
+      "conditions": []
+    },
+    {
+      "id": "automated_code_review",
+      "name": "AI-Powered Code Review",
+      "action": "execute_automated_review",
+      "description": "Comprehensive code review with pattern analysis and improvement suggestions",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "reviewScope": { "type": "string", "enum": ["changed_files", "all_files"] },
+          "reviewDepth": { "type": "string", "enum": ["syntax", "logic", "architecture"] },
+          "includePerformance": { "type": "boolean" }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "reviewScore": { "type": "number" },
+          "issues": { "type": "array" },
+          "suggestions": { "type": "array" },
+          "architecturalConcerns": { "type": "array" },
+          "performanceImpacts": { "type": "array" }
+        }
+      },
+      "timeoutMs": 75000,
+      "retryPolicy": {
+        "maxAttempts": 2,
+        "backoffStrategy": "linear",
+        "retryableErrors": ["analysis_timeout"],
+        "exponentialBase": 2,
+        "maxBackoffMs": 8000
+      },
+      "requiredRole": "REVIEW_AGENT",
+      "parallelExecution": true,
+      "dependencies": ["comprehensive_testing", "security_audit"],
+      "conditions": []
+    },
+    {
+      "id": "performance_optimization",
+      "name": "Performance Analysis & Optimization",
+      "action": "optimize_performance",
+      "description": "Analyze runtime performance and apply optimization strategies",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "optimizationTargets": { "type": "array" },
+          "performanceThresholds": { "type": "object" },
+          "bundleAnalysis": { "type": "boolean" }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "performanceScore": { "type": "number" },
+          "optimizations": { "type": "array" },
+          "bundleAnalysis": { "type": "object" },
+          "runtimeMetrics": { "type": "object" }
+        }
+      },
+      "timeoutMs": 60000,
+      "retryPolicy": {
+        "maxAttempts": 2,
+        "backoffStrategy": "exponential",
+        "retryableErrors": ["optimization_timeout"],
+        "exponentialBase": 2,
+        "maxBackoffMs": 10000
+      },
+      "requiredRole": "PERFORMANCE_OPTIMIZER",
+      "parallelExecution": true,
+      "dependencies": ["automated_code_review"],
+      "conditions": [
+        {
+          "type": "pre_condition",
+          "expression": "comprehensiveTesting.passRate >= 90",
+          "errorMessage": "Test pass rate too low for performance optimization"
+        }
+      ]
+    },
+    {
+      "id": "documentation_generation",
+      "name": "Intelligent Documentation Generation",
+      "action": "generate_comprehensive_docs",
+      "description": "Generate API docs, README, and code documentation with examples",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "documentationTypes": { "type": "array" },
+          "includeExamples": { "type": "boolean" },
+          "generateDiagrams": { "type": "boolean" }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "documentationGenerated": { "type": "array" },
+          "coverage": { "type": "number" },
+          "examples": { "type": "array" },
+          "diagrams": { "type": "array" }
+        }
+      },
+      "timeoutMs": 45000,
+      "retryPolicy": {
+        "maxAttempts": 2,
+        "backoffStrategy": "linear",
+        "retryableErrors": ["generation_timeout"],
+        "exponentialBase": 2,
+        "maxBackoffMs": 5000
+      },
+      "requiredRole": "DOCUMENTATION_AGENT",
+      "parallelExecution": true,
+      "dependencies": ["performance_optimization"],
+      "conditions": []
+    },
+    {
+      "id": "deployment_preparation",
+      "name": "Deployment Package Preparation",
+      "action": "prepare_deployment",
+      "description": "Prepare optimized deployment package with health checks and rollback capability",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deploymentTarget": { "type": "string" },
+          "environment": { "type": "string", "enum": ["staging", "production"] },
+          "healthChecks": { "type": "array" }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "packageReady": { "type": "boolean" },
+          "packageSize": { "type": "number" },
+          "healthChecks": { "type": "array" },
+          "rollbackPlan": { "type": "object" }
+        }
+      },
+      "timeoutMs": 30000,
+      "retryPolicy": {
+        "maxAttempts": 2,
+        "backoffStrategy": "fixed",
+        "retryableErrors": ["packaging_error"],
+        "exponentialBase": 2,
+        "maxBackoffMs": 3000
+      },
+      "requiredRole": "BUILD_ORCHESTRATOR",
+      "parallelExecution": false,
+      "dependencies": ["documentation_generation"],
+      "conditions": [
+        {
+          "type": "pre_condition",
+          "expression": "securityAudit.riskScore < 7",
+          "errorMessage": "Security risk score too high for deployment"
+        },
+        {
+          "type": "pre_condition",
+          "expression": "automatedCodeReview.reviewScore > 75",
+          "errorMessage": "Code review score too low for deployment"
+        }
+      ]
+    },
+    {
+      "id": "quality_gate_validation",
+      "name": "Final Quality Gate Validation",
+      "action": "validate_quality_gates",
+      "description": "Final validation of all quality gates before completion",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "qualityGates": { "type": "array" },
+          "strictMode": { "type": "boolean" }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "allGatesPassed": { "type": "boolean" },
+          "gateResults": { "type": "array" },
+          "overallScore": { "type": "number" },
+          "recommendations": { "type": "array" }
+        }
+      },
+      "timeoutMs": 15000,
+      "retryPolicy": {
+        "maxAttempts": 1,
+        "backoffStrategy": "fixed",
+        "retryableErrors": [],
+        "exponentialBase": 2,
+        "maxBackoffMs": 1000
+      },
+      "requiredRole": "CODE_ANALYZER",
+      "parallelExecution": false,
+      "dependencies": ["deployment_preparation"],
+      "conditions": []
+    }
+  ],
+  "successCriteria": [
+    {
+      "metric": "overall_quality_score",
+      "operator": "greater_than",
+      "value": 80,
+      "description": "Overall project quality score must be above 80%"
+    },
+    {
+      "metric": "test_pass_rate",
+      "operator": "greater_than",
+      "value": 95,
+      "description": "Test pass rate must be above 95%"
+    },
+    {
+      "metric": "security_risk_score",
+      "operator": "less_than",
+      "value": 5,
+      "description": "Security risk score must be below 5"
+    },
+    {
+      "metric": "performance_score",
+      "operator": "greater_than",
+      "value": 70,
+      "description": "Performance score must be above 70%"
+    }
+  ],
+  "rollbackProcedure": [
+    {
+      "stepId": "deployment_preparation",
+      "rollbackAction": "restore_previous_build",
+      "compensationData": {}
+    },
+    {
+      "stepId": "performance_optimization",
+      "rollbackAction": "revert_optimizations",
+      "compensationData": {}
+    }
+  ],
+  "metadata": {
+    "author": "TerraFusion IDE Swarm System",
+    "created": "2025-01-21T10:00:00Z",
+    "lastModified": "2025-01-21T10:00:00Z",
+    "version": "1.0.0",
+    "tags": [
+      "full-cycle",
+      "automation",
+      "quality",
+      "security",
+      "performance",
+      "documentation",
+      "deployment"
+    ],
+    "ideSpecific": [
+      "typescript",
+      "webpack",
+      "jest",
+      "eslint",
+      "monaco-editor",
+      "electron"
+    ],
+    "frameworkCompatibility": [
+      "typescript",
+      "javascript",
+      "react",
+      "node",
+      "webpack",
+      "electron",
+      "jest",
+      "cypress"
+    ]
+  }
+}

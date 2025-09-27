@@ -20,9 +20,9 @@ DURATION=${DURATION:-300}
 RAMP_UP=${RAMP_UP:-60}
 GENERATE_REPORT=false
 COMPONENT="all"
-BASE_URL=${BASE_URL:-"http://localhost:8080"}
-FRONTEND_URL=${FRONTEND_URL:-"http://localhost:3003"}
-AI_ENGINE_URL=${AI_ENGINE_URL:-"http://localhost:8001"}
+BASE_URL=${BASE_URL:-"http://localhost:\${{TF_ADMIN_PORT:-8080}}"}
+FRONTEND_URL=${FRONTEND_URL:-"http://localhost:\${{TF_ADMIN_PORT:-8080}}"}
+AI_ENGINE_URL=${AI_ENGINE_URL:-"http://localhost:\${{TF_ADMIN_PORT:-8080}}"}
 RESULTS_DIR="/var/reports/performance"
 LOG_FILE="/var/log/terrafusion/perf_test_$(date +%Y%m%d_%H%M%S).log"
 

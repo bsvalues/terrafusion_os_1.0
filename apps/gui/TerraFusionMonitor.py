@@ -154,12 +154,12 @@ class TerraFusionTray:
     
     def check_services(self):
         services = {
-            "Frontend": "http://localhost:3000/health",
-            "Backend API": "http://localhost:5000/health",
-            "AI Swarm": "http://localhost:3001/health",
-            "Database": "localhost:5432",
-            "Redis Cache": "localhost:6379",
-            "Monitoring": "http://localhost:3009"
+            "Frontend": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health",
+            "Backend API": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health",
+            "AI Swarm": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health",
+            "Database": "localhost:\${{TF_FRONTEND_PORT:-3000}}",
+            "Redis Cache": "localhost:\${{TF_FRONTEND_PORT:-3000}}",
+            "Monitoring": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
         }
         
         for service, endpoint in services.items():
@@ -229,7 +229,7 @@ class TerraFusionTray:
     def open_monitor(self, icon, item):
         try:
             import webbrowser
-            webbrowser.open('http://localhost:3009')
+            webbrowser.open('http://localhost:\${{TF_FRONTEND_PORT:-3000}}')
         except Exception as e:
             messagebox.showerror("Error", f"Failed to open monitor: {str(e)}")
     

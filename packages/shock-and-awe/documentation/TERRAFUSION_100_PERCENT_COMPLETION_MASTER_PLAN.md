@@ -68,10 +68,10 @@
                     Government AI Revolution
                 </h1>
                 <p class="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-                    The world's most advanced government AI platform featuring 14 revolutionary applications, 
+                    The world's most advanced government AI platform featuring 14 revolutionary applications,
                     zero-cost Enhanced Hybrid AI, and championship-level excellence.
                 </p>
-                
+
                 <!-- Status Badges -->
                 <div class="flex flex-wrap justify-center gap-4 mb-12">
                     <span class="bg-green-500/20 border border-green-500 text-green-400 px-4 py-2 rounded-full">
@@ -109,7 +109,7 @@
                     🧠 Enhanced Hybrid AI System
                 </h2>
                 <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                    Revolutionary AI architecture combining local OpenAI OSS models with cloud processing 
+                    Revolutionary AI architecture combining local OpenAI OSS models with cloud processing
                     for maximum security, performance, and zero operational costs.
                 </p>
             </div>
@@ -167,7 +167,7 @@
                     🚀 14 Revolutionary Applications
                 </h2>
                 <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                    Comprehensive government AI platform with native desktop applications 
+                    Comprehensive government AI platform with native desktop applications
                     for every aspect of public sector operations.
                 </p>
             </div>
@@ -397,10 +397,10 @@
                     🤝 Partner With Us
                 </h2>
                 <p class="text-xl text-gray-300 mb-8">
-                    Ready to revolutionize your government operations with advanced AI? 
+                    Ready to revolutionize your government operations with advanced AI?
                     Let's discuss how TerraFusion can transform your organization.
                 </p>
-                
+
                 <div class="grid md:grid-cols-2 gap-8 mb-8">
                     <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
                         <h3 class="text-xl font-bold mb-3">Government Clients</h3>
@@ -409,7 +409,7 @@
                             government@terrafusionmarket.io
                         </a>
                     </div>
-                    
+
                     <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
                         <h3 class="text-xl font-bold mb-3">Technical Support</h3>
                         <p class="text-gray-400 mb-4">Implementation and integration assistance</p>
@@ -466,8 +466,8 @@
                     <a href="/status" class="hover:text-terra-teal transition-colors">System Status</a>
                 </div>
                 <div class="mt-4 text-xs text-gray-600">
-                    🏆 Built with Championship Excellence | 
-                    Powered by Enhanced Hybrid AI | 
+                    🏆 Built with Championship Excellence |
+                    Powered by Enhanced Hybrid AI |
                     Domain: TerraFusionMarket.io
                 </div>
             </div>
@@ -495,5 +495,6 @@
         // Run status check every 30 seconds
         setInterval(updateStatus, 30000);
     </script>
+
 </body>
 </html>

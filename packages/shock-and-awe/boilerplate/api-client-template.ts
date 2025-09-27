@@ -1,9 +1,10 @@
+// NO HARDCODED PORTS! Use environment variables.
 /**
  * TerraFusion API Client Template
  * Production-ready HTTP client with authentication, caching, and error handling
- * 
+ *
  * Usage:
- * const api = new TerraFusionAPIClient('http://localhost:5000');
+ * const api = new TerraFusionAPIClient('http://localhost:${TF_STATIC_PORT:-8080}');
  * const assessment = await api.assessments.create(propertyData);
  */
 
@@ -83,7 +84,7 @@ export class TerraFusionAPIClient {
       timeout: 30000,
       retryAttempts: 3,
       enableCache: true,
-      ...config
+      ...config,
     };
 
     this.client = axios.create({
@@ -92,8 +93,8 @@ export class TerraFusionAPIClient {
       headers: {
         'Content-Type': 'application/json',
         'X-Client-Version': '1.0.0',
-        'X-Client-Name': 'TerraFusion-SDK'
-      }
+        'X-Client-Name': 'TerraFusion-SDK',
+      },
     });
 
     this.setupInterceptors();
@@ -102,45 +103,48 @@ export class TerraFusionAPIClient {
   private setupInterceptors(): void {
     // Request interceptor - add auth and logging
     this.client.interceptors.request.use(
-      (config) => {
+      config => {
         if (this.config.authToken) {
           config.headers.Authorization = `Bearer ${this.config.authToken}`;
         }
-        
+
         config.headers['X-Request-ID'] = this.generateRequestId();
-        
+
         console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
         return config;
       },
-      (error) => Promise.reject(error)
+      error => Promise.reject(error)
     );
 
     // Response interceptor - handle errors and caching
     this.client.interceptors.response.use(
       (response: AxiosResponse<TerraFusionResponse>) => {
         console.log(`[API Response] ${response.status} - ${response.config.url}`);
-        
+
         // Cache successful GET requests
         if (this.config.enableCache && response.config.method === 'get') {
           const cacheKey = this.getCacheKey(response.config);
           this.cache.set(cacheKey, {
             data: response.data,
-            expiry: Date.now() + 300000 // 5 minutes
+            expiry: Date.now() + 300000, // 5 minutes
           });
         }
-        
+
         return response;
       },
-      async (error) => {
-        console.error(`[API Error] ${error.response?.status} - ${error.config?.url}:`, error.message);
-        
+      async error => {
+        console.error(
+          `[API Error] ${error.response?.status} - ${error.config?.url}:`,
+          error.message
+        );
+
         // Retry logic for transient errors
         if (this.shouldRetry(error) && error.config._retryCount < this.config.retryAttempts) {
           error.config._retryCount = (error.config._retryCount || 0) + 1;
           await this.delay(1000 * error.config._retryCount);
           return this.client.request(error.config);
         }
-        
+
         return Promise.reject(this.formatError(error));
       }
     );
@@ -168,7 +172,9 @@ export class TerraFusionAPIClient {
 
   private formatError(error: any): Error {
     if (error.response) {
-      return new Error(`API Error ${error.response.status}: ${error.response.data?.message || error.message}`);
+      return new Error(
+        `API Error ${error.response.status}: ${error.response.data?.message || error.message}`
+      );
     } else if (error.request) {
       return new Error('Network Error: No response received from server');
     } else {
@@ -187,17 +193,24 @@ export class TerraFusionAPIClient {
   // Assessment endpoints
   public readonly assessments = {
     create: async (data: CreateAssessmentRequest): Promise<PropertyAssessment> => {
-      const response = await this.client.post<TerraFusionResponse<PropertyAssessment>>('/api/assessments', data);
+      const response = await this.client.post<TerraFusionResponse<PropertyAssessment>>(
+        '/api/assessments',
+        data
+      );
       return response.data.data;
     },
 
     getById: async (id: string): Promise<PropertyAssessment> => {
-      const response = await this.client.get<TerraFusionResponse<PropertyAssessment>>(`/api/assessments/${id}`);
+      const response = await this.client.get<TerraFusionResponse<PropertyAssessment>>(
+        `/api/assessments/${id}`
+      );
       return response.data.data;
     },
 
     getByParcel: async (parcelNumber: string): Promise<PropertyAssessment[]> => {
-      const response = await this.client.get<TerraFusionResponse<PropertyAssessment[]>>(`/api/assessments/parcel/${parcelNumber}`);
+      const response = await this.client.get<TerraFusionResponse<PropertyAssessment[]>>(
+        `/api/assessments/parcel/${parcelNumber}`
+      );
       return response.data.data;
     },
 
@@ -208,25 +221,41 @@ export class TerraFusionAPIClient {
       propertyType?: string;
       page?: number;
       limit?: number;
-    }): Promise<{ assessments: PropertyAssessment[]; total: number; page: number; limit: number }> => {
-      const response = await this.client.get<TerraFusionResponse<any>>('/api/assessments/search', { params: query });
+    }): Promise<{
+      assessments: PropertyAssessment[];
+      total: number;
+      page: number;
+      limit: number;
+    }> => {
+      const response = await this.client.get<TerraFusionResponse<any>>('/api/assessments/search', {
+        params: query,
+      });
       return response.data.data;
     },
 
-    update: async (id: string, data: Partial<CreateAssessmentRequest>): Promise<PropertyAssessment> => {
-      const response = await this.client.put<TerraFusionResponse<PropertyAssessment>>(`/api/assessments/${id}`, data);
+    update: async (
+      id: string,
+      data: Partial<CreateAssessmentRequest>
+    ): Promise<PropertyAssessment> => {
+      const response = await this.client.put<TerraFusionResponse<PropertyAssessment>>(
+        `/api/assessments/${id}`,
+        data
+      );
       return response.data.data;
     },
 
     delete: async (id: string): Promise<void> => {
       await this.client.delete(`/api/assessments/${id}`);
-    }
+    },
   };
 
   // Authentication endpoints
   public readonly auth = {
     login: async (username: string, password: string): Promise<{ token: string; user: User }> => {
-      const response = await this.client.post<TerraFusionResponse<any>>('/api/auth/login', { username, password });
+      const response = await this.client.post<TerraFusionResponse<any>>('/api/auth/login', {
+        username,
+        password,
+      });
       const { token, user } = response.data.data;
       this.setAuthToken(token);
       return { token, user };
@@ -247,32 +276,43 @@ export class TerraFusionAPIClient {
     getCurrentUser: async (): Promise<User> => {
       const response = await this.client.get<TerraFusionResponse<User>>('/api/auth/me');
       return response.data.data;
-    }
+    },
   };
 
   // Analytics endpoints
   public readonly analytics = {
     getMarketTrends: async (region: string, timeframe: string): Promise<any> => {
-      const response = await this.client.get<TerraFusionResponse<any>>('/api/analytics/market-trends', {
-        params: { region, timeframe }
-      });
+      const response = await this.client.get<TerraFusionResponse<any>>(
+        '/api/analytics/market-trends',
+        {
+          params: { region, timeframe },
+        }
+      );
       return response.data.data;
     },
 
     getAssessmentStats: async (countyId: string): Promise<any> => {
-      const response = await this.client.get<TerraFusionResponse<any>>(`/api/analytics/assessment-stats/${countyId}`);
+      const response = await this.client.get<TerraFusionResponse<any>>(
+        `/api/analytics/assessment-stats/${countyId}`
+      );
       return response.data.data;
     },
 
     getPerformanceMetrics: async (): Promise<any> => {
-      const response = await this.client.get<TerraFusionResponse<any>>('/api/analytics/performance');
+      const response = await this.client.get<TerraFusionResponse<any>>(
+        '/api/analytics/performance'
+      );
       return response.data.data;
-    }
+    },
   };
 
   // System health endpoints
   public readonly health = {
-    check: async (): Promise<{ status: string; services: Record<string, string>; timestamp: string }> => {
+    check: async (): Promise<{
+      status: string;
+      services: Record<string, string>;
+      timestamp: string;
+    }> => {
       const response = await this.client.get<TerraFusionResponse<any>>('/api/health');
       return response.data.data;
     },
@@ -280,7 +320,7 @@ export class TerraFusionAPIClient {
     detailed: async (): Promise<any> => {
       const response = await this.client.get<TerraFusionResponse<any>>('/api/health/detailed');
       return response.data.data;
-    }
+    },
   };
 }
 
@@ -295,7 +335,7 @@ export const createDefaultClient = (baseURL: string, authToken?: string): TerraF
     authToken,
     timeout: 30000,
     retryAttempts: 3,
-    enableCache: true
+    enableCache: true,
   });
 };
 

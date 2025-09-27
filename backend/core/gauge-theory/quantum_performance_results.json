@@ -17,10 +17,7 @@
           "energy_level": 5.9,
           "measurement_probability": 0.4999999999999998,
           "measured_value": 0,
-          "entanglement_partners": [
-            "Franklin County",
-            "Franklin County"
-          ]
+          "entanglement_partners": ["Franklin County", "Franklin County"]
         },
         {
           "county_name": "Franklin County",
@@ -29,10 +26,7 @@
           "energy_level": 8.7,
           "measurement_probability": 0.4999999999999998,
           "measured_value": 1,
-          "entanglement_partners": [
-            "Benton County",
-            "Benton County"
-          ]
+          "entanglement_partners": ["Benton County", "Benton County"]
         }
       ],
       "recommendations": [
@@ -59,10 +53,7 @@
           "energy_level": 5.9,
           "measurement_probability": 0.4999999999999996,
           "measured_value": 1,
-          "entanglement_partners": [
-            "Franklin County",
-            "Franklin County"
-          ]
+          "entanglement_partners": ["Franklin County", "Franklin County"]
         },
         {
           "county_name": "Franklin County",
@@ -71,10 +62,7 @@
           "energy_level": 8.7,
           "measurement_probability": 0.4999999999999996,
           "measured_value": 0,
-          "entanglement_partners": [
-            "Benton County",
-            "Benton County"
-          ]
+          "entanglement_partners": ["Benton County", "Benton County"]
         }
       ],
       "recommendations": [
@@ -101,10 +89,7 @@
           "energy_level": 5.9,
           "measurement_probability": 0.49999999999999944,
           "measured_value": 1,
-          "entanglement_partners": [
-            "Franklin County",
-            "Franklin County"
-          ]
+          "entanglement_partners": ["Franklin County", "Franklin County"]
         },
         {
           "county_name": "Franklin County",
@@ -113,10 +98,7 @@
           "energy_level": 8.7,
           "measurement_probability": 0.49999999999999944,
           "measured_value": 1,
-          "entanglement_partners": [
-            "Benton County",
-            "Benton County"
-          ]
+          "entanglement_partners": ["Benton County", "Benton County"]
         }
       ],
       "recommendations": [
@@ -143,10 +125,7 @@
           "energy_level": 5.9,
           "measurement_probability": 0.4999999999999993,
           "measured_value": 1,
-          "entanglement_partners": [
-            "Franklin County",
-            "Franklin County"
-          ]
+          "entanglement_partners": ["Franklin County", "Franklin County"]
         },
         {
           "county_name": "Franklin County",
@@ -155,10 +134,7 @@
           "energy_level": 8.7,
           "measurement_probability": 0.4999999999999993,
           "measured_value": 1,
-          "entanglement_partners": [
-            "Benton County",
-            "Benton County"
-          ]
+          "entanglement_partners": ["Benton County", "Benton County"]
         }
       ],
       "recommendations": [
@@ -212,10 +188,7 @@
               "energy_level": 5.9,
               "measurement_probability": 0.4999999999999998,
               "measured_value": 0,
-              "entanglement_partners": [
-                "Franklin County",
-                "Franklin County"
-              ]
+              "entanglement_partners": ["Franklin County", "Franklin County"]
             },
             {
               "county_name": "Franklin County",
@@ -224,10 +197,7 @@
               "energy_level": 8.7,
               "measurement_probability": 0.4999999999999998,
               "measured_value": 1,
-              "entanglement_partners": [
-                "Benton County",
-                "Benton County"
-              ]
+              "entanglement_partners": ["Benton County", "Benton County"]
             }
           ],
           "recommendations": [
@@ -259,10 +229,7 @@
               "energy_level": 5.9,
               "measurement_probability": 0.4999999999999996,
               "measured_value": 1,
-              "entanglement_partners": [
-                "Franklin County",
-                "Franklin County"
-              ]
+              "entanglement_partners": ["Franklin County", "Franklin County"]
             },
             {
               "county_name": "Franklin County",
@@ -271,10 +238,7 @@
               "energy_level": 8.7,
               "measurement_probability": 0.4999999999999996,
               "measured_value": 0,
-              "entanglement_partners": [
-                "Benton County",
-                "Benton County"
-              ]
+              "entanglement_partners": ["Benton County", "Benton County"]
             }
           ],
           "recommendations": [
@@ -306,10 +270,7 @@
               "energy_level": 5.9,
               "measurement_probability": 0.49999999999999944,
               "measured_value": 1,
-              "entanglement_partners": [
-                "Franklin County",
-                "Franklin County"
-              ]
+              "entanglement_partners": ["Franklin County", "Franklin County"]
             },
             {
               "county_name": "Franklin County",
@@ -318,10 +279,7 @@
               "energy_level": 8.7,
               "measurement_probability": 0.49999999999999944,
               "measured_value": 1,
-              "entanglement_partners": [
-                "Benton County",
-                "Benton County"
-              ]
+              "entanglement_partners": ["Benton County", "Benton County"]
             }
           ],
           "recommendations": [
@@ -353,10 +311,7 @@
               "energy_level": 5.9,
               "measurement_probability": 0.4999999999999993,
               "measured_value": 1,
-              "entanglement_partners": [
-                "Franklin County",
-                "Franklin County"
-              ]
+              "entanglement_partners": ["Franklin County", "Franklin County"]
             },
             {
               "county_name": "Franklin County",
@@ -365,10 +320,7 @@
               "energy_level": 8.7,
               "measurement_probability": 0.4999999999999993,
               "measured_value": 1,
-              "entanglement_partners": [
-                "Benton County",
-                "Benton County"
-              ]
+              "entanglement_partners": ["Benton County", "Benton County"]
             }
           ],
           "recommendations": [

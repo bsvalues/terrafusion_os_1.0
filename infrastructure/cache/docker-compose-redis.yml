@@ -269,7 +269,7 @@ services:
     environment:
       - SENTINEL_MASTER_NAME=terrafusion-master
       - SENTINEL_MASTER_HOST=terrafusion-redis-master
-      - SENTINEL_MASTER_PORT=6379
+      - SENTINEL_MASTER_PORT=\${{TF_REDIS_PORT:-6379}}
       - SENTINEL_QUORUM=2
       
     labels:
@@ -306,7 +306,7 @@ services:
       - terrafusion-redis-master
       
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9121/metrics"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:\${{TF_PORT_9121:-9121}}/metrics"]
       interval: 30s
       timeout: 10s
       retries: 3

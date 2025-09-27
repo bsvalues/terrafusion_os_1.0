@@ -11,12 +11,12 @@ Database Architecture:
 - Automated data replication between services
 
 Applications Deployed:
-- TerraFusionPilt: PILT management system (Port 5009) ✅ OPERATIONAL
-- TerraFlow: Data processing engine (Port 5001)
-- TerraSync: Data synchronization backbone (Port 5002)
-- TerraAgent: AI assistance system (Port 5003)
-- TerraMiner: Data mining platform (Port 5006)
-- TerraFusionPlayground: Application launcher (Port 3000)
+- TerraFusionPilt: PILT management system (Port \${{TF_API_5009_PORT:-5009}}) ✅ OPERATIONAL
+- TerraFlow: Data processing engine (Port \${{TF_API_5009_PORT:-5009}})
+- TerraSync: Data synchronization backbone (Port \${{TF_API_5009_PORT:-5009}})
+- TerraAgent: AI assistance system (Port \${{TF_API_5009_PORT:-5009}})
+- TerraMiner: Data mining platform (Port \${{TF_API_5009_PORT:-5009}})
+- TerraFusionPlayground: Application launcher (Port \${{TF_API_5009_PORT:-5009}})
 """
 
 import os
@@ -34,42 +34,42 @@ class TerraFusionEcosystemLauncher:
         self.applications = {
             'TerraFusionPilt': {
                 'path': 'TerraFusionPilt_PRODUCTION',
-                'port': 5009,
+                "port": \${{TF_API_5009_PORT:-5009}},
                 'status': 'OPERATIONAL',
                 'command': 'npm run dev',
                 'description': 'PILT Management System - DATABASE FIX VERIFIED ✅'
             },
             'TerraFlow': {
                 'path': 'TerraFlow_PRODUCTION',
-                'port': 5001,
+                "port": \${{TF_API_5009_PORT:-5009}},
                 'status': 'READY',
                 'command': 'python app.py',
                 'description': 'Data Processing Engine'
             },
             'TerraSync': {
                 'path': 'TerraFusionSync_PRODUCTION',
-                'port': 5002,
+                "port": \${{TF_API_5009_PORT:-5009}},
                 'status': 'READY',
                 'command': 'python app.py',
                 'description': 'Data Synchronization Backbone'
             },
             'TerraAgent': {
                 'path': 'TerraAgent_PRODUCTION',
-                'port': 5003,
+                "port": \${{TF_API_5009_PORT:-5009}},
                 'status': 'READY',
                 'command': 'python app.py',
                 'description': 'AI Assistance System'
             },
             'TerraMiner': {
                 'path': 'TerraMiner_PRODUCTION',
-                'port': 5006,
+                "port": \${{TF_API_5009_PORT:-5009}},
                 'status': 'READY',
                 'command': 'python app.py',
                 'description': 'Data Mining Platform'
             },
             'TerraFusionPlayground': {
                 'path': 'TerraFusionPlayground_PRODUCTION',
-                'port': 3000,
+                "port": \${{TF_API_5009_PORT:-5009}},
                 'status': 'READY',
                 'command': 'python start_playground.py',
                 'description': 'Application Launcher & Health Monitor'
@@ -174,12 +174,12 @@ import json
 
 def check_health():
     services = {
-        'TerraFusionPilt': 'http://localhost:5009/api/health',
-        'TerraFlow': 'http://localhost:5001/api/health',
-        'TerraSync': 'http://localhost:5002/api/health',
-        'TerraAgent': 'http://localhost:5003/api/health',
-        'TerraMiner': 'http://localhost:5006/api/health',
-        'Playground': 'http://localhost:3000/api/health'
+        'TerraFusionPilt': 'http://localhost:\${{TF_API_5009_PORT:-5009}}/api/health',
+        'TerraFlow': 'http://localhost:\${{TF_API_5009_PORT:-5009}}/api/health',
+        'TerraSync': 'http://localhost:\${{TF_API_5009_PORT:-5009}}/api/health',
+        'TerraAgent': 'http://localhost:\${{TF_API_5009_PORT:-5009}}/api/health',
+        'TerraMiner': 'http://localhost:\${{TF_API_5009_PORT:-5009}}/api/health',
+        'Playground': 'http://localhost:\${{TF_API_5009_PORT:-5009}}/api/health'
     }
     
     print("🏥 TERRAFUSION HEALTH MONITOR")
@@ -248,12 +248,12 @@ if __name__ == "__main__":
         print("\n🎉 TERRAFUSION ECOSYSTEM DEPLOYMENT COMPLETE!")
         print("=" * 50)
         print("🌐 Access Points:")
-        print("   • TerraFusionPilt: http://localhost:5009")
-        print("   • TerraFlow: http://localhost:5001")
-        print("   • TerraSync: http://localhost:5002")
-        print("   • TerraAgent: http://localhost:5003")
-        print("   • TerraMiner: http://localhost:5006")
-        print("   • Playground: http://localhost:3000")
+        print("   • TerraFusionPilt: http://localhost:\${{TF_API_5009_PORT:-5009}}")
+        print("   • TerraFlow: http://localhost:\${{TF_API_5009_PORT:-5009}}")
+        print("   • TerraSync: http://localhost:\${{TF_API_5009_PORT:-5009}}")
+        print("   • TerraAgent: http://localhost:\${{TF_API_5009_PORT:-5009}}")
+        print("   • TerraMiner: http://localhost:\${{TF_API_5009_PORT:-5009}}")
+        print("   • Playground: http://localhost:\${{TF_API_5009_PORT:-5009}}")
         print("\n🏥 Health Monitor: python HEALTH_MONITOR.py")
         print("=" * 50)
 

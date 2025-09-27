@@ -1,0 +1,47 @@
+{
+  "fabric_id": "did:tf:fabric:52c2574239397845",
+  "active_services": 5,
+  "allocated_ports": [
+    5000,
+    5001,
+    5002,
+    5003,
+    5004
+  ],
+  "available_ports": 995,
+  "merkle_root": "b4547c7bfc73fb312da2ac9dae10e0f9e0017f9f373f058a08694840114f674e",
+  "total_proofs": 5,
+  "mesh_nodes": 0,
+  "services": {
+    "did:tf:service:ecfe743837ad6eebe580ac13b33ff971": {
+      "identity": "did:tf:service:ecfe743837ad6eebe580ac13b33ff971",
+      "port": \${{TF_API_PORT:-5000}},
+      "birth_time": 1757545967.7756374,
+      "proof": "e05f5c929b25863a..."
+    },
+    "did:tf:service:5c94abc49f94ae083374630e6acc867f": {
+      "identity": "did:tf:service:5c94abc49f94ae083374630e6acc867f",
+      "port": \${{TF_API_PORT:-5000}},
+      "birth_time": 1757545967.7756374,
+      "proof": "73359c6411541f3f..."
+    },
+    "did:tf:service:6bd7fa3ebdd8838148e949bb3deea989": {
+      "identity": "did:tf:service:6bd7fa3ebdd8838148e949bb3deea989",
+      "port": \${{TF_API_PORT:-5000}},
+      "birth_time": 1757545967.7756374,
+      "proof": "9da24c1a2b4300d7..."
+    },
+    "did:tf:service:d7da7522a42f06e979c408bf03bc68b0": {
+      "identity": "did:tf:service:d7da7522a42f06e979c408bf03bc68b0",
+      "port": \${{TF_API_PORT:-5000}},
+      "birth_time": 1757545967.7823749,
+      "proof": "6453f2bf4f97af25..."
+    },
+    "did:tf:service:8dcd11437266a608a268d4ba9207ffd2": {
+      "identity": "did:tf:service:8dcd11437266a608a268d4ba9207ffd2",
+      "port": \${{TF_API_PORT:-5000}},
+      "birth_time": 1757545967.7838902,
+      "proof": "f0e7460ae9474661..."
+    }
+  }
+}

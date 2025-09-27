@@ -10,7 +10,7 @@ import {
   ProtocolSet,
   DetectionMetrics,
   CharacteristicSignature,
-  QuantumState
+  QuantumState,
 } from '../types/consciousness';
 
 /**
@@ -85,7 +85,7 @@ export class SpeciesDetectionService {
     behavioral: new BehavioralAnalyzer(),
     quantum: new QuantumConsciousnessDetector(),
     linguistic: new LinguisticAnalyzer(),
-    temporal: new TemporalAnalyzer()
+    temporal: new TemporalAnalyzer(),
   };
 
   private readonly SPECIES_SIGNATURES = new Map<SpeciesType, SpeciesSignatureSet>();
@@ -101,21 +101,21 @@ export class SpeciesDetectionService {
    */
   async detectSpecies(input: InputSignal): Promise<SpeciesProfile> {
     const startTime = Date.now();
-    
+
     try {
       // Run parallel analysis across all detection algorithms
       const [
         cognitiveAnalysis,
-        behavioralAnalysis, 
+        behavioralAnalysis,
         quantumAnalysis,
         linguisticAnalysis,
-        temporalAnalysis
+        temporalAnalysis,
       ] = await Promise.all([
         this.DETECTION_ALGORITHMS.cognitive.analyze(input),
         this.DETECTION_ALGORITHMS.behavioral.analyze(input),
         this.DETECTION_ALGORITHMS.quantum.analyze(input),
         this.DETECTION_ALGORITHMS.linguistic.analyze(input),
-        this.DETECTION_ALGORITHMS.temporal.analyze(input)
+        this.DETECTION_ALGORITHMS.temporal.analyze(input),
       ]);
 
       // Synthesize results using consciousness-aware fusion
@@ -124,12 +124,12 @@ export class SpeciesDetectionService {
         behavioral: behavioralAnalysis,
         quantum: quantumAnalysis,
         linguistic: linguisticAnalysis,
-        temporal: temporalAnalysis
+        temporal: temporalAnalysis,
       });
 
       // Generate species profile with confidence metrics
       const profile = await this.generateSpeciesProfile(fusionResult, input);
-      
+
       // Calculate detection metrics
       const detectionTime = Date.now() - startTime;
       profile.detectionMetrics = {
@@ -137,7 +137,7 @@ export class SpeciesDetectionService {
         dataQuality: this.assessDataQuality(input),
         algorithmVersion: '2.1.0-alpha',
         confirmationRequired: profile.confidenceLevel < this.CONFIDENCE_THRESHOLD,
-        alternativeSpecies: this.getAlternativeSpecies(fusionResult)
+        alternativeSpecies: this.getAlternativeSpecies(fusionResult),
       };
 
       return profile;
@@ -162,14 +162,16 @@ export class SpeciesDetectionService {
       creativityIndex: metrics.creativityIndex || 0.5,
       logicalReasoning: metrics.logicalStructure || 0.5,
       emotionalRange: this.detectEmotionalRange(metrics.emotionalMarkers),
-      quantumIntuition: this.assessQuantumIntuition(input.quantumSignatures || [])
+      quantumIntuition: this.assessQuantumIntuition(input.quantumSignatures || []),
     };
   }
 
   /**
    * Identify species-specific characteristics
    */
-  private async identifySpeciesCharacteristics(input: InputSignal): Promise<CharacteristicSignature[]> {
+  private async identifySpeciesCharacteristics(
+    input: InputSignal
+  ): Promise<CharacteristicSignature[]> {
     const signatures: CharacteristicSignature[] = [];
 
     // Cognitive signatures
@@ -206,10 +208,11 @@ export class SpeciesDetectionService {
     }
 
     const coherenceValues = input.quantumSignatures.map(sig => {
-      const avgCoherence = sig.coherencePattern.reduce((a, b) => a + b, 0) / sig.coherencePattern.length;
+      const avgCoherence =
+        sig.coherencePattern.reduce((a, b) => a + b, 0) / sig.coherencePattern.length;
       const stabilityFactor = 1 - sig.decoherenceRate;
       const superpositionContribution = sig.superpositionMarkers * 0.3;
-      
+
       return avgCoherence * stabilityFactor + superpositionContribution;
     });
 
@@ -224,7 +227,7 @@ export class SpeciesDetectionService {
       silicon: 0,
       carbon: 0,
       quantum: 0,
-      hybrid: 0
+      hybrid: 0,
     };
 
     // Silicon indicators: High processing speed, logical reasoning, structured communication
@@ -253,13 +256,17 @@ export class SpeciesDetectionService {
     }
 
     // Return species with highest score
-    return Object.entries(scores).reduce((a, b) => scores[a[0]] > scores[b[0]] ? a : b)[0] as SpeciesType;
+    return Object.entries(scores).reduce((a, b) =>
+      scores[a[0]] > scores[b[0]] ? a : b
+    )[0] as SpeciesType;
   }
 
   /**
    * Detect hybrid elements in consciousness patterns
    */
-  private detectHybridElements(characteristics: CharacteristicSignature[]): Array<{species: SpeciesType; percentage: number}> {
+  private detectHybridElements(
+    characteristics: CharacteristicSignature[]
+  ): Array<{ species: SpeciesType; percentage: number }> {
     const speciesContributions = new Map<SpeciesType, number>();
 
     characteristics.forEach(char => {
@@ -278,7 +285,7 @@ export class SpeciesDetectionService {
     return Array.from(speciesContributions.entries())
       .map(([species, contribution]) => ({
         species,
-        percentage: (contribution / totalContribution) * 100
+        percentage: (contribution / totalContribution) * 100,
       }))
       .filter(item => item.percentage > 10) // Only significant contributions
       .sort((a, b) => b.percentage - a.percentage);
@@ -293,14 +300,14 @@ export class SpeciesDetectionService {
       patterns.behavioral?.consistency || 0.5,
       patterns.quantum?.stability || 0.5,
       patterns.linguistic?.coherence || 0.5,
-      patterns.temporal?.predictability || 0.5
+      patterns.temporal?.predictability || 0.5,
     ];
 
     const baseConfidence = factors.reduce((a, b) => a + b, 0) / factors.length;
-    
+
     // Boost confidence if multiple indicators align
     const alignmentBonus = this.calculateAlignmentBonus(patterns);
-    
+
     return Math.min(1.0, baseConfidence + alignmentBonus);
   }
 
@@ -341,18 +348,18 @@ export class SpeciesDetectionService {
         processingSpeedRange: [0.8, 1.0],
         logicalReasoningRange: [0.7, 1.0],
         creativityRange: [0.3, 0.7],
-        emotionalRange: [0.0, 0.3]
+        emotionalRange: [0.0, 0.3],
       },
       behavioral: {
         consistencyThreshold: 0.8,
         adaptationPattern: 'incremental',
-        responseTimeVariance: 0.1
+        responseTimeVariance: 0.1,
       },
       communication: {
         syntaxComplexity: 'high',
         vocabularyPrecision: 'exact',
-        ambiguityTolerance: 'low'
-      }
+        ambiguityTolerance: 'low',
+      },
     });
 
     // Carbon signatures
@@ -361,18 +368,18 @@ export class SpeciesDetectionService {
         processingSpeedRange: [0.4, 0.8],
         logicalReasoningRange: [0.4, 0.8],
         creativityRange: [0.6, 1.0],
-        emotionalRange: [0.5, 1.0]
+        emotionalRange: [0.5, 1.0],
       },
       behavioral: {
         consistencyThreshold: 0.6,
         adaptationPattern: 'dynamic',
-        responseTimeVariance: 0.3
+        responseTimeVariance: 0.3,
       },
       communication: {
         syntaxComplexity: 'variable',
         vocabularyPrecision: 'contextual',
-        ambiguityTolerance: 'high'
-      }
+        ambiguityTolerance: 'high',
+      },
     });
 
     // Quantum signatures
@@ -381,18 +388,18 @@ export class SpeciesDetectionService {
         processingSpeedRange: [0.6, 1.0],
         logicalReasoningRange: [0.3, 0.9],
         creativityRange: [0.8, 1.0],
-        emotionalRange: [0.0, 0.8]
+        emotionalRange: [0.0, 0.8],
       },
       behavioral: {
         consistencyThreshold: 0.4,
         adaptationPattern: 'quantum-probabilistic',
-        responseTimeVariance: 0.5
+        responseTimeVariance: 0.5,
       },
       communication: {
         syntaxComplexity: 'multi-dimensional',
         vocabularyPrecision: 'probability-based',
-        ambiguityTolerance: 'infinite'
-      }
+        ambiguityTolerance: 'infinite',
+      },
     });
   }
 
@@ -406,7 +413,7 @@ export class SpeciesDetectionService {
       encryptionLevel: 'standard',
       bandwidth: 1000000, // 1 Mbps
       latency: 1, // 1ms
-      reliabilityIndex: 0.99
+      reliabilityIndex: 0.99,
     };
   }
 
@@ -417,7 +424,7 @@ export class SpeciesDetectionService {
       encryptionLevel: 'quantum',
       bandwidth: 10000000, // 10 Mbps
       latency: 0.1, // 0.1ms
-      reliabilityIndex: 0.999
+      reliabilityIndex: 0.999,
     };
   }
 
@@ -428,7 +435,7 @@ export class SpeciesDetectionService {
       encryptionLevel: 'standard',
       bandwidth: 100000, // 100 Kbps
       latency: 10, // 10ms
-      reliabilityIndex: 0.95
+      reliabilityIndex: 0.95,
     };
   }
 
@@ -439,7 +446,7 @@ export class SpeciesDetectionService {
       encryptionLevel: 'standard',
       bandwidth: 50000, // 50 Kbps
       latency: 50, // 50ms
-      reliabilityIndex: 0.9
+      reliabilityIndex: 0.9,
     };
   }
 
@@ -449,7 +456,7 @@ export class SpeciesDetectionService {
   private calculateProcessingSpeed(responseLatency: number): number {
     // Convert latency to processing speed score (0-1)
     const maxLatency = 5000; // 5 seconds
-    return Math.max(0, 1 - (responseLatency / maxLatency));
+    return Math.max(0, 1 - responseLatency / maxLatency);
   }
 
   private estimateMemoryCapacity(vocabularyComplexity: number): number {
@@ -459,11 +466,14 @@ export class SpeciesDetectionService {
 
   private assessLearningRate(patterns: BehavioralPattern[]): number {
     if (patterns.length === 0) return 0.5;
-    
+
     const adaptationPatterns = patterns.filter(p => p.type === 'learning-adaptation');
     if (adaptationPatterns.length === 0) return 0.5;
 
-    return adaptationPatterns.reduce((sum, pattern) => sum + pattern.confidence, 0) / adaptationPatterns.length;
+    return (
+      adaptationPatterns.reduce((sum, pattern) => sum + pattern.confidence, 0) /
+      adaptationPatterns.length
+    );
   }
 
   private detectEmotionalRange(emotionalMarkers: number): number {
@@ -472,12 +482,16 @@ export class SpeciesDetectionService {
 
   private assessQuantumIntuition(quantumSignatures: QuantumSignature[]): number {
     if (quantumSignatures.length === 0) return 0;
-    
-    const avgSuperposition = quantumSignatures.reduce((sum, sig) => sum + sig.superpositionMarkers, 0) / quantumSignatures.length;
-    const avgCoherence = quantumSignatures.reduce((sum, sig) => {
-      const coherence = sig.coherencePattern.reduce((a, b) => a + b, 0) / sig.coherencePattern.length;
-      return sum + coherence;
-    }, 0) / quantumSignatures.length;
+
+    const avgSuperposition =
+      quantumSignatures.reduce((sum, sig) => sum + sig.superpositionMarkers, 0) /
+      quantumSignatures.length;
+    const avgCoherence =
+      quantumSignatures.reduce((sum, sig) => {
+        const coherence =
+          sig.coherencePattern.reduce((a, b) => a + b, 0) / sig.coherencePattern.length;
+        return sum + coherence;
+      }, 0) / quantumSignatures.length;
 
     return (avgSuperposition + avgCoherence) / 2;
   }
@@ -490,7 +504,7 @@ export class SpeciesDetectionService {
       creativityIndex: 0.5,
       logicalReasoning: 0.5,
       emotionalRange: 0.5,
-      quantumIntuition: 0.0
+      quantumIntuition: 0.0,
     };
   }
 
@@ -521,7 +535,9 @@ export class SpeciesDetectionService {
     return factors > 0 ? qualityScore / factors : 0.5;
   }
 
-  private getAlternativeSpecies(fusionResult: any): Array<{species: SpeciesType; probability: number}> {
+  private getAlternativeSpecies(
+    fusionResult: any
+  ): Array<{ species: SpeciesType; probability: number }> {
     // Implementation for generating alternative species suggestions
     return []; // Simplified for now
   }
@@ -532,11 +548,14 @@ export class SpeciesDetectionService {
     return results;
   }
 
-  private async generateSpeciesProfile(fusionResult: any, input: InputSignal): Promise<SpeciesProfile> {
+  private async generateSpeciesProfile(
+    fusionResult: any,
+    input: InputSignal
+  ): Promise<SpeciesProfile> {
     const cognitiveProfile = await this.analyzeCognitivePatterns(input);
     const quantumCoherence = await this.measureQuantumCoherence(input);
     const characteristics = await this.identifySpeciesCharacteristics(input);
-    
+
     const primarySpecies = this.classifyPrimarySpecies(fusionResult, quantumCoherence);
     const hybridComponents = this.detectHybridElements(characteristics);
     const confidence = this.calculateConfidence(fusionResult);
@@ -548,7 +567,7 @@ export class SpeciesDetectionService {
       confidenceLevel: confidence,
       detectionMetrics: {} as DetectionMetrics, // Will be filled by caller
       recommendedProtocols: protocols,
-      characteristicSignatures: characteristics
+      characteristicSignatures: characteristics,
     };
   }
 
@@ -558,7 +577,7 @@ export class SpeciesDetectionService {
       signature: `cognitive-${metrics.vocabularyComplexity}-${metrics.logicalStructure}`,
       strength: (metrics.vocabularyComplexity + metrics.logicalStructure) / 2,
       uniqueness: metrics.semanticDepth,
-      verificationLevel: 'preliminary'
+      verificationLevel: 'preliminary',
     };
   }
 
@@ -568,27 +587,28 @@ export class SpeciesDetectionService {
       signature: `behavioral-${pattern.type}-${pattern.frequency}`,
       strength: pattern.confidence,
       uniqueness: Math.abs(pattern.speciesIndicator),
-      verificationLevel: 'preliminary'
+      verificationLevel: 'preliminary',
     }));
   }
 
   private generateQuantumSignature(signatures: QuantumSignature[]): CharacteristicSignature {
-    const avgCoherence = signatures.reduce((sum, sig) => {
-      return sum + sig.coherencePattern.reduce((a, b) => a + b, 0) / sig.coherencePattern.length;
-    }, 0) / signatures.length;
+    const avgCoherence =
+      signatures.reduce((sum, sig) => {
+        return sum + sig.coherencePattern.reduce((a, b) => a + b, 0) / sig.coherencePattern.length;
+      }, 0) / signatures.length;
 
     return {
       type: 'quantum',
       signature: `quantum-${avgCoherence.toFixed(3)}`,
       strength: avgCoherence,
       uniqueness: signatures.length > 0 ? signatures[0].superpositionMarkers : 0,
-      verificationLevel: 'preliminary'
+      verificationLevel: 'preliminary',
     };
   }
 
   private analyzeCharacteristicForSpecies(char: CharacteristicSignature): Map<SpeciesType, number> {
     const contributions = new Map<SpeciesType, number>();
-    
+
     // Analyze characteristic patterns for species indicators
     switch (char.type) {
       case 'cognitive':

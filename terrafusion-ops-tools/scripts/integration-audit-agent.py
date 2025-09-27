@@ -112,7 +112,7 @@ class IntegrationAuditAgent:
             },
             {
                 'name': 'Redis Cache Database',
-                'connection_string': 'redis://localhost:6379',
+                'connection_string': 'redis://localhost:\${{TF_REDIS_PORT:-6379}}',
                 'tests': [
                     {'type': 'connection', 'description': 'Redis connectivity'},
                     {'type': 'cache_operations', 'description': 'Cache set/get operations'},
@@ -123,7 +123,7 @@ class IntegrationAuditAgent:
             },
             {
                 'name': 'Analytics Database (ClickHouse)',
-                'connection_string': 'clickhouse://localhost:8123',
+                'connection_string': 'clickhouse://localhost:\${{TF_REDIS_PORT:-6379}}',
                 'tests': [
                     {'type': 'connection', 'description': 'ClickHouse connectivity'},
                     {'type': 'bulk_insert', 'description': 'Bulk data insertion'},
@@ -182,7 +182,7 @@ class IntegrationAuditAgent:
         api_integrations = [
             {
                 'name': 'User Management API',
-                'base_url': 'http://localhost:8000/api/users',
+                'base_url': 'http://localhost:\${{TF_REDIS_PORT:-6379}}/api/users',
                 'endpoints': [
                     {'method': 'GET', 'path': '/profile', 'auth_required': True},
                     {'method': 'POST', 'path': '/login', 'auth_required': False},
@@ -192,7 +192,7 @@ class IntegrationAuditAgent:
             },
             {
                 'name': 'Project Management API',
-                'base_url': 'http://localhost:8000/api/projects',
+                'base_url': 'http://localhost:\${{TF_REDIS_PORT:-6379}}/api/projects',
                 'endpoints': [
                     {'method': 'GET', 'path': '/', 'auth_required': True},
                     {'method': 'POST', 'path': '/', 'auth_required': True},
@@ -203,7 +203,7 @@ class IntegrationAuditAgent:
             },
             {
                 'name': 'ML Model API',
-                'base_url': 'http://localhost:8000/api/models',
+                'base_url': 'http://localhost:\${{TF_REDIS_PORT:-6379}}/api/models',
                 'endpoints': [
                     {'method': 'POST', 'path': '/train', 'auth_required': True},
                     {'method': 'GET', 'path': '/{id}/status', 'auth_required': True},
@@ -213,7 +213,7 @@ class IntegrationAuditAgent:
             },
             {
                 'name': 'Analytics API',
-                'base_url': 'http://localhost:8000/api/analytics',
+                'base_url': 'http://localhost:\${{TF_REDIS_PORT:-6379}}/api/analytics',
                 'endpoints': [
                     {'method': 'GET', 'path': '/dashboard', 'auth_required': True},
                     {'method': 'POST', 'path': '/events', 'auth_required': True},

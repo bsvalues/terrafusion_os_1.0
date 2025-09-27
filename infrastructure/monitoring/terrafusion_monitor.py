@@ -104,22 +104,22 @@ class TerraFusionMonitor:
         self.services = {
             "frontend": ServiceMonitor(
                 "Frontend", 
-                "http://localhost:3002",
+                "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}",
                 ["/"]
             ),
             "backend": ServiceMonitor(
                 "Backend API",
-                "http://localhost:8080",
+                "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}",
                 ["/health", "/api/v1/properties", "/api/v1/quantum/status"]
             ),
             "ai_engine": ServiceMonitor(
                 "AI Engine",
-                "http://localhost:8001",
+                "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}",
                 ["/health", "/api/v1/quantum/status", "/api/v1/ml/models"]
             ),
             "rag_service": ServiceMonitor(
                 "RAG Service",
-                "http://localhost:5003",
+                "http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}",
                 ["/health", "/api/v1/stats"]
             )
         }

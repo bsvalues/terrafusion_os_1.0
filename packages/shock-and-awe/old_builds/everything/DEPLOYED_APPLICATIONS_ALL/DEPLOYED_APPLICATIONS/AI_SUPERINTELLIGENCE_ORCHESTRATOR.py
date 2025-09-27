@@ -162,28 +162,28 @@ class AISuperintelligenceOrchestrator:
 
     def setup_repository_agents(self):
         terrafusion_repos = [
-            {"name": "TerraFusion_Build", "port": 5000,
+            {"name": "TerraFusion_Build", "port": \${{TF_API_PORT:-5000}},
                 "focus": "property_data_optimization"},
-            {"name": "TerraFlow", "port": 5001, "focus": "workflow_intelligence"},
-            {"name": "TerraFusionSync", "port": 5002,
+            {"name": "TerraFlow", "port": \${{TF_API_PORT:-5000}}, "focus": "workflow_intelligence"},
+            {"name": "TerraFusionSync", "port": \${{TF_API_PORT:-5000}},
                 "focus": "ai_processing_enhancement"},
-            {"name": "TerraAgent", "port": 5003, "focus": "ai_coordination"},
-            {"name": "TerraFusionAssessor", "port": 5004,
+            {"name": "TerraAgent", "port": \${{TF_API_PORT:-5000}}, "focus": "ai_coordination"},
+            {"name": "TerraFusionAssessor", "port": \${{TF_API_PORT:-5000}},
                 "focus": "assessment_accuracy"},
-            {"name": "TerraFusionDashboard", "port": 5005,
+            {"name": "TerraFusionDashboard", "port": \${{TF_API_PORT:-5000}},
                 "focus": "executive_insights"},
-            {"name": "TerraMiner", "port": 5006,
+            {"name": "TerraMiner", "port": \${{TF_API_PORT:-5000}},
                 "focus": "data_mining_optimization"},
-            {"name": "BSIncomeValuation", "port": 5007,
+            {"name": "BSIncomeValuation", "port": \${{TF_API_PORT:-5000}},
                 "focus": "valuation_precision"},
-            {"name": "TerraFusionPro", "port": 5008,
+            {"name": "TerraFusionPro", "port": \${{TF_API_PORT:-5000}},
                 "focus": "professional_services"},
-            {"name": "TerraFusionPilt", "port": 5009, "focus": "pilt_automation"},
-            {"name": "BCBSGISPRO", "port": 5010, "focus": "gis_intelligence"},
-            {"name": "TerraFusionAssistant", "port": 5011, "focus": "ai_assistance"},
-            {"name": "TerraFusionProPlus", "port": 5012,
+            {"name": "TerraFusionPilt", "port": \${{TF_API_PORT:-5000}}, "focus": "pilt_automation"},
+            {"name": "BCBSGISPRO", "port": \${{TF_API_PORT:-5000}}, "focus": "gis_intelligence"},
+            {"name": "TerraFusionAssistant", "port": \${{TF_API_PORT:-5000}}, "focus": "ai_assistance"},
+            {"name": "TerraFusionProPlus", "port": \${{TF_API_PORT:-5000}},
                 "focus": "premium_features"},
-            {"name": "TerraFusionPermit", "port": 5013, "focus": "permit_automation"}
+            {"name": "TerraFusionPermit", "port": \${{TF_API_PORT:-5000}}, "focus": "permit_automation"}
         ]
 
         for repo in terrafusion_repos:

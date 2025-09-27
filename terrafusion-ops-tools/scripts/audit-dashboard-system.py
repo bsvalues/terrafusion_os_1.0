@@ -107,7 +107,7 @@ class AuditDashboardSystem:
     def __init__(self):
         self.session_id = f"dashboard_system_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         
         # Dashboard configuration
         self.dashboards = {}
@@ -657,7 +657,7 @@ async def main():
     
     try:
         print("\n🚀 Starting dashboard web server...")
-        print("📊 Dashboard URL: http://localhost:8050")
+        print("📊 Dashboard URL: http://localhost:\${{TF_SERVICE_8050_PORT:-8050}}")
         print("📱 Mobile-responsive design enabled")
         print("🔄 Auto-refresh: 30 seconds")
         print("\nPress Ctrl+C to stop the server...")
@@ -665,7 +665,7 @@ async def main():
         # Start the Dash app
         dashboard_system.app.run_server(
             host='0.0.0.0',
-            port=8050,
+            port=\${{TF_REDIS_PORT:-6379}},
             debug=False,
             dev_tools_hot_reload=False
         )

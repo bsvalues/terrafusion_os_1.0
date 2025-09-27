@@ -1,3 +1,4 @@
+# NO HARDCODED PORTS! Use environment variables.
 #!/usr/bin/env python3
 """
 TerraFusion OS Production Readiness Validator
@@ -36,10 +37,10 @@ class ValidationResult:
 
 class ProductionReadinessValidator:
     def __init__(self):
-        self.base_url = "http://localhost:5000"
-        self.ai_swarm_url = "http://localhost:8001"
-        self.claude_flow_url = "http://localhost:8002"
-        self.consciousness_url = "http://localhost:8003"
+        self.base_url = "http://localhost:${TF_STATIC_PORT:-8080}"
+        self.ai_swarm_url = "http://localhost:${TF_STATIC_PORT:-8080}"
+        self.claude_flow_url = "http://localhost:${TF_STATIC_PORT:-8080}"
+        self.consciousness_url = "http://localhost:${TF_STATIC_PORT:-8080}"
         self.results: List[ValidationResult] = []
         
     async def run_comprehensive_validation(self) -> Dict[str, Any]:

@@ -1,0 +1,89 @@
+{
+  "source": [
+    "frontend/src/brand/tokens/common/*.json",
+    "frontend/src/brand/tokens/county/*.json"
+  ],
+  "platforms": {
+    "css": {
+      "transformGroup": "css",
+      "buildPath": "frontend/public/brand/",
+      "files": [
+        {
+          "destination": "tokens-base.css",
+          "format": "css/variables",
+          "filter": {
+            "attributes": {
+              "type": "base"
+            }
+          },
+          "options": {
+            "showFileHeader": true,
+            "fileHeader": "custom"
+          }
+        },
+        {
+          "destination": "tokens-benton.css",
+          "format": "css/variables",
+          "filter": {
+            "attributes": {
+              "county": "Benton"
+            }
+          },
+          "options": {
+            "showFileHeader": true,
+            "fileHeader": "custom"
+          }
+        },
+        {
+          "destination": "tokens-yakima.css",
+          "format": "css/variables",
+          "filter": {
+            "attributes": {
+              "county": "Yakima"
+            }
+          },
+          "options": {
+            "showFileHeader": true,
+            "fileHeader": "custom"
+          }
+        }
+      ]
+    },
+    "js": {
+      "transformGroup": "js",
+      "buildPath": "frontend/src/brand/tokens/",
+      "files": [
+        {
+          "destination": "tokens.js",
+          "format": "javascript/es6"
+        },
+        {
+          "destination": "tokens.d.ts",
+          "format": "typescript/es6-declarations"
+        }
+      ]
+    }
+  },
+  "hooks": {
+    "parsers": {
+      "custom": {
+        "pattern": "json"
+      }
+    },
+    "transforms": {
+      "custom/css": [
+        "attribute/cti",
+        "name/cti/kebab",
+        "time/seconds",
+        "content/icon",
+        "size/rem",
+        "color/css"
+      ]
+    },
+    "formats": {
+      "custom": {
+        "formatter": "css/variables"
+      }
+    }
+  }
+}

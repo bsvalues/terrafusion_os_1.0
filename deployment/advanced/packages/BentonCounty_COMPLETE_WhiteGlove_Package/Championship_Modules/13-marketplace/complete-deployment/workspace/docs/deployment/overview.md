@@ -1,17 +1,18 @@
 # Terrafusion Deployment Overview
 
-Complete guide for deploying Terrafusion across different environments and platforms. Choose the deployment strategy that best fits your needs.
+Complete guide for deploying Terrafusion across different environments and
+platforms. Choose the deployment strategy that best fits your needs.
 
 ## 🎯 Deployment Options
 
 ### Quick Comparison
 
-| Deployment Type | Best For | Complexity | Scalability | Time to Deploy |
-|-----------------|----------|------------|-------------|----------------|
-| **Docker Compose** | Development, small teams | Low | Limited | 15 minutes |
-| **Kubernetes** | Production, enterprise | High | Excellent | 2-4 hours |
-| **Cloud Managed** | Scalable production | Medium | Excellent | 30-60 minutes |
-| **Hybrid** | Mixed environments | High | Excellent | 4-8 hours |
+| Deployment Type    | Best For                 | Complexity | Scalability | Time to Deploy |
+| ------------------ | ------------------------ | ---------- | ----------- | -------------- |
+| **Docker Compose** | Development, small teams | Low        | Limited     | 15 minutes     |
+| **Kubernetes**     | Production, enterprise   | High       | Excellent   | 2-4 hours      |
+| **Cloud Managed**  | Scalable production      | Medium     | Excellent   | 30-60 minutes  |
+| **Hybrid**         | Mixed environments       | High       | Excellent   | 4-8 hours      |
 
 ---
 
@@ -20,12 +21,14 @@ Complete guide for deploying Terrafusion across different environments and platf
 Perfect for development environments and small production deployments.
 
 ### Prerequisites
+
 - Docker 24.0+
 - Docker Compose 2.0+
 - 8GB RAM minimum
 - 50GB disk space
 
 ### Quick Start
+
 ```bash
 # Clone repository
 git clone https://github.com/terrafusion/terrafusion-master-workspace.git
@@ -47,6 +50,7 @@ curl http://localhost/health
 ```
 
 ### Production Configuration
+
 ```yaml
 # docker-compose.production.yml
 version: '3.8'
@@ -54,8 +58,8 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/ssl
@@ -118,6 +122,7 @@ volumes:
 Enterprise-grade deployment with automatic scaling and high availability.
 
 ### Prerequisites
+
 - Kubernetes cluster 1.25+
 - kubectl configured
 - Helm 3.0+
@@ -125,6 +130,7 @@ Enterprise-grade deployment with automatic scaling and high availability.
 - Certificate manager (cert-manager)
 
 ### Namespace Setup
+
 ```bash
 # Create namespace
 kubectl create namespace terrafusion
@@ -138,6 +144,7 @@ kubectl create secret generic terrafusion-secrets \
 ```
 
 ### Core Services Deployment
+
 ```yaml
 # k8s/postgres.yaml
 apiVersion: apps/v1
@@ -157,34 +164,35 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:15-alpine
-        env:
-        - name: POSTGRES_DB
-          value: terrafusion
-        - name: POSTGRES_USER
-          value: terrafusion
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: postgres-password
-        ports:
-        - containerPort: 5432
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: terrafusion
+            - name: POSTGRES_USER
+              value: terrafusion
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: postgres-password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
-  - metadata:
-      name: postgres-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 100Gi
+    - metadata:
+        name: postgres-storage
+      spec:
+        accessModes: ['ReadWriteOnce']
+        resources:
+          requests:
+            storage: 100Gi
 ```
 
 ### Application Deployment
+
 ```yaml
 # k8s/api.yaml
 apiVersion: apps/v1
@@ -203,45 +211,46 @@ spec:
         app: terrafusion-api
     spec:
       containers:
-      - name: api
-        image: terrafusion/api:v3.0.5
-        env:
-        - name: NODE_ENV
-          value: production
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: database-url
-        - name: REDIS_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: redis-url
-        ports:
-        - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: api
+          image: terrafusion/api:v3.0.5
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: database-url
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: redis-url
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
 ```
 
 ### Ingress Configuration
+
 ```yaml
 # k8s/ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -252,33 +261,34 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
 spec:
   tls:
-  - hosts:
-    - app.your-domain.com
-    secretName: terrafusion-tls
+    - hosts:
+        - app.your-domain.com
+      secretName: terrafusion-tls
   rules:
-  - host: app.your-domain.com
-    http:
-      paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-api
-            port:
-              number: 8080
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-frontend
-            port:
-              number: 80
+    - host: app.your-domain.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-api
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-frontend
+                port:
+                  number: 80
 ```
 
 ### Horizontal Pod Autoscaler
+
 ```yaml
 # k8s/hpa.yaml
 apiVersion: autoscaling/v2
@@ -294,18 +304,18 @@ spec:
   minReplicas: 3
   maxReplicas: 20
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 ---
@@ -315,6 +325,7 @@ spec:
 ### AWS Deployment
 
 #### Using AWS EKS
+
 ```bash
 # Install eksctl
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
@@ -337,54 +348,50 @@ kubectl apply -k k8s/overlays/aws
 ```
 
 #### Using AWS ECS Fargate
+
 ```yaml
 # ecs-task-definition.json
 {
-  "family": "terrafusion",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "1024",
-  "memory": "2048",
-  "executionRoleArn": "arn:aws:iam::account:role/ecsTaskExecutionRole",
-  "taskRoleArn": "arn:aws:iam::account:role/ecsTaskRole",
-  "containerDefinitions": [
-    {
-      "name": "terrafusion-api",
-      "image": "terrafusion/api:v3.0.5",
-      "portMappings": [
-        {
-          "containerPort": 8080,
-          "protocol": "tcp"
-        }
-      ],
-      "environment": [
-        {
-          "name": "NODE_ENV",
-          "value": "production"
-        }
-      ],
-      "secrets": [
-        {
-          "name": "DATABASE_URL",
-          "valueFrom": "arn:aws:secretsmanager:region:account:secret:database-url"
-        }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/terrafusion",
-          "awslogs-region": "us-west-2",
-          "awslogs-stream-prefix": "ecs"
-        }
-      }
-    }
-  ]
+  'family': 'terrafusion',
+  'networkMode': 'awsvpc',
+  'requiresCompatibilities': ['FARGATE'],
+  'cpu': '1024',
+  'memory': '2048',
+  'executionRoleArn': 'arn:aws:iam::account:role/ecsTaskExecutionRole',
+  'taskRoleArn': 'arn:aws:iam::account:role/ecsTaskRole',
+  'containerDefinitions':
+    [
+      {
+        'name': 'terrafusion-api',
+        'image': 'terrafusion/api:v3.0.5',
+        'portMappings': [{ 'containerPort': 8080, 'protocol': 'tcp' }],
+        'environment': [{ 'name': 'NODE_ENV', 'value': 'production' }],
+        'secrets':
+          [
+            {
+              'name': 'DATABASE_URL',
+              'valueFrom': 'arn:aws:secretsmanager:region:account:secret:database-url',
+            },
+          ],
+        'logConfiguration':
+          {
+            'logDriver': 'awslogs',
+            'options':
+              {
+                'awslogs-group': '/ecs/terrafusion',
+                'awslogs-region': 'us-west-2',
+                'awslogs-stream-prefix': 'ecs',
+              },
+          },
+      },
+    ],
 }
 ```
 
 ### Azure Deployment
 
 #### Using Azure Kubernetes Service (AKS)
+
 ```bash
 # Create resource group
 az group create --name terrafusion-rg --location eastus
@@ -407,6 +414,7 @@ kubectl apply -k k8s/overlays/azure
 ### Google Cloud Deployment
 
 #### Using Google Kubernetes Engine (GKE)
+
 ```bash
 # Create GKE cluster
 gcloud container clusters create terrafusion \
@@ -428,6 +436,7 @@ kubectl apply -k k8s/overlays/gcp
 ## 🔄 CI/CD Pipeline
 
 ### GitHub Actions Workflow
+
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy Terrafusion
@@ -442,30 +451,30 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run test
-    - run: npm run lint
-    - run: npm run type-check
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test
+      - run: npm run lint
+      - run: npm run type-check
 
   build:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Build Docker images
-      run: |
-        docker build -t terrafusion/api:${{ github.sha }} -f Dockerfile.api .
-        docker build -t terrafusion/frontend:${{ github.sha }} -f Dockerfile.frontend .
-    - name: Push to registry
-      run: |
-        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-        docker push terrafusion/api:${{ github.sha }}
-        docker push terrafusion/frontend:${{ github.sha }}
+      - uses: actions/checkout@v3
+      - name: Build Docker images
+        run: |
+          docker build -t terrafusion/api:${{ github.sha }} -f Dockerfile.api .
+          docker build -t terrafusion/frontend:${{ github.sha }} -f Dockerfile.frontend .
+      - name: Push to registry
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker push terrafusion/api:${{ github.sha }}
+          docker push terrafusion/frontend:${{ github.sha }}
 
   deploy-staging:
     needs: build
@@ -473,13 +482,13 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: staging
     steps:
-    - uses: actions/checkout@v3
-    - name: Deploy to staging
-      run: |
-        kubectl set image deployment/terrafusion-api terrafusion-api=terrafusion/api:${{ github.sha }} -n staging
-        kubectl set image deployment/terrafusion-frontend terrafusion-frontend=terrafusion/frontend:${{ github.sha }} -n staging
-        kubectl rollout status deployment/terrafusion-api -n staging
-        kubectl rollout status deployment/terrafusion-frontend -n staging
+      - uses: actions/checkout@v3
+      - name: Deploy to staging
+        run: |
+          kubectl set image deployment/terrafusion-api terrafusion-api=terrafusion/api:${{ github.sha }} -n staging
+          kubectl set image deployment/terrafusion-frontend terrafusion-frontend=terrafusion/frontend:${{ github.sha }} -n staging
+          kubectl rollout status deployment/terrafusion-api -n staging
+          kubectl rollout status deployment/terrafusion-frontend -n staging
 
   deploy-production:
     needs: deploy-staging
@@ -487,13 +496,13 @@ jobs:
     environment: production
     if: github.ref == 'refs/heads/main'
     steps:
-    - uses: actions/checkout@v3
-    - name: Deploy to production
-      run: |
-        kubectl set image deployment/terrafusion-api terrafusion-api=terrafusion/api:${{ github.sha }} -n production
-        kubectl set image deployment/terrafusion-frontend terrafusion-frontend=terrafusion/frontend:${{ github.sha }} -n production
-        kubectl rollout status deployment/terrafusion-api -n production
-        kubectl rollout status deployment/terrafusion-frontend -n production
+      - uses: actions/checkout@v3
+      - name: Deploy to production
+        run: |
+          kubectl set image deployment/terrafusion-api terrafusion-api=terrafusion/api:${{ github.sha }} -n production
+          kubectl set image deployment/terrafusion-frontend terrafusion-frontend=terrafusion/frontend:${{ github.sha }} -n production
+          kubectl rollout status deployment/terrafusion-api -n production
+          kubectl rollout status deployment/terrafusion-frontend -n production
 ```
 
 ---
@@ -503,10 +512,11 @@ jobs:
 ### Environment Variables
 
 #### Core Configuration
+
 ```bash
 # Application
 NODE_ENV=production
-PORT=8080
+PORT=\${{TF_ADMIN_PORT:-8080}}
 LOG_LEVEL=info
 API_VERSION=v1
 
@@ -534,6 +544,7 @@ AWS_REGION=us-west-2
 ```
 
 #### Feature Flags
+
 ```bash
 # Feature toggles
 FEATURE_ML_INFERENCE=true
@@ -551,12 +562,15 @@ RATE_LIMIT_MAX_REQUESTS=1000
 ```
 
 ### Configuration Validation
+
 ```typescript
 // config/validation.ts
 import Joi from 'joi';
 
 const configSchema = Joi.object({
-  NODE_ENV: Joi.string().valid('development', 'staging', 'production').required(),
+  NODE_ENV: Joi.string()
+    .valid('development', 'staging', 'production')
+    .required(),
   PORT: Joi.number().port().default(8080),
   DATABASE_URL: Joi.string().uri().required(),
   REDIS_URL: Joi.string().uri().required(),
@@ -565,20 +579,20 @@ const configSchema = Joi.object({
   AWS_ACCESS_KEY_ID: Joi.string().when('NODE_ENV', {
     is: 'production',
     then: Joi.required(),
-    otherwise: Joi.optional()
-  })
+    otherwise: Joi.optional(),
+  }),
 });
 
 export const validateConfig = () => {
   const { error, value } = configSchema.validate(process.env, {
     allowUnknown: true,
-    stripUnknown: true
+    stripUnknown: true,
   });
-  
+
   if (error) {
     throw new Error(`Config validation error: ${error.message}`);
   }
-  
+
   return value;
 };
 ```
@@ -588,6 +602,7 @@ export const validateConfig = () => {
 ## 📊 Monitoring and Observability
 
 ### Health Checks
+
 ```typescript
 // health-check endpoint
 app.get('/health', async (req, res) => {
@@ -598,18 +613,21 @@ app.get('/health', async (req, res) => {
     checks: {
       database: await checkDatabase(),
       redis: await checkRedis(),
-      externalApis: await checkExternalAPIs()
-    }
+      externalApis: await checkExternalAPIs(),
+    },
   };
-  
-  const isHealthy = Object.values(health.checks).every(check => check.status === 'healthy');
+
+  const isHealthy = Object.values(health.checks).every(
+    check => check.status === 'healthy'
+  );
   const statusCode = isHealthy ? 200 : 503;
-  
+
   res.status(statusCode).json(health);
 });
 ```
 
 ### Metrics Collection
+
 ```yaml
 # prometheus.yml
 global:
@@ -636,6 +654,7 @@ scrape_configs:
 ## 🚀 Deployment Scripts
 
 ### Automated Deployment Script
+
 ```bash
 #!/bin/bash
 # deploy.sh
@@ -696,6 +715,7 @@ echo "Deployment completed successfully!"
 ```
 
 ### Rollback Script
+
 ```bash
 #!/bin/bash
 # rollback.sh
@@ -723,6 +743,7 @@ echo "Rollback completed successfully!"
 ## 📋 Deployment Checklist
 
 ### Pre-Deployment
+
 - [ ] Code reviewed and approved
 - [ ] All tests passing
 - [ ] Security scan completed
@@ -732,6 +753,7 @@ echo "Rollback completed successfully!"
 - [ ] Monitoring alerts configured
 
 ### During Deployment
+
 - [ ] Health checks passing
 - [ ] Database migrations successful
 - [ ] Services responding
@@ -740,6 +762,7 @@ echo "Rollback completed successfully!"
 - [ ] DNS records updated
 
 ### Post-Deployment
+
 - [ ] Smoke tests passing
 - [ ] Performance metrics normal
 - [ ] Error rates acceptable
@@ -755,6 +778,7 @@ echo "Rollback completed successfully!"
 ### Common Issues
 
 #### Database Connection Issues
+
 ```bash
 # Check database connectivity
 kubectl exec -it pod/terrafusion-api-xxx -n terrafusion -- \
@@ -765,6 +789,7 @@ kubectl logs deployment/postgres -n terrafusion
 ```
 
 #### Memory Issues
+
 ```bash
 # Check memory usage
 kubectl top nodes
@@ -775,6 +800,7 @@ kubectl scale deployment terrafusion-api --replicas=5 -n terrafusion
 ```
 
 #### Network Issues
+
 ```bash
 # Check service endpoints
 kubectl get endpoints -n terrafusion
@@ -797,4 +823,4 @@ kubectl exec -it pod/terrafusion-api-xxx -n terrafusion -- \
 
 ---
 
-*Deployment guide last updated: August 3, 2025*
+_Deployment guide last updated: August 3, 2025_

@@ -20,147 +20,144 @@ const PACKAGE_DIR = path.join(OUTPUT_DIR, 'terrafusion-commercial');
 
 // Platform configuration
 const config = {
-    name: 'Terrafusion Commercial Platform',
-    version: '3.0.0',
-    buildDate: new Date().toISOString(),
-    features: [
-        'CostForge AI Engine (379M× faster)',
-        'Marketplace Launcher',
-        'Full Terrafusion Branding',
-        'Enterprise Authentication',
-        'Multi-Tenant Architecture',
-        'USPAP Compliance Suite',
-        'Market Analytics Dashboard',
-        'Workflow Automation',
-        'API & Integrations',
-        'Mobile Applications'
-    ],
-    components: {
-        frontend: {
-            path: './frontend',
-            build: 'npm run build',
-            dist: './frontend/dist'
-        },
-        backend: {
-            path: './backend',
-            build: 'cargo build --release',
-            dist: './backend/target/release'
-        },
-        marketplace: {
-            path: '../../dist/marketplace-launcher.html',
-            dist: './marketplace'
-        },
-        branding: {
-            path: './styles',
-            dist: './assets/styles'
-        }
-    }
+  name: 'Terrafusion Commercial Platform',
+  version: '3.0.0',
+  buildDate: new Date().toISOString(),
+  features: [
+    'CostForge AI Engine (379M× faster)',
+    'Marketplace Launcher',
+    'Full Terrafusion Branding',
+    'Enterprise Authentication',
+    'Multi-Tenant Architecture',
+    'USPAP Compliance Suite',
+    'Market Analytics Dashboard',
+    'Workflow Automation',
+    'API & Integrations',
+    'Mobile Applications',
+  ],
+  components: {
+    frontend: {
+      path: './frontend',
+      build: 'npm run build',
+      dist: './frontend/dist',
+    },
+    backend: {
+      path: './backend',
+      build: 'cargo build --release',
+      dist: './backend/target/release',
+    },
+    marketplace: {
+      path: '../../dist/marketplace-launcher.html',
+      dist: './marketplace',
+    },
+    branding: {
+      path: './styles',
+      dist: './assets/styles',
+    },
+  },
 };
 
 // Create package structure
 function createPackageStructure() {
-    console.log('📁 Creating package structure...');
-    
-    const dirs = [
-        PACKAGE_DIR,
-        path.join(PACKAGE_DIR, 'frontend'),
-        path.join(PACKAGE_DIR, 'backend'),
-        path.join(PACKAGE_DIR, 'marketplace'),
-        path.join(PACKAGE_DIR, 'assets'),
-        path.join(PACKAGE_DIR, 'assets/styles'),
-        path.join(PACKAGE_DIR, 'assets/images'),
-        path.join(PACKAGE_DIR, 'config'),
-        path.join(PACKAGE_DIR, 'docs'),
-        path.join(PACKAGE_DIR, 'scripts')
-    ];
-    
-    dirs.forEach(dir => {
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-            console.log(`  ✅ Created: ${path.basename(dir)}`);
-        }
-    });
+  console.log('📁 Creating package structure...');
+
+  const dirs = [
+    PACKAGE_DIR,
+    path.join(PACKAGE_DIR, 'frontend'),
+    path.join(PACKAGE_DIR, 'backend'),
+    path.join(PACKAGE_DIR, 'marketplace'),
+    path.join(PACKAGE_DIR, 'assets'),
+    path.join(PACKAGE_DIR, 'assets/styles'),
+    path.join(PACKAGE_DIR, 'assets/images'),
+    path.join(PACKAGE_DIR, 'config'),
+    path.join(PACKAGE_DIR, 'docs'),
+    path.join(PACKAGE_DIR, 'scripts'),
+  ];
+
+  dirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`  ✅ Created: ${path.basename(dir)}`);
+    }
+  });
 }
 
 // Copy platform files
 function copyPlatformFiles() {
-    console.log('\n📋 Copying platform files...');
-    
-    // Copy main platform files
-    const files = [
-        { src: 'index.html', dest: 'index.html' },
-        { src: 'package.json', dest: 'package.json' },
-        { src: 'integration-config.json', dest: 'config/integration-config.json' },
-        { src: 'docker-compose.yml', dest: 'docker-compose.yml' }
-    ];
-    
-    files.forEach(file => {
-        const srcPath = path.join(PLATFORM_ROOT, file.src);
-        const destPath = path.join(PACKAGE_DIR, file.dest);
-        
-        if (fs.existsSync(srcPath)) {
-            fs.copyFileSync(srcPath, destPath);
-            console.log(`  ✅ Copied: ${file.src}`);
-        }
-    });
-    
-    // Copy styles
-    const stylesDir = path.join(PLATFORM_ROOT, 'styles');
-    if (fs.existsSync(stylesDir)) {
-        copyDir(stylesDir, path.join(PACKAGE_DIR, 'assets/styles'));
-        console.log('  ✅ Copied: Terrafusion brand styles');
+  console.log('\n📋 Copying platform files...');
+
+  // Copy main platform files
+  const files = [
+    { src: 'index.html', dest: 'index.html' },
+    { src: 'package.json', dest: 'package.json' },
+    { src: 'integration-config.json', dest: 'config/integration-config.json' },
+    { src: 'docker-compose.yml', dest: 'docker-compose.yml' },
+  ];
+
+  files.forEach(file => {
+    const srcPath = path.join(PLATFORM_ROOT, file.src);
+    const destPath = path.join(PACKAGE_DIR, file.dest);
+
+    if (fs.existsSync(srcPath)) {
+      fs.copyFileSync(srcPath, destPath);
+      console.log(`  ✅ Copied: ${file.src}`);
     }
-    
-    // Copy marketplace launcher
-    const launcherPath = path.join(PLATFORM_ROOT, '../../dist/marketplace-launcher.html');
-    if (fs.existsSync(launcherPath)) {
-        fs.copyFileSync(launcherPath, path.join(PACKAGE_DIR, 'marketplace/launcher.html'));
-        console.log('  ✅ Copied: Marketplace launcher');
-    }
+  });
+
+  // Copy styles
+  const stylesDir = path.join(PLATFORM_ROOT, 'styles');
+  if (fs.existsSync(stylesDir)) {
+    copyDir(stylesDir, path.join(PACKAGE_DIR, 'assets/styles'));
+    console.log('  ✅ Copied: Terrafusion brand styles');
+  }
+
+  // Copy marketplace launcher
+  const launcherPath = path.join(PLATFORM_ROOT, '../../dist/marketplace-launcher.html');
+  if (fs.existsSync(launcherPath)) {
+    fs.copyFileSync(launcherPath, path.join(PACKAGE_DIR, 'marketplace/launcher.html'));
+    console.log('  ✅ Copied: Marketplace launcher');
+  }
 }
 
 // Create manifest file
 function createManifest() {
-    console.log('\n📄 Creating manifest...');
-    
-    const manifest = {
-        name: config.name,
-        version: config.version,
-        buildDate: config.buildDate,
-        platform: 'commercial',
-        features: config.features,
-        requirements: {
-            node: '>=18.0.0',
-            rust: '>=1.70.0',
-            postgres: '>=14.0'
-        },
-        endpoints: {
-            frontend: 'http://localhost:3000',
-            backend: 'http://localhost:3002',
-            marketplace: 'http://localhost:3000/marketplace'
-        },
-        deployment: {
-            docker: true,
-            kubernetes: true,
-            standalone: true
-        },
-        license: 'Terrafusion Commercial License',
-        support: 'support@terrafusion.com'
-    };
-    
-    fs.writeFileSync(
-        path.join(PACKAGE_DIR, 'manifest.json'),
-        JSON.stringify(manifest, null, 2)
-    );
-    
-    console.log('  ✅ Created: manifest.json');
+  console.log('\n📄 Creating manifest...');
+
+  const manifest = {
+    name: config.name,
+    version: config.version,
+    buildDate: config.buildDate,
+    platform: 'commercial',
+    features: config.features,
+    requirements: {
+      node: '>=18.0.0',
+      rust: '>=1.70.0',
+      postgres: '>=14.0',
+    },
+    endpoints: {
+      frontend: 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}',
+      backend: 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}',
+      marketplace: 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/marketplace',
+    },
+    deployment: {
+      docker: true,
+      kubernetes: true,
+      standalone: true,
+    },
+    license: 'Terrafusion Commercial License',
+    support: 'support@terrafusion.com',
+  };
+
+  fs.writeFileSync(path.join(PACKAGE_DIR, 'manifest.json'), JSON.stringify(manifest, null, 2));
+
+  console.log('  ✅ Created: manifest.json');
 }
 
 // Create launcher script
 function createLauncher() {
-    console.log('\n🚀 Creating launcher script...');
-    
-    const launcherScript = `#!/usr/bin/env node
+  console.log('\n🚀 Creating launcher script...');
+
+  const launcherScript = `#!/usr/bin/env node
 
 /**
  * Terrafusion Commercial Platform Launcher
@@ -201,39 +198,36 @@ setTimeout(() => {
 setTimeout(() => {
     console.log('🌍 Opening Terrafusion Commercial in browser...');
     const open = require('open');
-    open('http://localhost:3000');
+    open('http://localhost:\${{TF_FRONTEND_PORT:-3000}}');
 }, 5000);
 
 console.log('');
 console.log('✨ Terrafusion Commercial Platform is running!');
 console.log('');
-console.log('   Frontend:    http://localhost:3000');
-console.log('   Backend API: http://localhost:3002');
-console.log('   Marketplace: http://localhost:3000/marketplace');
+console.log('   Frontend:    http://localhost:\${{TF_FRONTEND_PORT:-3000}}');
+console.log('   Backend API: http://localhost:\${{TF_FRONTEND_PORT:-3000}}');
+console.log('   Marketplace: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/marketplace');
 console.log('');
 console.log('Press Ctrl+C to stop all services');
 `;
-    
-    fs.writeFileSync(
-        path.join(PACKAGE_DIR, 'launcher.js'),
-        launcherScript
-    );
-    
-    // Make executable on Unix-like systems
-    try {
-        fs.chmodSync(path.join(PACKAGE_DIR, 'launcher.js'), '755');
-    } catch (e) {
-        // Windows doesn't support chmod
-    }
-    
-    console.log('  ✅ Created: launcher.js');
+
+  fs.writeFileSync(path.join(PACKAGE_DIR, 'launcher.js'), launcherScript);
+
+  // Make executable on Unix-like systems
+  try {
+    fs.chmodSync(path.join(PACKAGE_DIR, 'launcher.js'), '755');
+  } catch (e) {
+    // Windows doesn't support chmod
+  }
+
+  console.log('  ✅ Created: launcher.js');
 }
 
 // Create README
 function createReadme() {
-    console.log('\n📖 Creating documentation...');
-    
-    const readme = `# Terrafusion Commercial Platform
+  console.log('\n📖 Creating documentation...');
+
+  const readme = `# Terrafusion Commercial Platform
 
 ## Government. Transcended. | Business. Transformed.
 
@@ -329,20 +323,17 @@ Terrafusion Commercial License - See LICENSE file for details.
 
 **Terrafusion Technologies © 2025 - The Future of Real Estate Technology**
 `;
-    
-    fs.writeFileSync(
-        path.join(PACKAGE_DIR, 'README.md'),
-        readme
-    );
-    
-    console.log('  ✅ Created: README.md');
+
+  fs.writeFileSync(path.join(PACKAGE_DIR, 'README.md'), readme);
+
+  console.log('  ✅ Created: README.md');
 }
 
 // Create deployment script
 function createDeploymentScript() {
-    console.log('\n🚢 Creating deployment script...');
-    
-    const deployScript = `#!/bin/bash
+  console.log('\n🚢 Creating deployment script...');
+
+  const deployScript = `#!/bin/bash
 
 echo "================================================"
 echo "Terrafusion Commercial Platform Deployment"
@@ -384,101 +375,97 @@ echo "================================================"
 echo "✨ Terrafusion Commercial Platform Deployed!"
 echo "================================================"
 echo ""
-echo "   Frontend:    http://localhost:3000"
-echo "   Backend API: http://localhost:3002"
-echo "   Marketplace: http://localhost:3000/marketplace"
+echo "   Frontend:    http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "   Backend API: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "   Marketplace: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/marketplace"
 echo ""
 echo "Run 'docker-compose logs -f' to view logs"
 echo "Run 'docker-compose down' to stop services"
 `;
-    
-    fs.writeFileSync(
-        path.join(PACKAGE_DIR, 'scripts/deploy.sh'),
-        deployScript
-    );
-    
-    try {
-        fs.chmodSync(path.join(PACKAGE_DIR, 'scripts/deploy.sh'), '755');
-    } catch (e) {
-        // Windows doesn't support chmod
-    }
-    
-    console.log('  ✅ Created: deploy.sh');
+
+  fs.writeFileSync(path.join(PACKAGE_DIR, 'scripts/deploy.sh'), deployScript);
+
+  try {
+    fs.chmodSync(path.join(PACKAGE_DIR, 'scripts/deploy.sh'), '755');
+  } catch (e) {
+    // Windows doesn't support chmod
+  }
+
+  console.log('  ✅ Created: deploy.sh');
 }
 
 // Helper function to copy directory
 function copyDir(src, dest) {
-    if (!fs.existsSync(dest)) {
-        fs.mkdirSync(dest, { recursive: true });
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+
+  for (let entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDir(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
     }
-    
-    const entries = fs.readdirSync(src, { withFileTypes: true });
-    
-    for (let entry of entries) {
-        const srcPath = path.join(src, entry.name);
-        const destPath = path.join(dest, entry.name);
-        
-        if (entry.isDirectory()) {
-            copyDir(srcPath, destPath);
-        } else {
-            fs.copyFileSync(srcPath, destPath);
-        }
-    }
+  }
 }
 
 // Create package archive
 function createArchive() {
-    console.log('\n📦 Creating distribution archive...');
-    
-    const archiveName = `terrafusion-commercial-v${config.version}-${Date.now()}.tar.gz`;
-    const archivePath = path.join(OUTPUT_DIR, archiveName);
-    
-    try {
-        execSync(`tar -czf ${archiveName} terrafusion-commercial`, {
-            cwd: OUTPUT_DIR,
-            stdio: 'inherit'
-        });
-        
-        console.log(`  ✅ Created: ${archiveName}`);
-        
-        // Get file size
-        const stats = fs.statSync(archivePath);
-        const fileSizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
-        console.log(`  📊 Size: ${fileSizeInMB} MB`);
-    } catch (error) {
-        console.log('  ⚠️  Could not create archive (tar not available)');
-    }
+  console.log('\n📦 Creating distribution archive...');
+
+  const archiveName = `terrafusion-commercial-v${config.version}-${Date.now()}.tar.gz`;
+  const archivePath = path.join(OUTPUT_DIR, archiveName);
+
+  try {
+    execSync(`tar -czf ${archiveName} terrafusion-commercial`, {
+      cwd: OUTPUT_DIR,
+      stdio: 'inherit',
+    });
+
+    console.log(`  ✅ Created: ${archiveName}`);
+
+    // Get file size
+    const stats = fs.statSync(archivePath);
+    const fileSizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
+    console.log(`  📊 Size: ${fileSizeInMB} MB`);
+  } catch (error) {
+    console.log('  ⚠️  Could not create archive (tar not available)');
+  }
 }
 
 // Main execution
 async function main() {
-    try {
-        createPackageStructure();
-        copyPlatformFiles();
-        createManifest();
-        createLauncher();
-        createReadme();
-        createDeploymentScript();
-        createArchive();
-        
-        console.log('\n');
-        console.log('╔════════════════════════════════════════════════════════╗');
-        console.log('║     ✅ Terrafusion Commercial Platform Packaged!      ║');
-        console.log('╚════════════════════════════════════════════════════════╝');
-        console.log('');
-        console.log(`📁 Package location: ${PACKAGE_DIR}`);
-        console.log('');
-        console.log('🚀 To launch the platform:');
-        console.log(`   cd ${PACKAGE_DIR}`);
-        console.log('   node launcher.js');
-        console.log('');
-        console.log('379,000,000× Faster Than Competition!');
-        console.log('');
-        
-    } catch (error) {
-        console.error('❌ Error packaging platform:', error);
-        process.exit(1);
-    }
+  try {
+    createPackageStructure();
+    copyPlatformFiles();
+    createManifest();
+    createLauncher();
+    createReadme();
+    createDeploymentScript();
+    createArchive();
+
+    console.log('\n');
+    console.log('╔════════════════════════════════════════════════════════╗');
+    console.log('║     ✅ Terrafusion Commercial Platform Packaged!      ║');
+    console.log('╚════════════════════════════════════════════════════════╝');
+    console.log('');
+    console.log(`📁 Package location: ${PACKAGE_DIR}`);
+    console.log('');
+    console.log('🚀 To launch the platform:');
+    console.log(`   cd ${PACKAGE_DIR}`);
+    console.log('   node launcher.js');
+    console.log('');
+    console.log('379,000,000× Faster Than Competition!');
+    console.log('');
+  } catch (error) {
+    console.error('❌ Error packaging platform:', error);
+    process.exit(1);
+  }
 }
 
 // Run packager

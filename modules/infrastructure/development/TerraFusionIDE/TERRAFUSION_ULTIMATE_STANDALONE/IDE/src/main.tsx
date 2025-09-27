@@ -25,21 +25,14 @@ Status: READY TO DOMINATE
 
 // Activate AI Swarm (1,008 agents)
 console.log('🧠 Activating AI Swarm...');
-setTimeout(() => {
-  console.log('✅ AI Swarm activated with 1,008 agents');
+setTimeout(() =>{console.log('✅ AI Swarm activated with 1,008 agents');
   console.log('🏛️ Government compliance framework active');
   console.log('⚡ Quantum performance engine ready');
   console.log('🔌 Plugin development SDK loaded');
   console.log('🗺️ Geospatial services (LeafScope) ready');
-  console.log('🗄️ Database connections established');
-}, 1000);
+  console.log('🗄️ Database connections established');}, 1000);
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
-root.render(
-  <React.StrictMode>
-    <TerraFusionIDE_ULTIMATE />
-  </React.StrictMode>
+root.render(<React.StrictMode><TerraFusionIDE_ULTIMATE /></React.StrictMode>
 );

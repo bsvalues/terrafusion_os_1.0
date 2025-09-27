@@ -256,4 +256,4 @@ if __name__ == "__main__":
     generate_benton_county_data()
     
     logger.info("✅ System ready!")
-    app.run(host='0.0.0.0', port=5003, debug=True) 
+    app.run(host='0.0.0.0', port=\${{TF_API_5003_PORT:-5003}}, debug=True) 

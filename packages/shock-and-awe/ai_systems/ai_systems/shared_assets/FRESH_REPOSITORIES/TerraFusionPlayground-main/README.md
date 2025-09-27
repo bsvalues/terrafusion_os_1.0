@@ -32,28 +32,33 @@ A modern, AI-powered civil infrastructure management platform that combines adva
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-org/terrafusion.git
    cd terrafusion
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Set up environment variables:
+
    ```bash
    cp .env.example .env
    ```
+
    Edit `.env` with your configuration.
 
 4. Start the development server:
+
    ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:\${{TF_FRONTEND_PORT:-3000}}](http://localhost:\${{TF_FRONTEND_PORT:-3000}}) in your browser.
 
 ## Development
 
@@ -97,4 +102,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For support, email support@terrafusion.ai or join our [Discord community](https://discord.gg/terrafusion). 
+For support, email support@terrafusion.ai or join our [Discord community](https://discord.gg/terrafusion).

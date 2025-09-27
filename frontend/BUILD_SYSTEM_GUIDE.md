@@ -7,6 +7,7 @@ The Terrafusion OS frontend has been completely rebuilt with a robust, modern bu
 ## Build System Status ✅
 
 ### ✅ FIXED: Core Issues Resolved
+
 - **TypeScript Compilation**: Clean compilation with 0 errors
 - **Dependency Conflicts**: All dependency issues resolved
 - **Build Pipeline**: Production-ready build system configured
@@ -15,6 +16,7 @@ The Terrafusion OS frontend has been completely rebuilt with a robust, modern bu
 - **Pre-commit Hooks**: Automated quality checks on commit
 
 ### ⚠️ EXCLUDED: Temporary Exclusions
+
 - `components-enhanced/`: Excluded due to missing dependencies (needs cleanup)
 - `docs/`: Excluded from TypeScript checking
 - Test files: Excluded from main build (separate test pipeline needed)
@@ -22,6 +24,7 @@ The Terrafusion OS frontend has been completely rebuilt with a robust, modern bu
 ## Quick Start
 
 ### Prerequisites
+
 ```bash
 # Required software
 Node.js 18+
@@ -29,6 +32,7 @@ npm 9+
 ```
 
 ### Development Commands
+
 ```bash
 # Install dependencies
 npm install
@@ -53,16 +57,19 @@ npm run clean
 ## Development Workflow
 
 ### 1. Start Development
+
 ```bash
 cd frontend
 npm run dev
 ```
-- Development server starts at `http://localhost:3000`
+
+- Development server starts at `http://localhost:\${{TF_FRONTEND_PORT:-3000}}`
 - Hot reload enabled for instant updates
 - TypeScript compilation in real-time
 - API proxy to backend configured
 
 ### 2. Code Quality Checks
+
 ```bash
 # Check TypeScript types
 npm run type-check
@@ -75,7 +82,9 @@ npm run format
 ```
 
 ### 3. Pre-commit Validation
+
 All commits automatically run:
+
 - ESLint fixes
 - Prettier formatting
 - Commit message validation
@@ -83,18 +92,21 @@ All commits automatically run:
 ## Build Pipeline Architecture
 
 ### TypeScript Configuration
+
 - **Target**: ES2020 for modern browser support
 - **Strict Mode**: Disabled for rapid development
 - **Module Resolution**: Bundler mode for Vite
 - **Path Aliases**: Clean imports with `@/` prefix
 
 ### Vite Build System
+
 - **Dev Server**: Instant hot reload
 - **Production Build**: Optimized bundles
 - **Source Maps**: Enabled for debugging
 - **Code Splitting**: Vendor and app chunks
 
 ### Electron Integration
+
 ```bash
 # Start Electron app
 npm run electron
@@ -106,18 +118,21 @@ npm run electron:dev
 ## Quality Assurance Pipeline
 
 ### ESLint Configuration
+
 - Basic JavaScript/TypeScript linting
 - React best practices
 - Warning threshold: 100 (configurable)
 - Automatic fixing on save
 
 ### Prettier Configuration
+
 - Consistent code formatting
 - 100 character line width
 - Single quotes for strings
 - Trailing commas for ES5
 
 ### Pre-commit Hooks
+
 - **lint-staged**: Only check modified files
 - **ESLint auto-fix**: Automatic error fixing
 - **Prettier format**: Consistent formatting
@@ -148,14 +163,15 @@ frontend/
 ## Configuration Files
 
 ### package.json Scripts
+
 ```json
 {
   "scripts": {
     "start": "vite --host",
-    "dev": "vite --host", 
+    "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "electron": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron public/electron.js\"",
+    "electron": "concurrently \"npm start\" \"wait-on http://localhost:\${{TF_FRONTEND_PORT:-3000}} && electron public/electron.js\"",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 100",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,css,md}\"",
     "type-check": "tsc --noEmit"
@@ -164,14 +180,16 @@ frontend/
 ```
 
 ### TypeScript Configuration
+
 - **Strict Mode**: Disabled for development speed
 - **Module Resolution**: Bundler mode
 - **Path Aliases**: `@/` for clean imports
 - **Exclusions**: Test files, docs, components-enhanced
 
 ### Vite Configuration
+
 - **React Plugin**: Hot reload and JSX support
-- **Dev Server**: Port 3000 with proxy to backend
+- **Dev Server**: Port \${{TF_FRONTEND_PORT:-3000}} with proxy to backend
 - **Build Optimization**: Code splitting and tree shaking
 - **Path Resolution**: Absolute imports support
 
@@ -180,6 +198,7 @@ frontend/
 ### Common Issues
 
 #### Build Fails with TypeScript Errors
+
 ```bash
 # Check for compilation errors
 npm run type-check
@@ -190,6 +209,7 @@ npm run reinstall
 ```
 
 #### ESLint Errors
+
 ```bash
 # Auto-fix linting issues
 npm run lint:fix
@@ -199,12 +219,14 @@ npm run format
 ```
 
 #### Hot Reload Not Working
+
 ```bash
 # Restart development server
 npm run dev
 ```
 
 #### Dependencies Issues
+
 ```bash
 # Clean reinstall
 npm run reinstall
@@ -213,11 +235,13 @@ npm run reinstall
 ### Performance Optimization
 
 #### Build Time
+
 - Current build time: ~1.5 seconds
 - TypeScript compilation: ~500ms
 - Vite bundling: ~1 second
 
 #### Development Server
+
 - Start time: ~740ms
 - Hot reload: <100ms
 - Memory usage: ~200MB
@@ -225,6 +249,7 @@ npm run reinstall
 ## Future Improvements
 
 ### Planned Enhancements
+
 1. **Component Library**: Restore components-enhanced with proper dependencies
 2. **Test Pipeline**: Jest and Playwright test automation
 3. **CI/CD Integration**: GitHub Actions workflow
@@ -232,6 +257,7 @@ npm run reinstall
 5. **Performance Monitoring**: Build time tracking
 
 ### Security Features
+
 - **Dependency Scanning**: Automated vulnerability checks
 - **Code Analysis**: Static security analysis
 - **FISMA Compliance**: Government security standards
@@ -240,6 +266,7 @@ npm run reinstall
 ## Production Deployment
 
 ### Build Process
+
 ```bash
 # Production build
 npm run build
@@ -252,11 +279,13 @@ npm run preview
 ```
 
 ### Build Output
+
 - **dist/index.html**: Entry point
 - **dist/assets/**: Optimized JavaScript and CSS
 - **Source maps**: Available for debugging
 
 ### Performance Metrics
+
 - **Bundle Size**: ~140KB vendor + ~18KB app
 - **Load Time**: <2 seconds on modern networks
 - **Lighthouse Score**: 95+ performance
@@ -264,6 +293,7 @@ npm run preview
 ## Support
 
 ### Getting Help
+
 1. Check this guide first
 2. Review console errors in development
 3. Run diagnostic commands:
@@ -278,6 +308,7 @@ npm run preview
    ```
 
 ### Contributing
+
 1. Follow conventional commit format
 2. Run quality checks before committing
 3. Ensure all builds pass before PR

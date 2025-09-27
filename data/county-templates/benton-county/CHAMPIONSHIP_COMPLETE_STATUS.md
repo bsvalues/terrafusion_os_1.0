@@ -113,10 +113,10 @@ chmod +x LAUNCH_DYNASTY.sh
 7. **Opens dashboard** 🌐
 
 ### Your Dynasty URLs:
-- 🌐 **Main Dashboard**: http://localhost:8090/championship_ui.html
-- 🔧 **Master API**: http://localhost:8000
-- 📊 **System Status**: http://localhost:8000/status
-- 🧠 **Ollama**: http://localhost:11434
+- 🌐 **Main Dashboard**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html
+- 🔧 **Master API**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}
+- 📊 **System Status**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/status
+- 🧠 **Ollama**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}
 
 ---
 
@@ -266,7 +266,7 @@ From Training Camp to Super Bowl to Dynasty - **THE CHAMPIONSHIP IS COMPLETE!**
 ```
 
 ### 🌐 Dashboard:
-**http://localhost:8090/championship_ui.html**
+**http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html**
 
 ---
 

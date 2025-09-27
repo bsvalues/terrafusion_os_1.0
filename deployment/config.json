@@ -68,7 +68,7 @@
       "thresholds": {
         "agentFailureRate": 0.05,
         "responseTime": 100,
-        "quantumCoherence": 0.90
+        "quantumCoherence": 0.9
       }
     }
   },

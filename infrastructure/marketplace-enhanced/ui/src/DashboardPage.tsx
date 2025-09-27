@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { DashboardDrilldownModal } from './DashboardDrilldownModal';
-import { DashboardExportButton } from './DashboardExportButton';
-import { DashboardAdminActions } from './DashboardAdminActions';
-import { DashboardAuditLogModal } from './DashboardAuditLogModal';
+import React, {useEffect, useState} from 'react';
+import {DashboardDrilldownModal} from './DashboardDrilldownModal';
+import {DashboardExportButton} from './DashboardExportButton';
+import {DashboardAdminActions} from './DashboardAdminActions';
+import {DashboardAuditLogModal} from './DashboardAuditLogModal';
 import './DashboardDrilldownModal.css';
 
 // TypeScript interfaces
-interface PluginAnalytics {
-  id: string;
+interface PluginAnalytics {id: string;
   name: string;
   version?: string;
   healthy: boolean;
@@ -15,7 +14,7 @@ interface PluginAnalytics {
   lastLaunched?: string;
   uptime: number | null;
   errors: string[];
-  errorTrend: { timestamp: string; count: number }[];
+  errorTrend: { timestamp: string; count: number}[];
   onboarding: string[];
   tags?: string[];
   categories?: string[];
@@ -30,7 +29,7 @@ export function DashboardPage() {
   const [auditLog, setAuditLog] = useState<any>(null);
   const [showAudit, setShowAudit] = useState(false);
 
-  useEffect(() => {
+  useEffect(() =>{
     // Step 1: Load plugin IDs and metadata from sidebar.json
     fetch('/sidebar.json')
       .then(r => r.json())
@@ -56,8 +55,7 @@ export function DashboardPage() {
         const merged: PluginAnalytics[] = sidebar.map((meta: any) => {
           const id = meta.id;
           const usageStats = usage.find((u: any) => u.pluginId === id) || {};
-          return {
-            id,
+          return {id,
             name: meta.name,
             version: meta.version || '',
             healthy: typeof health[id] === 'boolean' ? health[id] : true,
@@ -71,8 +69,7 @@ export function DashboardPage() {
             categories: meta.categories,
             owner: meta.owner,
             changelog: meta.changelog,
-            logs: meta.logs
-          };
+            logs: meta.logs};
         });
         setPlugins(merged);
       });
@@ -81,63 +78,25 @@ export function DashboardPage() {
   const handleAdminAction = (action: string, plugin: PluginAnalytics) => {
     if (action === 'audit') {
       // Fetch audit log for plugin
-      fetch(`/api/plugin-audit-log/${plugin.id}`).then(r=>r.json()).then(logs => {
-        setAuditLog(logs);
-        setShowAudit(true);
-      });
-    } else {
-      // POST to admin endpoint for disable/restart/promote
+      fetch(`/api/plugin-audit-log/${plugin.id}`).then(r=>r.json()).then(logs => {setAuditLog(logs);
+        setShowAudit(true);});
+    } else {// POST to admin endpoint for disable/restart/promote
       fetch(`/api/plugin-admin-action`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, id: plugin.id })
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({action, id: plugin.id})
       }).then(()=>window.location.reload());
     }
   };
 
-  return (
-    <div className="tf-dashboard-page">
-      <div className="tf-dashboard-header"><>
-
-        <h1>Terrafusion Plugin Analytics</h1>
-        <DashboardExportButton
+  return (<div className="tf-dashboard-page"><div className="tf-dashboard-header"><><h1>Terrafusion Plugin Analytics</h1><DashboardExportButton
 </>
-plugins={plugins} />
-      </div>
-      <table className="tf-dashboard-table">
-        <thead>
-          <tr>
-            <th>Name</th><th>Version</th><th>Status</th><th>Launches</th><th>Uptime</th><th>Errors</th><th>Owner</th><th>Admin</th>
-          </tr>
-        </thead>
-        <tbody>
-          {plugins.map(plugin => (
-            <tr key={plugin.id} onClick={()=>setSelected(plugin)}><>
-
-              <td>{plugin.name}</td>
-              <td
+plugins={plugins} /></div><table className="tf-dashboard-table"><thead><tr><th>Name</th><th>Version</th><th>Status</th><th>Launches</th><th>Uptime</th><th>Errors</th><th>Owner</th><th>Admin</th></tr></thead><tbody>{plugins.map(plugin => (<tr key={plugin.id} onClick={()=>setSelected(plugin)}><><td>{plugin.name}</td><td
+</></>>{plugin.version}</td><><td>{plugin.healthy ? '🟢' : '🔴'}</td><td
+</></>>{plugin.launchCount}</td><><td>{plugin.uptime !== null ? (plugin.uptime*100).toFixed(1)+'%' : '—'}</td><td
+</></>>{plugin.errors?.length || 0}</td><><td>{plugin.owner}</td><td
 </>
-</>>{plugin.version}</td><>
-
-              <td>{plugin.healthy ? '🟢' : '🔴'}</td>
-              <td
-</>
-</>>{plugin.launchCount}</td><>
-
-              <td>{plugin.uptime !== null ? (plugin.uptime*100).toFixed(1)+'%' : '—'}</td>
-              <td
-</>
-</>>{plugin.errors?.length || 0}</td><>
-
-              <td>{plugin.owner}</td>
-              <td
-</>
-onClick={e=>e.stopPropagation()}><DashboardAdminActions plugin={plugin} onAction={handleAdminAction} /></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {selected && <DashboardDrilldownModal plugin={selected} onClose={()=>setSelected(null)} />}
+onClick={e=>e.stopPropagation()}><DashboardAdminActions plugin={plugin} onAction={handleAdminAction} /></td></tr>))}</tbody></table>{selected &&<DashboardDrilldownModal plugin={selected} onClose={()=>setSelected(null)} />}
       {showAudit && <DashboardAuditLogModal plugin={selected} logs={auditLog} onClose={()=>setShowAudit(false)} />}
     </div>
   );

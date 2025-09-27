@@ -1,0 +1,22 @@
+[package]
+name = "valuation-kernel"
+version = "1.0.0"
+edition = "2021"
+authors = ["TerraFusion cOS Team"]
+description = "Government-grade Property Assessment Algorithms"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+uuid = { version = "1.0", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+statrs = "0.16"
+rayon = "1.7"
+
+[lib]
+name = "valuation_kernel"
+path = "src/lib.rs"

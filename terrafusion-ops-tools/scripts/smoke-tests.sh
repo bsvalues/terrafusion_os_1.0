@@ -10,9 +10,9 @@ set -euo pipefail
 
 # Configuration
 ENVIRONMENT=${1:-staging}
-BASE_URL=${BASE_URL:-"http://localhost:8080"}
-FRONTEND_URL=${FRONTEND_URL:-"http://localhost:3003"}
-AI_ENGINE_URL=${AI_ENGINE_URL:-"http://localhost:8001"}
+BASE_URL=${BASE_URL:-"http://localhost:\${{TF_ADMIN_PORT:-8080}}"}
+FRONTEND_URL=${FRONTEND_URL:-"http://localhost:\${{TF_ADMIN_PORT:-8080}}"}
+AI_ENGINE_URL=${AI_ENGINE_URL:-"http://localhost:\${{TF_ADMIN_PORT:-8080}}"}
 TEST_USER_EMAIL="test@terrafusion.com"
 TEST_USER_PASSWORD="TestPassword123!"
 TIMEOUT=10

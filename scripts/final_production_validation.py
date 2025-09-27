@@ -12,12 +12,12 @@ from datetime import datetime
 class TerraFusionProductionValidator:
     def __init__(self):
         self.services = {
-            'gauge_theory_api': {'url': 'http://localhost:5001', 'name': 'Gauge Theory API'},
-            'gauge_theory_swarm': {'url': 'http://localhost:8001', 'name': 'Gauge Theory AI Swarm'},
-            'claude_flow': {'url': 'http://localhost:8002', 'name': 'Claude-Flow Integration'},
-            'frontend': {'url': 'http://localhost:3000', 'name': 'Frontend Application'},
-            'backend': {'url': 'http://localhost:8000', 'name': 'Backend Services'},
-            'quantum_engine': {'url': 'http://localhost:8080', 'name': 'Quantum Performance Engine'}
+            'gauge_theory_api': {'url': 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}', 'name': 'Gauge Theory API'},
+            'gauge_theory_swarm': {'url': 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}', 'name': 'Gauge Theory AI Swarm'},
+            'claude_flow': {'url': 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}', 'name': 'Claude-Flow Integration'},
+            'frontend': {'url': 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}', 'name': 'Frontend Application'},
+            'backend': {'url': 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}', 'name': 'Backend Services'},
+            'quantum_engine': {'url': 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}', 'name': 'Quantum Performance Engine'}
         }
         self.results = {}
         
@@ -92,7 +92,7 @@ class TerraFusionProductionValidator:
         
         try:
             # Test Gauge Theory Swarm
-            swarm_response = requests.get('http://localhost:8001/api/swarm/status', timeout=5)
+            swarm_response = requests.get('http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/swarm/status', timeout=5)
             if swarm_response.status_code == 200:
                 swarm_data = swarm_response.json()
                 agents_count = swarm_data.get('totalAgents', 0)
@@ -106,7 +106,7 @@ class TerraFusionProductionValidator:
                     score += 25
             
             # Test Claude Flow Integration
-            claude_response = requests.get('http://localhost:8002/api/claude/status', timeout=5)
+            claude_response = requests.get('http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/claude/status', timeout=5)
             if claude_response.status_code == 200:
                 claude_data = claude_response.json()
                 managed_agents = claude_data.get('commanderStatus', {}).get('agentsManaged', 0)
@@ -134,9 +134,9 @@ class TerraFusionProductionValidator:
         
         # Test API Response Times
         api_tests = [
-            ('Gauge Theory API', 'http://localhost:5001/health'),
-            ('AI Swarm Service', 'http://localhost:8001/health'),
-            ('Claude Flow Service', 'http://localhost:8002/health')
+            ('Gauge Theory API', 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/health'),
+            ('AI Swarm Service', 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/health'),
+            ('Claude Flow Service', 'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/health')
         ]
         
         total_response_time = 0
@@ -215,7 +215,7 @@ class TerraFusionProductionValidator:
         try:
             # Test gauge theory optimization
             optimization_response = requests.post(
-                'http://localhost:8001/api/swarm/optimize',
+                'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/swarm/optimize',
                 json={'countyId': 'benton-wa', 'parameters': {'test': True}},
                 timeout=10
             )
@@ -228,7 +228,7 @@ class TerraFusionProductionValidator:
         try:
             # Test workflow execution
             workflow_response = requests.post(
-                'http://localhost:8002/api/claude/execute',
+                'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/claude/execute',
                 json={'workflowId': 'ai-swarm-coordination', 'parameters': {}},
                 timeout=10
             )

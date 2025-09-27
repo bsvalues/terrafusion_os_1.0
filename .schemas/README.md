@@ -2,7 +2,9 @@
 
 ## Quick Start
 
-The `.schemas` directory contains schema definitions, validation rules, and API contracts for TerraFusion OS, ensuring data integrity across our 1,008 AI agents, 33 active modules, and government-grade infrastructure.
+The `.schemas` directory contains schema definitions, validation rules, and API
+contracts for TerraFusion OS, ensuring data integrity across our 1,008 AI
+agents, 33 active modules, and government-grade infrastructure.
 
 ## Directory Structure
 
@@ -26,6 +28,7 @@ The `.schemas` directory contains schema definitions, validation rules, and API 
 ## Essential Commands
 
 ### Schema Validation
+
 ```bash
 # Validate specific schema
 npm run schema:validate .schemas/api/v1/property.schema.json
@@ -41,6 +44,7 @@ npm run schema:report
 ```
 
 ### Type Generation
+
 ```bash
 # Generate TypeScript types
 npm run schema:generate-types
@@ -55,6 +59,7 @@ npm run schema:generate-docs
 ## Quick Schema Creation
 
 ### Basic Property Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -79,6 +84,7 @@ npm run schema:generate-docs
 ```
 
 ### AI Agent Status Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -104,6 +110,7 @@ npm run schema:generate-docs
 ```
 
 ### Government User Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -134,6 +141,7 @@ npm run schema:generate-docs
 ## Common Workflows
 
 ### API Development Workflow
+
 1. **Define Schema**: Create JSON schema for API endpoint
 2. **Validate**: `npm run schema:validate api/endpoint.schema.json`
 3. **Generate Types**: `npm run schema:generate-types`
@@ -141,6 +149,7 @@ npm run schema:generate-docs
 5. **Test**: `npm run test:api-schema-compliance`
 
 ### Database Schema Workflow
+
 1. **Create Entity Schema**: Define database entity structure
 2. **Validate Migration**: `npm run schema:validate-migration`
 3. **Generate Models**: `npm run schema:generate-csharp`
@@ -148,6 +157,7 @@ npm run schema:generate-docs
 5. **Verify**: `npm run schema:verify-database`
 
 ### Government Compliance Workflow
+
 1. **Check FISMA Compliance**: `npm run schema:fisma-check`
 2. **Validate Security Requirements**: `npm run schema:security-validate`
 3. **Generate Audit Report**: `npm run schema:audit-report`
@@ -156,6 +166,7 @@ npm run schema:generate-docs
 ## Configuration Files
 
 ### Schema Validation Configuration
+
 ```json
 {
   "validation": {
@@ -173,6 +184,7 @@ npm run schema:generate-docs
 ```
 
 ### Type Generation Configuration
+
 ```json
 {
   "typescript": {
@@ -191,29 +203,30 @@ npm run schema:generate-docs
 ## Integration Examples
 
 ### React Component with Schema Validation
+
 ```typescript
 import { useSchemaValidation } from '../hooks/useSchemaValidation';
 import { PropertyAssessment } from '../types/generated';
 
 export function PropertyForm() {
   const { validateData } = useSchemaValidation();
-  
+
   const handleSubmit = async (data: PropertyAssessment) => {
     const result = await validateData(data, 'property-assessment');
-    
+
     if (!result.valid) {
       console.error('Validation failed:', result.errors);
       return;
     }
-    
+
     if (!result.governmentCompliant) {
       console.warn('Government compliance issues:', result.complianceErrors);
     }
-    
+
     // Submit valid data
     await submitProperty(data);
   };
-  
+
   return (
     <form onSubmit={handleSubmit}>
       {/* Form fields */}
@@ -223,13 +236,14 @@ export function PropertyForm() {
 ```
 
 ### .NET API Controller with Schema Validation
+
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
 public class PropertiesController : ControllerBase
 {
     private readonly ISchemaValidationService _validator;
-    
+
     [HttpPost]
     public async Task<IActionResult> CreateProperty(
         [FromBody] CreatePropertyRequest request)
@@ -237,17 +251,17 @@ public class PropertiesController : ControllerBase
         // Validate request against schema
         var validationResult = await _validator.ValidateAsync(
             request, "create-property-request");
-        
+
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
-        
+
         if (!validationResult.GovernmentCompliant)
         {
             return StatusCode(403, "Government compliance requirements not met");
         }
-        
+
         // Process valid request
         var property = await _propertyService.CreateAsync(request);
         return Ok(property);
@@ -256,6 +270,7 @@ public class PropertiesController : ControllerBase
 ```
 
 ### AI Agent Schema Validation
+
 ```python
 # AI agent message validation
 import json
@@ -265,20 +280,20 @@ class SwarmMessageValidator:
     def __init__(self):
         with open('.schemas/ai/swarm-message.schema.json') as f:
             self.schema = json.load(f)
-    
+
     def validate_message(self, message):
         try:
             validate(instance=message, schema=self.schema)
-            
+
             # Additional government compliance checks
             if not self.validate_quantum_signature(message.get('quantumSignature')):
                 raise ValidationError("Invalid quantum signature")
-            
+
             return True
         except ValidationError as e:
             print(f"Message validation failed: {e.message}")
             return False
-    
+
     def validate_quantum_signature(self, signature):
         # Validate quantum cryptographic signature
         return len(signature) == 64 and signature.isalnum()
@@ -287,6 +302,7 @@ class SwarmMessageValidator:
 ## Government Compliance Features
 
 ### FISMA Compliance Validation
+
 ```bash
 # Check FISMA compliance for all schemas
 npm run schema:fisma-validate
@@ -299,6 +315,7 @@ npm run schema:security-controls-check
 ```
 
 ### Audit Trail Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -342,13 +359,21 @@ npm run schema:security-controls-check
       "maxLength": 1000
     }
   },
-  "required": ["eventId", "timestamp", "userId", "governmentId", "action", "resourceType"]
+  "required": [
+    "eventId",
+    "timestamp",
+    "userId",
+    "governmentId",
+    "action",
+    "resourceType"
+  ]
 }
 ```
 
 ## Performance Optimization
 
 ### Schema Caching
+
 ```javascript
 // Schema caching for performance
 class SchemaCache {
@@ -356,26 +381,27 @@ class SchemaCache {
     this.cache = new Map();
     this.maxAge = 300000; // 5 minutes
   }
-  
+
   async getSchema(schemaName) {
     const cached = this.cache.get(schemaName);
-    
+
     if (cached && Date.now() - cached.timestamp < this.maxAge) {
       return cached.schema;
     }
-    
+
     const schema = await this.loadSchema(schemaName);
     this.cache.set(schemaName, {
       schema,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     return schema;
   }
 }
 ```
 
 ### Validation Performance
+
 ```bash
 # Benchmark schema validation performance
 npm run schema:benchmark
@@ -392,6 +418,7 @@ npm run schema:optimize-validation
 ### Common Issues
 
 #### Schema Validation Failures
+
 ```bash
 # Debug validation issues
 npm run schema:debug property.schema.json
@@ -404,6 +431,7 @@ npm run schema:meta-validate
 ```
 
 #### Government Compliance Issues
+
 ```bash
 # Debug FISMA compliance
 npm run schema:debug-fisma
@@ -416,6 +444,7 @@ npm run schema:audit-debug
 ```
 
 #### Performance Issues
+
 ```bash
 # Profile validation performance
 npm run schema:profile-validation
@@ -428,6 +457,7 @@ npm run schema:optimize
 ```
 
 ### Emergency Procedures
+
 ```bash
 # Bypass validation (emergency only)
 export SCHEMA_VALIDATION_BYPASS=true
@@ -442,11 +472,13 @@ npm run schema:restore-backup
 ## Support and Resources
 
 ### Documentation
+
 - `index.md`: Comprehensive technical documentation
 - `claude.md`: Development patterns and integration guide
 - Individual schema files include inline documentation
 
 ### Getting Help
+
 ```bash
 # Check schema status
 npm run schema:status
@@ -458,4 +490,6 @@ npm run schema:debug-report
 npm run schema:dependencies
 ```
 
-This README provides quick access to essential schema functionality while maintaining TerraFusion's government-grade data integrity and compliance standards.
+This README provides quick access to essential schema functionality while
+maintaining TerraFusion's government-grade data integrity and compliance
+standards.

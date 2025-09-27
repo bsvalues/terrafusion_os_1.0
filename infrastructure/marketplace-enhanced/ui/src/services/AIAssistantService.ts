@@ -62,7 +62,7 @@ class AIAssistantService {
   private templates: any;
   private activeConversationId: string | null = null;
 
-  constructor(baseUrl: string = 'http://localhost:3000/api') {
+  constructor(baseUrl: string = 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api') {
     this.baseUrl = baseUrl;
     this.templates = AIPromptTemplates.terrafusion_ai_templates;
     this.currentContext = this.initializeContext();
@@ -86,7 +86,7 @@ class AIAssistantService {
         ...this.currentContext,
         ...request.contextOverride,
         template_config: template,
-        conversation_history: this.getRecentHistory(5)
+        conversation_history: this.getRecentHistory(5),
       };
 
       // Process request based on template type
@@ -107,32 +107,32 @@ class AIAssistantService {
 
   // Template-Specific Processing
   private async processAIRequest(
-    request: AIRequest, 
-    template: any, 
+    request: AIRequest,
+    template: any,
     context: any
   ): Promise<AIResponse> {
     switch (request.template) {
       case 'government_copilot':
         return this.processGovernmentCopilot(request, template, context);
-      
+
       case 'plugin_validation_agent':
         return this.processPluginValidation(request, template, context);
-      
+
       case 'compliance_automation':
         return this.processComplianceAutomation(request, template, context);
-      
+
       case 'federation_manager':
         return this.processFederationManager(request, template, context);
-      
+
       case 'user_onboarding':
         return this.processUserOnboarding(request, template, context);
-      
+
       case 'audit_trail_generator':
         return this.processAuditTrailGenerator(request, template, context);
-      
+
       case 'ai_confidence_explainer':
         return this.processConfidenceExplainer(request, template, context);
-      
+
       default:
         return this.processGenericTemplate(request, template, context);
     }
@@ -140,8 +140,8 @@ class AIAssistantService {
 
   // Government Copilot Implementation
   private async processGovernmentCopilot(
-    request: AIRequest, 
-    template: any, 
+    request: AIRequest,
+    template: any,
     context: any
   ): Promise<AIResponse> {
     const response: AIResponse = {
@@ -152,28 +152,28 @@ class AIAssistantService {
       timestamp: new Date().toISOString(),
       context: context,
       actions: [],
-      followUp: []
+      followUp: [],
     };
 
     // Analyze user query for intent
     const intent = this.analyzeIntent(request.userQuery);
-    
+
     switch (intent.category) {
       case 'plugin_deployment':
         response.response = await this.generatePluginDeploymentGuidance(intent, context);
         response.actions = this.generatePluginDeploymentActions(intent, context);
         break;
-      
+
       case 'compliance_check':
         response.response = await this.generateComplianceGuidance(intent, context);
         response.actions = this.generateComplianceActions(intent, context);
         break;
-      
+
       case 'federation_management':
         response.response = await this.generateFederationGuidance(intent, context);
         response.actions = this.generateFederationActions(intent, context);
         break;
-      
+
       default:
         response.response = this.generateGenericGuidance(request.userQuery, template, context);
     }
@@ -186,8 +186,8 @@ class AIAssistantService {
 
   // Plugin Validation Agent Implementation
   private async processPluginValidation(
-    request: AIRequest, 
-    template: any, 
+    request: AIRequest,
+    template: any,
     context: any
   ): Promise<AIResponse> {
     const response: AIResponse = {
@@ -197,18 +197,18 @@ class AIAssistantService {
       template: 'plugin_validation_agent',
       timestamp: new Date().toISOString(),
       context: context,
-      actions: []
+      actions: [],
     };
 
     // Extract plugin information from query
     const pluginInfo = this.extractPluginInfo(request.userQuery);
-    
+
     if (pluginInfo.pluginId) {
       // Get actual validation status
       try {
         const validationStatus = await governmentAPI.getValidationStatus(pluginInfo.pluginId);
         const plugin = await governmentAPI.getPluginById(pluginInfo.pluginId);
-        
+
         response.response = this.generateValidationReport(plugin, validationStatus, template);
         response.actions = this.generateValidationActions(plugin, validationStatus);
         response.confidence = validationStatus.aiConfidence;
@@ -225,8 +225,8 @@ class AIAssistantService {
 
   // Compliance Automation Implementation
   private async processComplianceAutomation(
-    request: AIRequest, 
-    template: any, 
+    request: AIRequest,
+    template: any,
     context: any
   ): Promise<AIResponse> {
     const response: AIResponse = {
@@ -236,13 +236,13 @@ class AIAssistantService {
       template: 'compliance_automation',
       timestamp: new Date().toISOString(),
       context: context,
-      actions: []
+      actions: [],
     };
 
     // Get compliance alerts and status
     const complianceAlerts = notificationService.getComplianceAlerts({
       county: context.county?.id,
-      status: 'open'
+      status: 'open',
     });
 
     // Generate compliance report
@@ -259,7 +259,7 @@ class AIAssistantService {
         priority: 'critical',
         category: 'compliance',
         county: context.county?.id,
-        persistent: true
+        persistent: true,
       });
     }
 
@@ -285,7 +285,7 @@ class AIAssistantService {
       currentModule: this.getCurrentModule(),
       securityLevel: user?.securityClearance || 'public',
       complianceMode: this.getComplianceMode(county),
-      sessionData: this.getSessionData()
+      sessionData: this.getSessionData(),
     };
   }
 
@@ -296,45 +296,53 @@ class AIAssistantService {
       currentModule: 'dashboard',
       securityLevel: 'public',
       complianceMode: ['basic'],
-      sessionData: {}
+      sessionData: {},
     };
   }
 
   // Intent Analysis
   private analyzeIntent(query: string): { category: string; entities: any; confidence: number } {
     const lowercaseQuery = query.toLowerCase();
-    
+
     // Plugin deployment patterns
     if (lowercaseQuery.includes('deploy') || lowercaseQuery.includes('install')) {
       return {
         category: 'plugin_deployment',
         entities: this.extractPluginEntities(query),
-        confidence: 0.9
+        confidence: 0.9,
       };
     }
-    
+
     // Compliance patterns
-    if (lowercaseQuery.includes('compliance') || lowercaseQuery.includes('audit') || lowercaseQuery.includes('fisma')) {
+    if (
+      lowercaseQuery.includes('compliance') ||
+      lowercaseQuery.includes('audit') ||
+      lowercaseQuery.includes('fisma')
+    ) {
       return {
         category: 'compliance_check',
         entities: this.extractComplianceEntities(query),
-        confidence: 0.85
+        confidence: 0.85,
       };
     }
-    
+
     // Federation patterns
-    if (lowercaseQuery.includes('federation') || lowercaseQuery.includes('multi-county') || lowercaseQuery.includes('cross-jurisdiction')) {
+    if (
+      lowercaseQuery.includes('federation') ||
+      lowercaseQuery.includes('multi-county') ||
+      lowercaseQuery.includes('cross-jurisdiction')
+    ) {
       return {
         category: 'federation_management',
         entities: this.extractFederationEntities(query),
-        confidence: 0.8
+        confidence: 0.8,
       };
     }
-    
+
     return {
       category: 'general',
       entities: {},
-      confidence: 0.5
+      confidence: 0.5,
     };
   }
 
@@ -342,11 +350,11 @@ class AIAssistantService {
   private async generatePluginDeploymentGuidance(intent: any, context: any): Promise<string> {
     const steps = [
       "1. **Authentication**: Ensure you're logged in with appropriate permissions",
-      "2. **Plugin Selection**: Navigate to Government Dashboard > Plugin Marketplace",
-      "3. **Validation Check**: Verify plugin compliance and security status",
-      "4. **County Selection**: Choose target counties for deployment",
-      "5. **Deployment**: Initiate deployment with AI-guided validation",
-      "6. **Monitoring**: Track deployment status and performance metrics"
+      '2. **Plugin Selection**: Navigate to Government Dashboard > Plugin Marketplace',
+      '3. **Validation Check**: Verify plugin compliance and security status',
+      '4. **County Selection**: Choose target counties for deployment',
+      '5. **Deployment**: Initiate deployment with AI-guided validation',
+      '6. **Monitoring**: Track deployment status and performance metrics',
     ];
 
     return `## Plugin Deployment Guidance\n\n${steps.join('\n')}\n\n**Current Context**: ${context.user?.role.displayName} in ${context.county?.name}\n\n⚠️ **Security Note**: All deployments require FISMA compliance validation.`;
@@ -360,7 +368,7 @@ class AIAssistantService {
     let report = `## Compliance Status Report\n\n`;
     report += `**County**: ${context.county?.name || 'Unknown'}\n`;
     report += `**Generated**: ${new Date().toLocaleString()}\n\n`;
-    
+
     if (totalAlerts === 0) {
       report += `✅ **All Systems Compliant** - No active compliance issues detected.\n\n`;
     } else {
@@ -368,12 +376,14 @@ class AIAssistantService {
       report += `- 🔴 Critical: ${criticalAlerts}\n`;
       report += `- 🟡 Warning: ${warningAlerts}\n`;
       report += `- 📊 Total: ${totalAlerts}\n\n`;
-      
+
       if (criticalAlerts > 0) {
         report += `### Critical Issues Requiring Immediate Attention\n`;
-        alerts.filter(a => a.severity === 'critical').forEach(alert => {
-          report += `- **${alert.complianceType.toUpperCase()}**: ${alert.description}\n`;
-        });
+        alerts
+          .filter(a => a.severity === 'critical')
+          .forEach(alert => {
+            report += `- **${alert.complianceType.toUpperCase()}**: ${alert.description}\n`;
+          });
       }
     }
 
@@ -389,7 +399,7 @@ class AIAssistantService {
         type: 'navigation',
         handler: async () => {
           window.location.href = '/plugins';
-        }
+        },
       },
       {
         id: 'check-compliance',
@@ -398,8 +408,8 @@ class AIAssistantService {
         handler: async () => {
           await this.triggerComplianceCheck(context.county?.id);
         },
-        requiresConfirmation: true
-      }
+        requiresConfirmation: true,
+      },
     ];
   }
 
@@ -411,8 +421,8 @@ class AIAssistantService {
         type: 'api_call',
         handler: async () => {
           await this.generateFullComplianceReport();
-        }
-      }
+        },
+      },
     ];
 
     if (alerts.length > 0) {
@@ -422,7 +432,7 @@ class AIAssistantService {
         type: 'navigation',
         handler: async () => {
           window.location.href = '/government-dashboard?tab=compliance';
-        }
+        },
       });
     }
 
@@ -455,7 +465,7 @@ class AIAssistantService {
     return {
       timestamp: new Date().toISOString(),
       performance: performanceService.getPerformanceMetrics(),
-      notifications: notificationService.getUnreadCount()
+      notifications: notificationService.getUnreadCount(),
     };
   }
 
@@ -467,11 +477,11 @@ class AIAssistantService {
       userQuery: query,
       aiResponse: response.response,
       template,
-      context: this.currentContext
+      context: this.currentContext,
     };
 
     this.conversationHistory.unshift(conversation);
-    
+
     // Keep only last 50 conversations
     if (this.conversationHistory.length > 50) {
       this.conversationHistory = this.conversationHistory.slice(0, 50);
@@ -512,14 +522,16 @@ class AIAssistantService {
       template: request.template,
       timestamp: new Date().toISOString(),
       context: this.currentContext,
-      actions: [{
-        id: 'retry-request',
-        label: 'Retry Request',
-        type: 'api_call',
-        handler: async () => {
-          await this.askAssistant(request);
-        }
-      }]
+      actions: [
+        {
+          id: 'retry-request',
+          label: 'Retry Request',
+          type: 'api_call',
+          handler: async () => {
+            await this.askAssistant(request);
+          },
+        },
+      ],
     };
   }
 
@@ -560,7 +572,7 @@ class AIAssistantService {
   }
 
   private generateFederationGuidance(intent: any, context: any): Promise<string> {
-    return Promise.resolve("Federation management guidance will be provided here.");
+    return Promise.resolve('Federation management guidance will be provided here.');
   }
 
   private generateFederationActions(intent: any, context: any): AIAction[] {
@@ -573,9 +585,9 @@ class AIAssistantService {
 
   private generateFollowUpQuestions(intent: any, context: any): string[] {
     return [
-      "Would you like me to check the current compliance status?",
-      "Do you need help with plugin deployment?",
-      "Should I generate an audit report?"
+      'Would you like me to check the current compliance status?',
+      'Do you need help with plugin deployment?',
+      'Should I generate an audit report?',
     ];
   }
 
@@ -583,14 +595,18 @@ class AIAssistantService {
     // Implement automated actions based on response
   }
 
-  private processGenericTemplate(request: AIRequest, template: any, context: any): Promise<AIResponse> {
+  private processGenericTemplate(
+    request: AIRequest,
+    template: any,
+    context: any
+  ): Promise<AIResponse> {
     return Promise.resolve({
       id: this.generateResponseId(),
-      response: "Generic response based on template.",
+      response: 'Generic response based on template.',
       confidence: 0.7,
       template: request.template,
       timestamp: new Date().toISOString(),
-      context: context
+      context: context,
     });
   }
 
@@ -612,7 +628,10 @@ class AIAssistantService {
     this.saveConversationHistory();
   }
 
-  rateSatisfaction(conversationId: string, satisfaction: 'helpful' | 'neutral' | 'unhelpful'): void {
+  rateSatisfaction(
+    conversationId: string,
+    satisfaction: 'helpful' | 'neutral' | 'unhelpful'
+  ): void {
     const conversation = this.conversationHistory.find(c => c.id === conversationId);
     if (conversation) {
       conversation.satisfaction = satisfaction;

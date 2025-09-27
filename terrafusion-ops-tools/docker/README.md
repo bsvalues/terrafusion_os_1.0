@@ -1,37 +1,42 @@
 # Terrafusion Docker Configuration
 
-This directory contains Docker Compose configurations for running Terrafusion in different environments.
+This directory contains Docker Compose configurations for running Terrafusion in
+different environments.
 
 ## Quick Start
 
 ### Development Environment
 
 1. Copy the environment template:
+
    ```bash
    cp .env.example .env
    ```
 
 2. Start all services:
+
    ```bash
    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
    ```
 
 3. Access the application:
-   - Frontend: http://localhost:3003
-   - Backend API: http://localhost:8080/docs
-   - AI Engine: http://localhost:8001/docs
-   - Database Admin: http://localhost:8088
-   - Mail Testing: http://localhost:8025
+   - Frontend: http://localhost:\${{TF_DESKTOP_PORT:-3003}}
+   - Backend API: http://localhost:\${{TF_DESKTOP_PORT:-3003}}/docs
+   - AI Engine: http://localhost:\${{TF_DESKTOP_PORT:-3003}}/docs
+   - Database Admin: http://localhost:\${{TF_DESKTOP_PORT:-3003}}
+   - Mail Testing: http://localhost:\${{TF_DESKTOP_PORT:-3003}}
 
 ### Production Environment
 
 1. Configure environment:
+
    ```bash
    cp .env.example .env
    # Edit .env with production values
    ```
 
 2. Build and start services:
+
    ```bash
    docker-compose build
    docker-compose up -d
@@ -46,6 +51,7 @@ This directory contains Docker Compose configurations for running Terrafusion in
 ## Services
 
 ### Core Services
+
 - **db**: PostgreSQL 16 database
 - **redis**: Redis 7 cache and message broker
 - **backend**: FastAPI backend service
@@ -53,6 +59,7 @@ This directory contains Docker Compose configurations for running Terrafusion in
 - **frontend**: React frontend application
 
 ### Supporting Services
+
 - **worker**: Celery worker for async tasks
 - **scheduler**: Celery beat for periodic tasks
 - **prometheus**: Metrics collection
@@ -60,12 +67,14 @@ This directory contains Docker Compose configurations for running Terrafusion in
 - **backup**: Automated backup service
 
 ### Development Tools
+
 - **adminer**: Database management UI
 - **mailhog**: Email testing service
 
 ## Common Commands
 
 ### Service Management
+
 ```bash
 # Start all services
 docker-compose up -d
@@ -84,6 +93,7 @@ docker-compose up -d --scale worker=3
 ```
 
 ### Database Operations
+
 ```bash
 # Access PostgreSQL
 docker-compose exec db psql -U terrafusion_user -d terrafusion_production
@@ -96,6 +106,7 @@ docker-compose exec backup /scripts/db_restore.sh /backups/daily/backup.sql.gz
 ```
 
 ### Development
+
 ```bash
 # Run backend tests
 docker-compose exec backend pytest
@@ -146,6 +157,7 @@ Persistent data is stored in Docker volumes:
 - `grafana_data`: Dashboard configurations
 
 Local directories:
+
 - `./logs`: Application logs
 - `./uploads`: User uploaded files
 - `./backups`: Database backups
@@ -153,13 +165,15 @@ Local directories:
 
 ## Networking
 
-All services communicate on the `terrafusion-network` bridge network with the subnet `172.20.0.0/16`.
+All services communicate on the `terrafusion-network` bridge network with the
+subnet `172.20.0.0/16`.
 
 Services can reference each other by name (e.g., `http://backend:8080`).
 
 ## Troubleshooting
 
 ### Service Won't Start
+
 ```bash
 # Check logs
 docker-compose logs [service_name]
@@ -172,6 +186,7 @@ docker-compose build --no-cache [service_name]
 ```
 
 ### Database Connection Issues
+
 ```bash
 # Verify database is running
 docker-compose exec db pg_isready
@@ -184,6 +199,7 @@ docker-compose exec backend python -c "from app.database import engine; print('C
 ```
 
 ### Performance Issues
+
 ```bash
 # Check resource usage
 docker stats
@@ -217,10 +233,12 @@ Automated backups run daily via the backup service. Manual backup:
 ## Monitoring
 
 Access monitoring dashboards:
-- Prometheus: http://localhost:9090
-- Grafana: http://localhost:3000 (admin/configured_password)
+
+- Prometheus: http://localhost:\${{TF_DESKTOP_PORT:-3003}}
+- Grafana: http://localhost:\${{TF_DESKTOP_PORT:-3003}} (admin/configured_password)
 
 Pre-configured dashboards:
+
 - System Overview
 - Application Metrics
 - Database Performance
@@ -247,6 +265,7 @@ To update services:
 ## Support
 
 For issues:
+
 1. Check service logs
 2. Review documentation
 3. Contact DevOps team

@@ -1,7 +1,7 @@
 /**
  * User Workflow Integration Tests
  * Championship-level end-to-end user workflow testing
- * 
+ *
  * Tests verify that real-world user scenarios work perfectly
  * across the entire Terrafusion ecosystem.
  */
@@ -9,7 +9,11 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 import { TerraFusionIPC, MessageType, Priority, createIPC } from '../../shared/ipc-protocol/index';
 import { DatabaseManager } from '../../shared/rust-services/placeholder/src/database';
-import { MessageBus, Message, MessagePriority } from '../../shared/rust-services/placeholder/src/messaging';
+import {
+  MessageBus,
+  Message,
+  MessagePriority,
+} from '../../shared/rust-services/placeholder/src/messaging';
 import { MetricsCollector } from '../../shared/rust-services/placeholder/src/metrics';
 import { setTimeout } from 'timers/promises';
 
@@ -32,36 +36,36 @@ const USER_PERSONAS: UserPersona[] = [
     name: 'Sarah Johnson',
     role: 'Real Estate Agent',
     primaryApps: ['property-workbench', 'gispro', 'costforge-ai', 'marketplace'],
-    workflows: ['property-listing', 'market-analysis', 'client-reporting']
+    workflows: ['property-listing', 'market-analysis', 'client-reporting'],
   },
   {
     id: 'property-assessor',
     name: 'Michael Chen',
     role: 'Property Assessor',
     primaryApps: ['terra-fusion-assessor', 'gispro', 'costforge-ai', 'terra-fusion-dashboard'],
-    workflows: ['property-assessment', 'valuation-reporting', 'compliance-review']
+    workflows: ['property-assessment', 'valuation-reporting', 'compliance-review'],
   },
   {
     id: 'data-analyst',
     name: 'Emily Rodriguez',
     role: 'Data Analyst',
     primaryApps: ['terra-miner', 'terra-insight', 'terra-fusion-dashboard', 'terra-agent'],
-    workflows: ['market-research', 'trend-analysis', 'ai-insights']
+    workflows: ['market-research', 'trend-analysis', 'ai-insights'],
   },
   {
     id: 'web-developer',
     name: 'David Kim',
     role: 'Web Developer',
     primaryApps: ['web-audit-tracker', 'terra-agent', 'terra-fusion-dashboard'],
-    workflows: ['website-audit', 'performance-optimization', 'compliance-checking']
+    workflows: ['website-audit', 'performance-optimization', 'compliance-checking'],
   },
   {
     id: 'business-owner',
     name: 'Lisa Thompson',
     role: 'Business Owner',
     primaryApps: ['terra-levy', 'costforge-ai', 'marketplace', 'terra-fusion-dashboard'],
-    workflows: ['tax-planning', 'investment-analysis', 'business-reporting']
-  }
+    workflows: ['tax-planning', 'investment-analysis', 'business-reporting'],
+  },
 ];
 
 // Common user workflow scenarios
@@ -100,7 +104,7 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         appId: 'property-workbench',
         action: 'user-login',
         userInput: { userId: 'sarah.johnson', role: 'agent' },
-        expectedResult: { authenticated: true, dashboard: 'loaded' }
+        expectedResult: { authenticated: true, dashboard: 'loaded' },
       },
       {
         id: 'create-new-property',
@@ -112,9 +116,9 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
           type: 'single-family',
           bedrooms: 3,
           bathrooms: 2,
-          sqft: 1850
+          sqft: 1850,
         },
-        expectedResult: { propertyId: 'PROP_456OAK', status: 'created' }
+        expectedResult: { propertyId: 'PROP_456OAK', status: 'created' },
       },
       {
         id: 'analyze-location',
@@ -122,28 +126,28 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         appId: 'gispro',
         action: 'comprehensive-location-analysis',
         userInput: { propertyId: 'PROP_456OAK' },
-        expectedResult: { 
+        expectedResult: {
           coordinates: [39.7817, -89.6501],
           neighborhood: 'Oak Park',
           walkScore: 72,
-          schoolDistrict: 'Springfield District 186'
-        }
+          schoolDistrict: 'Springfield District 186',
+        },
       },
       {
         id: 'get-valuation',
         description: 'Get AI-powered property valuation',
         appId: 'costforge-ai',
         action: 'property-valuation',
-        userInput: { 
+        userInput: {
           propertyId: 'PROP_456OAK',
-          analysisType: 'market-competitive'
+          analysisType: 'market-competitive',
         },
         expectedResult: {
           estimatedValue: 285000,
           valueRange: { min: 270000, max: 300000 },
           confidence: 0.89,
-          comparables: 8
-        }
+          comparables: 8,
+        },
       },
       {
         id: 'market-analysis',
@@ -153,14 +157,14 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         userInput: {
           propertyId: 'PROP_456OAK',
           radius: 2, // miles
-          timeframe: '6-months'
+          timeframe: '6-months',
         },
         expectedResult: {
           trendDirection: 'rising',
           avgDaysOnMarket: 45,
           priceAppreciation: 0.08,
-          inventory: 'balanced'
-        }
+          inventory: 'balanced',
+        },
       },
       {
         id: 'create-listing',
@@ -171,13 +175,13 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
           propertyId: 'PROP_456OAK',
           listPrice: 289900,
           description: 'Beautiful 3BR/2BA home in desirable Oak Park neighborhood',
-          photos: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg']
+          photos: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg'],
         },
         expectedResult: {
           listingId: 'MLS_456OAK',
           status: 'active',
-          publicUrl: 'https://marketplace.terrafusion.com/listing/MLS_456OAK'
-        }
+          publicUrl: 'https://marketplace.terrafusion.com/listing/MLS_456OAK',
+        },
       },
       {
         id: 'generate-reports',
@@ -186,15 +190,15 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'generate-listing-package',
         userInput: {
           propertyId: 'PROP_456OAK',
-          reportTypes: ['cma', 'market-analysis', 'property-details']
+          reportTypes: ['cma', 'market-analysis', 'property-details'],
         },
         expectedResult: {
           reportPackageId: 'RPT_456OAK',
           reports: 3,
-          downloadUrl: 'https://reports.terrafusion.com/packages/RPT_456OAK'
-        }
-      }
-    ]
+          downloadUrl: 'https://reports.terrafusion.com/packages/RPT_456OAK',
+        },
+      },
+    ],
   },
   {
     id: 'property-assessment-workflow',
@@ -210,7 +214,7 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         appId: 'terra-fusion-assessor',
         action: 'assessor-login',
         userInput: { assessorId: 'michael.chen', jurisdiction: 'cook-county' },
-        expectedResult: { authenticated: true, jurisdiction: 'verified' }
+        expectedResult: { authenticated: true, jurisdiction: 'verified' },
       },
       {
         id: 'load-property',
@@ -218,7 +222,7 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         appId: 'terra-fusion-assessor',
         action: 'load-property',
         userInput: { parcelId: 'COOK123456789', assessmentYear: 2024 },
-        expectedResult: { propertyLoaded: true, priorAssessment: 275000 }
+        expectedResult: { propertyLoaded: true, priorAssessment: 275000 },
       },
       {
         id: 'gis-analysis',
@@ -230,8 +234,8 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
           lotSize: 7200,
           zoning: 'R1-Single Family',
           floodZone: 'X',
-          utilities: ['water', 'sewer', 'electric', 'gas']
-        }
+          utilities: ['water', 'sewer', 'electric', 'gas'],
+        },
       },
       {
         id: 'cost-analysis',
@@ -242,14 +246,14 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
           parcelId: 'COOK123456789',
           buildingType: 'single-family',
           yearBuilt: 1995,
-          sqft: 1850
+          sqft: 1850,
         },
         expectedResult: {
           replacementCost: 320000,
           depreciation: 0.25,
           landValue: 85000,
-          totalValue: 325000
-        }
+          totalValue: 325000,
+        },
       },
       {
         id: 'field-inspection',
@@ -260,9 +264,9 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
           parcelId: 'COOK123456789',
           condition: 'good',
           improvements: ['deck', 'garage'],
-          issues: []
+          issues: [],
         },
-        expectedResult: { inspectionComplete: true, condition: 'verified' }
+        expectedResult: { inspectionComplete: true, condition: 'verified' },
       },
       {
         id: 'finalize-assessment',
@@ -272,13 +276,13 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         userInput: {
           parcelId: 'COOK123456789',
           assessedValue: 320000,
-          assessorNotes: 'Property in good condition, recent improvements noted'
+          assessorNotes: 'Property in good condition, recent improvements noted',
         },
         expectedResult: {
           assessmentId: 'ASSESS_COOK123456789_2024',
           status: 'finalized',
-          effectiveDate: '2024-01-01'
-        }
+          effectiveDate: '2024-01-01',
+        },
       },
       {
         id: 'generate-notices',
@@ -289,10 +293,10 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         expectedResult: {
           noticesGenerated: 2,
           mailDate: '2024-01-15',
-          appealDeadline: '2024-02-15'
-        }
-      }
-    ]
+          appealDeadline: '2024-02-15',
+        },
+      },
+    ],
   },
   {
     id: 'market-research-workflow',
@@ -310,9 +314,9 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         userInput: {
           projectName: 'Q4 2024 Market Analysis',
           region: 'Chicago Metro',
-          dataTypes: ['sales', 'listings', 'demographics']
+          dataTypes: ['sales', 'listings', 'demographics'],
         },
-        expectedResult: { projectId: 'RESEARCH_Q4_2024_CHI', status: 'initialized' }
+        expectedResult: { projectId: 'RESEARCH_Q4_2024_CHI', status: 'initialized' },
       },
       {
         id: 'data-mining',
@@ -322,13 +326,13 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         userInput: {
           projectId: 'RESEARCH_Q4_2024_CHI',
           sources: ['mls', 'public-records', 'census'],
-          timeframe: '2024-Q4'
+          timeframe: '2024-Q4',
         },
         expectedResult: {
           recordsCollected: 15847,
           dataQuality: 0.94,
-          processingTime: 8500
-        }
+          processingTime: 8500,
+        },
       },
       {
         id: 'ai-analysis',
@@ -337,13 +341,13 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'market-ai-analysis',
         userInput: {
           projectId: 'RESEARCH_Q4_2024_CHI',
-          analysisTypes: ['price-trends', 'inventory-patterns', 'buyer-behavior']
+          analysisTypes: ['price-trends', 'inventory-patterns', 'buyer-behavior'],
         },
         expectedResult: {
           trendsIdentified: 8,
           patterns: ['seasonal-dip', 'price-stabilization', 'inventory-growth'],
-          confidence: 0.91
-        }
+          confidence: 0.91,
+        },
       },
       {
         id: 'generate-insights',
@@ -352,16 +356,16 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'generate-market-insights',
         userInput: {
           projectId: 'RESEARCH_Q4_2024_CHI',
-          focusAreas: ['pricing', 'inventory', 'demand']
+          focusAreas: ['pricing', 'inventory', 'demand'],
         },
         expectedResult: {
           insightCount: 12,
           keyFindings: [
             'Median price increased 3.2% YoY',
             'Inventory up 15% from Q3',
-            'Days on market decreased to 38 days'
-          ]
-        }
+            'Days on market decreased to 38 days',
+          ],
+        },
       },
       {
         id: 'create-dashboard',
@@ -370,15 +374,15 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'create-research-dashboard',
         userInput: {
           projectId: 'RESEARCH_Q4_2024_CHI',
-          visualizations: ['trend-charts', 'heat-maps', 'comparison-tables']
+          visualizations: ['trend-charts', 'heat-maps', 'comparison-tables'],
         },
         expectedResult: {
           dashboardId: 'DASH_Q4_2024_CHI',
           url: 'https://dashboard.terrafusion.com/research/DASH_Q4_2024_CHI',
-          widgets: 8
-        }
-      }
-    ]
+          widgets: 8,
+        },
+      },
+    ],
   },
   {
     id: 'website-audit-workflow',
@@ -395,13 +399,13 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'start-comprehensive-audit',
         userInput: {
           url: 'https://example-real-estate.com',
-          auditTypes: ['performance', 'accessibility', 'seo', 'security']
+          auditTypes: ['performance', 'accessibility', 'seo', 'security'],
         },
         expectedResult: {
           auditId: 'AUDIT_EXAMPLE_RE_2024',
           status: 'running',
-          estimatedDuration: 300
-        }
+          estimatedDuration: 300,
+        },
       },
       {
         id: 'ai-content-analysis',
@@ -410,14 +414,14 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'website-content-analysis',
         userInput: {
           url: 'https://example-real-estate.com',
-          analysisTypes: ['readability', 'seo-optimization', 'user-experience']
+          analysisTypes: ['readability', 'seo-optimization', 'user-experience'],
         },
         expectedResult: {
           contentScore: 78,
           readabilityGrade: 'college',
           seoScore: 85,
-          uxScore: 82
-        }
+          uxScore: 82,
+        },
       },
       {
         id: 'performance-audit',
@@ -429,8 +433,8 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
           lighthouseScore: 92,
           loadTime: 2.3,
           coreWebVitals: { lcp: 1.8, fid: 45, cls: 0.12 },
-          optimizationSuggestions: 7
-        }
+          optimizationSuggestions: 7,
+        },
       },
       {
         id: 'accessibility-check',
@@ -439,14 +443,14 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'accessibility-audit',
         userInput: {
           auditId: 'AUDIT_EXAMPLE_RE_2024',
-          standards: ['WCAG2.1-AA', 'Section508']
+          standards: ['WCAG2.1-AA', 'Section508'],
         },
         expectedResult: {
           complianceScore: 89,
           violations: 8,
           warnings: 15,
-          passes: 142
-        }
+          passes: 142,
+        },
       },
       {
         id: 'generate-report',
@@ -456,15 +460,15 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         userInput: {
           auditId: 'AUDIT_EXAMPLE_RE_2024',
           reportFormat: 'detailed-pdf',
-          includeRecommendations: true
+          includeRecommendations: true,
         },
         expectedResult: {
           reportId: 'RPT_AUDIT_EXAMPLE_RE_2024',
           pageCount: 24,
-          downloadUrl: 'https://reports.terrafusion.com/audits/RPT_AUDIT_EXAMPLE_RE_2024.pdf'
-        }
-      }
-    ]
+          downloadUrl: 'https://reports.terrafusion.com/audits/RPT_AUDIT_EXAMPLE_RE_2024.pdf',
+        },
+      },
+    ],
   },
   {
     id: 'business-tax-planning',
@@ -483,13 +487,13 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
           businessName: 'Thompson Real Estate LLC',
           entityType: 'LLC',
           taxYear: 2024,
-          industry: 'real-estate'
+          industry: 'real-estate',
         },
         expectedResult: {
           profileId: 'TAX_THOMPSON_RE_LLC',
           status: 'created',
-          applicableDeductions: 23
-        }
+          applicableDeductions: 23,
+        },
       },
       {
         id: 'import-financial-data',
@@ -499,14 +503,14 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         userInput: {
           profileId: 'TAX_THOMPSON_RE_LLC',
           sources: ['quickbooks', 'bank-statements', 'receipts'],
-          dateRange: '2024-01-01 to 2024-12-31'
+          dateRange: '2024-01-01 to 2024-12-31',
         },
         expectedResult: {
           transactionsImported: 1247,
           revenue: 485000,
           expenses: 312000,
-          categorized: 0.96
-        }
+          categorized: 0.96,
+        },
       },
       {
         id: 'cost-analysis',
@@ -515,14 +519,14 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'business-cost-analysis',
         userInput: {
           profileId: 'TAX_THOMPSON_RE_LLC',
-          analysisType: 'deduction-optimization'
+          analysisType: 'deduction-optimization',
         },
         expectedResult: {
           potentialSavings: 18500,
           deductionCategories: 12,
           riskAssessment: 'low',
-          confidence: 0.87
-        }
+          confidence: 0.87,
+        },
       },
       {
         id: 'tax-strategy',
@@ -531,14 +535,14 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'generate-tax-strategy',
         userInput: {
           profileId: 'TAX_THOMPSON_RE_LLC',
-          goals: ['minimize-tax-liability', 'maximize-deductions', 'ensure-compliance']
+          goals: ['minimize-tax-liability', 'maximize-deductions', 'ensure-compliance'],
         },
         expectedResult: {
           strategyId: 'STRATEGY_THOMPSON_2024',
           recommendedActions: 8,
           estimatedSavings: 22300,
-          implementationSteps: 12
-        }
+          implementationSteps: 12,
+        },
       },
       {
         id: 'compliance-check',
@@ -547,14 +551,14 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'compliance-verification',
         userInput: {
           profileId: 'TAX_THOMPSON_RE_LLC',
-          jurisdictions: ['federal', 'illinois', 'cook-county']
+          jurisdictions: ['federal', 'illinois', 'cook-county'],
         },
         expectedResult: {
           complianceScore: 94,
           requiredFilings: 5,
           upcomingDeadlines: 3,
-          warningsCount: 1
-        }
+          warningsCount: 1,
+        },
       },
       {
         id: 'generate-plan',
@@ -563,17 +567,17 @@ const USER_WORKFLOW_SCENARIOS: UserWorkflowScenario[] = [
         action: 'create-tax-plan-report',
         userInput: {
           profileId: 'TAX_THOMPSON_RE_LLC',
-          strategyId: 'STRATEGY_THOMPSON_2024'
+          strategyId: 'STRATEGY_THOMPSON_2024',
         },
         expectedResult: {
           planId: 'PLAN_THOMPSON_2024',
           sections: 6,
           actionItems: 15,
-          quarterlyReviews: 4
-        }
-      }
-    ]
-  }
+          quarterlyReviews: 4,
+        },
+      },
+    ],
+  },
 ];
 
 describe('User Workflow Integration Tests', () => {
@@ -592,9 +596,17 @@ describe('User Workflow Integration Tests', () => {
 
     // Initialize app mocks for user workflow testing
     const allApps = [
-      'property-workbench', 'gispro', 'costforge-ai', 'marketplace',
-      'terra-fusion-assessor', 'terra-fusion-dashboard', 'terra-miner',
-      'terra-insight', 'terra-agent', 'web-audit-tracker', 'terra-levy'
+      'property-workbench',
+      'gispro',
+      'costforge-ai',
+      'marketplace',
+      'terra-fusion-assessor',
+      'terra-fusion-dashboard',
+      'terra-miner',
+      'terra-insight',
+      'terra-agent',
+      'web-audit-tracker',
+      'terra-levy',
     ];
 
     console.log('🚀 Initializing user workflow test environment...');
@@ -631,7 +643,7 @@ describe('User Workflow Integration Tests', () => {
     (appIPC as any).onCommand = async (command: string, args: any) => {
       // Simulate realistic processing time
       await setTimeout(50 + Math.random() * 150);
-      
+
       return mockUserWorkflowAction(appId, command, args);
     };
   }
@@ -644,11 +656,11 @@ describe('User Workflow Integration Tests', () => {
           case 'user-login':
             return { authenticated: true, dashboard: 'loaded', userId: input.userId };
           case 'create-property':
-            return { 
-              propertyId: 'PROP_456OAK', 
+            return {
+              propertyId: 'PROP_456OAK',
               status: 'created',
               address: input.address,
-              type: input.type
+              type: input.type,
             };
           default:
             return { status: 'completed', appId, action };
@@ -662,14 +674,14 @@ describe('User Workflow Integration Tests', () => {
               neighborhood: 'Oak Park',
               walkScore: 72,
               schoolDistrict: 'Springfield District 186',
-              amenities: ['park', 'shopping', 'transit']
+              amenities: ['park', 'shopping', 'transit'],
             };
           case 'assessor-gis-analysis':
             return {
               lotSize: 7200,
               zoning: 'R1-Single Family',
               floodZone: 'X',
-              utilities: ['water', 'sewer', 'electric', 'gas']
+              utilities: ['water', 'sewer', 'electric', 'gas'],
             };
           default:
             return { status: 'completed', coordinates: [40.0, -90.0] };
@@ -683,21 +695,21 @@ describe('User Workflow Integration Tests', () => {
               valueRange: { min: 270000, max: 300000 },
               confidence: 0.89,
               comparables: 8,
-              methodology: 'AI-Enhanced CMA'
+              methodology: 'AI-Enhanced CMA',
             };
           case 'replacement-cost-analysis':
             return {
               replacementCost: 320000,
               depreciation: 0.25,
               landValue: 85000,
-              totalValue: 325000
+              totalValue: 325000,
             };
           case 'business-cost-analysis':
             return {
               potentialSavings: 18500,
               deductionCategories: 12,
               riskAssessment: 'low',
-              confidence: 0.87
+              confidence: 0.87,
             };
           default:
             return { estimatedValue: 250000, confidence: 0.85 };
@@ -710,7 +722,7 @@ describe('User Workflow Integration Tests', () => {
               listingId: 'MLS_456OAK',
               status: 'active',
               publicUrl: 'https://marketplace.terrafusion.com/listing/MLS_456OAK',
-              listPrice: input.listPrice
+              listPrice: input.listPrice,
             };
           default:
             return { listingId: 'MLS_123', status: 'active' };
@@ -723,13 +735,17 @@ describe('User Workflow Integration Tests', () => {
           case 'load-property':
             return { propertyLoaded: true, priorAssessment: 275000, parcelId: input.parcelId };
           case 'field-inspection':
-            return { inspectionComplete: true, condition: 'verified', date: new Date().toISOString() };
+            return {
+              inspectionComplete: true,
+              condition: 'verified',
+              date: new Date().toISOString(),
+            };
           case 'finalize-assessment':
             return {
               assessmentId: 'ASSESS_COOK123456789_2024',
               status: 'finalized',
               effectiveDate: '2024-01-01',
-              assessedValue: input.assessedValue
+              assessedValue: input.assessedValue,
             };
           default:
             return { status: 'completed', assessmentId: 'ASSESS_123' };
@@ -741,32 +757,32 @@ describe('User Workflow Integration Tests', () => {
             return {
               reportPackageId: 'RPT_456OAK',
               reports: 3,
-              downloadUrl: 'https://reports.terrafusion.com/packages/RPT_456OAK'
+              downloadUrl: 'https://reports.terrafusion.com/packages/RPT_456OAK',
             };
           case 'generate-assessment-notices':
             return {
               noticesGenerated: 2,
               mailDate: '2024-01-15',
-              appealDeadline: '2024-02-15'
+              appealDeadline: '2024-02-15',
             };
           case 'create-research-dashboard':
             return {
               dashboardId: 'DASH_Q4_2024_CHI',
               url: 'https://dashboard.terrafusion.com/research/DASH_Q4_2024_CHI',
-              widgets: 8
+              widgets: 8,
             };
           case 'create-audit-report':
             return {
               reportId: 'RPT_AUDIT_EXAMPLE_RE_2024',
               pageCount: 24,
-              downloadUrl: 'https://reports.terrafusion.com/audits/RPT_AUDIT_EXAMPLE_RE_2024.pdf'
+              downloadUrl: 'https://reports.terrafusion.com/audits/RPT_AUDIT_EXAMPLE_RE_2024.pdf',
             };
           case 'create-tax-plan-report':
             return {
               planId: 'PLAN_THOMPSON_2024',
               sections: 6,
               actionItems: 15,
-              quarterlyReviews: 4
+              quarterlyReviews: 4,
             };
           default:
             return { reportGenerated: true, reportId: 'RPT_123' };
@@ -775,17 +791,17 @@ describe('User Workflow Integration Tests', () => {
       case 'terra-miner':
         switch (action) {
           case 'create-research-project':
-            return { 
-              projectId: 'RESEARCH_Q4_2024_CHI', 
+            return {
+              projectId: 'RESEARCH_Q4_2024_CHI',
               status: 'initialized',
-              projectName: input.projectName
+              projectName: input.projectName,
             };
           case 'mine-real-estate-data':
             return {
               recordsCollected: 15847,
               dataQuality: 0.94,
               processingTime: 8500,
-              sources: input.sources
+              sources: input.sources,
             };
           default:
             return { miningJobId: 'MINE_123', status: 'started' };
@@ -798,7 +814,7 @@ describe('User Workflow Integration Tests', () => {
               trendDirection: 'rising',
               avgDaysOnMarket: 45,
               priceAppreciation: 0.08,
-              inventory: 'balanced'
+              inventory: 'balanced',
             };
           case 'generate-market-insights':
             return {
@@ -806,8 +822,8 @@ describe('User Workflow Integration Tests', () => {
               keyFindings: [
                 'Median price increased 3.2% YoY',
                 'Inventory up 15% from Q3',
-                'Days on market decreased to 38 days'
-              ]
+                'Days on market decreased to 38 days',
+              ],
             };
           default:
             return { insightId: 'INSIGHT_123', keyFindings: 5 };
@@ -819,14 +835,14 @@ describe('User Workflow Integration Tests', () => {
             return {
               trendsIdentified: 8,
               patterns: ['seasonal-dip', 'price-stabilization', 'inventory-growth'],
-              confidence: 0.91
+              confidence: 0.91,
             };
           case 'website-content-analysis':
             return {
               contentScore: 78,
               readabilityGrade: 'college',
               seoScore: 85,
-              uxScore: 82
+              uxScore: 82,
             };
           default:
             return { aiAnalysisComplete: true, confidence: 0.9 };
@@ -839,21 +855,21 @@ describe('User Workflow Integration Tests', () => {
               auditId: 'AUDIT_EXAMPLE_RE_2024',
               status: 'running',
               estimatedDuration: 300,
-              url: input.url
+              url: input.url,
             };
           case 'performance-deep-dive':
             return {
               lighthouseScore: 92,
               loadTime: 2.3,
               coreWebVitals: { lcp: 1.8, fid: 45, cls: 0.12 },
-              optimizationSuggestions: 7
+              optimizationSuggestions: 7,
             };
           case 'accessibility-audit':
             return {
               complianceScore: 89,
               violations: 8,
               warnings: 15,
-              passes: 142
+              passes: 142,
             };
           default:
             return { auditId: 'AUDIT_123', status: 'running' };
@@ -866,28 +882,28 @@ describe('User Workflow Integration Tests', () => {
               profileId: 'TAX_THOMPSON_RE_LLC',
               status: 'created',
               applicableDeductions: 23,
-              businessName: input.businessName
+              businessName: input.businessName,
             };
           case 'import-financial-data':
             return {
               transactionsImported: 1247,
               revenue: 485000,
               expenses: 312000,
-              categorized: 0.96
+              categorized: 0.96,
             };
           case 'generate-tax-strategy':
             return {
               strategyId: 'STRATEGY_THOMPSON_2024',
               recommendedActions: 8,
               estimatedSavings: 22300,
-              implementationSteps: 12
+              implementationSteps: 12,
             };
           case 'compliance-verification':
             return {
               complianceScore: 94,
               requiredFilings: 5,
               upcomingDeadlines: 3,
-              warningsCount: 1
+              warningsCount: 1,
             };
           default:
             return { taxAnalysisComplete: true, savings: 5000 };
@@ -917,7 +933,7 @@ describe('User Workflow Integration Tests', () => {
     for (const step of scenario.steps) {
       try {
         console.log(`   👤 ${step.description}`);
-        
+
         // Simulate user thinking/interaction time
         if (USER_ACTION_DELAY > 0) {
           await setTimeout(USER_ACTION_DELAY);
@@ -930,9 +946,8 @@ describe('User Workflow Integration Tests', () => {
 
         const stepResult = await appIPC.executeCommand(step.appId, step.action, step.userInput);
         results[step.id] = stepResult;
-        
+
         console.log(`   ✅ ${step.description} - completed`);
-        
       } catch (error: any) {
         errors[step.id] = error.message;
         console.error(`   ❌ ${step.description} - failed:`, error.message);
@@ -951,158 +966,189 @@ describe('User Workflow Integration Tests', () => {
       totalSteps: scenario.steps.length,
       executionTime,
       results,
-      errors
+      errors,
     };
   }
 
   describe('Real Estate Agent Workflows', () => {
-    test('Should complete property listing workflow', async () => {
-      const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'complete-property-listing')!;
-      const result = await executeUserWorkflow(scenario);
+    test(
+      'Should complete property listing workflow',
+      async () => {
+        const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'complete-property-listing')!;
+        const result = await executeUserWorkflow(scenario);
 
-      expect(result.success).toBe(true);
-      expect(result.completedSteps).toBe(scenario.steps.length);
-      expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
+        expect(result.success).toBe(true);
+        expect(result.completedSteps).toBe(scenario.steps.length);
+        expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
 
-      // Verify key workflow outcomes
-      expect(result.results['create-new-property'].propertyId).toBe('PROP_456OAK');
-      expect(result.results['get-valuation'].estimatedValue).toBe(285000);
-      expect(result.results['create-listing'].listingId).toBe('MLS_456OAK');
-      expect(result.results['generate-reports'].reports).toBe(3);
+        // Verify key workflow outcomes
+        expect(result.results['create-new-property'].propertyId).toBe('PROP_456OAK');
+        expect(result.results['get-valuation'].estimatedValue).toBe(285000);
+        expect(result.results['create-listing'].listingId).toBe('MLS_456OAK');
+        expect(result.results['generate-reports'].reports).toBe(3);
 
-      console.log(`✅ Property listing workflow completed in ${result.executionTime}ms`);
-    }, TEST_TIMEOUT);
+        console.log(`✅ Property listing workflow completed in ${result.executionTime}ms`);
+      },
+      TEST_TIMEOUT
+    );
   });
 
   describe('Property Assessor Workflows', () => {
-    test('Should complete property assessment workflow', async () => {
-      const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'property-assessment-workflow')!;
-      const result = await executeUserWorkflow(scenario);
+    test(
+      'Should complete property assessment workflow',
+      async () => {
+        const scenario = USER_WORKFLOW_SCENARIOS.find(
+          s => s.id === 'property-assessment-workflow'
+        )!;
+        const result = await executeUserWorkflow(scenario);
 
-      expect(result.success).toBe(true);
-      expect(result.completedSteps).toBe(scenario.steps.length);
-      expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
+        expect(result.success).toBe(true);
+        expect(result.completedSteps).toBe(scenario.steps.length);
+        expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
 
-      // Verify assessment outcomes
-      expect(result.results['load-property'].propertyLoaded).toBe(true);
-      expect(result.results['cost-analysis'].totalValue).toBe(325000);
-      expect(result.results['finalize-assessment'].status).toBe('finalized');
-      expect(result.results['generate-notices'].noticesGenerated).toBe(2);
+        // Verify assessment outcomes
+        expect(result.results['load-property'].propertyLoaded).toBe(true);
+        expect(result.results['cost-analysis'].totalValue).toBe(325000);
+        expect(result.results['finalize-assessment'].status).toBe('finalized');
+        expect(result.results['generate-notices'].noticesGenerated).toBe(2);
 
-      console.log(`✅ Property assessment workflow completed in ${result.executionTime}ms`);
-    }, TEST_TIMEOUT);
+        console.log(`✅ Property assessment workflow completed in ${result.executionTime}ms`);
+      },
+      TEST_TIMEOUT
+    );
   });
 
   describe('Data Analyst Workflows', () => {
-    test('Should complete market research workflow', async () => {
-      const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'market-research-workflow')!;
-      const result = await executeUserWorkflow(scenario);
+    test(
+      'Should complete market research workflow',
+      async () => {
+        const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'market-research-workflow')!;
+        const result = await executeUserWorkflow(scenario);
 
-      expect(result.success).toBe(true);
-      expect(result.completedSteps).toBe(scenario.steps.length);
-      expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
+        expect(result.success).toBe(true);
+        expect(result.completedSteps).toBe(scenario.steps.length);
+        expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
 
-      // Verify research outcomes
-      expect(result.results['setup-research-project'].projectId).toBe('RESEARCH_Q4_2024_CHI');
-      expect(result.results['data-mining'].recordsCollected).toBe(15847);
-      expect(result.results['ai-analysis'].confidence).toBe(0.91);
-      expect(result.results['generate-insights'].insightCount).toBe(12);
-      expect(result.results['create-dashboard'].widgets).toBe(8);
+        // Verify research outcomes
+        expect(result.results['setup-research-project'].projectId).toBe('RESEARCH_Q4_2024_CHI');
+        expect(result.results['data-mining'].recordsCollected).toBe(15847);
+        expect(result.results['ai-analysis'].confidence).toBe(0.91);
+        expect(result.results['generate-insights'].insightCount).toBe(12);
+        expect(result.results['create-dashboard'].widgets).toBe(8);
 
-      console.log(`✅ Market research workflow completed in ${result.executionTime}ms`);
-    }, TEST_TIMEOUT);
+        console.log(`✅ Market research workflow completed in ${result.executionTime}ms`);
+      },
+      TEST_TIMEOUT
+    );
   });
 
   describe('Web Developer Workflows', () => {
-    test('Should complete website audit workflow', async () => {
-      const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'website-audit-workflow')!;
-      const result = await executeUserWorkflow(scenario);
+    test(
+      'Should complete website audit workflow',
+      async () => {
+        const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'website-audit-workflow')!;
+        const result = await executeUserWorkflow(scenario);
 
-      expect(result.success).toBe(true);
-      expect(result.completedSteps).toBe(scenario.steps.length);
-      expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
+        expect(result.success).toBe(true);
+        expect(result.completedSteps).toBe(scenario.steps.length);
+        expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
 
-      // Verify audit outcomes
-      expect(result.results['initiate-audit'].auditId).toBe('AUDIT_EXAMPLE_RE_2024');
-      expect(result.results['ai-content-analysis'].contentScore).toBe(78);
-      expect(result.results['performance-audit'].lighthouseScore).toBe(92);
-      expect(result.results['accessibility-check'].complianceScore).toBe(89);
-      expect(result.results['generate-report'].pageCount).toBe(24);
+        // Verify audit outcomes
+        expect(result.results['initiate-audit'].auditId).toBe('AUDIT_EXAMPLE_RE_2024');
+        expect(result.results['ai-content-analysis'].contentScore).toBe(78);
+        expect(result.results['performance-audit'].lighthouseScore).toBe(92);
+        expect(result.results['accessibility-check'].complianceScore).toBe(89);
+        expect(result.results['generate-report'].pageCount).toBe(24);
 
-      console.log(`✅ Website audit workflow completed in ${result.executionTime}ms`);
-    }, TEST_TIMEOUT);
+        console.log(`✅ Website audit workflow completed in ${result.executionTime}ms`);
+      },
+      TEST_TIMEOUT
+    );
   });
 
   describe('Business Owner Workflows', () => {
-    test('Should complete business tax planning workflow', async () => {
-      const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'business-tax-planning')!;
-      const result = await executeUserWorkflow(scenario);
+    test(
+      'Should complete business tax planning workflow',
+      async () => {
+        const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'business-tax-planning')!;
+        const result = await executeUserWorkflow(scenario);
 
-      expect(result.success).toBe(true);
-      expect(result.completedSteps).toBe(scenario.steps.length);
-      expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
+        expect(result.success).toBe(true);
+        expect(result.completedSteps).toBe(scenario.steps.length);
+        expect(result.executionTime).toBeLessThan(scenario.performanceTarget! * 1.5);
 
-      // Verify tax planning outcomes
-      expect(result.results['setup-tax-profile'].profileId).toBe('TAX_THOMPSON_RE_LLC');
-      expect(result.results['import-financial-data'].transactionsImported).toBe(1247);
-      expect(result.results['cost-analysis'].potentialSavings).toBe(18500);
-      expect(result.results['tax-strategy'].estimatedSavings).toBe(22300);
-      expect(result.results['compliance-check'].complianceScore).toBe(94);
-      expect(result.results['generate-plan'].actionItems).toBe(15);
+        // Verify tax planning outcomes
+        expect(result.results['setup-tax-profile'].profileId).toBe('TAX_THOMPSON_RE_LLC');
+        expect(result.results['import-financial-data'].transactionsImported).toBe(1247);
+        expect(result.results['cost-analysis'].potentialSavings).toBe(18500);
+        expect(result.results['tax-strategy'].estimatedSavings).toBe(22300);
+        expect(result.results['compliance-check'].complianceScore).toBe(94);
+        expect(result.results['generate-plan'].actionItems).toBe(15);
 
-      console.log(`✅ Business tax planning workflow completed in ${result.executionTime}ms`);
-    }, TEST_TIMEOUT);
+        console.log(`✅ Business tax planning workflow completed in ${result.executionTime}ms`);
+      },
+      TEST_TIMEOUT
+    );
   });
 
   describe('Cross-Persona Workflows', () => {
-    test('Should handle concurrent user workflows without interference', async () => {
-      const scenarios = [
-        USER_WORKFLOW_SCENARIOS.find(s => s.id === 'complete-property-listing')!,
-        USER_WORKFLOW_SCENARIOS.find(s => s.id === 'website-audit-workflow')!
-      ];
+    test(
+      'Should handle concurrent user workflows without interference',
+      async () => {
+        const scenarios = [
+          USER_WORKFLOW_SCENARIOS.find(s => s.id === 'complete-property-listing')!,
+          USER_WORKFLOW_SCENARIOS.find(s => s.id === 'website-audit-workflow')!,
+        ];
 
-      console.log('🚀 Starting concurrent user workflows...');
+        console.log('🚀 Starting concurrent user workflows...');
 
-      const results = await Promise.all(
-        scenarios.map(scenario => executeUserWorkflow(scenario))
-      );
+        const results = await Promise.all(scenarios.map(scenario => executeUserWorkflow(scenario)));
 
-      results.forEach((result /* , index */) => {
-        expect(result.success).toBe(true);
-        expect(result.completedSteps).toBe(scenarios[index].steps.length);
-        console.log(`✅ Concurrent workflow ${index + 1} completed in ${result.executionTime}ms`);
-      });
+        results.forEach((result /* , index */) => {
+          expect(result.success).toBe(true);
+          expect(result.completedSteps).toBe(scenarios[index].steps.length);
+          console.log(`✅ Concurrent workflow ${index + 1} completed in ${result.executionTime}ms`);
+        });
 
-      // Verify workflows didn't interfere with each other
-      expect(results[0].scenarioId).not.toBe(results[1].scenarioId);
-      expect(results[0].results).not.toEqual(results[1].results);
+        // Verify workflows didn't interfere with each other
+        expect(results[0].scenarioId).not.toBe(results[1].scenarioId);
+        expect(results[0].results).not.toEqual(results[1].results);
 
-      console.log('✅ Concurrent user workflows completed without interference');
-    }, TEST_TIMEOUT);
+        console.log('✅ Concurrent user workflows completed without interference');
+      },
+      TEST_TIMEOUT
+    );
 
-    test('Should handle workflow performance under realistic load', async () => {
-      const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'complete-property-listing')!;
-      const concurrentUsers = 3;
-      
-      console.log(`🚀 Testing workflow performance with ${concurrentUsers} concurrent users...`);
+    test(
+      'Should handle workflow performance under realistic load',
+      async () => {
+        const scenario = USER_WORKFLOW_SCENARIOS.find(s => s.id === 'complete-property-listing')!;
+        const concurrentUsers = 3;
 
-      const startTime = Date.now();
-      const results = await Promise.all(
-        Array(concurrentUsers).fill(null).map(() => executeUserWorkflow(scenario))
-      );
-      const totalTime = Date.now() - startTime;
+        console.log(`🚀 Testing workflow performance with ${concurrentUsers} concurrent users...`);
 
-      const successfulWorkflows = results.filter(r => r.success).length;
-      const avgExecutionTime = results.reduce((sum, r) => sum + r.executionTime, 0) / results.length;
+        const startTime = Date.now();
+        const results = await Promise.all(
+          Array(concurrentUsers)
+            .fill(null)
+            .map(() => executeUserWorkflow(scenario))
+        );
+        const totalTime = Date.now() - startTime;
 
-      expect(successfulWorkflows).toBe(concurrentUsers);
-      expect(avgExecutionTime).toBeLessThan(scenario.performanceTarget! * 2); // Allow more time under load
+        const successfulWorkflows = results.filter(r => r.success).length;
+        const avgExecutionTime =
+          results.reduce((sum, r) => sum + r.executionTime, 0) / results.length;
 
-      console.log(`✅ Performance test completed:`);
-      console.log(`   - Concurrent users: ${concurrentUsers}`);
-      console.log(`   - Successful workflows: ${successfulWorkflows}`);
-      console.log(`   - Average execution time: ${avgExecutionTime.toFixed(0)}ms`);
-      console.log(`   - Total test time: ${totalTime}ms`);
-    }, TEST_TIMEOUT);
+        expect(successfulWorkflows).toBe(concurrentUsers);
+        expect(avgExecutionTime).toBeLessThan(scenario.performanceTarget! * 2); // Allow more time under load
+
+        console.log(`✅ Performance test completed:`);
+        console.log(`   - Concurrent users: ${concurrentUsers}`);
+        console.log(`   - Successful workflows: ${successfulWorkflows}`);
+        console.log(`   - Average execution time: ${avgExecutionTime.toFixed(0)}ms`);
+        console.log(`   - Total test time: ${totalTime}ms`);
+      },
+      TEST_TIMEOUT
+    );
   });
 });

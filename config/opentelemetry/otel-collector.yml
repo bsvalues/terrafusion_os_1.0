@@ -10,7 +10,7 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:4317
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
         max_recv_msg_size: 52428800  # 50MB
         read_buffer_size: 1048576    # 1MB
         write_buffer_size: 1048576   # 1MB
@@ -21,10 +21,10 @@ receivers:
           client_ca_file: /etc/ssl/certs/terrafusion-ca.crt
           
       http:
-        endpoint: 0.0.0.0:4318
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
         cors:
           allowed_origins:
-            - "http://localhost:3000"
+            - "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
             - "https://*.terrafusion.gov"
             - "https://*.benton-county.gov"
           allowed_headers:
@@ -44,7 +44,7 @@ receivers:
         # TerraFusion API metrics
         - job_name: 'terrafusion-api'
           static_configs:
-            - targets: ['terrafusion-api-1:5000', 'terrafusion-api-2:5000', 'terrafusion-api-3:5000']
+            - targets: ['terrafusion-api-1:${TF_API_PORT:-5046}', 'terrafusion-api-2:${TF_API_PORT:-5046}', 'terrafusion-api-3:${TF_API_PORT:-5046}']
           scrape_interval: 15s
           scrape_timeout: 10s
           metrics_path: '/metrics'
@@ -76,7 +76,7 @@ receivers:
         # AI Agent metrics
         - job_name: 'ai-agents'
           static_configs:
-            - targets: ['ai-command-brain:3001', 'ai-swarm:3002', 'ai-advanced:3003', 'consciousness-layer:3004']
+            - targets: ['ai-command-brain:${TF_SHELL_PORT:-3103}', 'ai-swarm:${TF_DESKTOP_PORT:-3104}', 'ai-advanced:3003', 'consciousness-layer:3004']
           scrape_interval: 15s
           metrics_path: '/metrics'
 
@@ -84,17 +84,17 @@ receivers:
   jaeger:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:14250
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
       thrift_http:
-        endpoint: 0.0.0.0:14268
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
       thrift_compact:
-        endpoint: 0.0.0.0:6831
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
       thrift_binary:
-        endpoint: 0.0.0.0:6832
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
 
   # Zipkin receiver
   zipkin:
-    endpoint: 0.0.0.0:9411
+    endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
 
   # Host metrics for system monitoring
   hostmetrics:
@@ -256,7 +256,7 @@ processors:
 exporters:
   # Prometheus exporter for metrics
   prometheus:
-    endpoint: "0.0.0.0:8889"
+    endpoint: "0.0.0.0:\${{TF_PORT_4317:-4317}}"
     namespace: terrafusion
     const_labels:
       environment: production
@@ -347,18 +347,18 @@ exporters:
 extensions:
   # Health check extension
   health_check:
-    endpoint: 0.0.0.0:13133
+    endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
     tls:
       cert_file: /etc/ssl/certs/otel-collector.crt
       key_file: /etc/ssl/private/otel-collector.key
 
   # Performance profiling
   pprof:
-    endpoint: 0.0.0.0:1777
+    endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
 
   # zpages for debugging
   zpages:
-    endpoint: 0.0.0.0:55679
+    endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
 
   # File storage for buffering
   file_storage:
@@ -411,7 +411,7 @@ service:
         
     metrics:
       level: detailed
-      address: 0.0.0.0:8888
+      address: 0.0.0.0:\${{TF_PORT_4317:-4317}}
       
     traces:
       level: detailed

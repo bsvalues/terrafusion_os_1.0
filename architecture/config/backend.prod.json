@@ -1,0 +1,51 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "TerraFusion": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "postgresql://tf_user:${DB_PASSWORD}@postgres:5432/terrafusion",
+    "Redis": "redis://redis:6379"
+  },
+  "TrustFabric": {
+    "BaseUrl": "http://trust-fabric:7000",
+    "AttestationEnabled": true,
+    "ServiceName": "terrafusion-backend",
+    "Capabilities": [
+      "county_services",
+      "property_valuation", 
+      "ai_integration",
+      "government_compliance"
+    ]
+  },
+  "ServiceDiscovery": {
+    "ConsulUrl": "http://consul:8500",
+    "ServiceName": "terrafusion-backend",
+    "HealthCheckInterval": "00:00:30"
+  },
+  "SPIFFE": {
+    "SocketPath": "/spire/agent.sock",
+    "TrustDomain": "terrafusion.local"
+  },
+  "Security": {
+    "EnableHttpsRedirection": false,
+    "RequireAuthentication": true,
+    "OpaUrl": "http://opa:8181",
+    "PolicyPackage": "terrafusion.authz"
+  },
+  "Monitoring": {
+    "PrometheusEnabled": true,
+    "MetricsPath": "/metrics",
+    "HealthCheckPath": "/health"
+  },
+  "Features": {
+    "CountyServices": true,
+    "PropertyValuation": true,
+    "AISwarmIntegration": true,
+    "GovernmentCompliance": true
+  }
+}

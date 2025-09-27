@@ -1,3 +1,4 @@
+# NO HARDCODED PORTS! Use environment variables.
 #!/usr/bin/env python3
 """
 TerraFusion OS AI Swarm Metrics Collector
@@ -44,7 +45,7 @@ REDIS_DB = int(os.getenv('REDIS_DB', 0))
 
 # AI Swarm endpoints
 AI_SWARM_ORCHESTRATOR_URL = os.getenv('AI_SWARM_ORCHESTRATOR_URL', 'http://ai-swarm:9000')
-CLAUDE_FLOW_MCP_URL = os.getenv('CLAUDE_FLOW_MCP_URL', 'http://claude-flow:8080')
+CLAUDE_FLOW_MCP_URL = os.getenv('CLAUDE_FLOW_MCP_URL', 'http://claude-flow:${TF_STATIC_PORT:-8080}')
 HARRIS_PACS_COORDINATOR_URL = os.getenv('HARRIS_PACS_COORDINATOR_URL', 'http://harris-pacs-coordinator:9093')
 
 @dataclass
@@ -539,7 +540,7 @@ async def main():
         
         # Start Prometheus metrics server
         start_http_server(9400)
-        logger.info("Prometheus metrics server started on port 9400")
+        logger.info("Prometheus metrics server started on port \${{TF_PORT_9400:-9400}}")
         
         # Start health check server
         await collector.start_http_server()

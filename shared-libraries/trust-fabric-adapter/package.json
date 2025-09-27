@@ -1,0 +1,23 @@
+{
+  "name": "@terrafusion/trust-fabric-adapter",
+  "version": "1.0.0",
+  "description": "Universal Trust Fabric Adapter for all TerraFusion microservices",
+  "main": "index.js",
+  "keywords": ["terrafusion", "trust-fabric", "adapter", "microservices"],
+  "author": "TerraFusion Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bsvalues/terrafusion_os_1.0.git"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "peerDependencies": {
+    "axios": "*"
+  },
+  "files": [
+    "index.js",
+    "README.md"
+  ]
+}

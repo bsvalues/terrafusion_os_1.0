@@ -12,8 +12,8 @@ source "${SCRIPT_DIR}/common-functions.sh"
 PREDICT_DB="${PREDICT_DB:-terrafusion_predictions}"
 PREDICT_USER="${DB_USER:-tfpredict}"
 PREDICT_PASS="${DB_PASS:-$(generate_password)}"
-PROPHET_SERVICE="${PROPHET_SERVICE:-http://localhost:5001}"
-TENSORFLOW_SERVICE="${TENSORFLOW_SERVICE:-http://localhost:5002}"
+PROPHET_SERVICE="${PROPHET_SERVICE:-http://localhost:\${{TF_API_HTTPS_PORT:-5001}}}"
+TENSORFLOW_SERVICE="${TENSORFLOW_SERVICE:-http://localhost:\${{TF_API_HTTPS_PORT:-5001}}}"
 PREDICTION_WINDOW="${PREDICTION_WINDOW:-3600}" # 1 hour ahead
 
 # Initialize database
@@ -376,7 +376,7 @@ def health():
     }), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=\${{TF_API_HTTPS_PORT:-5001}})
 EOF
     
     # TensorFlow service for deep learning predictions
@@ -579,7 +579,7 @@ def health():
     }), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002)
+    app.run(host='0.0.0.0', port=\${{TF_API_HTTPS_PORT:-5001}})
 EOF
     
     # Create requirements
@@ -698,7 +698,7 @@ def fetch_metric_data(metric_name, service, days=30):
     start_time = end_time - timedelta(days=days)
     
     response = requests.get(
-        'http://localhost:9090/api/v1/query_range',
+        'http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/v1/query_range',
         params={
             'query': query,
             'start': start_time.timestamp(),

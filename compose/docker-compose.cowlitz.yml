@@ -21,15 +21,15 @@ services:
       COUNTY_NAME: "Cowlitz County, WA"
       COUNTY_CODE: "US-WA-COWLITZ"
       COWLITZ_DEMO_MODE: "true"
-    ports: ["8020:8080"]
+    ports: ["8020:${TF_STATIC_PORT:-8080}"]
     networks: [ terrafusion_cowlitz ]
 
   ui:
     container_name: cowlitz-ui
     environment:
-      NEXT_PUBLIC_API_BASE: http://localhost:8020
+      NEXT_PUBLIC_API_BASE: http://localhost:\${{TF_SERVICE_8020_PORT:-8020}}
       NEXT_PUBLIC_COUNTY_NAME: "Cowlitz County, WA"
-    ports: ["3020:3000"]
+    ports: ["3020:${TF_FRONTEND_PORT:-3102}"]
     networks: [ terrafusion_cowlitz ]
 
 networks:

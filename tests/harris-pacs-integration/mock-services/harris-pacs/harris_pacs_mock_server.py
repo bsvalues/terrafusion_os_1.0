@@ -701,7 +701,7 @@ async def main():
     site = web.TCPSite(runner, '0.0.0.0', 8080)
     await site.start()
     
-    logger.info("Harris PACS Mock Server started on http://0.0.0.0:8080")
+    logger.info("Harris PACS Mock Server started on http://0.0.0.0:\${{TF_ADMIN_PORT:-8080}}")
     logger.info(f"Benton County simulation: {BENTON_COUNTY_SIMULATION}")
     logger.info(f"Government compliance mode: {GOVERNMENT_COMPLIANCE_MODE}")
     logger.info(f"API response delay: {API_RESPONSE_DELAY_MS}ms")

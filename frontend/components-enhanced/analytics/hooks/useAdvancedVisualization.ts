@@ -12,11 +12,11 @@ export const useAdvancedVisualization = (jurisdiction: string) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const [chartData, geoJsonData, availableTypes] = await Promise.all([
         advancedVisualizationService.getChartData(jurisdiction),
         advancedVisualizationService.getGeoData(jurisdiction),
-        advancedVisualizationService.getAvailableChartTypes()
+        advancedVisualizationService.getAvailableChartTypes(),
       ]);
 
       setData(chartData);
@@ -29,13 +29,24 @@ export const useAdvancedVisualization = (jurisdiction: string) => {
     }
   }, [jurisdiction]);
 
-  const getChartData = useCallback((metrics: string[], timeRange: string, filters: Record<string, any>) => {
-    return advancedVisualizationService.getFilteredData(jurisdiction, metrics, timeRange, filters);
-  }, [jurisdiction]);
+  const getChartData = useCallback(
+    (metrics: string[], timeRange: string, filters: Record<string, any>) => {
+      return advancedVisualizationService.getFilteredData(
+        jurisdiction,
+        metrics,
+        timeRange,
+        filters
+      );
+    },
+    [jurisdiction]
+  );
 
-  const exportChart = useCallback(async (chartType: string, chartData: any[], format: 'png' | 'svg' | 'pdf') => {
-    return advancedVisualizationService.exportChart(chartType, chartData, format);
-  }, []);
+  const exportChart = useCallback(
+    async (chartType: string, chartData: any[], format: 'png' | 'svg' | 'pdf') => {
+      return advancedVisualizationService.exportChart(chartType, chartData, format);
+    },
+    []
+  );
 
   useEffect(() => {
     refreshData();
@@ -49,6 +60,6 @@ export const useAdvancedVisualization = (jurisdiction: string) => {
     error,
     refreshData,
     getChartData,
-    exportChart
+    exportChart,
   };
 };

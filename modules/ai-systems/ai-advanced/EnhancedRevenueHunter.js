@@ -45,7 +45,7 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             batchSize: 100,
             updateFrequency: 'daily',
             validationSplit: 0.2,
-            metricsTracking: ['accuracy', 'precision', 'recall', 'revenue_found']
+            metricsTracking: ['accuracy', 'precision', 'recall', 'revenue_found'],
         };
         this.predictiveAnalytics = {
             enabled: true,
@@ -54,14 +54,14 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             alertThresholds: {
                 high_value_opportunity: 50000,
                 compliance_risk: 0.7,
-                collection_probability: 0.9
-            }
+                collection_probability: 0.9,
+            },
         };
         this.competitiveIntelligence = {
             enabled: true,
             benchmarkSources: ['industry_reports', 'peer_jurisdictions', 'best_practices'],
             updateFrequency: 'weekly',
-            analysisDepth: 'comprehensive'
+            analysisDepth: 'comprehensive',
         };
     }
     /**
@@ -73,32 +73,42 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
                 modelType: 'gradient_boosting',
                 features: ['industry', 'employees', 'square_footage', 'location', 'age'],
                 accuracy: 0.89,
-                lastTrained: '2024-01-15'
+                lastTrained: '2024-01-15',
             },
             property_assessment: {
                 modelType: 'neural_network',
                 features: ['sale_price', 'square_footage', 'lot_size', 'year_built', 'location'],
                 accuracy: 0.94,
-                lastTrained: '2024-01-20'
+                lastTrained: '2024-01-20',
             },
             compliance_prediction: {
                 modelType: 'random_forest',
                 features: ['business_type', 'history', 'location', 'size'],
                 accuracy: 0.86,
-                lastTrained: '2024-01-10'
+                lastTrained: '2024-01-10',
             },
             revenue_forecasting: {
                 modelType: 'lstm_neural_network',
-                features: ['historical_revenue', 'economic_indicators', 'seasonal_patterns', 'policy_changes'],
+                features: [
+                    'historical_revenue',
+                    'economic_indicators',
+                    'seasonal_patterns',
+                    'policy_changes',
+                ],
                 accuracy: 0.91,
-                lastTrained: '2024-01-25'
+                lastTrained: '2024-01-25',
             },
             risk_assessment: {
                 modelType: 'ensemble_classifier',
-                features: ['compliance_history', 'financial_indicators', 'market_conditions', 'regulatory_changes'],
+                features: [
+                    'compliance_history',
+                    'financial_indicators',
+                    'market_conditions',
+                    'regulatory_changes',
+                ],
                 accuracy: 0.88,
-                lastTrained: '2024-01-18'
-            }
+                lastTrained: '2024-01-18',
+            },
         };
         console.log('   🤖 ML models loaded for enhanced predictions');
         await new Promise(resolve => setTimeout(resolve, 100)); // Simulate loading time
@@ -132,8 +142,8 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             thresholds: {
                 high_value_discovery: 25000,
                 unusual_pattern: 0.95,
-                compliance_violation: 0.8
-            }
+                compliance_violation: 0.8,
+            },
         };
         console.log('   📡 Real-time monitoring activated');
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -172,7 +182,7 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             competitiveAnalysis,
             enhancedRecommendations,
             automationOpportunities,
-            riskAssessment
+            riskAssessment,
         };
         // Update learning models with new data
         await this.updateLearningModels(enhancedReport);
@@ -191,19 +201,19 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             enhancedAccuracy: {
                 business_valuation: 0.94,
                 property_assessment: 0.96,
-                compliance_prediction: 0.91
+                compliance_prediction: 0.91,
             },
             additionalOpportunities: Math.floor(baseReport.topOpportunities.length * 0.15),
             refinedEstimates: {
                 totalRevenueAdjustment: baseReport.totalRevenueDiscovered * 1.12,
                 confidenceImprovement: 0.08,
-                falsePositiveReduction: 0.23
+                falsePositiveReduction: 0.23,
             },
             mlInsights: [
                 'Seasonal patterns detected in STR violations',
                 'Business registration lag correlation identified',
-                'Property assessment discrepancy clusters found'
-            ]
+                'Property assessment discrepancy clusters found',
+            ],
         };
     }
     /**
@@ -215,18 +225,18 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             patternRecognition: {
                 highValueAreas: ['downtown_district', 'waterfront_properties', 'commercial_corridors'],
                 temporalPatterns: ['summer_str_spike', 'construction_season_permits', 'year_end_transfers'],
-                behavioralPatterns: ['repeat_violators', 'seasonal_businesses', 'development_clusters']
+                behavioralPatterns: ['repeat_violators', 'seasonal_businesses', 'development_clusters'],
             },
             learningProgress: {
                 modelAccuracyImprovement: 0.03,
                 newPatternsDiscovered: 7,
-                validationSuccess: 0.89
+                validationSuccess: 0.89,
             },
             adaptiveRecommendations: [
                 'Focus enforcement during peak violation periods',
                 'Implement predictive monitoring for high-risk areas',
-                'Develop targeted outreach for repeat violators'
-            ]
+                'Develop targeted outreach for repeat violators',
+            ],
         };
     }
     /**
@@ -241,20 +251,20 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
                 { quarter: 'Q1', projected: baseRevenue * 0.28, confidence: 0.87 },
                 { quarter: 'Q2', projected: baseRevenue * 0.32, confidence: 0.91 },
                 { quarter: 'Q3', projected: baseRevenue * 0.35, confidence: 0.89 },
-                { quarter: 'Q4', projected: baseRevenue * 0.30, confidence: 0.85 }
+                { quarter: 'Q4', projected: baseRevenue * 0.3, confidence: 0.85 },
             ],
             trendAnalysis: {
                 growthRate: 0.25,
                 volatility: 0.12,
                 seasonality: 'moderate',
-                riskFactors: ['economic_downturn', 'regulatory_changes', 'market_saturation']
+                riskFactors: ['economic_downturn', 'regulatory_changes', 'market_saturation'],
             },
             opportunityPipeline: {
                 immediate: baseRevenue * 0.15,
                 short_term: baseRevenue * 0.35,
-                medium_term: baseRevenue * 0.40,
-                long_term: baseRevenue * 0.10
-            }
+                medium_term: baseRevenue * 0.4,
+                long_term: baseRevenue * 0.1,
+            },
         };
     }
     /**
@@ -266,38 +276,38 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             benchmarkComparison: {
                 revenuePerCapita: {
                     jurisdiction: baseReport.totalRevenueDiscovered / 50000, // Assume 50k population
-                    peerAverage: 145.50,
-                    ranking: 'above_average'
+                    peerAverage: 145.5,
+                    ranking: 'above_average',
                 },
                 collectionEfficiency: {
                     jurisdiction: baseReport.estimatedCollectionRate,
                     peerAverage: 0.78,
-                    ranking: 'excellent'
+                    ranking: 'excellent',
                 },
                 discoveryRate: {
                     jurisdiction: baseReport.successfulAgents / baseReport.agentsDeployed,
                     peerAverage: 0.72,
-                    ranking: 'superior'
-                }
+                    ranking: 'superior',
+                },
             },
             bestPractices: [
                 'Implement automated STR monitoring systems',
                 'Deploy predictive analytics for permit compliance',
                 'Establish real-time property transfer monitoring',
-                'Create integrated business registration cross-referencing'
+                'Create integrated business registration cross-referencing',
             ],
             competitiveAdvantages: [
                 'Advanced AI-powered discovery algorithms',
                 'Real-time multi-source data integration',
                 'Predictive compliance monitoring',
-                'Automated enforcement workflows'
+                'Automated enforcement workflows',
             ],
             improvementOpportunities: [
                 'Enhance inter-agency data sharing',
                 'Implement mobile enforcement tools',
                 'Develop taxpayer self-service portals',
-                'Create automated appeal processing'
-            ]
+                'Create automated appeal processing',
+            ],
         };
     }
     /**
@@ -313,7 +323,7 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             'Deploy mobile enforcement tools with AI-assisted decision support',
             'Implement automated taxpayer outreach for voluntary compliance programs',
             'Establish performance-based enforcement prioritization using ML scoring',
-            'Create real-time dashboard for monitoring revenue discovery and collection rates'
+            'Create real-time dashboard for monitoring revenue discovery and collection rates',
         ];
     }
     /**
@@ -329,7 +339,7 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
             'Machine learning-based risk scoring for enforcement prioritization',
             'Automated notice generation and delivery for compliance violations',
             'Real-time revenue opportunity alerting and workflow routing',
-            'Predictive analytics for optimal enforcement timing and resource allocation'
+            'Predictive analytics for optimal enforcement timing and resource allocation',
         ];
     }
     /**
@@ -343,38 +353,38 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
                 legal: {
                     level: 'low',
                     factors: ['due_process_compliance', 'appeal_procedures', 'enforcement_authority'],
-                    mitigation: 'Established legal frameworks and procedures'
+                    mitigation: 'Established legal frameworks and procedures',
                 },
                 operational: {
                     level: 'medium',
                     factors: ['resource_capacity', 'staff_training', 'technology_reliability'],
-                    mitigation: 'Phased implementation with training and support'
+                    mitigation: 'Phased implementation with training and support',
                 },
                 financial: {
                     level: 'low',
                     factors: ['collection_rates', 'cost_effectiveness', 'budget_impact'],
-                    mitigation: 'Strong ROI projections and proven collection methods'
+                    mitigation: 'Strong ROI projections and proven collection methods',
                 },
                 political: {
                     level: 'medium',
                     factors: ['public_perception', 'stakeholder_support', 'policy_stability'],
-                    mitigation: 'Transparent communication and stakeholder engagement'
-                }
+                    mitigation: 'Transparent communication and stakeholder engagement',
+                },
             },
             mitigationStrategies: [
                 'Implement comprehensive staff training program',
                 'Establish clear communication protocols with taxpayers',
                 'Create robust appeal and review processes',
                 'Develop stakeholder engagement and education initiatives',
-                'Implement gradual rollout with performance monitoring'
+                'Implement gradual rollout with performance monitoring',
             ],
             successProbability: 0.89,
             contingencyPlans: [
                 'Alternative enforcement approaches if primary methods face resistance',
                 'Backup technology solutions for system reliability',
                 'Additional resource allocation if collection rates exceed projections',
-                'Public relations strategy for addressing concerns or misconceptions'
-            ]
+                'Public relations strategy for addressing concerns or misconceptions',
+            ],
         };
     }
     /**
@@ -391,8 +401,9 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
         }
         this.emit('models-updated', {
             modelsUpdated: Object.keys(this.mlModels).length,
-            averageAccuracy: Object.values(this.mlModels).reduce((sum, m) => sum + m.accuracy, 0) / Object.keys(this.mlModels).length,
-            lastUpdate: new Date().toISOString()
+            averageAccuracy: Object.values(this.mlModels).reduce((sum, m) => sum + m.accuracy, 0) /
+                Object.keys(this.mlModels).length,
+            lastUpdate: new Date().toISOString(),
         });
     }
     /**
@@ -416,7 +427,7 @@ class EnhancedRevenueHunter extends events_1.EventEmitter {
         this.emit('learning-update', {
             timestamp: new Date().toISOString(),
             improvementsDetected: Math.floor(Math.random() * 5) + 1,
-            modelAccuracyGains: Math.random() * 0.01
+            modelAccuracyGains: Math.random() * 0.01,
         });
     }
     /**

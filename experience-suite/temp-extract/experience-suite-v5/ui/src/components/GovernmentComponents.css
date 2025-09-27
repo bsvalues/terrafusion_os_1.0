@@ -1,0 +1,1543 @@
+/* TerraFusion OS Experience Suite v5 - Government Components Styling */
+
+/* Property Assessment Dashboard */
+.tf-property-dashboard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.tf-assessment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.tf-metric-card {
+  background: linear-gradient(135deg, var(--tf-primary), var(--tf-secondary));
+  color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.tf-metric-card:hover {
+  transform: translateY(-4px);
+}
+
+.tf-metric-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.tf-metric-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.tf-valuation-methods {
+  margin-top: 2rem;
+}
+
+.tf-method-badge {
+  display: inline-block;
+  background: var(--tf-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* AI Agent Coordination */
+.tf-ai-coordination {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.tf-supreme-commander {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+}
+
+.tf-agent-hierarchy {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.tf-agent-tier {
+  background: rgba(255,255,255,0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.tf-agent-count {
+  display: block;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--tf-primary);
+  margin-top: 0.5rem;
+}
+
+.tf-performance-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.tf-perf-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.1);
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+/* Rust Performance Monitor */
+.tf-rust-monitor {
+  background: linear-gradient(135deg, #2d1b69, #11998e);
+  color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.tf-rust-subtitle {
+  text-align: center;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+.tf-crate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tf-crate-card {
+  background: rgba(255,255,255,0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--tf-primary);
+}
+
+.tf-crate-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.tf-status-indicator {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.tf-status-indicator.operational {
+  background: #10b981;
+  color: white;
+}
+
+.tf-status-indicator.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.tf-performance-badge {
+  background: #f59e0b;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.tf-rust-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.tf-rust-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.1);
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+/* Module Marketplace */
+.tf-marketplace {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.tf-marketplace-subtitle {
+  text-align: center;
+  color: var(--tf-text-secondary);
+  margin-bottom: 2rem;
+}
+
+.tf-marketplace-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.tf-market-metric {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--tf-sidebar-bg);
+  border-radius: 8px;
+  border: 2px solid var(--tf-border);
+}
+
+.tf-market-metric h3 {
+  font-size: 2rem;
+  color: var(--tf-primary);
+  margin: 0;
+}
+
+.tf-market-metric span {
+  color: var(--tf-text-secondary);
+  font-size: 0.9rem;
+}
+
+.tf-featured-modules {
+  margin-top: 2rem;
+}
+
+.tf-module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.tf-module-card {
+  background: var(--tf-sidebar-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--tf-border);
+  transition: all 0.3s ease;
+}
+
+.tf-module-card:hover {
+  border-color: var(--tf-primary);
+  box-shadow: 0 4px 12px rgba(0,179,164,0.2);
+}
+
+.tf-module-category {
+  display: inline-block;
+  background: var(--tf-primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
+}
+
+.tf-module-price {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--tf-secondary);
+  margin: 0.5rem 0;
+}
+
+.tf-install-btn {
+  background: var(--tf-primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  width: 100%;
+}
+
+.tf-install-btn:hover {
+  background: var(--tf-button-hover);
+}
+
+/* Government Operations */
+.tf-gov-operations {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.tf-compliance-section {
+  margin-bottom: 2rem;
+}
+
+.tf-compliance-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tf-compliance-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.tf-security-section {
+  margin-bottom: 2rem;
+}
+
+.tf-security-level {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.tf-security-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.tf-security-features span {
+  background: rgba(255,255,255,0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.tf-support-section {
+  text-align: center;
+}
+
+.tf-deployment-status {
+  display: inline-block;
+  background: #10b981;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+/* Enhanced Module Marketplace Styles */
+.tf-marketplace-controls {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.tf-search-input {
+  flex: 1;
+  min-width: 300px;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.tf-search-input:focus {
+  outline: none;
+  border-color: var(--tf-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tf-category-filter {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  font-size: 1rem;
+  min-width: 150px;
+  cursor: pointer;
+}
+
+.tf-module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.tf-module-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: var(--tf-primary);
+}
+
+.tf-module-card.installed {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.tf-module-card.available {
+  border-color: #e5e7eb;
+}
+
+.tf-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.tf-module-header h4 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  flex: 1;
+}
+
+.tf-module-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tf-module-status.installed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.tf-module-status.available {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.tf-module-details {
+  margin-bottom: 1.5rem;
+}
+
+.tf-module-category {
+  display: inline-block;
+  background: var(--tf-primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+.tf-module-tier {
+  display: inline-block;
+  background: #f59e0b;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.tf-module-description {
+  margin: 0.75rem 0 0 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.tf-module-pricing {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.tf-module-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--tf-primary);
+  display: block;
+}
+
+.tf-module-annual {
+  font-size: 0.9rem;
+  color: #6b7280;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.tf-module-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tf-install-btn,
+.tf-uninstall-btn,
+.tf-toggle-btn,
+.tf-details-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.tf-install-btn {
+  background: var(--tf-primary);
+  color: white;
+}
+
+.tf-install-btn:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.tf-uninstall-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.tf-uninstall-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+.tf-toggle-btn.enabled {
+  background: #f59e0b;
+  color: white;
+}
+
+.tf-toggle-btn.disabled {
+  background: #6b7280;
+  color: white;
+}
+
+.tf-toggle-btn:hover {
+  transform: translateY(-2px);
+}
+
+.tf-details-btn {
+  background: #8b5cf6;
+  color: white;
+}
+
+.tf-details-btn:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+}
+
+.tf-module-health {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+}
+
+.tf-health-indicator {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.tf-health-indicator.healthy {
+  color: #059669;
+}
+
+.tf-health-indicator.warning {
+  color: #d97706;
+}
+
+.tf-health-indicator.error {
+  color: #dc2626;
+}
+
+.tf-health-indicator.unknown {
+  color: #6b7280;
+}
+
+.tf-no-modules {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.tf-refresh-btn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--tf-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tf-refresh-btn:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.tf-loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tf-assessment-grid,
+  .tf-agent-hierarchy,
+  .tf-performance-metrics,
+  .tf-crate-grid,
+  .tf-rust-metrics,
+  .tf-marketplace-stats,
+  .tf-module-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tf-security-features {
+    flex-direction: column;
+  }
+  
+  .tf-compliance-badges {
+    justify-content: center;
+  }
+
+  .tf-marketplace-controls {
+    flex-direction: column;
+  }
+
+  .tf-search-input {
+    min-width: unset;
+  }
+
+  .tf-module-actions {
+    flex-direction: column;
+  }
+
+  .tf-module-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Revenue Dashboard Styles */
+.tf-revenue-dashboard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.tf-revenue-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.tf-revenue-subtitle {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.tf-timeframe-selector {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.tf-timeframe-selector button {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tf-timeframe-selector button.active {
+  background: var(--tf-primary);
+  color: white;
+  border-color: var(--tf-primary);
+}
+
+.tf-revenue-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.tf-revenue-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-revenue-card.primary {
+  background: linear-gradient(135deg, var(--tf-primary), #2563eb);
+}
+
+.tf-revenue-card.secondary {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+}
+
+.tf-revenue-card.success {
+  background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.tf-revenue-card.warning {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+}
+
+.tf-revenue-card h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.tf-revenue-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.tf-revenue-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.tf-revenue-split {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tf-revenue-split span {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* County Billing Styles */
+.tf-county-billing {
+  margin-bottom: 3rem;
+}
+
+.tf-county-billing h3 {
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.tf-billing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.tf-billing-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.tf-billing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.tf-billing-card.current {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.tf-billing-card.overdue {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+}
+
+.tf-billing-card.trial {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+}
+
+.tf-billing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.tf-billing-header h4 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.tf-payment-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tf-payment-status.current {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.tf-payment-status.overdue {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.tf-payment-status.trial {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.tf-billing-details {
+  margin-bottom: 1.5rem;
+}
+
+.tf-billing-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.tf-billing-row.total {
+  border-top: 1px solid #e5e7eb;
+  font-weight: 600;
+  color: #1f2937;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+}
+
+.tf-billing-row.annual {
+  color: #059669;
+  font-weight: 600;
+}
+
+.tf-module-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.tf-billing-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tf-invoice-btn,
+.tf-payment-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tf-invoice-btn {
+  background: #6b7280;
+  color: white;
+}
+
+.tf-invoice-btn:hover {
+  background: #4b5563;
+}
+
+.tf-payment-btn {
+  background: var(--tf-primary);
+  color: white;
+}
+
+.tf-payment-btn:hover {
+  background: #2563eb;
+}
+
+/* Module Revenue Performance */
+.tf-module-revenue {
+  margin-bottom: 3rem;
+}
+
+.tf-module-revenue h3 {
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.tf-module-performance {
+  display: grid;
+  gap: 1rem;
+}
+
+.tf-module-revenue-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border-left: 4px solid var(--tf-primary);
+}
+
+.tf-module-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #1f2937;
+}
+
+.tf-module-county {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.tf-module-pricing {
+  text-align: center;
+}
+
+.tf-module-monthly {
+  display: block;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.tf-module-annual {
+  display: block;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.tf-revenue-split-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tf-split-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.tf-split-item.terrafusion {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.tf-split-item.developer {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.tf-module-status {
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.tf-module-status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.tf-module-status.suspended {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.tf-module-status.trial {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Revenue Analytics */
+.tf-revenue-summary {
+  margin-bottom: 2rem;
+}
+
+.tf-revenue-summary h3 {
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.tf-analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.tf-analytics-card {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  border-left: 4px solid var(--tf-primary);
+}
+
+.tf-analytics-card h4 {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.tf-analytics-value {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+/* Module Detail Modal Styles */
+.tf-module-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.tf-module-detail-modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.tf-module-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 2rem 1rem 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tf-module-title-section h2 {
+  margin: 0 0 0.5rem 0;
+  color: #1f2937;
+  font-size: 1.75rem;
+}
+
+.tf-close-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tf-close-btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.tf-module-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.tf-module-tabs button {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  background: none;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.tf-module-tabs button.active {
+  color: var(--tf-primary);
+  border-bottom-color: var(--tf-primary);
+  background: white;
+}
+
+.tf-module-tabs button:hover {
+  color: #1f2937;
+  background: #f3f4f6;
+}
+
+.tf-module-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+/* Overview Tab Styles */
+.tf-overview-tab > div {
+  margin-bottom: 2rem;
+}
+
+.tf-overview-tab h3 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.25rem;
+}
+
+.tf-module-description-section p {
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.tf-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.tf-pricing-card {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  border-left: 4px solid var(--tf-primary);
+}
+
+.tf-pricing-card.annual {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-left-color: #10b981;
+}
+
+.tf-pricing-card h4 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+}
+
+.tf-price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--tf-primary);
+  margin-bottom: 0.5rem;
+}
+
+.tf-pricing-card.annual .tf-price {
+  color: #10b981;
+}
+
+.tf-price-period {
+  color: #6b7280;
+  font-size: 0.9rem;
+  display: block;
+}
+
+.tf-savings {
+  display: block;
+  background: #10b981;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.tf-classification-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.tf-classification-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.tf-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.tf-value {
+  color: #6b7280;
+}
+
+/* Features Tab Styles */
+.tf-features-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tf-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.tf-feature-icon {
+  font-size: 1.25rem;
+}
+
+.tf-feature-text {
+  color: #374151;
+  font-weight: 500;
+}
+
+.tf-no-features {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.tf-endpoints-section {
+  margin-top: 2rem;
+}
+
+.tf-endpoints-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.tf-endpoint-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.tf-endpoint-method {
+  background: var(--tf-primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tf-endpoint-path {
+  font-family: monospace;
+  color: #374151;
+}
+
+.tf-endpoint-description {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Technical Tab Styles */
+.tf-tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.tf-tech-section h4 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.tf-tech-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.tf-tech-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.tf-tech-value {
+  color: #6b7280;
+  font-family: monospace;
+}
+
+.tf-permissions-section {
+  margin-top: 2rem;
+}
+
+.tf-permissions-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tf-permission-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #fef3c7;
+  border-radius: 8px;
+  border-left: 4px solid #f59e0b;
+}
+
+.tf-permission-icon {
+  font-size: 1.25rem;
+}
+
+.tf-permission-text {
+  color: #92400e;
+  font-weight: 500;
+}
+
+/* Compliance Tab Styles */
+.tf-compliance-grid {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.tf-compliance-section h4 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.tf-compliance-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tf-compliance-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tf-compliance-badge.verified {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.tf-cert-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tf-cert-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f0fdf4;
+  border-radius: 8px;
+  border-left: 4px solid #10b981;
+}
+
+.tf-cert-icon {
+  font-size: 1.25rem;
+}
+
+.tf-cert-text {
+  color: #065f46;
+  font-weight: 500;
+}
+
+.tf-security-details {
+  margin-top: 2rem;
+}
+
+.tf-security-details h4 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.tf-security-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tf-security-list li {
+  padding: 0.75rem;
+  background: #f0f9ff;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  border-left: 4px solid #0ea5e9;
+  color: #0c4a6e;
+  font-weight: 500;
+}
+
+.tf-security-list li:before {
+  content: '🔒 ';
+  margin-right: 0.5rem;
+}
+
+/* Action Buttons */
+.tf-module-actions {
+  padding: 2rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.tf-installed-actions,
+.tf-install-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.tf-btn-primary,
+.tf-btn-secondary,
+.tf-btn-warning {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tf-btn-primary {
+  background: var(--tf-primary);
+  color: white;
+}
+
+.tf-btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.tf-btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.tf-btn-secondary:hover {
+  background: #4b5563;
+  transform: translateY(-2px);
+}
+
+.tf-btn-warning {
+  background: #ef4444;
+  color: white;
+}
+
+.tf-btn-warning:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* Responsive Design for Module Detail */
+@media (max-width: 768px) {
+  .tf-module-detail-overlay {
+    padding: 1rem;
+  }
+
+  .tf-module-detail-modal {
+    max-height: 95vh;
+  }
+
+  .tf-module-tabs {
+    flex-wrap: wrap;
+  }
+
+  .tf-module-tabs button {
+    flex: 1 1 50%;
+    min-width: 120px;
+  }
+
+  .tf-pricing-grid,
+  .tf-tech-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tf-installed-actions,
+  .tf-install-actions {
+    flex-direction: column;
+  }
+
+  .tf-endpoint-item {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .tf-module-content {
+    padding: 1rem;
+  }
+}

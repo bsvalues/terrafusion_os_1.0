@@ -1,0 +1,376 @@
+{
+  "$schema": "../schemas/workflow-schema.json",
+  "id": "tf-workflow-tax-collection-standard",
+  "name": "Tax Collection Processing",
+  "description": "Automated processing of property tax collections including payment processing, delinquency management, and compliance tracking",
+  "version": "1.0.0",
+  "category": "tax_collection",
+  "department": "treasurer",
+  "created_date": "2025-01-15T00:00:00Z",
+  "last_modified": "2025-01-15T00:00:00Z",
+  "author": "TerraFusion AI Swarm",
+  "compliance": {
+    "regulations": ["RCW 84.56", "RCW 84.64", "WAC 458-19"],
+    "standards": ["GASB 33", "GASB 62"],
+    "certifications": ["Government Finance Officers Association"]
+  },
+  "sla_requirements": {
+    "max_duration": "PT24H",
+    "target_completion": "PT4H",
+    "availability": 0.999,
+    "error_threshold": 0.001
+  },
+  "triggers": [
+    {
+      "type": "scheduled",
+      "schedule": "0 2 * * *",
+      "description": "Daily tax collection processing at 2 AM"
+    },
+    {
+      "type": "manual",
+      "description": "Manual initiation for specific tax periods"
+    },
+    {
+      "type": "api",
+      "endpoint": "/api/webhooks/tax-payment-received",
+      "description": "Real-time payment processing"
+    }
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "tax_year": {
+        "type": "integer",
+        "description": "Tax year for processing"
+      },
+      "collection_type": {
+        "type": "string",
+        "enum": ["current", "delinquent", "installment", "special_assessment"],
+        "description": "Type of tax collection"
+      },
+      "batch_id": {
+        "type": "string",
+        "description": "Batch identifier for payment processing"
+      },
+      "payment_method": {
+        "type": "string",
+        "enum": ["online", "mail", "in_person", "ach", "wire"],
+        "description": "Payment processing method"
+      }
+    },
+    "required": ["tax_year", "collection_type"]
+  },
+  "outputs": {
+    "tax_collection_summary": {
+      "type": "object",
+      "description": "Summary of tax collection results"
+    },
+    "payment_processed_report": {
+      "type": "object", 
+      "description": "Detailed payment processing report"
+    },
+    "delinquency_notices": {
+      "type": "array",
+      "description": "Generated delinquency notices"
+    },
+    "compliance_report": {
+      "type": "object",
+      "description": "Regulatory compliance report"
+    }
+  },
+  "steps": [
+    {
+      "id": "step_001_initialize",
+      "name": "Initialize Tax Collection Process",
+      "description": "Set up collection parameters and validate input data",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["data_validation", "tax_processing"]
+      },
+      "integrations": [
+        {
+          "system": "harris_pacs",
+          "action": "get_tax_roll_data",
+          "parameters": ["tax_year", "collection_type"]
+        }
+      ],
+      "inputs": ["tax_year", "collection_type", "batch_id"],
+      "outputs": ["validated_tax_roll", "collection_parameters"],
+      "next_steps": [
+        {
+          "condition": "success",
+          "step_id": "step_002_payment_processing"
+        },
+        {
+          "condition": "validation_failed",
+          "step_id": "step_999_error_handling"
+        }
+      ]
+    },
+    {
+      "id": "step_002_payment_processing",
+      "name": "Process Tax Payments",
+      "description": "Process incoming tax payments and apply to appropriate accounts",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["payment_processing", "account_management"]
+      },
+      "integrations": [
+        {
+          "system": "payment_gateway",
+          "action": "process_payments",
+          "parameters": ["batch_id", "payment_method"]
+        },
+        {
+          "system": "harris_pacs",
+          "action": "update_tax_accounts",
+          "parameters": ["account_updates"]
+        }
+      ],
+      "inputs": ["validated_tax_roll", "payment_data"],
+      "outputs": ["processed_payments", "account_updates"],
+      "next_steps": [
+        {
+          "condition": "success",
+          "step_id": "step_003_delinquency_check"
+        },
+        {
+          "condition": "payment_failed",
+          "step_id": "step_007_failed_payment_handling"
+        }
+      ]
+    },
+    {
+      "id": "step_003_delinquency_check",
+      "name": "Delinquency Assessment",
+      "description": "Identify and process delinquent tax accounts",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["delinquency_analysis", "compliance_checking"]
+      },
+      "integrations": [
+        {
+          "system": "harris_pacs",
+          "action": "identify_delinquent_accounts",
+          "parameters": ["tax_year", "cutoff_date"]
+        },
+        {
+          "system": "compliance_checker",
+          "action": "validate_delinquency_rules",
+          "parameters": ["delinquent_accounts"]
+        }
+      ],
+      "inputs": ["processed_payments", "collection_parameters"],
+      "outputs": ["delinquent_accounts", "notice_requirements"],
+      "next_steps": [
+        {
+          "condition": "delinquencies_found",
+          "step_id": "step_004_notice_generation"
+        },
+        {
+          "condition": "no_delinquencies",
+          "step_id": "step_006_compliance_reporting"
+        }
+      ]
+    },
+    {
+      "id": "step_004_notice_generation",
+      "name": "Generate Delinquency Notices",
+      "description": "Generate and queue delinquency notices for mailing",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["document_generation", "notification_services"]
+      },
+      "integrations": [
+        {
+          "system": "document_generator",
+          "action": "create_delinquency_notices",
+          "parameters": ["delinquent_accounts", "notice_templates"]
+        },
+        {
+          "system": "mailing_service",
+          "action": "queue_for_mailing",
+          "parameters": ["generated_notices"]
+        }
+      ],
+      "inputs": ["delinquent_accounts", "notice_requirements"],
+      "outputs": ["generated_notices", "mailing_queue"],
+      "next_steps": [
+        {
+          "condition": "success",
+          "step_id": "step_005_interest_calculation"
+        }
+      ]
+    },
+    {
+      "id": "step_005_interest_calculation",
+      "name": "Calculate Interest and Penalties",
+      "description": "Calculate and apply interest and penalties to delinquent accounts",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["financial_calculations", "regulatory_compliance"]
+      },
+      "integrations": [
+        {
+          "system": "valuation_kernel",
+          "action": "calculate_interest_penalties",
+          "parameters": ["delinquent_accounts", "interest_rates"]
+        },
+        {
+          "system": "harris_pacs",
+          "action": "apply_interest_penalties",
+          "parameters": ["calculated_amounts"]
+        }
+      ],
+      "inputs": ["delinquent_accounts", "interest_rates"],
+      "outputs": ["calculated_interest", "updated_balances"],
+      "next_steps": [
+        {
+          "condition": "success",
+          "step_id": "step_006_compliance_reporting"
+        }
+      ]
+    },
+    {
+      "id": "step_006_compliance_reporting",
+      "name": "Generate Compliance Reports",
+      "description": "Generate required compliance and performance reports",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["reporting", "compliance_validation"]
+      },
+      "integrations": [
+        {
+          "system": "reporting_engine",
+          "action": "generate_tax_collection_report",
+          "parameters": ["collection_summary", "compliance_data"]
+        },
+        {
+          "system": "dashboard",
+          "action": "update_metrics",
+          "parameters": ["performance_metrics"]
+        }
+      ],
+      "inputs": ["processed_payments", "delinquent_accounts", "calculated_interest"],
+      "outputs": ["compliance_reports", "performance_metrics"],
+      "next_steps": [
+        {
+          "condition": "success",
+          "step_id": "step_999_completion"
+        }
+      ]
+    },
+    {
+      "id": "step_007_failed_payment_handling",
+      "name": "Handle Failed Payments",
+      "description": "Process and manage failed payment attempts",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["error_handling", "customer_service"]
+      },
+      "integrations": [
+        {
+          "system": "payment_gateway",
+          "action": "analyze_payment_failure",
+          "parameters": ["failed_payments"]
+        },
+        {
+          "system": "notification_service",
+          "action": "send_failure_notifications",
+          "parameters": ["taxpayer_notifications"]
+        }
+      ],
+      "inputs": ["failed_payments", "failure_reasons"],
+      "outputs": ["retry_queue", "taxpayer_notifications"],
+      "next_steps": [
+        {
+          "condition": "retry_possible",
+          "step_id": "step_002_payment_processing"
+        },
+        {
+          "condition": "permanent_failure",
+          "step_id": "step_003_delinquency_check"
+        }
+      ]
+    },
+    {
+      "id": "step_999_completion",
+      "name": "Complete Tax Collection Process",
+      "description": "Finalize the tax collection workflow and archive results",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["workflow_finalization", "data_archival"]
+      },
+      "integrations": [
+        {
+          "system": "audit_log",
+          "action": "log_completion",
+          "parameters": ["workflow_summary"]
+        },
+        {
+          "system": "archive_system",
+          "action": "archive_results",
+          "parameters": ["all_outputs"]
+        }
+      ],
+      "inputs": ["all_workflow_outputs"],
+      "outputs": ["completion_summary"],
+      "next_steps": []
+    },
+    {
+      "id": "step_999_error_handling",
+      "name": "Handle Workflow Errors",
+      "description": "Manage and escalate workflow errors",
+      "type": "human_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["error_analysis", "escalation_management"]
+      },
+      "inputs": ["error_details", "context_data"],
+      "outputs": ["error_resolution", "escalation_notice"],
+      "next_steps": []
+    }
+  ],
+  "error_handling": {
+    "max_retries": 3,
+    "retry_delay": "PT30S",
+    "escalation_triggers": [
+      "max_retries_exceeded",
+      "critical_system_failure",
+      "compliance_violation"
+    ],
+    "escalation_contacts": ["tax.supervisor@bentoncountywa.gov"]
+  },
+  "monitoring": {
+    "metrics": [
+      "processing_time",
+      "payment_success_rate",
+      "delinquency_rate",
+      "compliance_score"
+    ],
+    "alerts": [
+      {
+        "condition": "processing_time > PT6H",
+        "severity": "warning"
+      },
+      {
+        "condition": "payment_success_rate < 0.95",
+        "severity": "critical"
+      }
+    ]
+  },
+  "security": {
+    "classification": "Confidential",
+    "encryption_required": true,
+    "audit_logging": true,
+    "access_controls": ["TaxCollector", "FinanceManager", "CountyTreasurer"]
+  }
+}

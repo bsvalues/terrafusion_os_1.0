@@ -1,0 +1,24 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tf-app
+  annotations:
+    konghq.com/strip-path: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+    - hosts: [ {{ .Values.ingress.host }} ]
+      secretName: tf-app-tls
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: tf-ui, port: { number: 80 } } }
+          - path: /api
+            pathType: Prefix
+            backend: { service: { name: tf-api, port: { number: 80 } } }
+{{- end }}

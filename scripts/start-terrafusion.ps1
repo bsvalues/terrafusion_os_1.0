@@ -6,7 +6,7 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
 function Start-Backend {
-    Write-Host "[BACKEND] Starting API server on port 5000..." -ForegroundColor Yellow
+    Write-Host "[BACKEND] Starting API server on port \${{TF_API_PORT:-5000}}..." -ForegroundColor Yellow
     
     $backendPath = Join-Path $PSScriptRoot "backend\TerraFusion.API"
     
@@ -15,14 +15,14 @@ function Start-Backend {
         return $false
     }
     
-    $backendProcess = Start-Process -FilePath "dotnet" -ArgumentList "run", "--project", $backendPath, "--urls", "http://localhost:5000" -NoNewWindow -PassThru
+    $backendProcess = Start-Process -FilePath "dotnet" -ArgumentList "run", "--project", $backendPath, "--urls", "http://localhost:\${{TF_API_PORT:-5000}}" -NoNewWindow -PassThru
     
     Start-Sleep -Seconds 3
     
     $maxAttempts = 30
     for ($i = 1; $i -le $maxAttempts; $i++) {
         try {
-            $response = Invoke-RestMethod -Uri "http://localhost:5000/health" -Method Get -TimeoutSec 2 -ErrorAction SilentlyContinue
+            $response = Invoke-RestMethod -Uri "http://localhost:\${{TF_API_PORT:-5000}}/health" -Method Get -TimeoutSec 2 -ErrorAction SilentlyContinue
             if ($response.status -eq "healthy" -or $response.status -eq "degraded") {
                 Write-Host "[BACKEND] ✅ API server is running! Status: $($response.status)" -ForegroundColor Green
                 Write-Host "[BACKEND] Server: $($response.server)" -ForegroundColor Gray
@@ -42,7 +42,7 @@ function Start-Backend {
 
 function Start-Frontend {
     Write-Host ""
-    Write-Host "[FRONTEND] Starting React application on port 3000..." -ForegroundColor Yellow
+    Write-Host "[FRONTEND] Starting React application on port \${{TF_API_PORT:-5000}}..." -ForegroundColor Yellow
     
     $frontendPath = Join-Path $PSScriptRoot "frontend"
     
@@ -64,10 +64,10 @@ function Start-Frontend {
     Start-Sleep -Seconds 5
     
     Write-Host "[FRONTEND] ✅ React application starting..." -ForegroundColor Green
-    Write-Host "[FRONTEND] Opening browser at http://localhost:3000" -ForegroundColor Cyan
+    Write-Host "[FRONTEND] Opening browser at http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor Cyan
     
     Start-Sleep -Seconds 3
-    Start-Process "http://localhost:3000"
+    Start-Process "http://localhost:\${{TF_API_PORT:-5000}}"
     
     return $true
 }
@@ -78,10 +78,10 @@ function Show-Status {
     Write-Host "   TerraFusion OS 1.0 - Running!       " -ForegroundColor Green
     Write-Host "========================================" -ForegroundColor Green
     Write-Host ""
-    Write-Host "🌐 Frontend: http://localhost:3000" -ForegroundColor Cyan
-    Write-Host "🚀 Backend API: http://localhost:5000" -ForegroundColor Cyan
-    Write-Host "📊 Health Check: http://localhost:5000/health" -ForegroundColor Cyan
-    Write-Host "📡 API Test: http://localhost:5000/api/test" -ForegroundColor Cyan
+    Write-Host "🌐 Frontend: http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor Cyan
+    Write-Host "🚀 Backend API: http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor Cyan
+    Write-Host "📊 Health Check: http://localhost:\${{TF_API_PORT:-5000}}/health" -ForegroundColor Cyan
+    Write-Host "📡 API Test: http://localhost:\${{TF_API_PORT:-5000}}/api/test" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Press Ctrl+C to stop all services" -ForegroundColor Yellow
     Write-Host ""

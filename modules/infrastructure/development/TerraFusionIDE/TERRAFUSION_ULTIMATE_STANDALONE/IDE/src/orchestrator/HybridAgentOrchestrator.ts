@@ -66,7 +66,7 @@ export class HybridAgentOrchestrator extends EventEmitter {
     disk: 0,
     network: 0,
     temperature: 0,
-    timestamp: new Date()
+    timestamp: new Date(),
   };
 
   constructor() {
@@ -82,14 +82,32 @@ export class HybridAgentOrchestrator extends EventEmitter {
       name: 'Windsurf',
       type: 'windsurf',
       capabilities: [
-        { id: 'web-dev', name: 'Web Development', category: 'development', priority: 9, dependencies: [] },
-        { id: 'search', name: 'Advanced Search', category: 'search', priority: 8, dependencies: [] },
-        { id: 'deployment', name: 'Deployment', category: 'deployment', priority: 7, dependencies: ['web-dev'] }
+        {
+          id: 'web-dev',
+          name: 'Web Development',
+          category: 'development',
+          priority: 9,
+          dependencies: [],
+        },
+        {
+          id: 'search',
+          name: 'Advanced Search',
+          category: 'search',
+          priority: 8,
+          dependencies: [],
+        },
+        {
+          id: 'deployment',
+          name: 'Deployment',
+          category: 'deployment',
+          priority: 7,
+          dependencies: ['web-dev'],
+        },
       ],
       performance: 95,
       currentTask: null,
       taskQueue: [],
-      status: 'idle'
+      status: 'idle',
     });
 
     // Devin AI - Strategic Planning & Development
@@ -98,14 +116,32 @@ export class HybridAgentOrchestrator extends EventEmitter {
       name: 'Devin AI',
       type: 'devin',
       capabilities: [
-        { id: 'planning', name: 'Strategic Planning', category: 'planning', priority: 10, dependencies: [] },
-        { id: 'dev-strategy', name: 'Development Strategy', category: 'development', priority: 9, dependencies: ['planning'] },
-        { id: 'optimization', name: 'System Optimization', category: 'optimization', priority: 8, dependencies: ['dev-strategy'] }
+        {
+          id: 'planning',
+          name: 'Strategic Planning',
+          category: 'planning',
+          priority: 10,
+          dependencies: [],
+        },
+        {
+          id: 'dev-strategy',
+          name: 'Development Strategy',
+          category: 'development',
+          priority: 9,
+          dependencies: ['planning'],
+        },
+        {
+          id: 'optimization',
+          name: 'System Optimization',
+          category: 'optimization',
+          priority: 8,
+          dependencies: ['dev-strategy'],
+        },
       ],
       performance: 98,
       currentTask: null,
       taskQueue: [],
-      status: 'idle'
+      status: 'idle',
     });
 
     // Cursor Agent - Code Optimization & Development
@@ -114,14 +150,32 @@ export class HybridAgentOrchestrator extends EventEmitter {
       name: 'Cursor',
       type: 'cursor',
       capabilities: [
-        { id: 'code-opt', name: 'Code Optimization', category: 'optimization', priority: 9, dependencies: [] },
-        { id: 'dev-tools', name: 'Development Tools', category: 'development', priority: 8, dependencies: ['code-opt'] },
-        { id: 'parallel', name: 'Parallel Execution', category: 'development', priority: 7, dependencies: ['dev-tools'] }
+        {
+          id: 'code-opt',
+          name: 'Code Optimization',
+          category: 'optimization',
+          priority: 9,
+          dependencies: [],
+        },
+        {
+          id: 'dev-tools',
+          name: 'Development Tools',
+          category: 'development',
+          priority: 8,
+          dependencies: ['code-opt'],
+        },
+        {
+          id: 'parallel',
+          name: 'Parallel Execution',
+          category: 'development',
+          priority: 7,
+          dependencies: ['dev-tools'],
+        },
       ],
       performance: 92,
       currentTask: null,
       taskQueue: [],
-      status: 'idle'
+      status: 'idle',
     });
 
     // Replit Agent - Package Management & Database
@@ -130,14 +184,32 @@ export class HybridAgentOrchestrator extends EventEmitter {
       name: 'Replit',
       type: 'replit',
       capabilities: [
-        { id: 'package-mgmt', name: 'Package Management', category: 'deployment', priority: 8, dependencies: [] },
-        { id: 'database', name: 'Database Setup', category: 'deployment', priority: 7, dependencies: ['package-mgmt'] },
-        { id: 'workflow', name: 'Workflow Management', category: 'deployment', priority: 6, dependencies: ['package-mgmt'] }
+        {
+          id: 'package-mgmt',
+          name: 'Package Management',
+          category: 'deployment',
+          priority: 8,
+          dependencies: [],
+        },
+        {
+          id: 'database',
+          name: 'Database Setup',
+          category: 'deployment',
+          priority: 7,
+          dependencies: ['package-mgmt'],
+        },
+        {
+          id: 'workflow',
+          name: 'Workflow Management',
+          category: 'deployment',
+          priority: 6,
+          dependencies: ['package-mgmt'],
+        },
       ],
       performance: 88,
       currentTask: null,
       taskQueue: [],
-      status: 'idle'
+      status: 'idle',
     });
 
     // Manus Agent - Communication & User Interaction
@@ -146,14 +218,32 @@ export class HybridAgentOrchestrator extends EventEmitter {
       name: 'Manus',
       type: 'manus',
       capabilities: [
-        { id: 'user-comm', name: 'User Communication', category: 'communication', priority: 9, dependencies: [] },
-        { id: 'notifications', name: 'Notifications', category: 'communication', priority: 8, dependencies: ['user-comm'] },
-        { id: 'file-ops', name: 'File Operations', category: 'development', priority: 6, dependencies: ['user-comm'] }
+        {
+          id: 'user-comm',
+          name: 'User Communication',
+          category: 'communication',
+          priority: 9,
+          dependencies: [],
+        },
+        {
+          id: 'notifications',
+          name: 'Notifications',
+          category: 'communication',
+          priority: 8,
+          dependencies: ['user-comm'],
+        },
+        {
+          id: 'file-ops',
+          name: 'File Operations',
+          category: 'development',
+          priority: 6,
+          dependencies: ['user-comm'],
+        },
       ],
       performance: 90,
       currentTask: null,
       taskQueue: [],
-      status: 'idle'
+      status: 'idle',
     });
   }
 
@@ -171,19 +261,21 @@ export class HybridAgentOrchestrator extends EventEmitter {
       disk: Math.floor(Math.random() * 20) + 10,
       network: Math.floor(Math.random() * 50) + 20,
       temperature: Math.floor(Math.random() * 15) + 35,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     this.emit('metrics-updated', this.metrics);
   }
 
-  async createTask(taskData: Omit<Task, 'id' | 'status' | 'assignedAgent' | 'createdAt' | 'updatedAt'>): Promise<Task> {
+  async createTask(
+    taskData: Omit<Task, 'id' | 'status' | 'assignedAgent' | 'createdAt' | 'updatedAt'>
+  ): Promise<Task> {
     const task: Task = {
       ...taskData,
       id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       status: 'pending',
       assignedAgent: null,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.tasks.set(task.id, task);
@@ -226,9 +318,8 @@ export class HybridAgentOrchestrator extends EventEmitter {
       let score = agent.performance;
 
       // Bonus for relevant capabilities
-      const relevantCapabilities = agent.capabilities.filter((cap: AgentCapability) => 
-        cap.category === task.type || 
-        cap.category === 'development' // Fallback for development tasks
+      const relevantCapabilities = agent.capabilities.filter(
+        (cap: AgentCapability) => cap.category === task.type || cap.category === 'development' // Fallback for development tasks
       );
 
       if (relevantCapabilities.length > 0) {
@@ -282,13 +373,15 @@ export class HybridAgentOrchestrator extends EventEmitter {
     this.emit('task-failed', { task, error });
   }
 
-  async storeMemory(memoryData: Omit<MemoryItem, 'id' | 'createdAt' | 'lastAccessed' | 'accessCount'>): Promise<void> {
+  async storeMemory(
+    memoryData: Omit<MemoryItem, 'id' | 'createdAt' | 'lastAccessed' | 'accessCount'>
+  ): Promise<void> {
     const memory: MemoryItem = {
       ...memoryData,
       id: `memory_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date(),
       lastAccessed: new Date(),
-      accessCount: 0
+      accessCount: 0,
     };
 
     this.memories.set(memory.id, memory);
@@ -313,9 +406,7 @@ export class HybridAgentOrchestrator extends EventEmitter {
       }
 
       // Score based on tag matches
-      const tagMatches = memory.tags.filter(tag => 
-        tag.toLowerCase().includes(queryLower)
-      ).length;
+      const tagMatches = memory.tags.filter(tag => tag.toLowerCase().includes(queryLower)).length;
       score += tagMatches * 3;
 
       // Bonus for recent and frequently accessed memories
@@ -341,8 +432,8 @@ export class HybridAgentOrchestrator extends EventEmitter {
   }
 
   getActiveTasks(): Task[] {
-    return Array.from(this.tasks.values()).filter(task => 
-      task.status === 'in-progress' || task.status === 'assigned'
+    return Array.from(this.tasks.values()).filter(
+      task => task.status === 'in-progress' || task.status === 'assigned'
     );
   }
 

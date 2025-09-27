@@ -82,7 +82,6 @@ class AIAgentTrainingDemo {
       await this.demoAgentManagement();
 
       console.log('\n🎉 Demo completed successfully!\n');
-
     } catch (error) {
       console.error('❌ Demo failed:', error);
     } finally {
@@ -105,25 +104,25 @@ class AIAgentTrainingDemo {
           size: 100000,
           quality: 0.95,
           domain: 'real_estate',
-          preprocessing: true
+          preprocessing: true,
         },
         {
           name: 'market_comps_dataset',
           type: 'unsupervised',
           size: 50000,
-          quality: 0.90,
+          quality: 0.9,
           domain: 'market_analysis',
-          preprocessing: true
-        }
+          preprocessing: true,
+        },
       ],
       quantumEnhancement: true,
       adaptiveLearning: true,
       multiAgentCoordination: false,
       performanceTargets: [
         { metric: 'accuracy', target: 0.95, current: 0, improvement: 0 },
-        { metric: 'responseTime', target: 100, current: 0, improvement: 0 }
+        { metric: 'responseTime', target: 100, current: 0, improvement: 0 },
       ],
-      securityLevel: 'government'
+      securityLevel: 'government',
     };
 
     const jobId = await this.trainingSystem.startAgentTraining(config);
@@ -148,17 +147,17 @@ class AIAgentTrainingDemo {
           size: 75000,
           quality: 0.92,
           domain: 'tax_collection',
-          preprocessing: true
-        }
+          preprocessing: true,
+        },
       ],
       quantumEnhancement: true,
       adaptiveLearning: true,
       multiAgentCoordination: true,
       performanceTargets: [
         { metric: 'accuracy', target: 0.98, current: 0, improvement: 0 },
-        { metric: 'throughput', target: 1000, current: 0, improvement: 0 }
+        { metric: 'throughput', target: 1000, current: 0, improvement: 0 },
       ],
-      securityLevel: 'government'
+      securityLevel: 'government',
     };
 
     const jobId = await this.trainingSystem.startAgentTraining(config);
@@ -182,7 +181,7 @@ class AIAgentTrainingDemo {
           size: 200000,
           quality: 0.98,
           domain: 'strategic_planning',
-          preprocessing: true
+          preprocessing: true,
         },
         {
           name: 'multi_agent_coordination_dataset',
@@ -190,17 +189,17 @@ class AIAgentTrainingDemo {
           size: 100000,
           quality: 0.95,
           domain: 'coordination',
-          preprocessing: true
-        }
+          preprocessing: true,
+        },
       ],
       quantumEnhancement: true,
       adaptiveLearning: true,
       multiAgentCoordination: true,
       performanceTargets: [
         { metric: 'accuracy', target: 0.99, current: 0, improvement: 0 },
-        { metric: 'adaptability', target: 0.95, current: 0, improvement: 0 }
+        { metric: 'adaptability', target: 0.95, current: 0, improvement: 0 },
       ],
-      securityLevel: 'quantum'
+      securityLevel: 'quantum',
     };
 
     const jobId = await this.trainingSystem.startAgentTraining(config);
@@ -264,7 +263,9 @@ class AIAgentTrainingDemo {
 
     const job = this.trainingSystem.getTrainingStatus(jobId);
     if (job) {
-      console.log(`📊 Training completed: ${(job.metrics.finalAccuracy * 100).toFixed(1)}% accuracy`);
+      console.log(
+        `📊 Training completed: ${(job.metrics.finalAccuracy * 100).toFixed(1)}% accuracy`
+      );
     }
   }
 }

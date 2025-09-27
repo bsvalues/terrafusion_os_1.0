@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite --port 3010",
+    "dev": "vite --port ${TF_FRONTEND_3010_PORT:-3010}",
     "build": "vite build",
-    "preview": "vite preview --port 4173"
+    "preview": "vite preview --port ${TF_FRONTEND_3010_PORT:-3010}"
   },
   "dependencies": {
     "react": "^18.2.0",

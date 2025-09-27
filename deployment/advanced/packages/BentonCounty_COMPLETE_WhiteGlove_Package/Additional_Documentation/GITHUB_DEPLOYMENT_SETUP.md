@@ -3,14 +3,17 @@
 ## Step 1: Create New GitHub Repository
 
 ### Option A: Via GitHub Web Interface
+
 1. Go to https://github.com/new
 2. Repository name: `terrafusion-market`
-3. Description: "Official Terrafusion Market - AI-Powered Government Solutions Platform"
+3. Description: "Official Terrafusion Market - AI-Powered Government Solutions
+   Platform"
 4. Public repository (for GitHub Pages)
 5. Initialize with README: No (we'll push our own)
 6. Create repository
 
 ### Option B: Via GitHub CLI
+
 ```bash
 gh repo create terrafusion-market --public --description "Official Terrafusion Market - AI-Powered Government Solutions Platform"
 ```
@@ -79,6 +82,7 @@ git push -u origin main
 ## Step 3: Enable GitHub Pages
 
 ### Via GitHub Web Interface:
+
 1. Go to your repository: https://github.com/YOUR_USERNAME/terrafusion-market
 2. Settings → Pages
 3. Source: Deploy from a branch
@@ -87,6 +91,7 @@ git push -u origin main
 6. Click Save
 
 ### Via GitHub CLI:
+
 ```bash
 gh api repos/YOUR_USERNAME/terrafusion-market/pages \
   --method POST \
@@ -96,6 +101,7 @@ gh api repos/YOUR_USERNAME/terrafusion-market/pages \
 ## Step 4: Configure Custom Domain in Hostinger
 
 ### DNS Settings in Hostinger:
+
 ```dns
 # Add these DNS records in Hostinger hPanel
 
@@ -134,9 +140,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -145,7 +151,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 
 jobs:
@@ -154,28 +160,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
+
       - name: Install dependencies
         run: |
           npm init -y
           npm install --save-dev prettier htmlhint
-          
+
       - name: Validate HTML
         run: npx htmlhint index.html
-        
+
       - name: Format check
         run: npx prettier --check index.html
-        
+
       - name: Build site
         run: |
           echo "Building Terrafusion Market..."
           # Add any build steps here if needed
-          
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -196,6 +202,7 @@ jobs:
 ## Step 6: Advanced Features Setup
 
 ### A. API Status Monitor
+
 Create `api-status.js`:
 
 ```javascript
@@ -204,22 +211,22 @@ const API_ENDPOINT = 'https://api.terrafusionmarket.io/health';
 const STATUS_CHECK_INTERVAL = 30000; // 30 seconds
 
 async function checkAPIStatus() {
-    const statusElement = document.querySelector('.api-status');
-    const statusDot = document.querySelector('.status-dot');
-    const statusText = statusElement.querySelector('span');
-    
-    try {
-        const response = await fetch(API_ENDPOINT);
-        const data = await response.json();
-        
-        statusDot.style.background = '#10b981';
-        statusText.textContent = 'API Status: Online';
-        console.log('API Health:', data);
-    } catch (error) {
-        statusDot.style.background = '#ef4444';
-        statusText.textContent = 'API Status: Offline';
-        console.error('API Error:', error);
-    }
+  const statusElement = document.querySelector('.api-status');
+  const statusDot = document.querySelector('.status-dot');
+  const statusText = statusElement.querySelector('span');
+
+  try {
+    const response = await fetch(API_ENDPOINT);
+    const data = await response.json();
+
+    statusDot.style.background = '#10b981';
+    statusText.textContent = 'API Status: Online';
+    console.log('API Health:', data);
+  } catch (error) {
+    statusDot.style.background = '#ef4444';
+    statusText.textContent = 'API Status: Offline';
+    console.error('API Error:', error);
+  }
 }
 
 // Check on load and every 30 seconds
@@ -228,25 +235,38 @@ setInterval(checkAPIStatus, STATUS_CHECK_INTERVAL);
 ```
 
 ### B. Analytics Integration
+
 Create `analytics.html`:
 
 ```html
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag() {
+    dataLayer.push(arguments);
+  }
   gtag('js', new Date());
   gtag('config', 'G-XXXXXXXXXX');
 </script>
 
 <!-- Microsoft Clarity -->
 <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "YOUR_CLARITY_ID");
+  (function (c, l, a, r, i, t, y) {
+    c[a] =
+      c[a] ||
+      function () {
+        (c[a].q = c[a].q || []).push(arguments);
+      };
+    t = l.createElement(r);
+    t.async = 1;
+    t.src = 'https://www.clarity.ms/tag/' + i;
+    y = l.getElementsByTagName(r)[0];
+    y.parentNode.insertBefore(t, y);
+  })(window, document, 'clarity', 'script', 'YOUR_CLARITY_ID');
 </script>
 ```
 
@@ -341,7 +361,8 @@ chmod +x deploy.sh
 
 3. **Monitor deployment:**
    - GitHub Actions: https://github.com/YOUR_USERNAME/terrafusion-market/actions
-   - Pages deployment: https://github.com/YOUR_USERNAME/terrafusion-market/deployments
+   - Pages deployment:
+     https://github.com/YOUR_USERNAME/terrafusion-market/deployments
 
 ## Continuous Deployment Workflow
 
@@ -361,6 +382,7 @@ git push
 ```
 
 GitHub Actions will automatically:
+
 1. Validate HTML
 2. Run tests
 3. Build the site
@@ -369,34 +391,34 @@ GitHub Actions will automatically:
 
 ## Benefits of This Setup
 
-✅ **Version Control**: Complete history of all changes
-✅ **Automatic Deployment**: Push to deploy
-✅ **Free Hosting**: GitHub Pages is free for public repos
-✅ **HTTPS Included**: Automatic SSL certificates
-✅ **Global CDN**: GitHub's CDN for fast loading
-✅ **CI/CD Pipeline**: Automated testing and deployment
-✅ **Rollback Capability**: Easy to revert changes
-✅ **Collaboration**: Multiple developers can contribute
-✅ **Issue Tracking**: Built-in issue management
-✅ **Documentation**: Wiki and README support
+✅ **Version Control**: Complete history of all changes ✅ **Automatic
+Deployment**: Push to deploy ✅ **Free Hosting**: GitHub Pages is free for
+public repos ✅ **HTTPS Included**: Automatic SSL certificates ✅ **Global
+CDN**: GitHub's CDN for fast loading ✅ **CI/CD Pipeline**: Automated testing
+and deployment ✅ **Rollback Capability**: Easy to revert changes ✅
+**Collaboration**: Multiple developers can contribute ✅ **Issue Tracking**:
+Built-in issue management ✅ **Documentation**: Wiki and README support
 
 ## Troubleshooting
 
 ### DNS not working?
+
 - Wait up to 24 hours for propagation
 - Verify CNAME file exists in repository
 - Check DNS settings in Hostinger
 
 ### Page not updating?
+
 - Check GitHub Actions for errors
 - Clear browser cache
 - Wait 10 minutes for GitHub Pages cache
 
 ### Custom domain SSL issues?
+
 - GitHub automatically provisions SSL
 - May take up to 24 hours
 - Check https://github.com/YOUR_USERNAME/terrafusion-market/settings/pages
 
 ---
 
-*Your Terrafusion Market website is now ready for continuous deployment!*
+_Your Terrafusion Market website is now ready for continuous deployment!_

@@ -1,5 +1,4 @@
-Async trait methods
-===================
+# Async trait methods
 
 [<img alt="github" src="https://img.shields.io/badge/github-dtolnay/async--trait-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/dtolnay/async-trait)
 [<img alt="crates.io" src="https://img.shields.io/crates/v/async-trait.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/async-trait)
@@ -41,11 +40,12 @@ note: for a trait to be dyn compatible it needs to allow building a vtable
 This crate provides an attribute macro to make async fn in traits work with dyn
 traits.
 
-Please refer to [*why async fn in traits are hard*][hard] for a deeper analysis
+Please refer to [_why async fn in traits are hard_][hard] for a deeper analysis
 of how this implementation differs from what the compiler and language deliver
 natively.
 
-[hard]: https://smallcultfollowing.com/babysteps/blog/2019/10/26/async-fn-in-traits-are-hard/
+[hard]:
+  https://smallcultfollowing.com/babysteps/blog/2019/10/26/async-fn-in-traits-are-hard/
 
 <br>
 
@@ -101,8 +101,8 @@ impl Advertisement for AutoplayingVideo {
 ## Supported features
 
 It is the intention that all features of Rust traits should work nicely with
-\#\[async_trait\], but the edge cases are numerous. *Please file an issue if you
-see unexpected borrow checker errors, type errors, or warnings.* There is no use
+\#\[async_trait\], but the edge cases are numerous. _Please file an issue if you
+see unexpected borrow checker errors, type errors, or warnings._ There is no use
 of `unsafe` in the expanded code, so rest assured that if your code compiles it
 can't be that badly broken.
 
@@ -118,8 +118,8 @@ can't be that badly broken.
 
 ## Explanation
 
-Async fns get transformed into methods that return `Pin<Box<dyn Future + Send +
-'async_trait>>` and delegate to an async block.
+Async fns get transformed into methods that return
+`Pin<Box<dyn Future + Send + 'async_trait>>` and delegate to an async block.
 
 For example the `impl Advertisement for AutoplayingVideo` above would be
 expanded as:
@@ -152,8 +152,8 @@ macro as `#[async_trait(?Send)]` on both the trait and the impl blocks.
 ## Elided lifetimes
 
 Be aware that async fn syntax does not allow lifetime elision outside of `&` and
-`&mut` references. (This is true even when not using #\[async_trait\].)
-Lifetimes must be named or marked by the placeholder `'_`.
+`&mut` references. (This is true even when not using #\[async*trait\].)
+Lifetimes must be named or marked by the placeholder `'*`.
 
 Fortunately the compiler is able to diagnose missing lifetimes with a good error
 message.

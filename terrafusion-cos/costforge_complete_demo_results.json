@@ -1,0 +1,284 @@
+{
+  "demonstration_timestamp": "2025-09-26T21:12:25.577310",
+  "platform_info": {
+    "system": {
+      "name": "CostForge AI Professional Valuation Platform",
+      "version": "3.0.0",
+      "deployment_environment": "production",
+      "compliance_standards": [
+        "USPAP",
+        "IAAO",
+        "FISMA_MODERATE",
+        "NIST_CYBERSECURITY"
+      ]
+    },
+    "county": {
+      "county_name": "Benton County Washington",
+      "assessor_office": "Benton County Assessor's Office",
+      "total_parcels": 89247,
+      "assessment_cycle": "annual",
+      "current_assessment_year": 2025,
+      "next_revaluation": 2026
+    },
+    "assessor_profile": {
+      "title": "County Assessor",
+      "total_experience_years": null,
+      "pacs_experience_years": null,
+      "cama_system_experience": null,
+      "valuation_specialties": [
+        "residential",
+        "commercial",
+        "industrial",
+        "agricultural"
+      ],
+      "certifications": [
+        "RES",
+        "CAE",
+        "AAS"
+      ],
+      "role_in_system_design": "Lead Technical Advisor"
+    },
+    "engines_enabled": {
+      "cost_approach": true,
+      "sales_comparison": true,
+      "income_approach": true,
+      "ai_analysis": true
+    },
+    "performance_targets": {
+      "processing_time_seconds": {
+        "residential": 8,
+        "commercial": 15,
+        "complex_commercial": 30
+      },
+      "accuracy_targets": {
+        "residential": 0.95,
+        "commercial": 0.9,
+        "industrial": 0.85
+      },
+      "confidence_thresholds": {
+        "high_confidence": 0.9,
+        "medium_confidence": 0.75,
+        "review_required": 0.6
+      }
+    },
+    "integration_points": {
+      "harris_govern_pacs": {
+        "cost_system_replacement": true,
+        "marshall_swift_replacement": true,
+        "dcs_mobile_enhancement": true,
+        "api_endpoints": [
+          "/valuation",
+          "/batch_processing",
+          "/audit_trail"
+        ]
+      },
+      "woolpert_gis": {
+        "spatial_analysis": true,
+        "parcel_boundary_integration": true,
+        "location_intelligence": true
+      },
+      "terrafusion_platform": {
+        "substrate_integration": true,
+        "security_mesh": true,
+        "ai_swarm_coordination": true
+      }
+    },
+    "vendor_partnerships": {
+      "harris_govern": {
+        "relationship": "existing_pacs_vendor",
+        "integration_opportunity": "ai_valuation_replacement",
+        "target_markets": [
+          "existing_pacs_customers",
+          "new_counties"
+        ],
+        "revenue_model": "licensing_plus_support"
+      },
+      "woolpert": {
+        "relationship": "gis_services_partner",
+        "integration_opportunity": "comprehensive_government_platform",
+        "target_markets": [
+          "gis_customers",
+          "government_solutions"
+        ],
+        "revenue_model": "platform_partnership"
+      }
+    }
+  },
+  "demo_property": {
+    "parcel_id": "R532156789",
+    "address": "1245 Columbia Center Blvd, Kennewick, WA 99336",
+    "property_type": "PropertyType.RESIDENTIAL",
+    "land_area": 10890,
+    "building_area": 2400,
+    "year_built": 1998,
+    "construction_type": "frame",
+    "condition": "good",
+    "grade": "average",
+    "bedrooms": 4,
+    "bathrooms": 2.5,
+    "stories": 2,
+    "basement": true,
+    "garage": "2_car_attached",
+    "fireplace": true,
+    "pool": false,
+    "amenities": [
+      "deck",
+      "central_air",
+      "dishwasher"
+    ],
+    "zoning": "R-1",
+    "land_use_code": "111",
+    "neighborhood": "Columbia Center",
+    "school_district": "Kennewick",
+    "current_assessment": 385000,
+    "last_sale_date": "2018-06-15",
+    "last_sale_price": 345000
+  },
+  "valuation_result": {
+    "property_id": "R532156789",
+    "valuation_date": "2025-09-26",
+    "approaches_used": [
+      "ValuationApproach.COST",
+      "ValuationApproach.SALES_COMPARISON"
+    ],
+    "cost_approach_value": 546164.498,
+    "replacement_cost_new": 453600.0,
+    "depreciation_total": 0.502,
+    "land_value": 92565.0,
+    "sales_comparison_value": 429730.5447342005,
+    "comparables_analyzed": [
+      {
+        "property_id": "R532100001",
+        "address": "1523 Clearwater Ave, Kennewick, WA",
+        "sale_date": "2025-08-15",
+        "sale_price": 425000,
+        "property_type": "PropertyType.RESIDENTIAL",
+        "land_area": 8000,
+        "building_area": 2380,
+        "year_built": 1996,
+        "distance_miles": 1.2,
+        "similarity_score": 0.9446666666666668,
+        "adjustments": {
+          "size_adjustment": 1500,
+          "age_adjustment": 1600,
+          "location_adjustment": 0,
+          "time_adjustment": 2975.0
+        },
+        "adjusted_price": 431075.0,
+        "data_source": "MLS",
+        "verification_status": "verified"
+      },
+      {
+        "property_id": "R532100003",
+        "address": "3789 Union St, Kennewick, WA",
+        "sale_date": "2025-09-03",
+        "sale_price": 441200,
+        "property_type": "PropertyType.RESIDENTIAL",
+        "land_area": 8200,
+        "building_area": 2510,
+        "year_built": 2000,
+        "distance_miles": 0.8,
+        "similarity_score": 0.9416666666666668,
+        "adjustments": {
+          "size_adjustment": -8250,
+          "age_adjustment": -1600,
+          "location_adjustment": 0,
+          "time_adjustment": 1691.2666666666669
+        },
+        "adjusted_price": 433041.26666666666,
+        "data_source": "MLS",
+        "verification_status": "verified"
+      },
+      {
+        "property_id": "R532100002",
+        "address": "2456 Court St, Richland, WA",
+        "sale_date": "2025-07-22",
+        "sale_price": 398500,
+        "property_type": "PropertyType.RESIDENTIAL",
+        "land_area": 7500,
+        "building_area": 2290,
+        "year_built": 1999,
+        "distance_miles": 2.8,
+        "similarity_score": 0.8896666666666667,
+        "adjustments": {
+          "size_adjustment": 8250,
+          "age_adjustment": -800,
+          "location_adjustment": 0,
+          "time_adjustment": 4383.5
+        },
+        "adjusted_price": 410333.5,
+        "data_source": "MLS",
+        "verification_status": "verified"
+      },
+      {
+        "property_id": "R532100004",
+        "address": "4521 Bombing Range Rd, West Richland, WA",
+        "sale_date": "2025-06-18",
+        "sale_price": 475600,
+        "property_type": "PropertyType.RESIDENTIAL",
+        "land_area": 9500,
+        "building_area": 2780,
+        "year_built": 2005,
+        "distance_miles": 4.2,
+        "similarity_score": 0.7546666666666666,
+        "adjustments": {
+          "size_adjustment": -28500,
+          "age_adjustment": -5600,
+          "location_adjustment": 0,
+          "time_adjustment": 7926.666666666667
+        },
+        "adjusted_price": 449426.6666666667,
+        "data_source": "MLS",
+        "verification_status": "verified"
+      }
+    ],
+    "market_adjustments": {
+      "comparable_adjustment": 0
+    },
+    "income_approach_value": null,
+    "gross_income": null,
+    "operating_expenses": null,
+    "net_operating_income": null,
+    "capitalization_rate": null,
+    "market_value_estimate": 487947.5213671003,
+    "confidence_level": "ConfidenceLevel.REVIEW_REQUIRED",
+    "confidence_score": 0.5,
+    "ai_reasoning": [],
+    "feature_importance": {},
+    "model_predictions": {},
+    "ensemble_weights": {},
+    "uspap_compliance": true,
+    "audit_trail": [
+      "Valuation initiated: 2025-09-26T21:12:25.575407",
+      "Property: R532156789 - 1245 Columbia Center Blvd, Kennewick, WA 99336",
+      "Cost approach completed: $546,164",
+      "Sales comparison completed: $429,731 from 4 comparables",
+      "USPAP compliance validation: PASSED",
+      "Valuation completed: 2025-09-26T21:12:25.577187",
+      "Processing time: 0.00 seconds",
+      "Validation checks: 9/10 passed"
+    ],
+    "quality_flags": [
+      "AI analysis error - using fallback calculation"
+    ],
+    "reviewer_notes": null,
+    "processing_time_seconds": 0.00178,
+    "data_sources_used": [
+      "construction_cost_data",
+      "mls_data"
+    ],
+    "validation_checks_passed": 9,
+    "validation_checks_total": 10
+  },
+  "performance_summary": {
+    "processing_time_seconds": 0.00178,
+    "confidence_score": 0.5,
+    "approaches_used": [
+      "cost_approach",
+      "sales_comparison"
+    ],
+    "comparables_count": 4,
+    "validation_success_rate": 0.9,
+    "uspap_compliant": true
+  }
+}

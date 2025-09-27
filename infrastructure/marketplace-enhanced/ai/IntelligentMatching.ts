@@ -103,14 +103,14 @@ export class IntelligentMatching {
 
     // Get initial recommendations from AI engine
     const recommendations = await recommendationEngine.generateRecommendations(
-      criteria.countyId, 
+      criteria.countyId,
       context
     );
 
     // Apply intelligent filtering and ranking
     const filteredRecommendations = await this.applyIntelligentFiltering(
-      recommendations, 
-      criteria, 
+      recommendations,
+      criteria,
       context
     );
 
@@ -129,20 +129,15 @@ export class IntelligentMatching {
     // Parse natural language query
     const intent = await this.nlpProcessor.extractIntent(query.query);
     const entities = await this.nlpProcessor.extractEntities(query.query);
-    
+
     // Convert to matching criteria
     const criteria = await this.convertToCriteria(intent, entities, query);
-    
+
     // Find matches
     const matches = await this.findBestMatches(criteria);
-    
+
     // Generate conversational response
-    const response = await this.generateConversationalResponse(
-      query, 
-      intent, 
-      entities, 
-      matches
-    );
+    const response = await this.generateConversationalResponse(query, intent, entities, matches);
 
     return response;
   }
@@ -162,15 +157,15 @@ export class IntelligentMatching {
           functionality: analysis.functionalityScore,
           costEffectiveness: analysis.costEffectivenessScore,
           easeOfImplementation: analysis.implementationScore,
-          longTermValue: analysis.longTermValueScore
-        }
+          longTermValue: analysis.longTermValueScore,
+        },
       });
     }
 
     return {
       comparisons,
       recommendation: this.selectBestOption(comparisons),
-      decisionMatrix: this.generateDecisionMatrix(comparisons)
+      decisionMatrix: this.generateDecisionMatrix(comparisons),
     };
   }
 
@@ -184,7 +179,7 @@ export class IntelligentMatching {
       predictedNeeds: await this.predictNeeds(profile, currentTrends, futureScenarios),
       recommendedPreparations: await this.recommendPreparations(futureScenarios),
       budgetProjections: await this.projectBudgetNeeds(profile, futureScenarios),
-      riskFactors: await this.identifyFutureRisks(futureScenarios)
+      riskFactors: await this.identifyFutureRisks(futureScenarios),
     };
   }
 
@@ -196,37 +191,26 @@ export class IntelligentMatching {
     context: any
   ): Promise<SmartMatch> {
     const plugin = await this.getPluginDetails(recommendation.pluginId);
-    
+
     // Calculate enhanced match score
     const matchScore = await this.calculateEnhancedMatchScore(
-      recommendation, 
-      criteria, 
-      profile, 
+      recommendation,
+      criteria,
+      profile,
       context
     );
 
     // Generate detailed reasoning
-    const reasoning = await this.generateMatchReasoning(
-      recommendation, 
-      criteria, 
-      profile
-    );
+    const reasoning = await this.generateMatchReasoning(recommendation, criteria, profile);
 
     // Find alternatives
     const alternatives = await this.findAlternatives(plugin, profile, criteria);
 
     // Create implementation plan
-    const implementationPlan = await this.createImplementationPlan(
-      plugin, 
-      profile, 
-      criteria
-    );
+    const implementationPlan = await this.createImplementationPlan(plugin, profile, criteria);
 
     // Assess risks
-    const riskAssessment = await this.riskAnalyzer.assessImplementationRisks(
-      plugin, 
-      profile
-    );
+    const riskAssessment = await this.riskAnalyzer.assessImplementationRisks(plugin, profile);
 
     return {
       plugin,
@@ -234,7 +218,7 @@ export class IntelligentMatching {
       reasoning,
       alternatives,
       implementationPlan,
-      riskAssessment
+      riskAssessment,
     };
   }
 
@@ -301,16 +285,16 @@ export class IntelligentMatching {
       primaryFactors: [
         `${recommendation.confidence * 100}% confidence match`,
         `Successful in ${recommendation.similarCounties.length} similar counties`,
-        `${recommendation.estimatedROI}% estimated ROI`
+        `${recommendation.estimatedROI}% estimated ROI`,
       ],
       secondaryFactors: [
         `${recommendation.implementationComplexity} implementation complexity`,
         `${recommendation.timeToValue} time to value`,
-        `Aligns with ${recommendation.category} priorities`
+        `Aligns with ${recommendation.category} priorities`,
       ],
       concerns: this.identifyConcerns(recommendation, profile),
       mitigations: this.suggestMitigations(recommendation, profile),
-      confidenceLevel: recommendation.confidence
+      confidenceLevel: recommendation.confidence,
     };
   }
 
@@ -325,8 +309,8 @@ export class IntelligentMatching {
         pluginId: 'alternative-1',
         pluginName: 'Alternative Solution',
         reason: 'Lower cost option with similar functionality',
-        tradeoffs: ['Reduced features', 'Longer implementation time']
-      }
+        tradeoffs: ['Reduced features', 'Longer implementation time'],
+      },
     ];
   }
 
@@ -339,36 +323,24 @@ export class IntelligentMatching {
       {
         name: 'Planning & Preparation',
         duration: '2-3 weeks',
-        tasks: [
-          'Stakeholder alignment',
-          'Technical requirements review',
-          'Resource allocation'
-        ],
+        tasks: ['Stakeholder alignment', 'Technical requirements review', 'Resource allocation'],
         dependencies: [],
-        deliverables: ['Implementation plan', 'Resource allocation document']
+        deliverables: ['Implementation plan', 'Resource allocation document'],
       },
       {
         name: 'Installation & Configuration',
         duration: '1-2 weeks',
-        tasks: [
-          'Plugin installation',
-          'Initial configuration',
-          'Integration testing'
-        ],
+        tasks: ['Plugin installation', 'Initial configuration', 'Integration testing'],
         dependencies: ['Planning & Preparation'],
-        deliverables: ['Configured system', 'Test results']
+        deliverables: ['Configured system', 'Test results'],
       },
       {
         name: 'Training & Rollout',
         duration: '2-4 weeks',
-        tasks: [
-          'User training',
-          'Phased rollout',
-          'Support setup'
-        ],
+        tasks: ['User training', 'Phased rollout', 'Support setup'],
         dependencies: ['Installation & Configuration'],
-        deliverables: ['Trained users', 'Live system', 'Support documentation']
-      }
+        deliverables: ['Trained users', 'Live system', 'Support documentation'],
+      },
     ];
 
     return {
@@ -376,17 +348,17 @@ export class IntelligentMatching {
       totalDuration: '5-9 weeks',
       totalCost: plugin.cost || 0,
       prerequisites: ['Budget approval', 'Technical readiness'],
-      successMetrics: ['User adoption rate', 'Efficiency improvement', 'ROI achievement']
+      successMetrics: ['User adoption rate', 'Efficiency improvement', 'ROI achievement'],
     };
   }
 
   private calculatePriorityBonus(recommendation: PluginRecommendation, priority: string): number {
     const priorityMap = {
-      'efficiency': recommendation.category === 'Workflow & Automation' ? 10 : 0,
+      efficiency: recommendation.category === 'Workflow & Automation' ? 10 : 0,
       'cost-saving': recommendation.estimatedROI > 50 ? 10 : 0,
-      'compliance': recommendation.category === 'Compliance & Audit' ? 10 : 0,
-      'innovation': recommendation.tier === 'enterprise' ? 10 : 0,
-      'citizen-service': recommendation.category === 'Public Services' ? 10 : 0
+      compliance: recommendation.category === 'Compliance & Audit' ? 10 : 0,
+      innovation: recommendation.tier === 'enterprise' ? 10 : 0,
+      'citizen-service': recommendation.category === 'Public Services' ? 10 : 0,
     };
 
     return priorityMap[priority] || 0;
@@ -399,9 +371,9 @@ export class IntelligentMatching {
 
   private calculateTimelineFit(recommendation: PluginRecommendation, timeline: string): number {
     const timelineMap = {
-      'immediate': recommendation.implementationComplexity === 'low' ? 1.0 : 0.5,
+      immediate: recommendation.implementationComplexity === 'low' ? 1.0 : 0.5,
       'short-term': recommendation.implementationComplexity !== 'high' ? 1.0 : 0.7,
-      'long-term': 1.0
+      'long-term': 1.0,
     };
 
     return timelineMap[timeline] || 1.0;
@@ -421,11 +393,14 @@ export class IntelligentMatching {
     return concerns;
   }
 
-  private suggestMitigations(recommendation: PluginRecommendation, profile: CountyProfile): string[] {
+  private suggestMitigations(
+    recommendation: PluginRecommendation,
+    profile: CountyProfile
+  ): string[] {
     return [
       'Provide comprehensive training program',
       'Implement phased rollout approach',
-      'Establish dedicated support team'
+      'Establish dedicated support team',
     ];
   }
 
@@ -444,7 +419,7 @@ export class IntelligentMatching {
       challenges: ['efficiency', 'citizen-engagement'],
       priorities: ['automation', 'cost-reduction'],
       techMaturity: 'intermediate',
-      complianceRequirements: ['NIST', 'FISMA']
+      complianceRequirements: ['NIST', 'FISMA'],
     };
   }
 
@@ -455,7 +430,7 @@ export class IntelligentMatching {
       name: 'Sample Plugin',
       category: 'Analytics & Reporting',
       cost: 5000,
-      complexity: 'medium'
+      complexity: 'medium',
     };
   }
 
@@ -464,23 +439,34 @@ export class IntelligentMatching {
       functionalityScore: 85,
       costEffectivenessScore: 78,
       implementationScore: 82,
-      longTermValueScore: 88
+      longTermValueScore: 88,
     };
   }
 
   private selectBestOption(comparisons: any[]): any {
     return comparisons.reduce((best, current) => {
-      const bestTotal = Object.values(best.scores).reduce((sum: number, score: number) => sum + score, 0);
-      const currentTotal = Object.values(current.scores).reduce((sum: number, score: number) => sum + score, 0);
+      const bestTotal = Object.values(best.scores).reduce(
+        (sum: number, score: number) => sum + score,
+        0
+      );
+      const currentTotal = Object.values(current.scores).reduce(
+        (sum: number, score: number) => sum + score,
+        0
+      );
       return currentTotal > bestTotal ? current : best;
     });
   }
 
   private generateDecisionMatrix(comparisons: any[]): any {
     return {
-      criteria: ['Functionality', 'Cost Effectiveness', 'Ease of Implementation', 'Long Term Value'],
+      criteria: [
+        'Functionality',
+        'Cost Effectiveness',
+        'Ease of Implementation',
+        'Long Term Value',
+      ],
       plugins: comparisons.map(c => c.plugin.name),
-      scores: comparisons.map(c => Object.values(c.scores))
+      scores: comparisons.map(c => Object.values(c.scores)),
     };
   }
 
@@ -488,7 +474,7 @@ export class IntelligentMatching {
     return {
       growthRate: 0.05,
       techAdoption: 'increasing',
-      budgetTrend: 'stable'
+      budgetTrend: 'stable',
     };
   }
 
@@ -496,49 +482,49 @@ export class IntelligentMatching {
     return [
       { name: 'Conservative Growth', probability: 0.6 },
       { name: 'Rapid Expansion', probability: 0.3 },
-      { name: 'Budget Constraints', probability: 0.1 }
+      { name: 'Budget Constraints', probability: 0.1 },
     ];
   }
 
-  private async predictNeeds(profile: CountyProfile, trends: any, scenarios: any): Promise<string[]> {
+  private async predictNeeds(
+    profile: CountyProfile,
+    trends: any,
+    scenarios: any
+  ): Promise<string[]> {
     return [
       'Advanced analytics capabilities',
       'Citizen self-service portals',
-      'Automated workflow systems'
+      'Automated workflow systems',
     ];
   }
 
   private async recommendPreparations(scenarios: any): Promise<string[]> {
-    return [
-      'Invest in staff training',
-      'Upgrade infrastructure',
-      'Establish vendor relationships'
-    ];
+    return ['Invest in staff training', 'Upgrade infrastructure', 'Establish vendor relationships'];
   }
 
   private async projectBudgetNeeds(profile: CountyProfile, scenarios: any): Promise<any> {
     return {
       nextYear: profile.budget * 1.1,
       threeYear: profile.budget * 1.3,
-      fiveYear: profile.budget * 1.5
+      fiveYear: profile.budget * 1.5,
     };
   }
 
   private async identifyFutureRisks(scenarios: any): Promise<string[]> {
-    return [
-      'Technology obsolescence',
-      'Vendor dependency',
-      'Skills gap'
-    ];
+    return ['Technology obsolescence', 'Vendor dependency', 'Skills gap'];
   }
 
-  private async convertToCriteria(intent: any, entities: any, query: ConversationalQuery): Promise<MatchingCriteria> {
+  private async convertToCriteria(
+    intent: any,
+    entities: any,
+    query: ConversationalQuery
+  ): Promise<MatchingCriteria> {
     return {
       countyId: query.countyId,
       intent: intent.type,
       priority: entities.priority,
       category: entities.category,
-      budget: entities.budget
+      budget: entities.budget,
     };
   }
 
@@ -549,7 +535,7 @@ export class IntelligentMatching {
     matches: SmartMatch[]
   ): Promise<ConversationalResponse> {
     const topMatch = matches[0];
-    
+
     return {
       answer: `Based on your query, I recommend ${topMatch?.plugin?.name || 'exploring several options'} which would be an excellent fit for your county.`,
       recommendations: matches.map(m => ({
@@ -564,18 +550,18 @@ export class IntelligentMatching {
         similarCounties: ['County A', 'County B'],
         category: m.plugin.category,
         tier: 'professional',
-        priority: 'medium' as const
+        priority: 'medium' as const,
       })),
       followUpQuestions: [
         'Would you like to see a detailed comparison?',
         'What is your preferred timeline for implementation?',
-        'Do you have any specific budget constraints?'
+        'Do you have any specific budget constraints?',
       ],
       actionItems: [
         'Schedule demo with vendor',
         'Review implementation requirements',
-        'Prepare budget proposal'
-      ]
+        'Prepare budget proposal',
+      ],
     };
   }
 }
@@ -598,7 +584,7 @@ class ContextAnalyzer {
     return {
       urgency: 'medium',
       constraints: ['budget', 'timeline'],
-      opportunities: ['automation', 'efficiency']
+      opportunities: ['automation', 'efficiency'],
     };
   }
 }
@@ -607,17 +593,27 @@ class RiskAnalyzer {
   async assessImplementationRisks(plugin: any, profile: CountyProfile): Promise<RiskAssessment> {
     return {
       technicalRisks: [
-        { description: 'Integration complexity', probability: 0.3, impact: 0.7, severity: 'medium' }
+        {
+          description: 'Integration complexity',
+          probability: 0.3,
+          impact: 0.7,
+          severity: 'medium',
+        },
       ],
       businessRisks: [
-        { description: 'User adoption challenges', probability: 0.4, impact: 0.6, severity: 'medium' }
+        {
+          description: 'User adoption challenges',
+          probability: 0.4,
+          impact: 0.6,
+          severity: 'medium',
+        },
       ],
       mitigationStrategies: [
         'Comprehensive testing phase',
         'User training program',
-        'Phased rollout approach'
+        'Phased rollout approach',
       ],
-      overallRiskLevel: 'medium'
+      overallRiskLevel: 'medium',
     };
   }
 }

@@ -41,9 +41,7 @@ describe('API Routes', () => {
       mockAIModel.process.mockResolvedValue(expectedResult);
       mockSecurityManager.validateRequest.mockResolvedValue(true);
 
-      const response = await request(app)
-        .post('/api/process')
-        .send(testData);
+      const response = await request(app).post('/api/process').send(testData);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(expectedResult);
@@ -86,8 +84,7 @@ describe('API Routes', () => {
       mockSecurityManager.getStatus.mockResolvedValue(expectedStatus.security);
       mockSecurityManager.validateRequest.mockResolvedValue(true);
 
-      const response = await request(app)
-        .get('/api/status');
+      const response = await request(app).get('/api/status');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(expectedStatus);
@@ -99,8 +96,7 @@ describe('API Routes', () => {
       mockSecurityManager.validateRequest.mockResolvedValue(true);
       mockAIModel.initialize.mockResolvedValue(true);
 
-      const response = await request(app)
-        .post('/api/initialize');
+      const response = await request(app).post('/api/initialize');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ status: 'initialized' });
@@ -112,11 +108,10 @@ describe('API Routes', () => {
       mockSecurityManager.validateRequest.mockResolvedValue(true);
       mockAIModel.cleanup.mockResolvedValue(true);
 
-      const response = await request(app)
-        .post('/api/cleanup');
+      const response = await request(app).post('/api/cleanup');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ status: 'cleaned_up' });
     });
   });
-}); 
+});

@@ -3,7 +3,7 @@
  * Runs comprehensive quantum performance benchmarks
  */
 
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 
 export class BenchmarkBot extends EventEmitter {
   private isActive: boolean = false;
@@ -19,44 +19,44 @@ export class BenchmarkBot extends EventEmitter {
 
   private initializeBenchmarks(): void {
     // Random Circuit Sampling
-    this.benchmarkSuite.set("random_circuit_sampling", {
+    this.benchmarkSuite.set('random_circuit_sampling', {
       circuit_depth: 20,
       qubit_count: 53,
-      gate_set: ["sqrt_x", "sqrt_y", "cz"],
+      gate_set: ['sqrt_x', 'sqrt_y', 'cz'],
       samples: 1000000,
     });
 
     // Quantum Volume
-    this.benchmarkSuite.set("quantum_volume", {
+    this.benchmarkSuite.set('quantum_volume', {
       test_sizes: [4, 8, 16, 32, 64],
       trials_per_size: 100,
       success_threshold: 0.68,
     });
 
     // Cross-Entropy Benchmarking
-    this.benchmarkSuite.set("cross_entropy", {
+    this.benchmarkSuite.set('cross_entropy', {
       circuit_depths: [10, 20, 30, 40],
       reference_fidelity: 0.99,
       statistical_confidence: 0.95,
     });
 
     // Application Benchmarks
-    this.benchmarkSuite.set("applications", {
-      vqe_chemistry: "H2_molecule",
-      qaoa_maxcut: "random_graphs",
-      quantum_ml: "classification",
-      quantum_simulation: "ising_model",
+    this.benchmarkSuite.set('applications', {
+      vqe_chemistry: 'H2_molecule',
+      qaoa_maxcut: 'random_graphs',
+      quantum_ml: 'classification',
+      quantum_simulation: 'ising_model',
     });
   }
 
   async initialize(): Promise<void> {
-    console.log("📊 Initializing Benchmark Bot...");
+    console.log('📊 Initializing Benchmark Bot...');
     this.isActive = true;
-    this.emit("initialized");
+    this.emit('initialized');
   }
 
   async deploy(): Promise<void> {
-    console.log("🚀 Deploying quantum benchmarking suite...");
+    console.log('🚀 Deploying quantum benchmarking suite...');
     this.startBenchmarking();
   }
 
@@ -74,7 +74,7 @@ export class BenchmarkBot extends EventEmitter {
 
     this.benchmarkResults.set(benchmarkType, result);
 
-    this.emit("benchmark-complete", {
+    this.emit('benchmark-complete', {
       benchmark: benchmarkType,
       results: result,
     });
@@ -87,24 +87,24 @@ export class BenchmarkBot extends EventEmitter {
 
   private async executeBenchmark(type: string): Promise<any> {
     switch (type) {
-      case "random_circuit_sampling":
+      case 'random_circuit_sampling':
         return await this.runRCSBenchmark();
-      case "quantum_volume":
+      case 'quantum_volume':
         return await this.runQuantumVolumeBenchmark();
-      case "cross_entropy":
+      case 'cross_entropy':
         return await this.runCrossEntropyBenchmark();
-      case "applications":
+      case 'applications':
         return await this.runApplicationBenchmark();
       default:
-        return { error: "Unknown benchmark type" };
+        return { error: 'Unknown benchmark type' };
     }
   }
 
   private async runRCSBenchmark(): Promise<any> {
     return {
       linear_xeb_fidelity: 0.002 + Math.random() * 0.001,
-      sampling_time_quantum: "200 seconds",
-      sampling_time_classical: "10000 years",
+      sampling_time_quantum: '200 seconds',
+      sampling_time_classical: '10000 years',
       speedup: 5e12,
       circuit_fidelity: 0.995,
     };
@@ -112,7 +112,7 @@ export class BenchmarkBot extends EventEmitter {
 
   private async runQuantumVolumeBenchmark(): Promise<any> {
     const volumes: any = {};
-    const sizes = this.benchmarkSuite.get("quantum_volume").test_sizes;
+    const sizes = this.benchmarkSuite.get('quantum_volume').test_sizes;
 
     for (const size of sizes) {
       volumes[size] = this.calculateQuantumVolume(size);
@@ -135,7 +135,7 @@ export class BenchmarkBot extends EventEmitter {
   }
 
   private async runCrossEntropyBenchmark(): Promise<any> {
-    const depths = this.benchmarkSuite.get("cross_entropy").circuit_depths;
+    const depths = this.benchmarkSuite.get('cross_entropy').circuit_depths;
     const results: any = {};
 
     for (const depth of depths) {
@@ -163,30 +163,30 @@ export class BenchmarkBot extends EventEmitter {
   }
 
   async runRandomCircuitSampling(): Promise<any> {
-    console.log("🎲 Running Random Circuit Sampling benchmark...");
+    console.log('🎲 Running Random Circuit Sampling benchmark...');
     return await this.runRCSBenchmark();
   }
 
   async runBosonSampling(): Promise<any> {
-    console.log("🌊 Running Boson Sampling benchmark...");
+    console.log('🌊 Running Boson Sampling benchmark...');
 
     return {
       photon_number: 50,
       mode_number: 100,
       samples_generated: 100000,
-      classical_simulation_time: "intractable",
-      quantum_sampling_time: "200 seconds",
-      validation_method: "cross_validation",
+      classical_simulation_time: 'intractable',
+      quantum_sampling_time: '200 seconds',
+      validation_method: 'cross_validation',
     };
   }
 
   async measureQuantumVolume(): Promise<any> {
-    console.log("📏 Measuring Quantum Volume...");
+    console.log('📏 Measuring Quantum Volume...');
     return await this.runQuantumVolumeBenchmark();
   }
 
   async runCrossEntropyBenchmark(): Promise<any> {
-    console.log("🔀 Running Cross-Entropy Benchmark...");
+    console.log('🔀 Running Cross-Entropy Benchmark...');
     return await this.runCrossEntropyBenchmark();
   }
 
@@ -201,6 +201,6 @@ export class BenchmarkBot extends EventEmitter {
 
   async shutdown(): Promise<void> {
     this.isActive = false;
-    this.emit("shutdown");
+    this.emit('shutdown');
   }
 }

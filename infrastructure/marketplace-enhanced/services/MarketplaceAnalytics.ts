@@ -21,7 +21,15 @@ export interface Plugin {
 }
 
 export interface UsageEvent {
-  type: 'install' | 'uninstall' | 'activate' | 'deactivate' | 'view' | 'search' | 'error' | 'performance';
+  type:
+    | 'install'
+    | 'uninstall'
+    | 'activate'
+    | 'deactivate'
+    | 'view'
+    | 'search'
+    | 'error'
+    | 'performance';
   plugin_id: string;
   county_id: string;
   user_id: string;
@@ -97,7 +105,7 @@ export class MarketplaceAnalytics extends EventEmitter {
   private counties: Map<string, CountyProfile> = new Map();
   private metrics_cache: Map<string, PluginMetrics> = new Map();
   private insights_cache: Map<string, CountyInsights> = new Map();
-  
+
   constructor(
     private config: {
       cache_ttl: number;
@@ -108,7 +116,7 @@ export class MarketplaceAnalytics extends EventEmitter {
       cache_ttl: 300000, // 5 minutes
       batch_size: 1000,
       ai_recommendations: true,
-      real_time_analytics: true
+      real_time_analytics: true,
     }
   ) {
     super();
@@ -119,7 +127,7 @@ export class MarketplaceAnalytics extends EventEmitter {
   async trackUsage(event: UsageEvent): Promise<void> {
     this.events.push({
       ...event,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     // Real-time processing
@@ -163,14 +171,15 @@ export class MarketplaceAnalytics extends EventEmitter {
     const totalDownloads = installEvents.length;
     const activeInstallations = totalDownloads - uninstallEvents.length;
     const errorRate = errorEvents.length / Math.max(pluginEvents.length, 1);
-    
+
     // Performance scoring
-    const avgPerformance = performanceEvents.reduce((acc, event) => {
-      if (event.performance_data) {
-        return acc + (100 - event.performance_data.load_time / 10); // Simple scoring
-      }
-      return acc;
-    }, 0) / Math.max(performanceEvents.length, 1);
+    const avgPerformance =
+      performanceEvents.reduce((acc, event) => {
+        if (event.performance_data) {
+          return acc + (100 - event.performance_data.load_time / 10); // Simple scoring
+        }
+        return acc;
+      }, 0) / Math.max(performanceEvents.length, 1);
 
     // Usage trends
     const usageTrends = this.calculateUsageTrends(pluginEvents);
@@ -196,7 +205,7 @@ export class MarketplaceAnalytics extends EventEmitter {
       retention_rate: activeInstallations / Math.max(totalDownloads, 1),
       revenue_generated: this.calculateRevenue(plugin, totalDownloads),
       top_counties: topCounties,
-      usage_trends: usageTrends
+      usage_trends: usageTrends,
     };
   }
 
@@ -220,9 +229,7 @@ export class MarketplaceAnalytics extends EventEmitter {
 
     const countyEvents = this.events.filter(e => e.county_id === countyId);
     const installedPlugins = new Set(
-      countyEvents
-        .filter(e => e.type === 'install')
-        .map(e => e.plugin_id)
+      countyEvents.filter(e => e.type === 'install').map(e => e.plugin_id)
     );
 
     // Calculate adoption rate
@@ -262,7 +269,7 @@ export class MarketplaceAnalytics extends EventEmitter {
       cost_savings: costSavings,
       recommended_plugins: recommendedPlugins,
       usage_patterns: usagePatterns,
-      benchmark_comparison: benchmarkComparison
+      benchmark_comparison: benchmarkComparison,
     };
   }
 
@@ -276,7 +283,7 @@ export class MarketplaceAnalytics extends EventEmitter {
     const allPlugins = Array.from(this.plugins.values());
     const scoredPlugins = allPlugins.map(plugin => ({
       plugin,
-      score: this.calculateRecommendationScore(plugin, county)
+      score: this.calculateRecommendationScore(plugin, county),
     }));
 
     return scoredPlugins
@@ -298,7 +305,7 @@ export class MarketplaceAnalytics extends EventEmitter {
     if (county.size === 'large' && plugin.tier === 'Tier3EnterpriseSuite') score += 30;
 
     // Specialty matching
-    const specialtyMatch = county.specialties.some(specialty => 
+    const specialtyMatch = county.specialties.some(specialty =>
       plugin.category.toLowerCase().includes(specialty.toLowerCase())
     );
     if (specialtyMatch) score += 25;
@@ -318,7 +325,11 @@ export class MarketplaceAnalytics extends EventEmitter {
   }
 
   // Trend Analysis
-  private calculateUsageTrends(events: UsageEvent[]): { daily: number[]; weekly: number[]; monthly: number[] } {
+  private calculateUsageTrends(events: UsageEvent[]): {
+    daily: number[];
+    weekly: number[];
+    monthly: number[];
+  } {
     const now = new Date();
     const daily = new Array(7).fill(0);
     const weekly = new Array(4).fill(0);
@@ -358,23 +369,25 @@ export class MarketplaceAnalytics extends EventEmitter {
       const totalEvents = this.events.filter(e => e.plugin_id === id).length;
 
       if (pluginPerfEvents.length > 0) {
-        const avgPerf = pluginPerfEvents.reduce((acc, event) => {
-          return acc + (event.performance_data?.load_time || 0);
-        }, 0) / pluginPerfEvents.length;
+        const avgPerf =
+          pluginPerfEvents.reduce((acc, event) => {
+            return acc + (event.performance_data?.load_time || 0);
+          }, 0) / pluginPerfEvents.length;
         pluginPerformance[id] = Math.max(0, 100 - avgPerf / 10);
       }
 
       errorRates[id] = totalEvents > 0 ? (pluginErrorEvents.length / totalEvents) * 100 : 0;
     });
 
-    const overallHealth = Object.values(pluginPerformance).reduce((a, b) => a + b, 0) / 
-                         Math.max(Object.values(pluginPerformance).length, 1);
+    const overallHealth =
+      Object.values(pluginPerformance).reduce((a, b) => a + b, 0) /
+      Math.max(Object.values(pluginPerformance).length, 1);
 
     return {
       overall_health: overallHealth,
       plugin_performance: pluginPerformance,
       system_load: this.calculateSystemLoad(),
-      error_rates: errorRates
+      error_rates: errorRates,
     };
   }
 
@@ -406,14 +419,17 @@ export class MarketplaceAnalytics extends EventEmitter {
   private calculateRevenue(plugin: Plugin, downloads: number): number {
     // Simple revenue calculation based on tier
     const tierPricing = {
-      'Tier1CoreFoundation': 0, // Free tier
-      'Tier2CostForgeProfessional': 50,
-      'Tier3EnterpriseSuite': 200
+      Tier1CoreFoundation: 0, // Free tier
+      Tier2CostForgeProfessional: 50,
+      Tier3EnterpriseSuite: 200,
     };
     return downloads * (tierPricing[plugin.tier] || 0);
   }
 
-  private calculateEfficiencyGains(county: CountyProfile, plugins: string[]): Record<string, number> {
+  private calculateEfficiencyGains(
+    county: CountyProfile,
+    plugins: string[]
+  ): Record<string, number> {
     // Mock efficiency calculation
     const gains: Record<string, number> = {};
     plugins.forEach(pluginId => {
@@ -436,7 +452,10 @@ export class MarketplaceAnalytics extends EventEmitter {
   } {
     const hourlyUsage = new Array(24).fill(0);
     const seasonalUsage: Record<string, number> = {
-      spring: 0, summer: 0, fall: 0, winter: 0
+      spring: 0,
+      summer: 0,
+      fall: 0,
+      winter: 0,
     };
 
     events.forEach(event => {
@@ -458,7 +477,7 @@ export class MarketplaceAnalytics extends EventEmitter {
 
     return {
       peak_hours: peakHours,
-      seasonal_trends: seasonalUsage
+      seasonal_trends: seasonalUsage,
     };
   }
 
@@ -471,7 +490,7 @@ export class MarketplaceAnalytics extends EventEmitter {
 
     return {
       similar_counties: similarCounties.slice(0, 5),
-      performance_ranking: ranking
+      performance_ranking: ranking,
     };
   }
 
@@ -483,7 +502,9 @@ export class MarketplaceAnalytics extends EventEmitter {
 
   private getPluginSuccessInCounties(pluginId: string, counties: string[]): number {
     const successfulInstalls = counties.filter(countyId => {
-      const countyEvents = this.events.filter(e => e.county_id === countyId && e.plugin_id === pluginId);
+      const countyEvents = this.events.filter(
+        e => e.county_id === countyId && e.plugin_id === pluginId
+      );
       const installs = countyEvents.filter(e => e.type === 'install').length;
       const uninstalls = countyEvents.filter(e => e.type === 'uninstall').length;
       return installs > uninstalls;
@@ -522,17 +543,16 @@ export class MarketplaceAnalytics extends EventEmitter {
   }
 
   async getPluginsByCategory(category: string): Promise<Plugin[]> {
-    return Array.from(this.plugins.values())
-      .filter(plugin => plugin.category === category);
+    return Array.from(this.plugins.values()).filter(plugin => plugin.category === category);
   }
 
   async searchPlugins(query: string): Promise<Plugin[]> {
     const lowercaseQuery = query.toLowerCase();
-    return Array.from(this.plugins.values())
-      .filter(plugin => 
+    return Array.from(this.plugins.values()).filter(
+      plugin =>
         plugin.name.toLowerCase().includes(lowercaseQuery) ||
         plugin.category.toLowerCase().includes(lowercaseQuery)
-      );
+    );
   }
 }
 

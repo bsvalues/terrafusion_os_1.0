@@ -120,8 +120,8 @@ export class AIModelHub extends EventEmitter {
       parameters: {
         costWeight: 0.3,
         performanceWeight: 0.4,
-        reliabilityWeight: 0.3
-      }
+        reliabilityWeight: 0.3,
+      },
     };
   }
 
@@ -132,24 +132,24 @@ export class AIModelHub extends EventEmitter {
     if (this.isInitialized) return;
 
     console.log('🧠 AI Model Hub initializing...');
-    
+
     // Initialize providers
     await this.initializeProviders();
-    
+
     // Initialize models
     await this.initializeModels();
-    
+
     // Start monitoring
     this.startMonitoring();
-    
+
     // Start request processing
     this.startRequestProcessor();
-    
+
     this.isInitialized = true;
     console.log('✅ AI Model Hub ready');
     console.log(`   Providers: ${this.providers.size}`);
     console.log(`   Models: ${this.models.size}`);
-    
+
     this.emit('initialized');
   }
 
@@ -167,12 +167,12 @@ export class AIModelHub extends EventEmitter {
         rateLimits: {
           requestsPerMinute: 1000,
           tokensPerMinute: 100000,
-          concurrentRequests: 50
+          concurrentRequests: 50,
         },
         pricing: {
           inputTokenCost: 0.000008,
           outputTokenCost: 0.000024,
-          currency: 'USD'
+          currency: 'USD',
         },
         capabilities: ['text_generation', 'analysis', 'reasoning', 'coding'],
         metadata: {
@@ -180,8 +180,8 @@ export class AIModelHub extends EventEmitter {
           version: '2024-01-01',
           lastUpdated: new Date(),
           deploymentModel: 'sovereign',
-          isolationLevel: 'county'
-        }
+          isolationLevel: 'county',
+        },
       },
       {
         id: 'openai',
@@ -192,12 +192,12 @@ export class AIModelHub extends EventEmitter {
         rateLimits: {
           requestsPerMinute: 3000,
           tokensPerMinute: 150000,
-          concurrentRequests: 100
+          concurrentRequests: 100,
         },
         pricing: {
           inputTokenCost: 0.00001,
           outputTokenCost: 0.00003,
-          currency: 'USD'
+          currency: 'USD',
         },
         capabilities: ['text_generation', 'vision', 'embeddings', 'fine_tuning'],
         metadata: {
@@ -205,8 +205,8 @@ export class AIModelHub extends EventEmitter {
           version: '4.0',
           lastUpdated: new Date(),
           deploymentModel: 'sovereign',
-          isolationLevel: 'county'
-        }
+          isolationLevel: 'county',
+        },
       },
       {
         id: 'google',
@@ -217,12 +217,12 @@ export class AIModelHub extends EventEmitter {
         rateLimits: {
           requestsPerMinute: 2000,
           tokensPerMinute: 120000,
-          concurrentRequests: 75
+          concurrentRequests: 75,
         },
         pricing: {
           inputTokenCost: 0.000005,
           outputTokenCost: 0.000015,
-          currency: 'USD'
+          currency: 'USD',
         },
         capabilities: ['text_generation', 'vision', 'embeddings', 'multimodal'],
         metadata: {
@@ -230,24 +230,24 @@ export class AIModelHub extends EventEmitter {
           version: '2.1',
           lastUpdated: new Date(),
           deploymentModel: 'sovereign',
-          isolationLevel: 'county'
-        }
+          isolationLevel: 'county',
+        },
       },
       {
         id: 'local_llama',
         name: 'Local Llama',
         type: 'local',
         status: 'connected',
-        apiEndpoint: 'http://localhost:11434/v1',
+        apiEndpoint: `http://localhost:${process.env.TF_OLLAMA_PORT || process.env.TF_API_PORT || '11434'}/v1`,
         rateLimits: {
           requestsPerMinute: 500,
           tokensPerMinute: 50000,
-          concurrentRequests: 10
+          concurrentRequests: 10,
         },
         pricing: {
           inputTokenCost: 0,
           outputTokenCost: 0,
-          currency: 'USD'
+          currency: 'USD',
         },
         capabilities: ['text_generation', 'privacy_focused', 'offline'],
         metadata: {
@@ -255,8 +255,8 @@ export class AIModelHub extends EventEmitter {
           version: '1.0.0',
           lastUpdated: new Date(),
           deploymentModel: 'sovereign',
-          isolationLevel: 'county'
-        }
+          isolationLevel: 'county',
+        },
       },
       {
         id: 'azure_openai',
@@ -267,12 +267,12 @@ export class AIModelHub extends EventEmitter {
         rateLimits: {
           requestsPerMinute: 2500,
           tokensPerMinute: 200000,
-          concurrentRequests: 80
+          concurrentRequests: 80,
         },
         pricing: {
           inputTokenCost: 0.00001,
           outputTokenCost: 0.00003,
-          currency: 'USD'
+          currency: 'USD',
         },
         capabilities: ['text_generation', 'enterprise_grade', 'compliance'],
         metadata: {
@@ -280,9 +280,9 @@ export class AIModelHub extends EventEmitter {
           version: '2024-02-15',
           lastUpdated: new Date(),
           deploymentModel: 'federated',
-          isolationLevel: 'regional'
-        }
-      }
+          isolationLevel: 'regional',
+        },
+      },
     ];
 
     for (const config of providerConfigs) {
@@ -307,7 +307,7 @@ export class AIModelHub extends EventEmitter {
       rateLimits: config.rateLimits!,
       pricing: config.pricing!,
       capabilities: config.capabilities!,
-      metadata: config.metadata!
+      metadata: config.metadata!,
     };
 
     // Test connection
@@ -329,8 +329,9 @@ export class AIModelHub extends EventEmitter {
   private async testProviderConnection(provider: AIProvider): Promise<void> {
     // Simulate connection test
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
-    
-    if (Math.random() < 0.9) { // 90% success rate
+
+    if (Math.random() < 0.9) {
+      // 90% success rate
       return;
     } else {
       throw new Error(`Connection timeout to ${provider.name}`);
@@ -354,20 +355,20 @@ export class AIModelHub extends EventEmitter {
           contextWindow: 200000,
           trainingCutoff: '2024-04-01',
           languages: ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh'],
-          specializations: ['reasoning', 'analysis', 'coding', 'writing']
+          specializations: ['reasoning', 'analysis', 'coding', 'writing'],
         },
         performance: {
           accuracy: 0.95,
           speed: 25,
           reliability: 0.98,
-          costEfficiency: 0.75
+          costEfficiency: 0.75,
         },
         configuration: {
           temperature: 0.7,
           topP: 0.9,
           maxTokens: 4096,
-          stopSequences: []
-        }
+          stopSequences: [],
+        },
       },
       {
         id: 'claude-3-sonnet',
@@ -380,20 +381,20 @@ export class AIModelHub extends EventEmitter {
           contextWindow: 200000,
           trainingCutoff: '2024-04-01',
           languages: ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh'],
-          specializations: ['balanced', 'general', 'speed']
+          specializations: ['balanced', 'general', 'speed'],
         },
         performance: {
           accuracy: 0.92,
           speed: 45,
           reliability: 0.97,
-          costEfficiency: 0.88
+          costEfficiency: 0.88,
         },
         configuration: {
           temperature: 0.7,
           topP: 0.9,
           maxTokens: 4096,
-          stopSequences: []
-        }
+          stopSequences: [],
+        },
       },
       // OpenAI Models
       {
@@ -407,20 +408,20 @@ export class AIModelHub extends EventEmitter {
           contextWindow: 128000,
           trainingCutoff: '2024-04-01',
           languages: ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh'],
-          specializations: ['creative', 'coding', 'problem_solving']
+          specializations: ['creative', 'coding', 'problem_solving'],
         },
         performance: {
           accuracy: 0.94,
           speed: 35,
           reliability: 0.96,
-          costEfficiency: 0.80
+          costEfficiency: 0.8,
         },
         configuration: {
           temperature: 0.7,
           topP: 0.9,
           maxTokens: 4096,
-          stopSequences: []
-        }
+          stopSequences: [],
+        },
       },
       {
         id: 'gpt-3.5-turbo',
@@ -433,20 +434,20 @@ export class AIModelHub extends EventEmitter {
           contextWindow: 16385,
           trainingCutoff: '2021-09-01',
           languages: ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh'],
-          specializations: ['speed', 'general', 'cost_effective']
+          specializations: ['speed', 'general', 'cost_effective'],
         },
         performance: {
           accuracy: 0.88,
           speed: 80,
           reliability: 0.95,
-          costEfficiency: 0.95
+          costEfficiency: 0.95,
         },
         configuration: {
           temperature: 0.7,
           topP: 0.9,
           maxTokens: 4096,
-          stopSequences: []
-        }
+          stopSequences: [],
+        },
       },
       // Google Models
       {
@@ -460,20 +461,20 @@ export class AIModelHub extends EventEmitter {
           contextWindow: 32768,
           trainingCutoff: '2024-02-01',
           languages: ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh'],
-          specializations: ['multimodal', 'reasoning', 'factual']
+          specializations: ['multimodal', 'reasoning', 'factual'],
         },
         performance: {
           accuracy: 0.91,
           speed: 40,
           reliability: 0.94,
-          costEfficiency: 0.85
+          costEfficiency: 0.85,
         },
         configuration: {
           temperature: 0.7,
           topP: 0.9,
           maxTokens: 8192,
-          stopSequences: []
-        }
+          stopSequences: [],
+        },
       },
       // Local Models
       {
@@ -487,21 +488,21 @@ export class AIModelHub extends EventEmitter {
           contextWindow: 4096,
           trainingCutoff: '2023-07-01',
           languages: ['en', 'es', 'fr', 'de', 'it', 'pt'],
-          specializations: ['privacy', 'offline', 'open_source']
+          specializations: ['privacy', 'offline', 'open_source'],
         },
         performance: {
           accuracy: 0.85,
           speed: 15,
           reliability: 0.92,
-          costEfficiency: 1.0
+          costEfficiency: 1.0,
         },
         configuration: {
           temperature: 0.7,
           topP: 0.9,
           maxTokens: 4096,
-          stopSequences: []
-        }
-      }
+          stopSequences: [],
+        },
+      },
     ];
 
     for (const config of modelConfigs) {
@@ -529,9 +530,9 @@ export class AIModelHub extends EventEmitter {
         totalTokens: 0,
         totalCost: 0,
         averageResponseTime: 0,
-        errorRate: 0
+        errorRate: 0,
       },
-      configuration: config.configuration!
+      configuration: config.configuration!,
     };
 
     return model;
@@ -542,22 +543,22 @@ export class AIModelHub extends EventEmitter {
    */
   async submitRequest(request: Omit<ModelRequest, 'id'>): Promise<string> {
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const fullRequest: ModelRequest = {
       id: requestId,
-      ...request
+      ...request,
     };
 
     // Add to queue
     this.requestQueue.push(fullRequest);
-    
+
     console.log(`📨 Request ${requestId} queued for model ${request.modelId}`);
-    
+
     this.emit('request-queued', fullRequest);
-    
+
     // Process queue
     this.processRequestQueue();
-    
+
     return requestId;
   }
 
@@ -575,7 +576,7 @@ export class AIModelHub extends EventEmitter {
     }
   ): Promise<string> {
     const optimalModel = this.selectOptimalModel(requirements);
-    
+
     if (!optimalModel) {
       throw new Error('No suitable model found for requirements');
     }
@@ -587,8 +588,8 @@ export class AIModelHub extends EventEmitter {
       timeout: requirements.maxResponseTime || 30000,
       retryCount: 3,
       metadata: {
-        taskType: requirements.taskType
-      }
+        taskType: requirements.taskType,
+      },
     });
   }
 
@@ -596,11 +597,10 @@ export class AIModelHub extends EventEmitter {
    * Select optimal model based on requirements
    */
   private selectOptimalModel(requirements: any): AIModel | null {
-    const availableModels = Array.from(this.models.values())
-      .filter(model => {
-        const provider = this.providers.get(model.providerId);
-        return model.status === 'available' && provider?.status === 'connected';
-      });
+    const availableModels = Array.from(this.models.values()).filter(model => {
+      const provider = this.providers.get(model.providerId);
+      return model.status === 'available' && provider?.status === 'connected';
+    });
 
     if (availableModels.length === 0) return null;
 
@@ -608,13 +608,16 @@ export class AIModelHub extends EventEmitter {
     let filteredModels = availableModels;
 
     if (requirements.minAccuracy) {
-      filteredModels = filteredModels.filter(m => m.performance.accuracy >= requirements.minAccuracy);
+      filteredModels = filteredModels.filter(
+        m => m.performance.accuracy >= requirements.minAccuracy
+      );
     }
 
     if (requirements.maxCost) {
       filteredModels = filteredModels.filter(m => {
         const provider = this.providers.get(m.providerId)!;
-        const estimatedCost = (provider.pricing.inputTokenCost + provider.pricing.outputTokenCost) * 1000; // Estimate for 1000 tokens
+        const estimatedCost =
+          (provider.pricing.inputTokenCost + provider.pricing.outputTokenCost) * 1000; // Estimate for 1000 tokens
         return estimatedCost <= requirements.maxCost;
       });
     }
@@ -624,15 +627,16 @@ export class AIModelHub extends EventEmitter {
     // Score models based on strategy
     const scoredModels = filteredModels.map(model => {
       const provider = this.providers.get(model.providerId)!;
-      
-      const costScore = 1 - ((provider.pricing.inputTokenCost + provider.pricing.outputTokenCost) / 0.0001); // Normalize
+
+      const costScore =
+        1 - (provider.pricing.inputTokenCost + provider.pricing.outputTokenCost) / 0.0001; // Normalize
       const performanceScore = (model.performance.accuracy + model.performance.reliability) / 2;
       const speedScore = Math.min(model.performance.speed / 100, 1);
 
-      const totalScore = 
-        (costScore * this.loadBalancingStrategy.parameters.costWeight) +
-        (performanceScore * this.loadBalancingStrategy.parameters.performanceWeight) +
-        (speedScore * this.loadBalancingStrategy.parameters.reliabilityWeight);
+      const totalScore =
+        costScore * this.loadBalancingStrategy.parameters.costWeight +
+        performanceScore * this.loadBalancingStrategy.parameters.performanceWeight +
+        speedScore * this.loadBalancingStrategy.parameters.reliabilityWeight;
 
       return { model, score: totalScore };
     });
@@ -660,29 +664,29 @@ export class AIModelHub extends EventEmitter {
     const provider = model ? this.providers.get(model.providerId) : null;
 
     if (!model || !provider) {
-      this.emit('request-failed', { 
-        requestId: request.id, 
-        error: 'Model or provider not found' 
+      this.emit('request-failed', {
+        requestId: request.id,
+        error: 'Model or provider not found',
       });
       return;
     }
 
     if (provider.status !== 'connected') {
-      this.emit('request-failed', { 
-        requestId: request.id, 
-        error: 'Provider not connected' 
+      this.emit('request-failed', {
+        requestId: request.id,
+        error: 'Provider not connected',
       });
       return;
     }
 
     this.activeRequests.set(request.id, request);
-    
+
     const startTime = Date.now();
-    
+
     try {
       // Simulate API call
       const response = await this.callModelAPI(model, provider, request);
-      
+
       const endTime = Date.now();
       const responseTime = endTime - startTime;
 
@@ -690,11 +694,10 @@ export class AIModelHub extends EventEmitter {
       this.updateUsageStats(model, response, responseTime);
 
       this.emit('request-completed', response);
-      
     } catch (error) {
-      this.emit('request-failed', { 
-        requestId: request.id, 
-        error: error.message 
+      this.emit('request-failed', {
+        requestId: request.id,
+        error: error.message,
       });
     } finally {
       this.activeRequests.delete(request.id);
@@ -704,15 +707,20 @@ export class AIModelHub extends EventEmitter {
   /**
    * Call model API (simulated)
    */
-  private async callModelAPI(model: AIModel, provider: AIProvider, request: ModelRequest): Promise<ModelResponse> {
+  private async callModelAPI(
+    model: AIModel,
+    provider: AIProvider,
+    request: ModelRequest
+  ): Promise<ModelResponse> {
     // Simulate API call delay
     const baseDelay = 1000 / model.performance.speed; // Convert speed to delay
-    const actualDelay = baseDelay + (Math.random() * baseDelay);
-    
+    const actualDelay = baseDelay + Math.random() * baseDelay;
+
     await new Promise(resolve => setTimeout(resolve, actualDelay));
 
     // Simulate occasional failures
-    if (Math.random() < 0.02) { // 2% failure rate
+    if (Math.random() < 0.02) {
+      // 2% failure rate
       throw new Error('API request failed');
     }
 
@@ -720,7 +728,9 @@ export class AIModelHub extends EventEmitter {
     const inputTokens = Math.floor(request.prompt.length / 4); // Rough estimate
     const outputTokens = Math.floor(Math.random() * 1000 + 200);
     const totalTokens = inputTokens + outputTokens;
-    const cost = (inputTokens * provider.pricing.inputTokenCost) + (outputTokens * provider.pricing.outputTokenCost);
+    const cost =
+      inputTokens * provider.pricing.inputTokenCost +
+      outputTokens * provider.pricing.outputTokenCost;
 
     const response: ModelResponse = {
       requestId: request.id,
@@ -730,19 +740,19 @@ export class AIModelHub extends EventEmitter {
         inputTokens,
         outputTokens,
         totalTokens,
-        cost
+        cost,
       },
       performance: {
         responseTime: actualDelay,
         queueTime: 0,
-        processingTime: actualDelay
+        processingTime: actualDelay,
       },
       metadata: {
         timestamp: new Date(),
         model: model.name,
         provider: provider.name,
-        confidence: 0.8 + Math.random() * 0.2
-      }
+        confidence: 0.8 + Math.random() * 0.2,
+      },
     };
 
     return response;
@@ -757,7 +767,7 @@ export class AIModelHub extends EventEmitter {
       'The data indicates strong potential for revenue optimization through the suggested approach.',
       'After reviewing the requirements, the most effective strategy would be to focus on the high-priority items first.',
       'The assessment reveals several opportunities for improvement that align with government best practices.',
-      'Implementation should proceed in phases to ensure proper validation and risk mitigation.'
+      'Implementation should proceed in phases to ensure proper validation and risk mitigation.',
     ];
 
     return responses[Math.floor(Math.random() * responses.length)];
@@ -770,9 +780,10 @@ export class AIModelHub extends EventEmitter {
     model.usageStats.totalRequests++;
     model.usageStats.totalTokens += response.usage.totalTokens;
     model.usageStats.totalCost += response.usage.cost;
-    
+
     // Update average response time
-    const totalTime = model.usageStats.averageResponseTime * (model.usageStats.totalRequests - 1) + responseTime;
+    const totalTime =
+      model.usageStats.averageResponseTime * (model.usageStats.totalRequests - 1) + responseTime;
     model.usageStats.averageResponseTime = totalTime / model.usageStats.totalRequests;
   }
 
@@ -806,7 +817,8 @@ export class AIModelHub extends EventEmitter {
   private updateProviderStatus(): void {
     for (const provider of this.providers.values()) {
       // Simulate occasional provider issues
-      if (Math.random() < 0.01) { // 1% chance of temporary issue
+      if (Math.random() < 0.01) {
+        // 1% chance of temporary issue
         provider.status = 'maintenance';
         setTimeout(() => {
           provider.status = 'connected';
@@ -823,7 +835,7 @@ export class AIModelHub extends EventEmitter {
       // Simulate performance fluctuations
       model.performance.speed += (Math.random() - 0.5) * 2;
       model.performance.speed = Math.max(1, Math.min(100, model.performance.speed));
-      
+
       model.performance.reliability += (Math.random() - 0.5) * 0.02;
       model.performance.reliability = Math.max(0.8, Math.min(1.0, model.performance.reliability));
     }
@@ -835,17 +847,20 @@ export class AIModelHub extends EventEmitter {
   private optimizeLoadBalancing(): void {
     // Analyze recent performance and adjust weights
     const recentPerformance = this.analyzeRecentPerformance();
-    
+
     if (recentPerformance.costEffectiveness < 0.7) {
       this.loadBalancingStrategy.parameters.costWeight += 0.05;
     }
-    
+
     if (recentPerformance.averageAccuracy < 0.9) {
       this.loadBalancingStrategy.parameters.performanceWeight += 0.05;
     }
 
     // Normalize weights
-    const totalWeight = Object.values(this.loadBalancingStrategy.parameters).reduce((sum, weight) => sum + weight, 0);
+    const totalWeight = Object.values(this.loadBalancingStrategy.parameters).reduce(
+      (sum, weight) => sum + weight,
+      0
+    );
     for (const key in this.loadBalancingStrategy.parameters) {
       this.loadBalancingStrategy.parameters[key] /= totalWeight;
     }
@@ -856,13 +871,14 @@ export class AIModelHub extends EventEmitter {
    */
   private analyzeRecentPerformance(): any {
     const models = Array.from(this.models.values());
-    
+
     const avgAccuracy = models.reduce((sum, m) => sum + m.performance.accuracy, 0) / models.length;
-    const avgCostEfficiency = models.reduce((sum, m) => sum + m.performance.costEfficiency, 0) / models.length;
-    
+    const avgCostEfficiency =
+      models.reduce((sum, m) => sum + m.performance.costEfficiency, 0) / models.length;
+
     return {
       averageAccuracy: avgAccuracy,
-      costEffectiveness: avgCostEfficiency
+      costEffectiveness: avgCostEfficiency,
     };
   }
 
@@ -874,14 +890,14 @@ export class AIModelHub extends EventEmitter {
       connected: 0,
       disconnected: 0,
       error: 0,
-      maintenance: 0
+      maintenance: 0,
     };
 
     const modelsByStatus = {
       available: 0,
       unavailable: 0,
       deprecated: 0,
-      beta: 0
+      beta: 0,
     };
 
     for (const provider of this.providers.values()) {
@@ -899,7 +915,7 @@ export class AIModelHub extends EventEmitter {
       modelsByStatus,
       requestQueue: this.requestQueue.length,
       activeRequests: this.activeRequests.size,
-      loadBalancingStrategy: this.loadBalancingStrategy
+      loadBalancingStrategy: this.loadBalancingStrategy,
     };
   }
 
@@ -939,7 +955,7 @@ export class AIModelHub extends EventEmitter {
       totalRequests: 0,
       totalTokens: 0,
       totalCost: 0,
-      averageResponseTime: 0
+      averageResponseTime: 0,
     };
 
     const modelStats: Record<string, any> = {};
@@ -948,18 +964,21 @@ export class AIModelHub extends EventEmitter {
       totalStats.totalRequests += model.usageStats.totalRequests;
       totalStats.totalTokens += model.usageStats.totalTokens;
       totalStats.totalCost += model.usageStats.totalCost;
-      
+
       modelStats[model.id] = { ...model.usageStats };
     }
 
     if (totalStats.totalRequests > 0) {
-      totalStats.averageResponseTime = Array.from(this.models.values())
-        .reduce((sum, m) => sum + m.usageStats.averageResponseTime, 0) / this.models.size;
+      totalStats.averageResponseTime =
+        Array.from(this.models.values()).reduce(
+          (sum, m) => sum + m.usageStats.averageResponseTime,
+          0
+        ) / this.models.size;
     }
 
     return {
       total: totalStats,
-      byModel: modelStats
+      byModel: modelStats,
     };
   }
 }

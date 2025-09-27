@@ -46,14 +46,14 @@ K8S_INGRESS_NAME="terrafusion-ingress"
 
 # Application Configuration
 APP_NAME="terrafusion"
-APP_PORT=8080
+APP_PORT=\${{TF_ADMIN_PORT:-8080}}
 HEALTH_CHECK_PATH="/health"
 READINESS_PATH="/ready"
 METRICS_PATH="/metrics"
 
 # Monitoring Configuration
 PROMETHEUS_URL="${PROMETHEUS_URL:-http://prometheus:9090}"
-GRAFANA_URL="${GRAFANA_URL:-http://grafana:3000}"
+GRAFANA_URL="${GRAFANA_URL:-http://grafana:${TF_FRONTEND_PORT:-3102}}"
 ALERT_MANAGER_URL="${ALERT_MANAGER_URL:-http://alertmanager:9093}"
 
 # Validation Thresholds

@@ -16,7 +16,7 @@ rule_files:
 scrape_configs:
   - job_name: 'terrafusion'
     static_configs:
-      - targets: ['app:3000']
+      - targets: ['app:${TF_FRONTEND_PORT:-3102}']
     metrics_path: '/metrics'
     scheme: 'http'
     scrape_interval: 5s
@@ -24,7 +24,7 @@ scrape_configs:
 
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['localhost:\${{TF_PROMETHEUS_PORT:-9090}}']
 
   - job_name: 'node-exporter'
     static_configs:
@@ -36,4 +36,4 @@ scrape_configs:
 
   - job_name: 'cadvisor'
     static_configs:
-      - targets: ['cadvisor:8080'] 
+      - targets: ['cadvisor:${TF_STATIC_PORT:-8080}'] 

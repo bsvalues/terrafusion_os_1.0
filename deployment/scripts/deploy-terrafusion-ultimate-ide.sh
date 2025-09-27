@@ -387,29 +387,29 @@ TERRAFUSION_DEPLOYMENT_ID=${DEPLOYMENT_ID}
 
 # Database Configuration
 DATABASE_HOST=postgres-primary
-DATABASE_PORT=5432
+DATABASE_PORT=\${{TF_POSTGRES_PORT:-5432}}
 DATABASE_NAME=terrafusion_ultimate_ide
 DATABASE_USER=terrafusion_admin
 DATABASE_PASSWORD=tf_secure_$(openssl rand -hex 16)
 
 # Redis Configuration
 REDIS_HOST=redis-cache
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 REDIS_PASSWORD=redis_secure_$(openssl rand -hex 16)
 
 # API Configuration
-API_BASE_URL=http://localhost:5000
+API_BASE_URL=http://localhost:${TF_STATIC_PORT:-8080}
 API_TIMEOUT=30000
 API_MAX_RETRIES=3
 
 # AI Swarm Configuration
-AI_SUPREME_COMMANDER_URL=http://localhost:8080
-AI_FIELD_GENERALS_BASE_URL=http://localhost:8090
+AI_SUPREME_COMMANDER_URL=http://localhost:${TF_STATIC_PORT:-8080}
+AI_FIELD_GENERALS_BASE_URL=http://localhost:${TF_STATIC_PORT:-8080}
 AI_SWARM_COORDINATION=distributed
 
 # Monitoring Configuration
-PROMETHEUS_URL=http://localhost:9090
-GRAFANA_URL=http://localhost:3000
+PROMETHEUS_URL=http://localhost:${TF_STATIC_PORT:-8080}
+GRAFANA_URL=http://localhost:${TF_STATIC_PORT:-8080}
 GRAFANA_ADMIN_PASSWORD=grafana_admin_$(openssl rand -hex 12)
 
 # Security Configuration
@@ -617,7 +617,7 @@ deploy_infrastructure() {
     
     # Wait for API to be ready
     log_info "Waiting for API initialization..."
-    timeout 120 bash -c 'until curl -f http://localhost:5000/health; do sleep 2; done'
+    timeout 120 bash -c 'until curl -f http://localhost:${TF_STATIC_PORT:-8080}/health; do sleep 2; done'
     
     # Start AI Swarm
     log_info "Deploying AI Swarm (${AI_AGENTS} agents)..."
@@ -652,7 +652,7 @@ validate_deployment() {
     
     # Service health checks
     log_info "Checking service health..."
-    local services=("terrafusion-api:5000/health" "terrafusion-frontend:3000" "prometheus:9090/-/ready" "grafana:3000/api/health")
+    local services=("terrafusion-api:${TF_API_PORT:-5046}/health" "terrafusion-frontend:${TF_FRONTEND_PORT:-3102}" "prometheus:9090/-/ready" "grafana:${TF_FRONTEND_PORT:-3102}/api/health")
     
     for service in "${services[@]}"; do
         local service_name=${service%%:*}
@@ -668,7 +668,7 @@ validate_deployment() {
     
     # AI Swarm validation
     log_info "Validating AI Swarm deployment..."
-    if curl -f http://localhost:8080/swarm/status | jq -r '.totalAgents' | grep -q "$AI_AGENTS"; then
+    if curl -f http://localhost:${TF_STATIC_PORT:-8080}/swarm/status | jq -r '.totalAgents' | grep -q "$AI_AGENTS"; then
         log_success "AI Swarm deployed with $AI_AGENTS agents"
     else
         log_error "AI Swarm validation failed"
@@ -678,7 +678,7 @@ validate_deployment() {
     # Performance validation
     log_info "Running performance validation..."
     local response_time
-    response_time=$(curl -w "%{time_total}" -o /dev/null -s http://localhost:5000/api/status)
+    response_time=$(curl -w "%{time_total}" -o /dev/null -s http://localhost:${TF_STATIC_PORT:-8080}/api/status)
     if (( $(echo "$response_time < 0.01" | bc -l) )); then
         log_success "API response time: ${response_time}s (target: <10ms)"
     else
@@ -687,7 +687,7 @@ validate_deployment() {
     
     # Security validation
     log_info "Validating security configuration..."
-    if curl -f http://localhost:5000/api/compliance/status | jq -r '.overallStatus' | grep -q "Compliant"; then
+    if curl -f http://localhost:${TF_STATIC_PORT:-8080}/api/compliance/status | jq -r '.overallStatus' | grep -q "Compliant"; then
         log_success "Security compliance validated"
     else
         log_error "Security compliance validation failed"
@@ -697,7 +697,7 @@ validate_deployment() {
     # Government compliance validation
     log_info "Validating government compliance..."
     local compliance_score
-    compliance_score=$(curl -s http://localhost:5000/api/compliance/status | jq -r '.overallScore // 0')
+    compliance_score=$(curl -s http://localhost:${TF_STATIC_PORT:-8080}/api/compliance/status | jq -r '.overallScore // 0')
     if [ "$compliance_score" -ge 90 ]; then
         log_success "Government compliance score: $compliance_score% (FISMA Ready)"
     else
@@ -752,10 +752,10 @@ generate_deployment_report() {
     "infrastructure": {
       "services": ${services_status},
       "endpoints": {
-        "api": "http://localhost:5000",
-        "frontend": "http://localhost:3000",
-        "monitoring": "http://localhost:9090",
-        "grafana": "http://localhost:3001"
+        "api": "http://localhost:${TF_STATIC_PORT:-8080}",
+        "frontend": "http://localhost:${TF_STATIC_PORT:-8080}",
+        "monitoring": "http://localhost:${TF_STATIC_PORT:-8080}",
+        "grafana": "http://localhost:${TF_STATIC_PORT:-8080}"
       }
     },
     "governmentCompliance": {
@@ -797,13 +797,13 @@ EOF
     echo "   • Compliance: $COMPLIANCE_MODE"
     echo
     echo "🌐 Access Points:"
-    echo "   • IDE Frontend: http://localhost:3000"
-    echo "   • API Gateway: http://localhost:5000"
-    echo "   • Monitoring: http://localhost:9090"
-    echo "   • Grafana: http://localhost:3001"
+    echo "   • IDE Frontend: http://localhost:${TF_STATIC_PORT:-8080}"
+    echo "   • API Gateway: http://localhost:${TF_STATIC_PORT:-8080}"
+    echo "   • Monitoring: http://localhost:${TF_STATIC_PORT:-8080}"
+    echo "   • Grafana: http://localhost:${TF_STATIC_PORT:-8080}"
     echo
     echo "📋 Next Steps:"
-    echo "   • Access the IDE at http://localhost:3000"
+    echo "   • Access the IDE at http://localhost:${TF_STATIC_PORT:-8080}"
     echo "   • Review monitoring dashboards"
     echo "   • Run compliance validation"
     echo "   • Configure user security clearances"

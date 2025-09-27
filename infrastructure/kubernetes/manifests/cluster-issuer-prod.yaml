@@ -1,0 +1,32 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: cert-manager
+spec:
+  acme:
+    # Production ACME server
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: devops@terrafusion.ai
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: kong
+          podTemplate:
+            metadata:
+              labels:
+                app: cert-manager-acme-solver
+            spec:
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 65534
+              containers:
+              - name: acme-solver
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities:
+                    drop:
+                    - ALL

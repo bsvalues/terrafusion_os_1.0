@@ -44,7 +44,7 @@ services:
     image: grafana/grafana:latest
     container_name: terrafusion-grafana
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=terrafusion2025
@@ -94,7 +94,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: terrafusion-cadvisor
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro

@@ -20,7 +20,8 @@ interface MigrationResult {
 }
 
 export class BentonCountyMigrationService {
-  private readonly sourceBasePath = 'e:/TerraFusion_OS/gov_deploy_packages/BentonCounty_COMPLETE_WhiteGlove_Package';
+  private readonly sourceBasePath =
+    'e:/TerraFusion_OS/gov_deploy_packages/BentonCounty_COMPLETE_WhiteGlove_Package';
   private readonly targetBasePath = 'e:/TerraFusion_OS_1.0';
 
   private readonly migrationMap: MigrationComponent[] = [
@@ -31,7 +32,7 @@ export class BentonCountyMigrationService {
       targetPath: 'backend/government-edition',
       size: 1067,
       priority: 'high',
-      type: 'module'
+      type: 'module',
     },
     {
       name: 'Championship Modules',
@@ -39,7 +40,7 @@ export class BentonCountyMigrationService {
       targetPath: 'modules/championship',
       size: 932,
       priority: 'high',
-      type: 'module'
+      type: 'module',
     },
     {
       name: 'Enhanced DevOps Workspace',
@@ -47,7 +48,7 @@ export class BentonCountyMigrationService {
       targetPath: 'devops/enhanced',
       size: 665,
       priority: 'high',
-      type: 'config'
+      type: 'config',
     },
     {
       name: 'Web Deployment Configs',
@@ -55,7 +56,7 @@ export class BentonCountyMigrationService {
       targetPath: 'deployment/web',
       size: 650,
       priority: 'high',
-      type: 'config'
+      type: 'config',
     },
 
     // Medium Priority - Commercial and Legacy
@@ -65,7 +66,7 @@ export class BentonCountyMigrationService {
       targetPath: 'modules/commercial/enterprise',
       size: 851,
       priority: 'medium',
-      type: 'module'
+      type: 'module',
     },
     {
       name: 'Legacy Applications',
@@ -73,7 +74,7 @@ export class BentonCountyMigrationService {
       targetPath: 'legacy/compatibility',
       size: 587,
       priority: 'medium',
-      type: 'module'
+      type: 'module',
     },
     {
       name: 'Terrafusion Core',
@@ -81,7 +82,7 @@ export class BentonCountyMigrationService {
       targetPath: 'backend/core/enhanced',
       size: 389,
       priority: 'medium',
-      type: 'module'
+      type: 'module',
     },
     {
       name: 'Brand Assets',
@@ -89,7 +90,7 @@ export class BentonCountyMigrationService {
       targetPath: 'assets/branding',
       size: 254,
       priority: 'medium',
-      type: 'asset'
+      type: 'asset',
     },
 
     // Low Priority - Documentation and Infrastructure
@@ -99,7 +100,7 @@ export class BentonCountyMigrationService {
       targetPath: 'modules/marketplace/enhanced',
       size: 158,
       priority: 'low',
-      type: 'module'
+      type: 'module',
     },
     {
       name: 'Documentation',
@@ -107,7 +108,7 @@ export class BentonCountyMigrationService {
       targetPath: 'docs/production',
       size: 92,
       priority: 'low',
-      type: 'asset'
+      type: 'asset',
     },
     {
       name: 'Additional Documentation',
@@ -115,7 +116,7 @@ export class BentonCountyMigrationService {
       targetPath: 'docs/additional',
       size: 68,
       priority: 'low',
-      type: 'asset'
+      type: 'asset',
     },
     {
       name: 'County Databases',
@@ -123,24 +124,28 @@ export class BentonCountyMigrationService {
       targetPath: 'data/counties',
       size: 10,
       priority: 'medium',
-      type: 'data'
-    }
+      type: 'data',
+    },
   ];
 
   /**
    * Execute selective migration based on priority
    */
-  async executeMigration(priorities: ('high' | 'medium' | 'low')[] = ['high']): Promise<MigrationResult> {
+  async executeMigration(
+    priorities: ('high' | 'medium' | 'low')[] = ['high']
+  ): Promise<MigrationResult> {
     const result: MigrationResult = {
       success: true,
       componentsProcessed: 0,
       totalSize: 0,
       errors: [],
-      warnings: []
+      warnings: [],
     };
 
-    const componentsToMigrate = this.migrationMap.filter(comp => priorities.includes(comp.priority));
-    
+    const componentsToMigrate = this.migrationMap.filter(comp =>
+      priorities.includes(comp.priority)
+    );
+
     console.log(`Starting migration of ${componentsToMigrate.length} components...`);
 
     for (const component of componentsToMigrate) {
@@ -201,7 +206,7 @@ export class BentonCountyMigrationService {
    */
   private async copyModuleFiles(sourcePath: string, targetPath: string): Promise<void> {
     const files = await fs.readdir(sourcePath, { withFileTypes: true });
-    
+
     for (const file of files) {
       const sourceFile = path.join(sourcePath, file.name);
       const targetFile = path.join(targetPath, file.name);
@@ -223,21 +228,21 @@ export class BentonCountyMigrationService {
    */
   private async copyDataFiles(sourcePath: string, targetPath: string): Promise<void> {
     const files = await fs.readdir(sourcePath, { withFileTypes: true });
-    
+
     for (const file of files) {
       if (!file.isDirectory()) {
         const sourceFile = path.join(sourcePath, file.name);
         const targetFile = path.join(targetPath, file.name);
-        
+
         // Copy with integrity verification
         const sourceData = await fs.readFile(sourceFile);
         await fs.writeFile(targetFile, sourceData);
-        
+
         // Verify integrity
         const targetData = await fs.readFile(targetFile);
         const sourceHash = createHash('sha256').update(sourceData).digest('hex');
         const targetHash = createHash('sha256').update(targetData).digest('hex');
-        
+
         if (sourceHash !== targetHash) {
           throw new Error(`Integrity check failed for ${file.name}`);
         }
@@ -250,7 +255,7 @@ export class BentonCountyMigrationService {
    */
   private async copyConfigFiles(sourcePath: string, targetPath: string): Promise<void> {
     const files = await fs.readdir(sourcePath, { withFileTypes: true });
-    
+
     for (const file of files) {
       const sourceFile = path.join(sourcePath, file.name);
       const targetFile = path.join(targetPath, file.name);
@@ -269,7 +274,7 @@ export class BentonCountyMigrationService {
    */
   private async copyAssetFiles(sourcePath: string, targetPath: string): Promise<void> {
     const files = await fs.readdir(sourcePath, { withFileTypes: true });
-    
+
     for (const file of files) {
       const sourceFile = path.join(sourcePath, file.name);
       const targetFile = path.join(targetPath, file.name);
@@ -286,7 +291,10 @@ export class BentonCountyMigrationService {
   /**
    * Create migration manifest for tracking
    */
-  private async createMigrationManifest(component: MigrationComponent, targetPath: string): Promise<void> {
+  private async createMigrationManifest(
+    component: MigrationComponent,
+    targetPath: string
+  ): Promise<void> {
     const manifest = {
       component: component.name,
       migratedAt: new Date().toISOString(),
@@ -296,7 +304,7 @@ export class BentonCountyMigrationService {
       priority: component.priority,
       type: component.type,
       version: '1.0.0',
-      integrity: 'verified'
+      integrity: 'verified',
     };
 
     const manifestPath = path.join(targetPath, '.migration-manifest.json');
@@ -307,35 +315,68 @@ export class BentonCountyMigrationService {
    * Validate module file types
    */
   private isValidModuleFile(filename: string): boolean {
-    const validExtensions = ['.cs', '.ts', '.tsx', '.js', '.jsx', '.json', '.yml', '.yaml', '.md', '.sql'];
+    const validExtensions = [
+      '.cs',
+      '.ts',
+      '.tsx',
+      '.js',
+      '.jsx',
+      '.json',
+      '.yml',
+      '.yaml',
+      '.md',
+      '.sql',
+    ];
     const validFiles = ['package.json', 'tsconfig.json', 'appsettings.json', 'Dockerfile'];
-    
-    return validExtensions.some(ext => filename.endsWith(ext)) || 
-           validFiles.includes(filename) ||
-           filename.endsWith('.csproj') ||
-           filename.endsWith('.sln');
+
+    return (
+      validExtensions.some(ext => filename.endsWith(ext)) ||
+      validFiles.includes(filename) ||
+      filename.endsWith('.csproj') ||
+      filename.endsWith('.sln')
+    );
   }
 
   /**
    * Validate configuration file types
    */
   private isValidConfigFile(filename: string): boolean {
-    const validExtensions = ['.json', '.yml', '.yaml', '.xml', '.config', '.env', '.sh', '.bat', '.ps1'];
+    const validExtensions = [
+      '.json',
+      '.yml',
+      '.yaml',
+      '.xml',
+      '.config',
+      '.env',
+      '.sh',
+      '.bat',
+      '.ps1',
+    ];
     return validExtensions.some(ext => filename.endsWith(ext));
   }
 
   /**
    * Get migration summary
    */
-  getMigrationSummary(): { totalComponents: number; totalSize: number; byPriority: Record<string, number> } {
+  getMigrationSummary(): {
+    totalComponents: number;
+    totalSize: number;
+    byPriority: Record<string, number>;
+  } {
     const summary = {
       totalComponents: this.migrationMap.length,
       totalSize: this.migrationMap.reduce((sum, comp) => sum + comp.size, 0),
       byPriority: {
-        high: this.migrationMap.filter(c => c.priority === 'high').reduce((sum, c) => sum + c.size, 0),
-        medium: this.migrationMap.filter(c => c.priority === 'medium').reduce((sum, c) => sum + c.size, 0),
-        low: this.migrationMap.filter(c => c.priority === 'low').reduce((sum, c) => sum + c.size, 0)
-      }
+        high: this.migrationMap
+          .filter(c => c.priority === 'high')
+          .reduce((sum, c) => sum + c.size, 0),
+        medium: this.migrationMap
+          .filter(c => c.priority === 'medium')
+          .reduce((sum, c) => sum + c.size, 0),
+        low: this.migrationMap
+          .filter(c => c.priority === 'low')
+          .reduce((sum, c) => sum + c.size, 0),
+      },
     };
 
     return summary;
@@ -366,7 +407,7 @@ export class BentonCountyMigrationService {
 
     return {
       valid: issues.length === 0,
-      issues
+      issues,
     };
   }
 }

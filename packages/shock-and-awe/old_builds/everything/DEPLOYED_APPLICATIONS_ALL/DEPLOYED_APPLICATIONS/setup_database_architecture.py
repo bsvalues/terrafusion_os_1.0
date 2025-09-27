@@ -405,12 +405,12 @@ class TerraFusionDatabaseArchitect:
                 "terrasync": {
                     "database": str(db_dir / "terrasync_master.db"),
                     "role": "master_sync",
-                    "port": 5432
+                    "port": \${{TF_POSTGRES_PORT:-5432}}
                 },
                 "terraflow": {
                     "database": str(db_dir / "terraflow_master.db"),
                     "role": "data_processing",
-                    "port": 5433
+                    "port": \${{TF_POSTGRES_PORT:-5432}}
                 }
             },
             "applications": {},
@@ -554,8 +554,8 @@ PGADMIN_PASSWORD=your_secure_pgadmin_password
 
 # Development Settings
 NODE_ENV=development
-DATABASE_URL_TERRASYNC=postgresql://terrasync_user:terrasync_pass@localhost:5432/terrasync_master
-DATABASE_URL_TERRAFLOW=postgresql://terraflow_user:terraflow_pass@localhost:5433/terraflow_master
+DATABASE_URL_TERRASYNC=postgresql://terrasync_user:terrasync_pass@localhost:\${{TF_POSTGRES_PORT:-5432}}/terrasync_master
+DATABASE_URL_TERRAFLOW=postgresql://terraflow_user:terraflow_pass@localhost:\${{TF_POSTGRES_PORT:-5432}}/terraflow_master
 """
 
         env_path = self.base_path / ".env.template"

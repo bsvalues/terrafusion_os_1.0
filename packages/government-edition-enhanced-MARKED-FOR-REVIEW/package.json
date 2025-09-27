@@ -37,7 +37,13 @@
     "@types/react": "^18.0.0",
     "typescript": "^5.0.0"
   },
-  "keywords": ["terrafusion", "government", "enhanced", "premium", "ai-advanced"],
+  "keywords": [
+    "terrafusion",
+    "government",
+    "enhanced",
+    "premium",
+    "ai-advanced"
+  ],
   "author": "Terrafusion OS Team",
   "license": "Government-Enhanced",
   "repository": {

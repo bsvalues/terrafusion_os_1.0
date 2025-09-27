@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("IDEPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000", "http://localhost:8080")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:5175")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -63,17 +63,17 @@ builder.Services.AddHttpClient("TerraFusionAPI", client =>
 
 builder.Services.AddHttpClient("RustDevEngine", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["Services:RustDevEngine"] ?? "http://localhost:8080");
+    client.BaseAddress = new Uri(builder.Configuration["Services:RustDevEngine"] ?? "http://localhost:8001");
 });
 
 builder.Services.AddHttpClient("AISwarm", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["Services:AISwarm"] ?? "http://localhost:3000");
+    client.BaseAddress = new Uri(builder.Configuration["Services:AISwarm"] ?? "http://localhost:8002");
 });
 
 builder.Services.AddHttpClient("OpsTools", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["Services:OpsTools"] ?? "http://localhost:9000");
+    client.BaseAddress = new Uri(builder.Configuration["Services:OpsTools"] ?? "http://localhost:8003");
 });
 
 // Add reverse proxy

@@ -1,0 +1,14 @@
+{
+  "name": "geospatial",
+  "version": "1.0.0",
+  "description": "Geospatial analysis and mapping module for Terrafusion OS",
+  "tier": "Tier 2 (Essential Operations)",
+  "category": "geospatial",
+  "author": "Terrafusion OS Team",
+  "itemCount": 1,
+  "migratedAt": "2025-08-31T00:00:00.000000Z",
+  "status": "active",
+  "languages": [],
+  "dependencies": [],
+  "entryPoints": {}
+}

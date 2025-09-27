@@ -29,19 +29,10 @@ module.exports = {
     '^.+\\.js$': 'babel-jest'
   },
   globals: {
-    'NODE_ENV': 'test'
+    NODE_ENV: 'test'
   },
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/dist/',
-    '/build/'
-  ],
-  watchPathIgnorePatterns: [
-    '/node_modules/',
-    '/dist/',
-    '/build/',
-    '/coverage/'
-  ],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/build/'],
+  watchPathIgnorePatterns: ['/node_modules/', '/dist/', '/build/', '/coverage/'],
   collectCoverage: true,
   coveragePathIgnorePatterns: [
     '/node_modules/',
@@ -52,11 +43,14 @@ module.exports = {
   ],
   reporters: [
     'default',
-    ['jest-junit', {
-      outputDirectory: 'coverage/junit',
-      outputName: 'junit.xml',
-      classNameTemplate: '{classname}',
-      titleTemplate: '{title}'
-    }]
+    [
+      'jest-junit',
+      {
+        outputDirectory: 'coverage/junit',
+        outputName: 'junit.xml',
+        classNameTemplate: '{classname}',
+        titleTemplate: '{title}'
+      }
+    ]
   ]
-}; 
+};

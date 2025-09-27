@@ -101,7 +101,7 @@ cd api
 timeout 10s node demo-api-server.js &
 sleep 5
 
-if curl -s http://localhost:8080/health > /dev/null 2>&1; then
+if curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/health > /dev/null 2>&1; then
     echo -e "${GREEN}✅ API server is responding${NC}"
     pkill -f "node demo-api-server.js" 2>/dev/null || true
 else
@@ -127,14 +127,14 @@ sleep 45
 echo
 echo -e "${CYAN}🔍 Step 7: Verifying all services...${NC}"
 echo "   Checking demo frontend..."
-if curl -s http://localhost:3000 > /dev/null 2>&1; then
+if curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}} > /dev/null 2>&1; then
     echo -e "   ${GREEN}✅ Demo frontend is responding${NC}"
 else
     echo -e "   ${YELLOW}⏳ Demo frontend still starting${NC}"
 fi
 
 echo "   Checking demo API..."
-if curl -s http://localhost:8080/health > /dev/null 2>&1; then
+if curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/health > /dev/null 2>&1; then
     echo -e "   ${GREEN}✅ Demo API is responding${NC}"
 else
     echo -e "   ${YELLOW}⏳ Demo API still starting${NC}"
@@ -163,7 +163,7 @@ echo "      → Real Benton County properties (89,247 parcels)"
 echo "      → AI-powered property assessments (3 seconds vs 30 minutes)"
 echo "      → Live demonstration of all government modules"
 echo
-echo -e "${BLUE}  🔧 Demo API Endpoints: http://localhost:8080${NC}"
+echo -e "${BLUE}  🔧 Demo API Endpoints: http://localhost:\${{TF_ADMIN_PORT:-8080}}${NC}"
 echo "      → /api/demo/stats - Live demo statistics"
 echo "      → /api/properties - Property database (89,247 records)"
 echo "      → /api/ai-agents - AI swarm status (1,008 agents)"
@@ -273,7 +273,7 @@ echo -e "${GREEN}🚀 Demo deployment complete! Ready for terrafusionmarket.io p
 echo
 echo "Key URLs to bookmark:"
 echo "• Main Demo: http://localhost"
-echo "• API Health: http://localhost:8080/health"  
-echo "• Demo Stats: http://localhost:8080/api/demo/stats"
-echo "• Real-time: http://localhost:8080/api/demo/realtime"
+echo "• API Health: http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"  
+echo "• Demo Stats: http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/demo/stats"
+echo "• Real-time: http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/demo/realtime"
 echo

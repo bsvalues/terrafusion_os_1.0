@@ -139,12 +139,12 @@ Continuous Improvement (Forever Loop)
 - `./dynasty-status.sh` - Check system health
 - `./dynasty-logs.sh` - View real-time logs
 - `./dynasty-stop.sh` - Graceful shutdown
-- Dashboard: http://localhost:8888
+- Dashboard: http://localhost:\${{TF_PORT_8888:-8888}}
 
 ### Monitoring Locations:
 - System logs: `/var/log/benton-dynasty/`
-- Metrics endpoint: `http://localhost:8888/metrics`
-- Health check: `http://localhost:8888/health`
+- Metrics endpoint: `http://localhost:\${{TF_PORT_8888:-8888}}/metrics`
+- Health check: `http://localhost:\${{TF_PORT_8888:-8888}}/health`
 - Reports: `/var/lib/benton-dynasty/reports/`
 
 ---

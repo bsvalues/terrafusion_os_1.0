@@ -1,6 +1,7 @@
 # 🚨 EMERGENCY FIX INSTRUCTIONS
 
 ## THE PROBLEM
+
 - React Error #130 (invalid element type)
 - CSP violations
 - Build/transpilation hanging
@@ -69,9 +70,11 @@ echo 'import React from "react"; import ReactDOM from "react-dom/client"; ReactD
 npx vite
 ```
 
-If this works, the issue is with the championship project configuration.
-If this doesn't work, the issue is with your environment.
+If this works, the issue is with the championship project configuration. If this
+doesn't work, the issue is with your environment.
 
 ## THE REAL SOLUTION
 
-We integrated TerraFusionBuild correctly, but there's a build/runtime issue preventing it from loading. The integration is complete - we just need to fix the build process.
+We integrated TerraFusionBuild correctly, but there's a build/runtime issue
+preventing it from loading. The integration is complete - we just need to fix
+the build process.

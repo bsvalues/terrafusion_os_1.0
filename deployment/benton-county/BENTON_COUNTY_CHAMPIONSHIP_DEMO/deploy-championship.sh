@@ -152,10 +152,10 @@ wait_for_services() {
     
     # Define services and their health check URLs
     declare -A services=(
-        ["TerraFusion Demo"]="http://localhost:3000/api/demo/health"
-        ["Grafana Dashboard"]="http://localhost:3001/api/health"
-        ["Prometheus"]="http://localhost:9090/-/healthy"
-        ["Traefik"]="http://localhost:8080/ping"
+        ["TerraFusion Demo"]="http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health"
+        ["Grafana Dashboard"]="http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/health"
+        ["Prometheus"]="http://localhost:\${{TF_FRONTEND_PORT:-3000}}/-/healthy"
+        ["Traefik"]="http://localhost:\${{TF_FRONTEND_PORT:-3000}}/ping"
     )
     
     # Wait for each service
@@ -190,10 +190,10 @@ post_deployment() {
     echo "=========================================="
     echo ""
     echo "📊 Service URLs:"
-    echo "  • Demo Application: http://localhost:3000"
-    echo "  • Grafana Dashboard: http://localhost:3001"
-    echo "  • Prometheus: http://localhost:9090"
-    echo "  • Traefik Dashboard: http://localhost:8080"
+    echo "  • Demo Application: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+    echo "  • Grafana Dashboard: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+    echo "  • Prometheus: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+    echo "  • Traefik Dashboard: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
     echo ""
     echo "🔑 Default Credentials:"
     echo "  • Grafana: admin / $(grep GRAFANA_PASSWORD .env | cut -d'=' -f2)"
@@ -206,9 +206,9 @@ post_deployment() {
     echo "  • Full cleanup: docker-compose down -v"
     echo ""
     echo "📈 Key Metrics:"
-    echo "  • API Endpoint: http://localhost:3000/api/monitoring/performance"
-    echo "  • Health Check: http://localhost:3000/api/demo/health"
-    echo "  • Backup Status: http://localhost:3000/api/backup/list"
+    echo "  • API Endpoint: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/performance"
+    echo "  • Health Check: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health"
+    echo "  • Backup Status: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/backup/list"
     echo ""
     echo "🎯 Ready for championship demonstration!"
     echo ""

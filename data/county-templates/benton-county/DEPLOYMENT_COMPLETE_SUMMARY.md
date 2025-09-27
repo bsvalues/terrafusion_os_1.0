@@ -54,7 +54,7 @@
 
 ### **Service Stack**
 ```
-🌐 API Layer (Port 8080)
+🌐 API Layer (Port \${{TF_ADMIN_PORT:-8080}})
 ├── FastAPI Service
 ├── Authentication & Authorization
 ├── Rate Limiting & Caching

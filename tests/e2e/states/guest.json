@@ -1,1 +1,9 @@
-{ "cookies": [], "origins": [{ "origin": "http://localhost:3000", "localStorage": [{ "name": "role", "value": "guest" }] }] }
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
+      "localStorage": [{ "name": "role", "value": "guest" }]
+    }
+  ]
+}

@@ -11,7 +11,7 @@ from datetime import datetime
 
 class TerraFusionDemo:
     def __init__(self):
-        self.api_base = "http://localhost:8080"
+        self.api_base = "http://localhost:\${{TF_ADMIN_PORT:-8080}}"
         
     def test_connection(self):
         """Test API connection"""

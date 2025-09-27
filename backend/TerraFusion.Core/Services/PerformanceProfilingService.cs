@@ -171,8 +171,8 @@ namespace TerraFusion.Core.Services
                 return new ProfileResult { 
                     OperationName = operationName, 
                     IsSuccess = true,
-                    ErrorMessage = null,
-                    Exception = null
+                    ErrorMessage = string.Empty,
+                    Exception = null!
                 };
             }
 
@@ -182,8 +182,8 @@ namespace TerraFusion.Core.Services
                 StartTime = DateTime.UtcNow,
                 ThreadId = Environment.CurrentManagedThreadId,
                 Context = context ?? new Dictionary<string, object>(),
-                ErrorMessage = null,
-                Exception = null
+                ErrorMessage = string.Empty,
+                Exception = null!
             };
 
             var stopwatch = Stopwatch.StartNew();
@@ -219,7 +219,7 @@ namespace TerraFusion.Core.Services
             return await ProfileAsync<object>(operationName, async () =>
             {
                 await operation();
-                return null;
+                return new ProfileResult { OperationName = "VoidOperation", IsSuccess = true, ErrorMessage = string.Empty, Exception = null! };
             }, context);
         }
 
@@ -289,59 +289,70 @@ namespace TerraFusion.Core.Services
 
         public async Task<List<PerformanceMetric>> GetMetricsAsync(string? operationName = null, TimeSpan? timeWindow = null)
         {
-            var cutoff = timeWindow.HasValue ? DateTime.UtcNow - timeWindow.Value : DateTime.MinValue;
-            
-            var filteredMetrics = _metrics
-                .Where(m => m.Timestamp >= cutoff)
-                .Where(m => string.IsNullOrEmpty(operationName) || m.OperationName == operationName)
-                .OrderByDescending(m => m.Timestamp)
-                .ToList();
+            return await Task.Run(() =>
+            {
+                var cutoff = timeWindow.HasValue ? DateTime.UtcNow - timeWindow.Value : DateTime.MinValue;
+                
+                var filteredMetrics = _metrics
+                    .Where(m => m.Timestamp >= cutoff)
+                    .Where(m => string.IsNullOrEmpty(operationName) || m.OperationName == operationName)
+                    .OrderByDescending(m => m.Timestamp)
+                    .ToList();
 
-            return filteredMetrics;
+                return filteredMetrics;
+            });
         }
 
         public async Task<PerformanceBaseline> GetBaselineAsync(string operationName)
         {
-            if (_baselines.TryGetValue(operationName, out var baseline))
+            return await Task.Run(() =>
             {
-                return baseline;
-            }
+                if (_baselines.TryGetValue(operationName, out var baseline))
+                {
+                    return baseline;
+                }
 
-            // Create a sensible default baseline to avoid null returns
-            var now = DateTime.UtcNow;
-            var defaultBaseline = new PerformanceBaseline
-            {
-                OperationName = operationName,
-                ExpectedDuration = TimeSpan.FromMilliseconds(100),
-                MaxAcceptableDuration = TimeSpan.FromMilliseconds(1000),
-                ExpectedMemoryUsage = 0,
-                ExpectedThroughput = 0,
-                CreatedAt = now,
-                LastUpdated = now
-            };
+                // Create a sensible default baseline to avoid null returns
+                var now = DateTime.UtcNow;
+                var defaultBaseline = new PerformanceBaseline
+                {
+                    OperationName = operationName,
+                    ExpectedDuration = TimeSpan.FromMilliseconds(100),
+                    MaxAcceptableDuration = TimeSpan.FromMilliseconds(1000),
+                    ExpectedMemoryUsage = 0,
+                    ExpectedThroughput = 0,
+                    CreatedAt = now,
+                    LastUpdated = now
+                };
 
-            _baselines[operationName] = defaultBaseline;
-            return defaultBaseline;
+                _baselines[operationName] = defaultBaseline;
+                return defaultBaseline;
+            });
         }
 
         public async Task SetBaselineAsync(string operationName, PerformanceBaseline baseline)
         {
-            baseline.LastUpdated = DateTime.UtcNow;
-            _baselines[operationName] = baseline;
-            
-            _logger.LogInformation("Updated performance baseline for operation {OperationName}", operationName);
+            await Task.Run(() =>
+            {
+                baseline.LastUpdated = DateTime.UtcNow;
+                _baselines[operationName] = baseline;
+                
+                _logger.LogInformation("Updated performance baseline for operation {OperationName}", operationName);
+            });
         }
 
         public async Task<List<PerformanceAnomaly>> DetectAnomaliesAsync(TimeSpan? timeWindow = null)
         {
-            var window = timeWindow ?? _anomalyDetectionWindow;
-            var cutoff = DateTime.UtcNow - window;
-            var anomalies = new List<PerformanceAnomaly>();
+            return await Task.Run(() =>
+            {
+                var window = timeWindow ?? _anomalyDetectionWindow;
+                var cutoff = DateTime.UtcNow - window;
+                var anomalies = new List<PerformanceAnomaly>();
 
-            var recentMetrics = _metrics
-                .Where(m => m.Timestamp >= cutoff)
-                .GroupBy(m => m.OperationName)
-                .ToList();
+                var recentMetrics = _metrics
+                    .Where(m => m.Timestamp >= cutoff)
+                    .GroupBy(m => m.OperationName)
+                    .ToList();
 
             foreach (var operationGroup in recentMetrics)
             {
@@ -429,33 +440,37 @@ namespace TerraFusion.Core.Services
                 }
             }
 
-            return anomalies.OrderByDescending(a => a.DeviationScore).ToList();
+                return anomalies.OrderByDescending(a => a.DeviationScore).ToList();
+            });
         }
 
         private async Task RecordMetricAsync(ProfileResult result)
         {
-            var metric = new PerformanceMetric
+            await Task.Run(() =>
             {
-                OperationName = result.OperationName,
-                Timestamp = result.StartTime,
-                Duration = result.Duration,
-                MemoryUsage = result.MemoryAfter,
-                CpuUsage = GetCurrentCpuUsage(),
-                ThreadCount = _currentProcess.Threads.Count,
-                Context = result.Context,
-                Status = result.IsSuccess ? "success" : "error"
-            };
+                var metric = new PerformanceMetric
+                {
+                    OperationName = result.OperationName,
+                    Timestamp = result.StartTime,
+                    Duration = result.Duration,
+                    MemoryUsage = result.MemoryAfter,
+                    CpuUsage = GetCurrentCpuUsage(),
+                    ThreadCount = _currentProcess.Threads.Count,
+                    Context = result.Context,
+                    Status = result.IsSuccess ? "success" : "error"
+                };
 
-            _metrics.Enqueue(metric);
+                _metrics.Enqueue(metric);
 
-            // Maintain retention limit
-            while (_metrics.Count > _maxMetricsRetention)
-            {
-                _metrics.TryDequeue(out _);
-            }
+                // Maintain retention limit
+                while (_metrics.Count > _maxMetricsRetention)
+                {
+                    _metrics.TryDequeue(out _);
+                }
 
-            _logger.LogDebug("Recorded performance metric for {OperationName}: {Duration}ms",
-                result.OperationName, result.Duration.TotalMilliseconds);
+                _logger.LogDebug("Recorded performance metric for {OperationName}: {Duration}ms",
+                    result.OperationName, result.Duration.TotalMilliseconds);
+            });
         }
 
         private double GetCurrentCpuUsage()
@@ -540,8 +555,8 @@ namespace TerraFusion.Core.Services
                     ThreadId = Environment.CurrentManagedThreadId,
                     Context = context ?? new Dictionary<string, object>(),
                     MemoryBefore = GC.GetTotalMemory(false),
-                    ErrorMessage = null,
-                    Exception = null
+                    ErrorMessage = string.Empty,
+                    Exception = null!
                 };
                 _stopwatch = Stopwatch.StartNew();
             }

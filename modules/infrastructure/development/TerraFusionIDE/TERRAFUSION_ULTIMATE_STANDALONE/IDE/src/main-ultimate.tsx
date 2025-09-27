@@ -18,14 +18,10 @@ console.log('🔌 Plugin Development: Government App Store ready...');
 console.log('🎯 Revenue Generation: $500M-$1B platform economy...');
 console.log('🚀 Terrafusion IDE ULTIMATE POWER: READY FOR LAUNCH!');
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-  <React.StrictMode>
-    <TerraFusionIDE_ULTIMATE_POWER />
-  </React.StrictMode>
+  <React.StrictMode><TerraFusionIDE_ULTIMATE_POWER /></React.StrictMode>
 );
 
 // Terrafusion Power Activation Complete

@@ -198,7 +198,7 @@ jobs:
       - name: Run integration tests
         env:
           ConnectionStrings__DefaultConnection: "Server=localhost;Port=5432;Database=test_db;User Id=test_user;Password=test_password;"
-          ConnectionStrings__Redis: "localhost:6379"
+          ConnectionStrings__Redis: "localhost:\${{TF_REDIS_PORT:-6379}}"
         run: |
           cd backend
           dotnet test TerraFusion.API.Tests --configuration Release --logger trx --results-directory TestResults/

@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tf-app-cert
+  namespace: terrafusion
+spec:
+  secretName: tf-app-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  dnsNames:
+    - app.terrafusion.gov
+    - api.terrafusion.gov
+    - "*.terrafusion.gov"
+  usages:
+    - digital signature
+    - key encipherment
+  duration: 2160h  # 90 days
+  renewBefore: 360h  # 15 days before expiry

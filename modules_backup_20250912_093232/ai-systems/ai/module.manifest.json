@@ -1,0 +1,17 @@
+{
+  "name": "ai",
+  "version": "1.0.0",
+  "description": "Core AI module for Terrafusion OS with Python, TypeScript, and configuration support",
+  "tier": "Tier 1 (Core Government)",
+  "category": "ai-core",
+  "author": "Terrafusion OS Team",
+  "itemCount": 4,
+  "migratedAt": "2025-08-31T00:00:00.000000Z",
+  "status": "active",
+  "languages": ["python", "typescript"],
+  "dependencies": [],
+  "entryPoints": {
+    "python": "main.py",
+    "typescript": "index.ts"
+  }
+}

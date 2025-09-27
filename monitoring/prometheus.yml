@@ -1,10 +1,61 @@
 global:
   scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
 
 scrape_configs:
-  - job_name: 'yakima-core'
+  # TerraFusion Services
+  - job_name: 'consul'
     static_configs:
-      - targets: ['core:8080']
-  - job_name: 'yakima-ui'
+      - targets: ['consul:8500']
+    metrics_path: '/v1/agent/metrics'
+    params:
+      format: ['prometheus']
+
+  - job_name: 'kong'
     static_configs:
-      - targets: ['ui:3000']
+      - targets: ['kong:8001']
+    metrics_path: '/metrics'
+
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15692']
+    metrics_path: '/metrics'
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+
+  - job_name: 'message-coordinator'
+    static_configs:
+      - targets: ['message-coordinator:${TF_DESKTOP_PORT:-3104}']
+    metrics_path: '/metrics'
+
+  - job_name: 'supreme-commander'
+    static_configs:
+      - targets: ['supreme-commander:4000']
+    metrics_path: '/metrics'
+
+  - job_name: 'progress-monitor'
+    static_configs:
+      - targets: ['progress-monitor:${TF_SHELL_PORT:-3103}']
+    metrics_path: '/metrics'
+
+  # System metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:\${{TF_PORT_9100:-9100}}']
+
+  # Kafka metrics (if JMX exporter is configured)
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka:9308']
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093

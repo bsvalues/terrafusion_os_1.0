@@ -120,7 +120,7 @@ scrape_configs:
   # TerraFusion Backend API metrics
   - job_name: 'terrafusion-backend'
     static_configs:
-      - targets: ['backend:5000']
+      - targets: ['backend:${TF_API_PORT:-5046}']
     metrics_path: '/metrics'
     scrape_interval: 30s
     scrape_timeout: 10s
@@ -177,7 +177,7 @@ scrape_configs:
   # Container metrics
   - job_name: 'cadvisor'
     static_configs:
-      - targets: ['cadvisor:8080']
+      - targets: ['cadvisor:${TF_STATIC_PORT:-8080}']
 
   # AI Swarm Performance Metrics (Quantum 379x optimization)
   - job_name: 'quantum-performance-metrics'
@@ -799,7 +799,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: terrafusion-cadvisor
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -883,7 +883,7 @@ services:
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
-      - '--web.external-url=http://localhost:9093'
+      - '--web.external-url=http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}'
 
 volumes:
   ai_swarm_metrics:
@@ -1181,12 +1181,12 @@ sleep 30
 # Check service health
 echo "🔍 Checking service health..."
 services=(
-    "http://localhost:5000/health|Backend API"
-    "http://localhost:3000|Frontend"
-    "http://localhost:8080/health|Claude-Flow MCP"
-    "http://localhost:9090|Prometheus"
-    "http://localhost:3002|Grafana"
-    "http://localhost:9091/health|AI Swarm Metrics"
+    "http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/health|Backend API"
+    "http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}|Frontend"
+    "http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/health|Claude-Flow MCP"
+    "http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}|Prometheus"
+    "http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}|Grafana"
+    "http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/health|AI Swarm Metrics"
 )
 
 for service in "${services[@]}"; do
@@ -1204,20 +1204,20 @@ echo ""
 echo "🎯 AI Swarm DevOps Monitoring Stack is ready!"
 echo ""
 echo "📊 Monitoring URLs:"
-echo "   Prometheus:     http://localhost:9090"
-echo "   Grafana:        http://localhost:3002 (admin/terrafusion_dev_2024)"
-echo "   AI Swarm Metrics: http://localhost:9091/metrics"
+echo "   Prometheus:     http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}"
+echo "   Grafana:        http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}} (admin/terrafusion_dev_2024)"
+echo "   AI Swarm Metrics: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/metrics"
 echo ""
 echo "🔧 Development URLs:"
-echo "   Backend API:    http://localhost:5000"
-echo "   Frontend:       http://localhost:3000"
-echo "   Claude-Flow:    http://localhost:8080"
+echo "   Backend API:    http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}"
+echo "   Frontend:       http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}"
+echo "   Claude-Flow:    http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}"
 echo ""
 echo "📈 Key Metrics:"
-echo "   - AI Swarm Health: http://localhost:9091/ai-swarm/metrics"
-echo "   - Harris PACS Integration: http://localhost:9093/harris/metrics"
-echo "   - DevOps Automation: http://localhost:9094/agents/metrics"
-echo "   - Quantum Performance: http://localhost:9095/quantum/metrics"
+echo "   - AI Swarm Health: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/ai-swarm/metrics"
+echo "   - Harris PACS Integration: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/harris/metrics"
+echo "   - DevOps Automation: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/agents/metrics"
+echo "   - Quantum Performance: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/quantum/metrics"
 echo ""
 EOF
 
@@ -1277,13 +1277,13 @@ This monitoring stack provides comprehensive observability for:
    ```
 
 2. **Access monitoring dashboards:**
-   - Grafana: http://localhost:3002 (admin/terrafusion_dev_2024)
-   - Prometheus: http://localhost:9090
+   - Grafana: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}} (admin/terrafusion_dev_2024)
+   - Prometheus: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}
 
 3. **View key metrics:**
-   - AI Swarm Health: http://localhost:9091/metrics
-   - DevOps Tasks: http://localhost:9094/agents/metrics
-   - Harris PACS: http://localhost:9093/harris/metrics
+   - AI Swarm Health: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/metrics
+   - DevOps Tasks: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/agents/metrics
+   - Harris PACS: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/harris/metrics
 
 ## Dashboards
 
@@ -1377,13 +1377,13 @@ QUANTUM_PERFORMANCE_TARGET=379
 ### Health Checks
 ```bash
 # Check AI Swarm health
-curl http://localhost:9091/health
+curl http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/health
 
 # Check metrics export
-curl http://localhost:9091/metrics
+curl http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/metrics
 
 # Check Prometheus targets
-curl http://localhost:9090/api/v1/targets
+curl http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/api/v1/targets
 ```
 
 ## Development
@@ -1413,7 +1413,7 @@ For production deployment:
 
 - **Documentation**: https://docs.terrafusion.gov/monitoring
 - **Runbooks**: https://docs.terrafusion.gov/runbooks/
-- **Health Dashboard**: http://localhost:3002/d/ai-swarm-health
+- **Health Dashboard**: http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/d/ai-swarm-health
 EOF
 
     log_success "Integration documentation created"
@@ -1440,12 +1440,12 @@ main() {
     echo "   ${GREEN}./scripts/start-ai-swarm-monitoring.sh${NC}"
     echo ""
     echo "2. Access monitoring dashboards:"
-    echo "   - Grafana: ${BLUE}http://localhost:3002${NC} (admin/terrafusion_dev_2024)"
-    echo "   - Prometheus: ${BLUE}http://localhost:9090${NC}"
+    echo "   - Grafana: ${BLUE}http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}${NC} (admin/terrafusion_dev_2024)"
+    echo "   - Prometheus: ${BLUE}http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}${NC}"
     echo ""
     echo "3. View AI Swarm metrics:"
-    echo "   - Health: ${BLUE}http://localhost:9091/health${NC}"  
-    echo "   - Metrics: ${BLUE}http://localhost:9091/metrics${NC}"
+    echo "   - Health: ${BLUE}http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/health${NC}"  
+    echo "   - Metrics: ${BLUE}http://localhost:\${{TF_ALERTMANAGER_PORT:-9093}}/metrics${NC}"
     echo ""
     echo "4. Key Performance Targets:"
     echo "   - AI Swarm Health: ${GREEN}>90%${NC}"

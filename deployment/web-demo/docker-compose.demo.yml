@@ -11,16 +11,16 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-demo-api-server
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
     environment:
       - NODE_ENV=production
-      - PORT=8080
+      - PORT=\${{TF_ADMIN_PORT:-8080}}
     volumes:
       - ./data:/app/data:ro
     networks:
       - terrafusion-demo
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -68,7 +68,7 @@ services:
       - "3000:80"
     environment:
       - NODE_ENV=production
-      - API_BASE_URL=http://demo-api-server:8080
+      - API_BASE_URL=http://demo-api-server:${TF_STATIC_PORT:-8080}
     depends_on:
       - demo-api-server
     networks:
@@ -104,7 +104,7 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-demo-ai-swarm
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
     environment:
       - NODE_ENV=production
       - AI_SWARM_SIZE=1008
@@ -143,12 +143,12 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-demo-dashboard
     ports:
-      - "5050:5000"
+      - "5050:${TF_API_PORT:-5046}"
     environment:
       - FLASK_ENV=production
       - DEMO_MODE=true
       - API_BASE_URL=http://terrafusion-api:80
-      - AI_SWARM_URL=http://ai-swarm-service:8080
+      - AI_SWARM_URL=http://ai-swarm-service:${TF_STATIC_PORT:-8080}
       - QUANTUM_ENGINE_URL=http://quantum-engine:9090
     depends_on:
       - terrafusion-api
@@ -236,6 +236,6 @@ x-demo-info:
   urls:
     main_demo: "http://localhost"
     api_health: "http://localhost/api/health"
-    operations_dashboard: "http://localhost:5050"
-    ai_swarm_status: "http://localhost:8080/status"
-    quantum_metrics: "http://localhost:9090/metrics"
+    operations_dashboard: "http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+    ai_swarm_status: "http://localhost:\${{TF_ADMIN_PORT:-8080}}/status"
+    quantum_metrics: "http://localhost:\${{TF_ADMIN_PORT:-8080}}/metrics"

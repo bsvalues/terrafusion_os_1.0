@@ -6,12 +6,12 @@
   "scripts": {
     "start": "python index.py",
     "test": "python test.py",
-    "dev": "python -m uvicorn index:app --reload --host 0.0.0.0 --port 8000"
+    "dev": "python -m uvicorn index:app --reload --host 0.0.0.0 --port ${TF_DOCS_PORT:-8000}"
   },
   "keywords": [
-    "terrafusion", 
-    "government-edition", 
-    "government-ai", 
+    "terrafusion",
+    "government-edition",
+    "government-ai",
     "administrative-control",
     "fisma-compliance",
     "nist-framework",
@@ -47,7 +47,7 @@
     "administrative_control": true,
     "capabilities": [
       "government-operations",
-      "administrative-control", 
+      "administrative-control",
       "fisma-compliance",
       "nist-framework",
       "security-clearance",

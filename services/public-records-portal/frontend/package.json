@@ -1,0 +1,119 @@
+{
+  "name": "@terrafusion/public-records-portal",
+  "version": "1.0.0",
+  "description": "TerraFusion Public Records Portal - FOIA Compliance and Public Transparency Interface",
+  "private": true,
+  "type": "module",
+  "keywords": [
+    "TerraFusion",
+    "Public Records",
+    "FOIA",
+    "Government Transparency",
+    "Records Management",
+    "Citizen Access"
+  ],
+  "author": "TerraFusion Technologies",
+  "license": "PROPRIETARY",
+  "homepage": "http://localhost:${TF_PORT_7000:-7000}",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terrafusion/terrafusion-os.git",
+    "directory": "services/public-records-portal/frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/terrafusion/terrafusion-os/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "dev": "vite --port ${TF_PORT_7000:-7000} --host",
+    "build": "vite build",
+    "preview": "vite preview --port ${TF_PORT_7000:-7000} --host",
+    "serve": "vite preview --port ${TF_PORT_7000:-7000}",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,html}\"",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "build:analyze": "npm run build && npx vite-bundle-analyzer dist",
+    "clean": "rm -rf dist node_modules/.vite",
+    "start:prod": "npm run build && npm run preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.26.1",
+    "socket.io-client": "^4.7.5",
+    "date-fns": "^2.30.0",
+    "react-hook-form": "^7.47.0",
+    "react-query": "^3.39.3",
+    "axios": "^1.6.2",
+    "react-pdf": "^7.5.1",
+    "file-saver": "^2.0.5",
+    "react-dropzone": "^14.2.3",
+    "react-select": "^5.8.0",
+    "react-datepicker": "^4.21.0",
+    "react-toastify": "^9.1.3",
+    "framer-motion": "^10.16.5",
+    "lucide-react": "^0.294.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@types/file-saver": "^2.0.7",
+    "@types/react-datepicker": "^4.19.3",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vitest": "^1.0.4",
+    "@vitest/ui": "^1.0.4",
+    "jsdom": "^23.0.1",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/user-event": "^14.5.1",
+    "vite-bundle-analyzer": "^0.7.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "http://localhost:${TF_PORT_7000:-7000}",
+  "terrafusion": {
+    "service": "public-records-portal",
+    "port": ${TF_PORT_7000:-7000},
+    "type": "citizen-facing",
+    "category": "transparency",
+    "branding": "Government. Transcended.",
+    "compliance": ["FOIA", "Open Government", "Public Records Act"],
+    "security": ["citizen-access", "document-protection", "audit-trail"],
+    "features": [
+      "records-search",
+      "foia-requests",
+      "document-viewing",
+      "request-tracking",
+      "public-transparency",
+      "accessibility-compliance"
+    ]
+  }
+}

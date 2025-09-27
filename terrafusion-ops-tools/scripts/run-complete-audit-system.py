@@ -327,9 +327,9 @@ class TerraFusionAuditSystemLauncher:
         component = next((c for c in self.components if c['script'] == 'audit-api-server.py'), None)
         
         if component:
-            print("🚀 Starting API server on http://localhost:8080")
-            print("📚 API Documentation: http://localhost:8080/docs")
-            print("🔌 WebSocket endpoint: ws://localhost:8765")
+            print("🚀 Starting API server on http://localhost:\${{TF_ADMIN_PORT:-8080}}")
+            print("📚 API Documentation: http://localhost:\${{TF_ADMIN_PORT:-8080}}/docs")
+            print("🔌 WebSocket endpoint: ws://localhost:\${{TF_ADMIN_PORT:-8080}}")
             print("\\nPress Ctrl+C to stop the server...")
             
             await self.run_component(component)

@@ -10,7 +10,7 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 # Configuration
 AI_SWARM_SIZE=1008
-DEVOPS_ORCHESTRATOR_PORT=9000
+DEVOPS_ORCHESTRATOR_PORT=\${{TF_PORT_9000:-9000}}
 CLAUDE_FLOW_INTEGRATION=true
 HARRIS_PACS_VALIDATION=true
 QUANTUM_OPTIMIZATION=true
@@ -70,25 +70,25 @@ check_dependencies() {
     log_header "Checking Dependencies"
     
     # Check if backend services are running
-    if ! curl -f -s http://localhost:5000/health > /dev/null 2>&1; then
+    if ! curl -f -s http://localhost:${TF_STATIC_PORT:-8080}/health > /dev/null 2>&1; then
         log_error "Backend API is not running. Please start the development stack first:"
         log_info "  docker-compose -f docker-compose.dev.yml up -d"
         exit 1
     fi
     
     # Check if Claude-Flow is running
-    if ! curl -f -s http://localhost:8080/health > /dev/null 2>&1; then
+    if ! curl -f -s http://localhost:${TF_STATIC_PORT:-8080}/health > /dev/null 2>&1; then
         log_warn "Claude-Flow MCP service not detected. Some features may be limited."
         CLAUDE_FLOW_INTEGRATION=false
     fi
     
     # Check if PostgreSQL is accessible
-    if ! curl -f -s http://localhost:5432 > /dev/null 2>&1; then
+    if ! curl -f -s http://localhost:${TF_STATIC_PORT:-8080} > /dev/null 2>&1; then
         log_warn "PostgreSQL connection check failed. Database features may be limited."
     fi
     
     # Check if Redis is accessible  
-    if ! curl -f -s http://localhost:6379 > /dev/null 2>&1; then
+    if ! curl -f -s http://localhost:${TF_STATIC_PORT:-8080} > /dev/null 2>&1; then
         log_warn "Redis connection check failed. Caching features may be limited."
     fi
     
@@ -164,7 +164,7 @@ wait_for_services() {
         
         # Check Claude-Flow MCP (if enabled)
         if [ "$CLAUDE_FLOW_INTEGRATION" = true ]; then
-            if ! curl -f -s http://localhost:8080/devops/health > /dev/null 2>&1; then
+            if ! curl -f -s http://localhost:${TF_STATIC_PORT:-8080}/devops/health > /dev/null 2>&1; then
                 all_healthy=false
                 log_info "  Claude-Flow MCP: Starting..."
             else
@@ -241,16 +241,16 @@ show_status() {
     log_header "AI Swarm DevOps System Status"
     
     echo "🎯 Core Services:"
-    if curl -f -s http://localhost:5000/health > /dev/null 2>&1; then
-        echo "  ✅ Backend API (Port 5000): Healthy"
+    if curl -f -s http://localhost:${TF_STATIC_PORT:-8080}/health > /dev/null 2>&1; then
+        echo "  ✅ Backend API (Port \${{TF_API_PORT:-5000}}): Healthy"
     else
-        echo "  ❌ Backend API (Port 5000): Unavailable"
+        echo "  ❌ Backend API (Port \${{TF_API_PORT:-5000}}): Unavailable"
     fi
     
-    if curl -f -s http://localhost:3000 > /dev/null 2>&1; then
-        echo "  ✅ Frontend (Port 3000): Healthy"
+    if curl -f -s http://localhost:${TF_STATIC_PORT:-8080} > /dev/null 2>&1; then
+        echo "  ✅ Frontend (Port \${{TF_API_PORT:-5000}}): Healthy"
     else
-        echo "  ❌ Frontend (Port 3000): Unavailable"
+        echo "  ❌ Frontend (Port \${{TF_API_PORT:-5000}}): Unavailable"
     fi
     
     echo ""
@@ -262,10 +262,10 @@ show_status() {
     fi
     
     if [ "$CLAUDE_FLOW_INTEGRATION" = true ]; then
-        if curl -f -s http://localhost:8080/devops/health > /dev/null 2>&1; then
-            echo "  ✅ Claude-Flow MCP (Port 8080): 87 tools available"
+        if curl -f -s http://localhost:${TF_STATIC_PORT:-8080}/devops/health > /dev/null 2>&1; then
+            echo "  ✅ Claude-Flow MCP (Port \${{TF_API_PORT:-5000}}): 87 tools available"
         else
-            echo "  ❌ Claude-Flow MCP (Port 8080): Unavailable"
+            echo "  ❌ Claude-Flow MCP (Port \${{TF_API_PORT:-5000}}): Unavailable"
         fi
     fi
     
@@ -275,16 +275,16 @@ show_status() {
     
     echo ""
     echo "🔍 Monitoring:"
-    if curl -f -s http://localhost:9090 > /dev/null 2>&1; then
-        echo "  ✅ Prometheus (Port 9090): Collecting metrics"
+    if curl -f -s http://localhost:${TF_STATIC_PORT:-8080} > /dev/null 2>&1; then
+        echo "  ✅ Prometheus (Port \${{TF_API_PORT:-5000}}): Collecting metrics"
     else
-        echo "  ⚠️ Prometheus (Port 9090): Not configured"
+        echo "  ⚠️ Prometheus (Port \${{TF_API_PORT:-5000}}): Not configured"
     fi
     
-    if curl -f -s http://localhost:3002 > /dev/null 2>&1; then
-        echo "  ✅ Grafana (Port 3002): Dashboards available"
+    if curl -f -s http://localhost:${TF_STATIC_PORT:-8080} > /dev/null 2>&1; then
+        echo "  ✅ Grafana (Port \${{TF_API_PORT:-5000}}): Dashboards available"
     else
-        echo "  ⚠️ Grafana (Port 3002): Not configured"
+        echo "  ⚠️ Grafana (Port \${{TF_API_PORT:-5000}}): Not configured"
     fi
     
     echo ""
@@ -300,7 +300,7 @@ show_status() {
     echo "  DevOps Tasks: http://localhost:${DEVOPS_ORCHESTRATOR_PORT}/api/tasks"
     echo "  Harris PACS:  http://localhost:${DEVOPS_ORCHESTRATOR_PORT}/api/harris-pacs/validate"
     echo "  System Status: http://localhost:${DEVOPS_ORCHESTRATOR_PORT}/status"
-    echo "  Metrics:      http://localhost:9091/metrics"
+    echo "  Metrics:      http://localhost:${TF_STATIC_PORT:-8080}/metrics"
 }
 
 # Cleanup function

@@ -1,53 +1,60 @@
 # .ai Directory - Claude Development Guide
 
 ## Overview
-The `.ai` directory contains the core AI infrastructure for TerraFusion OS, including Claude-Flow v2.0.0 integration, AI agent management, and government-specific AI workflows. This represents the most advanced AI capabilities within the platform, designed for production government operations.
+
+The `.ai` directory contains the core AI infrastructure for TerraFusion OS,
+including Claude-Flow v2.0.0 integration, AI agent management, and
+government-specific AI workflows. This represents the most advanced AI
+capabilities within the platform, designed for production government operations.
 
 ## Architecture Deep Dive
 
 ### Claude-Flow v2.0.0 Integration Platform
 
 **Location**: `.ai/claude-flow/`
+
 - **Core Integration**: Advanced AI workflow orchestration
 - **MCP Support**: Model Context Protocol implementation
 - **DevOps Automation**: AI-powered deployment and operations
 - **Government Workflows**: Property assessment and compliance automation
 
 #### Core Integration Service
+
 ```typescript
 // claude-flow/core/ClaudeFlowIntegration.ts
 export class ClaudeFlowIntegration {
-  private mcpClient: MCPClient
-  private workflowEngine: WorkflowEngine
-  private governmentConnectors: GovernmentConnectors
-  
+  private mcpClient: MCPClient;
+  private workflowEngine: WorkflowEngine;
+  private governmentConnectors: GovernmentConnectors;
+
   async executeGovernmentWorkflow(
     workflowId: string,
     context: GovernmentContext
   ): Promise<WorkflowResult> {
     // 1. Validate government compliance requirements
-    await this.validateCompliance(context)
-    
+    await this.validateCompliance(context);
+
     // 2. Initialize MCP tools for government operations
-    const tools = await this.mcpClient.getGovernmentTools()
-    
+    const tools = await this.mcpClient.getGovernmentTools();
+
     // 3. Execute workflow with Claude AI
     const result = await this.workflowEngine.execute({
       workflowId,
       context,
       tools,
-      auditTrail: true
-    })
-    
+      auditTrail: true,
+    });
+
     // 4. Log for government audit requirements
-    await this.auditLogger.logWorkflowExecution(result)
-    
-    return result
+    await this.auditLogger.logWorkflowExecution(result);
+
+    return result;
   }
 }
 ```
 
 #### DevOps Automation Service
+
 ```typescript
 // claude-flow/devops/ClaudeFlowMCPDevOpsService.ts
 export class ClaudeFlowMCPDevOpsService {
@@ -56,28 +63,24 @@ export class ClaudeFlowMCPDevOpsService {
     configuration: GovernmentConfig
   ): Promise<DeploymentResult> {
     // 1. Validate FISMA compliance requirements
-    await this.validateFISMACompliance(configuration)
-    
+    await this.validateFISMACompliance(configuration);
+
     // 2. Deploy AI agents for county operations
     const agents = await this.deployAIAgents({
       county,
-      agentTypes: [
-        'property_assessor',
-        'revenue_hunter', 
-        'compliance_monitor'
-      ]
-    })
-    
+      agentTypes: ['property_assessor', 'revenue_hunter', 'compliance_monitor'],
+    });
+
     // 3. Setup legacy system integrations
     await this.setupLegacyIntegrations({
       harrisPagess: configuration.harrisPagessVersion,
-      tylerTechnologies: configuration.tylerVersion
-    })
-    
+      tylerTechnologies: configuration.tylerVersion,
+    });
+
     // 4. Initialize monitoring and audit systems
-    await this.initializeMonitoring(county)
-    
-    return { status: 'deployed', county, agents: agents.length }
+    await this.initializeMonitoring(county);
+
+    return { status: 'deployed', county, agents: agents.length };
   }
 }
 ```
@@ -85,6 +88,7 @@ export class ClaudeFlowMCPDevOpsService {
 ### AI Agent Management System
 
 **File**: `.ai/core/AIAgentManager.ts`
+
 - **Agent Lifecycle**: Complete agent deployment and management
 - **Performance Monitoring**: Real-time agent health tracking
 - **Task Distribution**: Intelligent workload balancing
@@ -92,52 +96,55 @@ export class ClaudeFlowMCPDevOpsService {
 
 ```typescript
 interface AIAgent {
-  id: string
-  type: AgentType
-  capabilities: string[]
-  county: string
-  status: AgentStatus
-  performanceMetrics: PerformanceMetrics
-  governmentIntegrations: GovernmentIntegration[]
+  id: string;
+  type: AgentType;
+  capabilities: string[];
+  county: string;
+  status: AgentStatus;
+  performanceMetrics: PerformanceMetrics;
+  governmentIntegrations: GovernmentIntegration[];
 }
 
 export class AIAgentManager {
-  private agents: Map<string, AIAgent> = new Map()
-  private taskQueue: TaskQueue
-  private performanceMonitor: PerformanceMonitor
-  
+  private agents: Map<string, AIAgent> = new Map();
+  private taskQueue: TaskQueue;
+  private performanceMonitor: PerformanceMonitor;
+
   async deployAgentSwarm(config: SwarmConfig): Promise<SwarmDeployment> {
     // Deploy 1,008 agents across government operations
     const agentDistribution = {
-      property_assessor: 300,    // Property assessment and valuation
-      revenue_hunter: 200,       // Tax optimization and revenue discovery  
-      data_processor: 200,       // Harris PACS and legacy integration
-      compliance_monitor: 150,   // Regulatory compliance and audit
-      analyst: 100,              // Analytics and reporting
-      coordinator: 58            // Agent coordination and workflow
-    }
-    
+      property_assessor: 300, // Property assessment and valuation
+      revenue_hunter: 200, // Tax optimization and revenue discovery
+      data_processor: 200, // Harris PACS and legacy integration
+      compliance_monitor: 150, // Regulatory compliance and audit
+      analyst: 100, // Analytics and reporting
+      coordinator: 58, // Agent coordination and workflow
+    };
+
     for (const [agentType, count] of Object.entries(agentDistribution)) {
-      await this.deployAgentType(agentType, count, config)
+      await this.deployAgentType(agentType, count, config);
     }
-    
+
     return {
       totalAgents: 50000,
       county: config.county,
-      status: 'operational'
-    }
+      status: 'operational',
+    };
   }
-  
+
   async routeTaskToAgent(task: GovernmentTask): Promise<TaskResult> {
     // Intelligent agent selection based on capabilities and performance
-    const suitableAgents = this.agents.values().filter(agent =>
-      agent.capabilities.includes(task.type) &&
-      agent.status === 'available' &&
-      agent.county === task.county
-    )
-    
-    const selectedAgent = this.selectBestPerformingAgent(suitableAgents)
-    return await this.executeTask(selectedAgent, task)
+    const suitableAgents = this.agents
+      .values()
+      .filter(
+        agent =>
+          agent.capabilities.includes(task.type) &&
+          agent.status === 'available' &&
+          agent.county === task.county
+      );
+
+    const selectedAgent = this.selectBestPerformingAgent(suitableAgents);
+    return await this.executeTask(selectedAgent, task);
   }
 }
 ```
@@ -145,6 +152,7 @@ export class AIAgentManager {
 ### AI Model Hub
 
 **File**: `.ai/core/AIModelHub.ts`
+
 - **Multi-Provider Integration**: Claude, GPT-4, Llama, Gemini
 - **Government Models**: Custom models for public sector operations
 - **Cost Optimization**: Intelligent routing based on performance/cost
@@ -152,54 +160,54 @@ export class AIAgentManager {
 
 ```typescript
 interface AIModelProvider {
-  provider: 'claude' | 'openai' | 'google' | 'huggingface' | 'custom'
-  models: AIModel[]
-  governmentCompliance: ComplianceLevel
-  costPerInference: number
-  averageResponseTime: number
+  provider: 'claude' | 'openai' | 'google' | 'huggingface' | 'custom';
+  models: AIModel[];
+  governmentCompliance: ComplianceLevel;
+  costPerInference: number;
+  averageResponseTime: number;
 }
 
 export class AIModelHub {
-  private providers: Map<string, AIModelProvider> = new Map()
-  private modelRegistry: ModelRegistry
-  private costOptimizer: CostOptimizer
-  
+  private providers: Map<string, AIModelProvider> = new Map();
+  private modelRegistry: ModelRegistry;
+  private costOptimizer: CostOptimizer;
+
   async selectOptimalModel(
     task: AITask,
     constraints: GovernmentConstraints
   ): Promise<ModelSelection> {
     // 1. Filter models by government compliance requirements
-    const compliantModels = await this.filterByCompliance(constraints)
-    
+    const compliantModels = await this.filterByCompliance(constraints);
+
     // 2. Optimize for accuracy, cost, and speed
     const optimizedSelection = await this.costOptimizer.optimize({
       models: compliantModels,
       task,
       budgetConstraints: constraints.budget,
-      accuracyRequirements: constraints.accuracy
-    })
-    
-    return optimizedSelection
+      accuracyRequirements: constraints.accuracy,
+    });
+
+    return optimizedSelection;
   }
-  
+
   async executeInference(
     modelId: string,
     input: GovernmentData,
     auditContext: AuditContext
   ): Promise<AIInferenceResult> {
     // Execute with complete audit trail for government compliance
-    const result = await this.modelRegistry.get(modelId).infer(input)
-    
+    const result = await this.modelRegistry.get(modelId).infer(input);
+
     await this.auditLogger.logInference({
       modelId,
       input: this.sanitizeForAudit(input),
       result: this.sanitizeForAudit(result),
       auditContext,
       timestamp: new Date(),
-      governmentCompliance: true
-    })
-    
-    return result
+      governmentCompliance: true,
+    });
+
+    return result;
   }
 }
 ```
@@ -209,74 +217,76 @@ export class AIModelHub {
 ### Government Workflow Implementation
 
 #### Property Assessment Workflow
+
 ```typescript
 // Example: Automated property assessment workflow
 export class PropertyAssessmentWorkflow {
   async executeAssessment(parcel: PropertyParcel): Promise<AssessmentResult> {
     // 1. Data validation and compliance checking
-    await this.validateParcelData(parcel)
-    
+    await this.validateParcelData(parcel);
+
     // 2. AI-powered market analysis
     const marketAnalysis = await this.aiModelHub.execute('market_analysis', {
       parcel,
       comparableProperties: await this.getComparables(parcel),
-      marketTrends: await this.getMarketTrends(parcel.location)
-    })
-    
+      marketTrends: await this.getMarketTrends(parcel.location),
+    });
+
     // 3. Compliance validation
     const complianceCheck = await this.validateAssessmentCompliance(
       marketAnalysis,
       parcel.county
-    )
-    
+    );
+
     // 4. Generate audit trail
     const auditTrail = await this.generateAuditTrail({
       parcel,
       marketAnalysis,
       complianceCheck,
-      aiModelsUsed: ['market_analysis', 'compliance_validator']
-    })
-    
+      aiModelsUsed: ['market_analysis', 'compliance_validator'],
+    });
+
     return {
       assessedValue: marketAnalysis.value,
       confidence: marketAnalysis.confidence,
       compliance: complianceCheck,
-      auditTrail
-    }
+      auditTrail,
+    };
   }
 }
 ```
 
 #### Revenue Optimization Workflow
+
 ```typescript
 export class RevenueOptimizationWorkflow {
   async identifyRevenueOpportunities(
     county: string
   ): Promise<RevenueOpportunities> {
     // 1. Analyze current tax rolls and assessments
-    const currentAssessments = await this.getCountyAssessments(county)
-    
-    // 2. AI analysis for underassessed properties  
+    const currentAssessments = await this.getCountyAssessments(county);
+
+    // 2. AI analysis for underassessed properties
     const underassessedProperties = await this.aiModelHub.execute(
       'revenue_hunter_analysis',
       {
         assessments: currentAssessments,
         marketData: await this.getMarketData(county),
-        historicalTrends: await this.getHistoricalTrends(county)
+        historicalTrends: await this.getHistoricalTrends(county),
       }
-    )
-    
+    );
+
     // 3. Calculate revenue potential
     const revenueProjections = await this.calculateRevenueImpact(
       underassessedProperties
-    )
-    
+    );
+
     return {
       opportunities: underassessedProperties,
       projectedRevenue: revenueProjections,
       confidence: this.calculateConfidence(revenueProjections),
-      auditTrail: await this.generateRevenueAuditTrail()
-    }
+      auditTrail: await this.generateRevenueAuditTrail(),
+    };
   }
 }
 ```
@@ -284,6 +294,7 @@ export class RevenueOptimizationWorkflow {
 ### Claude-Flow Configuration
 
 #### MCP Server Configuration
+
 ```json
 // claude-flow/config/mcp-servers.json
 {
@@ -293,7 +304,7 @@ export class RevenueOptimizationWorkflow {
       "args": ["dist/government-mcp-server.js"],
       "capabilities": [
         "property_assessment",
-        "revenue_optimization", 
+        "revenue_optimization",
         "compliance_validation",
         "harris_pacs_integration"
       ],
@@ -306,7 +317,7 @@ export class RevenueOptimizationWorkflow {
       "auditLogging": true
     },
     "ai-swarm-coordinator": {
-      "command": "python", 
+      "command": "python",
       "args": ["swarm/orchestrator.py"],
       "capabilities": [
         "agent_management",
@@ -321,6 +332,7 @@ export class RevenueOptimizationWorkflow {
 ```
 
 #### Claude-Flow MCP Integration
+
 ```json
 // mcp/claude-flow-mcp-config.json
 {
@@ -361,49 +373,51 @@ export class RevenueOptimizationWorkflow {
 ## Integration Patterns
 
 ### Legacy System Bridges
+
 ```typescript
 // Government system integration patterns
 export class GovernmentIntegrationBridge {
-  private harrisPagessClient: HarrisPagessClient
-  private tylerClient: TylerTechnologiesClient
-  private aumentumClient: AumentumClient
-  
+  private harrisPagessClient: HarrisPagessClient;
+  private tylerClient: TylerTechnologiesClient;
+  private aumentumClient: AumentumClient;
+
   async syncPropertyData(county: string): Promise<SyncResult> {
     // 1. Harris PACS property data synchronization
     const properties = await this.harrisPagessClient.getProperties({
       county,
-      lastSync: await this.getLastSyncTimestamp(county)
-    })
-    
+      lastSync: await this.getLastSyncTimestamp(county),
+    });
+
     // 2. AI-powered data validation and enhancement
     const enhancedProperties = await this.aiModelHub.execute(
       'data_enhancement',
       { properties, county }
-    )
-    
+    );
+
     // 3. Tyler Technologies ERP integration
     await this.tylerClient.updateAssessments({
       county,
-      properties: enhancedProperties
-    })
-    
+      properties: enhancedProperties,
+    });
+
     // 4. Audit trail generation
     await this.generateSyncAuditTrail({
       county,
       propertiesProcessed: properties.length,
-      enhancementsApplied: enhancedProperties.enhancements.length
-    })
-    
+      enhancementsApplied: enhancedProperties.enhancements.length,
+    });
+
     return {
       status: 'completed',
       propertiesSync: properties.length,
-      county
-    }
+      county,
+    };
   }
 }
 ```
 
 ### AI Workflow Execution
+
 ```typescript
 export class AIWorkflowExecutor {
   async executeGovernmentWorkflow(
@@ -411,23 +425,25 @@ export class AIWorkflowExecutor {
     context: GovernmentContext
   ): Promise<WorkflowExecutionResult> {
     // 1. Validate government compliance and permissions
-    await this.validateGovernmentAccess(context)
-    
+    await this.validateGovernmentAccess(context);
+
     // 2. Initialize required AI agents
-    const agents = await this.agentManager.getAgentsForWorkflow(workflowType)
-    
+    const agents = await this.agentManager.getAgentsForWorkflow(workflowType);
+
     // 3. Execute workflow with Claude-Flow orchestration
     const result = await this.claudeFlowIntegration.executeWorkflow({
       type: workflowType,
       agents,
       context,
-      complianceRequirements: await this.getComplianceRequirements(context.county)
-    })
-    
+      complianceRequirements: await this.getComplianceRequirements(
+        context.county
+      ),
+    });
+
     // 4. Generate government audit documentation
-    await this.generateGovernmentAuditReport(result)
-    
-    return result
+    await this.generateGovernmentAuditReport(result);
+
+    return result;
   }
 }
 ```
@@ -435,6 +451,7 @@ export class AIWorkflowExecutor {
 ## Development Environment
 
 ### Setup and Configuration
+
 ```bash
 # Initialize Claude-Flow development environment
 cd .ai/claude-flow
@@ -453,31 +470,33 @@ npm run dev
 ```
 
 ### TypeScript Development
+
 ```typescript
 // Development configuration for government AI workflows
 export interface DevelopmentConfig {
-  environment: 'development' | 'staging' | 'production'
-  governmentMode: boolean
+  environment: 'development' | 'staging' | 'production';
+  governmentMode: boolean;
   aiModels: {
-    claude: ClaudeConfig
-    openai: OpenAIConfig
-    customModels: CustomModelConfig[]
-  }
+    claude: ClaudeConfig;
+    openai: OpenAIConfig;
+    customModels: CustomModelConfig[];
+  };
   compliance: {
-    fismaLevel: 'LOW' | 'MODERATE' | 'HIGH'
-    auditLogging: boolean
-    dataRetention: string
-  }
+    fismaLevel: 'LOW' | 'MODERATE' | 'HIGH';
+    auditLogging: boolean;
+    dataRetention: string;
+  };
   integration: {
-    harrisPagess: HarrisPagessConfig
-    tylerTechnologies: TylerConfig
-  }
+    harrisPagess: HarrisPagessConfig;
+    tylerTechnologies: TylerConfig;
+  };
 }
 ```
 
 ## Testing and Quality Assurance
 
 ### AI Workflow Testing
+
 ```bash
 # Test government workflow execution
 npm run test:workflows
@@ -493,74 +512,79 @@ npm run test:performance
 ```
 
 ### Integration Testing
+
 ```typescript
 describe('Government AI Workflows', () => {
   it('should execute property assessment workflow', async () => {
-    const workflow = new PropertyAssessmentWorkflow()
-    const result = await workflow.executeAssessment(testParcel)
-    
-    expect(result.assessedValue).toBeGreaterThan(0)
-    expect(result.compliance.fismaCompliant).toBe(true)
-    expect(result.auditTrail).toBeDefined()
-  })
-  
+    const workflow = new PropertyAssessmentWorkflow();
+    const result = await workflow.executeAssessment(testParcel);
+
+    expect(result.assessedValue).toBeGreaterThan(0);
+    expect(result.compliance.fismaCompliant).toBe(true);
+    expect(result.auditTrail).toBeDefined();
+  });
+
   it('should identify revenue opportunities', async () => {
-    const workflow = new RevenueOptimizationWorkflow()
-    const opportunities = await workflow.identifyRevenueOpportunities('benton')
-    
-    expect(opportunities.projectedRevenue).toBeGreaterThan(0)
-    expect(opportunities.confidence).toBeGreaterThan(0.85)
-  })
-})
+    const workflow = new RevenueOptimizationWorkflow();
+    const opportunities = await workflow.identifyRevenueOpportunities('benton');
+
+    expect(opportunities.projectedRevenue).toBeGreaterThan(0);
+    expect(opportunities.confidence).toBeGreaterThan(0.85);
+  });
+});
 ```
 
 ## Performance and Monitoring
 
 ### AI System Metrics
+
 ```typescript
 interface AISystemMetrics {
   agentHealth: {
-    totalAgents: 50000
-    activeAgents: number
-    errorAgents: number
-    averagePerformance: number
-  }
+    totalAgents: 50000;
+    activeAgents: number;
+    errorAgents: number;
+    averagePerformance: number;
+  };
   workflowPerformance: {
-    executionsPerHour: number
-    averageExecutionTime: number
-    successRate: number
-    governmentComplianceRate: number
-  }
+    executionsPerHour: number;
+    averageExecutionTime: number;
+    successRate: number;
+    governmentComplianceRate: number;
+  };
   resourceUtilization: {
-    cpuUsage: number
-    memoryUsage: number
-    gpuUsage?: number
-    networkThroughput: number
-  }
+    cpuUsage: number;
+    memoryUsage: number;
+    gpuUsage?: number;
+    networkThroughput: number;
+  };
   costOptimization: {
-    modelUsageCosts: number
-    costPerInference: number
-    budgetUtilization: number
-  }
+    modelUsageCosts: number;
+    costPerInference: number;
+    budgetUtilization: number;
+  };
 }
 ```
 
 ### Government Compliance Monitoring
+
 ```typescript
 export class GovernmentComplianceMonitor {
   async validateFISMACompliance(): Promise<ComplianceReport> {
     const checks = await Promise.all([
       this.validateAccessControls(),
-      this.validateAuditLogging(), 
+      this.validateAuditLogging(),
       this.validateDataEncryption(),
-      this.validateIncidentResponse()
-    ])
-    
+      this.validateIncidentResponse(),
+    ]);
+
     return {
-      status: checks.every(check => check.compliant) ? 'COMPLIANT' : 'NON_COMPLIANT',
+      status: checks.every(check => check.compliant)
+        ? 'COMPLIANT'
+        : 'NON_COMPLIANT',
       checks,
-      remediation: checks.filter(check => !check.compliant)
-    }
+      remediation: checks.filter(check => !check.compliant),
+    };
   }
 }
 ```
@@ -568,6 +592,7 @@ export class GovernmentComplianceMonitor {
 ## Deployment and Operations
 
 ### Container Deployment
+
 ```dockerfile
 # claude-flow/Dockerfile.dev
 FROM node:18-alpine
@@ -592,7 +617,7 @@ USER aiflow
 
 # Health check for AI services
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/health || exit 1
+  CMD curl -f http://localhost:\${{TF_ADMIN_PORT:-8080}}/health || exit 1
 
 EXPOSE 8080
 
@@ -600,6 +625,7 @@ CMD ["node", "dist/index.js"]
 ```
 
 ### Production Deployment
+
 ```bash
 # Build production AI services
 docker build -f claude-flow/Dockerfile.dev -t terrafusion-ai-claude-flow .
@@ -620,6 +646,7 @@ docker run -d \
 ## Security and Compliance
 
 ### Government Security Framework
+
 - **FISMA Compliance**: Automated security validation
 - **Access Control**: Role-based AI service permissions
 - **Data Encryption**: End-to-end encryption for AI workflows
@@ -627,6 +654,7 @@ docker run -d \
 - **Container Security**: Hardened container deployment
 
 ### AI Ethics and Governance
+
 ```typescript
 export class AIEthicsFramework {
   async validateAIDecision(
@@ -637,14 +665,16 @@ export class AIEthicsFramework {
       this.checkForBias(decision, context),
       this.validateFairness(decision, context),
       this.ensureTransparency(decision),
-      this.validateGovernmentCompliance(decision, context)
-    ])
-    
+      this.validateGovernmentCompliance(decision, context),
+    ]);
+
     return {
       ethical: validations.every(v => v.passed),
       validations,
-      recommendations: validations.filter(v => !v.passed).map(v => v.recommendation)
-    }
+      recommendations: validations
+        .filter(v => !v.passed)
+        .map(v => v.recommendation),
+    };
   }
 }
 ```
@@ -652,6 +682,7 @@ export class AIEthicsFramework {
 ---
 
 ## Related Documentation
+
 - **[ai-models/claude.md](../ai-models/claude.md)**: AI swarm development guide
 - **[CLAUDE-ai.md](../CLAUDE-ai.md)**: AI strategy and architecture
 - **[CLAUDE-backend.md](../CLAUDE-backend.md)**: Backend integration patterns
@@ -660,4 +691,4 @@ export class AIEthicsFramework {
 
 **Classification**: Government AI Infrastructure - Production Ready  
 **Last Updated**: August 27, 2025  
-**Version**: Claude-Flow v2.0.0-alpha / TerraFusion OS 1.0  
+**Version**: Claude-Flow v2.0.0-alpha / TerraFusion OS 1.0

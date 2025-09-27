@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion - WebGL Transcendence Effects</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+            background: #0b1020;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* WebGL Canvas */
+        #webglCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Hero Content Overlay */
+        .hero-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            text-align: center;
+            padding: 40px;
+            pointer-events: auto;
+        }
+
+        .hero-headline {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 300;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            color: white;
+            text-shadow: 0 0 40px rgba(0, 255, 238, 0.5);
+            animation: textGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 40px rgba(0, 255, 238, 0.5); }
+            50% { text-shadow: 0 0 60px rgba(0, 255, 238, 0.8); }
+        }
+
+        .hero-subhead {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            text-shadow: 0 0 20px rgba(0, 153, 255, 0.5);
+        }
+
+        /* Effect Controls */
+        .effect-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 31, 58, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #00ffee;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            min-width: 250px;
+        }
+
+        .effect-controls h3 {
+            color: #00ffee;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .effect-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #0b1020;
+            color: #00ffaa;
+            border: 1px solid #00ffaa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .effect-btn:hover {
+            background: #00ffaa;
+            color: #0b1020;
+        }
+
+        .effect-btn.active {
+            background: #00ffee;
+            color: #0b1020;
+            border-color: #00ffee;
+        }
+
+        /* Performance Monitor */
+        .fps-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #00ffee;
+            z-index: 1000;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b1020;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(0, 255, 238, 0.1);
+            border-top: 3px solid #00ffee;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p style="color: #00ffee;">Initializing Transcendence Engine...</p>
+        </div>
+    </div>
+
+    <!-- WebGL Canvas -->
+    <canvas id="webglCanvas"></canvas>
+
+    <!-- Hero Content Overlay -->
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1 class="hero-headline" id="heroHeadline">Government. Transcended.</h1>
+            <p class="hero-subhead" id="heroSubhead">Experience the next level of clarity.</p>
+        </div>
+    </div>
+
+    <!-- Effect Controls -->
+    <div class="effect-controls">
+        <h3>🎨 WebGL Effects</h3>
+        <button class="effect-btn active" onclick="switchEffect('transcendenceWave')">Transcendence Wave</button>
+        <button class="effect-btn" onclick="switchEffect('neuralNetwork')">Neural Network</button>
+        <button class="effect-btn" onclick="switchEffect('dataFlow')">Data Flow</button>
+        <button class="effect-btn" onclick="switchEffect('particleGalaxy')">Particle Galaxy</button>
+        <button class="effect-btn" onclick="switchEffect('clarityVortex')">Clarity Vortex</button>
+        <button class="effect-btn" onclick="switchEffect('quantumField')">Quantum Field</button>
+        <button class="effect-btn" onclick="switchEffect('matrixRain')">Matrix Rain</button>
+    </div>
+
+    <!-- FPS Counter -->
+    <div class="fps-counter" id="fpsCounter">FPS: 60</div>
+
+    <!-- Three.js for WebGL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // Scene setup
+        let scene, camera, renderer;
+        let currentEffect = null;
+        let effects = {};
+        let mouseX = 0, mouseY = 0;
+        let time = 0;
+        let fps = 60;
+        let lastTime = performance.now();
+        let frameCount = 0;
+
+        // Initialize Three.js
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0b1020, 0.001);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.z = 50;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('webglCanvas'),
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Initialize all effects
+            initTranscendenceWave();
+            initNeuralNetwork();
+            initDataFlow();
+            initParticleGalaxy();
+            initClarityVortex();
+            initQuantumField();
+            initMatrixRain();
+
+            // Start with Transcendence Wave
+            switchEffect('transcendenceWave');
+
+            // Mouse tracking
+            document.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('resize', onWindowResize);
+
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 500);
+            }, 1000);
+
+            // Start animation
+            animate();
+        }
+
+        // Effect 1: Transcendence Wave
+        function initTranscendenceWave() {
+            const group = new THREE.Group();
+            
+            // Create wave mesh
+            const geometry = new THREE.PlaneGeometry(200, 200, 100, 100);
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    mousePos: { value: new THREE.Vector2(0, 0) }
+                },
+                vertexShader: `
+                    uniform float time;
+                    uniform vec2 mousePos;
+                    varying vec2 vUv;
+                    varying float vElevation;
+                    
+                    void main() {
+                        vUv = uv;
+                        vec3 pos = position;
+                        
+                        float dist = distance(uv, vec2(0.5));
+                        float wave1 = sin(dist * 10.0 - time * 2.0) * 2.0;
+                        float wave2 = sin(dist * 15.0 - time * 3.0) * 1.0;
+                        float mouseInfluence = 1.0 - distance(uv, mousePos) * 2.0;
+                        
+                        pos.z = (wave1 + wave2) * (1.0 + mouseInfluence * 0.5);
+                        vElevation = pos.z;
+                        
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform float time;
+                    varying vec2 vUv;
+                    varying float vElevation;
+                    
+                    void main() {
+                        vec3 color1 = vec3(0.0, 0.6, 1.0); // Primary blue
+                        vec3 color2 = vec3(0.0, 1.0, 0.92); // Transcend teal
+                        vec3 color3 = vec3(0.0, 1.0, 0.67); // Accent green
+                        
+                        float mixFactor = vElevation * 0.5 + 0.5;
+                        vec3 color = mix(color1, color2, mixFactor);
+                        color = mix(color, color3, sin(time * 0.5) * 0.5 + 0.5);
+                        
+                        float alpha = 0.8 + vElevation * 0.1;
+                        gl_FragColor = vec4(color, alpha);
+                    }
+                `,
+                transparent: true,
+                wireframe: true
+            });
+            
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.rotation.x = -Math.PI / 4;
+            group.add(mesh);
+            
+            effects.transcendenceWave = {
+                group: group,
+                update: function(delta) {
+                    material.uniforms.time.value += delta;
+                    material.uniforms.mousePos.value.x = (mouseX / window.innerWidth);
+                    material.uniforms.mousePos.value.y = 1.0 - (mouseY / window.innerHeight);
+                    mesh.rotation.z += delta * 0.1;
+                }
+            };
+        }
+
+        // Effect 2: Neural Network
+        function initNeuralNetwork() {
+            const group = new THREE.Group();
+            
+            // Create nodes
+            const nodes = [];
+            const nodeGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+            const nodeMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ffee,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            for (let i = 0; i < 50; i++) {
+                const node = new THREE.Mesh(nodeGeometry, nodeMaterial.clone());
+                node.position.set(
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 100
+                );
+                node.userData.velocity = new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.5,
+                    (Math.random() - 0.5) * 0.5,
+                    (Math.random() - 0.5) * 0.5
+                );
+                nodes.push(node);
+                group.add(node);
+            }
+            
+            // Create connections
+            const connectionGeometry = new THREE.BufferGeometry();
+            const connectionMaterial = new THREE.LineBasicMaterial({
+                color: 0x0099ff,
+                transparent: true,
+                opacity: 0.3
+            });
+            
+            effects.neuralNetwork = {
+                group: group,
+                nodes: nodes,
+                update: function(delta) {
+                    // Update nodes
+                    nodes.forEach((node, i) => {
+                        node.position.add(node.userData.velocity.clone().multiplyScalar(delta));
+                        
+                        // Bounce off boundaries
+                        ['x', 'y', 'z'].forEach(axis => {
+                            if (Math.abs(node.position[axis]) > 50) {
+                                node.userData.velocity[axis] *= -1;
+                            }
+                        });
+                        
+                        // Pulse effect
+                        node.scale.setScalar(1 + Math.sin(time * 2 + i) * 0.2);
+                        node.material.opacity = 0.5 + Math.sin(time * 3 + i) * 0.3;
+                    });
+                    
+                    // Update connections
+                    const positions = [];
+                    nodes.forEach((node1, i) => {
+                        nodes.forEach((node2, j) => {
+                            if (i < j) {
+                                const distance = node1.position.distanceTo(node2.position);
+                                if (distance < 20) {
+                                    positions.push(
+                                        node1.position.x, node1.position.y, node1.position.z,
+                                        node2.position.x, node2.position.y, node2.position.z
+                                    );
+                                }
+                            }
+                        });
+                    });
+                    
+                    connectionGeometry.setAttribute('position', 
+                        new THREE.Float32BufferAttribute(positions, 3));
+                    
+                    if (group.children.length > nodes.length) {
+                        group.remove(group.children[group.children.length - 1]);
+                    }
+                    group.add(new THREE.LineSegments(connectionGeometry, connectionMaterial));
+                    
+                    group.rotation.y += delta * 0.1;
+                }
+            };
+        }
+
+        // Effect 3: Data Flow
+        function initDataFlow() {
+            const group = new THREE.Group();
+            
+            // Create flowing particles
+            const particleCount = 1000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * 100;
+                positions[i3 + 1] = (Math.random() - 0.5) * 100;
+                positions[i3 + 2] = (Math.random() - 0.5) * 100;
+                
+                // Color gradient
+                const t = i / particleCount;
+                colors[i3] = 0;
+                colors[i3 + 1] = 0.6 + t * 0.4;
+                colors[i3 + 2] = 1;
+                
+                sizes[i] = Math.random() * 3 + 1;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: `
+                    attribute float size;
+                    varying vec3 vColor;
+                    
+                    void main() {
+                        vColor = color;
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        gl_PointSize = size * (300.0 / -mvPosition.z);
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vColor;
+                    
+                    void main() {
+                        float dist = distance(gl_PointCoord, vec2(0.5));
+                        if (dist > 0.5) discard;
+                        
+                        float alpha = 1.0 - dist * 2.0;
+                        gl_FragColor = vec4(vColor, alpha);
+                    }
+                `,
+                transparent: true,
+                vertexColors: true
+            });
+            
+            const particles = new THREE.Points(geometry, material);
+            group.add(particles);
+            
+            effects.dataFlow = {
+                group: group,
+                update: function(delta) {
+                    const positions = particles.geometry.attributes.position.array;
+                    
+                    for (let i = 0; i < particleCount; i++) {
+                        const i3 = i * 3;
+                        
+                        // Flow motion
+                        positions[i3 + 1] -= delta * 10;
+                        
+                        // Reset particles that go too low
+                        if (positions[i3 + 1] < -50) {
+                            positions[i3 + 1] = 50;
+                            positions[i3] = (Math.random() - 0.5) * 100;
+                            positions[i3 + 2] = (Math.random() - 0.5) * 100;
+                        }
+                    }
+                    
+                    particles.geometry.attributes.position.needsUpdate = true;
+                    particles.rotation.y += delta * 0.05;
+                }
+            };
+        }
+
+        // Effect 4: Particle Galaxy
+        function initParticleGalaxy() {
+            const group = new THREE.Group();
+            
+            const particleCount = 5000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                
+                // Spiral galaxy shape
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 50;
+                const y = (Math.random() - 0.5) * 10;
+                
+                positions[i3] = Math.cos(angle) * radius;
+                positions[i3 + 1] = y;
+                positions[i3 + 2] = Math.sin(angle) * radius;
+                
+                // Color based on distance from center
+                const t = radius / 50;
+                colors[i3] = t;
+                colors[i3 + 1] = 1 - t * 0.5;
+                colors[i3 + 2] = 1 - t;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.5,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+            
+            const particles = new THREE.Points(geometry, material);
+            group.add(particles);
+            
+            effects.particleGalaxy = {
+                group: group,
+                update: function(delta) {
+                    particles.rotation.y += delta * 0.2;
+                    
+                    // Spiral motion
+                    const positions = particles.geometry.attributes.position.array;
+                    for (let i = 0; i < particleCount; i++) {
+                        const i3 = i * 3;
+                        const x = positions[i3];
+                        const z = positions[i3 + 2];
+                        const angle = Math.atan2(z, x) + delta * 0.5;
+                        const radius = Math.sqrt(x * x + z * z);
+                        
+                        positions[i3] = Math.cos(angle) * radius;
+                        positions[i3 + 2] = Math.sin(angle) * radius;
+                    }
+                    particles.geometry.attributes.position.needsUpdate = true;
+                }
+            };
+        }
+
+        // Effect 5: Clarity Vortex
+        function initClarityVortex() {
+            const group = new THREE.Group();
+            
+            // Create vortex geometry
+            const geometry = new THREE.ConeGeometry(30, 60, 32, 20, true);
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: `
+                    uniform float time;
+                    varying vec2 vUv;
+                    varying float vY;
+                    
+                    void main() {
+                        vUv = uv;
+                        vY = position.y;
+                        
+                        vec3 pos = position;
+                        float twist = sin(position.y * 0.1 + time) * 2.0;
+                        float c = cos(twist);
+                        float s = sin(twist);
+                        
+                        mat2 rotation = mat2(c, -s, s, c);
+                        pos.xz = rotation * pos.xz;
+                        
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform float time;
+                    varying vec2 vUv;
+                    varying float vY;
+                    
+                    void main() {
+                        vec3 color = mix(
+                            vec3(0.0, 0.6, 1.0),
+                            vec3(0.0, 1.0, 0.92),
+                            (vY + 30.0) / 60.0
+                        );
+                        
+                        float alpha = 0.3 + sin(vUv.y * 10.0 + time * 2.0) * 0.2;
+                        gl_FragColor = vec4(color, alpha);
+                    }
+                `,
+                transparent: true,
+                side: THREE.DoubleSide,
+                wireframe: true
+            });
+            
+            const vortex = new THREE.Mesh(geometry, material);
+            group.add(vortex);
+            
+            effects.clarityVortex = {
+                group: group,
+                update: function(delta) {
+                    material.uniforms.time.value += delta;
+                    vortex.rotation.y += delta * 0.5;
+                }
+            };
+        }
+
+        // Effect 6: Quantum Field
+        function initQuantumField() {
+            const group = new THREE.Group();
+            
+            // Create quantum field visualization
+            const size = 100;
+            const divisions = 50;
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            
+            for (let i = 0; i <= divisions; i++) {
+                for (let j = 0; j <= divisions; j++) {
+                    const x = (i / divisions - 0.5) * size;
+                    const z = (j / divisions - 0.5) * size;
+                    vertices.push(x, 0, z);
+                }
+            }
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    mousePos: { value: new THREE.Vector2(0, 0) }
+                },
+                vertexShader: `
+                    uniform float time;
+                    uniform vec2 mousePos;
+                    varying float vElevation;
+                    
+                    float quantum(vec3 p) {
+                        return sin(p.x * 0.1 + time) * cos(p.z * 0.1 + time) * 10.0;
+                    }
+                    
+                    void main() {
+                        vec3 pos = position;
+                        pos.y = quantum(pos);
+                        
+                        float mouseInfluence = 1.0 - distance(
+                            vec2(pos.x, pos.z) / 50.0 + 0.5,
+                            mousePos
+                        );
+                        pos.y *= 1.0 + mouseInfluence;
+                        
+                        vElevation = pos.y;
+                        gl_PointSize = 2.0 + abs(pos.y) * 0.1;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    varying float vElevation;
+                    
+                    void main() {
+                        vec3 color = mix(
+                            vec3(0.0, 0.4, 0.8),
+                            vec3(0.0, 1.0, 0.8),
+                            abs(vElevation) / 10.0
+                        );
+                        gl_FragColor = vec4(color, 0.8);
+                    }
+                `,
+                transparent: true
+            });
+            
+            const field = new THREE.Points(geometry, material);
+            group.add(field);
+            
+            effects.quantumField = {
+                group: group,
+                update: function(delta) {
+                    material.uniforms.time.value += delta;
+                    material.uniforms.mousePos.value.x = mouseX / window.innerWidth;
+                    material.uniforms.mousePos.value.y = 1.0 - mouseY / window.innerHeight;
+                    field.rotation.y += delta * 0.1;
+                }
+            };
+        }
+
+        // Effect 7: Matrix Rain
+        function initMatrixRain() {
+            const group = new THREE.Group();
+            
+            const columns = 50;
+            const rows = 30;
+            const characters = "TERRAFUSION01";
+            
+            for (let i = 0; i < columns; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const geometry = new THREE.PlaneGeometry(1, 1);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 32;
+                    canvas.height = 32;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#00ffee';
+                    ctx.font = '24px monospace';
+                    ctx.fillText(
+                        characters[Math.floor(Math.random() * characters.length)],
+                        8, 24
+                    );
+                    
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        transparent: true,
+                        opacity: Math.random() * 0.5 + 0.5
+                    });
+                    
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.set(
+                        (i - columns / 2) * 2,
+                        (j - rows / 2) * 2,
+                        -20
+                    );
+                    mesh.userData.speed = Math.random() * 5 + 5;
+                    mesh.userData.originalY = mesh.position.y;
+                    
+                    group.add(mesh);
+                }
+            }
+            
+            effects.matrixRain = {
+                group: group,
+                update: function(delta) {
+                    group.children.forEach(mesh => {
+                        mesh.position.y -= mesh.userData.speed * delta;
+                        
+                        if (mesh.position.y < -30) {
+                            mesh.position.y = 30;
+                            mesh.material.opacity = Math.random() * 0.5 + 0.5;
+                        }
+                        
+                        // Fade based on position
+                        const fade = (mesh.position.y + 30) / 60;
+                        mesh.material.opacity *= fade;
+                    });
+                }
+            };
+        }
+
+        // Switch between effects
+        function switchEffect(effectName) {
+            // Remove current effect
+            if (currentEffect && effects[currentEffect]) {
+                scene.remove(effects[currentEffect].group);
+            }
+            
+            // Add new effect
+            if (effects[effectName]) {
+                scene.add(effects[effectName].group);
+                currentEffect = effectName;
+                
+                // Update button states
+                document.querySelectorAll('.effect-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent.toLowerCase().includes(effectName.toLowerCase()) ||
+                        (effectName === 'transcendenceWave' && btn.textContent.includes('Transcendence')) ||
+                        (effectName === 'neuralNetwork' && btn.textContent.includes('Neural')) ||
+                        (effectName === 'dataFlow' && btn.textContent.includes('Data')) ||
+                        (effectName === 'particleGalaxy' && btn.textContent.includes('Galaxy')) ||
+                        (effectName === 'clarityVortex' && btn.textContent.includes('Vortex')) ||
+                        (effectName === 'quantumField' && btn.textContent.includes('Quantum')) ||
+                        (effectName === 'matrixRain' && btn.textContent.includes('Matrix'))) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Update hero text based on effect
+                const headlines = {
+                    transcendenceWave: 'Government. Transcended.',
+                    neuralNetwork: 'Intelligence. Connected.',
+                    dataFlow: 'Data. Flowing.',
+                    particleGalaxy: 'Possibilities. Infinite.',
+                    clarityVortex: 'Clarity. Achieved.',
+                    quantumField: 'Reality. Enhanced.',
+                    matrixRain: 'System. Activated.'
+                };
+                
+                document.getElementById('heroHeadline').textContent = 
+                    headlines[effectName] || 'Government. Transcended.';
+            }
+        }
+
+        // Mouse movement
+        function onMouseMove(event) {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+        }
+
+        // Window resize
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const currentTime = performance.now();
+            const delta = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+            time += delta;
+            
+            // Update FPS
+            frameCount++;
+            if (frameCount % 30 === 0) {
+                fps = Math.round(1 / delta);
+                document.getElementById('fpsCounter').textContent = `FPS: ${fps}`;
+            }
+            
+            // Update current effect
+            if (currentEffect && effects[currentEffect]) {
+                effects[currentEffect].update(delta);
+            }
+            
+            // Camera movement
+            camera.position.x = Math.sin(time * 0.1) * 10;
+            camera.position.y = Math.cos(time * 0.1) * 10;
+            camera.lookAt(scene.position);
+            
+            renderer.render(scene, camera);
+        }
+
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

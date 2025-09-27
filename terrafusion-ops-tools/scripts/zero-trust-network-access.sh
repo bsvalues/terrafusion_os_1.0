@@ -379,10 +379,10 @@ iptables -A ZTNA_SEGMENTS -j DROP
 
 # Allow specific inter-segment communication based on policies
 # DMZ to Application
-iptables -A ZTNA_SEGMENTS -s 10.0.1.0/24 -d 10.0.2.0/24 -p tcp --dport 8080 -j ZTNA_POLICY
+iptables -A ZTNA_SEGMENTS -s 10.0.1.0/24 -d 10.0.2.0/24 -p tcp --dport \${{TF_ADMIN_PORT:-8080}} -j ZTNA_POLICY
 
 # Application to Database
-iptables -A ZTNA_SEGMENTS -s 10.0.2.0/24 -d 10.0.3.0/24 -p tcp --dport 5432 -j ZTNA_POLICY
+iptables -A ZTNA_SEGMENTS -s 10.0.2.0/24 -d 10.0.3.0/24 -p tcp --dport \${{TF_ADMIN_PORT:-8080}} -j ZTNA_POLICY
 
 # Management to all segments (with restrictions)
 iptables -A ZTNA_SEGMENTS -s 10.0.4.0/24 -p tcp --dport 22 -j ZTNA_POLICY

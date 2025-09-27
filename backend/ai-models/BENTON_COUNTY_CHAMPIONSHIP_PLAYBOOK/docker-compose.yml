@@ -68,7 +68,7 @@ services:
       dockerfile: Dockerfile.router
     container_name: dynasty_router
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
     environment:
       - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
       - REDIS_URL=redis://redis:6379
@@ -99,7 +99,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://dynasty_user:championship_password_2024@postgres:5432/benton_dynasty
       - REDIS_URL=redis://redis:6379
-      - ROUTER_URL=http://router:8080
+      - ROUTER_URL=http://router:${TF_STATIC_PORT:-8080}
       - BENTON_ASSESSOR_KEY=${BENTON_ASSESSOR_KEY}
     depends_on:
       - postgres
@@ -195,8 +195,8 @@ services:
     ports:
       - "8090:8090"
     environment:
-      - API_BASE_URL=http://router:8080
-      - WEBSOCKET_URL=ws://router:8080/ws
+      - API_BASE_URL=http://router:${TF_STATIC_PORT:-8080}
+      - WEBSOCKET_URL=ws://router:${TF_STATIC_PORT:-8080}/ws
     depends_on:
       - router
     restart: unless-stopped
@@ -278,7 +278,7 @@ services:
     image: grafana/grafana:latest
     container_name: dynasty_grafana
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=championship2024
     volumes:

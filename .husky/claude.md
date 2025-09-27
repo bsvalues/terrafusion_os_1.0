@@ -2,13 +2,18 @@
 
 ## Overview
 
-This guide provides comprehensive instructions for implementing, configuring, and maintaining Git hooks through Husky in the TerraFusion OS government AI platform. The `.husky` directory manages automated quality gates that protect the integrity of our 1,008 AI agents, 33 active modules, and government-grade security requirements.
+This guide provides comprehensive instructions for implementing, configuring,
+and maintaining Git hooks through Husky in the TerraFusion OS government AI
+platform. The `.husky` directory manages automated quality gates that protect
+the integrity of our 1,008 AI agents, 33 active modules, and government-grade
+security requirements.
 
 ## Development Patterns
 
 ### Hook Development Workflow
 
 #### 1. Hook Creation and Testing
+
 ```bash
 # Create new hook
 npx husky add .husky/pre-commit "npm run pre-commit-tasks"
@@ -21,6 +26,7 @@ npm run husky:validate-config
 ```
 
 #### 2. Government-Specific Hook Development
+
 ```bash
 #!/bin/sh
 # Government compliance pre-commit hook template
@@ -52,6 +58,7 @@ echo "✅ Government compliance validation passed"
 ### AI Agent Integration Patterns
 
 #### Swarm Coordination Validation Hook
+
 ```typescript
 // .husky/scripts/validate-ai-swarm.ts
 import { AISwarmValidator } from '../backend/TerraFusion.AI/Services/AISwarmValidator';
@@ -59,28 +66,30 @@ import { AISwarmValidator } from '../backend/TerraFusion.AI/Services/AISwarmVali
 export class SwarmValidationHook {
   async validateSwarmIntegrity(): Promise<boolean> {
     const validator = new AISwarmValidator();
-    
+
     // Validate 1,008 agents
     const agentStatus = await validator.checkAllAgents();
     if (agentStatus.healthyAgents !== 1008) {
-      console.error(`❌ Agent swarm compromised: ${agentStatus.healthyAgents}/1008 healthy`);
+      console.error(
+        `❌ Agent swarm compromised: ${agentStatus.healthyAgents}/1008 healthy`
+      );
       return false;
     }
-    
+
     // Validate command brain connectivity
     const commandBrainStatus = await validator.checkCommandBrain();
     if (!commandBrainStatus.operational) {
       console.error('❌ AI Command Brain not operational');
       return false;
     }
-    
+
     // Validate quantum optimization layer
     const quantumStatus = await validator.checkQuantumOptimization();
     if (!quantumStatus.coherent) {
       console.error('❌ Quantum optimization layer not coherent');
       return false;
     }
-    
+
     console.log('✅ AI Swarm validation passed');
     return true;
   }
@@ -88,12 +97,13 @@ export class SwarmValidationHook {
 ```
 
 #### County-Specific Validation
+
 ```bash
 #!/bin/sh
 # County-specific validation hook
 validate_county_integration() {
   local county=$1
-  
+
   case $county in
     "benton")
       # Validate Harris PACS integration
@@ -122,6 +132,7 @@ validate_county_integration() {
 ### Advanced Security Hook Configuration
 
 #### Secret Detection and Prevention
+
 ```json
 {
   "secret_detection": {
@@ -142,36 +153,34 @@ validate_county_integration() {
         "severity": "critical"
       }
     ],
-    "exclusions": [
-      "test/**/*.test.ts",
-      "docs/**/*.md"
-    ]
+    "exclusions": ["test/**/*.test.ts", "docs/**/*.md"]
   }
 }
 ```
 
 #### FISMA Compliance Automation
+
 ```bash
 #!/bin/sh
 # FISMA compliance validation hook
 validate_fisma_compliance() {
   echo "🛡️ FISMA Compliance Validation..."
-  
+
   # AC-2: Account Management
   npm run fisma:ac2-validation
-  
+
   # AC-3: Access Enforcement
   npm run fisma:ac3-validation
-  
+
   # AU-2: Event Logging
   npm run fisma:au2-validation
-  
+
   # IA-2: Identification and Authentication
   npm run fisma:ia2-validation
-  
+
   # SC-7: Boundary Protection
   npm run fisma:sc7-validation
-  
+
   # Generate compliance report
   npm run fisma:generate-report
 }
@@ -180,6 +189,7 @@ validate_fisma_compliance() {
 ### Government Data Protection Hooks
 
 #### PII Detection and Classification
+
 ```python
 # .husky/scripts/pii_detection.py
 import re
@@ -194,14 +204,14 @@ class PIIDetector:
             'email': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
             'address': r'\b\d+\s+\w+\s+(Street|St|Avenue|Ave|Boulevard|Blvd|Drive|Dr)\b'
         }
-    
+
     def scan_file(self, filepath: str) -> Dict:
         """Scan file for PII patterns"""
         violations = []
-        
+
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as file:
             content = file.read()
-            
+
             for pii_type, pattern in self.patterns.items():
                 matches = re.findall(pattern, content, re.IGNORECASE)
                 if matches:
@@ -210,7 +220,7 @@ class PIIDetector:
                         'matches': len(matches),
                         'severity': 'HIGH' if pii_type in ['ssn'] else 'MEDIUM'
                     })
-        
+
         return {
             'file': filepath,
             'violations': violations,
@@ -223,6 +233,7 @@ class PIIDetector:
 ### CI/CD Pipeline Integration
 
 #### GitHub Actions Workflow
+
 ```yaml
 # .github/workflows/husky-integration.yml
 name: Husky Hooks Integration
@@ -238,39 +249,39 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x, 20.x]
-    
+
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Setup Husky
         run: npm run prepare
-      
+
       - name: Validate hook configuration
         run: npm run husky:validate
-      
+
       - name: Test pre-commit hooks
         run: npm run husky:test-pre-commit
-      
+
       - name: Test pre-push hooks
         run: npm run husky:test-pre-push
-      
+
       - name: Government compliance check
         run: npm run government:compliance-full
-      
+
       - name: AI agent validation
         run: npm run ai:swarm-health-check
-      
+
       - name: Security deep scan
         run: npm run security:deep-scan
         env:
@@ -278,6 +289,7 @@ jobs:
 ```
 
 #### Docker Integration
+
 ```dockerfile
 # Multi-stage Docker build with Husky integration
 FROM node:18-alpine AS hooks-validation
@@ -318,6 +330,7 @@ CMD ["npm", "start"]
 ### Module-Specific Hook Configurations
 
 #### Backend (.NET) Integration
+
 ```bash
 #!/bin/sh
 # Backend-specific pre-commit hook
@@ -340,6 +353,7 @@ dotnet test backend/TerraFusion.API.Tests --configuration Release
 ```
 
 #### Frontend (React/TypeScript) Integration
+
 ```bash
 #!/bin/sh
 # Frontend-specific pre-commit hook
@@ -369,6 +383,7 @@ npm run test:components
 ### Common Issues and Solutions
 
 #### 1. Hook Execution Failures
+
 ```bash
 # Debug hook execution
 export HUSKY_DEBUG=1
@@ -382,6 +397,7 @@ bash -n .husky/pre-commit
 ```
 
 #### 2. Performance Issues
+
 ```bash
 # Profile hook execution time
 time .husky/pre-commit
@@ -399,14 +415,11 @@ npm install --save-dev concurrently
 ```
 
 #### 3. Security Scanning False Positives
+
 ```json
 {
   "security_exemptions": {
-    "files": [
-      "test/**/*.test.ts",
-      "docs/**/*.md",
-      "*.example.env"
-    ],
+    "files": ["test/**/*.test.ts", "docs/**/*.md", "*.example.env"],
     "patterns": [
       {
         "pattern": "password.*=.*test",
@@ -421,44 +434,48 @@ npm install --save-dev concurrently
 ### Government Compliance Troubleshooting
 
 #### FISMA Validation Issues
+
 ```bash
 #!/bin/sh
 # FISMA troubleshooting script
 debug_fisma_validation() {
   echo "🔍 FISMA Validation Debug..."
-  
+
   # Check compliance database
   npm run fisma:check-database-status
-  
+
   # Validate security controls
   npm run fisma:validate-controls --verbose
-  
+
   # Generate detailed report
   npm run fisma:debug-report --output=fisma-debug.json
-  
+
   # Check for missing requirements
   npm run fisma:missing-requirements
 }
 ```
 
 #### AI Agent Swarm Issues
+
 ```typescript
 // .husky/scripts/debug-ai-swarm.ts
 export class AISwarmDebugger {
   async debugSwarmIssues(): Promise<void> {
     console.log('🤖 AI Swarm Debug Analysis...');
-    
+
     // Check agent connectivity
     const connectivity = await this.checkAgentConnectivity();
-    console.log(`Agent Connectivity: ${connectivity.healthy}/${connectivity.total}`);
-    
+    console.log(
+      `Agent Connectivity: ${connectivity.healthy}/${connectivity.total}`
+    );
+
     // Validate command brain
     const commandBrain = await this.validateCommandBrain();
     if (!commandBrain.responsive) {
       console.error('Command Brain unresponsive - restarting...');
       await this.restartCommandBrain();
     }
-    
+
     // Check quantum optimization
     const quantum = await this.checkQuantumOptimization();
     if (quantum.coherenceLevel < 0.8) {
@@ -474,6 +491,7 @@ export class AISwarmDebugger {
 ### Hook Development Standards
 
 #### 1. Error Handling and Recovery
+
 ```bash
 #!/bin/sh
 # Robust error handling template
@@ -491,31 +509,31 @@ trap cleanup EXIT
 # Main hook logic with error handling
 main() {
   local exit_code=0
-  
+
   echo "🚀 Starting hook validation..."
-  
+
   # Each validation step with error handling
   if ! npm run lint:check; then
     echo "❌ Linting failed"
     exit_code=1
   fi
-  
+
   if ! npm run security:scan; then
     echo "❌ Security scan failed"
     exit_code=1
   fi
-  
+
   if ! npm run ai:validate; then
     echo "❌ AI validation failed"
     exit_code=1
   fi
-  
+
   if [ $exit_code -eq 0 ]; then
     echo "✅ All validations passed"
   else
     echo "❌ Validation failures detected"
   fi
-  
+
   exit $exit_code
 }
 
@@ -523,6 +541,7 @@ main "$@"
 ```
 
 #### 2. Performance Optimization
+
 ```bash
 #!/bin/sh
 # Performance-optimized hook execution
@@ -532,15 +551,15 @@ optimize_hook_performance() {
     echo "ℹ️ No staged changes detected, skipping validation"
     exit 0
   fi
-  
+
   # Parallel execution for independent tasks
   (npm run lint:changed &)
   (npm run type:check &)
   (npm run format:check &)
-  
+
   # Wait for all parallel tasks
   wait
-  
+
   # Sequential execution for dependent tasks
   npm run test:changed
   npm run security:scan:changed
@@ -548,23 +567,27 @@ optimize_hook_performance() {
 ```
 
 #### 3. Government Standards Compliance
+
 ```yaml
 # Government compliance configuration
 government_standards:
   documentation_requirements:
-    - commit_message_format: "conventional_commits"
+    - commit_message_format: 'conventional_commits'
     - security_clearance_validation: true
     - audit_trail_generation: true
-  
+
   security_requirements:
     - secret_detection: true
     - vulnerability_scanning: true
     - compliance_validation: true
-  
+
   performance_requirements:
-    - api_response_time: "6ms"
-    - database_query_time: "50ms"
-    - module_load_time: "2s"
+    - api_response_time: '6ms'
+    - database_query_time: '50ms'
+    - module_load_time: '2s'
 ```
 
-This comprehensive development guide ensures that Git hooks in TerraFusion OS maintain the highest standards of government compliance, security, and performance while supporting the sophisticated AI agent architecture and multi-county deployment requirements.
+This comprehensive development guide ensures that Git hooks in TerraFusion OS
+maintain the highest standards of government compliance, security, and
+performance while supporting the sophisticated AI agent architecture and
+multi-county deployment requirements.

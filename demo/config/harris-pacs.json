@@ -1,0 +1,216 @@
+{
+  "demo_database_url": "postgresql://demo_user:demo_pass@localhost:5432/terrafusion_demo",
+  "redis_host": "localhost",
+  "redis_port": 6379,
+  "anonymize_data": true,
+  "demo_county": "Benton County",
+  "demo_property_count": 89247,
+  "sync_interval_minutes": 60,
+
+  "data_sources": {
+    "harris_pacs_sample": "demo/data/harris-pacs-sample.csv",
+    "washington_parcels": "demo/data/wa-parcels.geojson",
+    "census_data": "demo/data/census-benton-county.json",
+    "open_data_portal": "https://data.wa.gov/api/views/",
+    "county_gis": "https://gis.bentoncountywa.gov/server/rest/services"
+  },
+
+  "demo_environments": {
+    "development": {
+      "database_url": "postgresql://demo_dev:demo_dev@localhost:5432/terrafusion_demo_dev",
+      "property_count": 10000,
+      "real_time_simulation": true,
+      "data_refresh_hours": 24
+    },
+    "staging": {
+      "database_url": "postgresql://demo_stage:demo_stage@demo-db-stage:5432/terrafusion_demo_stage",
+      "property_count": 50000,
+      "real_time_simulation": true,
+      "data_refresh_hours": 12
+    },
+    "production": {
+      "database_url": "postgresql://demo_prod:${DB_PASSWORD}@demo-db-prod:5432/terrafusion_demo_prod",
+      "property_count": 89247,
+      "real_time_simulation": true,
+      "data_refresh_hours": 1
+    }
+  },
+
+  "demo_features": {
+    "ai_agent_simulation": {
+      "enabled": true,
+      "agent_count": 50000,
+      "processing_simulation": true,
+      "coordination_demo": true
+    },
+    "vendor_integrations": {
+      "acme_assessment": {
+        "enabled": true,
+        "integration_type": "sidecar",
+        "demo_data": true
+      },
+      "govgis_solutions": {
+        "enabled": true,
+        "integration_type": "api_gateway",
+        "demo_data": true
+      },
+      "paymentpro_gov": {
+        "enabled": true,
+        "integration_type": "event_driven",
+        "demo_data": true
+      },
+      "permitflow": {
+        "enabled": true,
+        "integration_type": "reverse_proxy",
+        "demo_data": true
+      },
+      "electiontech": {
+        "enabled": true,
+        "integration_type": "database_sync",
+        "demo_data": true
+      }
+    },
+    "real_time_updates": {
+      "property_value_changes": true,
+      "new_assessments": true,
+      "sales_transactions": true,
+      "permit_applications": true,
+      "payment_processing": true
+    },
+    "analytics_dashboards": {
+      "executive_dashboard": true,
+      "operational_dashboard": true,
+      "vendor_dashboard": true,
+      "citizen_portal": true,
+      "ai_agent_monitoring": true
+    }
+  },
+
+  "compliance_settings": {
+    "data_anonymization": {
+      "pii_masking": true,
+      "owner_name_hashing": true,
+      "address_generalization": false,
+      "financial_data_rounding": true
+    },
+    "audit_logging": {
+      "all_data_access": true,
+      "user_activities": true,
+      "system_changes": true,
+      "retention_days": 90
+    },
+    "security": {
+      "ssl_required": true,
+      "jwt_authentication": true,
+      "role_based_access": true,
+      "api_rate_limiting": true
+    }
+  },
+
+  "performance_targets": {
+    "api_response_time_ms": 100,
+    "database_query_time_ms": 50,
+    "concurrent_users": 1000,
+    "throughput_rps": 2500,
+    "uptime_percentage": 99.9
+  },
+
+  "demo_scenarios": {
+    "government_executive": {
+      "duration_minutes": 45,
+      "features": [
+        "executive_dashboard",
+        "budget_impact_analysis",
+        "multi_department_coordination",
+        "citizen_service_metrics",
+        "ai_agent_coordination"
+      ],
+      "data_focus": "county_wide_analytics"
+    },
+    "vendor_integration": {
+      "duration_minutes": 30,
+      "features": [
+        "sidecar_deployment",
+        "api_integration",
+        "event_driven_updates",
+        "revenue_model_demo",
+        "technical_architecture"
+      ],
+      "data_focus": "integration_patterns"
+    },
+    "technical_deep_dive": {
+      "duration_minutes": 60,
+      "features": [
+        "system_architecture",
+        "ai_agent_fabric",
+        "data_pipeline",
+        "security_framework",
+        "performance_metrics"
+      ],
+      "data_focus": "technical_implementation"
+    },
+    "citizen_services": {
+      "duration_minutes": 20,
+      "features": [
+        "property_search",
+        "assessment_appeals",
+        "permit_applications",
+        "payment_processing",
+        "service_requests"
+      ],
+      "data_focus": "citizen_experience"
+    }
+  },
+
+  "integration_apis": {
+    "harris_pacs": {
+      "endpoint": "http://harris-pacs-demo:8080/api",
+      "auth_type": "basic",
+      "sync_tables": ["parcels", "assessments", "improvements", "ownership"],
+      "sync_frequency": "hourly"
+    },
+    "washington_state_gis": {
+      "endpoint": "https://gis.wa.gov/server/rest/services",
+      "auth_type": "token",
+      "layers": ["parcels", "zoning", "environmental"],
+      "sync_frequency": "daily"
+    },
+    "census_api": {
+      "endpoint": "https://api.census.gov/data/2021/acs/acs5",
+      "auth_type": "api_key",
+      "datasets": ["demographics", "economics", "housing"],
+      "sync_frequency": "monthly"
+    },
+    "open_data_portal": {
+      "endpoint": "https://data.wa.gov/api/views",
+      "auth_type": "none",
+      "datasets": ["budget", "contracts", "employees"],
+      "sync_frequency": "weekly"
+    }
+  },
+
+  "demo_urls": {
+    "government_demo": "https://demo.terrafusion.gov/government",
+    "vendor_demo": "https://demo.terrafusion.gov/vendor",
+    "technical_demo": "https://demo.terrafusion.gov/technical",
+    "citizen_demo": "https://demo.terrafusion.gov/citizen",
+    "api_documentation": "https://demo.terrafusion.gov/docs/api",
+    "platform_status": "https://demo.terrafusion.gov/status"
+  },
+
+  "support_contacts": {
+    "technical_support": "demo-support@terrafusion.gov",
+    "sales_inquiry": "demo-sales@terrafusion.gov",
+    "partnership_inquiry": "vendors@terrafusion.gov",
+    "government_relations": "government@terrafusion.gov"
+  },
+
+  "demo_metadata": {
+    "version": "1.0.0",
+    "created_date": "2025-08-27",
+    "last_updated": "2025-08-27",
+    "environment": "production_demo",
+    "data_classification": "public_demonstration",
+    "retention_policy": "30_days_session_data"
+  }
+}

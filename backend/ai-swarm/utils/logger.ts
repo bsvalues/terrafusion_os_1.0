@@ -6,7 +6,7 @@ export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
   WARN = 2,
-  ERROR = 3
+  ERROR = 3,
 }
 
 export interface LogEntry {
@@ -61,11 +61,11 @@ export class Logger {
       level,
       component: this.component,
       message,
-      metadata
+      metadata,
     };
 
     this.logs.push(entry);
-    
+
     // Keep only recent logs
     if (this.logs.length > this.maxLogs) {
       this.logs = this.logs.slice(-this.maxLogs);
@@ -75,12 +75,14 @@ export class Logger {
     const levelNames = ['DEBUG', 'INFO', 'WARN', 'ERROR'];
     const colors = ['\x1b[36m', '\x1b[32m', '\x1b[33m', '\x1b[31m'];
     const reset = '\x1b[0m';
-    
+
     const timestamp = entry.timestamp.toISOString().substr(11, 12);
     const levelStr = levelNames[level].padEnd(5);
     const componentStr = this.component.padEnd(20);
-    
-    console.log(`${colors[level]}[${timestamp}] ${levelStr} ${componentStr}${reset} ${message}${metadata ? ' ' + JSON.stringify(metadata) : ''}`);
+
+    console.log(
+      `${colors[level]}[${timestamp}] ${levelStr} ${componentStr}${reset} ${message}${metadata ? ' ' + JSON.stringify(metadata) : ''}`
+    );
   }
 
   public getRecentLogs(count: number = 50): LogEntry[] {

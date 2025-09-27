@@ -2,7 +2,8 @@
 
 **🔌 Complete REST API Documentation for Government-Grade Development Platform**
 
-**Status**: Production Ready ✅ | **Version**: 1.0 | **Base URL**: `http://localhost:5000/api`  
+**Status**: Production Ready ✅ | **Version**: 1.0 | **Base URL**:
+`http://localhost:\${{TF_API_PORT:-5000}}/api`  
 **Authentication**: JWT Bearer Token | **Rate Limiting**: 1000 requests/hour  
 **Government Classification**: OFFICIAL USE ONLY
 
@@ -20,6 +21,7 @@ The TerraFusion Ultimate IDE API provides comprehensive endpoints for:
 ## Authentication
 
 ### JWT Authentication
+
 All API endpoints require JWT authentication except public health checks.
 
 ```http
@@ -34,6 +36,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -48,6 +51,7 @@ Content-Type: application/json
 ```
 
 ### Using Authentication
+
 ```http
 GET /api/modules
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -56,6 +60,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ## Core Endpoints
 
 ### System Health
+
 Check system status and health metrics.
 
 ```http
@@ -63,6 +68,7 @@ GET /api/health
 ```
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -83,6 +89,7 @@ GET /api/health
 ```
 
 ### System Information
+
 Get comprehensive system information.
 
 ```http
@@ -91,6 +98,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "version": "1.0.0",
@@ -121,6 +129,7 @@ Authorization: Bearer {token}
 ## AI Agent Management
 
 ### Get AI Swarm Status
+
 Retrieve current AI swarm configuration and status.
 
 ```http
@@ -129,6 +138,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "totalAgents": 50000,
@@ -136,7 +146,7 @@ Authorization: Bearer {token}
   "swarmHealth": "excellent",
   "supremeCommander": {
     "status": "active",
-    "url": "http://localhost:8080",
+    "url": "http://localhost:\${{TF_API_PORT:-5000}}",
     "agents": 1,
     "performance": "100%"
   },
@@ -165,6 +175,7 @@ Authorization: Bearer {token}
 ```
 
 ### Deploy AI Agents
+
 Deploy additional AI agents to the swarm.
 
 ```http
@@ -181,6 +192,7 @@ Content-Type: application/json
 ```
 
 ### Scale AI Swarm
+
 Scale the AI swarm up or down.
 
 ```http
@@ -196,6 +208,7 @@ Content-Type: application/json
 ```
 
 ### AI Agent Performance
+
 Get performance metrics for AI agents.
 
 ```http
@@ -204,6 +217,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "overallPerformance": {
@@ -235,6 +249,7 @@ Authorization: Bearer {token}
 ## Module Management
 
 ### List All Modules
+
 Get comprehensive list of all government modules.
 
 ```http
@@ -243,6 +258,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "modules": [
@@ -281,6 +297,7 @@ Authorization: Bearer {token}
 ```
 
 ### Get Module Details
+
 Retrieve detailed information about a specific module.
 
 ```http
@@ -289,6 +306,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "id": "ai-command-brain",
@@ -327,6 +345,7 @@ Authorization: Bearer {token}
 ```
 
 ### Deploy Module
+
 Deploy or redeploy a government module.
 
 ```http
@@ -353,6 +372,7 @@ Content-Type: application/json
 ```
 
 ### Module Health Check
+
 Check the health status of a specific module.
 
 ```http
@@ -361,6 +381,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "moduleId": "terra-collections",
@@ -387,15 +408,18 @@ Authorization: Bearer {token}
 ## Development Tools
 
 ### Database Designer
+
 Visual database schema management endpoints.
 
 #### Get Database Schema
+
 ```http
 GET /api/tools/database/schema
 Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "tables": [
@@ -438,6 +462,7 @@ Authorization: Bearer {token}
 ```
 
 #### Create Database Table
+
 ```http
 POST /api/tools/database/tables
 Authorization: Bearer {token}
@@ -465,15 +490,18 @@ Content-Type: application/json
 ```
 
 ### API Designer
+
 Visual API endpoint design and generation.
 
 #### Get API Endpoints
+
 ```http
 GET /api/tools/api/endpoints
 Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "endpoints": [
@@ -513,9 +541,9 @@ Authorization: Bearer {token}
     "GovernmentRecord": {
       "type": "object",
       "properties": {
-        "id": {"type": "string"},
-        "title": {"type": "string"},
-        "classificationLevel": {"type": "string"}
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "classificationLevel": { "type": "string" }
       }
     }
   }
@@ -523,6 +551,7 @@ Authorization: Bearer {token}
 ```
 
 #### Generate API Endpoint
+
 ```http
 POST /api/tools/api/generate
 Authorization: Bearer {token}
@@ -550,6 +579,7 @@ Content-Type: application/json
 ## Monitoring & Analytics
 
 ### System Metrics
+
 Get real-time system performance metrics.
 
 ```http
@@ -558,6 +588,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "timestamp": "2025-09-02T10:30:00Z",
@@ -602,6 +633,7 @@ Authorization: Bearer {token}
 ```
 
 ### Performance Analytics
+
 Get detailed performance analytics.
 
 ```http
@@ -613,6 +645,7 @@ Query Parameters:
 ```
 
 **Response:**
+
 ```json
 {
   "timeRange": "24h",
@@ -647,6 +680,7 @@ Query Parameters:
 ```
 
 ### Real-time Logs
+
 Get real-time system logs.
 
 ```http
@@ -660,6 +694,7 @@ Query Parameters:
 ```
 
 **Response:**
+
 ```json
 {
   "logs": [
@@ -700,6 +735,7 @@ Query Parameters:
 ## Government Compliance
 
 ### Compliance Status
+
 Get overall government compliance status.
 
 ```http
@@ -708,6 +744,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "overallCompliance": "COMPLIANT",
@@ -768,6 +805,7 @@ Authorization: Bearer {token}
 ```
 
 ### Run Compliance Scan
+
 Initiate a comprehensive compliance scan.
 
 ```http
@@ -784,6 +822,7 @@ Content-Type: application/json
 ```
 
 ### Security Clearance Validation
+
 Validate user security clearance levels.
 
 ```http
@@ -792,6 +831,7 @@ Authorization: Bearer {token}
 ```
 
 **Response:**
+
 ```json
 {
   "userId": "user-123",
@@ -799,10 +839,7 @@ Authorization: Bearer {token}
   "issuedDate": "2024-01-15T00:00:00Z",
   "expirationDate": "2027-01-15T00:00:00Z",
   "status": "ACTIVE",
-  "compartments": [
-    "INTEL",
-    "OPERATIONS"
-  ],
+  "compartments": ["INTEL", "OPERATIONS"],
   "accessPermissions": {
     "modules": ["government-edition", "ai-swarm", "terra-collections"],
     "dataClassifications": ["PUBLIC", "CONFIDENTIAL", "SECRET"],
@@ -819,6 +856,7 @@ Authorization: Bearer {token}
 ## Error Handling
 
 ### Standard Error Response
+
 All API endpoints return errors in a consistent format:
 
 ```json
@@ -838,16 +876,16 @@ All API endpoints return errors in a consistent format:
 
 ### Common Error Codes
 
-| HTTP Code | Error Code | Description |
-|-----------|------------|-------------|
-| 400 | VALIDATION_ERROR | Invalid request parameters |
-| 401 | UNAUTHORIZED | Authentication required |
-| 403 | FORBIDDEN | Insufficient security clearance |
-| 404 | NOT_FOUND | Resource not found |
-| 409 | CONFLICT | Resource conflict |
-| 429 | RATE_LIMITED | Rate limit exceeded |
-| 500 | INTERNAL_ERROR | Server internal error |
-| 503 | SERVICE_UNAVAILABLE | Service temporarily unavailable |
+| HTTP Code | Error Code          | Description                     |
+| --------- | ------------------- | ------------------------------- |
+| 400       | VALIDATION_ERROR    | Invalid request parameters      |
+| 401       | UNAUTHORIZED        | Authentication required         |
+| 403       | FORBIDDEN           | Insufficient security clearance |
+| 404       | NOT_FOUND           | Resource not found              |
+| 409       | CONFLICT            | Resource conflict               |
+| 429       | RATE_LIMITED        | Rate limit exceeded             |
+| 500       | INTERNAL_ERROR      | Server internal error           |
+| 503       | SERVICE_UNAVAILABLE | Service temporarily unavailable |
 
 ## Rate Limiting
 
@@ -868,6 +906,7 @@ X-RateLimit-Reset: 1693656000
 ## Webhooks
 
 ### Configure Webhooks
+
 Set up webhooks for real-time event notifications.
 
 ```http
@@ -890,23 +929,24 @@ Content-Type: application/json
 
 ### Webhook Events
 
-| Event | Description | Payload |
-|-------|-------------|---------|
-| `module.deployed` | Module deployment completed | Module details |
-| `ai.agent.deployed` | AI agents deployed | Agent count and configuration |
-| `compliance.scan.completed` | Compliance scan finished | Scan results summary |
-| `security.breach.detected` | Security incident detected | Incident details |
-| `system.health.critical` | Critical system health issue | System metrics |
+| Event                       | Description                  | Payload                       |
+| --------------------------- | ---------------------------- | ----------------------------- |
+| `module.deployed`           | Module deployment completed  | Module details                |
+| `ai.agent.deployed`         | AI agents deployed           | Agent count and configuration |
+| `compliance.scan.completed` | Compliance scan finished     | Scan results summary          |
+| `security.breach.detected`  | Security incident detected   | Incident details              |
+| `system.health.critical`    | Critical system health issue | System metrics                |
 
 ## SDK Examples
 
 ### JavaScript/TypeScript SDK
+
 ```typescript
 import { TerraFusionAPI } from '@terrafusion/api-client';
 
 const api = new TerraFusionAPI({
-  baseURL: 'http://localhost:5000/api',
-  token: 'your-jwt-token'
+  baseURL: 'http://localhost:\${{TF_API_PORT:-5000}}/api',
+  token: 'your-jwt-token',
 });
 
 // Get AI swarm status
@@ -915,7 +955,7 @@ const swarmStatus = await api.aiSwarm.getStatus();
 // Deploy module
 const deployment = await api.modules.deploy('government-edition', {
   version: 'latest',
-  replicas: 3
+  replicas: 3,
 });
 
 // Run compliance scan
@@ -923,11 +963,12 @@ const scan = await api.compliance.scan(['FISMA', 'FedRAMP']);
 ```
 
 ### Python SDK
+
 ```python
 from terrafusion_api import TerraFusionClient
 
 client = TerraFusionClient(
-    base_url='http://localhost:5000/api',
+    base_url='http://localhost:\${{TF_API_PORT:-5000}}/api',
     token='your-jwt-token'
 )
 
@@ -942,10 +983,11 @@ health = client.modules.health_check('ai-command-brain')
 ```
 
 ### C# SDK
+
 ```csharp
 using TerraFusion.API.Client;
 
-var client = new TerraFusionClient("http://localhost:5000/api", "your-jwt-token");
+var client = new TerraFusionClient("http://localhost:\${{TF_API_PORT:-5000}}/api", "your-jwt-token");
 
 // Get module details
 var module = await client.Modules.GetAsync("ai-swarm");
@@ -966,7 +1008,8 @@ var compliance = await client.Compliance.GetStatusAsync();
 ## Support & Documentation
 
 - **[Quick Start Guide](./QUICK_START.md)** - Get started in 15 minutes
-- **[Module Development Guide](./MODULE_DEVELOPMENT.md)** - Create custom modules
+- **[Module Development Guide](./MODULE_DEVELOPMENT.md)** - Create custom
+  modules
 - **[Security Guide](./SECURITY.md)** - Security best practices
 - **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Production deployment
 

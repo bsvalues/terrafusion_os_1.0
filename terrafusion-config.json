@@ -1,0 +1,128 @@
+{
+  "system": {
+    "name": "TerraFusion OS",
+    "version": "1.0.0",
+    "environment": "production",
+    "deployment_target": "benton-county"
+  },
+  "ai_swarm": {
+    "scaling_strategy": "dynamic_elastic",
+    "deployment_phases": {
+      "current_phase": 1,
+      "target_phase": 5,
+      "phases": [
+        {
+          "id": 1,
+          "name": "bootstrap",
+          "agent_count": 1008,
+          "status": "active",
+          "capabilities": ["basic_operations", "module_loading", "health_monitoring"]
+        },
+        {
+          "id": 2,
+          "name": "county_operations",
+          "agent_count": 5000,
+          "status": "ready_to_deploy",
+          "capabilities": ["government_services", "citizen_portals", "basic_ai_coordination"]
+        },
+        {
+          "id": 3,
+          "name": "regional_expansion",
+          "agent_count": 15000,
+          "status": "planned",
+          "capabilities": ["multi_county", "advanced_analytics", "predictive_services"]
+        },
+        {
+          "id": 4,
+          "name": "state_integration",
+          "agent_count": 35000,
+          "status": "planned",
+          "capabilities": ["state_coordination", "enterprise_ai", "quantum_optimization"]
+        },
+        {
+          "id": 5,
+          "name": "federal_readiness",
+          "agent_count": 50000,
+          "status": "target",
+          "capabilities": ["federal_integration", "quantum_supreme", "unlimited_scaling"]
+        }
+      ]
+    },
+    "hierarchy": {
+      "supreme_commander": {
+        "count": 1,
+        "scaling_factor": "static"
+      },
+      "field_generals": {
+        "base_count": 7,
+        "scaling_factor": "logarithmic",
+        "max_count": 1220
+      },
+      "operational_forces": {
+        "base_count": 1000,
+        "scaling_factor": "linear",
+        "ratio_to_total": 0.96
+      }
+    }
+  },
+  "modules": {
+    "discovery_strategy": "filesystem_scan",
+    "loading_strategy": "hot_swap_enabled",
+    "scaling": {
+      "min_modules": 1,
+      "max_modules": "unlimited",
+      "auto_discovery": true,
+      "runtime_loading": true
+    }
+  },
+  "networking": {
+    "port_strategy": "dynamic_allocation",
+    "api_port": "${TF_API_PORT:-5046}",
+    "frontend_port": "${TF_FRONTEND_PORT:-3103}",
+    "shell_port": "${TF_SHELL_PORT:-3103}",
+    "port_range": {
+      "min": 3000,
+      "max": 9999
+    }
+  },
+  "security": {
+    "classification_levels": ["public", "internal", "confidential", "secret", "top_secret"],
+    "compliance_frameworks": ["FISMA", "NIST", "SOC2", "FedRAMP"],
+    "encryption": "AES-256-GCM",
+    "audit_logging": true
+  },
+  "performance": {
+    "rust_engine": {
+      "enabled": true,
+      "ffi_bridge": true,
+      "crates": [
+        "agent-coordination",
+        "geospatial-engine", 
+        "valuation-kernel",
+        "security-layer",
+        "performance-monitor",
+        "ffi-bridge"
+      ]
+    },
+    "target_response_time": "6-7ms",
+    "quantum_optimization": true
+  },
+  "deployment": {
+    "strategy": "white_glove_professional",
+    "counties": {
+      "benton_county": {
+        "population": 204390,
+        "budget": 125000000,
+        "parcels": 89247,
+        "agent_allocation": "auto_scale",
+        "module_selection": "government_core_plus"
+      }
+    },
+    "revenue_model": {
+      "base_fee": 477,
+      "marketplace_arpu": 142,
+      "total_monthly": 619,
+      "currency": "USD"
+    }
+  }
+}

@@ -15,11 +15,16 @@ function logAdminAction({ pluginId, action, user }) {
 
 function readAdminLogs(pluginId = null) {
   if (!fs.existsSync(LOG_PATH)) return [];
-  return fs.readFileSync(LOG_PATH, 'utf-8')
+  return fs
+    .readFileSync(LOG_PATH, 'utf-8')
     .split('\n')
     .filter(Boolean)
     .map(line => {
-      try { return JSON.parse(line); } catch { return { raw: line }; }
+      try {
+        return JSON.parse(line);
+      } catch {
+        return { raw: line };
+      }
     })
     .filter(entry => !pluginId || entry.pluginId === pluginId);
 }

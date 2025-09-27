@@ -1,33 +1,33 @@
 {
-    "county": "spokane",
-    "valuation_date": "2025-08-12",
-    "sample_valuations": [
-        {
-            "parcel": "SPOKANE-000001",
-            "address": "123 Division St",
-            "current_value": 425000,
-            "costforge_value": 438500,
-            "confidence": "94.8%",
-            "time": "2.9 seconds"
-        },
-        {
-            "parcel": "SPOKANE-000002",
-            "address": "456 Riverside Ave",
-            "current_value": 675000,
-            "costforge_value": 692000,
-            "confidence": "93.2%",
-            "time": "3.1 seconds"
-        },
-        {
-            "parcel": "SPOKANE-000003",
-            "address": "789 Monroe St",
-            "current_value": 380000,
-            "costforge_value": 372500,
-            "confidence": "95.1%",
-            "time": "2.8 seconds"
-        }
-    ],
-    "average_confidence": "94.4%",
-    "average_time": "2.9 seconds",
-    "vs_manual": "379,000,000× faster"
+  "county": "spokane",
+  "valuation_date": "2025-08-12",
+  "sample_valuations": [
+    {
+      "parcel": "SPOKANE-000001",
+      "address": "123 Division St",
+      "current_value": 425000,
+      "costforge_value": 438500,
+      "confidence": "94.8%",
+      "time": "2.9 seconds"
+    },
+    {
+      "parcel": "SPOKANE-000002",
+      "address": "456 Riverside Ave",
+      "current_value": 675000,
+      "costforge_value": 692000,
+      "confidence": "93.2%",
+      "time": "3.1 seconds"
+    },
+    {
+      "parcel": "SPOKANE-000003",
+      "address": "789 Monroe St",
+      "current_value": 380000,
+      "costforge_value": 372500,
+      "confidence": "95.1%",
+      "time": "2.8 seconds"
+    }
+  ],
+  "average_confidence": "94.4%",
+  "average_time": "2.9 seconds",
+  "vs_manual": "379,000,000× faster"
 }

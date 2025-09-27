@@ -17,14 +17,14 @@ module.exports = {
   ci: {
     collect: {
       url: [
-        'http://localhost:3000/',
-        'http://localhost:3000/properties',
-        'http://localhost:3000/properties/search',
-        'http://localhost:3000/dashboard',
-        'http://localhost:3000/assessments',
-        'http://localhost:3000/reports',
-        'http://localhost:3000/ai-swarm',
-        'http://localhost:3000/county/benton-county'
+        'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/',
+        'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/properties',
+        'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/properties/search',
+        'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/dashboard',
+        'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/assessments',
+        'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/reports',
+        'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/ai-swarm',
+        'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/county/benton-county'
       ],
       numberOfRuns: 3,
       settings: {
@@ -370,7 +370,7 @@ function analyzeBudgets(report) {
 
 function generateMockRoute(pathname, fcp, lcp, cls) {
     return {
-        url: `http://localhost:3000${pathname}`,
+        url: `http://localhost:\${{TF_FRONTEND_PORT:-3000}}${pathname}`,
         pathname,
         metrics: {
             fcp: fcp + Math.random() * 200 - 100,

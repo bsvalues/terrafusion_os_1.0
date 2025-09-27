@@ -1,0 +1,75 @@
+{
+  "name": "Golden Optimization Suite",
+  "slug": "golden-optimization-suite",
+  "version": "1.0.0",
+  "displayName": "Golden Optimization Suite (\u03c6)",
+  "description": "Graph denoising, \u03c6-optimizers, and Fibonacci services powered by the Golden Ratio Engine.",
+  "service": {
+    "baseUrl": "http://grfe.golden:8080",
+    "healthPath": "/health",
+    "endpoints": {
+      "fib": "/fib",
+      "goldenSection": "/opt/golden-section",
+      "goldenLaplacian": "/graph/golden-laplacian"
+    }
+  },
+  "rbac": {
+    "roles": [
+      "Public",
+      "User",
+      "Assessor",
+      "Realtor",
+      "CountyAdmin",
+      "EnterpriseAdmin"
+    ],
+    "permissions": {
+      "Public": [
+        "ui:read"
+      ],
+      "User": [
+        "ui:read",
+        "fib:read"
+      ],
+      "Assessor": [
+        "ui:read",
+        "fib:read",
+        "opt:run",
+        "graph:run"
+      ],
+      "Realtor": [
+        "ui:read",
+        "fib:read",
+        "opt:run"
+      ],
+      "CountyAdmin": [
+        "*"
+      ],
+      "EnterpriseAdmin": [
+        "*"
+      ]
+    }
+  },
+  "billing": {
+    "plan": "foundation",
+    "annualUSD": 25000,
+    "addons": [
+      "batch spectral",
+      "GPU"
+    ],
+    "webhook": "/api/billing/webhook"
+  },
+  "routes": [
+    {
+      "path": "/golden",
+      "auth": "User"
+    },
+    {
+      "path": "/golden/graph",
+      "auth": "Assessor"
+    },
+    {
+      "path": "/golden/opt",
+      "auth": "Assessor"
+    }
+  ]
+}

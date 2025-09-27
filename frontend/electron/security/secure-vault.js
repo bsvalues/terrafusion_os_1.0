@@ -59,7 +59,7 @@ class SecureVault {
       algorithm: 'AES-256-GCM',
       iv: iv.toString('base64'),
       ciphertext: ciphertext.toString('base64'),
-      tag: tag.toString('base64')
+      tag: tag.toString('base64'),
     };
   }
 

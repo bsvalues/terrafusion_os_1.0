@@ -1,0 +1,660 @@
+/* Advanced IDE Styles */
+.advanced-ide {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #1e1e1e;
+    color: #cccccc;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+/* Menu Bar */
+.ide-menubar {
+    background: #2d2d30;
+    border-bottom: 1px solid #3c3c3c;
+    height: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+.menu-items {
+    display: flex;
+    gap: 20px;
+}
+
+.menu-item {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+    background: #3c3c3c;
+}
+
+.ide-status {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+}
+
+.connection-status {
+    color: #4caf50;
+}
+
+.git-branch {
+    color: #2196f3;
+}
+
+/* Toolbar */
+.ide-toolbar {
+    background: #252526;
+    border-bottom: 1px solid #3c3c3c;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.toolbar-search {
+    margin-left: auto;
+    min-width: 250px;
+}
+
+.toolbar-search .input-group-sm .form-control {
+    background: #3c3c3c;
+    border: 1px solid #555;
+    color: #cccccc;
+    font-size: 13px;
+}
+
+.toolbar-search .btn-outline-secondary {
+    border-color: #555;
+    color: #cccccc;
+}
+
+/* Main IDE Layout */
+.ide-content {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+/* Left Sidebar */
+.ide-sidebar {
+    width: 300px;
+    background: #252526;
+    border-right: 1px solid #3c3c3c;
+    display: flex;
+    min-height: 0;
+}
+
+.sidebar-tabs {
+    width: 48px;
+    background: #2d2d30;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    gap: 5px;
+}
+
+.sidebar-tabs .tab {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #888;
+    transition: all 0.2s;
+    border-radius: 5px;
+    margin: 0 4px;
+}
+
+.sidebar-tabs .tab:hover {
+    background: #3c3c3c;
+    color: #cccccc;
+}
+
+.sidebar-tabs .tab.active {
+    background: #007acc;
+    color: white;
+}
+
+.sidebar-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.sidebar-panel {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.sidebar-panel.active {
+    display: flex;
+}
+
+.panel-header {
+    padding: 10px 15px;
+    background: #2d2d30;
+    border-bottom: 1px solid #3c3c3c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.panel-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.panel-actions .btn {
+    padding: 2px 6px;
+    font-size: 11px;
+    background: none;
+    border: none;
+    color: #888;
+}
+
+.panel-actions .btn:hover {
+    color: #cccccc;
+    background: #3c3c3c;
+}
+
+/* File Tree */
+.file-tree {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.file-item {
+    margin: 2px 0;
+}
+
+.file-label {
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.file-label:hover {
+    background: #2a2d2e;
+}
+
+.file-label.active {
+    background: #094771;
+    color: white;
+}
+
+.file-label i {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
+.file-children {
+    margin-left: 20px;
+}
+
+/* Search Panel */
+.search-controls {
+    padding: 15px;
+}
+
+.search-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.search-options .form-check-label {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.search-results {
+    flex: 1;
+    padding: 0 15px;
+    overflow-y: auto;
+}
+
+/* Git Panel */
+.git-status {
+    padding: 15px;
+    font-size: 12px;
+}
+
+.git-changes {
+    flex: 1;
+    padding: 0 15px;
+    overflow-y: auto;
+}
+
+/* Debug Panel */
+.debug-controls {
+    padding: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.debug-info {
+    flex: 1;
+    padding: 0 15px;
+    overflow-y: auto;
+}
+
+.debug-section {
+    margin-bottom: 20px;
+}
+
+.debug-section h6 {
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: #888;
+    text-transform: uppercase;
+}
+
+/* Main Editor Area */
+.ide-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Editor Tabs */
+.editor-tabs {
+    background: #2d2d30;
+    border-bottom: 1px solid #3c3c3c;
+    display: flex;
+    align-items: center;
+    min-height: 35px;
+    padding: 0 10px;
+    overflow-x: auto;
+}
+
+.editor-tab {
+    background: #2d2d30;
+    border: 1px solid #3c3c3c;
+    border-bottom: none;
+    padding: 6px 15px;
+    margin-right: 2px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.editor-tab:hover {
+    background: #3c3c3c;
+}
+
+.editor-tab.active {
+    background: #1e1e1e;
+    border-bottom: 2px solid #007acc;
+}
+
+.editor-tab.modified .tab-name::after {
+    content: "●";
+    color: #ff9800;
+    margin-left: 5px;
+}
+
+.tab-close {
+    background: none;
+    border: none;
+    color: #888;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+.tab-close:hover {
+    background: #e81123;
+    color: white;
+}
+
+.tab-controls {
+    margin-left: auto;
+    display: flex;
+    gap: 5px;
+}
+
+/* Editor Container */
+.editor-container {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.editor-group {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.monaco-editor {
+    flex: 1;
+    min-height: 0;
+}
+
+/* Status Bar */
+.ide-statusbar {
+    background: #007acc;
+    color: white;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    font-size: 12px;
+}
+
+.status-left, .status-center, .status-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.status-right .btn {
+    background: none;
+    border: none;
+    color: white;
+    padding: 0;
+    font-size: 12px;
+}
+
+/* Bottom Panel */
+.ide-bottom-panel {
+    height: 250px;
+    background: #1e1e1e;
+    border-top: 1px solid #3c3c3c;
+    display: flex;
+    flex-direction: column;
+    resize: vertical;
+    overflow: hidden;
+    min-height: 100px;
+    max-height: 400px;
+}
+
+.panel-tabs {
+    background: #2d2d30;
+    border-bottom: 1px solid #3c3c3c;
+    display: flex;
+    padding: 0 10px;
+    height: 35px;
+    align-items: center;
+}
+
+.panel-tabs .tab {
+    padding: 6px 15px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 3px 3px 0 0;
+    transition: all 0.2s;
+    color: #888;
+}
+
+.panel-tabs .tab:hover {
+    background: #3c3c3c;
+    color: #cccccc;
+}
+
+.panel-tabs .tab.active {
+    background: #1e1e1e;
+    color: white;
+    border-bottom: 2px solid #007acc;
+}
+
+.badge {
+    background: #e81123;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 5px;
+}
+
+.panel-content {
+    flex: 1;
+    position: relative;
+    min-height: 0;
+}
+
+.panel-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.panel-pane.active {
+    display: block;
+}
+
+/* Terminal */
+#terminal-container {
+    height: 100%;
+    background: #1e1e1e;
+    font-family: 'Fira Code', Monaco, Menlo, monospace;
+}
+
+/* Output */
+.output-content {
+    font-family: 'Fira Code', Monaco, Menlo, monospace;
+    font-size: 13px;
+    white-space: pre-wrap;
+    color: #cccccc;
+}
+
+/* Problems */
+.problems-list {
+    font-size: 13px;
+}
+
+.problem-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #3c3c3c;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.problem-severity {
+    width: 20px;
+    text-align: center;
+}
+
+.problem-severity.error {
+    color: #e81123;
+}
+
+.problem-severity.warning {
+    color: #ff9800;
+}
+
+.problem-severity.info {
+    color: #2196f3;
+}
+
+/* Debug Console */
+.debug-console {
+    font-family: 'Fira Code', Monaco, Menlo, monospace;
+    font-size: 13px;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+/* Toast Messages */
+.toast-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #007acc;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ide-sidebar {
+        width: 250px;
+    }
+    
+    .toolbar-search {
+        min-width: 200px;
+    }
+    
+    .ide-toolbar {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .ide-sidebar {
+        position: absolute;
+        left: -300px;
+        z-index: 100;
+        height: 100%;
+        transition: left 0.3s ease;
+    }
+    
+    .ide-sidebar.mobile-open {
+        left: 0;
+    }
+    
+    .toolbar-search {
+        width: 100%;
+        order: 1;
+    }
+}
+
+/* Dark theme adjustments */
+.form-control {
+    background: #3c3c3c !important;
+    border: 1px solid #555 !important;
+    color: #cccccc !important;
+}
+
+.form-control:focus {
+    border-color: #007acc !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 122, 204, 0.25) !important;
+}
+
+.btn-primary {
+    background: #007acc !important;
+    border-color: #007acc !important;
+}
+
+.btn-secondary {
+    background: #5a5d5e !important;
+    border-color: #5a5d5e !important;
+}
+
+.btn-success {
+    background: #4caf50 !important;
+    border-color: #4caf50 !important;
+}
+
+.btn-warning {
+    background: #ff9800 !important;
+    border-color: #ff9800 !important;
+}
+
+.btn-danger {
+    background: #e81123 !important;
+    border-color: #e81123 !important;
+}
+
+.btn-info {
+    background: #2196f3 !important;
+    border-color: #2196f3 !important;
+}
+
+.btn-outline-secondary {
+    border-color: #5a5d5e !important;
+    color: #5a5d5e !important;
+}
+
+.btn-outline-secondary:hover {
+    background: #5a5d5e !important;
+    color: white !important;
+}

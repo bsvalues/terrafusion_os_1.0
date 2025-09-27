@@ -81,7 +81,7 @@ receivers:
   # Default webhook receiver
   - name: 'web.hook'
     webhook_configs:
-      - url: 'http://terrafusion-monitor:8080/webhook/alerts'
+      - url: 'http://terrafusion-monitor:${TF_STATIC_PORT:-8080}/webhook/alerts'
         send_resolved: true
         http_config:
           basic_auth:
@@ -119,7 +119,7 @@ receivers:
         send_resolved: true
 
     webhook_configs:
-      - url: 'http://terrafusion-monitor:8080/webhook/critical'
+      - url: 'http://terrafusion-monitor:${TF_STATIC_PORT:-8080}/webhook/critical'
         send_resolved: true
 
   # Database team alerts

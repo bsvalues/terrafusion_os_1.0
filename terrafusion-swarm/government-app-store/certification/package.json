@@ -1,0 +1,72 @@
+{
+  "name": "terrafusion-plugin-certification",
+  "version": "2.0.0",
+  "description": "Plugin certification and compliance validation for TerraFusion Government App Store",
+  "main": "plugin-certification.js",
+  "scripts": {
+    "start": "node plugin-certification.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "validate": "node validate-plugins.js",
+    "certify": "node certification-pipeline.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "winston": "^3.10.0",
+    "archiver": "^6.0.1",
+    "unzipper": "^0.10.14",
+    "semver": "^7.5.4",
+    "crypto": "^1.0.1",
+    "multer": "^1.4.5-lts.1",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.29.4",
+    "axios": "^1.5.0",
+    "helmet": "^7.0.0",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^6.10.0",
+    "node-cron": "^3.0.2",
+    "uuid": "^9.0.0",
+    "lodash": "^4.17.21",
+    "validator": "^13.11.0",
+    "sanitize-html": "^2.11.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.49.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TerraFusion/government-app-store"
+  },
+  "keywords": [
+    "government",
+    "plugin",
+    "certification",
+    "compliance",
+    "terrafusion",
+    "app-store",
+    "marketplace",
+    "gsa",
+    "fisma",
+    "508-compliance"
+  ],
+  "author": "TerraFusion Development Team",
+  "license": "Government License",
+  "terrafusion": {
+    "module": "plugin-certification",
+    "tier": "Tier 1",
+    "category": "Core",
+    "government_certified": true,
+    "compliance_level": "FISMA_High",
+    "security_clearance": "Government_Approved"
+  }
+}

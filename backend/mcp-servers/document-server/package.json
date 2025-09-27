@@ -19,7 +19,12 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "keywords": ["mcp", "document", "processing", "terrafusion"],
+  "keywords": [
+    "mcp",
+    "document",
+    "processing",
+    "terrafusion"
+  ],
   "author": "Terrafusion Labs",
   "license": "Apache-2.0"
 }

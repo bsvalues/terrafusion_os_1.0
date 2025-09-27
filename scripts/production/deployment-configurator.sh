@@ -99,7 +99,7 @@ TERRAFUSION_SYSTEM_TYPE=${SYSTEM_TYPE}
 # Database Configuration (Isolated)
 DATABASE_NAME=terrafusion_${COUNTY_NAME}
 DATABASE_HOST=localhost
-DATABASE_PORT=5432
+DATABASE_PORT=\${{TF_POSTGRES_PORT:-5432}}
 DATABASE_SCHEMA=${COUNTY_NAME}_data
 
 # API Configuration (County-Scoped)
@@ -194,7 +194,7 @@ TERRAFUSION_COUNTIES="${COUNTIES_INPUT}"
 # Shared Database Configuration
 DATABASE_NAME=terrafusion_federated
 DATABASE_HOST=localhost
-DATABASE_PORT=5432
+DATABASE_PORT=\${{TF_POSTGRES_PORT:-5432}}
 DATABASE_SCHEMA=federated_data
 
 # Federated API Configuration

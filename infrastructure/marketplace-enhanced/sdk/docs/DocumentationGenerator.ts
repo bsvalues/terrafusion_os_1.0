@@ -48,13 +48,15 @@ export interface Example {
 export class DocumentationGenerator {
   private config: DocumentationConfig;
 
-  constructor(config: DocumentationConfig = {
-    includeAPI: true,
-    includeExamples: true,
-    includeScreenshots: false,
-    format: 'markdown',
-    theme: 'terrafusion'
-  }) {
+  constructor(
+    config: DocumentationConfig = {
+      includeAPI: true,
+      includeExamples: true,
+      includeScreenshots: false,
+      format: 'markdown',
+      theme: 'terrafusion',
+    }
+  ) {
     this.config = config;
   }
 
@@ -72,7 +74,7 @@ export class DocumentationGenerator {
       this.generateDevelopment(manifest),
       this.generateTroubleshooting(manifest),
       this.generateChangelog(manifest),
-      this.generateFooter(manifest)
+      this.generateFooter(manifest),
     ];
 
     return sections.filter(section => section.trim()).join('\n\n');
@@ -87,7 +89,9 @@ ${manifest.description}
 
 ## Key Features
 
-${this.extractFeatures(manifest).map(feature => `- ${feature}`).join('\n')}
+${this.extractFeatures(manifest)
+  .map(feature => `- ${feature}`)
+  .join('\n')}
 
 ## Compatibility
 
@@ -122,7 +126,7 @@ For support and documentation, visit the [Terrafusion Developer Portal](https://
     }
 
     let docs = '## API Reference\n\n';
-    
+
     endpoints.forEach(endpoint => {
       docs += `### ${endpoint.method.toUpperCase()} ${endpoint.path}\n\n`;
       docs += `${endpoint.description}\n\n`;
@@ -470,11 +474,15 @@ console.log('Validation Score:', report.overallScore);
 
 ${manifest.description}
 
-${manifest.tags && manifest.tags.length > 0 ? `
+${
+  manifest.tags && manifest.tags.length > 0
+    ? `
 ### Features
 
 ${manifest.tags.map(tag => `- ${this.formatFeatureName(tag)}`).join('\n')}
-` : ''}
+`
+    : ''
+}
 `.trim();
   }
 
@@ -513,9 +521,9 @@ ${manifest.terrafusion?.dependencies?.length ? `- Dependencies: ${manifest.terra
 
 This plugin requires the following permissions:
 
-${manifest.terrafusion.permissions.map(perm => 
-  `- **${perm.type}** (${perm.scope}): ${perm.description}`
-).join('\n')}
+${manifest.terrafusion.permissions
+  .map(perm => `- **${perm.type}** (${perm.scope}): ${perm.description}`)
+  .join('\n')}
 
 ### Setup
 
@@ -552,13 +560,17 @@ For detailed usage instructions and advanced configuration options, please refer
 
 This plugin requires the following permissions to function properly:
 
-${manifest.terrafusion.permissions.map(perm => `
+${manifest.terrafusion.permissions
+  .map(
+    perm => `
 ### ${perm.type}
 
 **Scope:** ${perm.scope}  
 **Required:** ${perm.required ? 'Yes' : 'No'}  
 **Description:** ${perm.description}
-`).join('\n')}
+`
+  )
+  .join('\n')}
 `.trim();
   }
 
@@ -572,9 +584,13 @@ ${manifest.terrafusion.permissions.map(perm => `
 
 This plugin meets the following compliance standards:
 
-${manifest.terrafusion.compliance.map(comp => `
+${manifest.terrafusion.compliance
+  .map(
+    comp => `
 - **${comp.standard}** (${comp.level}): ${comp.description}
-`).join('\n')}
+`
+  )
+  .join('\n')}
 `.trim();
   }
 
@@ -655,7 +671,7 @@ Licensed under ${manifest.license || 'MIT'}
 
   private extractFeatures(manifest: PluginManifest): string[] {
     const features = [];
-    
+
     if (manifest.tags) {
       features.push(...manifest.tags.map(tag => this.formatFeatureName(tag)));
     }
@@ -683,9 +699,10 @@ For detailed instructions, see the Usage section below.
   }
 
   private formatFeatureName(feature: string): string {
-    return feature.split(/[-_]/).map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    return feature
+      .split(/[-_]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 
   private generateArchitectureDocs(template: PluginTemplate): string {

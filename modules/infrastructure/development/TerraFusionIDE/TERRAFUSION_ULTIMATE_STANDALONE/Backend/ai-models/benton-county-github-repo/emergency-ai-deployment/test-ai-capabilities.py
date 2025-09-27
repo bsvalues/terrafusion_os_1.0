@@ -1,3 +1,4 @@
+# NO HARDCODED PORTS! Use environment variables.
 #!/usr/bin/env python3
 """
 🚨 BENTON COUNTY AI CAPABILITIES TEST SUITE
@@ -22,7 +23,7 @@ NC = '\033[0m'  # No Color
 
 # Configuration
 OLLAMA_HOST = "http://ollama-service.benton-county-prod:11434"
-WEAVIATE_HOST = "http://weaviate.benton-county-prod:8080"
+WEAVIATE_HOST = "http://weaviate.benton-county-prod:${TF_STATIC_PORT:-8080}"
 MCP_HOST = "http://mcp-server.benton-county-prod:8090"
 AGENT_HOST = "http://ai-agent-swarm.benton-county-prod:8095"
 

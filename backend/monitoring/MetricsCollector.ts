@@ -38,7 +38,7 @@ export class MetricsCollector {
       timestamp: new Date(),
       metricName: name,
       value,
-      tags
+      tags,
     };
 
     this.metrics.push(entry);
@@ -66,24 +66,25 @@ export class MetricsCollector {
 
   getPerformanceMetrics(): PerformanceMetrics {
     const recentMetrics = this.getMetrics(undefined, 300000); // Last 5 minutes
-    
+
     const successes = recentMetrics.filter(m => m.metricName === 'task_success').length;
     const failures = recentMetrics.filter(m => m.metricName === 'task_failure').length;
     const total = successes + failures;
-    
+
     const responseTimes = recentMetrics
       .filter(m => m.metricName === 'response_time')
       .map(m => m.value);
-    
+
     return {
       successRate: total > 0 ? successes / total : 1.0,
-      averageResponseTime: responseTimes.length > 0 
-        ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length 
-        : 0,
+      averageResponseTime:
+        responseTimes.length > 0
+          ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
+          : 0,
       throughput: total / 5, // Tasks per minute
       errorRate: total > 0 ? failures / total : 0,
       quantumCoherence: 0.98, // Simulated
-      consciousnessLevel: 7.5  // Simulated
+      consciousnessLevel: 7.5, // Simulated
     };
   }
 }

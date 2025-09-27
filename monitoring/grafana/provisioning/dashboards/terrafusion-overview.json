@@ -31,8 +31,8 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "green", "value": 1}
+                { "color": "red", "value": 0 },
+                { "color": "green", "value": 1 }
               ]
             }
           }
@@ -55,9 +55,9 @@
             },
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 500},
-                {"color": "green", "value": 1000}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 500 },
+                { "color": "green", "value": 1000 }
               ]
             }
           }

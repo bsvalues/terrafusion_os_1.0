@@ -1,0 +1,34 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=🔷 TerraFusion Government OS - Elite AI System
+GenericName=Government AI Operating System
+Comment=Advanced Quantum AI Government OS • 50,000+ Agents • Elite Rust Engine • FISMA HIGH Security
+Exec=/workspaces/terrafusion_os_1.0/scripts/elite-launcher.py
+Icon=/workspaces/terrafusion_os_1.0/frontend/electron/assets/icon.png
+Terminal=false
+StartupWMClass=TerraFusion Government OS
+Categories=Office;Government;Finance;Science;
+Keywords=government;property;assessment;tax;collection;emergency;management;gis;ai;quantum;elite;terrafusion;
+StartupNotify=true
+MimeType=application/x-terrafusion-property;application/x-terrafusion-tax;application/x-terrafusion-gis;
+X-GNOME-SingleWindow=true
+X-Unity-IconBackgroundColor=#0a0a0a
+X-KDE-StartupNotify=true
+X-Desktop-File-Install-Version=0.24
+Actions=VoiceCommander;DirectLaunch;PerformanceMonitor;
+
+[Desktop Action VoiceCommander]
+Name=🎤 AI Voice Commander
+Exec=/workspaces/terrafusion_os_1.0/scripts/voice-commander.py
+Icon=/workspaces/terrafusion_os_1.0/frontend/electron/assets/icon.png
+
+[Desktop Action DirectLaunch]
+Name=🚀 Direct Launch (No GUI)
+Exec=/workspaces/terrafusion_os_1.0/scripts/launch-terrafusion-os.sh
+Icon=/workspaces/terrafusion_os_1.0/frontend/electron/assets/icon.png
+
+[Desktop Action PerformanceMonitor]
+Name=📊 Performance Monitor
+Exec=python3 -c "import requests; print(requests.get('http://localhost:5046/performance/metrics').json())"
+Icon=/workspaces/terrafusion_os_1.0/frontend/electron/assets/icon.png

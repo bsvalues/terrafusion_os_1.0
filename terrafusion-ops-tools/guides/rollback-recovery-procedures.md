@@ -1,31 +1,35 @@
 # Terrafusion Rollback and Recovery Procedures
 
 ## Overview
-This document provides step-by-step procedures for rolling back deployments and recovering from various failure scenarios. These procedures are critical for maintaining service availability and data integrity.
+
+This document provides step-by-step procedures for rolling back deployments and
+recovering from various failure scenarios. These procedures are critical for
+maintaining service availability and data integrity.
 
 ## Quick Reference - Emergency Contacts
 
-| Role | Contact | Phone | Available |
-|------|---------|-------|-----------|
-| Incident Commander | [Name] | +1-XXX-XXX-XXXX | 24/7 |
-| Database Admin | [Name] | +1-XXX-XXX-XXXX | 24/7 |
-| DevOps Lead | [Name] | +1-XXX-XXX-XXXX | Business hours |
-| Security Team | security@terrafusion.com | - | 24/7 |
+| Role               | Contact                  | Phone           | Available      |
+| ------------------ | ------------------------ | --------------- | -------------- |
+| Incident Commander | [Name]                   | +1-XXX-XXX-XXXX | 24/7           |
+| Database Admin     | [Name]                   | +1-XXX-XXX-XXXX | 24/7           |
+| DevOps Lead        | [Name]                   | +1-XXX-XXX-XXXX | Business hours |
+| Security Team      | security@terrafusion.com | -               | 24/7           |
 
 ## Rollback Decision Matrix
 
-| Scenario | Severity | Rollback Time | Decision |
-|----------|----------|---------------|----------|
-| >5% API errors | Critical | Immediate | Automatic rollback |
-| Database corruption | Critical | Immediate | Stop all services, restore |
-| Performance degradation >50% | High | 15 minutes | Monitor then rollback |
-| UI breaking changes | High | 30 minutes | Rollback or hotfix |
-| Minor feature broken | Medium | Next window | Hotfix preferred |
-| Cosmetic issues | Low | No rollback | Fix forward |
+| Scenario                     | Severity | Rollback Time | Decision                   |
+| ---------------------------- | -------- | ------------- | -------------------------- |
+| >5% API errors               | Critical | Immediate     | Automatic rollback         |
+| Database corruption          | Critical | Immediate     | Stop all services, restore |
+| Performance degradation >50% | High     | 15 minutes    | Monitor then rollback      |
+| UI breaking changes          | High     | 30 minutes    | Rollback or hotfix         |
+| Minor feature broken         | Medium   | Next window   | Hotfix preferred           |
+| Cosmetic issues              | Low      | No rollback   | Fix forward                |
 
 ## Pre-Deployment Checklist
 
 **Before ANY Production Deployment**:
+
 - [ ] Full database backup completed
 - [ ] Application backup created
 - [ ] Configuration backup taken
@@ -65,7 +69,7 @@ sudo cp /opt/terrafusion/configs/backend.env.previous /opt/terrafusion/backend/.
 sudo systemctl start terrafusion-backend
 
 # 6. Verify health
-curl -f http://localhost:8080/health || exit 1
+curl -f http://localhost:\${{TF_ADMIN_PORT:-8080}}/health || exit 1
 
 echo "Backend rollback completed"
 ```
@@ -210,24 +214,27 @@ echo "Configuration rollback completed"
 **Symptoms**: Inconsistent data, application errors, query failures
 
 **Steps**:
+
 1. **Immediate Actions**
+
    ```bash
    # Stop writes to prevent further corruption
    sudo systemctl stop terrafusion-backend
-   
+
    # Set database to read-only
    psql -U postgres -c "ALTER DATABASE terrafusion_production SET default_transaction_read_only = on;"
    ```
 
 2. **Assess Damage**
+
    ```sql
    -- Check for corruption
-   SELECT schemaname, tablename, 
+   SELECT schemaname, tablename,
           pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size
-   FROM pg_tables 
+   FROM pg_tables
    WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
    ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
-   
+
    -- Run integrity checks
    VACUUM ANALYZE;
    ```
@@ -240,6 +247,7 @@ echo "Configuration rollback completed"
 ### 2. Service Failure Recovery
 
 **Backend Service Won't Start**:
+
 ```bash
 # 1. Check logs
 sudo journalctl -u terrafusion-backend -n 100
@@ -256,7 +264,7 @@ ls -la /opt/terrafusion/backend/
 # 5. Try manual start for debugging
 cd /opt/terrafusion/backend
 source venv/bin/activate
-python -m uvicorn main:app --host 0.0.0.0 --port 8080
+python -m uvicorn main:app --host 0.0.0.0 --port \${{TF_ADMIN_PORT:-8080}}
 ```
 
 ### 3. Complete System Recovery
@@ -264,11 +272,12 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8080
 **From Total Failure** (all services down):
 
 1. **Infrastructure Recovery**
+
    ```bash
    # 1. Verify hardware/VM status
    # 2. Check network connectivity
    ping 8.8.8.8
-   
+
    # 3. Start core services in order
    sudo systemctl start postgresql
    sudo systemctl start redis
@@ -276,13 +285,14 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8080
    ```
 
 2. **Application Recovery**
+
    ```bash
    # 4. Start backend
    sudo systemctl start terrafusion-backend
-   
+
    # 5. Start AI engine
    sudo systemctl start terrafusion-ai
-   
+
    # 6. Verify all services
    sudo systemctl status terrafusion-*
    ```
@@ -290,9 +300,9 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8080
 3. **Verification**
    ```bash
    # Health checks
-   curl http://localhost:8080/health
-   curl http://localhost:8001/health
-   curl http://localhost:3003/
+   curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
+   curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
+   curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/
    ```
 
 ## Disaster Recovery
@@ -302,29 +312,32 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8080
 **If Primary Database is Unrecoverable**:
 
 1. **Switch to DR Site** (if available)
+
    ```bash
    # Update DNS to point to DR site
    # Update load balancer configuration
    ```
 
 2. **Restore from Off-site Backup**
+
    ```bash
    # Download latest backup from S3/GCS
    aws s3 cp s3://terrafusion-backups/daily/terrafusion_$(date +%Y%m%d).sql.gz .
    gunzip terrafusion_*.sql.gz
-   
+
    # Restore to new database
    createdb -U postgres terrafusion_production
    psql -U postgres terrafusion_production < terrafusion_*.sql
    ```
 
 3. **Rebuild from Source**
+
    ```bash
    # Clone repositories
    git clone https://github.com/terrafusion/backend.git
    git clone https://github.com/terrafusion/frontend.git
    git clone https://github.com/terrafusion/ai_engine.git
-   
+
    # Deploy using standard procedures
    ```
 
@@ -333,11 +346,12 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8080
 **If System Compromise Detected**:
 
 1. **Immediate Isolation**
+
    ```bash
    # 1. Disconnect from network (if possible)
    # 2. Preserve evidence
    sudo tar -czf /evidence/system_state_$(date +%Y%m%d-%H%M%S).tar.gz /var/log /opt/terrafusion
-   
+
    # 3. Stop all services
    sudo systemctl stop terrafusion-* nginx postgresql redis
    ```
@@ -358,12 +372,14 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8080
 ### Monthly Rollback Drills
 
 **Test Schedule**:
+
 - 1st Monday: Backend rollback test
-- 2nd Monday: Frontend rollback test  
+- 2nd Monday: Frontend rollback test
 - 3rd Monday: Database recovery test
 - 4th Monday: Full system recovery
 
 **Test Script**:
+
 ```bash
 #!/bin/bash
 # Rollback Test Script (run in staging)
@@ -388,18 +404,21 @@ echo "Rollback drill completed successfully"
 ## Post-Incident Procedures
 
 ### 1. Immediate Actions
+
 - [ ] Services restored and verified
 - [ ] Users notified of resolution
 - [ ] Monitoring confirmed normal
 - [ ] Data integrity verified
 
 ### 2. Within 24 Hours
+
 - [ ] Incident report drafted
 - [ ] Root cause identified
 - [ ] Timeline documented
 - [ ] Stakeholders briefed
 
 ### 3. Within 1 Week
+
 - [ ] Post-mortem conducted
 - [ ] Procedures updated
 - [ ] Preventive measures implemented
@@ -427,7 +446,7 @@ rollback-production:
 def check_deployment_health():
     error_rate = get_error_rate()
     response_time = get_avg_response_time()
-    
+
     if error_rate > 0.05 or response_time > 2000:
         send_alert("Deployment issues detected")
         if auto_rollback_enabled:
@@ -456,9 +475,9 @@ psql -U terrafusion_user -d terrafusion_production -c "SELECT version();"
 psql -U terrafusion_user -d terrafusion_production -c "SELECT COUNT(*) FROM projects;"
 
 # Health Checks
-curl http://localhost:8080/health
-curl http://localhost:8001/health
-curl http://localhost:3003/health
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
 
 # Backup Commands
 pg_dump -U terrafusion_user terrafusion_production > backup_$(date +%Y%m%d).sql
@@ -472,4 +491,5 @@ redis-cli BGSAVE
 
 ---
 
-Remember: When in doubt, prioritize data integrity over service availability. It's better to have downtime than data loss.
+Remember: When in doubt, prioritize data integrity over service availability.
+It's better to have downtime than data loss.

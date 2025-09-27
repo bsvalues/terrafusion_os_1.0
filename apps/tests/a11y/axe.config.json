@@ -1,0 +1,76 @@
+{
+  "extends": ["axe:recommended", "axe:wcag2a", "axe:wcag2aa", "axe:section508"],
+  "rules": {
+    "color-contrast": {
+      "enabled": true,
+      "tags": ["wcag2aa", "section508"]
+    },
+    "keyboard-navigation": {
+      "enabled": true,
+      "tags": ["section508", "government"]
+    },
+    "focus-management": {
+      "enabled": true,
+      "tags": ["section508", "government"]
+    },
+    "aria-compliance": {
+      "enabled": true,
+      "tags": ["wcag2aa", "section508"]
+    },
+    "semantic-markup": {
+      "enabled": true,
+      "tags": ["wcag2aa"]
+    },
+    "government-forms": {
+      "enabled": true,
+      "tags": ["section508", "government", "terrafusion"]
+    }
+  },
+  "tags": {
+    "include": ["wcag2a", "wcag2aa", "section508", "government", "terrafusion"],
+    "exclude": ["experimental"]
+  },
+  "reporter": "html",
+  "outputDir": "./reports/a11y",
+  "threshold": {
+    "violations": 0,
+    "incomplete": 5,
+    "inapplicable": 0,
+    "passes": 100
+  },
+  "terrafusion": {
+    "government_standards": {
+      "section_508": {
+        "enabled": true,
+        "strict_mode": true,
+        "government_forms": true,
+        "keyboard_navigation": true,
+        "screen_reader_support": true
+      },
+      "wcag_2_1_aa": {
+        "enabled": true,
+        "color_contrast_ratio": 4.5,
+        "focus_indicators": true,
+        "text_alternatives": true,
+        "keyboard_accessible": true
+      }
+    },
+    "os_specific_requirements": {
+      "ai_swarm_interface": {
+        "voice_control": true,
+        "high_contrast": true,
+        "reduced_motion": true
+      },
+      "gis_mapping": {
+        "alt_text_for_maps": true,
+        "keyboard_map_navigation": true,
+        "screen_reader_coordinates": true
+      },
+      "marketplace": {
+        "accessible_pricing": true,
+        "clear_purchase_flow": true,
+        "error_reporting": true
+      }
+    }
+  }
+}

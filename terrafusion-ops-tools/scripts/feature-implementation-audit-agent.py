@@ -107,8 +107,8 @@ class FeatureImplementationAuditAgent:
     def _load_config(self, config_path: Optional[str]) -> Dict[str, Any]:
         """Load audit configuration"""
         default_config = {
-            'api_base_url': 'http://localhost:8000',
-            'ui_base_url': 'http://localhost:3000',
+            'api_base_url': 'http://localhost:\${{TF_DOCS_PORT:-8000}}',
+            'ui_base_url': 'http://localhost:\${{TF_DOCS_PORT:-8000}}',
             'test_timeout_seconds': 30,
             'quality_thresholds': {
                 'test_coverage_minimum': 80,

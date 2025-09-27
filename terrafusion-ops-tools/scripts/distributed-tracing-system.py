@@ -97,7 +97,7 @@ class DistributedTracingSystem:
     def __init__(self):
         self.session_id = f"tracing_system_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         
         # Tracing configuration
         self.active_traces = {}
@@ -130,7 +130,7 @@ class DistributedTracingSystem:
             # Configure Jaeger exporter
             jaeger_exporter = JaegerExporter(
                 agent_host_name="localhost",
-                agent_port=6831,
+                agent_port=\${{TF_REDIS_PORT:-6379}},
             )
             
             # Configure span processor

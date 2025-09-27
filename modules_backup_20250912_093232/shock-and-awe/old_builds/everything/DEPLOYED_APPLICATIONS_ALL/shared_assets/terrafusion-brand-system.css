@@ -1,0 +1,151 @@
+/**
+ * TerraFusion Unified Brand System v2.0
+ * Intelligence That Counties Envy - Master Design System
+ * Unified branding for all 8 TerraFusion production applications
+ */
+
+:root {
+  /* === CORE TERRAFUSION BRAND COLORS === */
+  --tf-cosmic-blue: #0891b2;
+  --tf-quantum-teal: #00d2ff;  
+  --tf-stellar-white: #ffffff;
+  --tf-deep-space: #0a0f1c;
+  --tf-accent-cyan: #22d3ee;
+  
+  /* Brand Extensions */
+  --tf-primary: #00e5ff;
+  --tf-primary-dark: #00b8d4;
+  --tf-secondary: #004d7a;
+  --tf-success: #10b981;
+  --tf-warning: #f59e0b;
+  --tf-error: #ef4444;
+  
+  /* Glass Morphism */
+  --tf-glass-bg: rgba(255, 255, 255, 0.05);
+  --tf-glass-border: rgba(0, 210, 255, 0.2);
+  --tf-backdrop-blur: blur(15px);
+  
+  /* Design System */
+  --tf-border-radius: 12px;
+  --tf-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --tf-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --tf-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+/* === UNIVERSAL BRAND OVERRIDES === */
+
+/* TerraFusion Navigation */
+.tf-navbar,
+.navbar.tf-branded {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal)) !important;
+  border-bottom: 2px solid var(--tf-glass-border);
+  box-shadow: 0 4px 20px rgba(0, 210, 255, 0.15);
+}
+
+.tf-navbar .navbar-brand,
+.navbar.tf-branded .navbar-brand {
+  color: var(--tf-stellar-white) !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.tf-navbar .nav-link,
+.navbar.tf-branded .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  transition: var(--tf-transition);
+}
+
+.tf-navbar .nav-link:hover,
+.navbar.tf-branded .nav-link:hover {
+  color: var(--tf-stellar-white) !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* TerraFusion Cards */
+.tf-card,
+.card.tf-branded {
+  background: var(--tf-stellar-white);
+  border: 2px solid var(--tf-glass-border);
+  border-radius: var(--tf-border-radius);
+  box-shadow: var(--tf-shadow);
+  transition: var(--tf-transition);
+  overflow: hidden;
+}
+
+.tf-card:hover,
+.card.tf-branded:hover {
+  transform: translateY(-5px);
+  border-color: var(--tf-quantum-teal);
+}
+
+.tf-card-header,
+.card.tf-branded .card-header {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+  color: var(--tf-stellar-white);
+  font-weight: 600;
+  border-bottom: none;
+}
+
+/* TerraFusion Buttons */
+.tf-btn-primary,
+.btn-primary.tf-branded {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal)) !important;
+  border: none !important;
+  color: var(--tf-stellar-white) !important;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: var(--tf-transition);
+  box-shadow: 0 4px 15px rgba(8, 145, 178, 0.3);
+}
+
+.tf-btn-primary:hover,
+.btn-primary.tf-branded:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(8, 145, 178, 0.4);
+}
+
+/* TerraFusion Tables */
+.tf-table,
+.table.tf-branded {
+  background: var(--tf-stellar-white);
+  border-radius: var(--tf-border-radius);
+  overflow: hidden;
+  box-shadow: var(--tf-shadow);
+}
+
+.tf-table thead,
+.table.tf-branded thead {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+  color: var(--tf-stellar-white);
+}
+
+/* TerraFusion Status */
+.tf-status-online { color: var(--tf-success); font-weight: 600; }
+.tf-status-offline { color: var(--tf-error); font-weight: 600; }
+.tf-status-warning { color: var(--tf-warning); font-weight: 600; }
+
+/* TerraFusion Typography */
+.tf-title {
+  color: var(--tf-cosmic-blue);
+  font-weight: 700;
+}
+
+.tf-text-gradient {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dark Theme Support */
+.tf-dark {
+  background-color: var(--tf-deep-space);
+  color: var(--tf-stellar-white);
+}
+
+.tf-dark .tf-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--tf-glass-border);
+  color: var(--tf-stellar-white);
+} 

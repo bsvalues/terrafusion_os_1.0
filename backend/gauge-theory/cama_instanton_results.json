@@ -37,9 +37,7 @@
     "risk_assessment": {
       "risk_level": "VERY HIGH",
       "risk_score": 0.9,
-      "primary_risks": [
-        "High system complexity - increased migration risk"
-      ],
+      "primary_risks": ["High system complexity - increased migration risk"],
       "mitigation_strategies": [
         "Implement extensive pilot programs",
         "Use parallel systems during transition",

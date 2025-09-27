@@ -146,7 +146,7 @@ ExecStart=/usr/bin/dotnet TerraFusion.API.dll
 Restart=always
 RestartSec=10
 Environment=ASPNETCORE_ENVIRONMENT=Production
-Environment=ASPNETCORE_URLS=http://localhost:5000
+Environment=ASPNETCORE_URLS=http://localhost:${TF_STATIC_PORT:-8080}
 
 [Install]
 WantedBy=multi-user.target
@@ -160,8 +160,8 @@ systemctl start "$SERVICE_NAME"
 # Configure firewall (if firewalld is available)
 if command -v firewall-cmd &> /dev/null; then
     echo "Configuring firewall..."
-    firewall-cmd --permanent --add-port=5000/tcp
-    firewall-cmd --permanent --add-port=3000/tcp
+    firewall-cmd --permanent --add-port = process.env.TF_DESKTOP_PORT || 3104/tcp
+    firewall-cmd --permanent --add-port = process.env.TF_DESKTOP_PORT || 3104/tcp
     firewall-cmd --reload
 fi
 
@@ -212,8 +212,8 @@ echo ""
 echo "Service Status:"
 systemctl status "$SERVICE_NAME" --no-pager -l
 echo ""
-echo "Access the application at: http://localhost:3000"
-echo "Backend API at: http://localhost:5000"
+echo "Access the application at: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "Backend API at: http://localhost:${TF_STATIC_PORT:-8080}"
 echo ""
 echo "To start/stop the service:"
 echo "  sudo systemctl start $SERVICE_NAME"

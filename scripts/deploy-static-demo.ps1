@@ -45,11 +45,11 @@ Write-Host ""
 Write-Host "🎉 Static Demo Running!" -ForegroundColor Green
 Write-Host ""
 Write-Host "📊 Demo Endpoints:" -ForegroundColor Cyan
-Write-Host "  API Health:    http://localhost:8080/health" -ForegroundColor White
-Write-Host "  Parcels Data:  http://localhost:8080/api/counties/benton/parcels" -ForegroundColor White
-Write-Host "  Assessments:   http://localhost:8080/api/counties/benton/assessments" -ForegroundColor White
-Write-Host "  Dashboard:     http://localhost:8080/api/dashboard/stats" -ForegroundColor White
-Write-Host "  Grafana:       http://localhost:3001" -ForegroundColor White
+Write-Host "  API Health:    http://localhost:\${{TF_ADMIN_PORT:-8080}}/health" -ForegroundColor White
+Write-Host "  Parcels Data:  http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/counties/benton/parcels" -ForegroundColor White
+Write-Host "  Assessments:   http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/counties/benton/assessments" -ForegroundColor White
+Write-Host "  Dashboard:     http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/dashboard/stats" -ForegroundColor White
+Write-Host "  Grafana:       http://localhost:\${{TF_ADMIN_PORT:-8080}}" -ForegroundColor White
 Write-Host ""
 Write-Host "🗄️  Database:      PostgreSQL with static Benton County data" -ForegroundColor Yellow
 Write-Host "📁 Sample Data:   ./data/benton/parcels.csv" -ForegroundColor Yellow

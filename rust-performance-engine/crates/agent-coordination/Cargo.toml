@@ -1,0 +1,34 @@
+[package]
+name = "agent-coordination"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "High-performance agent coordination engine for TerraFusion OS"
+
+[dependencies]
+tokio.workspace = true
+tokio-util.workspace = true
+crossbeam.workspace = true
+dashmap.workspace = true
+parking_lot.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+
+# Performance metrics
+prometheus = "0.13.4"
+metrics = "0.22"
+
+[dev-dependencies]
+criterion.workspace = true
+proptest.workspace = true
+tokio-test = "0.4"
+
+[[bench]]
+name = "agent_benchmark"
+harness = false

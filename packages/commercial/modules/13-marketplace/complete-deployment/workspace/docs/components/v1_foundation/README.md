@@ -2,7 +2,9 @@
 
 ## Overview
 
-V1 Foundation is the core layer of Terrafusion Platform, providing enterprise-grade government operations capabilities. It serves as the foundational infrastructure upon which advanced features (V2 and V3) are built.
+V1 Foundation is the core layer of Terrafusion Platform, providing
+enterprise-grade government operations capabilities. It serves as the
+foundational infrastructure upon which advanced features (V2 and V3) are built.
 
 ## Architecture
 
@@ -27,7 +29,8 @@ graph TB
 Provides comprehensive security features:
 
 - **Authentication**: JWT-based authentication with refresh tokens
-- **Authorization**: Role-based access control (RBAC) with fine-grained permissions
+- **Authorization**: Role-based access control (RBAC) with fine-grained
+  permissions
 - **Encryption**: AES-256 encryption at rest, TLS 1.3 in transit
 - **Audit Logging**: Comprehensive audit trails for compliance
 - **Security Headers**: OWASP-compliant security headers
@@ -165,7 +168,7 @@ GET    /api/v1/logs
 ```env
 # Core Configuration
 NODE_ENV=production
-PORT=3000
+PORT=\${{TF_FRONTEND_PORT:-3000}}
 API_URL=https://api.terrafusion.gov
 
 # Database
@@ -173,7 +176,7 @@ DATABASE_URL=postgresql://user:pass@host:5432/terrafusion
 DATABASE_POOL_SIZE=20
 
 # Redis
-REDIS_URL=redis://localhost:6379
+REDIS_URL=redis://localhost:\${{TF_REDIS_PORT:-6379}}
 REDIS_PASSWORD=secure-password
 
 # Security
@@ -194,7 +197,7 @@ OAUTH_CLIENT_ID=your-client-id
 OAUTH_CLIENT_SECRET=your-client-secret
 
 # Monitoring
-PROMETHEUS_PORT=9090
+PROMETHEUS_PORT=\${{TF_FRONTEND_PORT:-3000}}
 LOG_LEVEL=info
 SENTRY_DSN=https://sentry.io/your-dsn
 ```
@@ -299,12 +302,12 @@ npm start
 ### Docker Compose
 
 ```yaml
-version: "3.8"
+version: '3.8'
 services:
   foundation:
     image: terrafusion/v1-foundation:latest
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:password@db:5432/terrafusion
@@ -334,7 +337,8 @@ volumes:
 
 ### Kubernetes
 
-See [kubernetes deployment guide](../../developer/kubernetes-deployment.md) for detailed instructions.
+See [kubernetes deployment guide](../../developer/kubernetes-deployment.md) for
+detailed instructions.
 
 ## Monitoring & Maintenance
 

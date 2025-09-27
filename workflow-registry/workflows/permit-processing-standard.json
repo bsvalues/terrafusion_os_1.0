@@ -1,0 +1,481 @@
+{
+  "$schema": "../schemas/workflow-schema.json",
+  "id": "tf-workflow-permit-processing-standard",
+  "name": "Building Permit Processing",
+  "description": "Automated processing of building permits including application review, code compliance checking, approval workflow, and certificate issuance",
+  "version": "1.0.0",
+  "category": "permitting",
+  "department": "planning",
+  "created_date": "2025-01-15T00:00:00Z",
+  "last_modified": "2025-01-15T00:00:00Z",
+  "author": "TerraFusion AI Swarm",
+  "compliance": {
+    "regulations": ["IBC 2021", "IRC 2021", "RCW 19.27", "WAC 51-11"],
+    "standards": ["ANSI/ASME A17.1", "NFPA 101"],
+    "certifications": ["International Code Council"]
+  },
+  "sla_requirements": {
+    "max_duration": "P30D",
+    "target_completion": "P14D",
+    "availability": 0.998,
+    "error_threshold": 0.002
+  },
+  "triggers": [
+    {
+      "type": "citizen_request",
+      "description": "Citizen submits permit application online"
+    },
+    {
+      "type": "manual",
+      "description": "Staff creates permit application in system"
+    },
+    {
+      "type": "api",
+      "endpoint": "/api/permits/submit",
+      "description": "External system submits permit application"
+    }
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "permit_type": {
+        "type": "string",
+        "enum": ["building", "electrical", "plumbing", "mechanical", "fire", "demo"],
+        "description": "Type of permit being requested"
+      },
+      "property_address": {
+        "type": "string",
+        "description": "Address of property for permit"
+      },
+      "parcel_id": {
+        "type": "string",
+        "description": "County parcel identification number"
+      },
+      "applicant_info": {
+        "type": "object",
+        "description": "Contact information for permit applicant"
+      },
+      "project_description": {
+        "type": "string",
+        "description": "Description of proposed work"
+      },
+      "construction_value": {
+        "type": "number",
+        "description": "Estimated construction value"
+      },
+      "submitted_documents": {
+        "type": "array",
+        "description": "Array of submitted documents and plans"
+      }
+    },
+    "required": ["permit_type", "property_address", "parcel_id", "applicant_info", "project_description"]
+  },
+  "outputs": {
+    "permit_decision": {
+      "type": "object",
+      "description": "Final permit approval or denial decision"
+    },
+    "permit_certificate": {
+      "type": "object",
+      "description": "Issued permit certificate if approved"
+    },
+    "review_comments": {
+      "type": "array",
+      "description": "Comments from review process"
+    },
+    "fee_calculation": {
+      "type": "object",
+      "description": "Calculated permit fees"
+    },
+    "inspection_schedule": {
+      "type": "object",
+      "description": "Required inspection schedule"
+    }
+  },
+  "steps": [
+    {
+      "id": "step_001_application_intake",
+      "name": "Application Intake and Validation",
+      "description": "Receive and validate permit application completeness",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["document_processing", "data_validation"]
+      },
+      "integrations": [
+        {
+          "system": "gis_system",
+          "action": "validate_parcel_id",
+          "parameters": ["parcel_id"]
+        },
+        {
+          "system": "document_management",
+          "action": "process_documents",
+          "parameters": ["submitted_documents"]
+        }
+      ],
+      "inputs": ["permit_application", "submitted_documents"],
+      "outputs": ["validated_application", "document_checklist"],
+      "next_steps": [
+        {
+          "condition": "complete_application",
+          "step_id": "step_002_fee_calculation"
+        },
+        {
+          "condition": "incomplete_application",
+          "step_id": "step_008_incomplete_notice"
+        }
+      ]
+    },
+    {
+      "id": "step_002_fee_calculation",
+      "name": "Calculate Permit Fees",
+      "description": "Calculate applicable permit fees based on project type and value",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["financial_calculations", "fee_processing"]
+      },
+      "integrations": [
+        {
+          "system": "fee_schedule",
+          "action": "calculate_fees",
+          "parameters": ["permit_type", "construction_value", "project_scope"]
+        }
+      ],
+      "inputs": ["validated_application", "construction_value"],
+      "outputs": ["calculated_fees", "payment_notice"],
+      "next_steps": [
+        {
+          "condition": "success",
+          "step_id": "step_003_technical_review"
+        }
+      ]
+    },
+    {
+      "id": "step_003_technical_review",
+      "name": "Technical Plan Review",
+      "description": "Conduct technical review of submitted plans and specifications",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["code_compliance", "plan_review", "technical_analysis"]
+      },
+      "integrations": [
+        {
+          "system": "code_compliance_checker",
+          "action": "review_plans",
+          "parameters": ["submitted_plans", "applicable_codes"]
+        },
+        {
+          "system": "cad_analysis",
+          "action": "analyze_drawings",
+          "parameters": ["plan_documents"]
+        }
+      ],
+      "inputs": ["validated_application", "submitted_plans"],
+      "outputs": ["review_results", "compliance_analysis"],
+      "next_steps": [
+        {
+          "condition": "plans_approved",
+          "step_id": "step_004_zoning_review"
+        },
+        {
+          "condition": "corrections_needed",
+          "step_id": "step_009_correction_notice"
+        },
+        {
+          "condition": "plans_rejected",
+          "step_id": "step_010_denial_notice"
+        }
+      ]
+    },
+    {
+      "id": "step_004_zoning_review",
+      "name": "Zoning Compliance Review",
+      "description": "Review project compliance with zoning regulations",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["zoning_analysis", "land_use_planning"]
+      },
+      "integrations": [
+        {
+          "system": "gis_system",
+          "action": "check_zoning_compliance",
+          "parameters": ["parcel_id", "project_details"]
+        },
+        {
+          "system": "zoning_database",
+          "action": "validate_use_permitted",
+          "parameters": ["zone_designation", "proposed_use"]
+        }
+      ],
+      "inputs": ["validated_application", "parcel_data"],
+      "outputs": ["zoning_compliance_report", "variance_requirements"],
+      "next_steps": [
+        {
+          "condition": "zoning_compliant",
+          "step_id": "step_005_environmental_review"
+        },
+        {
+          "condition": "variance_required",
+          "step_id": "step_011_variance_process"
+        }
+      ]
+    },
+    {
+      "id": "step_005_environmental_review",
+      "name": "Environmental Impact Review",
+      "description": "Assess environmental impact and compliance requirements",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "specialist",
+        "skills_required": ["environmental_analysis", "regulatory_compliance"]
+      },
+      "integrations": [
+        {
+          "system": "environmental_database",
+          "action": "check_sensitive_areas",
+          "parameters": ["parcel_location", "project_footprint"]
+        },
+        {
+          "system": "sepa_system",
+          "action": "determine_sepa_requirements",
+          "parameters": ["project_type", "environmental_factors"]
+        }
+      ],
+      "inputs": ["project_details", "parcel_data"],
+      "outputs": ["environmental_clearance", "mitigation_requirements"],
+      "next_steps": [
+        {
+          "condition": "environmental_cleared",
+          "step_id": "step_006_final_approval"
+        },
+        {
+          "condition": "mitigation_required",
+          "step_id": "step_012_mitigation_planning"
+        }
+      ]
+    },
+    {
+      "id": "step_006_final_approval",
+      "name": "Final Permit Approval",
+      "description": "Generate final permit approval and certificate",
+      "type": "human_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["final_review", "permit_issuance"]
+      },
+      "integrations": [
+        {
+          "system": "permit_system",
+          "action": "issue_permit",
+          "parameters": ["approved_application", "permit_conditions"]
+        },
+        {
+          "system": "notification_service",
+          "action": "notify_applicant",
+          "parameters": ["approval_notice"]
+        }
+      ],
+      "inputs": ["all_review_results", "approval_conditions"],
+      "outputs": ["permit_certificate", "approval_notice"],
+      "next_steps": [
+        {
+          "condition": "approved",
+          "step_id": "step_007_inspection_scheduling"
+        }
+      ]
+    },
+    {
+      "id": "step_007_inspection_scheduling",
+      "name": "Schedule Required Inspections",
+      "description": "Set up inspection schedule for permit holder",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["scheduling", "inspection_coordination"]
+      },
+      "integrations": [
+        {
+          "system": "inspection_scheduler",
+          "action": "create_inspection_schedule",
+          "parameters": ["permit_details", "inspection_types"]
+        }
+      ],
+      "inputs": ["permit_certificate", "inspection_requirements"],
+      "outputs": ["inspection_schedule"],
+      "next_steps": [
+        {
+          "condition": "success",
+          "step_id": "step_999_completion"
+        }
+      ]
+    },
+    {
+      "id": "step_008_incomplete_notice",
+      "name": "Send Incomplete Application Notice",
+      "description": "Notify applicant of missing information",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["notification_services", "customer_service"]
+      },
+      "integrations": [
+        {
+          "system": "notification_service",
+          "action": "send_incomplete_notice",
+          "parameters": ["missing_items", "applicant_contact"]
+        }
+      ],
+      "inputs": ["application_deficiencies"],
+      "outputs": ["incomplete_notice"],
+      "next_steps": []
+    },
+    {
+      "id": "step_009_correction_notice",
+      "name": "Send Plan Correction Notice",
+      "description": "Notify applicant of required plan corrections",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["technical_communication", "notification_services"]
+      },
+      "integrations": [
+        {
+          "system": "notification_service",
+          "action": "send_correction_notice",
+          "parameters": ["correction_items", "review_comments"]
+        }
+      ],
+      "inputs": ["review_corrections"],
+      "outputs": ["correction_notice"],
+      "next_steps": []
+    },
+    {
+      "id": "step_010_denial_notice",
+      "name": "Send Permit Denial Notice",
+      "description": "Formally deny permit with reasons",
+      "type": "human_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["decision_documentation", "legal_compliance"]
+      },
+      "integrations": [
+        {
+          "system": "notification_service",
+          "action": "send_denial_notice",
+          "parameters": ["denial_reasons", "appeal_rights"]
+        }
+      ],
+      "inputs": ["denial_reasons"],
+      "outputs": ["denial_notice"],
+      "next_steps": []
+    },
+    {
+      "id": "step_011_variance_process",
+      "name": "Initiate Variance Process",
+      "description": "Begin variance or conditional use permit process",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["variance_processing", "hearing_coordination"]
+      },
+      "integrations": [
+        {
+          "system": "hearing_scheduler",
+          "action": "schedule_variance_hearing",
+          "parameters": ["variance_type", "applicant_details"]
+        }
+      ],
+      "inputs": ["variance_requirements"],
+      "outputs": ["variance_application"],
+      "next_steps": []
+    },
+    {
+      "id": "step_012_mitigation_planning",
+      "name": "Develop Mitigation Plan",
+      "description": "Create environmental mitigation requirements",
+      "type": "human_task",
+      "agent_requirements": {
+        "agent_type": "specialist",
+        "skills_required": ["environmental_planning", "mitigation_design"]
+      },
+      "integrations": [
+        {
+          "system": "environmental_database",
+          "action": "create_mitigation_plan",
+          "parameters": ["environmental_impacts", "mitigation_measures"]
+        }
+      ],
+      "inputs": ["environmental_assessment"],
+      "outputs": ["mitigation_plan"],
+      "next_steps": [
+        {
+          "condition": "mitigation_accepted",
+          "step_id": "step_006_final_approval"
+        }
+      ]
+    },
+    {
+      "id": "step_999_completion",
+      "name": "Complete Permit Process",
+      "description": "Finalize permit processing workflow",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["workflow_finalization", "record_management"]
+      },
+      "integrations": [
+        {
+          "system": "audit_log",
+          "action": "log_completion",
+          "parameters": ["permit_summary"]
+        },
+        {
+          "system": "dashboard",
+          "action": "update_metrics",
+          "parameters": ["processing_metrics"]
+        }
+      ],
+      "inputs": ["all_workflow_outputs"],
+      "outputs": ["completion_summary"],
+      "next_steps": []
+    }
+  ],
+  "error_handling": {
+    "max_retries": 3,
+    "retry_delay": "PT1H",
+    "escalation_triggers": [
+      "max_retries_exceeded",
+      "deadline_approaching",
+      "complex_technical_issue"
+    ],
+    "escalation_contacts": ["permits.supervisor@bentoncountywa.gov"]
+  },
+  "monitoring": {
+    "metrics": [
+      "processing_time",
+      "approval_rate",
+      "correction_rate",
+      "customer_satisfaction"
+    ],
+    "alerts": [
+      {
+        "condition": "processing_time > P21D",
+        "severity": "warning"
+      },
+      {
+        "condition": "approval_rate < 0.70",
+        "severity": "critical"
+      }
+    ]
+  },
+  "security": {
+    "classification": "Public",
+    "encryption_required": false,
+    "audit_logging": true,
+    "access_controls": ["PermitTechnician", "PlanReviewer", "BuildingOfficial"]
+  }
+}

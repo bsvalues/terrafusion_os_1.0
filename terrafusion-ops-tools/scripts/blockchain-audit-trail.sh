@@ -13,8 +13,8 @@ AUDIT_DB="${AUDIT_DB:-terrafusion_blockchain}"
 AUDIT_USER="${DB_USER:-tfaudit}"
 AUDIT_PASS="${DB_PASS:-$(generate_password)}"
 BLOCKCHAIN_TYPE="${BLOCKCHAIN_TYPE:-hyperledger}" # hyperledger, ethereum_private
-IPFS_API="${IPFS_API:-http://localhost:5001}"
-BLOCKCHAIN_API="${BLOCKCHAIN_API:-http://localhost:7050}"
+IPFS_API="${IPFS_API:-http://localhost:\${{TF_API_HTTPS_PORT:-5001}}}"
+BLOCKCHAIN_API="${BLOCKCHAIN_API:-http://localhost:\${{TF_API_HTTPS_PORT:-5001}}}"
 
 # Initialize database
 init_blockchain_database() {
@@ -223,9 +223,9 @@ services:
     environment:
       - CORE_PEER_ID=peer0.audit.terrafusion.io
       - CORE_PEER_ADDRESS=peer0.audit.terrafusion.io:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:\${{TF_PORT_7051:-7051}}
       - CORE_PEER_CHAINCODEADDRESS=peer0.audit.terrafusion.io:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:\${{TF_PORT_7051:-7051}}
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.audit.terrafusion.io:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.audit.terrafusion.io:7051
       - CORE_PEER_LOCALMSPID=AuditMSP
@@ -269,7 +269,7 @@ services:
       - ./ipfs-data:/data/ipfs
     ports:
       - "5001:5001"  # API
-      - "8080:8080"  # Gateway
+      - "8080:${TF_STATIC_PORT:-8080}"  # Gateway
       - "4001:4001"  # Swarm
     networks:
       - audit_network
@@ -710,7 +710,7 @@ if "${BLOCKCHAIN_TYPE}" == "hyperledger":
 elif "${BLOCKCHAIN_TYPE}" == "ethereum_private":
     # Call Ethereum smart contract
     try:
-        w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
+        w3 = Web3(Web3.HTTPProvider('http://localhost:\${{TF_API_HTTPS_PORT:-5001}}'))
         
         # Load contract (simplified)
         contract_address = "0x..."  # Would be actual deployed address

@@ -8,15 +8,15 @@ export default defineConfig(async () => ({
 
   // Vite options tailored for Tauri development
   clearScreen: false,
-  
+
   // Tauri expects a fixed port, fail if that port is not available
   server: {
     port: 5173,
     strictPort: true,
     watch: {
       // Tell vite to ignore watching `src-tauri`
-      ignored: ['**/src-tauri/**']
-    }
+      ignored: ['**/src-tauri/**'],
+    },
   },
 
   // Build configuration
@@ -29,9 +29,9 @@ export default defineConfig(async () => ({
     sourcemap: !!process.env.TAURI_DEBUG,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html')
-      }
-    }
+        main: resolve(__dirname, 'index.html'),
+      },
+    },
   },
 
   // Path resolution
@@ -43,14 +43,14 @@ export default defineConfig(async () => ({
       '@services': resolve(__dirname, 'src/services'),
       '@hooks': resolve(__dirname, 'src/hooks'),
       '@types': resolve(__dirname, 'src/types'),
-      '@utils': resolve(__dirname, 'src/utils')
-    }
+      '@utils': resolve(__dirname, 'src/utils'),
+    },
   },
 
   // Environment variables
   define: {
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-    __TAURI_PLATFORM__: JSON.stringify(process.env.TAURI_PLATFORM || 'web')
+    __TAURI_PLATFORM__: JSON.stringify(process.env.TAURI_PLATFORM || 'web'),
   },
 
   // Optimizations
@@ -64,16 +64,16 @@ export default defineConfig(async () => ({
       '@emotion/styled',
       'three',
       '@react-three/fiber',
-      '@react-three/drei'
-    ]
+      '@react-three/drei',
+    ],
   },
 
   // CSS configuration
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "@/styles/variables.scss";`
-      }
-    }
-  }
+        additionalData: `@import "@/styles/variables.scss";`,
+      },
+    },
+  },
 }));

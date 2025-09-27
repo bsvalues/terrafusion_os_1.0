@@ -73,7 +73,7 @@ User=$USER
 Group=$USER
 WorkingDirectory=$(pwd)
 Environment="PYTHONPATH=$(pwd)"
-Environment="OLLAMA_HOST=localhost:11434"
+Environment="OLLAMA_HOST=localhost:\${{TF_PORT_8888:-8888}}"
 ExecStartPre=/bin/bash -c 'ollama serve || true'
 ExecStart=/usr/bin/python3 $(pwd)/autonomous_orchestrator.py
 Restart=always
@@ -132,7 +132,7 @@ Description=Dynasty Health Check
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'curl -s http://localhost:8888/health || systemctl restart benton-dynasty'
+ExecStart=/bin/bash -c 'curl -s http://localhost:\${{TF_PORT_8888:-8888}}/health || systemctl restart benton-dynasty'
 EOF
 
 # Create backup timer
@@ -205,7 +205,7 @@ echo "Recent Logs:"
 sudo journalctl -u benton-dynasty.service -n 10 --no-pager
 echo ""
 echo "Metrics:"
-curl -s http://localhost:8888/metrics 2>/dev/null | grep -E "(uptime|queries_processed|models_trained)" || echo "Metrics not available yet"
+curl -s http://localhost:\${{TF_PORT_8888:-8888}}/metrics 2>/dev/null | grep -E "(uptime|queries_processed|models_trained)" || echo "Metrics not available yet"
 SCRIPT
 chmod +x dynasty-status.sh
 
@@ -233,7 +233,7 @@ echo ""
 echo -e "${GREEN}🏆 AUTONOMOUS DYNASTY SYSTEM LAUNCHED!${NC}"
 echo "====================================="
 echo ""
-echo "📊 Dashboard: http://localhost:8888/CHAMPIONSHIP_DASHBOARD.html"
+echo "📊 Dashboard: http://localhost:\${{TF_PORT_8888:-8888}}/CHAMPIONSHIP_DASHBOARD.html"
 echo "📜 Logs: ./dynasty-logs.sh or journalctl -u benton-dynasty -f"
 echo "📈 Status: ./dynasty-status.sh"
 echo "🛑 Stop: ./dynasty-stop.sh"
@@ -251,10 +251,10 @@ echo ""
 # Open dashboard in browser if possible
 if command -v xdg-open &> /dev/null; then
     sleep 3
-    xdg-open "http://localhost:8888/CHAMPIONSHIP_DASHBOARD.html" &
+    xdg-open "http://localhost:\${{TF_PORT_8888:-8888}}/CHAMPIONSHIP_DASHBOARD.html" &
 elif command -v open &> /dev/null; then
     sleep 3
-    open "http://localhost:8888/CHAMPIONSHIP_DASHBOARD.html" &
+    open "http://localhost:\${{TF_PORT_8888:-8888}}/CHAMPIONSHIP_DASHBOARD.html" &
 fi
 
 echo "🏈 Dynasty system is running autonomously!"

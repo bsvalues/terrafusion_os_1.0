@@ -1,16 +1,19 @@
 # Terrafusion Infrastructure as Code
 
-This directory contains Terraform configurations for deploying the complete Terrafusion platform infrastructure on AWS.
+This directory contains Terraform configurations for deploying the complete
+Terrafusion platform infrastructure on AWS.
 
 ## 🏗️ Architecture Overview
 
 The infrastructure includes:
 
-- **VPC**: Multi-AZ Virtual Private Cloud with public, private, and database subnets
+- **VPC**: Multi-AZ Virtual Private Cloud with public, private, and database
+  subnets
 - **EKS Cluster**: Managed Kubernetes cluster with auto-scaling node groups
 - **RDS PostgreSQL**: Highly available database with automated backups
 - **ElastiCache Redis**: In-memory caching layer with replication
-- **Application Load Balancer**: Internet-facing load balancer with SSL termination
+- **Application Load Balancer**: Internet-facing load balancer with SSL
+  termination
 - **S3 Buckets**: Storage for backups, assets, and logs
 - **CloudWatch**: Comprehensive monitoring and logging
 - **KMS**: Encryption keys for all services
@@ -40,6 +43,7 @@ terraform/
 ### Initial Setup
 
 1. **Configure AWS credentials:**
+
    ```bash
    aws configure
    # or use environment variables
@@ -49,15 +53,16 @@ terraform/
    ```
 
 2. **Create Terraform backend resources:**
+
    ```bash
    # Create S3 bucket for state
    aws s3 mb s3://terrafusion-terraform-state --region us-west-2
-   
+
    # Enable versioning
    aws s3api put-bucket-versioning \
      --bucket terrafusion-terraform-state \
      --versioning-configuration Status=Enabled
-   
+
    # Create DynamoDB table for state locking
    aws dynamodb create-table \
      --table-name terrafusion-terraform-locks \
@@ -76,16 +81,19 @@ terraform/
 ### Deployment
 
 1. **Initialize Terraform:**
+
    ```bash
    terraform init
    ```
 
 2. **Plan the deployment:**
+
    ```bash
    terraform plan
    ```
 
 3. **Apply the infrastructure:**
+
    ```bash
    terraform apply
    ```
@@ -100,6 +108,7 @@ terraform/
 ### Environment-Specific Configurations
 
 #### Development
+
 ```hcl
 environment                 = "development"
 db_instance_class          = "db.r6g.large"
@@ -111,6 +120,7 @@ cost_budget_limit         = 1000
 ```
 
 #### Staging
+
 ```hcl
 environment                 = "staging"
 db_instance_class          = "db.r6g.large"
@@ -122,6 +132,7 @@ cost_budget_limit         = 2000
 ```
 
 #### Production
+
 ```hcl
 environment                 = "production"
 db_instance_class          = "db.r6g.xlarge"
@@ -172,17 +183,20 @@ s3_lifecycle_transition_days = 7
 ## 🔐 Security Features
 
 ### Encryption
+
 - **At Rest**: All data encrypted using AWS KMS
 - **In Transit**: TLS/SSL for all connections
 - **Key Management**: Dedicated KMS keys per service
 
 ### Network Security
+
 - **VPC**: Isolated network environment
 - **Security Groups**: Service-specific access rules
 - **Private Subnets**: Application and database isolation
 - **NAT Gateways**: Secure outbound internet access
 
 ### Access Control
+
 - **IAM Roles**: Least-privilege service access
 - **IRSA**: Pod-level service account mapping
 - **Parameter Store**: Encrypted secret management
@@ -190,12 +204,14 @@ s3_lifecycle_transition_days = 7
 ## 📊 Monitoring and Observability
 
 ### CloudWatch
+
 - **Metrics**: Comprehensive infrastructure metrics
 - **Logs**: Centralized log aggregation
 - **Dashboards**: Pre-configured monitoring dashboards
 - **Alarms**: Automated alerting on thresholds
 
 ### Application Monitoring
+
 - **Container Insights**: EKS cluster monitoring
 - **Performance Insights**: Database performance monitoring
 - **Enhanced Monitoring**: Detailed RDS metrics
@@ -203,11 +219,13 @@ s3_lifecycle_transition_days = 7
 ## 🔄 Backup and Disaster Recovery
 
 ### Automated Backups
+
 - **RDS**: Automated daily backups with point-in-time recovery
 - **Redis**: Daily snapshots with configurable retention
 - **S3**: Cross-region replication for critical data
 
 ### Disaster Recovery
+
 - **Multi-AZ**: Database and cache high availability
 - **Cross-Region**: Optional backup replication
 - **Infrastructure as Code**: Rapid environment recreation
@@ -215,12 +233,14 @@ s3_lifecycle_transition_days = 7
 ## 💰 Cost Management
 
 ### Built-in Cost Controls
+
 - **Budgets**: Automated cost alerts
 - **Anomaly Detection**: Unusual spend notifications
 - **Resource Tagging**: Comprehensive cost allocation
 - **Lifecycle Policies**: Automatic data archival
 
 ### Optimization Features
+
 - **Spot Instances**: Up to 90% cost savings for non-critical workloads
 - **Graviton Instances**: Better price/performance ratio
 - **Storage Optimization**: Intelligent S3 storage classes
@@ -228,6 +248,7 @@ s3_lifecycle_transition_days = 7
 ## 🔧 Advanced Configuration
 
 ### Auto Scaling
+
 ```hcl
 enable_auto_scaling        = true
 auto_scaling_target_cpu    = 70
@@ -238,6 +259,7 @@ enable_spot_instances = true
 ```
 
 ### High Availability
+
 ```hcl
 # Multi-AZ database
 db_multi_az = true
@@ -250,6 +272,7 @@ single_nat_gateway = false
 ```
 
 ### Development Features
+
 ```hcl
 enable_development_tools  = true
 enable_load_testing      = true
@@ -261,18 +284,21 @@ enable_canary_deployments = true
 After successful deployment, Terraform provides:
 
 ### Connection Information
+
 - EKS cluster endpoint and configuration
 - RDS database connection details
 - Redis cache endpoints
 - Load balancer DNS name
 
 ### Resource Identifiers
+
 - VPC and subnet IDs
 - Security group IDs
 - S3 bucket names
 - KMS key ARNs
 
 ### Monitoring Links
+
 - CloudWatch dashboard URLs
 - Log group names
 - Metric namespaces
@@ -280,6 +306,7 @@ After successful deployment, Terraform provides:
 ## 🧪 Testing
 
 ### Infrastructure Testing
+
 ```bash
 # Validate Terraform configuration
 terraform validate
@@ -293,6 +320,7 @@ psql -h <rds_endpoint> -U terrafusion_user -d terrafusion
 ```
 
 ### Application Testing
+
 ```bash
 # Deploy test application
 kubectl apply -f test-app.yaml
@@ -307,6 +335,7 @@ kubectl apply -f test-app.yaml
 ## 🔄 Updates and Maintenance
 
 ### Terraform Updates
+
 ```bash
 # Update providers
 terraform init -upgrade
@@ -319,6 +348,7 @@ terraform apply
 ```
 
 ### Infrastructure Updates
+
 ```bash
 # Update EKS cluster
 terraform apply -target=module.eks
@@ -335,12 +365,14 @@ kubectl get nodes
 ### Common Issues
 
 #### State Lock Issues
+
 ```bash
 # Force unlock (use carefully)
 terraform force-unlock <LOCK_ID>
 ```
 
 #### EKS Access Issues
+
 ```bash
 # Update kubeconfig
 aws eks update-kubeconfig --region us-west-2 --name <cluster-name>
@@ -350,6 +382,7 @@ aws sts get-caller-identity
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Check security groups
 aws ec2 describe-security-groups --group-ids <sg-id>
@@ -359,6 +392,7 @@ telnet <rds-endpoint> 5432
 ```
 
 ### Debug Mode
+
 ```bash
 # Enable debug logging
 export TF_LOG=DEBUG
@@ -368,15 +402,18 @@ terraform apply
 ## 📚 Additional Resources
 
 ### AWS Documentation
+
 - [EKS Best Practices](https://aws.github.io/aws-eks-best-practices/)
 - [RDS Best Practices](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html)
 - [VPC Best Practices](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-best-practices.html)
 
 ### Terraform Documentation
+
 - [AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [Terraform Best Practices](https://www.terraform.io/docs/cloud/guides/recommended-practices/index.html)
 
 ### Community Resources
+
 - [Terraform AWS Modules](https://github.com/terraform-aws-modules)
 - [EKS Workshop](https://www.eksworkshop.com/)
 
@@ -390,10 +427,12 @@ terraform apply
 ## 📞 Support
 
 For infrastructure issues:
+
 - **Email**: devops@terrafusion.com
 - **Slack**: #infrastructure
 - **On-call**: Via PagerDuty integration
 
 For emergencies:
+
 - **Incident Response**: Use incident management system
 - **Escalation**: Follow defined escalation procedures

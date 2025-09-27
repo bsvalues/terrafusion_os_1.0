@@ -1,7 +1,5 @@
 {
-  "agents": [
-    "replit-agent"
-  ],
+  "agents": ["replit-agent"],
   "models": [],
   "tools": [],
   "prompts": [],

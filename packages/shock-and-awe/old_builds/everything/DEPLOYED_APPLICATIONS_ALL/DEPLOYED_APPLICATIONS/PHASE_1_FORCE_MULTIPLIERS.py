@@ -322,10 +322,10 @@ class Phase1ForceMultipliers:
 
                     # Check core applications
                     core_apps = [
-                        {"name": "TerraFusion Build", "port": 5000},
-                        {"name": "TerraFlow", "port": 5001},
-                        {"name": "TerraFusionSync", "port": 5002},
-                        {"name": "TerraAgent", "port": 5003}
+                        {"name": "TerraFusion Build", "port": \${{TF_API_PORT:-5000}}},
+                        {"name": "TerraFlow", "port": \${{TF_API_PORT:-5000}}},
+                        {"name": "TerraFusionSync", "port": \${{TF_API_PORT:-5000}}},
+                        {"name": "TerraAgent", "port": \${{TF_API_PORT:-5000}}}
                     ]
 
                     healthy_count = 0

@@ -259,7 +259,7 @@ done &
 echo ""
 echo "📊 REAL-TIME LAUNCH MONITORING: ACTIVE"
 echo "═══════════════════════════════════════════════════════════"
-echo "Dashboard: http://localhost:8080/launch-monitor"
+echo "Dashboard: http://localhost:\${{TF_ADMIN_PORT:-8080}}/launch-monitor"
 echo "Monitoring Interval: ${MONITORING_INTERVAL}s"
 echo "Phase: $PHASE"
 echo "Launch Start: $LAUNCH_START"

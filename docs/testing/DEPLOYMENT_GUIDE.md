@@ -4,13 +4,15 @@
 
 ## Overview
 
-This guide provides step-by-step instructions for deploying the comprehensive testing infrastructure required for PHASE 6 Week 10 validation.
+This guide provides step-by-step instructions for deploying the comprehensive
+testing infrastructure required for PHASE 6 Week 10 validation.
 
 ## Prerequisites
 
 ### System Requirements
 
-- **Operating System**: Linux (Ubuntu 20.04+ recommended) or Windows Server 2019+
+- **Operating System**: Linux (Ubuntu 20.04+ recommended) or Windows Server
+  2019+
 - **CPU**: 16+ cores (32+ recommended for load testing)
 - **Memory**: 32GB RAM minimum (64GB+ recommended)
 - **Storage**: 500GB SSD minimum (1TB+ recommended)
@@ -37,11 +39,11 @@ version: '3.8'
 
 services:
   terrafusion-api:
-    build: 
+    build:
       context: .
       dockerfile: docker/Dockerfile.api
     ports:
-      - "5000:5000"
+      - '5000:5000'
     environment:
       - ASPNETCORE_ENVIRONMENT=Testing
       - DATABASE_URL=postgresql://test_user:test_pass@postgres:5432/terrafusion_test
@@ -59,7 +61,7 @@ services:
       - POSTGRES_USER=test_user
       - POSTGRES_PASSWORD=test_pass
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/test-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
@@ -69,7 +71,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru
     networks:
       - testing-network
@@ -77,8 +79,8 @@ services:
   nginx:
     image: nginx:1.24
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/testing.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
@@ -122,20 +124,20 @@ spec:
         app: terrafusion-api
     spec:
       containers:
-      - name: api
-        image: terrafusion/api:testing
-        ports:
-        - containerPort: 5000
-        env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: "Testing"
-        resources:
-          requests:
-            memory: "2Gi"
-            cpu: "1000m"
-          limits:
-            memory: "4Gi"
-            cpu: "2000m"
+        - name: api
+          image: terrafusion/api:testing
+          ports:
+            - containerPort: 5000
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: 'Testing'
+          resources:
+            requests:
+              memory: '2Gi'
+              cpu: '1000m'
+            limits:
+              memory: '4Gi'
+              cpu: '2000m'
 ---
 apiVersion: v1
 kind: Service
@@ -146,8 +148,8 @@ spec:
   selector:
     app: terrafusion-api
   ports:
-  - port: 80
-    targetPort: 5000
+    - port: 80
+      targetPort: 5000
   type: LoadBalancer
 ---
 apiVersion: autoscaling/v2
@@ -163,18 +165,18 @@ spec:
   minReplicas: 3
   maxReplicas: 50
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 ## Environment Configuration
@@ -185,13 +187,13 @@ Create `.env.testing` file:
 
 ```bash
 # API Configuration
-TEST_API_URL=http://localhost:5000
-TEST_WS_URL=ws://localhost:5000/hubs/system
+TEST_API_URL=http://localhost:\${{TF_API_PORT:-5000}}
+TEST_WS_URL=ws://localhost:\${{TF_API_PORT:-5000}}/hubs/system
 API_VERSION=v1
 
 # Database Configuration
-DATABASE_URL=postgresql://test_user:test_pass@localhost:5432/terrafusion_test
-REDIS_URL=redis://localhost:6379
+DATABASE_URL=postgresql://test_user:test_pass@localhost:\${{TF_API_PORT:-5000}}/terrafusion_test
+REDIS_URL=redis://localhost:\${{TF_API_PORT:-5000}}
 
 # Kubernetes Configuration
 KUBERNETES_API_URL=https://k8s-testing.terrafusion.local
@@ -237,12 +239,12 @@ INSERT INTO jurisdictions (id, name, population, properties, region) VALUES
 ('cook', 'Cook County', 5200000, 2000000, 'central');
 
 -- Sample property data for testing
-INSERT INTO properties (parcel_id, jurisdiction_id, assessed_value, property_type) 
-SELECT 
+INSERT INTO properties (parcel_id, jurisdiction_id, assessed_value, property_type)
+SELECT
   'TEST-' || jurisdiction_id || '-' || LPAD(generate_series::text, 6, '0'),
   jurisdiction_id,
   (random() * 1000000 + 100000)::integer,
-  CASE (random() * 3)::integer 
+  CASE (random() * 3)::integer
     WHEN 0 THEN 'residential'
     WHEN 1 THEN 'commercial'
     ELSE 'industrial'
@@ -315,10 +317,10 @@ echo "127.0.0.1 testing.terrafusion.local" >> /etc/hosts
 
 ```bash
 # Verify API health
-curl -f http://localhost:5000/api/health/comprehensive
+curl -f http://localhost:\${{TF_API_PORT:-5000}}/api/health/comprehensive
 
 # Check WebSocket connectivity
-wscat -c ws://localhost:5000/hubs/system
+wscat -c ws://localhost:\${{TF_API_PORT:-5000}}/hubs/system
 ```
 
 ### 2. Database Connectivity
@@ -375,12 +377,12 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
-            
+
             # WebSocket support
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
-            
+
             # Timeouts for load testing
             proxy_connect_timeout 60s;
             proxy_send_timeout 60s;
@@ -459,6 +461,7 @@ scrape_configs:
 ### Common Issues
 
 #### Port Conflicts
+
 ```bash
 # Check port usage
 netstat -tulpn | grep :5000
@@ -468,6 +471,7 @@ sudo fuser -k 5000/tcp
 ```
 
 #### Memory Issues
+
 ```bash
 # Increase Docker memory limit
 # Edit ~/.docker/daemon.json
@@ -488,6 +492,7 @@ sudo fuser -k 5000/tcp
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Check PostgreSQL logs
 docker-compose -f docker-compose.testing.yml logs postgres

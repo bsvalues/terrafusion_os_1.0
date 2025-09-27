@@ -1,135 +1,136 @@
 /**
  * TERRAFUSION TRANSCENDENCE BRAND PROTOCOL
  * Government. Transcended.
- * 
+ *
  * This is the single source of truth for all Terrafusion branding
  * Every UI component, every message, every interaction follows this
  */
 
 export const TERRAFUSION_BRAND = {
-  essence: "Government. Transcended.",
-  tagline: "Government. Transcended.",
-  slogan: "Turn Complexity into Clarity.",
-  motto: "We do it right the first time.",
-  promise: "Every user, every action, every day: simplicity, mastery, and confidence—delivered without compromise.",
-  
+  essence: 'Government. Transcended.',
+  tagline: 'Government. Transcended.',
+  slogan: 'Turn Complexity into Clarity.',
+  motto: 'We do it right the first time.',
+  promise:
+    'Every user, every action, every day: simplicity, mastery, and confidence—delivered without compromise.',
+
   // UI Microcopy
   confirmationMessages: [
-    "Transcendence complete.",
-    "Your path is clear.",
-    "All systems: Ready.",
-    "Excellence achieved.",
-    "Championship secured."
+    'Transcendence complete.',
+    'Your path is clear.',
+    'All systems: Ready.',
+    'Excellence achieved.',
+    'Championship secured.',
   ],
-  
+
   loadingMessages: [
-    "Preparing transcendence…",
-    "Advancing county intelligence…",
-    "Orchestrating clarity…",
-    "Building your empire…",
-    "379M× faster than legacy systems…"
+    'Preparing transcendence…',
+    'Advancing county intelligence…',
+    'Orchestrating clarity…',
+    'Building your empire…',
+    '379M× faster than legacy systems…',
   ],
-  
+
   errorMessages: [
     "Let's clear the path—together.",
-    "We anticipate, we adapt, we solve.",
-    "Support is standing by your side.",
-    "Temporary obstacle. Permanent solution incoming.",
-    "Every champion faces challenges."
+    'We anticipate, we adapt, we solve.',
+    'Support is standing by your side.',
+    'Temporary obstacle. Permanent solution incoming.',
+    'Every champion faces challenges.',
   ],
-  
+
   emptyStateMessages: [
-    "A blank page for transformation.",
-    "Begin your next chapter.",
-    "The future starts here.",
-    "Your $100B journey begins now.",
-    "Ready to transcend?"
+    'A blank page for transformation.',
+    'Begin your next chapter.',
+    'The future starts here.',
+    'Your $100B journey begins now.',
+    'Ready to transcend?',
   ],
-  
+
   // Color Palette - Unified across all apps
   colors: {
     primary: {
-      terra: "#0A2540",      // Deep government blue
-      fusion: "#00D4FF",     // Electric transcendence blue
-      accent: "#FF6B35",     // Energy orange
+      terra: '#0A2540', // Deep government blue
+      fusion: '#00D4FF', // Electric transcendence blue
+      accent: '#FF6B35', // Energy orange
     },
     secondary: {
-      wisdom: "#6366F1",     // Intelligent purple
-      growth: "#10B981",     // Success green
-      clarity: "#F59E0B",    // Warning amber
+      wisdom: '#6366F1', // Intelligent purple
+      growth: '#10B981', // Success green
+      clarity: '#F59E0B', // Warning amber
     },
     neutral: {
-      void: "#0F172A",       // Deep space
-      slate: "#475569",      // Professional gray
-      cloud: "#F8FAFC",      // Clean white
+      void: '#0F172A', // Deep space
+      slate: '#475569', // Professional gray
+      cloud: '#F8FAFC', // Clean white
     },
     gradients: {
-      transcendence: "linear-gradient(135deg, #0A2540 0%, #00D4FF 100%)",
-      empire: "linear-gradient(135deg, #6366F1 0%, #FF6B35 100%)",
-      dynasty: "linear-gradient(135deg, #10B981 0%, #00D4FF 100%)"
-    }
+      transcendence: 'linear-gradient(135deg, #0A2540 0%, #00D4FF 100%)',
+      empire: 'linear-gradient(135deg, #6366F1 0%, #FF6B35 100%)',
+      dynasty: 'linear-gradient(135deg, #10B981 0%, #00D4FF 100%)',
+    },
   },
-  
+
   // Typography System
   typography: {
     fontFamily: {
       display: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       body: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      mono: "'JetBrains Mono', 'Fira Code', monospace"
+      mono: "'JetBrains Mono', 'Fira Code', monospace",
     },
     scale: {
-      hero: "clamp(2.5rem, 5vw, 4rem)",
-      h1: "2.5rem",
-      h2: "2rem",
-      h3: "1.5rem",
-      h4: "1.25rem",
-      body: "1rem",
-      small: "0.875rem",
-      micro: "0.75rem"
-    }
+      hero: 'clamp(2.5rem, 5vw, 4rem)',
+      h1: '2.5rem',
+      h2: '2rem',
+      h3: '1.5rem',
+      h4: '1.25rem',
+      body: '1rem',
+      small: '0.875rem',
+      micro: '0.75rem',
+    },
   },
-  
+
   // Animation System
   animations: {
     transition: {
-      instant: "50ms",
-      fast: "150ms",
-      smooth: "300ms",
-      dramatic: "600ms"
+      instant: '50ms',
+      fast: '150ms',
+      smooth: '300ms',
+      dramatic: '600ms',
     },
     easing: {
-      smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
-      bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-      sharp: "cubic-bezier(0.4, 0, 0.6, 1)"
-    }
+      smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+      sharp: 'cubic-bezier(0.4, 0, 0.6, 1)',
+    },
   },
-  
+
   // Component Patterns
   patterns: {
     borderRadius: {
-      sharp: "0",
-      subtle: "0.25rem",
-      smooth: "0.5rem",
-      rounded: "1rem",
-      pill: "9999px"
+      sharp: '0',
+      subtle: '0.25rem',
+      smooth: '0.5rem',
+      rounded: '1rem',
+      pill: '9999px',
     },
     elevation: {
-      flat: "none",
-      raised: "0 1px 3px 0 rgb(0 0 0 / 0.1)",
-      floating: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-      hovering: "0 20px 25px -5px rgb(0 0 0 / 0.1)",
-      orbiting: "0 25px 50px -12px rgb(0 0 0 / 0.25)"
+      flat: 'none',
+      raised: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+      floating: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+      hovering: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+      orbiting: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
     },
     spacing: {
-      micro: "0.25rem",
-      tight: "0.5rem",
-      base: "1rem",
-      loose: "1.5rem",
-      section: "3rem",
-      hero: "6rem"
-    }
+      micro: '0.25rem',
+      tight: '0.5rem',
+      base: '1rem',
+      loose: '1.5rem',
+      section: '3rem',
+      hero: '6rem',
+    },
   },
-  
+
   // AI Copilot Behavior
   aiCopilot: {
     emotionAdaptation: true,
@@ -137,47 +138,47 @@ export const TERRAFUSION_BRAND = {
     predictiveEmpathy: true,
     personas: {
       frustrated: {
-        tone: "patient",
-        approach: "gentle guidance",
-        messages: ["We're here to help", "Let's solve this together"]
+        tone: 'patient',
+        approach: 'gentle guidance',
+        messages: ["We're here to help", "Let's solve this together"],
       },
       explorer: {
-        tone: "enthusiastic",
-        approach: "reveal possibilities",
-        messages: ["Discover what's possible", "You're unlocking excellence"]
+        tone: 'enthusiastic',
+        approach: 'reveal possibilities',
+        messages: ["Discover what's possible", "You're unlocking excellence"],
       },
       skeptic: {
-        tone: "confident",
-        approach: "prove with data",
-        messages: ["379M× faster - verified", "94,149 properties processed daily"]
+        tone: 'confident',
+        approach: 'prove with data',
+        messages: ['379M× faster - verified', '94,149 properties processed daily'],
       },
       champion: {
-        tone: "celebratory",
-        approach: "acknowledge mastery",
-        messages: ["Dynasty mode activated", "You're transcending government"]
-      }
-    }
+        tone: 'celebratory',
+        approach: 'acknowledge mastery',
+        messages: ['Dynasty mode activated', "You're transcending government"],
+      },
+    },
   },
-  
+
   // Module Specific Overrides
   moduleThemes: {
     costforge: {
-      accent: "#FF6B35",
-      message: "Valuation at the speed of light"
+      accent: '#FF6B35',
+      message: 'Valuation at the speed of light',
     },
     gispro: {
-      accent: "#10B981",
-      message: "Mapping the future of government"
+      accent: '#10B981',
+      message: 'Mapping the future of government',
     },
     marketplace: {
-      accent: "#6366F1",
-      message: "30% commission. 100% domination."
+      accent: '#6366F1',
+      message: '30% commission. 100% domination.',
     },
     terraflow: {
-      accent: "#00D4FF",
-      message: "Workflows that transcend"
-    }
-  }
+      accent: '#00D4FF',
+      message: 'Workflows that transcend',
+    },
+  },
 };
 
 // Export helper functions
@@ -190,7 +191,9 @@ export const getBrandColor = (path: string): string => {
   return value;
 };
 
-export const getRandomMessage = (type: 'confirmation' | 'loading' | 'error' | 'emptyState'): string => {
+export const getRandomMessage = (
+  type: 'confirmation' | 'loading' | 'error' | 'emptyState'
+): string => {
   const messages = TERRAFUSION_BRAND[`${type}Messages`];
   return messages[Math.floor(Math.random() * messages.length)];
 };

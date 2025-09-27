@@ -1,9 +1,9 @@
 /**
  * AI Assessment Service Template - Production Implementation Required
- * 
+ *
  * This template provides the structure for implementing actual AI-powered
  * property assessment algorithms to replace the placeholder implementations.
- * 
+ *
  * @version 2.0.0
  * @classification Production-Ready Template
  */
@@ -70,7 +70,7 @@ export interface AssessmentConfig {
 
 /**
  * Production AI Assessment Service
- * 
+ *
  * Implements actual property valuation algorithms using:
  * - Comparative Market Analysis (CMA)
  * - Automated Valuation Models (AVM)
@@ -90,7 +90,7 @@ export class AIAssessmentService {
       maxComparables: 10,
       confidenceThreshold: 85,
       timeHorizon: 90,
-      ...config
+      ...config,
     };
   }
 
@@ -101,13 +101,13 @@ export class AIAssessmentService {
     try {
       // Initialize connections to external data sources
       await this.initializeDataSources();
-      
+
       // Load ML models
       await this.loadValuationModels();
-      
+
       // Warm up caches
       await this.warmUpCaches();
-      
+
       console.log('✅ AI Assessment Service initialized successfully');
     } catch (error) {
       console.error('❌ AI Assessment Service initialization failed:', error);
@@ -124,7 +124,7 @@ export class AIAssessmentService {
     try {
       // Get market data for the county/property type
       const marketData = await this.getMarketData(propertyData.county, propertyData.type);
-      
+
       // Generate realistic demo values based on market data
       const baseValue = this.calculateDemoBaseValue(propertyData, marketData);
       const adjustments = this.calculateDemoAdjustments(propertyData);
@@ -146,13 +146,13 @@ export class AIAssessmentService {
         marketTrends: {
           trend: marketData.marketTrend,
           percentage: marketData.trendPercentage,
-          description: this.getTrendDescription(marketData)
+          description: this.getTrendDescription(marketData),
         },
         breakdown: {
           landValue: Math.round(finalValue * 0.3),
           improvementValue: Math.round(finalValue * 0.7),
-          adjustments: Math.round(finalValue * (adjustments.totalMultiplier - 1))
-        }
+          adjustments: Math.round(finalValue * (adjustments.totalMultiplier - 1)),
+        },
       };
     } catch (error) {
       throw new Error(`Demo assessment generation failed: ${error.message}`);
@@ -162,7 +162,10 @@ export class AIAssessmentService {
   /**
    * Generate comprehensive property assessment
    */
-  async generateFullAssessment(propertyData: FullPropertyData, userId: string): Promise<AssessmentResult> {
+  async generateFullAssessment(
+    propertyData: FullPropertyData,
+    userId: string
+  ): Promise<AssessmentResult> {
     const startTime = Date.now();
 
     try {
@@ -171,27 +174,33 @@ export class AIAssessmentService {
 
       // Get comprehensive market analysis
       const marketAnalysis = await this.getComprehensiveMarketAnalysis(propertyData);
-      
+
       // Find and analyze comparable properties
       const comparables = await this.findComparableProperties(propertyData);
-      
+
       // Apply ML valuation model
       const mlValuation = await this.applyMLValuationModel(propertyData, comparables);
-      
+
       // Calculate final valuation using multiple approaches
       const valuationApproaches = {
         comparativeMarketAnalysis: await this.calculateCMAValue(propertyData, comparables),
         automatedValuationModel: mlValuation.estimatedValue,
         costApproach: await this.calculateCostApproachValue(propertyData),
-        incomeApproach: propertyData.type === 'commercial' ? 
-          await this.calculateIncomeApproachValue(propertyData) : null
+        incomeApproach:
+          propertyData.type === 'commercial'
+            ? await this.calculateIncomeApproachValue(propertyData)
+            : null,
       };
 
       // Weighted average based on reliability
       const finalValuation = this.calculateWeightedValuation(valuationApproaches, propertyData);
-      
+
       // Calculate confidence score
-      const confidence = this.calculateConfidenceScore(valuationApproaches, comparables, marketAnalysis);
+      const confidence = this.calculateConfidenceScore(
+        valuationApproaches,
+        comparables,
+        marketAnalysis
+      );
 
       const processingTime = Date.now() - startTime;
 
@@ -201,7 +210,7 @@ export class AIAssessmentService {
         methodology: finalValuation.methodology,
         comparableProperties: comparables.slice(0, this.config.maxComparables),
         marketTrends: marketAnalysis.trends,
-        breakdown: finalValuation.breakdown
+        breakdown: finalValuation.breakdown,
       };
     } catch (error) {
       throw new Error(`Full assessment generation failed: ${error.message}`);
@@ -217,7 +226,7 @@ export class AIAssessmentService {
 
     for (let i = 0; i < properties.length; i += batchSize) {
       const batch = properties.slice(i, i + batchSize);
-      
+
       const batchPromises = batch.map(async (property, index) => {
         try {
           const assessment = await this.generateFullAssessment(property, userId);
@@ -225,21 +234,21 @@ export class AIAssessmentService {
             success: true,
             propertyIndex: i + index,
             assessment,
-            property
+            property,
           };
         } catch (error) {
           return {
             success: false,
             propertyIndex: i + index,
             error: error.message,
-            property
+            property,
           };
         }
       });
 
       const batchResults = await Promise.all(batchPromises);
       results.push(...batchResults);
-      
+
       // Brief pause between batches to prevent overwhelming external APIs
       if (i + batchSize < properties.length) {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -254,11 +263,12 @@ export class AIAssessmentService {
    */
   async getMarketData(county: string, propertyType: string): Promise<MarketData> {
     const cacheKey = `${county}_${propertyType}`;
-    
+
     // Check cache first
     if (this.marketDataCache.has(cacheKey)) {
       const cached = this.marketDataCache.get(cacheKey)!;
-      if (Date.now() - cached.lastUpdated.getTime() < 15 * 60 * 1000) { // 15 minutes
+      if (Date.now() - cached.lastUpdated.getTime() < 15 * 60 * 1000) {
+        // 15 minutes
         return cached;
       }
     }
@@ -266,10 +276,10 @@ export class AIAssessmentService {
     try {
       // Fetch from external data sources (MLS, public records, etc.)
       const marketData = await this.fetchMarketDataFromSources(county, propertyType);
-      
+
       // Cache the result
       this.marketDataCache.set(cacheKey, marketData);
-      
+
       return marketData;
     } catch (error) {
       // Fallback to estimated values if external sources fail
@@ -305,10 +315,10 @@ export class AIAssessmentService {
     return {
       nationalTrend: 'up',
       regionalTrends: {
-        'washington': { trend: 'up', percentage: 4.2 },
-        'oregon': { trend: 'stable', percentage: 0.8 }
+        washington: { trend: 'up', percentage: 4.2 },
+        oregon: { trend: 'stable', percentage: 0.8 },
       },
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -326,7 +336,7 @@ export class AIAssessmentService {
   private async initializeDataSources(): Promise<void> {
     // Initialize connections to:
     // - MLS data feeds
-    // - County assessor databases  
+    // - County assessor databases
     // - Public records APIs
     // - Market data providers
     console.log('Initializing data sources...');
@@ -342,7 +352,7 @@ export class AIAssessmentService {
     // Pre-load frequently accessed market data
     const popularCounties = ['yakima', 'benton', 'spokane', 'clark'];
     const propertyTypes = ['residential', 'commercial'];
-    
+
     for (const county of popularCounties) {
       for (const type of propertyTypes) {
         try {
@@ -360,7 +370,7 @@ export class AIAssessmentService {
       residential: { min: 200000, max: 800000 },
       commercial: { min: 500000, max: 2000000 },
       industrial: { min: 800000, max: 3000000 },
-      agricultural: { min: 100000, max: 1500000 }
+      agricultural: { min: 100000, max: 1500000 },
     };
 
     const range = baseRanges[propertyData.type];
@@ -377,24 +387,27 @@ export class AIAssessmentService {
 
     // County adjustments (some counties are more expensive)
     const countyAdjustments = {
-      'king': 1.4,     // Seattle area
-      'snohomish': 1.3, // North of Seattle  
-      'spokane': 0.9,   // Eastern WA
-      'yakima': 0.8,    // Central WA
-      'benton': 0.85    // Tri-Cities
+      king: 1.4, // Seattle area
+      snohomish: 1.3, // North of Seattle
+      spokane: 0.9, // Eastern WA
+      yakima: 0.8, // Central WA
+      benton: 0.85, // Tri-Cities
     };
 
     multiplier *= countyAdjustments[propertyData.county] || 1.0;
 
     // Add some randomness for demo variety
-    multiplier *= (0.9 + Math.random() * 0.2); // ±10%
+    multiplier *= 0.9 + Math.random() * 0.2; // ±10%
 
     return { totalMultiplier: multiplier };
   }
 
-  private async generateDemoComparables(propertyData: DemoPropertyData, estimatedValue: number): Promise<ComparableProperty[]> {
+  private async generateDemoComparables(
+    propertyData: DemoPropertyData,
+    estimatedValue: number
+  ): Promise<ComparableProperty[]> {
     const comparables: ComparableProperty[] = [];
-    
+
     for (let i = 0; i < 5; i++) {
       const variance = 0.8 + Math.random() * 0.4; // ±20% variance
       const comparable: ComparableProperty = {
@@ -412,14 +425,14 @@ export class AIAssessmentService {
           condition: Math.round((Math.random() - 0.5) * 10000),
           location: Math.round((Math.random() - 0.5) * 25000),
           features: Math.round((Math.random() - 0.5) * 12000),
-          total: 0
-        }
+          total: 0,
+        },
       };
-      
+
       comparable.adjustments.total = Object.values(comparable.adjustments)
         .slice(0, -1)
         .reduce((sum, adj) => sum + adj, 0);
-      
+
       comparables.push(comparable);
     }
 
@@ -430,15 +443,15 @@ export class AIAssessmentService {
     const streets = ['Main St', 'Oak Ave', 'First St', 'Park Dr', 'Elm Way', 'Cedar Ln'];
     const number = Math.floor(Math.random() * 9999) + 100;
     const street = streets[Math.floor(Math.random() * streets.length)];
-    
+
     const cities = {
-      'yakima': 'Yakima',
-      'benton': 'Richland',
-      'spokane': 'Spokane',
-      'king': 'Seattle',
-      'clark': 'Vancouver'
+      yakima: 'Yakima',
+      benton: 'Richland',
+      spokane: 'Spokane',
+      king: 'Seattle',
+      clark: 'Vancouver',
     };
-    
+
     const city = cities[county] || 'Unknown';
     return `${number} ${street}, ${city}, WA`;
   }
@@ -446,7 +459,7 @@ export class AIAssessmentService {
   private getTrendDescription(marketData: MarketData): string {
     const trend = marketData.marketTrend;
     const percentage = Math.abs(marketData.trendPercentage);
-    
+
     switch (trend) {
       case 'up':
         return `Market values increasing ${percentage.toFixed(1)}% year-over-year`;
@@ -463,20 +476,23 @@ export class AIAssessmentService {
     if (!propertyData.address) {
       throw new Error('Property address is required');
     }
-    
+
     if (!propertyData.type) {
       throw new Error('Property type is required');
     }
-    
+
     if (!propertyData.county) {
       throw new Error('County is required');
     }
-    
+
     if (propertyData.sqft && (propertyData.sqft < 100 || propertyData.sqft > 50000)) {
       throw new Error('Square footage must be between 100 and 50,000');
     }
-    
-    if (propertyData.yearBuilt && (propertyData.yearBuilt < 1800 || propertyData.yearBuilt > new Date().getFullYear())) {
+
+    if (
+      propertyData.yearBuilt &&
+      (propertyData.yearBuilt < 1800 || propertyData.yearBuilt > new Date().getFullYear())
+    ) {
       throw new Error('Year built must be reasonable');
     }
   }
@@ -486,7 +502,7 @@ export class AIAssessmentService {
   // - findComparableProperties()
   // - applyMLValuationModel()
   // - calculateCMAValue()
-  // - calculateCostApproachValue()  
+  // - calculateCostApproachValue()
   // - calculateIncomeApproachValue()
   // - calculateWeightedValuation()
   // - calculateConfidenceScore()
@@ -501,7 +517,7 @@ export class AIAssessmentService {
       residential: 450000,
       commercial: 1200000,
       industrial: 1800000,
-      agricultural: 750000
+      agricultural: 750000,
     };
 
     return {
@@ -513,7 +529,7 @@ export class AIAssessmentService {
       marketTrend: 'stable',
       trendPercentage: Math.random() * 4 - 2, // -2% to +2%
       sampleSize: Math.floor(Math.random() * 500) + 100,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
   }
 }
@@ -521,7 +537,9 @@ export class AIAssessmentService {
 // Export singleton instance
 let aiServiceInstance: AIAssessmentService | null = null;
 
-export const createAIAssessmentService = (config?: Partial<AssessmentConfig>): AIAssessmentService => {
+export const createAIAssessmentService = (
+  config?: Partial<AssessmentConfig>
+): AIAssessmentService => {
   if (!aiServiceInstance) {
     aiServiceInstance = new AIAssessmentService(config);
   }
@@ -530,7 +548,9 @@ export const createAIAssessmentService = (config?: Partial<AssessmentConfig>): A
 
 export const getAIAssessmentService = (): AIAssessmentService => {
   if (!aiServiceInstance) {
-    throw new Error('AI Assessment service not initialized. Call createAIAssessmentService() first.');
+    throw new Error(
+      'AI Assessment service not initialized. Call createAIAssessmentService() first.'
+    );
   }
   return aiServiceInstance;
 };

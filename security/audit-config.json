@@ -1,0 +1,66 @@
+{
+  "auditConfig": {
+    "version": "2.0.0",
+    "framework": "TerraFusion Security Audit Framework",
+    "lastUpdated": "2025-09-13T23:02:04Z",
+    "complianceStandards": [
+      "FISMA",
+      "NIST-800-53",
+      "SECTION-508",
+      "FEDRAMP",
+      "CMMC"
+    ],
+    "scanTypes": {
+      "codeAnalysis": {
+        "enabled": true,
+        "tools": ["bandit", "eslint-security"],
+        "severity": ["high", "medium", "low"],
+        "exclude": ["node_modules", ".git", "var", "tmp"]
+      },
+      "dependencyAudit": {
+        "enabled": true,
+        "tools": ["safety", "npm-audit"],
+        "checkCves": true,
+        "autoUpdate": false
+      },
+      "infrastructureAudit": {
+        "enabled": true,
+        "tools": ["checkov"],
+        "frameworks": ["terraform", "docker", "kubernetes"],
+        "scanContainers": true
+      },
+      "complianceCheck": {
+        "enabled": true,
+        "standards": {
+          "FISMA": {
+            "enabled": true,
+            "controls": ["access-control", "audit-accountability", "configuration-management"],
+            "reportFormat": "government"
+          },
+          "NIST-800-53": {
+            "enabled": true,
+            "controlFamilies": ["AC", "AU", "CA", "CM", "CP", "IA", "IR", "MA", "MP", "PE", "PL", "PS", "RA", "SA", "SC", "SI", "SR"],
+            "revision": "5"
+          },
+          "SECTION-508": {
+            "enabled": true,
+            "checkAccessibility": true,
+            "wcagLevel": "AA"
+          }
+        }
+      }
+    },
+    "reporting": {
+      "formats": ["json", "html", "pdf", "csv"],
+      "includeExecutiveSummary": true,
+      "governmentClassification": "TLP:GREEN",
+      "retentionPeriod": "7-years"
+    },
+    "automation": {
+      "scheduleScans": true,
+      "frequency": "daily",
+      "alertOnCritical": true,
+      "integrations": ["slack", "email", "syslog"]
+    }
+  }
+}

@@ -1,16 +1,14 @@
 import * as React from 'react';
 
-export type PropertyValuationFormProps = {
-  parcelId: string;
+export type PropertyValuationFormProps = {parcelId: string;
   defaultBedrooms?: number | null;
   defaultBathrooms?: number | null;
   canEdit?: boolean;
   featureFlags?: string[];
-  onSubmit?: (payload: { parcelId: string; bedrooms: number | null; bathrooms: number | null }) => Promise<any> | any;
+  onSubmit?: (payload: { parcelId: string; bedrooms: number | null; bathrooms: number | null}) => Promise<any> | any;
 };
 
-export default function PropertyValuationForm(props: PropertyValuationFormProps) {
-  const [bedrooms, setBedrooms] = React.useState<number | null>(
+export default function PropertyValuationForm(props: PropertyValuationFormProps) {const [bedrooms, setBedrooms] = React.useState<number | null>(
     props.defaultBedrooms === undefined ? null : (props.defaultBedrooms as any)
   );
   const [bathrooms, setBathrooms] = React.useState<number | null>(
@@ -25,19 +23,13 @@ export default function PropertyValuationForm(props: PropertyValuationFormProps)
     e.preventDefault();
     setLoading(true);
     try {
-      await (props.onSubmit?.({ parcelId: props.parcelId, bedrooms, bathrooms }) ?? Promise.resolve());
+      await (props.onSubmit?.({ parcelId: props.parcelId, bedrooms, bathrooms}) ?? Promise.resolve());
       setSubmitted(true);
-    } finally {
-      setLoading(false);
-    }
+    } finally {setLoading(false);}
   }
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Property Valuation Form">
-      <div><>
-
-        <label htmlFor="bedrooms">Bedrooms</label>
-        <input
+    <form onSubmit={handleSubmit} aria-label="Property Valuation Form"><div><><label htmlFor="bedrooms">Bedrooms</label><input
 </>
 
           id="bedrooms"
@@ -47,13 +39,7 @@ export default function PropertyValuationForm(props: PropertyValuationFormProps)
           value={bedrooms as any}
           onChange={(e) => setBedrooms(e.currentTarget.value === '' ? null : Number(e.currentTarget.value))}
           disabled={disabled}
-        />
-      </div>
-
-      <div><>
-
-        <label htmlFor="bathrooms">Bathrooms</label>
-        <input
+        /></div><div><><label htmlFor="bathrooms">Bathrooms</label><input
 </>
 
           id="bathrooms"
@@ -63,14 +49,7 @@ export default function PropertyValuationForm(props: PropertyValuationFormProps)
           value={bathrooms as any}
           onChange={(e) => setBathrooms(e.currentTarget.value === '' ? null : Number(e.currentTarget.value))}
           disabled={disabled}
-        />
-      </div>
-
-      <button type="submit" disabled={disabled || loading}>
-        {loading ? 'Calculating…' : 'Calculate'}
-      </button>
-
-      {submitted && <p>Valuation submitted</p>}
+        /></div><button type="submit" disabled={disabled || loading}>{loading ? 'Calculating…' : 'Calculate'}</button>{submitted &&<p>Valuation submitted</p>}
     </form>
   );
 }

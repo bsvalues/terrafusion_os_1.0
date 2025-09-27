@@ -11,9 +11,9 @@ chmod +x LAUNCH_DYNASTY.sh
 ```
 
 **That's it!** Your dynasty is now running at:
-- 🌐 **Dashboard**: http://localhost:8090/championship_ui.html
-- 🔧 **API**: http://localhost:8000
-- 🧠 **Ollama**: http://localhost:11434
+- 🌐 **Dashboard**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html
+- 🔧 **API**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}
+- 🧠 **Ollama**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}
 
 ---
 
@@ -123,7 +123,7 @@ LOG_LEVEL=INFO              # Logging level
 ./LAUNCH_DYNASTY.sh logs
 
 # Health check all services
-curl http://localhost:8000/health
+curl http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/health
 ```
 
 ### Dashboard Metrics
@@ -308,7 +308,7 @@ export ENABLE_QUANTUM=true
 export QUANTUM_BACKEND=simulator  # or 'ibm' for real quantum
 
 # Monitor quantum advantages
-curl http://localhost:8084/metrics
+curl http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/metrics
 ```
 
 ### Self-Evolution
@@ -318,7 +318,7 @@ export ENABLE_EVOLUTION=true
 export AUTO_EVOLUTION_RATE=0.1
 
 # Watch system evolve itself
-curl http://localhost:8083/evolution/status
+curl http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/evolution/status
 ```
 
 ---

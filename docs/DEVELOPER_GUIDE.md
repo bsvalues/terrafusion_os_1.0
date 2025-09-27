@@ -2,7 +2,9 @@
 
 ## 👨‍💻 **Developer Onboarding**
 
-Welcome to the Terrafusion OS 1.0 development team! This guide will help you get up to speed with our codebase, development practices, and contribution workflows.
+Welcome to the Terrafusion OS 1.0 development team! This guide will help you get
+up to speed with our codebase, development practices, and contribution
+workflows.
 
 ---
 
@@ -39,29 +41,32 @@ Install these essential extensions:
 ### **Local Development Setup**
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/terrafusion/os-1.0.git
    cd os-1.0
    ```
 
 2. **Install Dependencies**
+
    ```bash
    # Root dependencies
    npm install
-   
+
    # Backend dependencies
    cd backend
    dotnet restore
-   
+
    # Frontend dependencies
    cd ../frontend
    npm install
-   
+
    # Return to root
    cd ..
    ```
 
 3. **Environment Configuration**
+
    ```bash
    # Copy environment templates
    cp .env.example .env
@@ -70,6 +75,7 @@ Install these essential extensions:
    ```
 
 4. **Database Setup**
+
    ```bash
    # Start PostgreSQL (Docker)
    docker run -d \
@@ -79,7 +85,7 @@ Install these essential extensions:
      -e POSTGRES_PASSWORD=dev123 \
      -p 5432:5432 \
      postgres:14
-   
+
    # Run migrations
    cd backend
    dotnet ef database update
@@ -87,15 +93,16 @@ Install these essential extensions:
    ```
 
 5. **Start Development Services**
+
    ```bash
    # Start all services (recommended)
    npm run dev
-   
+
    # Or start individually
-   npm run dev:backend    # .NET API (port 5000)
-   npm run dev:frontend   # React PWA (port 3000)
+   npm run dev:backend    # .NET API (port \${{TF_API_PORT:-5000}})
+   npm run dev:frontend   # React PWA (port \${{TF_API_PORT:-5000}})
    npm run dev:electron   # Electron shell
-   npm run dev:ai-swarm   # AI services (port 8000)
+   npm run dev:ai-swarm   # AI services (port \${{TF_API_PORT:-5000}})
    ```
 
 ---
@@ -199,6 +206,7 @@ test(api): add integration tests for property service
 ### **Pull Request Process**
 
 1. **Create Feature Branch**
+
    ```bash
    git checkout develop
    git pull origin develop
@@ -206,18 +214,20 @@ test(api): add integration tests for property service
    ```
 
 2. **Development and Testing**
+
    ```bash
    # Make your changes
    # Run tests
    npm run test
    npm run test:integration
-   
+
    # Run linting and formatting
    npm run lint
    npm run format
    ```
 
 3. **Commit and Push**
+
    ```bash
    git add .
    git commit -m "feat(scope): your feature description"
@@ -233,12 +243,14 @@ test(api): add integration tests for property service
 ### **Code Review Guidelines**
 
 **For Authors:**
+
 - Keep PRs small and focused (< 400 lines)
 - Write clear descriptions and test instructions
 - Respond to feedback promptly
 - Update documentation if needed
 
 **For Reviewers:**
+
 - Review within 24 hours
 - Focus on logic, security, and performance
 - Be constructive and specific
@@ -289,6 +301,7 @@ npm run test:visual
 ### **Test Writing Guidelines**
 
 **Unit Test Example (.NET)**
+
 ```csharp
 [Test]
 public async Task AssessProperty_ValidInput_ReturnsAssessment()
@@ -297,10 +310,10 @@ public async Task AssessProperty_ValidInput_ReturnsAssessment()
     var propertyId = Guid.NewGuid();
     var mockRepo = new Mock<IPropertyRepository>();
     var service = new PropertyAssessmentService(mockRepo.Object);
-    
+
     // Act
     var result = await service.AssessPropertyAsync(propertyId);
-    
+
     // Assert
     Assert.That(result.IsSuccess, Is.True);
     Assert.That(result.Value.AssessedValue, Is.GreaterThan(0));
@@ -308,6 +321,7 @@ public async Task AssessProperty_ValidInput_ReturnsAssessment()
 ```
 
 **React Component Test Example**
+
 ```typescript
 describe('PropertyCard', () => {
   it('displays property information correctly', () => {
@@ -316,9 +330,9 @@ describe('PropertyCard', () => {
       address: '123 Main St',
       assessedValue: 500000
     };
-    
+
     render(<PropertyCard property={mockProperty} />);
-    
+
     expect(screen.getByText('123 Main St')).toBeInTheDocument();
     expect(screen.getByText('$500,000')).toBeInTheDocument();
   });
@@ -332,12 +346,14 @@ describe('PropertyCard', () => {
 ### **Backend Performance**
 
 **API Response Times**
+
 - Property queries: < 100ms
 - Assessment calculations: < 500ms
 - Bulk operations: < 2s
 - Health checks: < 50ms
 
 **Database Optimization**
+
 ```csharp
 // Use async/await for all database operations
 public async Task<Property> GetPropertyAsync(Guid id)
@@ -357,7 +373,7 @@ public async Task<PagedResult<Property>> GetPropertiesAsync(
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
         .ToListAsync();
-    
+
     return new PagedResult<Property>(items, total, page, pageSize);
 }
 ```
@@ -365,6 +381,7 @@ public async Task<PagedResult<Property>> GetPropertiesAsync(
 ### **Frontend Performance**
 
 **React Optimization**
+
 ```typescript
 // Use React.memo for expensive components
 export const PropertyCard = React.memo(({ property }: Props) => {
@@ -387,6 +404,7 @@ const handleClick = useCallback((id: string) => {
 ```
 
 **Bundle Optimization**
+
 ```typescript
 // Use dynamic imports for code splitting
 const PropertyDetails = lazy(() => import('./PropertyDetails'));
@@ -404,32 +422,34 @@ const PropertyDetails = lazy(() => import('./PropertyDetails'));
 ### **Authentication & Authorization**
 
 **JWT Token Handling**
+
 ```typescript
 // Store tokens securely
 const tokenService = {
   setToken: (token: string) => {
     localStorage.setItem('auth_token', token);
   },
-  
+
   getToken: (): string | null => {
     return localStorage.getItem('auth_token');
   },
-  
+
   removeToken: () => {
     localStorage.removeItem('auth_token');
-  }
+  },
 };
 
 // Add auth headers to API requests
 const apiClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   headers: {
-    'Authorization': `Bearer ${tokenService.getToken()}`
-  }
+    Authorization: `Bearer ${tokenService.getToken()}`,
+  },
 });
 ```
 
 **Input Validation**
+
 ```csharp
 // Backend validation with FluentValidation
 public class CreatePropertyValidator : AbstractValidator<CreatePropertyRequest>
@@ -439,7 +459,7 @@ public class CreatePropertyValidator : AbstractValidator<CreatePropertyRequest>
         RuleFor(x => x.Address)
             .NotEmpty()
             .MaximumLength(200);
-            
+
         RuleFor(x => x.AssessedValue)
             .GreaterThan(0)
             .LessThan(100_000_000);
@@ -450,6 +470,7 @@ public class CreatePropertyValidator : AbstractValidator<CreatePropertyRequest>
 ### **Data Protection**
 
 **Sensitive Data Handling**
+
 ```csharp
 // Encrypt sensitive data at rest
 [JsonIgnore]
@@ -476,13 +497,14 @@ public class AuditableEntity
 ### **AI Swarm Architecture**
 
 **Agent Implementation**
+
 ```python
 class PropertyAssessmentAgent:
     def __init__(self, agent_id: str, specialization: str):
         self.agent_id = agent_id
         self.specialization = specialization
         self.model = self.load_model()
-    
+
     async def process_task(self, task: AssessmentTask) -> AssessmentResult:
         # Implement agent-specific logic
         prediction = await self.model.predict(task.property_data)
@@ -494,27 +516,29 @@ class PropertyAssessmentAgent:
 ```
 
 **Model Training Pipeline**
+
 ```python
 # Training script example
 def train_assessment_model():
     # Load and preprocess data
     data = load_property_data()
     X_train, X_test, y_train, y_test = train_test_split(data)
-    
+
     # Train model
     model = create_neural_network()
     model.fit(X_train, y_train, validation_data=(X_test, y_test))
-    
+
     # Evaluate and save
     accuracy = model.evaluate(X_test, y_test)
     model.save('models/property_assessment_v1.h5')
-    
+
     return accuracy
 ```
 
 ### **Model Deployment**
 
 **Model Serving API**
+
 ```python
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -533,7 +557,7 @@ async def assess_property(data: PropertyData):
     # Load model and make prediction
     model = load_model()
     prediction = model.predict(data.dict())
-    
+
     return {
         "assessed_value": prediction.value,
         "confidence": prediction.confidence,
@@ -548,6 +572,7 @@ async def assess_property(data: PropertyData):
 ### **Component Architecture**
 
 **Component Structure**
+
 ```typescript
 // Component template
 interface Props {
@@ -558,17 +583,17 @@ export const ComponentName: React.FC<Props> = ({ prop1, prop2 }) => {
   // Hooks at the top
   const [state, setState] = useState<StateType>(initialState);
   const dispatch = useAppDispatch();
-  
+
   // Event handlers
   const handleEvent = useCallback(() => {
     // Handle event
   }, [dependencies]);
-  
+
   // Effects
   useEffect(() => {
     // Side effects
   }, [dependencies]);
-  
+
   // Render
   return (
     <div className="component-name">
@@ -581,6 +606,7 @@ export const ComponentName: React.FC<Props> = ({ prop1, prop2 }) => {
 ### **State Management**
 
 **Redux Toolkit Setup**
+
 ```typescript
 // Store configuration
 export const store = configureStore({
@@ -589,7 +615,7 @@ export const store = configureStore({
     auth: authSlice.reducer,
     ui: uiSlice.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
@@ -619,28 +645,29 @@ const propertiesSlice = createSlice({
 ### **Docker Development**
 
 **Development Docker Compose**
+
 ```yaml
 version: '3.8'
 services:
   backend:
     build: ./backend
     ports:
-      - "5000:5000"
+      - '5000:5000'
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=terrafusion_dev;Username=dev;Password=dev123
     depends_on:
       - postgres
       - redis
-  
+
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./frontend:/app
       - /app/node_modules
-  
+
   postgres:
     image: postgres:14
     environment:
@@ -648,12 +675,13 @@ services:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev123
     ports:
-      - "5432:5432"
+      - '5432:5432'
 ```
 
 ### **CI/CD Pipeline**
 
 **GitHub Actions Workflow**
+
 ```yaml
 name: CI/CD Pipeline
 
@@ -668,22 +696,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      
+
       - name: Run backend tests
         run: |
           cd backend
           dotnet test --configuration Release
-      
+
       - name: Run frontend tests
         run: |
           cd frontend
@@ -738,7 +766,7 @@ public class PropertiesController : ControllerBase
             return BadRequest(ModelState);
 
         var result = await _propertyService.CreatePropertyAsync(request);
-        return CreatedAtAction(nameof(GetProperty), 
+        return CreatedAtAction(nameof(GetProperty),
             new { id = result.Id }, result);
     }
 }
@@ -752,12 +780,12 @@ Use **Swagger/OpenAPI** for documentation:
 // In Program.cs
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "Terrafusion API", 
-        Version = "v1" 
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Terrafusion API",
+        Version = "v1"
     });
-    
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header",
@@ -775,6 +803,7 @@ builder.Services.AddSwaggerGen(c =>
 ### **Common Issues**
 
 **Database Connection Issues**
+
 ```bash
 # Check PostgreSQL status
 docker ps | grep postgres
@@ -787,6 +816,7 @@ psql -h localhost -U dev -d terrafusion_dev
 ```
 
 **Frontend Build Issues**
+
 ```bash
 # Clear node modules and reinstall
 rm -rf node_modules package-lock.json
@@ -800,6 +830,7 @@ npm run type-check
 ```
 
 **Performance Issues**
+
 ```bash
 # Profile .NET application
 dotnet-trace collect -p <process-id>
@@ -814,6 +845,7 @@ dotnet-trace collect -p <process-id>
 ### **Logging & Monitoring**
 
 **Backend Logging**
+
 ```csharp
 public class PropertyService : IPropertyService
 {
@@ -822,7 +854,7 @@ public class PropertyService : IPropertyService
     public async Task<Property> GetPropertyAsync(Guid id)
     {
         _logger.LogInformation("Retrieving property {PropertyId}", id);
-        
+
         try
         {
             var property = await _repository.GetByIdAsync(id);
@@ -839,6 +871,7 @@ public class PropertyService : IPropertyService
 ```
 
 **Frontend Error Tracking**
+
 ```typescript
 // Error boundary for React
 class ErrorBoundary extends React.Component {

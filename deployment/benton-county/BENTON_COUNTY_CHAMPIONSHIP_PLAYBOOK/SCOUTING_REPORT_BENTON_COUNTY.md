@@ -5,6 +5,7 @@
 ## 📊 OPPONENT OVERVIEW: BENTON COUNTY, WASHINGTON
 
 ### Quick Stats
+
 - **Population**: 206,873 (2023 est.)
 - **County Seat**: Prosser
 - **Major Cities**: Kennewick, Richland, West Richland, Benton City
@@ -17,23 +18,30 @@
 ## 🎯 DEFENSIVE FORMATIONS (Data Challenges)
 
 ### 1. The "Data Silo Blitz"
+
 **Challenge**: Multiple disconnected systems
+
 ```
 Assessor's Office ←X→ Planning Dept ←X→ Treasurer ←X→ GIS
 ```
-**Counter-Strategy**: 
+
+**Counter-Strategy**:
+
 - Build unified data ingestion pipeline
 - Create master parcel ID mapping
 - Implement cross-reference validation
 
-### 2. The "Format Zone Defense"  
+### 2. The "Format Zone Defense"
+
 **Challenge**: Inconsistent data formats
+
 - Property records: CSV, fixed-width, PDF
 - Zoning: Shapefiles, GeoJSON, CAD
 - Permits: REST API, SOAP, manual exports
 - Tax data: Legacy mainframe dumps
 
 **Counter-Strategy**:
+
 ```python
 class FormatNormalizer:
     converters = {
@@ -47,9 +55,11 @@ class FormatNormalizer:
 ```
 
 ### 3. The "Update Frequency Pressure"
+
 **Challenge**: Different update cycles
+
 - Assessments: Annual (January)
-- Sales: Weekly 
+- Sales: Weekly
 - Permits: Real-time
 - Zoning: Quarterly
 - Tax payments: Daily
@@ -57,7 +67,9 @@ class FormatNormalizer:
 **Counter-Strategy**: Incremental update system with data versioning
 
 ### 4. The "Legacy System Trap"
+
 **Challenge**: 30-year-old mainframe systems
+
 - COBOL-based property system
 - No modern APIs
 - Batch processing only
@@ -72,11 +84,12 @@ class FormatNormalizer:
 ### Primary Sources (Starting Field)
 
 #### 1. Assessor's Office - "The Pocket"
+
 - **URL**: assessor.co.benton.wa.us
 - **Access**: Public portal + FTP
-- **Key Data**: 
+- **Key Data**:
   - Parcel boundaries
-  - Property characteristics  
+  - Property characteristics
   - Assessment values
   - Ownership history
 - **Update Frequency**: Annual
@@ -84,7 +97,8 @@ class FormatNormalizer:
 - **Volume**: ~2GB annually
 
 #### 2. Planning & Development - "The Red Zone"
-- **URL**: pds.co.benton.wa.us  
+
+- **URL**: pds.co.benton.wa.us
 - **Access**: REST API (limited)
 - **Key Data**:
   - Building permits
@@ -96,6 +110,7 @@ class FormatNormalizer:
 - **Volume**: ~500MB + daily updates
 
 #### 3. GIS Department - "The Secondary"
+
 - **URL**: gis.co.benton.wa.us
 - **Access**: ArcGIS Server
 - **Key Data**:
@@ -107,7 +122,8 @@ class FormatNormalizer:
 - **Format**: Shapefiles, REST services
 - **Volume**: ~10GB spatial data
 
-#### 4. Treasurer's Office - "The Backfield"  
+#### 4. Treasurer's Office - "The Backfield"
+
 - **URL**: treasurer.co.benton.wa.us
 - **Access**: Secured portal
 - **Key Data**:
@@ -122,7 +138,7 @@ class FormatNormalizer:
 ### Secondary Sources (Special Teams)
 
 1. **MLS Data** - Regional realtor database
-2. **Census/Demographics** - Federal datasets  
+2. **Census/Demographics** - Federal datasets
 3. **Economic Development** - Business licenses
 4. **Public Works** - Infrastructure projects
 5. **Court Records** - Foreclosures, liens
@@ -132,24 +148,27 @@ class FormatNormalizer:
 ## 📈 STATISTICAL ANALYSIS
 
 ### Data Quality Grades
+
 ```
 Property Records:     B+ (85%) - Good completeness, some legacy issues
 Spatial Data:         A  (92%) - High quality GIS layers
 Sales History:        B  (83%) - Reliable but needs validation
-Permit Data:          A- (88%) - Real-time but complex relationships  
+Permit Data:          A- (88%) - Real-time but complex relationships
 Tax Records:          B  (82%) - Complete but difficult access
 ```
 
 ### Coverage Heatmap
+
 ```
 Kennewick:      ████████████ 95%
-Richland:       ████████████ 96%  
+Richland:       ████████████ 96%
 West Richland:  ███████████░ 91%
 Prosser:        ██████████░░ 85%
 Rural Areas:    ███████░░░░░ 72%
 ```
 
 ### Historical Trends
+
 - 2019: Digital transformation began
 - 2020: COVID accelerated online access
 - 2021: New GIS system deployed
@@ -163,7 +182,9 @@ Rural Areas:    ███████░░░░░ 72%
 ### Offensive Strategy
 
 #### First Quarter - Establish the Run
+
 1. **Bulk Data Download**
+
    ```bash
    # Weekly download script
    wget -r -np -nH --cut-dirs=2 \
@@ -175,12 +196,13 @@ Rural Areas:    ███████░░░░░ 72%
    class BentonAPIClient:
        endpoints = {
            'permits': '/api/v1/permits',
-           'parcels': '/api/v1/parcels', 
+           'parcels': '/api/v1/parcels',
            'zoning': '/api/v1/zoning'
        }
    ```
 
 #### Second Quarter - Play Action
+
 1. **Data Enrichment**
    - Geocode addresses
    - Match parcel IDs across systems
@@ -196,7 +218,8 @@ Rural Areas:    ███████░░░░░ 72%
        return (completeness + accuracy + timeliness) / 3
    ```
 
-#### Third Quarter - Air Attack  
+#### Third Quarter - Air Attack
+
 1. **Advanced Analytics**
    - Market trend analysis
    - Comparable property matching
@@ -215,9 +238,10 @@ Rural Areas:    ███████░░░░░ 72%
    ```
 
 #### Fourth Quarter - Clock Management
+
 1. **Incremental Updates**
    - Daily permit pulls
-   - Weekly sales updates  
+   - Weekly sales updates
    - Monthly assessment sync
    - Quarterly full refresh
 
@@ -232,18 +256,21 @@ Rural Areas:    ███████░░░░░ 72%
 ## 🚨 RED FLAGS (Risk Areas)
 
 ### Legal/Compliance
+
 - ⚠️ Public records law compliance required
 - ⚠️ No commercial use without license
 - ⚠️ PII must be handled carefully
 - ⚠️ Some data requires FOIA requests
 
 ### Technical Debt
+
 - ⚠️ Legacy system dependencies
 - ⚠️ Inconsistent field naming
 - ⚠️ Missing data dictionaries
 - ⚠️ No change data capture
 
 ### Data Gaps
+
 - ⚠️ Rural property coverage
 - ⚠️ Historical data pre-2000
 - ⚠️ Private sales not recorded
@@ -254,24 +281,28 @@ Rural Areas:    ███████░░░░░ 72%
 ## 🏆 KEYS TO VICTORY
 
 ### 1. Establish Data Dominance
+
 - Complete initial bulk download
 - Build comprehensive data dictionary
 - Create master parcel index
 - Implement quality scoring
 
 ### 2. Control the Clock
+
 - Automate update processes
 - Minimize manual intervention
 - Build robust error handling
 - Monitor data freshness
 
 ### 3. Execute in the Red Zone
+
 - Accurate property matching
 - Reliable valuation models
 - Fast query responses
 - Helpful LLM interactions
 
 ### 4. Special Teams Excellence
+
 - Strong documentation
 - Comprehensive testing
 - Performance monitoring
@@ -282,12 +313,14 @@ Rural Areas:    ███████░░░░░ 72%
 ## 📹 GAME FILM NOTES
 
 ### What Others Did Wrong
+
 - **Portland**: Over-engineered solution, too complex
 - **Seattle**: Ignored data quality, garbage in/out
 - **Spokane**: No incremental updates, stale data
 - **Tacoma**: Poor documentation, knowledge lost
 
-### What We'll Do Right  
+### What We'll Do Right
+
 - Start simple, iterate fast
 - Focus on data quality first
 - Build for maintainability
@@ -299,18 +332,21 @@ Rural Areas:    ███████░░░░░ 72%
 ## 🎯 FINAL SCOUTING SUMMARY
 
 **Strengths to Exploit**:
+
 - Good digital infrastructure (post-2021)
 - Willing county staff
 - Growing tech community
 - Clean GIS data
 
 **Weaknesses to Address**:
+
 - Legacy system dependencies
 - Inconsistent formats
 - Rural data gaps
 - Update lag times
 
 **Game Plan**:
+
 1. Week 1-2: Establish data pipelines
 2. Week 3-4: Build quality framework
 3. Week 5-8: Create training datasets
@@ -323,4 +359,4 @@ Rural Areas:    ███████░░░░░ 72%
 
 > "We're on to Benton County" - Tom Brady (probably)
 
-*Scouting report compiled by the New England Data Patriots*
+_Scouting report compiled by the New England Data Patriots_

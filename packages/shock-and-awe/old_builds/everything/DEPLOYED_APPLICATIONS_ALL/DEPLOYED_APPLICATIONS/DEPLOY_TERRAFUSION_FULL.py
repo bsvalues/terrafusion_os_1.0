@@ -6,12 +6,12 @@ with production-ready infrastructure, database management, and monitoring.
 
 Applications Deployed:
 - TerraFusionPlayground: Application launcher & health monitor (Port 30
-- TerraFusionSync: Data synchronization backbone (Port 5002
+- TerraFusionSync: Data synchronization backbone (Port \${{TF_API_5002_PORT:-5002}}
 - TerraFlow: Data processing engine (Port 51)
-- TerraAgent: AI assistance system (Port 53- TerraMiner: Data mining platform (Port 5006
+- TerraAgent: AI assistance system (Port 53- TerraMiner: Data mining platform (Port \${{TF_API_5002_PORT:-5002}}
 - TerraLevy: Levy management system (Port 57
 - TerraFusionAnalytics: Analytics dashboard (Port 508
-- TerraFusionPilt: PILT management system (Port 5009)
+- TerraFusionPilt: PILT management system (Port \${{TF_API_5002_PORT:-5002}})
 
 Database Architecture:
 - SQLite for development (fast, independent)
@@ -243,7 +243,7 @@ class TerraFusionFullDeployment:
 export default function {app_name}()[object Object][object Object] return (
     <div style={{ padding: 2em', fontFamily: Arial, sans-serif}}>
       <h1>🚀 {app_name}</h1    <p>TerraFusion Application - {app_name}</p>
-      <p>Status: Running on port 3000>
+      <p>Status: Running on port \${{TF_FRONTEND_PORT:-3000}}>
     </div>
   );
 }}

@@ -84,7 +84,7 @@
         },
         "authenticationMetrics": {
           "userAuthenticationRate": "99.9%",
-          "agentAuthenticationRate": "99.8%", 
+          "agentAuthenticationRate": "99.8%",
           "multiFactorSuccess": "99.6%",
           "suspiciousActivityDetected": 2
         },
@@ -105,7 +105,7 @@
           "timestamp": "2025-08-22T00:00:00Z"
         },
         {
-          "level": "info", 
+          "level": "info",
           "component": "government-readiness",
           "message": "FISMA compliance at 98.7% - ready for ATO process",
           "timestamp": "2025-08-22T00:00:00Z"

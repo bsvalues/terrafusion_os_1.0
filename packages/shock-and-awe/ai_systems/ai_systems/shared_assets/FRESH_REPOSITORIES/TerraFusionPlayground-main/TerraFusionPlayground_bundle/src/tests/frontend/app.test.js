@@ -43,11 +43,12 @@ describe('TerraFusionApp', () => {
     it('should initialize successfully', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          model: 'ready',
-          performance: { cpu: 50 },
-          security: { authenticated: true }
-        })
+        json: () =>
+          Promise.resolve({
+            model: 'ready',
+            performance: { cpu: 50 },
+            security: { authenticated: true }
+          })
       });
 
       app = new TerraFusionApp();
@@ -72,11 +73,12 @@ describe('TerraFusionApp', () => {
     beforeEach(async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          model: 'ready',
-          performance: { cpu: 50 },
-          security: { authenticated: true }
-        })
+        json: () =>
+          Promise.resolve({
+            model: 'ready',
+            performance: { cpu: 50 },
+            security: { authenticated: true }
+          })
       });
 
       app = new TerraFusionApp();
@@ -102,7 +104,9 @@ describe('TerraFusionApp', () => {
 
       expect(mockElements.processButton.disabled).toBe(false);
       expect(mockElements.processButton.textContent).toBe('Process');
-      expect(mockElements.predictionResult.textContent).toBe(JSON.stringify(expectedResult.result, null, 2));
+      expect(mockElements.predictionResult.textContent).toBe(
+        JSON.stringify(expectedResult.result, null, 2)
+      );
       expect(mockElements.confidenceResult.textContent).toBe('70.00%');
       expect(mockElements.processingTimeResult.textContent).toBe('100ms');
     });
@@ -123,11 +127,12 @@ describe('TerraFusionApp', () => {
     beforeEach(async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          model: 'ready',
-          performance: { cpu: 50 },
-          security: { authenticated: true }
-        })
+        json: () =>
+          Promise.resolve({
+            model: 'ready',
+            performance: { cpu: 50 },
+            security: { authenticated: true }
+          })
       });
 
       app = new TerraFusionApp();
@@ -150,8 +155,12 @@ describe('TerraFusionApp', () => {
       await Promise.resolve();
 
       expect(mockElements.modelStatus.textContent).toBe(newStatus.model);
-      expect(mockElements.performanceMetrics.textContent).toBe(JSON.stringify(newStatus.performance, null, 2));
-      expect(mockElements.securityStatus.textContent).toBe(JSON.stringify(newStatus.security, null, 2));
+      expect(mockElements.performanceMetrics.textContent).toBe(
+        JSON.stringify(newStatus.performance, null, 2)
+      );
+      expect(mockElements.securityStatus.textContent).toBe(
+        JSON.stringify(newStatus.security, null, 2)
+      );
     });
   });
-}); 
+});

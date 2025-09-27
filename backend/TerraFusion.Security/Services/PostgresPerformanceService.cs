@@ -469,7 +469,7 @@ namespace TerraFusion.Security.Services
 
 [pgbouncer]
 listen_addr = 0.0.0.0
-listen_port = 6432
+listen_port=\{{TF_PORT_6432:-6432}}
 auth_type = md5
 auth_file = /etc/pgbouncer/userlist.txt
 pool_mode = transaction
@@ -945,3 +945,4 @@ spec:
         public int TotalQueries { get; set; }
     }
 }
+

@@ -4,7 +4,7 @@ const path = require('path');
 const { ipcMain, dialog, shell, Notification } = require('electron');
 
 // API Base URL - should match backend
-const API_BASE_URL = 'https://localhost:5001/api';
+const API_BASE_URL = 'https://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api';
 
 // Window management handlers
 function setupWindowHandlers(mainWindow) {
@@ -30,14 +30,14 @@ function setupModuleHandlers() {
   ipcMain.handle('launch-module', async (event, moduleId) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/modules/${moduleId}/launch`);
-      
+
       // Notify renderer of module status change
       event.sender.send('module-status-change', {
         moduleId,
         status: 'active',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       return { success: true, data: response.data };
     } catch (error) {
       console.error('Failed to launch module:', error);
@@ -48,14 +48,14 @@ function setupModuleHandlers() {
   ipcMain.handle('stop-module', async (event, moduleId) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/modules/${moduleId}/stop`);
-      
+
       // Notify renderer of module status change
       event.sender.send('module-status-change', {
         moduleId,
         status: 'inactive',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       return { success: true, data: response.data };
     } catch (error) {
       console.error('Failed to stop module:', error);
@@ -72,7 +72,7 @@ function setupSystemHealthHandlers() {
       return { success: true, data: response.data };
     } catch (error) {
       console.error('Failed to get system health:', error);
-      
+
       // Return mock data if backend is not available
       return {
         success: true,
@@ -82,8 +82,8 @@ function setupSystemHealthHandlers() {
           memory: { used: 45, total: 100 },
           cpu: 12.5,
           activeModules: 4,
-          lastUpdated: new Date().toISOString()
-        }
+          lastUpdated: new Date().toISOString(),
+        },
       };
     }
   });
@@ -92,10 +92,10 @@ function setupSystemHealthHandlers() {
   setInterval(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/system/health`);
-      
+
       // Broadcast to all renderer processes
       const allWindows = require('electron').BrowserWindow.getAllWindows();
-      allWindows.forEach(window => {
+      allWindows.forEach((window) => {
         window.webContents.send('system-health-update', response.data);
       });
     } catch (error) {
@@ -114,10 +114,10 @@ function setupFileHandlers() {
           { name: 'All Files', extensions: ['*'] },
           { name: 'JSON Files', extensions: ['json'] },
           { name: 'CSV Files', extensions: ['csv'] },
-          { name: 'Excel Files', extensions: ['xlsx', 'xls'] }
-        ]
+          { name: 'Excel Files', extensions: ['xlsx', 'xls'] },
+        ],
       });
-      
+
       return { success: true, data: result };
     } catch (error) {
       return { success: false, error: error.message };
@@ -127,9 +127,9 @@ function setupFileHandlers() {
   ipcMain.handle('select-directory', async () => {
     try {
       const result = await dialog.showOpenDialog({
-        properties: ['openDirectory']
+        properties: ['openDirectory'],
       });
-      
+
       return { success: true, data: result };
     } catch (error) {
       return { success: false, error: error.message };
@@ -144,9 +144,9 @@ function setupNotificationHandlers() {
       new Notification({
         title,
         body,
-        icon: path.join(__dirname, 'assets', 'icon.png')
+        icon: path.join(__dirname, 'assets', 'icon.png'),
       }).show();
-      
+
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
@@ -169,7 +169,7 @@ function initializeIpcHandlers(mainWindow) {
   setupFileHandlers();
   setupNotificationHandlers();
   setupExternalHandlers();
-  
+
   console.log('IPC handlers initialized');
 }
 

@@ -4,23 +4,23 @@
  */
 
 class TerraFusionGIS {
-    constructor() {
-        this.map = null;
-        this.markers = [];
-        this.init();
-    }
+  constructor() {
+    this.map = null;
+    this.markers = [];
+    this.init();
+  }
 
-    init() {
-        this.createGISInterface();
-        this.bindEvents();
-    }
+  init() {
+    this.createGISInterface();
+    this.bindEvents();
+  }
 
-    createGISInterface() {
-        const gisContainer = document.createElement('div');
-        gisContainer.id = 'gis-viewer';
-        gisContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
-        gisContainer.style.display = 'none';
-        gisContainer.innerHTML = `
+  createGISInterface() {
+    const gisContainer = document.createElement('div');
+    gisContainer.id = 'gis-viewer';
+    gisContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
+    gisContainer.style.display = 'none';
+    gisContainer.innerHTML = `
             <div class="gis-container">
                 <div class="gis-header">
                     <div class="gis-title">
@@ -61,97 +61,97 @@ class TerraFusionGIS {
                 </div>
             </div>
         `;
-        
-        document.body.appendChild(gisContainer);
+
+    document.body.appendChild(gisContainer);
+  }
+
+  bindEvents() {
+    // Close button
+    document.addEventListener('click', e => {
+      if (e.target.closest('#gis-close')) {
+        this.close();
+      }
+    });
+
+    // GIS controls
+    document.addEventListener('click', e => {
+      const action = e.target.closest('[data-action]')?.dataset.action;
+      if (action) {
+        this.handleAction(action);
+      }
+    });
+
+    // Close on backdrop click
+    document.addEventListener('click', e => {
+      if (e.target.id === 'gis-viewer') {
+        this.close();
+      }
+    });
+  }
+
+  handleAction(action) {
+    console.log(`🗺️ GIS Action: ${action}`);
+
+    // Show visual feedback
+    const button = document.querySelector(`[data-action="${action}"]`);
+    if (button) {
+      button.style.background = 'rgba(0, 255, 238, 0.3)';
+      setTimeout(() => {
+        button.style.background = '';
+      }, 200);
     }
 
-    bindEvents() {
-        // Close button
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('#gis-close')) {
-                this.close();
-            }
-        });
-
-        // GIS controls
-        document.addEventListener('click', (e) => {
-            const action = e.target.closest('[data-action]')?.dataset.action;
-            if (action) {
-                this.handleAction(action);
-            }
-        });
-
-        // Close on backdrop click
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'gis-viewer') {
-                this.close();
-            }
-        });
+    switch (action) {
+      case 'zoom-in':
+        console.log('🔍 Zooming in...');
+        break;
+      case 'zoom-out':
+        console.log('🔍 Zooming out...');
+        break;
+      case 'reset-view':
+        console.log('🎯 Resetting view to Benton County...');
+        break;
+      case 'toggle-3d':
+        console.log('📦 Toggling 3D view...');
+        break;
+      case 'heatmap':
+        console.log('🔥 Showing property value heatmap...');
+        break;
+      case 'layers':
+        console.log('📋 Toggling map layers...');
+        break;
+      case 'measure':
+        console.log('📏 Activating measure tool...');
+        break;
+      case 'search':
+        console.log('🔍 Opening property search...');
+        break;
     }
+  }
 
-    handleAction(action) {
-        console.log(`🗺️ GIS Action: ${action}`);
-        
-        // Show visual feedback
-        const button = document.querySelector(`[data-action="${action}"]`);
-        if (button) {
-            button.style.background = 'rgba(0, 255, 238, 0.3)';
-            setTimeout(() => {
-                button.style.background = '';
-            }, 200);
-        }
-
-        switch(action) {
-            case 'zoom-in':
-                console.log('🔍 Zooming in...');
-                break;
-            case 'zoom-out':
-                console.log('🔍 Zooming out...');
-                break;
-            case 'reset-view':
-                console.log('🎯 Resetting view to Benton County...');
-                break;
-            case 'toggle-3d':
-                console.log('📦 Toggling 3D view...');
-                break;
-            case 'heatmap':
-                console.log('🔥 Showing property value heatmap...');
-                break;
-            case 'layers':
-                console.log('📋 Toggling map layers...');
-                break;
-            case 'measure':
-                console.log('📏 Activating measure tool...');
-                break;
-            case 'search':
-                console.log('🔍 Opening property search...');
-                break;
-        }
+  show() {
+    const container = document.getElementById('gis-viewer');
+    if (container) {
+      container.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      console.log('🗺️ Terrafusion GIS Pro launched - FULL SCREEN');
     }
+  }
 
-    show() {
-        const container = document.getElementById('gis-viewer');
-        if (container) {
-            container.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            console.log('🗺️ Terrafusion GIS Pro launched - FULL SCREEN');
-        }
+  close() {
+    const container = document.getElementById('gis-viewer');
+    if (container) {
+      container.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      console.log('🗺️ GIS viewer closed');
     }
+  }
 
-    close() {
-        const container = document.getElementById('gis-viewer');
-        if (container) {
-            container.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            console.log('🗺️ GIS viewer closed');
-        }
-    }
-
-    initializeMap() {
-        // Placeholder for actual map initialization
-        console.log('🗺️ Initializing interactive map for Benton County...');
-        console.log('📍 Loading property parcels and GIS layers...');
-    }
+  initializeMap() {
+    // Placeholder for actual map initialization
+    console.log('🗺️ Initializing interactive map for Benton County...');
+    console.log('📍 Loading property parcels and GIS layers...');
+  }
 }
 
 // Export for use in main application
@@ -159,11 +159,11 @@ window.TerraFusionGIS = TerraFusionGIS;
 window.GISViewer = TerraFusionGIS; // Alias for compatibility
 
 // Add show method
-TerraFusionGIS.prototype.show = function() {
-    const gisViewer = document.getElementById('gis-viewer');
-    if (gisViewer) {
-        gisViewer.style.display = 'flex';
-        this.initializeMap();
-        console.log('🗺️ GIS Viewer displayed');
-    }
+TerraFusionGIS.prototype.show = function () {
+  const gisViewer = document.getElementById('gis-viewer');
+  if (gisViewer) {
+    gisViewer.style.display = 'flex';
+    this.initializeMap();
+    console.log('🗺️ GIS Viewer displayed');
+  }
 };

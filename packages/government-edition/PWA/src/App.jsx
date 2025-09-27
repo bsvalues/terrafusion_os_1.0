@@ -1,8 +1,6 @@
-import React from 'react'
-import TerraFusionEnhanced from './TerraFusionEnhanced'
+import React from 'react';
+import TerraFusionEnhanced from './TerraFusionEnhanced';
 
-function App() {
-  return <TerraFusionEnhanced />
-}
+function App() {return <TerraFusionEnhanced />;}
 
-export default App
+export default App;

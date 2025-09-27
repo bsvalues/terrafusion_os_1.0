@@ -222,10 +222,10 @@ async def metrics():
 if __name__ == "__main__":
     import uvicorn
     print("🚀 Starting TerraFusion API Server...")
-    print("📍 API will be available at: http://localhost:8000")
-    print("📍 Documentation at: http://localhost:8000/docs")
+    print("📍 API will be available at: http://localhost:\${{TF_DOCS_PORT:-8000}}")
+    print("📍 Documentation at: http://localhost:\${{TF_DOCS_PORT:-8000}}/docs")
     print("⚡ Speed: 379,000,000× faster than Marshall Swift")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=\${{TF_DOCS_PORT:-8000}})
 EOF
 
 # Install dependencies
@@ -251,7 +251,7 @@ import requests
 import json
 import time
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:\${{TF_DOCS_PORT:-8000}}"
 
 print("=" * 60)
 print("TERRAFUSION PRODUCTION API TEST")
@@ -323,17 +323,17 @@ echo "════════════════════════�
 echo "           TERRAFUSION PRODUCTION SYSTEMS ACTIVE               "
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
-echo "🌐 API Server:    http://localhost:8000"
-echo "📚 API Docs:      http://localhost:8000/docs"
-echo "📊 Health Check:  http://localhost:8000/health"
+echo "🌐 API Server:    http://localhost:\${{TF_DOCS_PORT:-8000}}"
+echo "📚 API Docs:      http://localhost:\${{TF_DOCS_PORT:-8000}}/docs"
+echo "📊 Health Check:  http://localhost:\${{TF_DOCS_PORT:-8000}}/health"
 echo ""
 echo "Speed:         379,000,000× faster ⚡"
 echo "Properties:    94,149 ready 🏠"
 echo "Status:        OPERATIONAL ✅"
 echo ""
 echo "Test Commands:"
-echo "  curl http://localhost:8000/health"
-echo "  curl -X POST http://localhost:8000/api/v1/valuation -H 'Content-Type: application/json' -d '{\"property_id\":\"BEN-2025-001\"}'"
+echo "  curl http://localhost:\${{TF_DOCS_PORT:-8000}}/health"
+echo "  curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/api/v1/valuation -H 'Content-Type: application/json' -d '{\"property_id\":\"BEN-2025-001\"}'"
 echo ""
 echo "🏆 The Dynasty Has Begun 🏆"
 echo "═══════════════════════════════════════════════════════════════"

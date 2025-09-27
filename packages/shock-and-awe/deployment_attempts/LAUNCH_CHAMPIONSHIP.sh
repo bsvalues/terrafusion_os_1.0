@@ -66,7 +66,7 @@ case $choice in
         echo "  npm run dev       # Start frontend"
         echo "  npm run tauri dev # Start full app (when libs installed)"
         echo ""
-        echo "Access authentication at: http://localhost:3000"
+        echo "Access authentication at: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
         echo "Login with: brady@champions.com / championship2024"
         ;;
     

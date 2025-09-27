@@ -132,11 +132,11 @@ New-Service -Name "TerraFusionAPI" `
 # Create firewall rules
 Write-Host "🔥 Configuring firewall..." -ForegroundColor Yellow
 New-NetFirewallRule -DisplayName "TerraFusion API" `
-    -Direction Inbound -Protocol TCP -LocalPort 5000 `
+    -Direction Inbound -Protocol TCP -LocalPort \${{TF_API_PORT:-5000}} `
     -Action Allow
 
 New-NetFirewallRule -DisplayName "TerraFusion PWA" `
-    -Direction Inbound -Protocol TCP -LocalPort 3000 `
+    -Direction Inbound -Protocol TCP -LocalPort \${{TF_API_PORT:-5000}} `
     -Action Allow
 
 # Register URL ACLs

@@ -16,10 +16,10 @@ class AIModel {
     try {
       await this.securityManager.validateEnvironment();
       await this.performanceMonitor.startMonitoring();
-      
+
       this.model = await this.modelManager.loadModel();
       this.isInitialized = true;
-      
+
       await this.performanceMonitor.recordMetric('model_initialization', 'success');
       return true;
     } catch (error) {
@@ -67,4 +67,4 @@ class AIModel {
   }
 }
 
-module.exports = AIModel; 
+module.exports = AIModel;

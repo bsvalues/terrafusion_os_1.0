@@ -15,22 +15,22 @@ echo 📍 Working in: %CD%
 echo.
 
 echo 🛑 Stopping any running development servers...
-echo    Attempting to stop processes on port 3000...
+echo    Attempting to stop processes on port \${{TF_FRONTEND_PORT:-3000}}...
 netstat -ano | findstr :3000 > nul
 if %errorlevel% equ 0 (
     for /f "tokens=5" %%a in ('netstat -ano ^| findstr :3000') do taskkill /pid %%a /f > nul 2>&1
-    echo    ✅ Stopped processes on port 3000
+    echo    ✅ Stopped processes on port \${{TF_FRONTEND_PORT:-3000}}
 ) else (
-    echo    ℹ️  No process running on port 3000
+    echo    ℹ️  No process running on port \${{TF_FRONTEND_PORT:-3000}}
 )
 
-echo    Attempting to stop processes on port 5173 (Vite)...
+echo    Attempting to stop processes on port \${{TF_FRONTEND_PORT:-3000}} (Vite)...
 netstat -ano | findstr :5173 > nul
 if %errorlevel% equ 0 (
     for /f "tokens=5" %%a in ('netstat -ano ^| findstr :5173') do taskkill /pid %%a /f > nul 2>&1
-    echo    ✅ Stopped processes on port 5173
+    echo    ✅ Stopped processes on port \${{TF_FRONTEND_PORT:-3000}}
 ) else (
-    echo    ℹ️  No process running on port 5173
+    echo    ℹ️  No process running on port \${{TF_FRONTEND_PORT:-3000}}
 )
 
 echo.
@@ -67,7 +67,7 @@ echo    • Firefox: Ctrl+Shift+Delete → Clear cache
 echo    • Edge: Ctrl+Shift+Delete → Clear browsing data
 echo.
 echo 🔥 INCOGNITO/PRIVATE MODE:
-echo    • Open localhost:3000 in incognito/private browsing mode
+echo    • Open localhost:\${{TF_FRONTEND_PORT:-3000}} in incognito/private browsing mode
 echo.
 
 echo 🚀 Starting TerraFusion OS frontend with fresh modules...
@@ -75,7 +75,7 @@ echo    Registry Version: 2.1.20250825
 echo    Active Modules: 15 production-ready government modules
 echo.
 echo 📡 Starting development server...
-echo    URL will be: http://localhost:3000
+echo    URL will be: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 echo    Click 'Enter TerraFusion OS' to see the updated modules
 echo.
 echo ⚠️  IMPORTANT: After the server starts, you MUST do a hard refresh in your browser!
@@ -87,7 +87,7 @@ echo.
 echo ✅ If you still see old/fake modules after hard refresh:
 echo    1. Close browser completely
 echo    2. Open new browser window
-echo    3. Go to localhost:3000 in private/incognito mode
+echo    3. Go to localhost:\${{TF_FRONTEND_PORT:-3000}} in private/incognito mode
 echo    4. Click 'Enter TerraFusion OS'
 echo    5. You should now see the 15 ACTIVE_MODULES.md registry modules
 

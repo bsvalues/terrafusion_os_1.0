@@ -34,7 +34,7 @@ services:
     container_name: harris-pacs-mock-server
     restart: unless-stopped
     ports:
-      - "8180:8080"
+      - "8180:${TF_STATIC_PORT:-8080}"
       - "8181:8081"  # Administrative interface
     volumes:
       - harris-pacs-mock-data:/app/data
@@ -54,7 +54,7 @@ services:
     networks:
       - harris-pacs-test
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -109,7 +109,7 @@ services:
       - ./integration-testers/harris-pacs/test-suites:/app/test-suites:ro
       - ./integration-testers/harris-pacs/config:/app/config:ro
     environment:
-      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:${TF_STATIC_PORT:-8080}
       - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
       - BENTON_COUNTY_TEST_MODE=true
       - AI_AGENT_COUNT=90
@@ -125,7 +125,7 @@ services:
       - harris-pacs-mock
       - government-db-mock
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9500/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -146,7 +146,7 @@ services:
     volumes:
       - test-results-data:/app/test-results
     environment:
-      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:${TF_STATIC_PORT:-8080}
       - AGENT_COUNT=15
       - SPECIALIZATION=connectivity
       - TEST_SCENARIOS=endpoint_health,connection_timeout,ssl_validation,authentication_flow
@@ -173,7 +173,7 @@ services:
     volumes:
       - test-results-data:/app/test-results
     environment:
-      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:${TF_STATIC_PORT:-8080}
       - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
       - AGENT_COUNT=20
       - SPECIALIZATION=data-sync
@@ -202,7 +202,7 @@ services:
     volumes:
       - test-results-data:/app/test-results
     environment:
-      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:${TF_STATIC_PORT:-8080}
       - AGENT_COUNT=15
       - SPECIALIZATION=performance-analysis
       - TEST_SCENARIOS=load_testing,stress_testing,throughput_analysis,latency_measurement
@@ -230,7 +230,7 @@ services:
     volumes:
       - test-results-data:/app/test-results
     environment:
-      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:${TF_STATIC_PORT:-8080}
       - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
       - AGENT_COUNT=12
       - SPECIALIZATION=compliance-validation
@@ -259,7 +259,7 @@ services:
     volumes:
       - test-results-data:/app/test-results
     environment:
-      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:${TF_STATIC_PORT:-8080}
       - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
       - AGENT_COUNT=15
       - SPECIALIZATION=integration-testing
@@ -287,7 +287,7 @@ services:
     volumes:
       - test-results-data:/app/test-results
     environment:
-      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:${TF_STATIC_PORT:-8080}
       - AGENT_COUNT=8
       - SPECIALIZATION=monitoring-surveillance
       - TEST_SCENARIOS=real_time_monitoring,alert_generation,anomaly_detection,health_checks
@@ -314,7 +314,7 @@ services:
     volumes:
       - test-results-data:/app/test-results
     environment:
-      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
+      - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:${TF_STATIC_PORT:-8080}
       - AGENT_COUNT=5
       - SPECIALIZATION=security-audit
       - TEST_SCENARIOS=penetration_testing,vulnerability_scanning,access_control_validation,encryption_verification
@@ -370,7 +370,7 @@ services:
       - monitoring-agents-tester
       - security-audit-agents
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -387,7 +387,7 @@ services:
     container_name: harris-pacs-test-dashboard
     restart: unless-stopped
     ports:
-      - "3050:3000"
+      - "3050:${TF_FRONTEND_PORT:-3102}"
     volumes:
       - test-results-data:/app/test-results:ro
     environment:
@@ -422,7 +422,7 @@ services:
       - test-results-data:/app/test-results:ro
     environment:
       - METRICS_COLLECTION_INTERVAL=15s
-      - PROMETHEUS_METRICS_PORT=9600
+      - PROMETHEUS_METRICS_PORT=\${{TF_PORT_9600:-9600}}
       - TEST_RESULT_AGGREGATION=true
       - GOVERNMENT_METRICS_COMPLIANCE=true
     networks:

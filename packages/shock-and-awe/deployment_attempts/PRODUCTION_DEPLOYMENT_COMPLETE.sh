@@ -214,7 +214,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "simple_api:app",
         host="0.0.0.0", 
-        port=8080,
+        port=\${{TF_ADMIN_PORT:-8080}},
         reload=False,
         access_log=True,
         log_level="info"
@@ -435,7 +435,7 @@ class TerraFusionHandler(SimpleHTTPRequestHandler):
             const startTime = performance.now();
             
             try {
-                const response = await fetch('http://localhost:8080/api/valuation/test');
+                const response = await fetch('http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/valuation/test');
                 const data = await response.json();
                 const endTime = performance.now();
                 const totalTime = (endTime - startTime).toFixed(2);
@@ -451,7 +451,7 @@ class TerraFusionHandler(SimpleHTTPRequestHandler):
             } catch (error) {
                 resultDiv.innerHTML = `
                     <h4>❌ Test Failed</h4>
-                    <p>Make sure API server is running on port 8080</p>
+                    <p>Make sure API server is running on port \${{TF_ADMIN_PORT:-8080}}</p>
                     <p>Error: ${error.message}</p>
                 `;
             }
@@ -476,9 +476,9 @@ class TerraFusionHandler(SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     os.chdir('/mnt/e/TerraFusion_Tauri_Master_Workspace/championship')
     server = HTTPServer(('0.0.0.0', 3000), TerraFusionHandler)
-    print("🌐 TerraFusion Web Server running on http://localhost:3000")
-    print("🏥 Health check: http://localhost:3000/health")
-    print("🚀 Dashboard: http://localhost:3000")
+    print("🌐 TerraFusion Web Server running on http://localhost:\${{TF_ADMIN_PORT:-8080}}")
+    print("🏥 Health check: http://localhost:\${{TF_ADMIN_PORT:-8080}}/health")
+    print("🚀 Dashboard: http://localhost:\${{TF_ADMIN_PORT:-8080}}")
     server.serve_forever()
 EOF
 
@@ -520,8 +520,8 @@ def monitor_loop():
     
     while True:
         # Check services
-        api_health = check_service_health("http://localhost:8080/health", "API")
-        web_health = check_service_health("http://localhost:3000/health", "Web")
+        api_health = check_service_health("http://localhost:\${{TF_ADMIN_PORT:-8080}}/health", "API")
+        web_health = check_service_health("http://localhost:\${{TF_ADMIN_PORT:-8080}}/health", "Web")
         
         # Get system metrics
         system_metrics = get_system_metrics()
@@ -587,7 +587,7 @@ cd "$WORKSPACE/services/api"
 nohup python3 simple_api.py > "$LOG_DIR/api.log" 2>&1 &
 API_PID=$!
 echo $API_PID > "$LOG_DIR/api.pid"
-echo "✅ API Server started (PID: $API_PID) - http://localhost:8080"
+echo "✅ API Server started (PID: $API_PID) - http://localhost:\${{TF_ADMIN_PORT:-8080}}"
 
 # Start web service
 echo "🌐 Starting Web Server..."
@@ -595,7 +595,7 @@ cd "$WORKSPACE/services/web"
 nohup python3 simple_web_server.py > "$LOG_DIR/web.log" 2>&1 &
 WEB_PID=$!
 echo $WEB_PID > "$LOG_DIR/web.pid"
-echo "✅ Web Server started (PID: $WEB_PID) - http://localhost:3000"
+echo "✅ Web Server started (PID: $WEB_PID) - http://localhost:\${{TF_ADMIN_PORT:-8080}}"
 
 # Start monitoring
 echo "🔍 Starting System Monitor..."
@@ -615,17 +615,17 @@ echo "🏥 Service Health Check:"
 echo "=================================="
 
 # Test API
-api_status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health 2>/dev/null || echo "failed")
+api_status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:\${{TF_ADMIN_PORT:-8080}}/health 2>/dev/null || echo "failed")
 if [ "$api_status" = "200" ]; then
-    echo "✅ API Server: Healthy (http://localhost:8080)"
+    echo "✅ API Server: Healthy (http://localhost:\${{TF_ADMIN_PORT:-8080}})"
 else
     echo "❌ API Server: Unhealthy"
 fi
 
 # Test web
-web_status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/health 2>/dev/null || echo "failed")  
+web_status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:\${{TF_ADMIN_PORT:-8080}}/health 2>/dev/null || echo "failed")  
 if [ "$web_status" = "200" ]; then
-    echo "✅ Web Server: Healthy (http://localhost:3000)"
+    echo "✅ Web Server: Healthy (http://localhost:\${{TF_ADMIN_PORT:-8080}})"
 else
     echo "❌ Web Server: Unhealthy"
 fi
@@ -635,7 +635,7 @@ echo ""
 echo "⚡ Speed Test:"
 echo "=================================="
 start_time=$(date +%s%N)
-valuation_result=$(curl -s http://localhost:8080/api/valuation/test 2>/dev/null || echo '{"status":"failed"}')
+valuation_result=$(curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/valuation/test 2>/dev/null || echo '{"status":"failed"}')
 end_time=$(date +%s%N)
 duration=$((($end_time - $start_time) / 1000000))
 
@@ -658,10 +658,10 @@ echo "Speed:           379,000,000× advantage"
 echo "Commission:      30% marketplace active"
 echo ""
 echo "🌐 Access URLs:"
-echo "  Dashboard:     http://localhost:3000"
-echo "  API:           http://localhost:8080"
-echo "  Health Check:  http://localhost:8080/health"
-echo "  API Docs:      http://localhost:8080/docs"
+echo "  Dashboard:     http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+echo "  API:           http://localhost:\${{TF_ADMIN_PORT:-8080}}"
+echo "  Health Check:  http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
+echo "  API Docs:      http://localhost:\${{TF_ADMIN_PORT:-8080}}/docs"
 echo ""
 echo "🏁 TerraFusion County OS is LIVE!"
 echo "The future of government technology is operational."
@@ -737,7 +737,7 @@ from datetime import datetime
 
 class TerraFusionDemo:
     def __init__(self):
-        self.api_base = "http://localhost:8080"
+        self.api_base = "http://localhost:\${{TF_ADMIN_PORT:-8080}}"
         
     def test_connection(self):
         """Test API connection"""
@@ -923,15 +923,15 @@ generate_final_documentation() {
 ### Core Services Active
 | Service | Status | URL | Health Check |
 |---------|---------|-----|--------------|
-| **API Server** | ✅ OPERATIONAL | http://localhost:8080 | http://localhost:8080/health |
-| **Web Dashboard** | ✅ OPERATIONAL | http://localhost:3000 | http://localhost:3000/health |
+| **API Server** | ✅ OPERATIONAL | http://localhost:\${{TF_ADMIN_PORT:-8080}} | http://localhost:\${{TF_ADMIN_PORT:-8080}}/health |
+| **Web Dashboard** | ✅ OPERATIONAL | http://localhost:\${{TF_ADMIN_PORT:-8080}} | http://localhost:\${{TF_ADMIN_PORT:-8080}}/health |
 | **System Monitor** | ✅ OPERATIONAL | Background Process | Real-time logging |
 
 ### Service Management
 - **Start Services**: \`./start_production_simple.sh\`
 - **Stop Services**: \`./stop_production_simple.sh\`
 - **View Logs**: \`tail -f logs/*.log\`
-- **Health Check**: \`curl http://localhost:8080/health\`
+- **Health Check**: \`curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health\`
 
 ---
 
@@ -940,7 +940,7 @@ generate_final_documentation() {
 ### Speed Test Results
 \`\`\`bash
 # Test the 379M× speed advantage
-curl http://localhost:8080/api/valuation/test
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/valuation/test
 
 Response: 3ms (379,000,000× faster than Marshall & Swift)
 Confidence: 94%
@@ -1169,9 +1169,9 @@ Status: Championship Performance Confirmed ✅
 - **Executive**: Strategic planning and scaling support
 
 ### System Access
-- **Production Dashboard**: http://localhost:3000
-- **API Endpoint**: http://localhost:8080
-- **Health Monitoring**: http://localhost:8080/health
+- **Production Dashboard**: http://localhost:\${{TF_ADMIN_PORT:-8080}}
+- **API Endpoint**: http://localhost:\${{TF_ADMIN_PORT:-8080}}
+- **Health Monitoring**: http://localhost:\${{TF_ADMIN_PORT:-8080}}/health
 - **System Status**: Real-time monitoring active
 
 ---
@@ -1251,8 +1251,8 @@ main() {
     echo "║                 🏆 TERRAFUSION PRODUCTION COMPLETE 🏆                     ║"
     echo "║                                                                            ║"
     echo "║  ✅ Production Services: OPERATIONAL                                        ║"
-    echo "║  ✅ API Server: http://localhost:8080                                      ║"
-    echo "║  ✅ Web Dashboard: http://localhost:3000                                   ║"
+    echo "║  ✅ API Server: http://localhost:\${{TF_ADMIN_PORT:-8080}}                                      ║"
+    echo "║  ✅ Web Dashboard: http://localhost:\${{TF_ADMIN_PORT:-8080}}                                   ║"
     echo "║  ✅ CostForge AI: 379M× speed active                                       ║"
     echo "║  ✅ System Monitor: Real-time monitoring                                   ║"
     echo "║  ✅ Customer Demo: Ready for presentations                                 ║"
@@ -1263,10 +1263,10 @@ main() {
     echo -e "${NC}"
     
     echo -e "\n${CYAN}🎯 IMMEDIATE ACTIONS:${NC}"
-    echo -e "  1. Test the system: http://localhost:3000"
+    echo -e "  1. Test the system: http://localhost:\${{TF_ADMIN_PORT:-8080}}"
     echo -e "  2. Run customer demo: python3 customer_onboarding/demo_terrafusion.py" 
     echo -e "  3. Monitor services: tail -f logs/*.log"
-    echo -e "  4. Check health: curl http://localhost:8080/health"
+    echo -e "  4. Check health: curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
     
     echo -e "\n${PURPLE}💰 REVENUE READY:${NC}"
     echo -e "  • Marketplace commission: 30% active"

@@ -6,14 +6,19 @@
 
 ### Fundamental Principles
 
-1. **Primary Execution Context**: Terrafusion OS serves as the sovereign operating environment
-2. **Not a Subordinate Layer**: Does not run "on top of" other platforms - it IS the platform
-3. **Interface Abstraction**: PWA, Electron, Tauri are interface layers, not the core system
-4. **Module Integration**: External systems plug INTO Terrafusion, not vice versa
+1. **Primary Execution Context**: Terrafusion OS serves as the sovereign
+   operating environment
+2. **Not a Subordinate Layer**: Does not run "on top of" other platforms - it IS
+   the platform
+3. **Interface Abstraction**: PWA, Electron, Tauri are interface layers, not the
+   core system
+4. **Module Integration**: External systems plug INTO Terrafusion, not vice
+   versa
 
 ## Architecture Layers
 
 ### 1. Terrafusion Kernel Layer
+
 ```javascript
 const TerraFusionOS = {
   kernel: {
@@ -22,12 +27,13 @@ const TerraFusionOS = {
     moduleLoader: new ModuleLoader(),
     apiGateway: new APIGateway(),
     securityManager: new SecurityManager(),
-    sessionManager: new SessionManager()
-  }
+    sessionManager: new SessionManager(),
+  },
 };
 ```
 
 ### 2. Interface Layer (Multiple Options)
+
 ```javascript
 interfaces: {
   pwa: PWAInterface,                    // Web-based interface
@@ -40,6 +46,7 @@ interfaces: {
 ```
 
 ### 3. Module System
+
 ```javascript
 modules: {
   camaLegacy: new CAMALegacyModule(),
@@ -53,12 +60,14 @@ modules: {
 ## Key Architectural Decisions
 
 ### OS-First Design Paradigm
+
 - **System Configuration**: `terrafusion.config.js` defines mode as 'OS'
 - **Boot Sequence**: Terrafusion initializes as primary system
 - **Resource Management**: Direct hardware/system resource control
 - **Security Context**: Isolated execution environments for each module
 
 ### Custom Browser Implementation
+
 - Built using existing Electron/Tauri infrastructure
 - Direct OS communication channel via WebSocket
 - Eliminates CORS issues through native integration
@@ -67,6 +76,7 @@ modules: {
 ## Deployment Architecture
 
 ### Master Node (Physical Server)
+
 ```yaml
 deployment:
   master_node:
@@ -80,28 +90,32 @@ deployment:
 ```
 
 ### Satellite Terminals
+
 ```yaml
-  satellite_terminals:
-    type: virtual_machines
-    access_method: terrafusion_browser
-    connection: websocket_persistent
-    fallback: https_polling
-    cama_integration: legacy_bridge
+satellite_terminals:
+  type: virtual_machines
+  access_method: terrafusion_browser
+  connection: websocket_persistent
+  fallback: https_polling
+  cama_integration: legacy_bridge
 ```
 
 ## AI Agent Directive Correction
 
 **SYSTEM DIRECTIVE FOR ALL AI AGENTS:**
+
 - Terrafusion IS the operating system
 - It is NOT a Progressive Web Application
 - The PWA is merely ONE interface layer among many
 - All modules plug INTO Terrafusion OS
-- Terrafusion does NOT port to other systems - other systems integrate with Terrafusion
+- Terrafusion does NOT port to other systems - other systems integrate with
+  Terrafusion
 - The custom browser is a native Terrafusion component
 
 ## Legacy System Integration
 
 ### CAMA Legacy Bridge
+
 - Dedicated module for legacy CAMA system integration
 - Conversion engine for PACS 9.0 → Terrafusion OS format
 - Real-time data synchronization during transition period
@@ -110,17 +124,19 @@ deployment:
 ## Security Implementation
 
 ### OS-Level Security
+
 ```javascript
 const SecurityLayer = {
   credentials: new SecureVault(),
   permissions: new RBACSystem(),
   audit: new ComprehensiveLogger(),
   encryption: new E2EEncryption(),
-  isolation: new ProcessSandboxing()
+  isolation: new ProcessSandboxing(),
 };
 ```
 
 ### County-Level Security
+
 - Physical server isolation
 - Encrypted communication channels
 - Role-based access control
@@ -130,6 +146,7 @@ const SecurityLayer = {
 ## Performance Characteristics
 
 ### Quantum Performance Engine
+
 - 379M% improvement over legacy systems
 - Real-time processing capabilities
 - Distributed computing across satellite terminals
@@ -137,10 +154,11 @@ const SecurityLayer = {
 
 ## Implementation Strategy
 
-This architecture document serves as the foundation for all Terrafusion OS development and deployment activities. All team members and AI agents must align with this OS-first paradigm.
+This architecture document serves as the foundation for all Terrafusion OS
+development and deployment activities. All team members and AI agents must align
+with this OS-first paradigm.
 
 ---
 
-*Last Updated: August 19, 2025*
-*Architecture Version: 1.0*
-*Status: Foundational Truth Established*
+_Last Updated: August 19, 2025_ _Architecture Version: 1.0_ _Status:
+Foundational Truth Established_

@@ -420,7 +420,11 @@ export interface FeedbackMechanism {
  * Cognitive optimization for species efficiency
  */
 export interface CognitiveOptimization {
-  type: 'memory-reduction' | 'processing-acceleration' | 'attention-focusing' | 'quantum-enhancement';
+  type:
+    | 'memory-reduction'
+    | 'processing-acceleration'
+    | 'attention-focusing'
+    | 'quantum-enhancement';
   description: string;
   benefit: string;
   implementation: string;

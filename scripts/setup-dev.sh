@@ -69,11 +69,11 @@ echo ""
 echo "✅ TerraFusion Development Environment is ready!"
 echo ""
 echo "🌐 Application URLs:"
-echo "   Frontend:    http://localhost:3000"
-echo "   Backend API: http://localhost:8080"
-echo "   AI Agent:    http://localhost:3001"
-echo "   Database:    localhost:5432"
-echo "   Redis:       localhost:6379"
+echo "   Frontend:    http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "   Backend API: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "   AI Agent:    http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "   Database:    localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "   Redis:       localhost:\${{TF_FRONTEND_PORT:-3000}}"
 echo ""
 echo "📊 Useful commands:"
 echo "   View logs:       docker-compose logs -f [service_name]"
@@ -93,13 +93,13 @@ if command -v xdg-open &> /dev/null; then
     read -p "Open application in browser? (y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        xdg-open http://localhost:3000
+        xdg-open http://localhost:\${{TF_FRONTEND_PORT:-3000}}
     fi
 elif command -v open &> /dev/null; then
     read -p "Open application in browser? (y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        open http://localhost:3000
+        open http://localhost:\${{TF_FRONTEND_PORT:-3000}}
     fi
 fi
 

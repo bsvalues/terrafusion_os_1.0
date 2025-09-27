@@ -23,7 +23,7 @@ public class DatabaseHealthCheck : IHealthCheck
         _logger = logger;
     }
 
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -47,20 +47,20 @@ public class DatabaseHealthCheck : IHealthCheck
 
                 if (stopwatch.ElapsedMilliseconds > 5000) // 5 seconds
                 {
-                    return HealthCheckResult.Degraded("Database connection is slow", null, data);
+                    return Task.FromResult(HealthCheckResult.Degraded("Database connection is slow", null, data));
                 }
 
-                return HealthCheckResult.Healthy("Database accessible via abstraction (TODO)", data);
+                return Task.FromResult(HealthCheckResult.Healthy("Database accessible via abstraction (TODO)", data));
             }
             else
             {
-                return HealthCheckResult.Unhealthy("Cannot connect to database");
+                return Task.FromResult(HealthCheckResult.Unhealthy("Cannot connect to database"));
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Database health check failed");
-            return HealthCheckResult.Unhealthy("Database health check failed", ex);
+            return Task.FromResult(HealthCheckResult.Unhealthy("Database health check failed", ex));
         }
     }
 }

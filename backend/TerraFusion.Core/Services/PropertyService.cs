@@ -30,9 +30,9 @@ public class PropertyService : IPropertyService
         // Apply search filter
         if (!string.IsNullOrEmpty(search))
         {
-            query = query.Where(p => p.ParcelNumber.Contains(search) ||
-                                   p.Address.Contains(search) ||
-                                   p.OwnerName.Contains(search));
+            query = query.Where(p => (p.ParcelNumber != null && p.ParcelNumber.Contains(search)) ||
+                                   (p.Address != null && p.Address.Contains(search)) ||
+                                   (p.OwnerName != null && p.OwnerName.Contains(search)));
         }
 
         // Apply county filter
@@ -64,9 +64,9 @@ public class PropertyService : IPropertyService
     {
         var properties = await _context.Properties
             .Include(p => p.County)
-            .Where(p => p.ParcelNumber.Contains(searchTerm) ||
-                       p.Address.Contains(searchTerm) ||
-                       p.OwnerName.Contains(searchTerm))
+            .Where(p => (p.ParcelNumber != null && p.ParcelNumber.Contains(searchTerm)) ||
+                       (p.Address != null && p.Address.Contains(searchTerm)) ||
+                       (p.OwnerName != null && p.OwnerName.Contains(searchTerm)))
             .Take(100) // Limit results
             .ToListAsync();
 

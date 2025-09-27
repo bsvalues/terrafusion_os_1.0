@@ -89,7 +89,7 @@ namespace TerraFusion.Core.Services
                 {
                     Interlocked.Increment(ref _missCount);
                     _logger.LogDebug("Cache miss for key: {Key}", key);
-                    return default(T);
+                    return default(T)!; // By design: default value for cache misses
                 }
 
                 Interlocked.Increment(ref _hitCount);
@@ -102,7 +102,7 @@ namespace TerraFusion.Core.Services
             {
                 _logger.LogError(ex, "Error retrieving value from cache for key: {Key}", key);
                 Interlocked.Increment(ref _missCount);
-                return default(T);
+                return default(T)!; // By design: default value on error
             }
         }
 
@@ -492,7 +492,7 @@ namespace TerraFusion.Core.Services
 
         private T DeserializeValue<T>(string? value)
         {
-            if (string.IsNullOrEmpty(value)) return default(T);
+            if (string.IsNullOrEmpty(value)) return default(T)!; // By design: default for null values
             
             try
             {
@@ -506,15 +506,15 @@ namespace TerraFusion.Core.Services
                     
                     gzipStream.CopyTo(decompressedStream);
                     var decompressedJson = Encoding.UTF8.GetString(decompressedStream.ToArray());
-                    return JsonSerializer.Deserialize<T>(decompressedJson);
+                    return JsonSerializer.Deserialize<T>(decompressedJson) ?? default(T)!;
                 }
                 
-                return JsonSerializer.Deserialize<T>(value);
+                return JsonSerializer.Deserialize<T>(value) ?? default(T)!;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deserializing cache value");
-                return default(T);
+                return default(T)!; // By design: default on deserialization error
             }
         }
 

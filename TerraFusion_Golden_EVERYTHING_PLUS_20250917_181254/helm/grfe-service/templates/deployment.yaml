@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grfe-service
+spec:
+  replicas: { { .Values.replicaCount } }
+  selector:
+    matchLabels: { app: grfe-service }
+  template:
+    metadata:
+      labels: { app: grfe-service }
+    spec:
+      containers:
+        - name: grfe-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          ports:
+            - containerPort: 8080
+          env:
+            {% for e in .Values.env %}
+            - name: "{{ e.name }}"
+              value: "{{ e.value }}"
+            {% endfor %}
+          resources: { {- toYaml .Values.resources | nindent 12 } }

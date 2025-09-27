@@ -1,0 +1,63 @@
+/* TerraFusion OS Transcendence Effects */
+/* Elite Government Performance Enhancement */
+
+/* Transcendence Glow Effects */
+.transcendence-glow {
+    box-shadow: 
+        0 0 20px rgba(0, 255, 238, 0.4),
+        0 0 40px rgba(0, 153, 255, 0.3),
+        0 0 60px rgba(0, 255, 170, 0.2);
+    transition: all 0.3s ease;
+}
+
+.transcendence-glow:hover {
+    box-shadow: 
+        0 0 30px rgba(0, 255, 238, 0.6),
+        0 0 60px rgba(0, 153, 255, 0.4),
+        0 0 90px rgba(0, 255, 170, 0.3);
+}
+
+/* Performance Enhancement Animation */
+@keyframes transcendenceFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.transcendence-flow {
+    background: linear-gradient(-45deg, #2563eb, #3b82f6, #1e40af, #0ea5e9);
+    background-size: 400% 400%;
+    animation: transcendenceFlow 4s ease infinite;
+}
+
+/* Elite Performance Indicators */
+.elite-performance {
+    position: relative;
+    overflow: hidden;
+}
+
+.elite-performance::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(transparent, rgba(59, 130, 246, 0.1), transparent);
+    animation: rotate 4s linear infinite;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

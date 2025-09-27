@@ -3,26 +3,26 @@
  * Government. Transcended.
  */
 
-import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest'
-import { vi } from 'vitest'
+import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
+import { vi } from 'vitest';
 
 // Mock environment variables for testing
-process.env.NODE_ENV = 'test'
-process.env.GOVERNMENT_MODE = 'true'
-process.env.COUNTY = 'Benton'
-process.env.STATE = 'WA'
-process.env.HARRIS_PACS_VERSION = '12.4.7'
-process.env.PARCEL_COUNT = '89247'
-process.env.TEST_DATABASE_URL = 'sqlite://memory'
+process.env.NODE_ENV = 'test';
+process.env.GOVERNMENT_MODE = 'true';
+process.env.COUNTY = 'Benton';
+process.env.STATE = 'WA';
+process.env.HARRIS_PACS_VERSION = '12.4.7';
+process.env.PARCEL_COUNT = '89247';
+process.env.TEST_DATABASE_URL = 'sqlite://memory';
 
 // Global test configuration
 beforeAll(async () => {
   // Initialize test database
-  console.log('🏛️  Initializing Terrafusion OS Test Environment')
-  console.log('📍 County: Benton, WA')
-  console.log('🔗 Harris PACS: v12.4.7')
-  console.log('📊 Parcels: 89,247')
-  
+  console.log('🏛️  Initializing Terrafusion OS Test Environment');
+  console.log('📍 County: Benton, WA');
+  console.log('🔗 Harris PACS: v12.4.7');
+  console.log('📊 Parcels: 89,247');
+
   // Mock external services
   vi.mock('@/backend/services/HarrisPacsService', () => ({
     HarrisPacsService: {
@@ -32,54 +32,54 @@ beforeAll(async () => {
         id: 'TEST_PARCEL_001',
         address: '123 Test St, Richland, WA',
         owner: 'Test Owner',
-        assessedValue: 250000
-      })
-    }
-  }))
-  
+        assessedValue: 250000,
+      }),
+    },
+  }));
+
   // Mock AI services
   vi.mock('@/.ai/core/AIAgentManager', () => ({
     AIAgentManager: {
       initialize: vi.fn().mockResolvedValue(true),
       createAgent: vi.fn().mockResolvedValue({ id: 'test-agent' }),
-      deployAgents: vi.fn().mockResolvedValue(['agent-1', 'agent-2'])
-    }
-  }))
-  
+      deployAgents: vi.fn().mockResolvedValue(['agent-1', 'agent-2']),
+    },
+  }));
+
   // Mock Claude-Flow integration
   vi.mock('@/.ai/claude-flow/core/ClaudeFlowIntegration', () => ({
     ClaudeFlowIntegration: {
       initialize: vi.fn().mockResolvedValue(true),
       createHiveMind: vi.fn().mockResolvedValue({ id: 'test-hive' }),
-      executeWorkflow: vi.fn().mockResolvedValue({ success: true })
-    }
-  }))
-})
+      executeWorkflow: vi.fn().mockResolvedValue({ success: true }),
+    },
+  }));
+});
 
 afterAll(async () => {
   // Cleanup test environment
-  console.log('🧹 Cleaning up test environment')
-  vi.clearAllMocks()
-})
+  console.log('🧹 Cleaning up test environment');
+  vi.clearAllMocks();
+});
 
 beforeEach(() => {
   // Reset mocks before each test
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 
 afterEach(() => {
   // Cleanup after each test
-  vi.restoreAllMocks()
-})
+  vi.restoreAllMocks();
+});
 
 // Global test utilities
 declare global {
   var testUtils: {
-    createMockParcel: () => any
-    createMockAgent: () => any
-    createMockHiveMind: () => any
-    waitForAsync: (ms: number) => Promise<void>
-  }
+    createMockParcel: () => any;
+    createMockAgent: () => any;
+    createMockHiveMind: () => any;
+    waitForAsync: (ms: number) => Promise<void>;
+  };
 }
 
 globalThis.testUtils = {
@@ -89,60 +89,59 @@ globalThis.testUtils = {
     owner: 'Mock Owner',
     assessedValue: Math.floor(Math.random() * 500000) + 100000,
     county: 'Benton',
-    state: 'WA'
+    state: 'WA',
   }),
-  
+
   createMockAgent: () => ({
     id: `AGENT_${Math.random().toString(36).substr(2, 9)}`,
     type: 'revenue_hunter',
     status: 'idle',
     capabilities: ['property_assessment', 'revenue_discovery'],
-    jurisdiction: 'Benton County, WA'
+    jurisdiction: 'Benton County, WA',
   }),
-  
+
   createMockHiveMind: () => ({
     id: `HIVE_${Math.random().toString(36).substr(2, 9)}`,
     queen: 'claude-3.5-sonnet',
     workers: ['architect', 'coder', 'tester'],
     status: 'active',
-    county: 'Benton'
+    county: 'Benton',
   }),
-  
-  waitForAsync: (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-}
+
+  waitForAsync: (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
+};
 
 // Custom matchers
 expect.extend({
   toBeValidParcel(received) {
-    const pass = received && 
-                 typeof received.id === 'string' &&
-                 typeof received.address === 'string' &&
-                 typeof received.assessedValue === 'number' &&
-                 received.assessedValue > 0
-    
+    const pass =
+      received &&
+      typeof received.id === 'string' &&
+      typeof received.address === 'string' &&
+      typeof received.assessedValue === 'number' &&
+      received.assessedValue > 0;
+
     return {
       message: () => `expected ${received} to be a valid parcel object`,
-      pass
-    }
+      pass,
+    };
   },
-  
+
   toBeGovernmentCompliant(received) {
-    const pass = received &&
-                 received.county &&
-                 received.state &&
-                 received.compliance?.fisma === true
-    
+    const pass =
+      received && received.county && received.state && received.compliance?.fisma === true;
+
     return {
       message: () => `expected ${received} to be government compliant`,
-      pass
-    }
-  }
-})
+      pass,
+    };
+  },
+});
 
 // Extend expect interface
 declare module 'vitest' {
   interface Assertion<T = any> {
-    toBeValidParcel(): T
-    toBeGovernmentCompliant(): T
+    toBeValidParcel(): T;
+    toBeGovernmentCompliant(): T;
   }
 }

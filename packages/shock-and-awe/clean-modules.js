@@ -5,14 +5,14 @@
 
 // Clean, simple popup creation
 function createCleanPopup(title, content) {
-    // Remove any existing popups first
-    const existingPopups = document.querySelectorAll('.tf-clean-popup');
-    existingPopups.forEach(popup => popup.remove());
-    
-    // Create backdrop
-    const backdrop = document.createElement('div');
-    backdrop.className = 'tf-clean-popup';
-    backdrop.style.cssText = `
+  // Remove any existing popups first
+  const existingPopups = document.querySelectorAll('.tf-clean-popup');
+  existingPopups.forEach(popup => popup.remove());
+
+  // Create backdrop
+  const backdrop = document.createElement('div');
+  backdrop.className = 'tf-clean-popup';
+  backdrop.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
@@ -26,10 +26,10 @@ function createCleanPopup(title, content) {
         justify-content: center;
         animation: fadeIn 0.3s ease-out;
     `;
-    
-    // Create popup content
-    const popup = document.createElement('div');
-    popup.style.cssText = `
+
+  // Create popup content
+  const popup = document.createElement('div');
+  popup.style.cssText = `
         background: linear-gradient(135deg, #0b1020 0%, #1a1a2e 100%);
         border: 2px solid #00ffee;
         border-radius: 12px;
@@ -42,10 +42,10 @@ function createCleanPopup(title, content) {
             inset 0 1px 0 rgba(0, 255, 238, 0.1);
         position: relative;
     `;
-    
-    // Create header
-    const header = document.createElement('div');
-    header.style.cssText = `
+
+  // Create header
+  const header = document.createElement('div');
+  header.style.cssText = `
         padding: 1.5rem 2rem;
         border-bottom: 1px solid rgba(0, 255, 238, 0.2);
         display: flex;
@@ -53,8 +53,8 @@ function createCleanPopup(title, content) {
         justify-content: space-between;
         background: rgba(0, 255, 238, 0.05);
     `;
-    
-    header.innerHTML = `
+
+  header.innerHTML = `
         <h2 style="
             color: #00ffee;
             margin: 0;
@@ -72,59 +72,59 @@ function createCleanPopup(title, content) {
             transition: all 0.2s;
         " onmouseover="this.style.color='#00ffee'" onmouseout="this.style.color='#8892b0'">&times;</button>
     `;
-    
-    // Create content area
-    const contentArea = document.createElement('div');
-    contentArea.style.cssText = `
+
+  // Create content area
+  const contentArea = document.createElement('div');
+  contentArea.style.cssText = `
         padding: 2rem;
         color: white;
         line-height: 1.6;
     `;
-    contentArea.innerHTML = content;
-    
-    // Assemble popup
-    popup.appendChild(header);
-    popup.appendChild(contentArea);
-    backdrop.appendChild(popup);
-    
-    // Add animation CSS if not exists
-    if (!document.querySelector('#tf-popup-animations')) {
-        const style = document.createElement('style');
-        style.id = 'tf-popup-animations';
-        style.textContent = `
+  contentArea.innerHTML = content;
+
+  // Assemble popup
+  popup.appendChild(header);
+  popup.appendChild(contentArea);
+  backdrop.appendChild(popup);
+
+  // Add animation CSS if not exists
+  if (!document.querySelector('#tf-popup-animations')) {
+    const style = document.createElement('style');
+    style.id = 'tf-popup-animations';
+    style.textContent = `
             @keyframes fadeIn {
                 from { opacity: 0; }
                 to { opacity: 1; }
             }
         `;
-        document.head.appendChild(style);
+    document.head.appendChild(style);
+  }
+
+  // Add to page
+  document.body.appendChild(backdrop);
+
+  // Close on backdrop click
+  backdrop.addEventListener('click', e => {
+    if (e.target === backdrop) {
+      backdrop.remove();
     }
-    
-    // Add to page
-    document.body.appendChild(backdrop);
-    
-    // Close on backdrop click
-    backdrop.addEventListener('click', (e) => {
-        if (e.target === backdrop) {
-            backdrop.remove();
-        }
-    });
-    
-    // Close on Escape key
-    const handleEscape = (e) => {
-        if (e.key === 'Escape') {
-            backdrop.remove();
-            document.removeEventListener('keydown', handleEscape);
-        }
-    };
-    document.addEventListener('keydown', handleEscape);
-    
-    return backdrop;
+  });
+
+  // Close on Escape key
+  const handleEscape = e => {
+    if (e.key === 'Escape') {
+      backdrop.remove();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+
+  return backdrop;
 }
 
 // Clean CostForge demo
 function showCostForgeDemo() {
-    const content = `
+  const content = `
         <div style="text-align: center; margin-bottom: 2rem;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🏗️</div>
             <p style="color: #8892b0; font-size: 1.1rem;">Advanced Property Valuation with AI Precision</p>
@@ -177,13 +177,13 @@ function showCostForgeDemo() {
             </button>
         </div>
     `;
-    
-    createCleanPopup('CostForge AI - Property Valuation', content);
+
+  createCleanPopup('CostForge AI - Property Valuation', content);
 }
 
 // Clean AI Swarm demo
 function showAISwarmDemo() {
-    const content = `
+  const content = `
         <div style="text-align: center; margin-bottom: 2rem;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🤖</div>
             <p style="color: #8892b0; font-size: 1.1rem;">Real-Time AI Agent Coordination & Intelligence</p>
@@ -223,13 +223,13 @@ function showAISwarmDemo() {
             <div style="color: #8892b0;">All agents coordinated and ready for government operations</div>
         </div>
     `;
-    
-    createCleanPopup('AI Swarm Intelligence - 1,008 Agents', content);
+
+  createCleanPopup('AI Swarm Intelligence - 1,008 Agents', content);
 }
 
 // Clean GIS demo
 function showGISDemo() {
-    const content = `
+  const content = `
         <div style="text-align: center; margin-bottom: 2rem;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
             <p style="color: #8892b0; font-size: 1.1rem;">Advanced Geographic Information System</p>
@@ -256,13 +256,13 @@ function showGISDemo() {
             </div>
         </div>
     `;
-    
-    createCleanPopup('GIS Transcended - Geographic Intelligence', content);
+
+  createCleanPopup('GIS Transcended - Geographic Intelligence', content);
 }
 
 // Clean Quantum demo
 function showQuantumDemo() {
-    const content = `
+  const content = `
         <div style="text-align: center; margin-bottom: 2rem;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
             <p style="color: #8892b0; font-size: 1.1rem;">Quantum-Enhanced Performance Engine</p>
@@ -291,13 +291,13 @@ function showQuantumDemo() {
             </div>
         </div>
     `;
-    
-    createCleanPopup('Quantum Performance Core - Transcendent Speed', content);
+
+  createCleanPopup('Quantum Performance Core - Transcendent Speed', content);
 }
 
 // Clean Hybrid demo
 function showHybridDemo() {
-    const content = `
+  const content = `
         <div style="text-align: center; margin-bottom: 2rem;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
             <p style="color: #8892b0; font-size: 1.1rem;">Multi-Layer AI Security & Intelligence</p>
@@ -328,13 +328,13 @@ function showHybridDemo() {
             </div>
         </div>
     `;
-    
-    createCleanPopup('Hybrid Intelligence Engine - Security First', content);
+
+  createCleanPopup('Hybrid Intelligence Engine - Security First', content);
 }
 
 // Clean Levy demo
 function showLevyDemo() {
-    const content = `
+  const content = `
         <div style="text-align: center; margin-bottom: 2rem;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">💰</div>
             <p style="color: #8892b0; font-size: 1.1rem;">Intelligent Tax Levy Optimization</p>
@@ -370,44 +370,44 @@ function showLevyDemo() {
             <div style="color: #8892b0;">Maximum efficiency, minimum citizen burden</div>
         </div>
     `;
-    
-    createCleanPopup('Terra-Levy Optimizer - Smart Tax Management', content);
+
+  createCleanPopup('Terra-Levy Optimizer - Smart Tax Management', content);
 }
 
 // Override the main launch function with clean implementation
-window.launchDemo = function(demoId) {
-    console.log(`🚀 Launching clean demo: ${demoId}`);
-    
-    // Show transcendence loading first (if available)
-    if (window.terraFusionOS && window.terraFusionOS.launchDemo) {
-        window.terraFusionOS.launchDemo(demoId);
+window.launchDemo = function (demoId) {
+  console.log(`🚀 Launching clean demo: ${demoId}`);
+
+  // Show transcendence loading first (if available)
+  if (window.terraFusionOS && window.terraFusionOS.launchDemo) {
+    window.terraFusionOS.launchDemo(demoId);
+  }
+
+  // Then show clean demo after loading
+  setTimeout(() => {
+    switch (demoId) {
+      case 'costforge':
+        showCostForgeDemo();
+        break;
+      case 'ai-swarm':
+        showAISwarmDemo();
+        break;
+      case 'gis-transcended':
+        showGISDemo();
+        break;
+      case 'quantum-core':
+        showQuantumDemo();
+        break;
+      case 'hybrid-intelligence':
+        showHybridDemo();
+        break;
+      case 'levy-optimizer':
+        showLevyDemo();
+        break;
+      default:
+        alert(`Demo "${demoId}" is ready! Clean implementation loaded.`);
     }
-    
-    // Then show clean demo after loading
-    setTimeout(() => {
-        switch(demoId) {
-            case 'costforge':
-                showCostForgeDemo();
-                break;
-            case 'ai-swarm':
-                showAISwarmDemo();
-                break;
-            case 'gis-transcended':
-                showGISDemo();
-                break;
-            case 'quantum-core':
-                showQuantumDemo();
-                break;
-            case 'hybrid-intelligence':
-                showHybridDemo();
-                break;
-            case 'levy-optimizer':
-                showLevyDemo();
-                break;
-            default:
-                alert(`Demo "${demoId}" is ready! Clean implementation loaded.`);
-        }
-    }, 3500);
+  }, 3500);
 };
 
 console.log('✅ Clean module implementation loaded - no more disasters!');

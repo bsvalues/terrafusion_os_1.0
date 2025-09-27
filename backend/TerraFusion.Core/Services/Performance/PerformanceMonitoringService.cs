@@ -64,20 +64,20 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
         return metrics;
     }
 
-    public async Task<List<PerformanceMetrics>> GetMetricsHistoryAsync(TimeSpan period)
+    public Task<List<PerformanceMetrics>> GetMetricsHistoryAsync(TimeSpan period)
     {
         var cutoff = DateTime.UtcNow.Subtract(period);
         
         lock (_lock)
         {
-            return _metricsHistory
+            return Task.FromResult(_metricsHistory
                 .Where(m => m.Timestamp >= cutoff)
                 .OrderBy(m => m.Timestamp)
-                .ToList();
+                .ToList());
         }
     }
 
-    public async Task RecordApiCallAsync(string endpoint, TimeSpan duration, int statusCode)
+    public Task RecordApiCallAsync(string endpoint, TimeSpan duration, int statusCode)
     {
         var isError = statusCode >= 400;
         var isSlow = duration.TotalMilliseconds > _options.SlowRequestThresholdMs;
@@ -90,10 +90,10 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
         }
 
         // Store in metrics (implementation would depend on your metrics storage)
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
-    public async Task RecordDatabaseQueryAsync(string queryType, TimeSpan duration)
+    public Task RecordDatabaseQueryAsync(string queryType, TimeSpan duration)
     {
         var isSlow = duration.TotalMilliseconds > _options.SlowQueryThresholdMs;
 
@@ -104,21 +104,21 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
                 queryType, duration.TotalMilliseconds);
         }
 
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
-    public async Task RecordCacheOperationAsync(string operation, bool hit, TimeSpan duration)
+    public Task RecordCacheOperationAsync(string operation, bool hit, TimeSpan duration)
     {
         _logger.LogDebug(
             "Cache operation: {Operation} - {Result} in {Duration}ms",
             operation, hit ? "HIT" : "MISS", duration.TotalMilliseconds);
 
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
-    public async Task<HealthStatus> GetHealthStatusAsync()
+    public Task<HealthStatus> GetHealthStatusAsync()
     {
-        var metrics = await GetCurrentMetricsAsync();
+        var metrics = GetCurrentMetricsAsync().Result;
         var status = new HealthStatus
         {
             IsHealthy = true,
@@ -152,16 +152,16 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
         status.Details["threads"] = metrics.ThreadCount;
         status.Details["handles"] = metrics.HandleCount;
 
-        return status;
+        return Task.FromResult(status);
     }
 
-    private async Task<double> GetCpuUsageAsync()
+    private Task<double> GetCpuUsageAsync()
     {
         // Simple CPU usage calculation
         var startTime = DateTime.UtcNow;
         var startCpuUsage = Process.GetCurrentProcess().TotalProcessorTime;
         
-        await Task.Delay(500); // Wait 500ms
+        Task.Delay(500).Wait(); // Wait 500ms
         
         var endTime = DateTime.UtcNow;
         var endCpuUsage = Process.GetCurrentProcess().TotalProcessorTime;
@@ -170,7 +170,7 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
         var totalMsPassed = (endTime - startTime).TotalMilliseconds;
         var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
         
-        return cpuUsageTotal * 100;
+        return Task.FromResult(cpuUsageTotal * 100);
     }
 }
 

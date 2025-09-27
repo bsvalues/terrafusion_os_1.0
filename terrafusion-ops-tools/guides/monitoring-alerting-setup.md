@@ -1,7 +1,10 @@
 # Terrafusion Monitoring and Alerting Setup Guide
 
 ## Overview
-This guide provides comprehensive instructions for setting up monitoring and alerting for the Terrafusion platform using Prometheus, Grafana, and various alerting channels.
+
+This guide provides comprehensive instructions for setting up monitoring and
+alerting for the Terrafusion platform using Prometheus, Grafana, and various
+alerting channels.
 
 ## Architecture
 
@@ -122,8 +125,10 @@ groups:
           severity: critical
           team: backend
         annotations:
-          summary: "High error rate on {{ $labels.job }}"
-          description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.job }}"
+          summary: 'High error rate on {{ $labels.job }}'
+          description:
+            'Error rate is {{ $value | humanizePercentage }} for {{ $labels.job
+            }}'
 
       # API Response Time
       - alert: SlowAPIResponse
@@ -136,8 +141,8 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "Slow API responses on {{ $labels.job }}"
-          description: "95th percentile response time is {{ $value }}s"
+          summary: 'Slow API responses on {{ $labels.job }}'
+          description: '95th percentile response time is {{ $value }}s'
 
       # Service Down
       - alert: ServiceDown
@@ -147,8 +152,10 @@ groups:
           severity: critical
           team: ops
         annotations:
-          summary: "Service {{ $labels.job }} is down"
-          description: "{{ $labels.job }} on {{ $labels.instance }} has been down for more than 2 minutes"
+          summary: 'Service {{ $labels.job }} is down'
+          description:
+            '{{ $labels.job }} on {{ $labels.instance }} has been down for more
+            than 2 minutes'
 
   - name: infrastructure
     interval: 30s
@@ -162,8 +169,8 @@ groups:
           severity: warning
           team: ops
         annotations:
-          summary: "High CPU usage on {{ $labels.instance }}"
-          description: "CPU usage is {{ $value | humanize }}%"
+          summary: 'High CPU usage on {{ $labels.instance }}'
+          description: 'CPU usage is {{ $value | humanize }}%'
 
       # High Memory Usage
       - alert: HighMemoryUsage
@@ -174,8 +181,8 @@ groups:
           severity: warning
           team: ops
         annotations:
-          summary: "High memory usage on {{ $labels.instance }}"
-          description: "Memory usage is {{ $value | humanize }}%"
+          summary: 'High memory usage on {{ $labels.instance }}'
+          description: 'Memory usage is {{ $value | humanize }}%'
 
       # Disk Space Low
       - alert: DiskSpaceLow
@@ -186,8 +193,8 @@ groups:
           severity: warning
           team: ops
         annotations:
-          summary: "Low disk space on {{ $labels.instance }}"
-          description: "Only {{ $value | humanize }}% disk space left"
+          summary: 'Low disk space on {{ $labels.instance }}'
+          description: 'Only {{ $value | humanize }}% disk space left'
 
   - name: database
     interval: 30s
@@ -203,8 +210,8 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "Database connection pool near limit"
-          description: "{{ $value | humanizePercentage }} of connections used"
+          summary: 'Database connection pool near limit'
+          description: '{{ $value | humanizePercentage }} of connections used'
 
       # Slow Queries
       - alert: DatabaseSlowQueries
@@ -215,8 +222,8 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "Slow database queries detected"
-          description: "Query time averaging {{ $value }}s"
+          summary: 'Slow database queries detected'
+          description: 'Query time averaging {{ $value }}s'
 
       # Replication Lag
       - alert: DatabaseReplicationLag
@@ -227,8 +234,8 @@ groups:
           severity: critical
           team: ops
         annotations:
-          summary: "Database replication lag high"
-          description: "Replication lag is {{ $value }}s"
+          summary: 'Database replication lag high'
+          description: 'Replication lag is {{ $value }}s'
 
   - name: business
     interval: 1m
@@ -242,8 +249,8 @@ groups:
           severity: info
           team: product
         annotations:
-          summary: "No projects created in last hour"
-          description: "No new projects have been created"
+          summary: 'No projects created in last hour'
+          description: 'No new projects have been created'
 
       # AI Engine Failures
       - alert: AIEnginePredictionFailures
@@ -254,8 +261,9 @@ groups:
           severity: critical
           team: ai
         annotations:
-          summary: "High AI prediction failure rate"
-          description: "AI prediction failure rate is {{ $value | humanize }} per second"
+          summary: 'High AI prediction failure rate'
+          description:
+            'AI prediction failure rate is {{ $value | humanize }} per second'
 ```
 
 ## 2. Grafana Setup
@@ -263,6 +271,7 @@ groups:
 ### 2.1 Data Source Configuration
 
 1. Add Prometheus data source:
+
 ```json
 {
   "name": "Prometheus",
@@ -275,7 +284,8 @@ groups:
 
 ### 2.2 Dashboard Provisioning
 
-Create `/opt/terrafusion/monitoring/grafana/provisioning/dashboards/dashboards.yml`:
+Create
+`/opt/terrafusion/monitoring/grafana/provisioning/dashboards/dashboards.yml`:
 
 ```yaml
 apiVersion: 1
@@ -366,12 +376,12 @@ route:
         severity: critical
       receiver: 'pagerduty-critical'
       continue: true
-      
+
     # Warning alerts
     - match:
         severity: warning
       receiver: 'slack-warnings'
-      
+
     # Database alerts
     - match:
         team: database
@@ -460,21 +470,21 @@ import time
 
 async def metrics_middleware(request: Request, call_next):
     start_time = time.time()
-    
+
     response = await call_next(request)
-    
+
     duration = time.time() - start_time
     request_count.labels(
         method=request.method,
         endpoint=request.url.path,
         status=response.status_code
     ).inc()
-    
+
     request_duration.labels(
         method=request.method,
         endpoint=request.url.path
     ).observe(duration)
-    
+
     return response
 ```
 
@@ -592,18 +602,18 @@ scrape_configs:
 async def create_project(project_data: dict):
     # Business logic
     result = create_project_in_db(project_data)
-    
+
     # Track metric
     projects_created.inc()
     active_users.set(get_active_user_count())
-    
+
     return result
 
 # Track AI performance
 @app.post("/api/ai/predict")
 async def predict_cost(data: dict):
     start_time = time.time()
-    
+
     try:
         result = ai_engine.predict(data)
         ai_predictions.labels(model='cost_estimator', status='success').inc()
@@ -613,7 +623,7 @@ async def predict_cost(data: dict):
     finally:
         duration = time.time() - start_time
         ai_prediction_duration.labels(model='cost_estimator').observe(duration)
-    
+
     return result
 ```
 
@@ -650,13 +660,14 @@ groups:
           severity: warning
           team: sre
         annotations:
-          summary: "Error budget consumption high"
-          description: "Current availability: {{ $value | humanizePercentage }}"
+          summary: 'Error budget consumption high'
+          description: 'Current availability: {{ $value | humanizePercentage }}'
 ```
 
 ## 7. Monitoring Checklist
 
 ### 7.1 Initial Setup
+
 - [ ] Prometheus installed and configured
 - [ ] Grafana installed with dashboards
 - [ ] AlertManager configured with receivers
@@ -666,6 +677,7 @@ groups:
 - [ ] SSL certificates for monitoring endpoints
 
 ### 7.2 Dashboards Created
+
 - [ ] System Overview Dashboard
 - [ ] Application Performance Dashboard
 - [ ] Database Performance Dashboard
@@ -674,6 +686,7 @@ groups:
 - [ ] Alert Overview Dashboard
 
 ### 7.3 Alerts Configured
+
 - [ ] Service up/down alerts
 - [ ] Performance degradation alerts
 - [ ] Resource utilization alerts
@@ -682,6 +695,7 @@ groups:
 - [ ] Certificate expiration alerts
 
 ### 7.4 Testing
+
 - [ ] Test alert routing
 - [ ] Verify metric collection
 - [ ] Dashboard load testing
@@ -691,6 +705,7 @@ groups:
 ## 8. Maintenance
 
 ### 8.1 Regular Tasks
+
 - Review and tune alert thresholds weekly
 - Archive old metrics data monthly
 - Update dashboards based on feedback
@@ -700,6 +715,7 @@ groups:
 ### 8.2 Troubleshooting
 
 **Metrics not appearing**:
+
 ```bash
 # Check Prometheus targets
 curl http://prometheus:9090/api/v1/targets
@@ -712,6 +728,7 @@ docker logs prometheus
 ```
 
 **Alerts not firing**:
+
 ```bash
 # Check alert rules
 curl http://prometheus:9090/api/v1/rules

@@ -10,10 +10,10 @@ summary = {
   "county": os.getenv('COUNTY_NAME','Benton County, WA'),
   "county_code": os.getenv('COUNTY_CODE','US-WA-BENTON'),
   "services": {
-    "ui": "http://localhost:3000",
-    "api": "http://localhost:8080",
-    "grafana": "http://localhost:3001",
-    "prometheus": "http://localhost:9090"
+    "ui": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
+    "api": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
+    "grafana": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
+    "prometheus": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
   },
   "integrations": {
     "harris_pacs": {

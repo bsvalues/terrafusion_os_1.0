@@ -51,7 +51,7 @@ class ContinuousAuditMonitor:
     def __init__(self):
         self.session_id = f"continuous_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         self.metrics_registry = CollectorRegistry()
         self.active_alerts = {}
         self.audit_thresholds = self.load_audit_thresholds()
@@ -301,10 +301,10 @@ class ContinuousAuditMonitor:
     async def get_api_response_metrics(self) -> Dict[str, float]:
         """Get API response time metrics"""
         endpoints = [
-            'http://localhost:8000/api/health',
-            'http://localhost:8000/api/users/profile',
-            'http://localhost:8000/api/projects',
-            'http://localhost:8000/api/models/status'
+            'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/health',
+            'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/users/profile',
+            'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/projects',
+            'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/models/status'
         ]
         
         metrics = {}
@@ -568,7 +568,7 @@ class ContinuousAuditMonitor:
                 
         try:
             await websockets.serve(handle_client, "localhost", 8765)
-            self.logger.info("🌐 WebSocket server started on ws://localhost:8765")
+            self.logger.info("🌐 WebSocket server started on ws://localhost:\${{TF_DOCS_PORT:-8000}}")
         except Exception as e:
             self.logger.error(f"Failed to start WebSocket server: {e}")
             
@@ -773,9 +773,9 @@ class ContinuousAuditMonitor:
     async def check_api_endpoints_health(self) -> float:
         """Check API endpoints health"""
         endpoints = [
-            'http://localhost:8000/api/health',
-            'http://localhost:8000/api/status',
-            'http://localhost:8000/api/version'
+            'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/health',
+            'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/status',
+            'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/version'
         ]
         
         healthy_count = 0
@@ -905,9 +905,9 @@ class ContinuousAuditMonitor:
         try:
             # Test critical endpoints for performance
             endpoints = [
-                'http://localhost:8000/api/models/list',
-                'http://localhost:8000/api/data/query',
-                'http://localhost:8000/api/users/authenticate'
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/models/list',
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/data/query',
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/users/authenticate'
             ]
             
             performance_results = {}
@@ -1205,7 +1205,7 @@ async def main():
     print("  • Standard health checks: Every 5 minutes")
     print("  • Detailed analysis: Every 15 minutes")
     print("  • Comprehensive audit: Every 1 hour")
-    print("  • WebSocket dashboard: ws://localhost:8765")
+    print("  • WebSocket dashboard: ws://localhost:\${{TF_DOCS_PORT:-8000}}")
     print("=" * 60)
     
     monitor = ContinuousAuditMonitor()

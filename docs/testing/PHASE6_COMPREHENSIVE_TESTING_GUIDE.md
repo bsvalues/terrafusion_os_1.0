@@ -4,7 +4,9 @@
 
 ## Overview
 
-This document provides comprehensive guidance for executing and understanding the PHASE 6 Week 10 testing framework, which validates four critical technical focus areas for government deployment readiness.
+This document provides comprehensive guidance for executing and understanding
+the PHASE 6 Week 10 testing framework, which validates four critical technical
+focus areas for government deployment readiness.
 
 ## Table of Contents
 
@@ -48,9 +50,11 @@ scripts/
 
 ### 1. System Integration Testing
 
-**Purpose**: Validate seamless communication between all Terrafusion OS components
+**Purpose**: Validate seamless communication between all Terrafusion OS
+components
 
 **Test Coverage**:
+
 - Phase 1-10 evolutionary system integration
 - Harris PACS government data connectivity
 - WebSocket real-time communication
@@ -58,6 +62,7 @@ scripts/
 - Cross-component API validation
 
 **Key Metrics**:
+
 - System health status
 - Component response times
 - Data synchronization accuracy
@@ -68,6 +73,7 @@ scripts/
 **Purpose**: Optimize system performance for government-scale workloads
 
 **Test Coverage**:
+
 - Load testing (1,000+ concurrent users)
 - Database query optimization
 - Redis caching implementation
@@ -76,6 +82,7 @@ scripts/
 - Quantum performance verification
 
 **Key Metrics**:
+
 - Response time (P95 < 2000ms)
 - Throughput (> 500 RPS)
 - Error rate (< 1%)
@@ -87,6 +94,7 @@ scripts/
 **Purpose**: Ensure government-grade security compliance
 
 **Test Coverage**:
+
 - Comprehensive penetration testing
 - SQL injection vulnerability assessment
 - Cross-site scripting (XSS) protection
@@ -96,6 +104,7 @@ scripts/
 - Vulnerability scanning (CVSS scoring)
 
 **Key Metrics**:
+
 - Critical vulnerabilities (must be 0)
 - Overall security score (≥ 85/100)
 - FISMA compliance status
@@ -107,6 +116,7 @@ scripts/
 **Purpose**: Validate multi-jurisdiction deployment readiness
 
 **Test Coverage**:
+
 - Multi-jurisdiction load testing (25,000+ users)
 - Database sharding validation
 - Kubernetes auto-scaling
@@ -115,6 +125,7 @@ scripts/
 - Capacity planning validation
 
 **Key Metrics**:
+
 - Maximum concurrent users (≥ 25,000)
 - Multi-jurisdiction support (≥ 5 counties)
 - Response time under load (< 3000ms)
@@ -134,7 +145,7 @@ npm run test:comprehensive
 
 # Or run specific test categories
 npm run test:integration
-npm run test:performance  
+npm run test:performance
 npm run test:security
 npm run test:scalability
 ```
@@ -157,7 +168,7 @@ npx ts-node scripts/execute-comprehensive-testing.ts
 # Development environment
 npm run test:dev
 
-# Staging environment  
+# Staging environment
 npm run test:staging
 
 # Production validation
@@ -168,21 +179,22 @@ npm run test:production
 
 ### Environment Variables
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `TEST_API_URL` | Target API endpoint | `http://localhost:5000` | No |
-| `TEST_WS_URL` | WebSocket endpoint | `ws://localhost:5000/hubs/system` | No |
-| `KUBERNETES_API_URL` | Kubernetes cluster API | Empty | No |
-| `SECURITY_TEST_USER` | Security test username | `security-tester` | No |
-| `SECURITY_TEST_PASS` | Security test password | `SecureTest123!` | No |
-| `SKIP_SECTIONS` | Comma-separated sections to skip | Empty | No |
-| `PARALLEL_EXECUTION` | Enable parallel test execution | `false` | No |
-| `GENERATE_REPORTS` | Generate consolidated reports | `true` | No |
-| `OUTPUT_DIR` | Report output directory | `./test-results` | No |
+| Variable             | Description                      | Default                           | Required |
+| -------------------- | -------------------------------- | --------------------------------- | -------- |
+| `TEST_API_URL`       | Target API endpoint              | `http://localhost:\${{TF_API_PORT:-5000}}`           | No       |
+| `TEST_WS_URL`        | WebSocket endpoint               | `ws://localhost:\${{TF_API_PORT:-5000}}/hubs/system` | No       |
+| `KUBERNETES_API_URL` | Kubernetes cluster API           | Empty                             | No       |
+| `SECURITY_TEST_USER` | Security test username           | `security-tester`                 | No       |
+| `SECURITY_TEST_PASS` | Security test password           | `SecureTest123!`                  | No       |
+| `SKIP_SECTIONS`      | Comma-separated sections to skip | Empty                             | No       |
+| `PARALLEL_EXECUTION` | Enable parallel test execution   | `false`                           | No       |
+| `GENERATE_REPORTS`   | Generate consolidated reports    | `true`                            | No       |
+| `OUTPUT_DIR`         | Report output directory          | `./test-results`                  | No       |
 
 ### Test Configuration Objects
 
 #### Integration Test Config
+
 ```typescript
 interface IntegrationTestConfig {
   baseUrl: string;
@@ -193,6 +205,7 @@ interface IntegrationTestConfig {
 ```
 
 #### Performance Test Config
+
 ```typescript
 interface LoadTestConfig {
   baseUrl: string;
@@ -204,6 +217,7 @@ interface LoadTestConfig {
 ```
 
 #### Scalability Test Config
+
 ```typescript
 interface LoadTestScenario {
   name: string;
@@ -226,6 +240,7 @@ interface LoadTestScenario {
 ### Performance Benchmarks
 
 #### Government-Scale Requirements
+
 - **Response Time**: P95 < 2000ms for government users
 - **Throughput**: > 500 requests per second sustained
 - **Concurrent Users**: Support 10,000+ simultaneous users
@@ -233,12 +248,14 @@ interface LoadTestScenario {
 - **Availability**: 99.9% uptime requirement
 
 #### Security Standards
+
 - **Critical Vulnerabilities**: Zero tolerance for production deployment
 - **High Vulnerabilities**: Maximum 2 allowed with remediation plan
 - **Security Score**: Minimum 85/100 for government deployment
 - **Compliance**: 100% FISMA and NIST 800-53 compliance required
 
 #### Scalability Targets
+
 - **Multi-Jurisdiction**: Support minimum 5 concurrent jurisdictions
 - **User Capacity**: 25,000+ concurrent users across all jurisdictions
 - **Geographic Distribution**: < 2000ms response time from any US region
@@ -247,15 +264,20 @@ interface LoadTestScenario {
 ### Report Formats
 
 #### Console Output
+
 Real-time test execution progress with immediate pass/fail indicators.
 
 #### Markdown Reports
+
 Comprehensive testing reports generated in `./test-results/` directory:
+
 - `comprehensive-testing-report-{timestamp}.md`
 - Includes executive summary, detailed results, and recommendations
 
 #### JSON Results
+
 Machine-readable test results for CI/CD integration:
+
 - `test-results-{timestamp}.json`
 - Contains detailed metrics and status for each test category
 
@@ -263,7 +285,8 @@ Machine-readable test results for CI/CD integration:
 
 ### FISMA Compliance Validation
 
-The security testing framework validates Federal Information Security Management Act (FISMA) requirements:
+The security testing framework validates Federal Information Security Management
+Act (FISMA) requirements:
 
 - **Access Control**: Role-based access control (RBAC) implementation
 - **Audit and Accountability**: Comprehensive audit logging
@@ -297,11 +320,13 @@ Test results map to FedRAMP authorization levels:
 #### Test Execution Failures
 
 **Issue**: Tests fail to start or connect to target system
+
 ```bash
-Error: ECONNREFUSED 127.0.0.1:5000
+Error: ECONNREFUSED 127.0.0.1:\${{TF_API_PORT:-5000}}
 ```
 
 **Solution**:
+
 1. Verify target system is running
 2. Check `TEST_API_URL` environment variable
 3. Validate network connectivity
@@ -310,11 +335,13 @@ Error: ECONNREFUSED 127.0.0.1:5000
 #### Performance Test Timeouts
 
 **Issue**: Load tests timeout or fail under high concurrency
+
 ```bash
 Error: Timeout of 30000ms exceeded
 ```
 
 **Solution**:
+
 1. Increase timeout values in test configuration
 2. Reduce concurrent user count for initial testing
 3. Verify system resources (CPU, memory, network)
@@ -323,11 +350,13 @@ Error: Timeout of 30000ms exceeded
 #### Security Test Authentication
 
 **Issue**: Security tests fail authentication
+
 ```bash
 Error: Authentication failed for security testing
 ```
 
 **Solution**:
+
 1. Verify `SECURITY_TEST_USER` and `SECURITY_TEST_PASS` credentials
 2. Ensure test user has appropriate permissions
 3. Check authentication endpoint availability
@@ -336,11 +365,13 @@ Error: Authentication failed for security testing
 #### Kubernetes Integration
 
 **Issue**: Scalability tests fail Kubernetes validation
+
 ```bash
 Error: Unable to connect to Kubernetes API
 ```
 
 **Solution**:
+
 1. Set `KUBERNETES_API_URL` environment variable
 2. Provide valid `KUBERNETES_TOKEN` for authentication
 3. Verify cluster accessibility from test environment

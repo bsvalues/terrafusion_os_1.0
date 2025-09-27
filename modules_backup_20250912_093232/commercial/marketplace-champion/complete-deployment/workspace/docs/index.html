@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Documentation Hub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .filter-tag:hover,
+        .filter-tag.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .doc-category {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e1e5e9;
+        }
+
+        .doc-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .architecture .category-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .api .category-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .developer .category-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .admin .category-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .user .category-icon { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .security .category-icon { background: linear-gradient(135deg, #ff9a9e, #fecfef); }
+        .deployment .category-icon { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+        .troubleshooting .category-icon { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .category-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .doc-links {
+            list-style: none;
+        }
+
+        .doc-links li {
+            margin-bottom: 10px;
+        }
+
+        .doc-links a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .doc-links a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .doc-badge {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #e9ecef;
+            color: #666;
+        }
+
+        .doc-links a:hover .doc-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .stats-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-item {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quick-actions {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .quick-actions h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .doc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .feedback-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .feedback-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feedback-section p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .contact-item:hover {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-mountain"></i> TerraFusion</h1>
+            <p>Comprehensive Documentation Hub</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-number">150+</span>
+                <span class="stat-label">Documentation Pages</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">8</span>
+                <span class="stat-label">Major Categories</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">50+</span>
+                <span class="stat-label">API Endpoints</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Support Available</span>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search documentation..." id="searchInput">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="filters">
+                <span class="filter-tag active" data-filter="all">All Categories</span>
+                <span class="filter-tag" data-filter="architecture">Architecture</span>
+                <span class="filter-tag" data-filter="api">API</span>
+                <span class="filter-tag" data-filter="developer">Developer</span>
+                <span class="filter-tag" data-filter="admin">Admin</span>
+                <span class="filter-tag" data-filter="user">User</span>
+                <span class="filter-tag" data-filter="security">Security</span>
+                <span class="filter-tag" data-filter="deployment">Deployment</span>
+                <span class="filter-tag" data-filter="troubleshooting">Troubleshooting</span>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h3><i class="fas fa-rocket"></i> Quick Start Actions</h3>
+            <div class="action-buttons">
+                <a href="./developer/getting-started.md" class="action-btn">
+                    <i class="fas fa-play"></i> Get Started
+                </a>
+                <a href="./api/rest-api.md" class="action-btn">
+                    <i class="fas fa-code"></i> API Reference
+                </a>
+                <a href="./user/getting-started.md" class="action-btn">
+                    <i class="fas fa-user"></i> User Guide
+                </a>
+                <a href="./admin/installation.md" class="action-btn">
+                    <i class="fas fa-cog"></i> Installation
+                </a>
+                <a href="./troubleshooting/common-issues.md" class="action-btn">
+                    <i class="fas fa-question-circle"></i> Troubleshooting
+                </a>
+            </div>
+        </div>
+
+        <div class="doc-grid" id="docGrid">
+            <!-- System Architecture & Design -->
+            <div class="doc-category architecture" data-category="architecture">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
+                    <div>
+                        <div class="category-title">System Architecture</div>
+                        <div class="category-description">Comprehensive system design and architecture documentation</div>
+                    </div>
+                </div>
+                <ul class="doc-links">
+                    <li><a href="./architecture/system-overview.md">System Overview <span class="doc-badge">Core</span></a></li>
+                    <li><a href="./architecture/component-architecture.md">Component Architecture <span class="doc-badge">Technical</span></a></li>
+                    <li><a href="./architecture/data-flow.md">Data Flow Diagrams <span class="doc-badge">Visual</span></a></li>
+                    <li><a href="./architecture/security-architecture.md">Security Architecture <span class="doc-badge">Security</span></a></li>
+                    <li><a href="./architecture/scalability.md">Scalability & Performance <span class="doc-badge">Performance</span></a></li>
+                </ul>
+            </div>
+
+            <!-- API Documentation -->
+            <div class="doc-category api" data-category="api">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <div>
+                        <div class="category-title">API Documentation</div>
+                        <div class="category-description">Complete API references with interactive examples</div>
+                    </div>
+                </div>
+                <ul class="doc-links">
+                    <li><a href="./api/overview.md">API Overview <span class="doc-badge">Start Here</span></a></li>
+                    <li><a href="./api/authentication.md">Authentication <span class="doc-badge">Security</span></a></li>
+                    <li><a href="./api/rest-api.md">REST API Reference <span class="doc-badge">Complete</span></a></li>
+                    <li><a href="./api/graphql-api.md">GraphQL API <span class="doc-badge">Advanced</span></a></li>
+                    <li><a href="./api/websocket-api.md">WebSocket API <span class="doc-badge">Real-time</span></a></li>
+                    <li><a href="./api/sdks/">SDK Documentation <span class="doc-badge">Integration</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Developer Guides -->
+            <div class="doc-category developer" data-category="developer">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div>
+                        <div class="category-title">Developer Guides</div>
+                        <div class="category-description">Comprehensive development tutorials and best practices</div>
+                    </div>
+                </div>
+                <ul class="doc-links">
+                    <li><a href="./developer/getting-started.md">Getting Started <span class="doc-badge">Essential</span></a></li>
+                    <li><a href="./developer/environment-setup.md">Environment Setup <span class="doc-badge">Setup</span></a></li>
+                    <li><a href="./developer/contributing.md">Contributing Guide <span class="doc-badge">Community</span></a></li>
+                    <li><a href="./developer/code-standards.md">Code Standards <span class="doc-badge">Quality</span></a></li>
+                    <li><a href="./developer/testing.md">Testing Guidelines <span class="doc-badge">QA</span></a></li>
+                    <li><a href="./developer/debugging.md">Debugging Guide <span class="doc-badge">Debug</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Administrator Operations -->
+            <div class="doc-category admin" data-category="admin">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div>
+                        <div class="category-title">Administrator Manual</div>
+                        <div class="category-description">Operations, maintenance, and system administration</div>
+                    </div>
+                </div>
+                <ul class="doc-links">
+                    <li><a href="./admin/installation.md">Installation & Setup <span class="doc-badge">Critical</span></a></li>
+                    <li><a href="./admin/configuration.md">Configuration Guide <span class="doc-badge">Config</span></a></li>
+                    <li><a href="./admin/monitoring.md">Monitoring & Alerting <span class="doc-badge">Monitor</span></a></li>
+                    <li><a href="./admin/backup-recovery.md">Backup & Recovery <span class="doc-badge">Backup</span></a></li>
+                    <li><a href="./admin/performance-tuning.md">Performance Tuning <span class="doc-badge">Optimize</span></a></li>
+                    <li><a href="./admin/maintenance.md">Maintenance Procedures <span class="doc-badge">Routine</span></a></li>
+                </ul>
+            </div>
+
+            <!-- User Guides -->
+            <div class="doc-category user" data-category="user">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <div class="category-title">User Training</div>
+                        <div class="category-description">End-user guides and training materials</div>
+                    </div>
+                </div>
+                <ul class="doc-links">
+                    <li><a href="./user/getting-started.md">User Getting Started <span class="doc-badge">Beginner</span></a></li>
+                    <li><a href="./user/features/">Feature Documentation <span class="doc-badge">Features</span></a></li>
+                    <li><a href="./user/tutorials/">Video Tutorials <span class="doc-badge">Video</span></a></li>
+                    <li><a href="./user/training/">Training Curriculum <span class="doc-badge">Training</span></a></li>
+                    <li><a href="./user/best-practices.md">Best Practices <span class="doc-badge">Tips</span></a></li>
+                    <li><a href="./user/faq.md">FAQ <span class="doc-badge">Help</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Security & Compliance -->
+            <div class="doc-category security" data-category="security">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <div class="category-title">Security & Compliance</div>
+                        <div class="category-description">Security protocols and compliance frameworks</div>
+                    </div>
+                </div>
+                <ul class="doc-links">
+                    <li><a href="./security/overview.md">Security Overview <span class="doc-badge">Important</span></a></li>
+                    <li><a href="./security/auth.md">Authentication & Auth <span class="doc-badge">Auth</span></a></li>
+                    <li><a href="./security/data-protection.md">Data Protection <span class="doc-badge">Privacy</span></a></li>
+                    <li><a href="./security/compliance.md">Compliance Framework <span class="doc-badge">Legal</span></a></li>
+                    <li><a href="./security/best-practices.md">Security Best Practices <span class="doc-badge">Best Practice</span></a></li>
+                    <li><a href="./security/incident-response.md">Incident Response <span class="doc-badge">Emergency</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Deployment & Configuration -->
+            <div class="doc-category deployment" data-category="deployment">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div>
+                        <div class="category-title">Deployment</div>
+                        <div class="category-description">Deployment strategies and configuration guides</div>
+                    </div>
+                </div>
+                <ul class="doc-links">
+                    <li><a href="./deployment/overview.md">Deployment Overview <span class="doc-badge">Overview</span></a></li>
+                    <li><a href="./deployment/local.md">Local Development <span class="doc-badge">Dev</span></a></li>
+                    <li><a href="./deployment/staging.md">Staging Environment <span class="doc-badge">Staging</span></a></li>
+                    <li><a href="./deployment/production.md">Production Deployment <span class="doc-badge">Production</span></a></li>
+                    <li><a href="./deployment/docker.md">Docker & Containers <span class="doc-badge">Docker</span></a></li>
+                    <li><a href="./deployment/kubernetes.md">Kubernetes <span class="doc-badge">K8s</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Troubleshooting & FAQ -->
+            <div class="doc-category troubleshooting" data-category="troubleshooting">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <div>
+                        <div class="category-title">Troubleshooting</div>
+                        <div class="category-description">Problem resolution and diagnostic guides</div>
+                    </div>
+                </div>
+                <ul class="doc-links">
+                    <li><a href="./troubleshooting/common-issues.md">Common Issues <span class="doc-badge">Popular</span></a></li>
+                    <li><a href="./troubleshooting/error-codes.md">Error Codes <span class="doc-badge">Reference</span></a></li>
+                    <li><a href="./troubleshooting/diagnostic-tools.md">Diagnostic Tools <span class="doc-badge">Tools</span></a></li>
+                    <li><a href="./troubleshooting/performance.md">Performance Issues <span class="doc-badge">Performance</span></a></li>
+                    <li><a href="./troubleshooting/integration.md">Integration Issues <span class="doc-badge">Integration</span></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="feedback-section">
+            <h3><i class="fas fa-comments"></i> Need Help or Have Feedback?</h3>
+            <p>We're here to help! Get in touch with our team for support, questions, or suggestions.</p>
+            <div class="contact-info">
+                <a href="mailto:support@terrafusion.ai" class="contact-item">
+                    <i class="fas fa-envelope"></i> support@terrafusion.ai
+                </a>
+                <a href="https://community.terrafusion.ai" class="contact-item">
+                    <i class="fas fa-users"></i> Community Forum
+                </a>
+                <a href="tel:+1-800-TERRA-DOC" class="contact-item">
+                    <i class="fas fa-phone"></i> +1-800-TERRA-DOC
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const docGrid = document.getElementById('docGrid');
+        const filterTags = document.querySelectorAll('.filter-tag');
+
+        let currentFilter = 'all';
+
+        // Search function
+        function searchDocs(query) {
+            const categories = document.querySelectorAll('.doc-category');
+            query = query.toLowerCase();
+
+            categories.forEach(category => {
+                const title = category.querySelector('.category-title').textContent.toLowerCase();
+                const description = category.querySelector('.category-description').textContent.toLowerCase();
+                const links = Array.from(category.querySelectorAll('.doc-links a')).map(a => a.textContent.toLowerCase());
+                
+                const matches = title.includes(query) || 
+                               description.includes(query) || 
+                               links.some(link => link.includes(query));
+
+                if (query === '' || matches) {
+                    category.style.display = 'block';
+                } else {
+                    category.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter function
+        function filterDocs(filter) {
+            const categories = document.querySelectorAll('.doc-category');
+            
+            categories.forEach(category => {
+                if (filter === 'all' || category.dataset.category === filter) {
+                    category.style.display = 'block';
+                } else {
+                    category.style.display = 'none';
+                }
+            });
+        }
+
+        // Search input handler
+        searchInput.addEventListener('input', (e) => {
+            searchDocs(e.target.value);
+        });
+
+        // Filter tag handlers
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                // Remove active class from all tags
+                filterTags.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tag
+                tag.classList.add('active');
+                
+                // Set current filter
+                currentFilter = tag.dataset.filter;
+                
+                // Apply filter
+                filterDocs(currentFilter);
+                
+                // Clear search when filter changes
+                searchInput.value = '';
+            });
+        });
+
+        // Analytics tracking
+        function trackDocumentClick(category, document) {
+            // This would integrate with your analytics service
+            console.log(`Document clicked: ${category} - ${document}`);
+        }
+
+        // Add click tracking to all documentation links
+        document.querySelectorAll('.doc-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const category = e.target.closest('.doc-category').dataset.category;
+                const document = e.target.textContent.trim();
+                trackDocumentClick(category, document);
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + K to focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            
+            // Escape to clear search and filters
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                searchInput.blur();
+                filterTags.forEach(t => t.classList.remove('active'));
+                filterTags[0].classList.add('active'); // Reset to 'All'
+                currentFilter = 'all';
+                filterDocs('all');
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate cards on load
+            const categories = document.querySelectorAll('.doc-category');
+            categories.forEach((category, index) => {
+                setTimeout(() => {
+                    category.style.opacity = '0';
+                    category.style.transform = 'translateY(20px)';
+                    category.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    
+                    setTimeout(() => {
+                        category.style.opacity = '1';
+                        category.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

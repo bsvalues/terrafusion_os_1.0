@@ -1,11 +1,14 @@
 # Terrafusion API Contract Validation Checklist
 
 ## Overview
-This checklist ensures API compatibility between the original and new Terrafusion systems, preventing integration issues during migration.
+
+This checklist ensures API compatibility between the original and new
+Terrafusion systems, preventing integration issues during migration.
 
 ## Pre-Validation Setup
 
 ### 1. API Inventory
+
 - [ ] List all REST endpoints from original backend
 - [ ] List all REST endpoints from new backend
 - [ ] Document any GraphQL endpoints
@@ -13,6 +16,7 @@ This checklist ensures API compatibility between the original and new Terrafusio
 - [ ] Note any third-party API integrations
 
 ### 2. Documentation Gathering
+
 - [ ] Original API documentation (Swagger/OpenAPI)
 - [ ] New API documentation
 - [ ] Postman/Insomnia collections
@@ -24,6 +28,7 @@ This checklist ensures API compatibility between the original and new Terrafusio
 ### For Each API Endpoint:
 
 #### 1. Endpoint Matching
+
 - [ ] URL path matches (or document mapping)
 - [ ] HTTP method matches (GET, POST, PUT, DELETE, PATCH)
 - [ ] Query parameters supported
@@ -33,6 +38,7 @@ This checklist ensures API compatibility between the original and new Terrafusio
 #### 2. Request Validation
 
 **Request Body Structure**
+
 ```json
 // Document expected format for each endpoint
 {
@@ -55,6 +61,7 @@ This checklist ensures API compatibility between the original and new Terrafusio
 #### 3. Response Validation
 
 **Response Structure**
+
 ```json
 // Expected response format
 {
@@ -77,6 +84,7 @@ This checklist ensures API compatibility between the original and new Terrafusio
 - [ ] Response headers present
 
 #### 4. Authentication & Authorization
+
 - [ ] Authentication method compatible (Bearer token, API key, OAuth)
 - [ ] Token format matches
 - [ ] Permission requirements same
@@ -86,6 +94,7 @@ This checklist ensures API compatibility between the original and new Terrafusio
 ## Validation Test Cases
 
 ### 1. Happy Path Tests
+
 ```bash
 # Example test script
 curl -X POST https://api.terrafusion.com/v1/projects \
@@ -101,6 +110,7 @@ curl -X POST https://api.terrafusion.com/v1/projects \
 - [ ] List operations include filtering/sorting
 
 ### 2. Edge Cases
+
 - [ ] Empty request bodies handled
 - [ ] Missing required fields rejected
 - [ ] Invalid data types rejected
@@ -110,15 +120,17 @@ curl -X POST https://api.terrafusion.com/v1/projects \
 - [ ] Empty arrays vs missing arrays
 
 ### 3. Error Scenarios
+
 - [ ] 400 Bad Request format
 - [ ] 401 Unauthorized response
-- [ ] 403 Forbidden response  
+- [ ] 403 Forbidden response
 - [ ] 404 Not Found response
 - [ ] 422 Validation Error details
 - [ ] 500 Server Error handling
 - [ ] Rate limiting responses
 
 ### 4. Performance Tests
+
 - [ ] Response time acceptable (<500ms for most endpoints)
 - [ ] Large dataset handling
 - [ ] Concurrent request handling
@@ -127,20 +139,21 @@ curl -X POST https://api.terrafusion.com/v1/projects \
 
 ## API Comparison Matrix
 
-| Endpoint | Original | New | Status | Notes |
-|----------|----------|-----|---------|-------|
-| POST /auth/login | ✅ | ✅ | Matched | Returns JWT token |
-| GET /api/projects | ✅ | ✅ | Matched | Pagination working |
-| POST /api/projects | ✅ | ⚠️ | Different | New requires 'category' field |
-| GET /api/costs/calculate | ✅ | ❌ | Missing | Needs implementation |
-| POST /api/ai/predict | ✅ | ❌ | Missing | AI engine integration pending |
-| DELETE /api/projects/:id | ✅ | ✅ | Matched | Soft delete implemented |
-| GET /api/reports/generate | ✅ | ⚠️ | Different | New uses async job queue |
-| WebSocket /ws/updates | ❌ | ✅ | New | Real-time updates added |
+| Endpoint                  | Original | New | Status    | Notes                         |
+| ------------------------- | -------- | --- | --------- | ----------------------------- |
+| POST /auth/login          | ✅       | ✅  | Matched   | Returns JWT token             |
+| GET /api/projects         | ✅       | ✅  | Matched   | Pagination working            |
+| POST /api/projects        | ✅       | ⚠️  | Different | New requires 'category' field |
+| GET /api/costs/calculate  | ✅       | ❌  | Missing   | Needs implementation          |
+| POST /api/ai/predict      | ✅       | ❌  | Missing   | AI engine integration pending |
+| DELETE /api/projects/:id  | ✅       | ✅  | Matched   | Soft delete implemented       |
+| GET /api/reports/generate | ✅       | ⚠️  | Different | New uses async job queue      |
+| WebSocket /ws/updates     | ❌       | ✅  | New       | Real-time updates added       |
 
 ## Breaking Changes Documentation
 
 ### Fields Renamed
+
 ```
 Original -> New
 project_name -> name
@@ -150,6 +163,7 @@ is_active -> active
 ```
 
 ### New Required Fields
+
 ```
 - category (in projects)
 - timezone (in user profile)
@@ -157,12 +171,14 @@ is_active -> active
 ```
 
 ### Deprecated Endpoints
+
 ```
 - GET /api/legacy/costs (use /api/costs instead)
 - POST /api/batch/process (use queue system)
 ```
 
 ### Response Format Changes
+
 ```
 // Original
 {
@@ -181,12 +197,14 @@ is_active -> active
 ## Migration Strategy
 
 ### 1. API Versioning
+
 - [ ] Implement API versioning (/v1, /v2)
 - [ ] Maintain backward compatibility
 - [ ] Set deprecation timeline
 - [ ] Document version differences
 
 ### 2. Frontend Adapter
+
 ```javascript
 // Example adapter pattern
 class APIAdapter {
@@ -194,7 +212,7 @@ class APIAdapter {
     const response = await newAPI.getProjects(params);
     return this.transformToOldFormat(response);
   }
-  
+
   transformToOldFormat(newData) {
     return {
       success: newData.status === 'success',
@@ -206,6 +224,7 @@ class APIAdapter {
 ```
 
 ### 3. Gradual Migration
+
 - [ ] Implement feature flags
 - [ ] Route traffic progressively
 - [ ] Monitor error rates
@@ -214,6 +233,7 @@ class APIAdapter {
 ## Validation Tools
 
 ### 1. Automated Testing
+
 ```javascript
 // Example contract test
 describe('API Contract Tests', () => {
@@ -226,12 +246,14 @@ describe('API Contract Tests', () => {
 ```
 
 ### 2. Contract Testing Tools
+
 - [ ] Pact for consumer-driven contracts
 - [ ] Postman contract tests
 - [ ] OpenAPI diff tools
 - [ ] Custom validation scripts
 
 ### 3. Monitoring
+
 - [ ] API response time monitoring
 - [ ] Error rate tracking
 - [ ] Contract violation alerts
@@ -240,6 +262,7 @@ describe('API Contract Tests', () => {
 ## Sign-off Checklist
 
 ### Technical Review
+
 - [ ] All endpoints documented
 - [ ] Breaking changes identified
 - [ ] Migration path defined
@@ -247,6 +270,7 @@ describe('API Contract Tests', () => {
 - [ ] Security review completed
 
 ### Stakeholder Approval
+
 - [ ] Frontend team sign-off
 - [ ] Mobile team sign-off (if applicable)
 - [ ] QA team validation

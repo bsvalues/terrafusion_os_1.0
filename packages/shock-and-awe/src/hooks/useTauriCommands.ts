@@ -54,7 +54,7 @@ export const useSystemMetrics = () => {
 
   useEffect(() => {
     fetchMetrics();
-    
+
     // Set up periodic updates every 5 seconds
     const interval = setInterval(fetchMetrics, 5000);
     return () => clearInterval(interval);
@@ -146,18 +146,18 @@ export const useQuantumProcessing = () => {
       setProcessing(true);
       const result = await invoke<Record<string, any>>('simulate_quantum_processing', {
         problemType,
-        complexity
+        complexity,
       });
-      
+
       const processedResult: QuantumProcessingResult = {
         problem_type: result.problem_type as string,
         complexity: result.complexity as number,
         quantum_speedup: result.quantum_speedup as number,
         solution_found: result.solution_found as boolean,
         processing_time_ms: result.processing_time_ms as number,
-        ...result
+        ...result,
       };
-      
+
       setResults(prev => [processedResult, ...prev.slice(0, 9)]); // Keep last 10 results
       setError(null);
       return processedResult;
@@ -216,7 +216,7 @@ export const useTauriEvent = <T>(eventName: string, callback: (payload: T) => vo
 
     const setupListener = async () => {
       try {
-        unlisten = await listen<T>(eventName, (event) => {
+        unlisten = await listen<T>(eventName, event => {
           callback(event.payload);
         });
       } catch (error) {
@@ -240,7 +240,10 @@ export const isTauri = (): boolean => {
 };
 
 // Utility function for safe Tauri command invocation
-export const safeTauriInvoke = async <T>(command: string, args?: Record<string, any>): Promise<T | null> => {
+export const safeTauriInvoke = async <T>(
+  command: string,
+  args?: Record<string, any>
+): Promise<T | null> => {
   if (!isTauri()) {
     console.warn(`Tauri command '${command}' called but not running in Tauri environment`);
     return null;
@@ -262,5 +265,5 @@ export default {
   useSupremeCommander,
   useTauriEvent,
   isTauri,
-  safeTauriInvoke
+  safeTauriInvoke,
 };

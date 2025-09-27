@@ -1,0 +1,281 @@
+# TerraFusion cOS Helm Chart Default Values
+# Override these values in environment-specific value files
+
+# Global configuration
+global:
+  imageRegistry: ghcr.io
+  imagePullSecrets: []
+  storageClass: ""
+  
+# Application configuration
+image:
+  registry: ghcr.io
+  repository: terrafusion/cos-api
+  tag: "2.0.0-enterprise"
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+# Deployment configuration
+replicaCount: 3
+revisionHistoryLimit: 10
+
+# Environment configuration
+environment: development
+classification: CONFIDENTIAL
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8090
+  targetPort: 8090
+  annotations: {}
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/rate-limit: "1000"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+  hosts:
+    - host: api.terrafusion.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-cos-tls
+      hosts:
+        - api.terrafusion.local
+
+# Auto-scaling configuration
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+
+# Node selection
+nodeSelector: {}
+tolerations: []
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: terrafusion-cos
+        topologyKey: kubernetes.io/hostname
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+# Health checks
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8090
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8090
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Configuration
+config:
+  # TerraFusion cOS Configuration
+  terrafusion:
+    version: "2.0.0-enterprise"
+    classification: "CONFIDENTIAL"
+    max_users: 150000
+    api_rate_limit: 1000
+    session_timeout: 28800  # 8 hours
+    
+  # Database configuration
+  database:
+    host: terrafusion-postgresql
+    port: 5432
+    name: terrafusion_cos
+    ssl_mode: require
+    connection_pool_size: 20
+    connection_pool_max: 100
+    
+  # Redis configuration
+  redis:
+    host: terrafusion-redis-master
+    port: 6379
+    db: 0
+    connection_pool_size: 20
+    
+  # AI Swarm configuration
+  ai_swarm:
+    enabled: true
+    max_agents: 50000
+    supreme_commander: claude
+    coordination_interval: 1000
+    
+  # Security configuration
+  security:
+    encryption_key_rotation_days: 90
+    session_encryption: true
+    audit_logging: true
+    compliance_validation: true
+    zero_trust_enabled: true
+    
+  # Performance configuration
+  performance:
+    cache_ttl: 3600
+    bulk_operation_limit: 10000
+    async_processing: true
+    resource_monitoring: true
+
+# External dependencies
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "secure-postgres-password"
+    database: "terrafusion_cos"
+  primary:
+    persistence:
+      enabled: true
+      size: 100Gi
+    resources:
+      requests:
+        memory: 4Gi
+        cpu: 2000m
+      limits:
+        memory: 8Gi
+        cpu: 4000m
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "secure-redis-password"
+  master:
+    persistence:
+      enabled: true
+      size: 20Gi
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 1000m
+      limits:
+        memory: 4Gi
+        cpu: 2000m
+
+elasticsearch:
+  enabled: true
+  replicas: 3
+  minimumMasterNodes: 2
+  resources:
+    requests:
+      cpu: 2000m
+      memory: 8Gi
+    limits:
+      cpu: 4000m
+      memory: 16Gi
+  volumeClaimTemplate:
+    accessModes: ["ReadWriteOnce"]
+    resources:
+      requests:
+        storage: 100Gi
+
+# Monitoring
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+    scrapeInterval: 30s
+  grafana:
+    enabled: true
+  alertmanager:
+    enabled: true
+
+# Logging
+logging:
+  enabled: true
+  level: INFO
+  retention_days: 90
+  structured: true
+  
+# Network Policies
+networkPolicy:
+  enabled: true
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: ingress-nginx
+  egress:
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            name: terrafusion-database
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            name: terrafusion-monitoring
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod annotations
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8090"
+  prometheus.io/path: "/metrics"
+
+# Labels
+labels:
+  app.kubernetes.io/name: terrafusion-cos
+  app.kubernetes.io/instance: terrafusion-cos
+  app.kubernetes.io/version: "2.0.0-enterprise"
+  app.kubernetes.io/component: api-server
+  app.kubernetes.io/part-of: terrafusion-cos
+  app.kubernetes.io/managed-by: helm

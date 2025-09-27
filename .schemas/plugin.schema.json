@@ -90,8 +90,8 @@
           "description": "The algorithm used for the signature (e.g., HMAC-SHA256)."
         },
         "signature_value": {
-            "type": ["string", "null"],
-            "description": "The signature hash of the manifest content."
+          "type": ["string", "null"],
+          "description": "The signature hash of the manifest content."
         },
         "signed_by": {
           "type": "string",

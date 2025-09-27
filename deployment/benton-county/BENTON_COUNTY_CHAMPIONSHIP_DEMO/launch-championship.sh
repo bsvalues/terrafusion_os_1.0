@@ -9,8 +9,8 @@ echo "🏆 Starting Benton County Championship Demo..."
 cd "$(dirname "$0")"
 
 # Check if demo server is already running
-if curl -s http://localhost:3000/api/demo/health > /dev/null 2>&1; then
-    echo "✅ Demo server already running on port 3000"
+if curl -s http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health > /dev/null 2>&1; then
+    echo "✅ Demo server already running on port \${{TF_FRONTEND_PORT:-3000}}"
 else
     echo "🚀 Starting demo server..."
     node demo-server.js &
@@ -19,8 +19,8 @@ else
     # Wait for server to be ready
     echo "⏳ Waiting for demo server to start..."
     for i in {1..30}; do
-        if curl -s http://localhost:3000/api/demo/health > /dev/null 2>&1; then
-            echo "✅ Demo server ready on port 3000"
+        if curl -s http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health > /dev/null 2>&1; then
+            echo "✅ Demo server ready on port \${{TF_FRONTEND_PORT:-3000}}"
             break
         fi
         sleep 1
@@ -49,20 +49,20 @@ else
         echo "❌ Failed to build launcher"
         echo "📖 Opening demo in browser instead..."
         if command -v xdg-open > /dev/null; then
-            xdg-open http://localhost:3000
+            xdg-open http://localhost:\${{TF_FRONTEND_PORT:-3000}}
         elif command -v open > /dev/null; then
-            open http://localhost:3000
+            open http://localhost:\${{TF_FRONTEND_PORT:-3000}}
         else
-            echo "🌐 Open http://localhost:3000 in your browser"
+            echo "🌐 Open http://localhost:\${{TF_FRONTEND_PORT:-3000}} in your browser"
         fi
     fi
 fi
 
 echo "🏆 Championship Demo Ready!"
-echo "📊 Demo URL: http://localhost:3000"
+echo "📊 Demo URL: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
 echo "📈 API Endpoints:"
-echo "   - Overview: http://localhost:3000/api/demo/overview"
-echo "   - Properties: http://localhost:3000/api/demo/properties"  
-echo "   - Scenarios: http://localhost:3000/api/demo/scenarios"
-echo "   - Marketplace: http://localhost:3000/api/demo/marketplace"
-echo "   - Monitoring: http://localhost:3000/api/monitoring/performance"
+echo "   - Overview: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/overview"
+echo "   - Properties: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/properties"  
+echo "   - Scenarios: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/scenarios"
+echo "   - Marketplace: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/marketplace"
+echo "   - Monitoring: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/performance"

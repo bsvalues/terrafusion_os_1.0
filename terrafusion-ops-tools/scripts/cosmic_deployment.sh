@@ -1526,19 +1526,19 @@ EOF
     
     # Start simple HTTP server for dashboard
     if command -v python3 &> /dev/null; then
-        log_info "Starting dashboard server on port 8888..."
+        log_info "Starting dashboard server on port \${{TF_PORT_8888:-8888}}..."
         cd "$PROJECT_ROOT"
         python3 -m http.server 8888 > /dev/null 2>&1 &
         local server_pid=$!
         echo "$server_pid" > "$PROJECT_ROOT/.dashboard_server.pid"
         
-        print_success "Dashboard server started at http://localhost:8888/cosmic_dashboard.html"
+        print_success "Dashboard server started at http://localhost:\${{TF_PORT_8888:-8888}}/cosmic_dashboard.html"
         
         # Try to open dashboard in browser
         if command -v open &> /dev/null; then
-            open "http://localhost:8888/cosmic_dashboard.html" 2>/dev/null &
+            open "http://localhost:\${{TF_PORT_8888:-8888}}/cosmic_dashboard.html" 2>/dev/null &
         elif command -v xdg-open &> /dev/null; then
-            xdg-open "http://localhost:8888/cosmic_dashboard.html" 2>/dev/null &
+            xdg-open "http://localhost:\${{TF_PORT_8888:-8888}}/cosmic_dashboard.html" 2>/dev/null &
         fi
     else
         print_warning "Python3 not available - dashboard generated but server not started"
@@ -1775,7 +1775,7 @@ main() {
     echo "   🧪 Test Coverage: $(jq '.metrics.test_coverage' "$COSMIC_STATUS_FILE")%"
     echo ""
     echo "🌐 Access Points:"
-    echo "   📊 Cosmic Dashboard: http://localhost:8888/cosmic_dashboard.html"
+    echo "   📊 Cosmic Dashboard: http://localhost:\${{TF_PORT_8888:-8888}}/cosmic_dashboard.html"
     echo "   📋 Status File: $COSMIC_STATUS_FILE"
     echo "   📄 Audit Report: $AUDIT_REPORT_FILE"
     echo "   📝 Deployment Log: $LOG_FILE"

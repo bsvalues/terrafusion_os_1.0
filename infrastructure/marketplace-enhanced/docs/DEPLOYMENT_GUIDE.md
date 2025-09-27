@@ -1,17 +1,23 @@
 # Terrafusion Government Marketplace - Deployment Guide
 
 ## Overview
-This guide provides step-by-step instructions for deploying the Terrafusion Government Marketplace in production environments. The system is designed for government compliance, security, and scalability.
+
+This guide provides step-by-step instructions for deploying the Terrafusion
+Government Marketplace in production environments. The system is designed for
+government compliance, security, and scalability.
 
 ## System Architecture
 
 ### Frontend Components
-- **React/TypeScript Application**: Modern government UI with Terrafusion 2024 branding
+
+- **React/TypeScript Application**: Modern government UI with Terrafusion 2024
+  branding
 - **Government Dashboard**: Multi-tab interface for county operations
 - **Plugin Marketplace**: Government-specific software catalog
 - **AI Assistant**: Multi-persona intelligent automation system
 
 ### Backend Services
+
 - **Government API Service**: County and plugin management
 - **Authentication Service**: Role-based access control with MFA
 - **Performance Service**: Caching and optimization
@@ -19,6 +25,7 @@ This guide provides step-by-step instructions for deploying the Terrafusion Gove
 - **AI Assistant Service**: Intelligent automation workflows
 
 ### Security Features
+
 - Government-grade authentication and authorization
 - Role-based access control (7 user roles)
 - Multi-factor authentication support
@@ -28,6 +35,7 @@ This guide provides step-by-step instructions for deploying the Terrafusion Gove
 ## Pre-Deployment Requirements
 
 ### Infrastructure Requirements
+
 ```yaml
 Minimum System Requirements:
   CPU: 4 cores, 2.4GHz
@@ -46,6 +54,7 @@ Recommended Production Setup:
 ```
 
 ### Software Dependencies
+
 ```json
 {
   "node": ">=18.0.0",
@@ -57,6 +66,7 @@ Recommended Production Setup:
 ```
 
 ### Security Requirements
+
 - SSL/TLS certificates (government-approved CA)
 - Firewall configuration for required ports
 - Network segmentation for government compliance
@@ -68,6 +78,7 @@ Recommended Production Setup:
 ### 1. Environment Preparation
 
 #### 1.1 Server Setup
+
 ```bash
 # Update system packages
 sudo apt update && sudo apt upgrade -y
@@ -88,6 +99,7 @@ sudo apt install nginx -y
 ```
 
 #### 1.2 Database Setup
+
 ```sql
 -- PostgreSQL setup (recommended)
 CREATE DATABASE terrafusion_marketplace;
@@ -146,6 +158,7 @@ CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
 ### 2. Application Deployment
 
 #### 2.1 Code Deployment
+
 ```bash
 # Create application directory
 sudo mkdir -p /opt/terrafusion
@@ -172,17 +185,18 @@ sudo cp -r dist/* /var/www/terrafusion/
 ```
 
 #### 2.2 Environment Configuration
+
 ```bash
 # Create environment configuration
 cat > /opt/terrafusion/.env << EOF
 # Application Configuration
 NODE_ENV=production
-PORT=3010
+PORT=\${{TF_FRONTEND_3010_PORT:-3010}}
 HOST=0.0.0.0
 
 # Database Configuration
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=\${{TF_FRONTEND_3010_PORT:-3010}}
 DB_NAME=terrafusion_marketplace
 DB_USER=tf_app
 DB_PASSWORD=secure_password_here
@@ -228,6 +242,7 @@ chmod 600 /opt/terrafusion/.env
 ```
 
 #### 2.3 Process Management
+
 ```bash
 # Create PM2 ecosystem file
 cat > /opt/terrafusion/ecosystem.config.js << EOF
@@ -266,6 +281,7 @@ pm2 startup
 ### 3. Web Server Configuration
 
 #### 3.1 Nginx Configuration
+
 ```nginx
 # /etc/nginx/sites-available/terrafusion
 server {
@@ -311,7 +327,7 @@ server {
     }
 
     location @proxy {
-        proxy_pass http://127.0.0.1:3010;
+        proxy_pass http://127.0.0.1:\${{TF_FRONTEND_3010_PORT:-3010}};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -326,7 +342,7 @@ server {
     # API Rate Limiting
     location /api/ {
         limit_req zone=api burst=20 nodelay;
-        proxy_pass http://127.0.0.1:3010;
+        proxy_pass http://127.0.0.1:\${{TF_FRONTEND_3010_PORT:-3010}};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -336,7 +352,7 @@ server {
     # Login Rate Limiting
     location /api/auth/login {
         limit_req zone=login burst=5 nodelay;
-        proxy_pass http://127.0.0.1:3010;
+        proxy_pass http://127.0.0.1:\${{TF_FRONTEND_3010_PORT:-3010}};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -353,7 +369,7 @@ server {
     # Health Check
     location /health {
         access_log off;
-        proxy_pass http://127.0.0.1:3010/health;
+        proxy_pass http://127.0.0.1:\${{TF_FRONTEND_3010_PORT:-3010}}/health;
     }
 
     # Logging
@@ -363,6 +379,7 @@ server {
 ```
 
 #### 3.2 Enable Nginx Configuration
+
 ```bash
 # Enable site
 sudo ln -s /etc/nginx/sites-available/terrafusion /etc/nginx/sites-enabled/
@@ -377,6 +394,7 @@ sudo systemctl reload nginx
 ### 4. Security Hardening
 
 #### 4.1 Firewall Configuration
+
 ```bash
 # Configure UFW firewall
 sudo ufw default deny incoming
@@ -387,10 +405,11 @@ sudo ufw allow 443/tcp
 sudo ufw enable
 
 # For database server (if separate)
-sudo ufw allow from your_app_server_ip to any port 5432
+sudo ufw allow from your_app_server_ip to any port \${{TF_POSTGRES_PORT:-5432}}
 ```
 
 #### 4.2 SSL Certificate Setup
+
 ```bash
 # Using Let's Encrypt (for development/testing)
 sudo apt install certbot python3-certbot-nginx
@@ -405,6 +424,7 @@ sudo chmod 600 /etc/ssl/private/your-private.key
 ```
 
 #### 4.3 System Monitoring
+
 ```bash
 # Install monitoring tools
 sudo apt install htop iotop nethogs fail2ban
@@ -433,6 +453,7 @@ EOF
 ### 5. Backup and Recovery
 
 #### 5.1 Database Backup
+
 ```bash
 # Create backup script
 sudo cat > /opt/terrafusion/backup-db.sh << 'EOF'
@@ -459,6 +480,7 @@ chmod +x /opt/terrafusion/backup-db.sh
 ```
 
 #### 5.2 Application Backup
+
 ```bash
 # Create application backup script
 sudo cat > /opt/terrafusion/backup-app.sh << 'EOF'
@@ -488,6 +510,7 @@ chmod +x /opt/terrafusion/backup-app.sh
 ### 6. Health Monitoring
 
 #### 6.1 Application Health Checks
+
 ```bash
 # Create health check script
 cat > /opt/terrafusion/health-check.sh << 'EOF'
@@ -514,6 +537,7 @@ chmod +x /opt/terrafusion/health-check.sh
 ```
 
 #### 6.2 System Monitoring
+
 ```bash
 # Install and configure system monitoring
 sudo apt install prometheus-node-exporter
@@ -548,6 +572,7 @@ chmod +x /opt/terrafusion/metrics.sh
 ## Post-Deployment Verification
 
 ### 1. Functional Testing
+
 ```bash
 # Test application endpoints
 curl -k https://your-domain.gov/health
@@ -559,6 +584,7 @@ curl -k https://your-domain.gov/api/plugins
 ```
 
 ### 2. Performance Testing
+
 ```bash
 # Install Apache Bench for load testing
 sudo apt install apache2-utils
@@ -572,6 +598,7 @@ iotop
 ```
 
 ### 3. Security Verification
+
 ```bash
 # SSL/TLS testing
 openssl s_client -connect your-domain.gov:443 -servername your-domain.gov
@@ -586,24 +613,28 @@ nmap -sS -O your-domain.gov
 ## Maintenance Procedures
 
 ### Daily Tasks
+
 - Monitor application logs
 - Check system resources
 - Verify backup completion
 - Review security alerts
 
 ### Weekly Tasks
+
 - Update system packages
 - Review performance metrics
 - Analyze user activity logs
 - Test backup restoration
 
 ### Monthly Tasks
+
 - Security vulnerability scanning
 - Performance optimization review
 - Capacity planning assessment
 - Documentation updates
 
 ### Quarterly Tasks
+
 - Security audit and penetration testing
 - Disaster recovery testing
 - User access review
@@ -614,6 +645,7 @@ nmap -sS -O your-domain.gov
 ### Common Issues
 
 #### Application Won't Start
+
 ```bash
 # Check PM2 status
 pm2 status
@@ -630,6 +662,7 @@ pm2 restart terrafusion-marketplace
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Check PostgreSQL status
 sudo systemctl status postgresql
@@ -642,6 +675,7 @@ sudo tail -f /var/log/postgresql/postgresql-*.log
 ```
 
 #### High Memory Usage
+
 ```bash
 # Check memory usage
 free -h
@@ -656,6 +690,7 @@ pm2 restart terrafusion-marketplace
 ### Emergency Procedures
 
 #### Complete System Failure
+
 1. Check system status and logs
 2. Attempt service restart
 3. Restore from backup if necessary
@@ -663,6 +698,7 @@ pm2 restart terrafusion-marketplace
 5. Document incident
 
 #### Security Breach
+
 1. Isolate affected systems
 2. Preserve evidence
 3. Notify security team
@@ -672,17 +708,20 @@ pm2 restart terrafusion-marketplace
 ## Support and Contacts
 
 ### Technical Support
+
 - **Development Team**: Terrafusion Engineering
 - **System Administration**: IT Operations Team
 - **Security Team**: Information Security Office
 - **Database Administration**: Database Team
 
 ### Emergency Contacts
+
 - **24/7 Support**: [Emergency phone number]
 - **Security Incidents**: [Security team contact]
 - **System Outages**: [Operations team contact]
 
 ### Documentation
+
 - **User Guide**: `/docs/USER_TESTING_GUIDE.md`
 - **API Documentation**: `/docs/API_REFERENCE.md`
 - **Security Policies**: `/docs/SECURITY_POLICIES.md`
@@ -692,6 +731,7 @@ pm2 restart terrafusion-marketplace
 
 **Document Version**: 1.0  
 **Last Updated**: July 31, 2025  
-**Next Review**: August 31, 2025  
+**Next Review**: August 31, 2025
 
-This deployment guide ensures secure, scalable, and compliant deployment of the Terrafusion Government Marketplace in production environments.
+This deployment guide ensures secure, scalable, and compliant deployment of the
+Terrafusion Government Marketplace in production environments.

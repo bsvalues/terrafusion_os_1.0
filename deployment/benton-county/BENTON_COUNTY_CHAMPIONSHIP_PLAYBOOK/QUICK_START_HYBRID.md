@@ -5,6 +5,7 @@
 ## 🏃 IMMEDIATE ACTION PLAN
 
 ### 1️⃣ First Down - Local Ollama Setup (2 min)
+
 ```bash
 # Install Ollama for sensitive data
 curl -fsSL https://ollama.ai/install.sh | sh
@@ -20,6 +21,7 @@ ollama run llama2:7b "Hello, test query"
 ```
 
 ### 2️⃣ Second Down - Cloud API Setup (1 min)
+
 ```bash
 # Set up environment variables
 export OPENAI_API_KEY="your-openai-key"
@@ -35,26 +37,28 @@ EOF
 ```
 
 ### 3️⃣ Third Down - Test Hybrid Router (1 min)
+
 ```bash
 # Run the demonstration
 python3 hybrid_llm_router.py
 ```
 
 ### 4️⃣ Fourth Down - Deploy to Production (1 min)
+
 ```python
 # Quick integration example
 from hybrid_llm_router import ChampionshipHybridRouter, QueryContext
 
 async def process_benton_query(user_query: str):
     router = ChampionshipHybridRouter()
-    
+
     context = QueryContext(
         query=user_query,
         user_id="benton_user",
         data_type="property_query",
         metadata={"source": "web_interface"}
     )
-    
+
     result = await router.route_query(context)
     return result
 ```
@@ -64,6 +68,7 @@ async def process_benton_query(user_query: str):
 ## 🎯 KEY ROUTING RULES
 
 ### 🔴 ALWAYS LOCAL (Ollama)
+
 - Owner names, SSNs, Tax IDs
 - Specific property addresses
 - Payment histories
@@ -71,11 +76,13 @@ async def process_benton_query(user_query: str):
 - Any query with PII
 
 ### 🟡 ANONYMIZE FIRST (Then Cloud)
+
 - Property comparisons with addresses
 - Market analysis with locations
 - Trend calculations with identifiers
 
 ### 🟢 STRAIGHT TO CLOUD
+
 - ROI calculations
 - Mortgage calculators
 - General market trends
@@ -106,22 +113,24 @@ async def process_benton_query(user_query: str):
 ## 🏆 QUICK WINS
 
 ### Immediate Benefits
+
 1. **Security**: PII never leaves your servers
 2. **Cost**: 70% reduction vs all-local
 3. **Speed**: 65% faster calculations
 4. **Scale**: Handle 10x more queries
 
 ### Performance Metrics
+
 ```yaml
 local_ollama:
-  queries: "Sensitive data only (~30%)"
-  cost: "$0 after hardware"
-  speed: "~500ms"
-  
+  queries: 'Sensitive data only (~30%)'
+  cost: '$0 after hardware'
+  speed: '~500ms'
+
 cloud_llms:
-  queries: "Calculations & general (~70%)"
-  cost: "$0.01-0.03 per query"
-  speed: "~200ms"
+  queries: 'Calculations & general (~70%)'
+  cost: '$0.01-0.03 per query'
+  speed: '~200ms'
 ```
 
 ---
@@ -131,6 +140,7 @@ cloud_llms:
 ### Common Issues
 
 **Ollama Not Starting**
+
 ```bash
 # Check if port is in use
 lsof -i :11434
@@ -141,6 +151,7 @@ ollama serve
 ```
 
 **Cloud API Errors**
+
 ```bash
 # Verify API keys
 echo $OPENAI_API_KEY
@@ -150,6 +161,7 @@ curl https://api.openai.com/v1/models \
 ```
 
 **Routing Errors**
+
 ```python
 # Enable debug logging
 import logging
@@ -161,6 +173,7 @@ logging.basicConfig(level=logging.DEBUG)
 ## 🎮 ADVANCED CONFIGURATION
 
 ### Custom Sensitivity Rules
+
 ```python
 # Add custom patterns
 router.sensitivity_detector.sensitive_patterns.update({
@@ -170,6 +183,7 @@ router.sensitivity_detector.sensitive_patterns.update({
 ```
 
 ### Provider Selection
+
 ```python
 # Configure provider preferences
 router.cloud_client.provider_weights = {
@@ -184,6 +198,7 @@ router.cloud_client.provider_weights = {
 ## 📈 MONITORING
 
 ### Quick Dashboard
+
 ```python
 # Get routing statistics
 stats = router.get_game_stats()
@@ -192,6 +207,7 @@ print(f"Local vs Cloud: {stats['local_percentage']} / {stats['cloud_percentage']
 ```
 
 ### Health Check
+
 ```bash
 # Check system status
 curl http://localhost:11434/api/tags  # Ollama
@@ -212,4 +228,4 @@ curl https://api.openai.com/v1/models  # OpenAI
 
 > "Championship teams use the right tool for each play" - The Hybrid Dynasty
 
-*Ready to dominate with hybrid architecture!*
+_Ready to dominate with hybrid architecture!_

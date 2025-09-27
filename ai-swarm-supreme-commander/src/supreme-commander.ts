@@ -22,7 +22,12 @@ interface AIAgent {
 
 interface Task {
   id: string;
-  type: 'CODE_COMPLETION' | 'CODE_GENERATION' | 'COMPLIANCE_CHECK' | 'ARCHITECTURE_REVIEW' | 'DOCUMENTATION';
+  type:
+    | 'CODE_COMPLETION'
+    | 'CODE_GENERATION'
+    | 'COMPLIANCE_CHECK'
+    | 'ARCHITECTURE_REVIEW'
+    | 'DOCUMENTATION';
   priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   context: TaskContext;
   requirements: string[];
@@ -114,20 +119,20 @@ class SupremeCommanderClaude {
     this.app = express();
     this.server = createServer(this.app);
     this.io = new Server(this.server, {
-      cors: { origin: "*", methods: ["GET", "POST"] }
+      cors: { origin: '*', methods: ['GET', 'POST'] },
     });
-    
+
     this.redis = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
       retryDelayOnFailover: 100,
-      maxRetriesPerRequest: 3
+      maxRetriesPerRequest: 3,
     });
 
     if (process.env.OPENAI_API_KEY) {
       this.openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
+        apiKey: process.env.OPENAI_API_KEY,
       });
     }
 
@@ -149,59 +154,63 @@ class SupremeCommanderClaude {
         agents: {
           total: this.agents.size,
           active: Array.from(this.agents.values()).filter(a => a.status === 'ACTIVE').length,
-          processing: Array.from(this.agents.values()).filter(a => a.status === 'PROCESSING').length
+          processing: Array.from(this.agents.values()).filter(a => a.status === 'PROCESSING')
+            .length,
         },
         taskQueue: this.taskQueue.length,
-        activeTasks: this.activeTasks.size
+        activeTasks: this.activeTasks.size,
       });
     });
 
     // AI Code Completion Endpoint
     this.app.post('/api/ai/completion', async (req, res) => {
       try {
-        const completionRequest = z.object({
-          code: z.string(),
-          language: z.string(),
-          context: z.string().optional(),
-          projectType: z.string().optional(),
-          aiAgents: z.number().optional(),
-          governmentCompliance: z.boolean().optional(),
-          securityClearance: z.string().optional()
-        }).parse(req.body);
+        const completionRequest = z
+          .object({
+            code: z.string(),
+            language: z.string(),
+            context: z.string().optional(),
+            projectType: z.string().optional(),
+            aiAgents: z.number().optional(),
+            governmentCompliance: z.boolean().optional(),
+            securityClearance: z.string().optional(),
+          })
+          .parse(req.body);
 
         const task: Task = {
           id: this.generateTaskId(),
           type: 'CODE_COMPLETION',
           priority: 'HIGH',
           context: {
-            projectType: completionRequest.projectType as any || 'government-module',
+            projectType: (completionRequest.projectType as any) || 'government-module',
             language: completionRequest.language,
             code: completionRequest.code,
             userIntent: completionRequest.context || 'Code completion assistance',
-            complianceLevel: (completionRequest.securityClearance as any) || 'GREEN'
+            complianceLevel: (completionRequest.securityClearance as any) || 'GREEN',
           },
           requirements: ['FAST_RESPONSE', 'HIGH_CONFIDENCE', 'GOVERNMENT_COMPLIANT'],
-          governmentStandards: completionRequest.governmentCompliance ? ['FISMA', 'NIST', 'Section508'] : [],
+          governmentStandards: completionRequest.governmentCompliance
+            ? ['FISMA', 'NIST', 'Section508']
+            : [],
           assignedAgents: [],
-          status: 'QUEUED'
+          status: 'QUEUED',
         };
 
         const result = await this.executeTask(task);
-        
+
         res.json({
           suggestions: result.data.suggestions || [],
           confidence: result.confidence,
           processingTime: result.executionTime,
           agentContributions: result.agentContributions.length,
-          auditTrail: result.auditTrail
+          auditTrail: result.auditTrail,
         });
-
       } catch (error) {
         console.error('AI Completion Error:', error);
         res.status(500).json({
           error: 'AI completion failed',
           message: error instanceof Error ? error.message : 'Unknown error',
-          fallback: this.getFallbackCompletions(req.body.language)
+          fallback: this.getFallbackCompletions(req.body.language),
         });
       }
     });
@@ -209,17 +218,19 @@ class SupremeCommanderClaude {
     // AI Code Generation
     this.app.post('/api/ai/generate', async (req, res) => {
       try {
-        const generateRequest = z.object({
-          templateType: z.string(),
-          language: z.string(),
-          options: z.object({
-            complianceLevel: z.enum(['RED', 'YELLOW', 'GREEN']),
-            auditRequired: z.boolean(),
-            securityFeatures: z.array(z.string())
-          }),
-          governmentGrade: z.boolean().optional(),
-          aiSwarmOptimization: z.boolean().optional()
-        }).parse(req.body);
+        const generateRequest = z
+          .object({
+            templateType: z.string(),
+            language: z.string(),
+            options: z.object({
+              complianceLevel: z.enum(['RED', 'YELLOW', 'GREEN']),
+              auditRequired: z.boolean(),
+              securityFeatures: z.array(z.string()),
+            }),
+            governmentGrade: z.boolean().optional(),
+            aiSwarmOptimization: z.boolean().optional(),
+          })
+          .parse(req.body);
 
         const task: Task = {
           id: this.generateTaskId(),
@@ -229,27 +240,26 @@ class SupremeCommanderClaude {
             projectType: 'government-module',
             language: generateRequest.language,
             userIntent: `Generate ${generateRequest.templateType} template`,
-            complianceLevel: generateRequest.options.complianceLevel
+            complianceLevel: generateRequest.options.complianceLevel,
           },
           requirements: [
             'GOVERNMENT_COMPLIANT',
             'AUDIT_TRAIL',
             'SECURITY_FEATURES',
-            'PRODUCTION_READY'
+            'PRODUCTION_READY',
           ],
           governmentStandards: ['FISMA', 'NIST', 'Section508'],
           assignedAgents: [],
-          status: 'QUEUED'
+          status: 'QUEUED',
         };
 
         const result = await this.executeTask(task);
         res.json(result.data);
-
       } catch (error) {
         console.error('AI Generation Error:', error);
         res.status(500).json({
           error: 'AI generation failed',
-          message: error instanceof Error ? error.message : 'Unknown error'
+          message: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     });
@@ -257,15 +267,17 @@ class SupremeCommanderClaude {
     // Compliance Validation
     this.app.post('/api/compliance/validate', async (req, res) => {
       try {
-        const validationRequest = z.object({
-          code: z.string(),
-          language: z.string(),
-          projectType: z.string(),
-          standards: z.array(z.string()),
-          governmentGrade: z.boolean().optional(),
-          realTimeValidation: z.boolean().optional(),
-          auditRequired: z.boolean().optional()
-        }).parse(req.body);
+        const validationRequest = z
+          .object({
+            code: z.string(),
+            language: z.string(),
+            projectType: z.string(),
+            standards: z.array(z.string()),
+            governmentGrade: z.boolean().optional(),
+            realTimeValidation: z.boolean().optional(),
+            auditRequired: z.boolean().optional(),
+          })
+          .parse(req.body);
 
         const task: Task = {
           id: this.generateTaskId(),
@@ -276,22 +288,21 @@ class SupremeCommanderClaude {
             language: validationRequest.language,
             code: validationRequest.code,
             userIntent: 'Compliance validation',
-            complianceLevel: 'GREEN'
+            complianceLevel: 'GREEN',
           },
           requirements: ['THOROUGH_ANALYSIS', 'GOVERNMENT_STANDARDS', 'DETAILED_REPORT'],
           governmentStandards: validationRequest.standards,
           assignedAgents: [],
-          status: 'QUEUED'
+          status: 'QUEUED',
         };
 
         const result = await this.executeTask(task);
         res.json(result.data);
-
       } catch (error) {
         console.error('Compliance Validation Error:', error);
         res.status(500).json({
           error: 'Compliance validation failed',
-          message: error instanceof Error ? error.message : 'Unknown error'
+          message: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     });
@@ -304,7 +315,7 @@ class SupremeCommanderClaude {
         specialization: agent.specialization,
         status: agent.status,
         performanceMetrics: agent.performanceMetrics,
-        securityClearance: agent.securityClearance
+        securityClearance: agent.securityClearance,
       }));
 
       res.json({
@@ -313,8 +324,8 @@ class SupremeCommanderClaude {
         distribution: {
           supremeCommander: agentSummary.filter(a => a.type === 'SUPREME_COMMANDER').length,
           fieldGenerals: agentSummary.filter(a => a.type === 'FIELD_GENERAL').length,
-          operationalAgents: agentSummary.filter(a => a.type === 'OPERATIONAL_AGENT').length
-        }
+          operationalAgents: agentSummary.filter(a => a.type === 'OPERATIONAL_AGENT').length,
+        },
       });
     });
 
@@ -323,16 +334,16 @@ class SupremeCommanderClaude {
       res.json({
         queuedTasks: this.taskQueue.length,
         activeTasks: this.activeTasks.size,
-        recentTasks: Array.from(this.activeTasks.values()).slice(0, 10)
+        recentTasks: Array.from(this.activeTasks.values()).slice(0, 10),
       });
     });
   }
 
   private setupWebSocket(): void {
-    this.io.on('connection', (socket) => {
+    this.io.on('connection', socket => {
       console.log(`IDE Client connected: ${socket.id}`);
 
-      socket.on('request-completion', async (data) => {
+      socket.on('request-completion', async data => {
         try {
           const task: Task = {
             id: this.generateTaskId(),
@@ -343,20 +354,19 @@ class SupremeCommanderClaude {
               language: data.language,
               code: data.code,
               userIntent: data.context || 'Real-time code completion',
-              complianceLevel: data.complianceLevel || 'GREEN'
+              complianceLevel: data.complianceLevel || 'GREEN',
             },
             requirements: ['REAL_TIME', 'HIGH_CONFIDENCE'],
             assignedAgents: [],
-            status: 'QUEUED'
+            status: 'QUEUED',
           };
 
           const result = await this.executeTask(task);
           socket.emit('completion-result', result.data);
-
         } catch (error) {
           socket.emit('completion-error', {
             error: 'Real-time completion failed',
-            message: error instanceof Error ? error.message : 'Unknown error'
+            message: error instanceof Error ? error.message : 'Unknown error',
           });
         }
       });
@@ -371,12 +381,12 @@ class SupremeCommanderClaude {
     console.log('Initializing AI Agent Swarm...');
 
     // Supreme Commander (1 - Master AI)
-    this.createAgent('SC-001', 'SUPREME_COMMANDER', [
-      'STRATEGIC_PLANNING',
-      'TASK_ORCHESTRATION',
-      'QUALITY_ASSURANCE',
-      'GOVERNMENT_COMPLIANCE'
-    ], 'RED');
+    this.createAgent(
+      'SC-001',
+      'SUPREME_COMMANDER',
+      ['STRATEGIC_PLANNING', 'TASK_ORCHESTRATION', 'QUALITY_ASSURANCE', 'GOVERNMENT_COMPLIANCE'],
+      'RED'
+    );
 
     // Field Generals (7 - Domain Specialists)
     const fieldGeneralDomains = [
@@ -386,17 +396,22 @@ class SupremeCommanderClaude {
       'AI_OPTIMIZATION',
       'SECURITY_COMPLIANCE',
       'GOVERNMENT_REGULATIONS',
-      'PERFORMANCE_OPTIMIZATION'
+      'PERFORMANCE_OPTIMIZATION',
     ];
 
     fieldGeneralDomains.forEach((domain, index) => {
-      this.createAgent(`FG-${String(index + 1).padStart(3, '0')}`, 'FIELD_GENERAL', [domain], 'YELLOW');
+      this.createAgent(
+        `FG-${String(index + 1).padStart(3, '0')}`,
+        'FIELD_GENERAL',
+        [domain],
+        'YELLOW'
+      );
     });
 
     // Operational Agents (49,992 total capacity - 1,000 currently deployed in Phase 1)
     const operationalSpecializations = [
       'TYPESCRIPT_EXPERT',
-      'CSHARP_SPECIALIST', 
+      'CSHARP_SPECIALIST',
       'RUST_DEVELOPER',
       'PYTHON_AI_ENGINEER',
       'REACT_SPECIALIST',
@@ -411,30 +426,42 @@ class SupremeCommanderClaude {
       'BLOCKCHAIN_ENGINEER',
       'IOT_SPECIALIST',
       'EDGE_COMPUTING_AGENT',
-      'GOVERNMENT_INTEGRATION_SPECIALIST'
+      'GOVERNMENT_INTEGRATION_SPECIALIST',
     ];
 
     // Phase 1: Deploy first 1,000 agents (currently operational)
     for (let i = 1; i <= 1000; i++) {
       const specialization = operationalSpecializations[i % operationalSpecializations.length];
       const securityClearance = i <= 100 ? 'YELLOW' : 'GREEN';
-      this.createAgent(`OA-${String(i).padStart(5, '0')}`, 'OPERATIONAL_AGENT', [specialization], securityClearance);
+      this.createAgent(
+        `OA-${String(i).padStart(5, '0')}`,
+        'OPERATIONAL_AGENT',
+        [specialization],
+        securityClearance
+      );
     }
 
     // Initialize agent pool metadata for future expansions (Phases 2-5)
     await this.redis.set('swarm:total_capacity', '50000');
     await this.redis.set('swarm:current_phase', '1');
-    await this.redis.set('swarm:expansion_plan', JSON.stringify({
-      phase1: { agents: 1008, status: 'OPERATIONAL', deployment_date: '2025-08-01' },
-      phase2: { agents: 5000, status: 'SCHEDULED', deployment_date: '2026-02-01' },
-      phase3: { agents: 15000, status: 'PLANNED', deployment_date: '2026-08-01' },
-      phase4: { agents: 35000, status: 'PLANNED', deployment_date: '2027-02-01' },
-      phase5: { agents: 50000, status: 'TARGET', deployment_date: '2027-08-01' }
-    }));
+    await this.redis.set(
+      'swarm:expansion_plan',
+      JSON.stringify({
+        phase1: { agents: 1008, status: 'OPERATIONAL', deployment_date: '2025-08-01' },
+        phase2: { agents: 5000, status: 'SCHEDULED', deployment_date: '2026-02-01' },
+        phase3: { agents: 15000, status: 'PLANNED', deployment_date: '2026-08-01' },
+        phase4: { agents: 35000, status: 'PLANNED', deployment_date: '2027-02-01' },
+        phase5: { agents: 50000, status: 'TARGET', deployment_date: '2027-08-01' },
+      })
+    );
 
-    console.log(`🚀 TerraFusion AI Swarm Phase 1 Initialized: ${this.agents.size} agents operational`);
+    console.log(
+      `🚀 TerraFusion AI Swarm Phase 1 Initialized: ${this.agents.size} agents operational`
+    );
     console.log(`📈 Total Swarm Capacity: 50,000 agents across 5 deployment phases`);
-    console.log(`🎯 Current Phase: 1/5 (${((this.agents.size / 50000) * 100).toFixed(1)}% of total capacity)`);
+    console.log(
+      `🎯 Current Phase: 1/5 (${((this.agents.size / 50000) * 100).toFixed(1)}% of total capacity)`
+    );
     await this.redis.set('swarm:initialized', new Date().toISOString());
   }
 
@@ -454,7 +481,7 @@ class SupremeCommanderClaude {
         proficiency: Math.floor(Math.random() * 30) + 70, // 70-100% proficiency
         languages: this.getLanguagesForSpecialization(spec),
         frameworks: this.getFrameworksForSpecialization(spec),
-        governmentStandards: ['FISMA', 'NIST', 'Section508']
+        governmentStandards: ['FISMA', 'NIST', 'Section508'],
       })),
       securityClearance,
       performanceMetrics: {
@@ -462,8 +489,8 @@ class SupremeCommanderClaude {
         averageResponseTime: 0,
         successRate: 100,
         confidenceAverage: 85,
-        specializations: {}
-      }
+        specializations: {},
+      },
     };
 
     this.agents.set(id, agent);
@@ -471,15 +498,15 @@ class SupremeCommanderClaude {
 
   private getLanguagesForSpecialization(spec: string): string[] {
     const languageMap: Record<string, string[]> = {
-      'TYPESCRIPT_EXPERT': ['typescript', 'javascript', 'jsx', 'tsx'],
-      'CSHARP_SPECIALIST': ['csharp', 'fsharp', 'vb'],
-      'RUST_DEVELOPER': ['rust', 'toml'],
-      'PYTHON_AI_ENGINEER': ['python', 'jupyter'],
-      'REACT_SPECIALIST': ['typescript', 'javascript', 'jsx', 'tsx', 'html', 'css'],
-      'DOTNET_ARCHITECT': ['csharp', 'fsharp', 'razor', 'xml'],
-      'DATABASE_OPTIMIZER': ['sql', 'postgresql', 'mysql', 'mongodb'],
-      'SECURITY_AUDITOR': ['typescript', 'csharp', 'python', 'rust'],
-      'COMPLIANCE_VALIDATOR': ['typescript', 'csharp', 'python', 'json', 'yaml']
+      TYPESCRIPT_EXPERT: ['typescript', 'javascript', 'jsx', 'tsx'],
+      CSHARP_SPECIALIST: ['csharp', 'fsharp', 'vb'],
+      RUST_DEVELOPER: ['rust', 'toml'],
+      PYTHON_AI_ENGINEER: ['python', 'jupyter'],
+      REACT_SPECIALIST: ['typescript', 'javascript', 'jsx', 'tsx', 'html', 'css'],
+      DOTNET_ARCHITECT: ['csharp', 'fsharp', 'razor', 'xml'],
+      DATABASE_OPTIMIZER: ['sql', 'postgresql', 'mysql', 'mongodb'],
+      SECURITY_AUDITOR: ['typescript', 'csharp', 'python', 'rust'],
+      COMPLIANCE_VALIDATOR: ['typescript', 'csharp', 'python', 'json', 'yaml'],
     };
 
     return languageMap[spec] || ['typescript', 'javascript'];
@@ -487,11 +514,11 @@ class SupremeCommanderClaude {
 
   private getFrameworksForSpecialization(spec: string): string[] {
     const frameworkMap: Record<string, string[]> = {
-      'REACT_SPECIALIST': ['React', 'Next.js', 'Vite', 'Material-UI'],
-      'DOTNET_ARCHITECT': ['ASP.NET Core', 'Entity Framework', 'SignalR'],
-      'RUST_DEVELOPER': ['Axum', 'Tokio', 'Serde', 'Tauri'],
-      'PYTHON_AI_ENGINEER': ['FastAPI', 'TensorFlow', 'PyTorch', 'scikit-learn'],
-      'DATABASE_OPTIMIZER': ['PostgreSQL', 'Redis', 'Entity Framework', 'Dapper']
+      REACT_SPECIALIST: ['React', 'Next.js', 'Vite', 'Material-UI'],
+      DOTNET_ARCHITECT: ['ASP.NET Core', 'Entity Framework', 'SignalR'],
+      RUST_DEVELOPER: ['Axum', 'Tokio', 'Serde', 'Tauri'],
+      PYTHON_AI_ENGINEER: ['FastAPI', 'TensorFlow', 'PyTorch', 'scikit-learn'],
+      DATABASE_OPTIMIZER: ['PostgreSQL', 'Redis', 'Entity Framework', 'Dapper'],
     };
 
     return frameworkMap[spec] || ['Express.js', 'React'];
@@ -499,7 +526,7 @@ class SupremeCommanderClaude {
 
   private async executeTask(task: Task): Promise<TaskResult> {
     const startTime = Date.now();
-    
+
     try {
       // Assign agents based on task requirements
       const assignedAgents = await this.assignAgentsToTask(task);
@@ -524,7 +551,7 @@ class SupremeCommanderClaude {
       }
 
       const executionTime = Date.now() - startTime;
-      
+
       const taskResult: TaskResult = {
         success: true,
         data: result,
@@ -533,26 +560,28 @@ class SupremeCommanderClaude {
           agentId: agent.id,
           contribution: `${agent.specialization.join(', ')} expertise`,
           confidence: agent.capabilities[0]?.proficiency || 85,
-          processingTime: executionTime / assignedAgents.length
+          processingTime: executionTime / assignedAgents.length,
         })),
         executionTime,
-        auditTrail: [{
-          timestamp: new Date(),
-          agentId: 'SC-001',
-          action: `TASK_${task.type}_COMPLETED`,
-          details: {
-            taskId: task.id,
-            agents: assignedAgents.length,
-            confidence: this.calculateConfidence(assignedAgents, result)
+        auditTrail: [
+          {
+            timestamp: new Date(),
+            agentId: 'SC-001',
+            action: `TASK_${task.type}_COMPLETED`,
+            details: {
+              taskId: task.id,
+              agents: assignedAgents.length,
+              confidence: this.calculateConfidence(assignedAgents, result),
+            },
+            securityContext: task.context.complianceLevel,
           },
-          securityContext: task.context.complianceLevel
-        }]
+        ],
       };
 
       // Update agent metrics
       assignedAgents.forEach(agent => {
         agent.performanceMetrics.tasksCompleted++;
-        agent.performanceMetrics.averageResponseTime = 
+        agent.performanceMetrics.averageResponseTime =
           (agent.performanceMetrics.averageResponseTime + executionTime) / 2;
         agent.status = 'IDLE';
       });
@@ -562,23 +591,27 @@ class SupremeCommanderClaude {
       this.activeTasks.delete(task.id);
 
       return taskResult;
-
     } catch (error) {
       const executionTime = Date.now() - startTime;
-      
+
       const taskResult: TaskResult = {
         success: false,
         data: { error: error instanceof Error ? error.message : 'Unknown error' },
         confidence: 0,
         agentContributions: [],
         executionTime,
-        auditTrail: [{
-          timestamp: new Date(),
-          agentId: 'SC-001',
-          action: `TASK_${task.type}_FAILED`,
-          details: { taskId: task.id, error: error instanceof Error ? error.message : 'Unknown error' },
-          securityContext: task.context.complianceLevel
-        }]
+        auditTrail: [
+          {
+            timestamp: new Date(),
+            agentId: 'SC-001',
+            action: `TASK_${task.type}_FAILED`,
+            details: {
+              taskId: task.id,
+              error: error instanceof Error ? error.message : 'Unknown error',
+            },
+            securityContext: task.context.complianceLevel,
+          },
+        ],
       };
 
       task.status = 'FAILED';
@@ -591,10 +624,11 @@ class SupremeCommanderClaude {
 
   private async assignAgentsToTask(task: Task): Promise<AIAgent[]> {
     const agents: AIAgent[] = [];
-    
+
     // Always assign Supreme Commander for oversight
-    const supremeCommander = Array.from(this.agents.values())
-      .find(a => a.type === 'SUPREME_COMMANDER' && a.status === 'IDLE');
+    const supremeCommander = Array.from(this.agents.values()).find(
+      a => a.type === 'SUPREME_COMMANDER' && a.status === 'IDLE'
+    );
     if (supremeCommander) {
       supremeCommander.status = 'PROCESSING';
       agents.push(supremeCommander);
@@ -604,7 +638,7 @@ class SupremeCommanderClaude {
     const relevantGenerals = Array.from(this.agents.values())
       .filter(a => a.type === 'FIELD_GENERAL' && a.status === 'IDLE')
       .filter(a => this.isAgentRelevantForTask(a, task));
-    
+
     if (relevantGenerals.length > 0) {
       const general = relevantGenerals[0];
       general.status = 'PROCESSING';
@@ -628,8 +662,10 @@ class SupremeCommanderClaude {
 
   private isAgentRelevantForTask(agent: AIAgent, task: Task): boolean {
     // Check if agent specializations match task requirements
-    if (task.context.language && agent.capabilities.some(cap => 
-      cap.languages.includes(task.context.language))) {
+    if (
+      task.context.language &&
+      agent.capabilities.some(cap => cap.languages.includes(task.context.language))
+    ) {
       return true;
     }
 
@@ -639,7 +675,7 @@ class SupremeCommanderClaude {
       'ai-agent': ['AI_OPTIMIZATION', 'PYTHON_AI_ENGINEER'],
       'rust-service': ['RUST_DEVELOPER', 'BACKEND_ARCHITECTURE'],
       'dotnet-api': ['CSHARP_SPECIALIST', 'DOTNET_ARCHITECT'],
-      'python-ai': ['PYTHON_AI_ENGINEER', 'AI_OPTIMIZATION']
+      'python-ai': ['PYTHON_AI_ENGINEER', 'AI_OPTIMIZATION'],
     };
 
     const relevantSpecs = projectTypeMap[task.context.projectType] || [];
@@ -674,12 +710,12 @@ class SupremeCommanderClaude {
           '      throw error;',
           '    }',
           '  }',
-          '}'
+          '}',
         ].join('\n'),
         documentation: 'Government-compliant TypeScript service with audit trail',
         confidence: 95,
         filterText: 'service',
-        kind: 'Class'
+        kind: 'Class',
       });
     }
 
@@ -723,12 +759,12 @@ class SupremeCommanderClaude {
           '            return StatusCode(500);',
           '        }',
           '    }',
-          '}'
+          '}',
         ].join('\n'),
         documentation: 'FISMA-compliant API controller with comprehensive audit logging',
         confidence: 98,
         filterText: 'controller',
-        kind: 'Class'
+        kind: 'Class',
       });
     }
 
@@ -738,25 +774,35 @@ class SupremeCommanderClaude {
   private async executeCodeGeneration(task: Task, agents: AIAgent[]): Promise<any> {
     // Use Python AI service for advanced code generation
     return new Promise((resolve, reject) => {
-      PythonShell.run('ai-code-generator.py', {
-        mode: 'json',
-        args: [
-          '--task-type', 'generation',
-          '--language', task.context.language,
-          '--project-type', task.context.projectType,
-          '--compliance-level', task.context.complianceLevel
-        ]
-      }, (err, results) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(results?.[0] || {
-            generatedCode: `// Generated ${task.context.language} code for ${task.context.projectType}`,
-            documentation: 'AI-generated government-compliant code template',
-            compliance: true
-          });
+      PythonShell.run(
+        'ai-code-generator.py',
+        {
+          mode: 'json',
+          args: [
+            '--task-type',
+            'generation',
+            '--language',
+            task.context.language,
+            '--project-type',
+            task.context.projectType,
+            '--compliance-level',
+            task.context.complianceLevel,
+          ],
+        },
+        (err, results) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(
+              results?.[0] || {
+                generatedCode: `// Generated ${task.context.language} code for ${task.context.projectType}`,
+                documentation: 'AI-generated government-compliant code template',
+                compliance: true,
+              }
+            );
+          }
         }
-      });
+      );
     });
   }
 
@@ -772,7 +818,7 @@ class SupremeCommanderClaude {
         severity: 'warning',
         message: 'Console.log statements should be removed in production code for FISMA compliance',
         line: code.split('\n').findIndex(line => line.includes('console.log')) + 1,
-        column: 1
+        column: 1,
       });
     }
 
@@ -783,7 +829,7 @@ class SupremeCommanderClaude {
         severity: 'error',
         message: 'Government modules must implement comprehensive audit trail logging',
         line: 1,
-        column: 1
+        column: 1,
       });
     }
 
@@ -794,13 +840,13 @@ class SupremeCommanderClaude {
         severity: 'error',
         message: 'Government API endpoints must have proper authorization attributes',
         line: 1,
-        column: 1
+        column: 1,
       });
     }
 
     const errorCount = violations.filter(v => v.severity === 'error').length;
     const warningCount = violations.filter(v => v.severity === 'warning').length;
-    const score = Math.max(0, 100 - (errorCount * 20) - (warningCount * 5));
+    const score = Math.max(0, 100 - errorCount * 20 - warningCount * 5);
 
     return {
       isCompliant: errorCount === 0,
@@ -810,18 +856,20 @@ class SupremeCommanderClaude {
         'Implement comprehensive audit logging service',
         'Add proper error handling with security context',
         'Use government-approved authentication mechanisms',
-        'Validate all inputs against NIST security standards'
-      ]
+        'Validate all inputs against NIST security standards',
+      ],
     };
   }
 
   private calculateConfidence(agents: AIAgent[], result: any): number {
     if (agents.length === 0) return 50;
-    
-    const agentConfidences = agents.map(agent => 
-      agent.capabilities.reduce((acc, cap) => acc + cap.proficiency, 0) / agent.capabilities.length
+
+    const agentConfidences = agents.map(
+      agent =>
+        agent.capabilities.reduce((acc, cap) => acc + cap.proficiency, 0) /
+        agent.capabilities.length
     );
-    
+
     return agentConfidences.reduce((acc, conf) => acc + conf, 0) / agentConfidences.length;
   }
 
@@ -832,8 +880,8 @@ class SupremeCommanderClaude {
         insertText: 'const logger = new TerraFusionLogger({ compliance: true, auditTrail: true });',
         documentation: 'Government-compliant logger with comprehensive audit trail',
         confidence: 85,
-        kind: 'Variable'
-      }
+        kind: 'Variable',
+      },
     ];
   }
 
@@ -860,11 +908,13 @@ class SupremeCommanderClaude {
   }
 
   public async start(port: number = 3000): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.server.listen(port, () => {
         console.log(`🚀 TerraFusion AI Swarm Supreme Commander operational on port ${port}`);
         console.log(`📊 ${this.agents.size} AI agents ready for government operations`);
-        console.log(`🔒 Security clearances: RED=${Array.from(this.agents.values()).filter(a => a.securityClearance === 'RED').length}, YELLOW=${Array.from(this.agents.values()).filter(a => a.securityClearance === 'YELLOW').length}, GREEN=${Array.from(this.agents.values()).filter(a => a.securityClearance === 'GREEN').length}`);
+        console.log(
+          `🔒 Security clearances: RED=${Array.from(this.agents.values()).filter(a => a.securityClearance === 'RED').length}, YELLOW=${Array.from(this.agents.values()).filter(a => a.securityClearance === 'YELLOW').length}, GREEN=${Array.from(this.agents.values()).filter(a => a.securityClearance === 'GREEN').length}`
+        );
         resolve();
       });
     });

@@ -1,9 +1,12 @@
 # Permit Processing Workflow Template
 
 ## Overview
-Streamlined permit processing workflow leveraging Terrafusion OS AI capabilities with Harris PACS integration for efficient government permit management.
+
+Streamlined permit processing workflow leveraging Terrafusion OS AI capabilities
+with Harris PACS integration for efficient government permit management.
 
 ## Prerequisites
+
 - Harris PACS permit module access
 - Terrafusion OS AI processing engine
 - Permit review team assignments
@@ -12,10 +15,12 @@ Streamlined permit processing workflow leveraging Terrafusion OS AI capabilities
 ## Workflow Steps
 
 ### Phase 1: Application Intake
+
 **Duration**: Same day  
 **Responsible**: Intake Specialist
 
 #### 1.1 Digital Application Submission
+
 ```typescript
 // Initialize permit application
 POST /api/harris-pacs/permits/submit
@@ -37,6 +42,7 @@ POST /api/harris-pacs/permits/submit
 ```
 
 #### 1.2 AI-Powered Document Analysis
+
 ```typescript
 // Trigger document processing AI
 POST /api/ai/document-analysis
@@ -52,16 +58,20 @@ POST /api/ai/document-analysis
 ```
 
 #### 1.3 Automated Completeness Validation
-- **Required Documents**: Site plan, architectural drawings, structural calculations
+
+- **Required Documents**: Site plan, architectural drawings, structural
+  calculations
 - **Fee Calculation**: AI-based fee estimation
 - **Zoning Compliance**: Automated preliminary check
 - **Routing Assignment**: AI-optimized reviewer assignment
 
 ### Phase 2: Technical Review
+
 **Duration**: 5-10 business days  
 **Responsible**: Technical Review Team
 
 #### 2.1 Multi-Disciplinary Review Assignment
+
 ```typescript
 // AI-optimized reviewer assignment
 POST /api/ai/reviewer-assignment
@@ -79,6 +89,7 @@ POST /api/ai/reviewer-assignment
 ```
 
 #### 2.2 Parallel Review Process
+
 ```typescript
 // Track review progress
 GET /api/permits/review-status/PERM-2024-001234
@@ -93,7 +104,7 @@ Response: {
     },
     {
       "discipline": "electrical",
-      "reviewer": "mike.electrician@county.gov", 
+      "reviewer": "mike.electrician@county.gov",
       "status": "in-progress",
       "estimatedCompletion": "2024-08-22"
     }
@@ -102,6 +113,7 @@ Response: {
 ```
 
 #### 2.3 AI-Assisted Code Compliance
+
 ```typescript
 // Building code compliance check
 POST /api/ai/code-compliance
@@ -118,13 +130,15 @@ POST /api/ai/code-compliance
 ```
 
 ### Phase 3: Approval Process
+
 **Duration**: 1-2 business days  
 **Responsible**: Permit Manager
 
 #### 3.1 Consolidated Review Summary
+
 ```sql
 -- Generate review summary
-SELECT 
+SELECT
   p.permit_id,
   p.project_description,
   COUNT(r.review_id) as total_reviews,
@@ -137,6 +151,7 @@ GROUP BY p.permit_id;
 ```
 
 #### 3.2 Final Approval Decision
+
 ```typescript
 // Issue permit approval
 POST /api/permits/approve
@@ -152,6 +167,7 @@ POST /api/permits/approve
 ```
 
 #### 3.3 Harris PACS Integration
+
 ```typescript
 // Sync approval to Harris PACS
 POST /api/harris-pacs/permits/sync-approval
@@ -167,10 +183,12 @@ POST /api/harris-pacs/permits/sync-approval
 ```
 
 ### Phase 4: Inspection Scheduling
+
 **Duration**: Ongoing during construction  
 **Responsible**: Inspection Coordinator
 
 #### 4.1 AI-Optimized Inspection Scheduling
+
 ```typescript
 // Schedule inspections
 POST /api/ai/inspection-scheduling
@@ -178,7 +196,7 @@ POST /api/ai/inspection-scheduling
   "permitId": "PERM-2024-001234",
   "inspectionTypes": [
     "foundation",
-    "framing", 
+    "framing",
     "electrical-rough",
     "plumbing-rough",
     "final"
@@ -192,6 +210,7 @@ POST /api/ai/inspection-scheduling
 ```
 
 #### 4.2 Mobile Inspection Support
+
 ```typescript
 // Mobile inspector app integration
 GET /api/inspections/mobile-checklist/PERM-2024-001234
@@ -210,24 +229,28 @@ Response: {
 ## Quality Gates
 
 ### Gate 1: Application Completeness
+
 - [ ] All required documents submitted
 - [ ] Fee payment processed
 - [ ] Property information verified
 - [ ] AI completeness check passed
 
 ### Gate 2: Technical Review
+
 - [ ] All discipline reviews completed
 - [ ] Code compliance verified
 - [ ] Structural calculations approved
 - [ ] Fire safety requirements met
 
 ### Gate 3: Final Approval
+
 - [ ] All review comments addressed
 - [ ] Permit conditions documented
 - [ ] Harris PACS synchronization successful
 - [ ] Applicant notification sent
 
 ### Gate 4: Inspection Readiness
+
 - [ ] Inspection schedule optimized
 - [ ] Inspector assignments confirmed
 - [ ] Mobile tools configured
@@ -236,12 +259,14 @@ Response: {
 ## Performance Metrics
 
 ### Key Performance Indicators
+
 - **Average Processing Time**: Target <10 business days
 - **First-Time Approval Rate**: Target >80%
 - **Customer Satisfaction**: Target >4.5/5.0
 - **Digital Submission Rate**: Target >90%
 
 ### AI Performance Metrics
+
 ```typescript
 // Monitor AI performance
 GET /api/ai/permit-processing-metrics
@@ -258,6 +283,7 @@ Response: {
 ### Common Issues and Resolutions
 
 #### Issue: Harris PACS Synchronization Failure
+
 ```bash
 # Check Harris PACS permit module status
 curl -X GET "https://harris-pacs.county.gov/api/permits/health" \
@@ -268,6 +294,7 @@ curl -X GET "https://harris-pacs.county.gov/api/permits/health" \
 ```
 
 #### Issue: AI Document Analysis Timeout
+
 ```typescript
 // Retry document analysis with reduced scope
 POST /api/ai/document-analysis/retry
@@ -279,6 +306,7 @@ POST /api/ai/document-analysis/retry
 ```
 
 #### Issue: Reviewer Overload
+
 ```typescript
 // Rebalance reviewer assignments
 POST /api/ai/reviewer-rebalance
@@ -293,6 +321,7 @@ POST /api/ai/reviewer-rebalance
 ## Compliance Requirements
 
 ### Building Codes and Standards
+
 - **International Building Code (IBC)**
 - **National Electrical Code (NEC)**
 - **Uniform Plumbing Code (UPC)**
@@ -300,11 +329,13 @@ POST /api/ai/reviewer-rebalance
 - **Local Amendments and Ordinances**
 
 ### Accessibility Compliance
+
 - **ADA Requirements**: Public accommodations
 - **Fair Housing Act**: Residential modifications
 - **State Accessibility Codes**: Local requirements
 
 ### Environmental Regulations
+
 - **SEPA Review**: Environmental impact assessment
 - **Stormwater Management**: Runoff control requirements
 - **Wetlands Protection**: Critical area ordinances
@@ -312,6 +343,7 @@ POST /api/ai/reviewer-rebalance
 ## Integration Points
 
 ### Harris PACS Data Flow
+
 ```mermaid
 graph TD
     A[Application Submission] --> B[Harris PACS Intake]
@@ -323,6 +355,7 @@ graph TD
 ```
 
 ### Third-Party Integrations
+
 - **GIS Systems**: Property boundary verification
 - **Utility Companies**: Service availability checks
 - **State Databases**: Contractor license verification
@@ -331,12 +364,14 @@ graph TD
 ## Automation Opportunities
 
 ### AI-Powered Enhancements
+
 1. **Predictive Analytics**: Permit approval likelihood
 2. **Risk Assessment**: Project complexity scoring
 3. **Resource Optimization**: Staff allocation planning
 4. **Customer Service**: Chatbot for status inquiries
 
 ### Process Automation
+
 ```typescript
 // Configure automation rules
 PUT /api/permits/automation-rules
@@ -363,6 +398,7 @@ PUT /api/permits/automation-rules
 ## Customer Experience
 
 ### Self-Service Portal Features
+
 - **Application Status Tracking**
 - **Document Upload Interface**
 - **Fee Payment Processing**
@@ -370,20 +406,25 @@ PUT /api/permits/automation-rules
 - **Digital Permit Retrieval**
 
 ### Communication Channels
+
 - **Email Notifications**: Status updates
 - **SMS Alerts**: Inspection reminders
 - **Mobile App**: Real-time tracking
 - **Web Portal**: Comprehensive access
 
 ## Related Workflows
+
 - [Property Assessment Workflow](./property-assessment-workflow.md)
 - [Tax Collection Workflow](./tax-collection-workflow.md)
 - [Harris PACS Integration Guide](../troubleshooting/harris-pacs-integration.md)
 
 ## Revision History
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2024-08-18 | Terrafusion Team | Initial template creation |
+
+| Version | Date       | Author           | Changes                   |
+| ------- | ---------- | ---------------- | ------------------------- |
+| 1.0     | 2024-08-18 | Terrafusion Team | Initial template creation |
 
 ---
-*This workflow template leverages Terrafusion OS AI capabilities for efficient permit processing with Harris PACS integration.*
+
+_This workflow template leverages Terrafusion OS AI capabilities for efficient
+permit processing with Harris PACS integration._

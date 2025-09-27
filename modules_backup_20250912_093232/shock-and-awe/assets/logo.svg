@@ -1,0 +1,27 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tfGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0099ff"/>
+      <stop offset="50%" style="stop-color:#00ffee"/>
+      <stop offset="100%" style="stop-color:#00ffaa"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- TF Logo Orb -->
+  <circle cx="30" cy="30" r="20" fill="url(#tfGradient)" filter="url(#glow)" opacity="0.8"/>
+  <circle cx="30" cy="30" r="15" fill="none" stroke="url(#tfGradient)" stroke-width="2" opacity="0.6"/>
+  
+  <!-- TF Text in Orb -->
+  <text x="30" y="37" text-anchor="middle" fill="white" font-family="Inter, sans-serif" font-weight="700" font-size="16">TF</text>
+  
+  <!-- TerraFusion Text -->
+  <text x="65" y="25" fill="url(#tfGradient)" font-family="Inter, sans-serif" font-weight="600" font-size="18">TerraFusion</text>
+  <text x="65" y="42" fill="rgba(255,255,255,0.8)" font-family="Inter, sans-serif" font-weight="400" font-size="12">Market</text>
+</svg>

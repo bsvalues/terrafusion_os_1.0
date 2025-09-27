@@ -21,11 +21,11 @@ WATCH_INTERVAL=10
 
 # Service endpoints
 declare -A SERVICES=(
-    ["backend"]="http://localhost:8080/health"
-    ["ai-engine"]="http://localhost:8001/health"
-    ["frontend"]="http://localhost:3003/health"
-    ["prometheus"]="http://localhost:9090/-/healthy"
-    ["grafana"]="http://localhost:3000/api/health"
+    ["backend"]="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
+    ["ai-engine"]="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
+    ["frontend"]="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
+    ["prometheus"]="http://localhost:\${{TF_ADMIN_PORT:-8080}}/-/healthy"
+    ["grafana"]="http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/health"
 )
 
 # Database connection

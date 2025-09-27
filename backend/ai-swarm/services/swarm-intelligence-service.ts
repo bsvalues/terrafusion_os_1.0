@@ -1,5 +1,12 @@
 import { Logger } from '../utils/logger';
-import { AISwarmCoordinator, AgentConfiguration, SwarmMetrics, TaskAllocation, AgentTier, TaskPriority } from '../orchestrators/ai-swarm-coordinator';
+import {
+  AISwarmCoordinator,
+  AgentConfiguration,
+  SwarmMetrics,
+  TaskAllocation,
+  AgentTier,
+  TaskPriority,
+} from '../orchestrators/ai-swarm-coordinator';
 
 /**
  * Swarm Intelligence Service - Advanced collective intelligence implementation
@@ -37,10 +44,10 @@ export interface CollectiveLearning {
 
 export enum EmergentBehaviorType {
   COORDINATION = 'coordination',
-  OPTIMIZATION = 'optimization', 
+  OPTIMIZATION = 'optimization',
   ADAPTATION = 'adaptation',
   SPECIALIZATION = 'specialization',
-  INNOVATION = 'innovation'
+  INNOVATION = 'innovation',
 }
 
 export enum PatternType {
@@ -48,7 +55,7 @@ export enum PatternType {
   EFFICIENCY = 'efficiency',
   COLLABORATION = 'collaboration',
   PROBLEM_SOLVING = 'problem_solving',
-  RESOURCE_ALLOCATION = 'resource_allocation'
+  RESOURCE_ALLOCATION = 'resource_allocation',
 }
 
 /**
@@ -62,14 +69,14 @@ export class SwarmIntelligenceService {
   private collectiveLearning: Map<string, CollectiveLearning> = new Map();
   private behaviorDetectionLoop: NodeJS.Timer | null = null;
   private learningLoop: NodeJS.Timer | null = null;
-  
+
   // Intelligence metrics
   private intelligenceMetrics = {
     swarmIQ: 0,
     adaptabilityScore: 0,
     coordinationEfficiency: 0,
     learningVelocity: 0,
-    emergentCapabilities: 0
+    emergentCapabilities: 0,
   };
 
   constructor(coordinator: AISwarmCoordinator) {
@@ -83,17 +90,17 @@ export class SwarmIntelligenceService {
    */
   public async initialize(): Promise<boolean> {
     this.logger.info('🧠 Initializing Swarm Intelligence System...');
-    
+
     try {
       // Start behavior detection
       await this.startBehaviorDetection();
-      
+
       // Initialize collective learning
       await this.startCollectiveLearning();
-      
+
       // Begin pattern analysis
       await this.startPatternAnalysis();
-      
+
       this.logger.info('✅ Swarm Intelligence System operational');
       return true;
     } catch (error) {
@@ -111,7 +118,7 @@ export class SwarmIntelligenceService {
 
     try {
       const swarmMetrics = this.coordinator.getSwarmMetrics();
-      
+
       // Detect coordination behaviors
       const coordinationBehaviors = await this.detectCoordinationBehaviors(swarmMetrics);
       detectedBehaviors.push(...coordinationBehaviors);
@@ -130,7 +137,7 @@ export class SwarmIntelligenceService {
           this.emergentBehaviors.set(behavior.id, behavior);
           this.logger.info(`🌟 New emergent behavior detected: ${behavior.type}`, {
             description: behavior.description,
-            impact: behavior.impact
+            impact: behavior.impact,
           });
         }
       }
@@ -152,10 +159,10 @@ export class SwarmIntelligenceService {
 
     try {
       const behaviors = Array.from(this.emergentBehaviors.values());
-      
+
       // Group behaviors by type
       const behaviorGroups = this.groupBehaviorsByType(behaviors);
-      
+
       for (const [type, groupBehaviors] of behaviorGroups.entries()) {
         if (groupBehaviors.length >= 2) {
           const pattern = await this.generatePatternFromBehaviors(type, groupBehaviors);
@@ -190,8 +197,7 @@ export class SwarmIntelligenceService {
    * Get emergent behaviors by type
    */
   public getBehaviorsByType(type: EmergentBehaviorType): EmergentBehavior[] {
-    return Array.from(this.emergentBehaviors.values())
-      .filter(behavior => behavior.type === type);
+    return Array.from(this.emergentBehaviors.values()).filter(behavior => behavior.type === type);
   }
 
   /**
@@ -208,7 +214,7 @@ export class SwarmIntelligenceService {
    */
   public async applyIntelligenceOptimization(): Promise<boolean> {
     const timeStart = this.logger.timeStart('Intelligence optimization');
-    
+
     try {
       const highConfidencePatterns = this.getHighConfidencePatterns();
       let optimizationsApplied = 0;
@@ -220,7 +226,7 @@ export class SwarmIntelligenceService {
             optimizationsApplied++;
             this.logger.info(`🎯 Applied optimization from pattern: ${pattern.name}`, {
               expectedImprovement: pattern.expectedImprovement,
-              modules: pattern.applicableModules
+              modules: pattern.applicableModules,
             });
           }
         }
@@ -228,7 +234,7 @@ export class SwarmIntelligenceService {
 
       this.logger.info(`✅ Intelligence optimization complete`, {
         optimizationsApplied,
-        totalPatterns: highConfidencePatterns.length
+        totalPatterns: highConfidencePatterns.length,
       });
 
       timeStart();
@@ -244,15 +250,15 @@ export class SwarmIntelligenceService {
    */
   public shutdown(): void {
     this.logger.info('🔄 Shutting down Swarm Intelligence Service...');
-    
+
     if (this.behaviorDetectionLoop) {
       clearInterval(this.behaviorDetectionLoop);
     }
-    
+
     if (this.learningLoop) {
       clearInterval(this.learningLoop);
     }
-    
+
     this.logger.info('✅ Swarm Intelligence Service shutdown complete');
   }
 
@@ -260,7 +266,7 @@ export class SwarmIntelligenceService {
 
   private async startBehaviorDetection(): Promise<void> {
     this.behaviorDetectionLoop = setInterval(() => {
-      this.detectEmergentBehaviors().catch(error => 
+      this.detectEmergentBehaviors().catch(error =>
         this.logger.error('Error in behavior detection loop:', error)
       );
     }, 15000); // Every 15 seconds
@@ -292,13 +298,13 @@ export class SwarmIntelligenceService {
   private initializeLearningDomains(): void {
     const domains = [
       'property-assessment',
-      'workflow-optimization', 
+      'workflow-optimization',
       'resource-allocation',
       'error-recovery',
       'performance-tuning',
       'user-interaction',
       'data-processing',
-      'system-integration'
+      'system-integration',
     ];
 
     for (const domain of domains) {
@@ -308,7 +314,7 @@ export class SwarmIntelligenceService {
         learningRate: 0.1,
         confidenceLevel: 0.5,
         contributingAgents: [],
-        lastUpdate: new Date()
+        lastUpdate: new Date(),
       });
     }
 
@@ -328,7 +334,7 @@ export class SwarmIntelligenceService {
         firstObserved: new Date(),
         frequency: metrics.coherenceScore,
         impact: metrics.coherenceScore * 0.3,
-        isBeneficial: true
+        isBeneficial: true,
       });
     }
 
@@ -342,7 +348,7 @@ export class SwarmIntelligenceService {
         firstObserved: new Date(),
         frequency: 1 - metrics.errorRate,
         impact: (1 - metrics.errorRate) * 0.25,
-        isBeneficial: true
+        isBeneficial: true,
       });
     }
 
@@ -363,7 +369,7 @@ export class SwarmIntelligenceService {
         firstObserved: new Date(),
         frequency: metrics.averagePerformance,
         impact: metrics.averagePerformance * 0.2,
-        isBeneficial: true
+        isBeneficial: true,
       });
     }
 
@@ -377,7 +383,7 @@ export class SwarmIntelligenceService {
     // Dynamic agent reallocation indicates adaptation
     const activeRatio = metrics.activeAgents / metrics.totalAgents;
     const busyRatio = metrics.busyAgents / metrics.activeAgents;
-    
+
     if (activeRatio > 0.95 && busyRatio > 0.7) {
       behaviors.push({
         id: `adapt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -387,28 +393,30 @@ export class SwarmIntelligenceService {
         firstObserved: new Date(),
         frequency: Math.min(activeRatio, busyRatio),
         impact: Math.min(activeRatio, busyRatio) * 0.15,
-        isBeneficial: true
+        isBeneficial: true,
       });
     }
 
     return behaviors;
   }
 
-  private groupBehaviorsByType(behaviors: EmergentBehavior[]): Map<EmergentBehaviorType, EmergentBehavior[]> {
+  private groupBehaviorsByType(
+    behaviors: EmergentBehavior[]
+  ): Map<EmergentBehaviorType, EmergentBehavior[]> {
     const groups = new Map<EmergentBehaviorType, EmergentBehavior[]>();
-    
+
     for (const behavior of behaviors) {
       if (!groups.has(behavior.type)) {
         groups.set(behavior.type, []);
       }
       groups.get(behavior.type)!.push(behavior);
     }
-    
+
     return groups;
   }
 
   private async generatePatternFromBehaviors(
-    type: EmergentBehaviorType, 
+    type: EmergentBehaviorType,
     behaviors: EmergentBehavior[]
   ): Promise<IntelligencePattern | null> {
     if (behaviors.length < 2) return null;
@@ -425,7 +433,7 @@ export class SwarmIntelligenceService {
       [EmergentBehaviorType.OPTIMIZATION]: PatternType.PERFORMANCE,
       [EmergentBehaviorType.ADAPTATION]: PatternType.EFFICIENCY,
       [EmergentBehaviorType.SPECIALIZATION]: PatternType.RESOURCE_ALLOCATION,
-      [EmergentBehaviorType.INNOVATION]: PatternType.PROBLEM_SOLVING
+      [EmergentBehaviorType.INNOVATION]: PatternType.PROBLEM_SOLVING,
     };
 
     return {
@@ -435,24 +443,26 @@ export class SwarmIntelligenceService {
       confidence,
       sourceBehaviors: behaviors.map(b => b.id),
       applicableModules: ['ai-command-brain', 'ai-swarm', 'unified-system'], // Could be dynamically determined
-      expectedImprovement: avgImpact
+      expectedImprovement: avgImpact,
     };
   }
 
-  private async analyzeCrossTypePatterns(behaviors: EmergentBehavior[]): Promise<IntelligencePattern[]> {
+  private async analyzeCrossTypePatterns(
+    behaviors: EmergentBehavior[]
+  ): Promise<IntelligencePattern[]> {
     const patterns: IntelligencePattern[] = [];
-    
+
     // Look for synergistic patterns between different behavior types
     const typeGroups = this.groupBehaviorsByType(behaviors);
     const typeKeys = Array.from(typeGroups.keys());
-    
+
     for (let i = 0; i < typeKeys.length; i++) {
       for (let j = i + 1; j < typeKeys.length; j++) {
         const type1 = typeKeys[i];
         const type2 = typeKeys[j];
         const behaviors1 = typeGroups.get(type1) || [];
         const behaviors2 = typeGroups.get(type2) || [];
-        
+
         if (behaviors1.length > 0 && behaviors2.length > 0) {
           const synergy = this.calculateBehaviorSynergy(behaviors1, behaviors2);
           if (synergy > 0.6) {
@@ -463,17 +473,20 @@ export class SwarmIntelligenceService {
               confidence: synergy,
               sourceBehaviors: [...behaviors1.map(b => b.id), ...behaviors2.map(b => b.id)],
               applicableModules: ['ai-swarm', 'unified-system'],
-              expectedImprovement: synergy * 0.2
+              expectedImprovement: synergy * 0.2,
             });
           }
         }
       }
     }
-    
+
     return patterns;
   }
 
-  private calculateBehaviorSynergy(behaviors1: EmergentBehavior[], behaviors2: EmergentBehavior[]): number {
+  private calculateBehaviorSynergy(
+    behaviors1: EmergentBehavior[],
+    behaviors2: EmergentBehavior[]
+  ): number {
     const avg1 = behaviors1.reduce((sum, b) => sum + b.impact, 0) / behaviors1.length;
     const avg2 = behaviors2.reduce((sum, b) => sum + b.impact, 0) / behaviors2.length;
     return Math.min(1.0, (avg1 + avg2) * 0.75); // Synergy is less than sum of parts
@@ -482,22 +495,24 @@ export class SwarmIntelligenceService {
   private async implementPatternOptimization(pattern: IntelligencePattern): Promise<boolean> {
     // Implementation would vary based on pattern type
     // For now, simulate optimization by updating agent capabilities
-    
+
     try {
       for (const moduleId of pattern.applicableModules) {
         const moduleAgents = this.coordinator.getModuleAgents(moduleId);
         const targetCount = Math.min(5, moduleAgents.length);
-        
+
         for (let i = 0; i < targetCount; i++) {
           const agent = moduleAgents[i];
           if (agent) {
             // Simulate optimization by improving agent performance
-            agent.performance.successRate = Math.min(1.0, 
-              agent.performance.successRate + (pattern.expectedImprovement * 0.5));
+            agent.performance.successRate = Math.min(
+              1.0,
+              agent.performance.successRate + pattern.expectedImprovement * 0.5
+            );
           }
         }
       }
-      
+
       return true;
     } catch (error) {
       this.logger.error('Error implementing pattern optimization:', error);
@@ -510,13 +525,12 @@ export class SwarmIntelligenceService {
       // Simulate knowledge accumulation
       const newKnowledge = Math.random() * learning.learningRate;
       learning.knowledgeBase.set(`knowledge_${Date.now()}`, newKnowledge);
-      
+
       // Update confidence based on knowledge accumulation
-      learning.confidenceLevel = Math.min(1.0, 
-        learning.confidenceLevel + (newKnowledge * 0.01));
-      
+      learning.confidenceLevel = Math.min(1.0, learning.confidenceLevel + newKnowledge * 0.01);
+
       learning.lastUpdate = new Date();
-      
+
       // Clean up old knowledge entries (keep most recent 100)
       if (learning.knowledgeBase.size > 100) {
         const entries = Array.from(learning.knowledgeBase.entries());
@@ -533,17 +547,18 @@ export class SwarmIntelligenceService {
     const metrics = this.coordinator.getSwarmMetrics();
     const behaviorsCount = this.emergentBehaviors.size;
     const patternsCount = this.intelligencePatterns.size;
-    
+
     // Calculate swarm IQ based on various factors
-    const avgConfidence = Array.from(this.intelligencePatterns.values())
-      .reduce((sum, p) => sum + p.confidence, 0) / Math.max(1, patternsCount);
-    
+    const avgConfidence =
+      Array.from(this.intelligencePatterns.values()).reduce((sum, p) => sum + p.confidence, 0) /
+      Math.max(1, patternsCount);
+
     this.intelligenceMetrics = {
-      swarmIQ: Math.min(100, (metrics.averagePerformance * 100) + (behaviorsCount * 2)),
+      swarmIQ: Math.min(100, metrics.averagePerformance * 100 + behaviorsCount * 2),
       adaptabilityScore: Math.min(1.0, behaviorsCount / 20), // Max at 20 behaviors
       coordinationEfficiency: metrics.coherenceScore,
       learningVelocity: Math.min(1.0, patternsCount / 10), // Max at 10 patterns
-      emergentCapabilities: behaviorsCount
+      emergentCapabilities: behaviorsCount,
     };
   }
 }

@@ -118,7 +118,7 @@ class RealTimeAnomalyResponse:
     def __init__(self):
         self.session_id = f"anomaly_response_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         
         # Anomaly detection configuration
         self.active_anomalies = {}
@@ -177,7 +177,7 @@ class RealTimeAnomalyResponse:
             'webhook': {
                 'enabled': True,
                 'endpoints': [
-                    'http://localhost:8080/api/webhooks/alerts',
+                    'http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/webhooks/alerts',
                     'https://monitoring.terrafusion.com/webhooks/anomalies'
                 ]
             }
@@ -445,7 +445,7 @@ class RealTimeAnomalyResponse:
             # API endpoint metrics
             try:
                 async with aiohttp.ClientSession() as session:
-                    async with session.get('http://localhost:8000/api/metrics', timeout=5) as response:
+                    async with session.get('http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/metrics', timeout=5) as response:
                         if response.status == 200:
                             api_metrics = await response.json()
                             business_metrics.update(api_metrics)

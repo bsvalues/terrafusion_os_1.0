@@ -23,22 +23,22 @@
 
 ### Base URLs
 ```
-Master API:     http://localhost:8000
-Router API:     http://localhost:8080
-Training API:   http://localhost:8082
-Evolution API:  http://localhost:8083
-Quantum API:    http://localhost:8084
-Consciousness:  http://localhost:8085
+Master API:     http://localhost:\${{TF_DOCS_PORT:-8000}}
+Router API:     http://localhost:\${{TF_DOCS_PORT:-8000}}
+Training API:   http://localhost:\${{TF_DOCS_PORT:-8000}}
+Evolution API:  http://localhost:\${{TF_DOCS_PORT:-8000}}
+Quantum API:    http://localhost:\${{TF_DOCS_PORT:-8000}}
+Consciousness:  http://localhost:\${{TF_DOCS_PORT:-8000}}
 ```
 
 ### Health Check
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 ```
 
 ### Process a Query
 ```bash
-curl -X POST http://localhost:8080/query \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/query \
   -H "Content-Type: application/json" \
   -d '{"query": "What is the average home value in Richland?", "user_id": "test_user"}'
 ```
@@ -54,7 +54,7 @@ export DYNASTY_API_KEY="your-api-key-here"
 
 # Use in requests
 curl -H "Authorization: Bearer $DYNASTY_API_KEY" \
-     http://localhost:8000/status
+     http://localhost:\${{TF_DOCS_PORT:-8000}}/status
 ```
 
 ### Rate Limiting Headers
@@ -68,7 +68,7 @@ X-RateLimit-Reset: 1691234567
 
 ## 🏆 MASTER ORCHESTRATOR API
 
-**Base URL**: `http://localhost:8000`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /health
 Health check endpoint
@@ -159,7 +159,7 @@ Real-time system metrics
 
 ## 🧠 HYBRID ROUTER API
 
-**Base URL**: `http://localhost:8080`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### POST /query
 Process a query through the hybrid routing system
@@ -266,7 +266,7 @@ Get sensitivity analysis for a query
 
 ## 🎓 TRAINING PIPELINE API
 
-**Base URL**: `http://localhost:8082`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /training/status
 Current training status
@@ -332,7 +332,7 @@ Trigger manual retraining
 
 ## 🧬 EVOLUTION ENGINE API
 
-**Base URL**: `http://localhost:8083`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /evolution/status
 Current evolution status
@@ -395,7 +395,7 @@ Evolution history
 
 ## ⚛️ QUANTUM OPTIMIZER API
 
-**Base URL**: `http://localhost:8084`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /quantum/status
 Quantum system status
@@ -454,7 +454,7 @@ Quantum performance metrics
 
 ## 🧠 CONSCIOUSNESS LAYER API
 
-**Base URL**: `http://localhost:8085`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /consciousness/status
 Consciousness level and state
@@ -543,7 +543,7 @@ Interact with consciousness layer
 
 ### Connection
 ```javascript
-const ws = new WebSocket('ws://localhost:8080/ws');
+const ws = new WebSocket('ws://localhost:\${{TF_DOCS_PORT:-8000}}/ws');
 ```
 
 ### Event Types
@@ -666,7 +666,7 @@ import requests
 import json
 
 class DynastyClient:
-    def __init__(self, base_url="http://localhost:8080"):
+    def __init__(self, base_url="http://localhost:\${{TF_DOCS_PORT:-8000}}"):
         self.base_url = base_url
         
     def query(self, text, user_id="default"):
@@ -690,7 +690,7 @@ print(f"Routed to: {result['routed_to']}")
 ### JavaScript Client
 ```javascript
 class DynastyAPI {
-    constructor(baseUrl = 'http://localhost:8080') {
+    constructor(baseUrl = 'http://localhost:\${{TF_DOCS_PORT:-8000}}') {
         this.baseUrl = baseUrl;
     }
     
@@ -726,18 +726,18 @@ dynasty.query("Calculate ROI for $300k property")
 ### cURL Examples
 ```bash
 # Health check
-curl http://localhost:8000/health
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 
 # Process query
-curl -X POST http://localhost:8080/query \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/query \
   -H "Content-Type: application/json" \
   -d '{"query": "Average home price in Kennewick?", "user_id": "test"}'
 
 # Get system status
-curl http://localhost:8000/status | jq .
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/status | jq .
 
 # Batch processing
-curl -X POST http://localhost:8080/batch \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/batch \
   -H "Content-Type: application/json" \
   -d '{
     "queries": [
@@ -747,12 +747,12 @@ curl -X POST http://localhost:8080/batch \
   }'
 
 # Trigger evolution
-curl -X POST http://localhost:8083/evolution/trigger \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/trigger \
   -H "Content-Type: application/json" \
   -d '{"component": "router", "mutation_rate": 0.1}'
 
 # Check consciousness
-curl http://localhost:8085/consciousness/status | jq .awareness_level
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/consciousness/status | jq .awareness_level
 ```
 
 ---
@@ -778,10 +778,10 @@ go get github.com/benton-county/dynasty-go
 
 ## 🔗 ADDITIONAL RESOURCES
 
-- **OpenAPI Spec**: http://localhost:8000/openapi.json
-- **Swagger UI**: http://localhost:8000/docs
-- **WebSocket Docs**: http://localhost:8000/ws-docs
-- **Dashboard**: http://localhost:8090/championship_ui.html
+- **OpenAPI Spec**: http://localhost:\${{TF_DOCS_PORT:-8000}}/openapi.json
+- **Swagger UI**: http://localhost:\${{TF_DOCS_PORT:-8000}}/docs
+- **WebSocket Docs**: http://localhost:\${{TF_DOCS_PORT:-8000}}/ws-docs
+- **Dashboard**: http://localhost:\${{TF_DOCS_PORT:-8000}}/championship_ui.html
 
 ---
 

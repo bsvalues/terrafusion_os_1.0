@@ -19,7 +19,7 @@
       "platform": "narrow"
     },
     {
-      "src": "/assets/screenshots/desktop-1.png", 
+      "src": "/assets/screenshots/desktop-1.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "platform": "wide"
@@ -34,7 +34,7 @@
     },
     {
       "src": "/assets/icons/icon-96x96.png",
-      "sizes": "96x96", 
+      "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
@@ -95,7 +95,7 @@
       "url": "/#portal",
       "icons": [
         {
-          "src": "/assets/icons/portal-icon.png", 
+          "src": "/assets/icons/portal-icon.png",
           "sizes": "96x96"
         }
       ]
@@ -149,7 +149,9 @@
       "action": "/import-data",
       "accept": {
         "application/vnd.ms-excel": [".xls"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+          ".xlsx"
+        ],
         "text/csv": [".csv"]
       }
     }

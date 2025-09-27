@@ -1,0 +1,100 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: terrafusion-cos-development
+
+namespace: terrafusion-platform-dev
+
+resources:
+  - ../../base
+
+commonLabels:
+  app.kubernetes.io/name: terrafusion-cos
+  app.kubernetes.io/part-of: terrafusion-platform
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/environment: development
+
+commonAnnotations:
+  terrafusion.gov/platform: "cos"
+  terrafusion.gov/version: "1.0.0-dev"
+  terrafusion.gov/architecture: "vendor-substrate"
+  terrafusion.gov/environment: "development"
+
+namePrefix: dev-
+
+nameSuffix: "-dev"
+
+images:
+  - name: terrafusion/platform-core
+    newTag: "dev-latest"
+  - name: terrafusion/vendor-integration
+    newTag: "dev-latest"
+  - name: terrafusion/security-mesh
+    newTag: "dev-latest"
+  - name: terrafusion/data-plane
+    newTag: "dev-latest"
+  - name: terrafusion/agent-fabric
+    newTag: "dev-latest"
+  - name: terrafusion/observability
+    newTag: "dev-latest"
+  - name: terrafusion/api-gateway
+    newTag: "dev-latest"
+  - name: terrafusion/ui-shell
+    newTag: "dev-latest"
+
+configMapGenerator:
+  - name: platform-config-dev
+    files:
+      - config/development.yaml
+    options:
+      labels:
+        config.terrafusion.gov/environment: development
+
+secretGenerator:
+  - name: platform-secrets-dev
+    type: Opaque
+    literals:
+      - jwt-secret=dev-jwt-secret-change-in-production
+      - jwt-refresh-secret=dev-refresh-secret-change-in-production
+      - database-url=postgresql://dev-user:dev-pass@postgres-dev:5432/terrafusion_dev
+      - redis-url=redis://redis-dev:6379/0
+      - platform-api-key=dev-api-key-change-in-production
+      - vendor-webhook-secret=dev-webhook-secret
+
+replicas:
+  - name: platform-core
+    count: 1
+  - name: vendor-integration
+    count: 1
+  - name: security-mesh
+    count: 1
+  - name: data-plane
+    count: 1
+  - name: agent-fabric
+    count: 1
+  - name: observability
+    count: 1
+  - name: api-gateway
+    count: 1
+  - name: ui-shell
+    count: 1
+
+patchesStrategicMerge:
+  - patches/development-resources.yaml
+  - patches/development-logging.yaml
+  - patches/development-monitoring.yaml
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: platform-core
+    path: patches/platform-core-dev.yaml
+
+  - target:
+      group: v1
+      kind: Service
+      name: platform-core
+    path: patches/platform-service-dev.yaml

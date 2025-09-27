@@ -1,0 +1,49 @@
+{
+  "name": "bcw-uat-testing",
+  "version": "1.0.0",
+  "description": "Benton County Washington UAT Testing Suite for TerraFusion OS",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:government-personas": "playwright test government-personas.spec.ts",
+    "test:ai-coordination": "playwright test ai-agent-coordination.spec.ts",
+    "test:modules": "playwright test module-ecosystem.spec.ts",
+    "test:compliance": "playwright test fisma-nist-compliance.spec.ts",
+    "test:all": "playwright test --reporter=html",
+    "test:ci": "playwright test --reporter=json --output-dir=test-results",
+    "install-browsers": "playwright install",
+    "setup": "npm run install-browsers",
+    "report": "playwright show-report",
+    "clean": "rm -rf test-results playwright-report"
+  },
+  "keywords": [
+    "government",
+    "uat",
+    "testing",
+    "terrafusion",
+    "benton-county",
+    "fisma",
+    "nist",
+    "compliance"
+  ],
+  "author": "TerraFusion OS Team",
+  "license": "Government Use",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terrafusion/bcw-uat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/terrafusion/bcw-uat/issues"
+  },
+  "homepage": "https://github.com/terrafusion/bcw-uat#readme"
+}

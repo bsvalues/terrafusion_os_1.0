@@ -40,12 +40,12 @@ if [ ! -f "$ENV_FILE" ]; then
 TERRAFUSION_ENV=development
 TERRAFUSION_COUNTY=benton
 DATABASE_HOST=localhost
-DATABASE_PORT=5432
+DATABASE_PORT=\${{TF_POSTGRES_PORT:-5432}}
 DATABASE_NAME=terrafusion_benton_dev
 DATABASE_USER=terrafusion_dev
 DATABASE_PASSWORD=dev_password
 REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 JWT_SECRET=dev_jwt_secret_key
 HARRIS_PACS_CONNECTION=dev_connection_string
 EOF
@@ -103,14 +103,14 @@ sleep 15
 echo "🏥 Performing health checks..."
 
 # Check frontend
-if curl -f http://localhost:3000 > /dev/null 2>&1; then
+if curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}} > /dev/null 2>&1; then
     echo "✅ Frontend is running"
 else
     echo "⚠️  Frontend health check failed"
 fi
 
 # Check backend
-if curl -f http://localhost:5000/health > /dev/null 2>&1; then
+if curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health > /dev/null 2>&1; then
     echo "✅ Backend API is running"
 else
     echo "⚠️  Backend health check failed"
@@ -136,10 +136,10 @@ docker-compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" ps
 
 # Display URLs
 echo "🌐 Development URLs:"
-echo "  Frontend: http://localhost:3000"
-echo "  Backend API: http://localhost:5000"
-echo "  Database: localhost:5432"
-echo "  Redis: localhost:6379"
+echo "  Frontend: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "  Backend API: http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "  Database: localhost:\${{TF_FRONTEND_PORT:-3000}}"
+echo "  Redis: localhost:\${{TF_FRONTEND_PORT:-3000}}"
 
 # Success message
 echo -e "${GREEN}"

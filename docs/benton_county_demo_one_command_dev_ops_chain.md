@@ -1,6 +1,8 @@
 # Terrafusion OS 1.0 — Benton County “One‑Command” Production Demo DevOps Chain
 
-This package gives you a single command to provision infra, seed Benton County data, boot the full stack, validate with quality gates, run the live demo, and export reports/artifacts.
+This package gives you a single command to provision infra, seed Benton County
+data, boot the full stack, validate with quality gates, run the live demo, and
+export reports/artifacts.
 
 ---
 
@@ -13,8 +15,10 @@ bash ops/benton-demo.sh
 make demo-benton
 ```
 
-- Default mode is **idempotent** and safe to re-run. Uses `./.env.benton` if present (falls back to `./.env.benton.example`).
-- Artifacts (logs, reports, screenshots, bundle) go to `./artifacts/benton/<timestamp>/`.
+- Default mode is **idempotent** and safe to re-run. Uses `./.env.benton` if
+  present (falls back to `./.env.benton.example`).
+- Artifacts (logs, reports, screenshots, bundle) go to
+  `./artifacts/benton/<timestamp>/`.
 
 ---
 
@@ -72,11 +76,11 @@ POSTGRES_USER=terrafusion
 POSTGRES_PASSWORD=terrafusion_password
 POSTGRES_DB=terrafusion
 POSTGRES_HOST=db
-POSTGRES_PORT=5432
+POSTGRES_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Redis =====
 REDIS_HOST=redis
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== App Secrets (demo values) =====
 JWT_SECRET=change_me_demo_secret
@@ -173,7 +177,7 @@ log "🎉 Benton County demo chain complete. Artifacts: $LOG_DIR"
 
 ## 🔗 Step Scripts (`ops/benton/*.sh`)
 
-### 00\_bootstrap.sh
+### 00_bootstrap.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -190,7 +194,7 @@ fi
 echo "Bootstrap complete."
 ```
 
-### 01\_validate\_prereqs.sh
+### 01_validate_prereqs.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -209,7 +213,7 @@ done
 echo "Prereqs OK."
 ```
 
-### 02\_prepare\_env.sh
+### 02_prepare_env.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -237,7 +241,7 @@ fi
 echo "Env prepared."
 ```
 
-### 03\_provision\_infra.sh
+### 03_provision_infra.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -259,7 +263,7 @@ done
 echo "Infra provisioned."
 ```
 
-### 04\_seed\_data.sh
+### 04_seed_data.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -331,7 +335,7 @@ fi
 echo "Data seeded."
 ```
 
-### 05\_start\_services.sh
+### 05_start_services.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -342,7 +346,7 @@ docker compose -f compose/docker-compose.demo.yml up -d core ui worker grafana p
 echo "Services started."
 ```
 
-### 06\_run\_tests.sh
+### 06_run_tests.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -353,7 +357,7 @@ bash scripts/run_quality_gates.sh || { echo "Quality gates failed"; exit 1; }
 echo "Quality gates passed."
 ```
 
-### 07\_run\_demo.sh
+### 07_run_demo.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -367,10 +371,10 @@ else
 fi
 
 # Output demo endpoints
-echo "Demo ready:\n  UI:        http://localhost:3000\n  API:       http://localhost:8080\n  Grafana:   http://localhost:3001\n  Prometheus:http://localhost:9090"
+echo "Demo ready:\n  UI:        http://localhost:\${{TF_FRONTEND_PORT:-3000}}\n  API:       http://localhost:\${{TF_FRONTEND_PORT:-3000}}\n  Grafana:   http://localhost:\${{TF_FRONTEND_PORT:-3000}}\n  Prometheus:http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
 ```
 
-### 08\_collect\_artifacts.sh
+### 08_collect_artifacts.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -395,7 +399,7 @@ cp .env.benton "$OUT/.env.snapshot" || true
 echo "Artifacts collected at $OUT"
 ```
 
-### 09\_teardown.sh (optional)
+### 09_teardown.sh (optional)
 
 ```bash
 #!/usr/bin/env bash
@@ -452,7 +456,7 @@ services:
   ui:
     image: ghcr.io/terrafusion/ui:demo
     environment:
-      NEXT_PUBLIC_API_BASE: http://localhost:8080
+      NEXT_PUBLIC_API_BASE: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
     depends_on:
       core: { condition: service_started }
     ports: ["3000:3000"]
@@ -490,7 +494,8 @@ configs:
     file: ./prometheus.yml
 ```
 
-> **Note:** Point `image:` tags to your actual demo images, or replace with local Dockerfiles.
+> **Note:** Point `image:` tags to your actual demo images, or replace with
+> local Dockerfiles.
 
 ---
 
@@ -501,10 +506,10 @@ configs:
 set -Eeuo pipefail
 
 # Lightweight smoke: API health, DB connectivity, key routes
-curl -fsS http://localhost:8080/health || { echo "API health failed"; exit 1; }
+curl -fsS http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health || { echo "API health failed"; exit 1; }
 
 # Basic DB query
-psql "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}" -c "SELECT 1;" >/dev/null
+psql "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:\${{TF_FRONTEND_PORT:-3000}}/${POSTGRES_DB}" -c "SELECT 1;" >/dev/null
 
 # Optional: Container vuln scan (if trivy installed)
 if command -v trivy >/dev/null 2>&1; then
@@ -530,10 +535,10 @@ summary = {
   "timestamp": datetime.utcnow().isoformat()+"Z",
   "county": os.getenv('COUNTY_NAME','Benton County, WA'),
   "services": {
-    "ui": "http://localhost:3000",
-    "api": "http://localhost:8080",
-    "grafana": "http://localhost:3001",
-    "prometheus": "http://localhost:9090"
+    "ui": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
+    "api": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
+    "grafana": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
+    "prometheus": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
   },
   "notes": [
     "Demo stack started",
@@ -556,7 +561,7 @@ print('Wrote', os.path.join(out, 'summary.json'))
 """
 Alternative loader you can run locally instead of the ephemeral container in 04_seed_data.sh
 Usage:
-  PGHOST=localhost PGPORT=5432 PGUSER=terrafusion PGPASSWORD=... PGDATABASE=terrafusion \
+  PGHOST=localhost PGPORT=\${{TF_POSTGRES_PORT:-5432}} PGUSER=terrafusion PGPASSWORD=... PGDATABASE=terrafusion \
   python scripts/load_benton_data.py ./data/benton
 """
 import os, sys, pandas as pd
@@ -587,13 +592,14 @@ cur.close(); conn.close(); print('done')
 ## 🧪 CI Orchestration — `.github/workflows/benton-demo.yml`
 
 ```yaml
-name: "Benton Demo Packager"
+name: 'Benton Demo Packager'
 
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
-    paths: [ 'ops/**', 'compose/**', 'scripts/**', '.env.benton.example', 'Makefile' ]
+    branches: [main]
+    paths:
+      ['ops/**', 'compose/**', 'scripts/**', '.env.benton.example', 'Makefile']
 
 jobs:
   package:
@@ -617,7 +623,8 @@ jobs:
         run: bash ops/benton/04_seed_data.sh
 
       - name: Bring up full stack
-        run: docker compose -f compose/docker-compose.demo.yml up -d core ui worker
+        run:
+          docker compose -f compose/docker-compose.demo.yml up -d core ui worker
 
       - name: Quality gates
         run: bash scripts/run_quality_gates.sh
@@ -640,25 +647,34 @@ jobs:
 
 ## 🧷 Notes & Guarantees
 
-- **Idempotent:** You can rerun `bash ops/benton-demo.sh` safely; steps check infra state.
+- **Idempotent:** You can rerun `bash ops/benton-demo.sh` safely; steps check
+  infra state.
 - **Fail-fast with logs:** Each step logs to `artifacts/benton/<ts>/*.log`.
-- **Pluggable AI Arsenal:** If your `./championship/scripts/*.sh` exist, the chain invokes them; otherwise it gracefully skips.
-- **Security-minded:** Secrets are demo-only; wire in your real secret manager for production.
-- **Extensible:** Add steps (e.g., Lighthouse/Playwright) before `08_collect_artifacts.sh` as needed.
+- **Pluggable AI Arsenal:** If your `./championship/scripts/*.sh` exist, the
+  chain invokes them; otherwise it gracefully skips.
+- **Security-minded:** Secrets are demo-only; wire in your real secret manager
+  for production.
+- **Extensible:** Add steps (e.g., Lighthouse/Playwright) before
+  `08_collect_artifacts.sh` as needed.
 
 ```
+
 ```
 
 ---
 
 # 🏢 Enterprise+ Extensions (Beyond Enterprise-Grade)
 
-> This section elevates the one‑command demo into a **production‑caliber, multi‑cloud, policy‑driven, auditable platform**. It adds GitOps, Kubernetes, supply‑chain security, SSO, secrets, observability, DR, compliance, and progressive delivery. Everything remains reproducible and automated.
+> This section elevates the one‑command demo into a **production‑caliber,
+> multi‑cloud, policy‑driven, auditable platform**. It adds GitOps, Kubernetes,
+> supply‑chain security, SSO, secrets, observability, DR, compliance, and
+> progressive delivery. Everything remains reproducible and automated.
 
 ## 🌐 Modes of Operation
 
 - **Local Compose (existing):** Rapid demo/dev on a laptop.
-- **Enterprise Kubernetes:** AKS/EKS/GKE with GitOps & Argo CD. One command: `bash ops/benton-enterprise.sh`.
+- **Enterprise Kubernetes:** AKS/EKS/GKE with GitOps & Argo CD. One command:
+  `bash ops/benton-enterprise.sh`.
 
 ## 📁 New Repo Additions
 
@@ -747,19 +763,22 @@ archetypes/
 security:
   oidc:
     enabled: true
-    issuer: "https://login.microsoftonline.com/<tenant>/v2.0"
-    clientId: "${OIDC_CLIENT_ID}"
-    clientSecretRef: "oidc-client-secret"  # managed via External Secrets
+    issuer: 'https://login.microsoftonline.com/<tenant>/v2.0'
+    clientId: '${OIDC_CLIENT_ID}'
+    clientSecretRef: 'oidc-client-secret' # managed via External Secrets
     redirectUris:
-      - "https://benton.terrafusion.example.com/api/auth/callback"
-    groupsClaim: "groups"
+      - 'https://benton.terrafusion.example.com/api/auth/callback'
+    groupsClaim: 'groups'
     requiredGroups:
-      - "Assessor"
-      - "CountyAdmin"
+      - 'Assessor'
+      - 'CountyAdmin'
 ```
 
-- **Secrets Management**: External Secrets Operator → Azure Key Vault (or AWS SM/GCP SM). `infra/kubernetes/gitops/security/external-secrets.yaml` binds Kubernetes `Secret` to Key Vault entries; CI never sees raw secrets.
-- **Service‑to‑Service**: mTLS via service mesh (Istio/Linkerd optional), strict **NetworkPolicies** (deny‑all, allow necessary).
+- **Secrets Management**: External Secrets Operator → Azure Key Vault (or AWS
+  SM/GCP SM). `infra/kubernetes/gitops/security/external-secrets.yaml` binds
+  Kubernetes `Secret` to Key Vault entries; CI never sees raw secrets.
+- **Service‑to‑Service**: mTLS via service mesh (Istio/Linkerd optional), strict
+  **NetworkPolicies** (deny‑all, allow necessary).
 
 ---
 
@@ -768,10 +787,13 @@ security:
 `/.github/workflows/enterprise-ci.yml` (high‑level):
 
 1. **Build** images for `core`, `ui`, `worker` with build args/digests.
-2. **SBOM** via **Syft**; **vuln scan** via **Grype/Trivy** (fail on HIGH/CRITICAL, allowlist w/ expiry).
-3. **Sign** images using **cosign keyless** (OIDC/GitHub) + **generate SLSA provenance**.
+2. **SBOM** via **Syft**; **vuln scan** via **Grype/Trivy** (fail on
+   HIGH/CRITICAL, allowlist w/ expiry).
+3. **Sign** images using **cosign keyless** (OIDC/GitHub) + **generate SLSA
+   provenance**.
 4. **Push** to GHCR/ACR and **attach SBOM + attestations**.
-5. **Create PR** to `infra/kubernetes/gitops/terrafusion-app.yaml` pinning **image\@sha256****:digest** (immutable).
+5. **Create PR** to `infra/kubernetes/gitops/terrafusion-app.yaml` pinning
+   **image\@sha256\*\***:digest\*\* (immutable).
 
 Snippet:
 
@@ -796,7 +818,8 @@ Snippet:
 ## 🚀 Enterprise CD (GitOps + Progressive Delivery)
 
 - **Argo CD “App‑of‑Apps”** controls platform and add‑ons.
-- **Argo Rollouts** for **canary**/**blue‑green** with **Prometheus** checks + **automatic rollback**.
+- **Argo Rollouts** for **canary**/**blue‑green** with **Prometheus** checks +
+  **automatic rollback**.
 
 `infra/kubernetes/gitops/argo/terrafusion-app.yaml` (excerpt):
 
@@ -835,14 +858,14 @@ spec:
     canary:
       steps:
         - setWeight: 10
-        - pause: {duration: 120}
+        - pause: { duration: 120 }
         - analysis:
             templates:
               - templateName: success-rate
         - setWeight: 30
-        - pause: {duration: 180}
+        - pause: { duration: 180 }
         - setWeight: 60
-        - pause: {duration: 300}
+        - pause: { duration: 300 }
       trafficRouting:
         nginx: {}
 ```
@@ -851,7 +874,8 @@ spec:
 
 ## 📊 Observability & SLOs
 
-- **OpenTelemetry Collector** → **Tempo/Jaeger** (traces), **Loki** (logs), **Prometheus Operator** (metrics), **Grafana** dashboards auto‑provisioned.
+- **OpenTelemetry Collector** → **Tempo/Jaeger** (traces), **Loki** (logs),
+  **Prometheus Operator** (metrics), **Grafana** dashboards auto‑provisioned.
 - **SLOs with Sloth** → Error budgets + alerts routed to PagerDuty/MS Teams.
 
 `gitops/observability/sloth-slo.yaml` (excerpt):
@@ -872,7 +896,7 @@ spec:
           totalQuery: sum(rate(http_request_duration_seconds_count{service="api"}[5m]))
       alerting:
         name: latency-budget-burn
-        labels: {severity: page}
+        labels: { severity: page }
 ```
 
 ---
@@ -903,22 +927,24 @@ spec:
           - resources:
               kinds: [Deployment, Rollout]
       validate:
-        message: "Images must be pinned by digest"
+        message: 'Images must be pinned by digest'
         pattern:
           spec:
             template:
               spec:
                 containers:
-                  - image: "*@sha256:*"
+                  - image: '*@sha256:*'
 ```
 
 ---
 
 ## 🧯 DR/BCP & Backups
 
-- **Database**: Managed Postgres (Azure Flexible Server) **or** self‑managed with **WAL‑G** backups to Blob/S3, PITR enabled.
+- **Database**: Managed Postgres (Azure Flexible Server) **or** self‑managed
+  with **WAL‑G** backups to Blob/S3, PITR enabled.
 - **RPO/RTO Targets**: RPO ≤ 5m, RTO ≤ 30m (configurable).
-- **Automated Restore Tests**: Nightly job restores to staging & runs health checks.
+- **Automated Restore Tests**: Nightly job restores to staging & runs health
+  checks.
 
 `ops/enterprise/07_postgres_backup_dr.sh` (core):
 
@@ -929,7 +955,8 @@ wal-g delete retain 7 --confirm
 # Restore test (k8s Job) spins up ephemeral DB and runs smoke SQL
 ```
 
-Runbook (`archetypes/dr-runbook.md`) details on failover, DNS cutover, and data verification.
+Runbook (`archetypes/dr-runbook.md`) details on failover, DNS cutover, and data
+verification.
 
 ---
 
@@ -943,7 +970,8 @@ Runbook (`archetypes/dr-runbook.md`) details on failover, DNS cutover, and data 
 
 ## 🧪 Chaos & Resilience
 
-- **LitmusChaos** experiments baked into non‑prod: pod‑kill, network‑loss, latency injection for API/UI.
+- **LitmusChaos** experiments baked into non‑prod: pod‑kill, network‑loss,
+  latency injection for API/UI.
 - Rollout gates require passing chaos scenarios before promotion.
 
 ---
@@ -952,7 +980,9 @@ Runbook (`archetypes/dr-runbook.md`) details on failover, DNS cutover, and data 
 
 `ops/enterprise/08_compliance_snapshot.sh`:
 
-- Captures: SBOMs, image signatures, cluster policy reports, access logs (OIDC), backup status, SLO exports, change PR links, rollout history, vulnerability status.
+- Captures: SBOMs, image signatures, cluster policy reports, access logs (OIDC),
+  backup status, SLO exports, change PR links, rollout history, vulnerability
+  status.
 - Outputs a **time‑stamped evidence bundle** for auditors.
 
 ---
@@ -960,8 +990,10 @@ Runbook (`archetypes/dr-runbook.md`) details on failover, DNS cutover, and data 
 ## 🔄 Environment Promotion & Change Management
 
 - **Branching**: `main` → prod, `develop` → staging, PRs require ✅ checks.
-- **Promotion**: Tag release → CI signs + publishes → CD opens GitOps PR → Argo sync → Rollouts canary.
-- **Rollback**: `argocd app rollback` or `rollouts undo` to last healthy revision.
+- **Promotion**: Tag release → CI signs + publishes → CD opens GitOps PR → Argo
+  sync → Rollouts canary.
+- **Rollback**: `argocd app rollback` or `rollouts undo` to last healthy
+  revision.
 
 ---
 
@@ -1014,16 +1046,16 @@ ingress:
 
 resources:
   core:
-    limits: {cpu: "2", memory: "2Gi"}
-    requests: {cpu: "500m", memory: "512Mi"}
+    limits: { cpu: '2', memory: '2Gi' }
+    requests: { cpu: '500m', memory: '512Mi' }
   ui:
-    limits: {cpu: "1", memory: "1Gi"}
-    requests: {cpu: "200m", memory: "256Mi"}
+    limits: { cpu: '1', memory: '1Gi' }
+    requests: { cpu: '200m', memory: '256Mi' }
 
 postgres:
-  managed: true        # Use Azure Flexible Server with PostGIS
+  managed: true # Use Azure Flexible Server with PostGIS
   host: ${PG_HOST}
-  db:   ${PG_DB}
+  db: ${PG_DB}
   user: ${PG_USER}
   passwordSecret: pg-app-creds
 
@@ -1062,7 +1094,7 @@ spec:
   egress:
     - to:
         - namespaceSelector:
-            matchLabels: {kubernetes.io/metadata.name: database}
+            matchLabels: { kubernetes.io/metadata.name: database }
       ports:
         - protocol: TCP
           port: 5432
@@ -1093,5 +1125,6 @@ The loader will prefer `*_sanitized.csv` when present.
 - **Compliance** evidence bundle
 - **Progressive delivery** with automatic rollback
 
-> Ready for me to drop in the actual Terraform AKS module, Helm chart skeletons, and the ArgoCD App‑of‑Apps with working defaults? I can add those files verbatim next.
-
+> Ready for me to drop in the actual Terraform AKS module, Helm chart skeletons,
+> and the ArgoCD App‑of‑Apps with working defaults? I can add those files
+> verbatim next.

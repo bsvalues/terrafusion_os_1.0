@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using TerraFusion.Core.Services.Monitoring;
 
 namespace TerraFusion.Core.Services.Monitoring;
@@ -25,7 +26,7 @@ public class MetricsCollectionService : IMetricsCollectionService
     private readonly ILogger<MetricsCollectionService> _logger;
     private readonly ConcurrentDictionary<string, List<MetricPoint>> _metricsHistory;
     private readonly ConcurrentDictionary<string, double> _currentMetrics;
-    private readonly Timer? _collectionTimer;
+    // Timer for periodic metrics collection (removed to eliminate unused field warning)
     private readonly PerformanceCounter? _cpuCounter;
     private readonly PerformanceCounter? _memoryCounter;
     private bool _isCollecting;
@@ -41,12 +42,21 @@ public class MetricsCollectionService : IMetricsCollectionService
 
         try
         {
-            _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-            _memoryCounter = new PerformanceCounter("Memory", "Available MBytes");
+            // Use cross-platform metrics collection instead of Windows-specific PerformanceCounter
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+                _memoryCounter = new PerformanceCounter("Memory", "Available MBytes");
+            }
+            else
+            {
+                // Linux/macOS will use alternative metrics collection (Process.GetCurrentProcess())
+                _logger.LogInformation("Using cross-platform metrics collection for non-Windows platform");
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to initialize performance counters");
+            _logger.LogWarning(ex, "Failed to initialize performance counters, falling back to cross-platform metrics");
         }
     }
 
@@ -77,12 +87,14 @@ public class MetricsCollectionService : IMetricsCollectionService
 
     public async Task<List<MetricSnapshot>> GetMetricsHistoryAsync(TimeSpan period)
     {
-        try
+        return await Task.Run(() =>
         {
-            var cutoffTime = DateTimeOffset.UtcNow.Subtract(period);
-            var snapshots = new List<MetricSnapshot>();
+            try
+            {
+                var cutoffTime = DateTimeOffset.UtcNow.Subtract(period);
+                var snapshots = new List<MetricSnapshot>();
 
-            // Get historical data for core metrics
+                // Get historical data for core metrics
             var cpuHistory = GetMetricHistory("cpu_usage", cutoffTime);
             var memoryHistory = GetMetricHistory("memory_usage", cutoffTime);
             var responseTimeHistory = GetMetricHistory("response_time", cutoffTime);
@@ -111,14 +123,15 @@ public class MetricsCollectionService : IMetricsCollectionService
                 });
             }
 
-            return snapshots;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to get metrics history for period: {Period}", period);
-            _telemetryService.TrackException(ex);
-            return new List<MetricSnapshot>();
-        }
+                return snapshots;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get metrics history for period: {Period}", period);
+                _telemetryService.TrackException(ex);
+                return new List<MetricSnapshot>();
+            }
+        });
     }
 
     public async Task RecordMetricAsync(string metricName, double value, Dictionary<string, string>? tags = null)
@@ -192,12 +205,14 @@ public class MetricsCollectionService : IMetricsCollectionService
 
     public async Task<MetricsStatistics> GetMetricsStatisticsAsync()
     {
-        try
+        return await Task.Run(() =>
         {
-            var statistics = new MetricsStatistics();
-            
-            foreach (var metricGroup in _metricsHistory)
+            try
             {
+                var statistics = new MetricsStatistics();
+                
+                foreach (var metricGroup in _metricsHistory)
+                {
                 var metricName = metricGroup.Key;
                 var values = metricGroup.Value.Select(m => m.Value).ToList();
                 
@@ -219,14 +234,15 @@ public class MetricsCollectionService : IMetricsCollectionService
             statistics.TotalMetrics = _metricsHistory.Count;
             statistics.TotalDataPoints = _metricsHistory.Values.Sum(list => list.Count);
             
-            return statistics;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to get metrics statistics");
-            _telemetryService.TrackException(ex);
-            throw;
-        }
+                return statistics;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get metrics statistics");
+                _telemetryService.TrackException(ex);
+                throw;
+            }
+        });
     }
 
     public void StartPeriodicCollection()
@@ -290,7 +306,7 @@ public class MetricsCollectionService : IMetricsCollectionService
     {
         try
         {
-            if (_cpuCounter != null)
+            if (_cpuCounter != null && OperatingSystem.IsWindows())
             {
                 // First call returns 0, so call twice
                 _cpuCounter.NextValue();
@@ -312,7 +328,7 @@ public class MetricsCollectionService : IMetricsCollectionService
     {
         try
         {
-            if (_memoryCounter != null)
+            if (_memoryCounter != null && OperatingSystem.IsWindows())
             {
                 var availableMemoryMB = _memoryCounter.NextValue();
                 // Estimate total memory (this is a simplified approach)

@@ -1,0 +1,66 @@
+# TerraFusion cOS Production Requirements
+# Additional production-grade dependencies
+
+# Production WSGI server
+gunicorn==21.2.0
+uvicorn[standard]==0.24.0
+
+# Production database drivers
+psycopg2-binary==2.9.7
+redis[hiredis]==5.0.1
+
+# Monitoring and observability
+prometheus-client==0.18.0
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-exporter-prometheus==1.12.0rc1
+opentelemetry-instrumentation-fastapi==0.42b0
+opentelemetry-instrumentation-sqlalchemy==0.42b0
+opentelemetry-instrumentation-redis==0.42b0
+
+# Logging and structured logging
+structlog==23.2.0
+python-json-logger==2.0.7
+
+# Security and compliance
+cryptography>=41.0.0
+python-jose[cryptography]==3.3.0
+bcrypt==4.0.1
+passlib[bcrypt]==1.7.4
+
+# Configuration management
+pydantic-settings==2.0.3
+python-dotenv==1.0.0
+
+# Performance and optimization
+orjson==3.9.9
+ujson==5.8.0
+msgpack==1.0.7
+
+# HTTP client optimizations
+httpx[http2]==0.25.0
+aiofiles==23.2.1
+
+# Caching
+aiocache[redis]==0.12.2
+
+# Database migrations
+alembic==1.12.1
+
+# Task queue
+celery[redis]==5.3.4
+
+# API documentation
+redoc==0.1.1
+
+# Health checks
+py-healthcheck==1.10.1
+
+# Production utilities
+click==8.1.7
+rich==13.6.0
+typer==0.9.0
+
+# Government compliance
+fido2==1.1.2
+pycryptodome==3.19.0

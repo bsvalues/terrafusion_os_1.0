@@ -294,7 +294,7 @@ configure_monitoring_dashboards() {
     local wait_count=0
     
     while [ "$grafana_ready" = false ] && [ $wait_count -lt $max_wait ]; do
-        if curl -f -s http://localhost:3002/api/health >/dev/null 2>&1; then
+        if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/api/health >/dev/null 2>&1; then
             grafana_ready=true
         else
             sleep 2
@@ -313,7 +313,7 @@ configure_monitoring_dashboards() {
         -H "Content-Type: application/json" \
         -u "admin:terrafusion_admin_2024" \
         -d @"${PROJECT_ROOT}/monitoring/grafana/provisioning/dashboards/ai-swarm-overview.json" \
-        http://localhost:3002/api/dashboards/db >/dev/null 2>&1 || log_warn "Dashboard import may have failed"
+        http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/api/dashboards/db >/dev/null 2>&1 || log_warn "Dashboard import may have failed"
     
     log_success "Monitoring dashboards configured"
 }
@@ -325,102 +325,102 @@ show_monitoring_status() {
     echo "🎯 Core Monitoring Services:"
     
     # Check Prometheus
-    if curl -f -s http://localhost:9090/-/healthy >/dev/null 2>&1; then
-        echo "  ✅ Prometheus (Port 9090): Collecting metrics from ${AI_SWARM_SIZE} AI agents"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/-/healthy >/dev/null 2>&1; then
+        echo "  ✅ Prometheus (Port \${{TF_PROMETHEUS_PORT:-9090}}): Collecting metrics from ${AI_SWARM_SIZE} AI agents"
     else
-        echo "  ❌ Prometheus (Port 9090): Unavailable"
+        echo "  ❌ Prometheus (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     # Check Grafana
-    if curl -f -s http://localhost:3002/api/health >/dev/null 2>&1; then
-        echo "  ✅ Grafana (Port 3002): Government dashboards available"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/api/health >/dev/null 2>&1; then
+        echo "  ✅ Grafana (Port \${{TF_PROMETHEUS_PORT:-9090}}): Government dashboards available"
     else
-        echo "  ❌ Grafana (Port 3002): Unavailable"
+        echo "  ❌ Grafana (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     # Check Alertmanager
-    if curl -f -s http://localhost:9093/-/healthy >/dev/null 2>&1; then
-        echo "  ✅ Alertmanager (Port 9093): Government alert routing active"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/-/healthy >/dev/null 2>&1; then
+        echo "  ✅ Alertmanager (Port \${{TF_PROMETHEUS_PORT:-9090}}): Government alert routing active"
     else
-        echo "  ❌ Alertmanager (Port 9093): Unavailable"
+        echo "  ❌ Alertmanager (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     echo ""
     echo "🤖 AI Swarm Monitoring:"
     
     # Check AI Swarm exporter
-    if curl -f -s http://localhost:9100/health >/dev/null 2>&1; then
-        echo "  ✅ AI Swarm Exporter (Port 9100): Monitoring 1,008 agents"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/health >/dev/null 2>&1; then
+        echo "  ✅ AI Swarm Exporter (Port \${{TF_PROMETHEUS_PORT:-9090}}): Monitoring 1,008 agents"
     else
-        echo "  ❌ AI Swarm Exporter (Port 9100): Unavailable"
+        echo "  ❌ AI Swarm Exporter (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     # Check Harris PACS monitoring
     if [ "$HARRIS_PACS_MONITORING" = "true" ]; then
-        if curl -f -s http://localhost:9200/health >/dev/null 2>&1; then
-            echo "  ✅ Harris PACS Monitor (Port 9200): Benton County integration active"
+        if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/health >/dev/null 2>&1; then
+            echo "  ✅ Harris PACS Monitor (Port \${{TF_PROMETHEUS_PORT:-9090}}): Benton County integration active"
         else
-            echo "  ❌ Harris PACS Monitor (Port 9200): Unavailable"
+            echo "  ❌ Harris PACS Monitor (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
         fi
     fi
     
     # Check Quantum Performance monitoring
-    if curl -f -s http://localhost:9300/health >/dev/null 2>&1; then
-        echo "  ✅ Quantum Performance (Port 9300): 379x optimization monitoring"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/health >/dev/null 2>&1; then
+        echo "  ✅ Quantum Performance (Port \${{TF_PROMETHEUS_PORT:-9090}}): 379x optimization monitoring"
     else
-        echo "  ❌ Quantum Performance (Port 9300): Unavailable"
+        echo "  ❌ Quantum Performance (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     echo ""
     echo "🏛️ Government Compliance:"
     
     # Check Security monitor
-    if curl -f -s http://localhost:8080/health >/dev/null 2>&1; then
-        echo "  ✅ Security Monitor (Port 8080): FISMA compliance active"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/health >/dev/null 2>&1; then
+        echo "  ✅ Security Monitor (Port \${{TF_PROMETHEUS_PORT:-9090}}): FISMA compliance active"
     else
-        echo "  ❌ Security Monitor (Port 8080): Unavailable"
+        echo "  ❌ Security Monitor (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     # Check Compliance dashboard
-    if curl -f -s http://localhost:8070/health >/dev/null 2>&1; then
-        echo "  ✅ Compliance Dashboard (Port 8070): Government reporting ready"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/health >/dev/null 2>&1; then
+        echo "  ✅ Compliance Dashboard (Port \${{TF_PROMETHEUS_PORT:-9090}}): Government reporting ready"
     else
-        echo "  ❌ Compliance Dashboard (Port 8070): Unavailable"
+        echo "  ❌ Compliance Dashboard (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     echo ""
     echo "📊 Observability:"
     
     # Check Loki
-    if curl -f -s http://localhost:3100/ready >/dev/null 2>&1; then
-        echo "  ✅ Loki (Port 3100): Government audit logging active"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/ready >/dev/null 2>&1; then
+        echo "  ✅ Loki (Port \${{TF_PROMETHEUS_PORT:-9090}}): Government audit logging active"
     else
-        echo "  ❌ Loki (Port 3100): Unavailable"
+        echo "  ❌ Loki (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     # Check Jaeger
-    if curl -f -s http://localhost:16686/ >/dev/null 2>&1; then
-        echo "  ✅ Jaeger (Port 16686): Distributed tracing operational"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/ >/dev/null 2>&1; then
+        echo "  ✅ Jaeger (Port \${{TF_PROMETHEUS_PORT:-9090}}): Distributed tracing operational"
     else
-        echo "  ❌ Jaeger (Port 16686): Unavailable"
+        echo "  ❌ Jaeger (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     # Check Elasticsearch
-    if curl -f -s http://localhost:9201/_cluster/health >/dev/null 2>&1; then
-        echo "  ✅ Elasticsearch (Port 9201): Advanced analytics ready"
+    if curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/_cluster/health >/dev/null 2>&1; then
+        echo "  ✅ Elasticsearch (Port \${{TF_PROMETHEUS_PORT:-9090}}): Advanced analytics ready"
     else
-        echo "  ❌ Elasticsearch (Port 9201): Unavailable"
+        echo "  ❌ Elasticsearch (Port \${{TF_PROMETHEUS_PORT:-9090}}): Unavailable"
     fi
     
     echo ""
     echo "🔗 Access URLs:"
-    echo "  Grafana Dashboards:     http://localhost:3002 (admin/terrafusion_admin_2024)"
-    echo "  Prometheus Metrics:     http://localhost:9090"
-    echo "  Alertmanager:          http://localhost:9093"
-    echo "  Jaeger Tracing:        http://localhost:16686"
-    echo "  Kibana Analytics:      http://localhost:5601"
-    echo "  Security Dashboard:    http://localhost:8080"
-    echo "  Compliance Dashboard:  http://localhost:8070"
+    echo "  Grafana Dashboards:     http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}} (admin/terrafusion_admin_2024)"
+    echo "  Prometheus Metrics:     http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"
+    echo "  Alertmanager:          http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"
+    echo "  Jaeger Tracing:        http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"
+    echo "  Kibana Analytics:      http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"
+    echo "  Security Dashboard:    http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"
+    echo "  Compliance Dashboard:  http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}"
     echo ""
     echo "📈 Key Performance Metrics:"
     echo "  🎯 AI Agents Monitored: ${AI_SWARM_SIZE}"
@@ -474,11 +474,11 @@ main() {
         log_info "Monitoring stack health check: $(date)"
         
         # Basic health check
-        if ! curl -f -s http://localhost:9090/-/healthy >/dev/null 2>&1; then
+        if ! curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/-/healthy >/dev/null 2>&1; then
             log_warn "Prometheus health check failed - monitoring may be impaired"
         fi
         
-        if ! curl -f -s http://localhost:3002/api/health >/dev/null 2>&1; then
+        if ! curl -f -s http://localhost:\${{TF_CONSCIOUSNESS_PORT:-3002}}/api/health >/dev/null 2>&1; then
             log_warn "Grafana health check failed - dashboards may be unavailable"
         fi
     done

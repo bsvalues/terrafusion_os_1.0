@@ -3,6 +3,7 @@
 ## Repository Creation
 
 ### 1. Create New Repository
+
 ```bash
 # Repository Details
 Name: TerraFusion-OS-1.0
@@ -12,6 +13,7 @@ License: MIT or Custom Government License
 ```
 
 ### 2. Repository Structure
+
 ```
 TerraFusion-OS-1.0/
 ├── .github/
@@ -52,6 +54,7 @@ TerraFusion-OS-1.0/
 ```
 
 ### 3. Initial Setup Commands
+
 ```bash
 # Initialize repository
 git init
@@ -73,6 +76,7 @@ git push -u origin development
 ## Repository Settings
 
 ### Branch Protection Rules
+
 ```yaml
 Branch: main
 Protection Rules:
@@ -84,6 +88,7 @@ Protection Rules:
 ```
 
 ### Repository Secrets
+
 ```bash
 # Required secrets for CI/CD
 ANTHROPIC_API_KEY=your_anthropic_key
@@ -96,14 +101,16 @@ KUBERNETES_CONFIG=your_k8s_config
 ```
 
 ### Repository Topics/Tags
+
 ```
-government-ai, property-assessment, revenue-discovery, quantum-computing, 
+government-ai, property-assessment, revenue-discovery, quantum-computing,
 dotnet, react, typescript, kubernetes, ai-agents, government-software
 ```
 
 ## Collaboration Guidelines
 
 ### Commit Message Convention
+
 ```bash
 # Format: <type>(<scope>): <description>
 feat(ai): add revenue hunter swarm orchestration
@@ -114,6 +121,7 @@ security(auth): implement JWT token validation
 ```
 
 ### Pull Request Process
+
 1. Create feature branch from `development`
 2. Implement changes with tests
 3. Run pre-commit hooks (Husky validation)
@@ -125,6 +133,7 @@ security(auth): implement JWT token validation
 9. Merge to main for production release
 
 ### Issue Templates
+
 - **Bug Report**: Structured template for reporting issues
 - **Feature Request**: Template for new feature proposals
 - **Security Issue**: Private template for security vulnerabilities

@@ -20,7 +20,7 @@ export interface PluginManifest {
   icon?: string;
   homepage?: string;
   repository?: string;
-  
+
   // Terrafusion specific
   terrafusion: {
     minVersion: string;
@@ -141,22 +141,22 @@ export class TerraFusionSDK extends EventEmitter {
     try {
       // Validate permissions
       await this.validatePermissions();
-      
+
       // Initialize storage
       await this.context.storage.initialize();
-      
+
       // Setup API client
       await this.context.api.initialize();
-      
+
       // Register UI components
       await this.context.ui.registerComponents();
-      
+
       // Setup event listeners
       this.setupEventListeners();
-      
+
       this.initialized = true;
       this.emit('initialized');
-      
+
       this.context.logger.info('Plugin initialized successfully');
     } catch (error) {
       this.context.logger.error('Plugin initialization failed:', error);
@@ -172,13 +172,13 @@ export class TerraFusionSDK extends EventEmitter {
     try {
       // Run activation hooks
       await this.runLifecycleHooks('activate');
-      
+
       // Enable UI components
       await this.context.ui.enableComponents();
-      
+
       // Start background services
       await this.startServices();
-      
+
       this.emit('activated');
       this.context.logger.info('Plugin activated successfully');
     } catch (error) {
@@ -191,13 +191,13 @@ export class TerraFusionSDK extends EventEmitter {
     try {
       // Stop background services
       await this.stopServices();
-      
+
       // Disable UI components
       await this.context.ui.disableComponents();
-      
+
       // Run deactivation hooks
       await this.runLifecycleHooks('deactivate');
-      
+
       this.emit('deactivated');
       this.context.logger.info('Plugin deactivated successfully');
     } catch (error) {
@@ -264,7 +264,7 @@ export class TerraFusionSDK extends EventEmitter {
       api: new TerraFusionAPI(manifest),
       ui: new UIManager(manifest),
       logger: new Logger(manifest.id),
-      events: new EventManager(manifest.id)
+      events: new EventManager(manifest.id),
     };
   }
 
@@ -282,7 +282,7 @@ export class TerraFusionSDK extends EventEmitter {
 
   private async runLifecycleHooks(event: string): Promise<void> {
     const hooks = this.context.plugin.terrafusion.hooks.filter(h => h.event === event);
-    
+
     for (const hook of hooks) {
       try {
         if (hook.async) {
@@ -305,11 +305,11 @@ export class TerraFusionSDK extends EventEmitter {
 
   private setupEventListeners(): void {
     // Setup global event listeners
-    this.context.events.on('county_data_updated', (data) => {
+    this.context.events.on('county_data_updated', data => {
       this.emit('county_data_updated', data);
     });
 
-    this.context.events.on('user_permission_changed', (permissions) => {
+    this.context.events.on('user_permission_changed', permissions => {
       this.context.permissions = permissions;
       this.emit('permissions_changed', permissions);
     });
@@ -340,8 +340,8 @@ export class TerraFusionSDK extends EventEmitter {
       contact: {
         email: 'info@co.benton.wa.us',
         phone: '(509) 736-3000',
-        address: '7122 W Okanogan Pl, Kennewick, WA 99336'
-      }
+        address: '7122 W Okanogan Pl, Kennewick, WA 99336',
+      },
     };
   }
 
@@ -353,7 +353,7 @@ export class TerraFusionSDK extends EventEmitter {
       email: 'admin@co.benton.wa.us',
       role: 'admin',
       department: 'IT',
-      permissions: ['data_read', 'data_write', 'api_access']
+      permissions: ['data_read', 'data_write', 'api_access'],
     };
   }
 
@@ -428,7 +428,7 @@ export class TerraFusionAPI {
 
   constructor(manifest: PluginManifest) {
     this.manifest = manifest;
-    this.baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080/api/v1';
+    this.baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/v1';
   }
 
   async initialize(): Promise<void> {
@@ -499,7 +499,7 @@ export class TerraFusionAPI {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
@@ -555,13 +555,16 @@ export class UIManager {
     }
 
     // Show modal implementation
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       // Mock modal display
       setTimeout(() => resolve({ confirmed: true }), 1000);
     });
   }
 
-  async showNotification(message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info'): Promise<void> {
+  async showNotification(
+    message: string,
+    type: 'info' | 'success' | 'warning' | 'error' = 'info'
+  ): Promise<void> {
     // Show notification in Terrafusion UI
     console.log(`[${type.toUpperCase()}] ${message}`);
   }
@@ -654,38 +657,38 @@ export const PluginUtils = {
   compareVersions(v1: string, v2: string): number {
     const parts1 = v1.split('.').map(Number);
     const parts2 = v2.split('.').map(Number);
-    
+
     for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
       const part1 = parts1[i] || 0;
       const part2 = parts2[i] || 0;
-      
+
       if (part1 > part2) return 1;
       if (part1 < part2) return -1;
     }
-    
+
     return 0;
   },
 
   // County matching
   matchesCountyProfile(manifest: PluginManifest, county: CountyInfo): boolean {
     const targeting = manifest.targeting;
-    
+
     if (targeting.county_sizes && !targeting.county_sizes.includes(county.size)) {
       return false;
     }
-    
+
     if (targeting.county_types && !targeting.county_types.includes(county.type)) {
       return false;
     }
-    
+
     if (targeting.min_population && county.population < targeting.min_population) {
       return false;
     }
-    
+
     if (targeting.max_population && county.population > targeting.max_population) {
       return false;
     }
-    
+
     return true;
   },
 
@@ -698,13 +701,13 @@ export const PluginUtils = {
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
   },
 
   formatDate(date: Date): string {
     return new Intl.DateTimeFormat('en-US').format(date);
-  }
+  },
 };
 
 // Export main SDK class and types

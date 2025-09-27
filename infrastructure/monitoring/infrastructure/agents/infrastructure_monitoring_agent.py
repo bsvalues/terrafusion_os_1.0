@@ -86,7 +86,7 @@ class MetricsBot(MonitoringBot):
         self.prometheus_config["scrape_configs"].append({
             "job_name": "node",
             "static_configs": [{
-                "targets": ["localhost:9100"],
+                "targets": ["localhost:\${{TF_PORT_9100:-9100}}"],
                 "labels": {"component": "infrastructure"}
             }]
         })
@@ -95,7 +95,7 @@ class MetricsBot(MonitoringBot):
         self.prometheus_config["scrape_configs"].append({
             "job_name": "v1_foundation",
             "static_configs": [{
-                "targets": ["localhost:8080/metrics"],
+                "targets": ["localhost:\${{TF_PORT_9100:-9100}}/metrics"],
                 "labels": {"component": "v1_foundation", "version": "1.0"}
             }]
         })
@@ -104,7 +104,7 @@ class MetricsBot(MonitoringBot):
         self.prometheus_config["scrape_configs"].append({
             "job_name": "v2_project_reflex",
             "static_configs": [{
-                "targets": ["localhost:8081/metrics"],
+                "targets": ["localhost:\${{TF_PORT_9100:-9100}}/metrics"],
                 "labels": {"component": "v2_project_reflex", "version": "2.0"}
             }]
         })
@@ -113,7 +113,7 @@ class MetricsBot(MonitoringBot):
         self.prometheus_config["scrape_configs"].append({
             "job_name": "v3_cosmic_governance",
             "static_configs": [{
-                "targets": ["localhost:8082/metrics"],
+                "targets": ["localhost:\${{TF_PORT_9100:-9100}}/metrics"],
                 "labels": {"component": "v3_cosmic_governance", "version": "3.0"}
             }]
         })
@@ -122,7 +122,7 @@ class MetricsBot(MonitoringBot):
         self.prometheus_config["scrape_configs"].append({
             "job_name": "quantum_metrics",
             "static_configs": [{
-                "targets": ["localhost:9200"],
+                "targets": ["localhost:\${{TF_PORT_9100:-9100}}"],
                 "labels": {"component": "quantum", "type": "quantum_processor"}
             }]
         })
@@ -159,7 +159,7 @@ class LogBot(MonitoringBot):
         super().__init__("LogBot", config)
         self.elk_config = {
             "elasticsearch": {
-                "hosts": ["localhost:9200"],
+                "hosts": ["localhost:\${{TF_PORT_9100:-9100}}"],
                 "index_pattern": "terrafusion-logs-*"
             },
             "logstash": {
@@ -170,7 +170,7 @@ class LogBot(MonitoringBot):
                 }
             },
             "kibana": {
-                "host": "localhost:5601",
+                "host": "localhost:\${{TF_PORT_9100:-9100}}",
                 "index_patterns": []
             }
         }
@@ -193,10 +193,10 @@ class LogBot(MonitoringBot):
         pipeline_config = {
             "input": {
                 "beats": {
-                    "port": 5044
+                    "port": \${{TF_API_5044_PORT:-5044}}
                 },
                 "http": {
-                    "port": 8080,
+                    "port": \${{TF_API_5044_PORT:-5044}},
                     "codec": "json"
                 },
                 "file": {
@@ -223,7 +223,7 @@ class LogBot(MonitoringBot):
             },
             "output": {
                 "elasticsearch": {
-                    "hosts": ["localhost:9200"],
+                    "hosts": ["localhost:\${{TF_PORT_9100:-9100}}"],
                     "index": "terrafusion-logs-%{+YYYY.MM.dd}"
                 }
             }
@@ -282,7 +282,7 @@ class TraceBot(MonitoringBot):
             "service_name": "terrafusion",
             "agent_host": "localhost",
             "agent_port": 6831,
-            "collector_endpoint": "http://localhost:14268/api/traces",
+            "collector_endpoint": "http://localhost:\${{TF_PORT_9100:-9100}}/api/traces",
             "sampler": {
                 "type": "probabilistic",
                 "param": 0.1  # Sample 10% of traces

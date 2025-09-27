@@ -71,10 +71,10 @@ class ClaudeFlowOrchestrator {
           options: {
             colorize: true,
             translateTime: 'HH:MM:ss Z',
-            ignore: 'pid,hostname'
-          }
-        }
-      }
+            ignore: 'pid,hostname',
+          },
+        },
+      },
     });
 
     this.setupMiddleware();
@@ -87,7 +87,7 @@ class ClaudeFlowOrchestrator {
   private setupMiddleware(): void {
     this.server.register(cors, {
       origin: true,
-      credentials: true
+      credentials: true,
     });
 
     this.server.register(websocket);
@@ -106,7 +106,7 @@ class ClaudeFlowOrchestrator {
         agents: this.hiveMindAgents.size,
         workflows: this.workflows.size,
         uptime: Math.floor(uptime / 1000),
-        government: 'transcended'
+        government: 'transcended',
       };
     });
 
@@ -115,7 +115,7 @@ class ClaudeFlowOrchestrator {
       return {
         tools: Array.from(this.mcpTools.values()),
         total: this.mcpTools.size,
-        enabled: Array.from(this.mcpTools.values()).filter(t => t.enabled).length
+        enabled: Array.from(this.mcpTools.values()).filter(t => t.enabled).length,
       };
     });
 
@@ -142,7 +142,7 @@ class ClaudeFlowOrchestrator {
       return {
         agents: Array.from(this.hiveMindAgents.values()),
         total: this.hiveMindAgents.size,
-        active: Array.from(this.hiveMindAgents.values()).filter(a => a.status === 'active').length
+        active: Array.from(this.hiveMindAgents.values()).filter(a => a.status === 'active').length,
       };
     });
 
@@ -166,7 +166,7 @@ class ClaudeFlowOrchestrator {
     this.server.get('/workflows', async (request, reply) => {
       return {
         workflows: Array.from(this.workflows.values()),
-        total: this.workflows.size
+        total: this.workflows.size,
       };
     });
 
@@ -207,7 +207,7 @@ class ClaudeFlowOrchestrator {
     // WebSocket for real-time coordination
     this.server.register(async function (fastify) {
       fastify.get('/ws/coordination', { websocket: true }, (connection, req) => {
-        connection.socket.on('message', async (message) => {
+        connection.socket.on('message', async message => {
           try {
             const data = JSON.parse(message.toString());
             // Handle real-time coordination messages
@@ -224,15 +224,15 @@ class ClaudeFlowOrchestrator {
   private initializeMCPTools(): void {
     // Initialize 87 MCP tools for government operations
     const toolCategories = {
-      'data_processing': 15,
-      'harris_pacs': 12,
-      'compliance': 10,
-      'security': 8,
-      'analytics': 12,
-      'workflow': 10,
-      'integration': 8,
-      'monitoring': 6,
-      'reporting': 6
+      data_processing: 15,
+      harris_pacs: 12,
+      compliance: 10,
+      security: 8,
+      analytics: 12,
+      workflow: 10,
+      integration: 8,
+      monitoring: 6,
+      reporting: 6,
     };
 
     let toolId = 1;
@@ -244,7 +244,7 @@ class ClaudeFlowOrchestrator {
           description: `${category.replace('_', ' ')} tool for government operations`,
           category,
           enabled: true,
-          parameters: this.getToolParameters(category)
+          parameters: this.getToolParameters(category),
         };
         this.mcpTools.set(tool.id, tool);
         toolId++;
@@ -257,7 +257,13 @@ class ClaudeFlowOrchestrator {
   private initializeHiveMind(): void {
     // Initialize hive-mind agents
     const agentTypes: Array<HiveMindAgent['type']> = [
-      'queen', 'architect', 'coder', 'tester', 'researcher', 'security', 'devops'
+      'queen',
+      'architect',
+      'coder',
+      'tester',
+      'researcher',
+      'security',
+      'devops',
     ];
 
     const agentCounts = {
@@ -267,7 +273,7 @@ class ClaudeFlowOrchestrator {
       tester: 4,
       researcher: 3,
       security: 2,
-      devops: 4
+      devops: 4,
     };
 
     for (const [type, count] of Object.entries(agentCounts)) {
@@ -277,7 +283,7 @@ class ClaudeFlowOrchestrator {
           type: type as HiveMindAgent['type'],
           status: 'idle',
           performance: 0.85 + Math.random() * 0.15,
-          lastActivity: new Date()
+          lastActivity: new Date(),
         };
         this.hiveMindAgents.set(agent.id, agent);
       }
@@ -299,25 +305,25 @@ class ClaudeFlowOrchestrator {
             name: 'Data Extraction',
             type: 'harris_pacs',
             config: { operation: 'extract_parcels', county: 'benton' },
-            dependencies: []
+            dependencies: [],
           },
           {
             id: 'step_2',
             name: 'Data Validation',
             type: 'mcp_tool',
             config: { tool: 'data_validation', schema: 'harris_pacs' },
-            dependencies: ['step_1']
+            dependencies: ['step_1'],
           },
           {
             id: 'step_3',
             name: 'Swarm Processing',
             type: 'swarm_coordination',
             config: { agents: 200, task: 'property_assessment' },
-            dependencies: ['step_2']
-          }
+            dependencies: ['step_2'],
+          },
         ],
         triggers: ['schedule:daily', 'event:harris_update'],
-        county: 'benton'
+        county: 'benton',
       },
       {
         id: 'quantum_optimization',
@@ -329,19 +335,19 @@ class ClaudeFlowOrchestrator {
             name: 'Performance Analysis',
             type: 'ai_agent',
             config: { agent_type: 'analyst', task: 'performance_metrics' },
-            dependencies: []
+            dependencies: [],
           },
           {
             id: 'step_2',
             name: 'Optimization Execution',
             type: 'custom',
             config: { script: 'quantum_optimize.py' },
-            dependencies: ['step_1']
-          }
+            dependencies: ['step_1'],
+          },
         ],
         triggers: ['schedule:hourly'],
-        county: 'benton'
-      }
+        county: 'benton',
+      },
     ];
 
     workflows.forEach(workflow => {
@@ -353,15 +359,15 @@ class ClaudeFlowOrchestrator {
 
   private getToolParameters(category: string): Record<string, any> {
     const parameterMap: Record<string, Record<string, any>> = {
-      'data_processing': { input_format: 'json', output_format: 'json', batch_size: 1000 },
-      'harris_pacs': { version: '12.4.7', county: 'benton', sync_mode: 'incremental' },
-      'compliance': { standard: 'FISMA-HIGH', audit_level: 'comprehensive' },
-      'security': { encryption: 'AES-256', auth_method: 'oauth2' },
-      'analytics': { algorithm: 'ml_enhanced', confidence_threshold: 0.85 },
-      'workflow': { execution_mode: 'async', retry_count: 3 },
-      'integration': { protocol: 'REST', timeout: 30000 },
-      'monitoring': { interval: 30, alert_threshold: 0.95 },
-      'reporting': { format: 'pdf', template: 'government_standard' }
+      data_processing: { input_format: 'json', output_format: 'json', batch_size: 1000 },
+      harris_pacs: { version: '12.4.7', county: 'benton', sync_mode: 'incremental' },
+      compliance: { standard: 'FISMA-HIGH', audit_level: 'comprehensive' },
+      security: { encryption: 'AES-256', auth_method: 'oauth2' },
+      analytics: { algorithm: 'ml_enhanced', confidence_threshold: 0.85 },
+      workflow: { execution_mode: 'async', retry_count: 3 },
+      integration: { protocol: 'REST', timeout: 30000 },
+      monitoring: { interval: 30, alert_threshold: 0.95 },
+      reporting: { format: 'pdf', template: 'government_standard' },
     };
 
     return parameterMap[category] || {};
@@ -370,7 +376,7 @@ class ClaudeFlowOrchestrator {
   private async executeMCPTool(tool: MCPTool, parameters: Record<string, any>): Promise<any> {
     // Simulate MCP tool execution
     this.server.log.info(`Executing MCP tool: ${tool.name}`);
-    
+
     // Add artificial delay to simulate processing
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 500));
 
@@ -383,8 +389,8 @@ class ClaudeFlowOrchestrator {
         status: 'success',
         data: `Processed by ${tool.name}`,
         timestamp: new Date().toISOString(),
-        processingTime: Math.floor(Math.random() * 1000) + 100
-      }
+        processingTime: Math.floor(Math.random() * 1000) + 100,
+      },
     };
   }
 
@@ -407,11 +413,14 @@ class ClaudeFlowOrchestrator {
     this.server.log.info(`Task assigned to agent: ${selectedAgent.id}`);
 
     // Simulate task processing
-    setTimeout(() => {
-      selectedAgent.status = 'idle';
-      selectedAgent.currentTask = undefined;
-      selectedAgent.performance = Math.min(1.0, selectedAgent.performance + 0.001);
-    }, 2000 + Math.random() * 3000);
+    setTimeout(
+      () => {
+        selectedAgent.status = 'idle';
+        selectedAgent.currentTask = undefined;
+        selectedAgent.performance = Math.min(1.0, selectedAgent.performance + 0.001);
+      },
+      2000 + Math.random() * 3000
+    );
 
     return {
       coordinationId: uuidv4(),
@@ -419,11 +428,14 @@ class ClaudeFlowOrchestrator {
       task,
       priority,
       county,
-      estimatedCompletion: new Date(Date.now() + 5000).toISOString()
+      estimatedCompletion: new Date(Date.now() + 5000).toISOString(),
     };
   }
 
-  private async executeWorkflow(workflow: WorkflowDefinition, input: Record<string, any>): Promise<any> {
+  private async executeWorkflow(
+    workflow: WorkflowDefinition,
+    input: Record<string, any>
+  ): Promise<any> {
     this.server.log.info(`Executing workflow: ${workflow.name}`);
 
     const executionId = uuidv4();
@@ -464,7 +476,7 @@ class ClaudeFlowOrchestrator {
       workflowName: workflow.name,
       status: 'completed',
       results,
-      completedAt: new Date().toISOString()
+      completedAt: new Date().toISOString(),
     };
   }
 
@@ -475,13 +487,13 @@ class ClaudeFlowOrchestrator {
         priority: task.priority || 1,
         data: task,
         county: 'benton',
-        requires_claude_flow: true
+        requires_claude_flow: true,
       });
 
       return {
         swarmIntegration: 'success',
         swarmResponse: response.data,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     } catch (error) {
       this.server.log.error(`Swarm integration error: ${error}`);
@@ -497,8 +509,8 @@ class ClaudeFlowOrchestrator {
         status: 'processed',
         timestamp: new Date().toISOString(),
         hiveMindStatus: 'active',
-        mcpToolsAvailable: this.mcpTools.size
-      }
+        mcpToolsAvailable: this.mcpTools.size,
+      },
     };
   }
 
@@ -513,7 +525,7 @@ class ClaudeFlowOrchestrator {
       // Start the server
       await this.server.listen({
         port: 8080,
-        host: '0.0.0.0'
+        host: '0.0.0.0',
       });
 
       this.server.log.info('Claude-Flow v2.0.0 Alpha started successfully');
@@ -521,7 +533,6 @@ class ClaudeFlowOrchestrator {
       this.server.log.info(`MCP Tools: ${this.mcpTools.size} tools available`);
       this.server.log.info(`Workflows: ${this.workflows.size} workflows ready`);
       this.server.log.info('Government. Transcended.');
-
     } catch (error) {
       this.server.log.error(`Failed to start Claude-Flow: ${error}`);
       process.exit(1);
@@ -531,18 +542,20 @@ class ClaudeFlowOrchestrator {
   private async initializeConnections(): Promise<void> {
     // Redis connection
     this.redis = createClient({
-      url: process.env.REDIS_URL || 'redis://redis:6379'
+      url: process.env.REDIS_URL || 'redis://redis:6379',
     });
     await this.redis.connect();
 
     // PostgreSQL connection
     this.postgres = new Pool({
-      connectionString: process.env.POSTGRES_URL || 'postgresql://terrafusion:dev_password_2024@postgres:5432/terrafusion_dev'
+      connectionString:
+        process.env.POSTGRES_URL ||
+        'postgresql://terrafusion:dev_password_2024@postgres:5432/terrafusion_dev',
     });
 
     // SQLite for memory storage
     this.sqlite = new Database.Database('.swarm/memory.db');
-    
+
     this.server.log.info('Database connections established');
   }
 
@@ -565,7 +578,8 @@ class ClaudeFlowOrchestrator {
     const now = new Date();
     this.hiveMindAgents.forEach(agent => {
       const timeDiff = now.getTime() - agent.lastActivity.getTime();
-      if (timeDiff > 300000 && agent.status === 'busy') { // 5 minutes timeout
+      if (timeDiff > 300000 && agent.status === 'busy') {
+        // 5 minutes timeout
         agent.status = 'error';
         agent.currentTask = undefined;
       }

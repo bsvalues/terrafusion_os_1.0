@@ -1,0 +1,23 @@
+[package]
+name = "security-layer"
+version = "1.0.0"
+edition = "2021"
+authors = ["TerraFusion cOS Team"]
+description = "Government-grade Security Protection Framework"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+uuid = { version = "1.0", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+aes-gcm = "0.10"
+argon2 = "0.5"
+rand = "0.8"
+
+[lib]
+name = "security_layer"
+path = "src/lib.rs"

@@ -106,7 +106,7 @@ namespace TerraFusion.Core.Services
             if (!_enableCaching)
             {
                 Interlocked.Increment(ref _cacheMisses);
-                return default(T);
+                return default(T)!;
             }
 
             try
@@ -127,18 +127,18 @@ namespace TerraFusion.Core.Services
                     
                     // Deserialize the response data
                     var responseData = JsonSerializer.Deserialize<T>(cachedResponse.Data);
-                    return responseData;
+                    return responseData ?? throw new InvalidOperationException("Failed to deserialize cached response data");
                 }
 
                 Interlocked.Increment(ref _cacheMisses);
                 _logger.LogDebug("Cache miss for key: {CacheKey}", cacheKey);
-                return default(T);
+                return default(T)!;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving cached response for key: {CacheKey}", cacheKey);
                 Interlocked.Increment(ref _cacheMisses);
-                return default(T);
+                return default(T)!;
             }
         }
 
@@ -299,36 +299,36 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<bool> ShouldCacheResponseAsync(HttpRequest request, IActionResult response)
+        public Task<bool> ShouldCacheResponseAsync(HttpRequest request, IActionResult response)
         {
             try
             {
                 // Check if caching is enabled
                 if (!_enableCaching)
-                    return false;
+                    return Task.FromResult(false);
 
                 // Check HTTP method - only cache GET requests
                 if (!string.Equals(request.Method, "GET", StringComparison.OrdinalIgnoreCase))
-                    return false;
+                    return Task.FromResult(false);
 
                 // Check if endpoint is in non-cacheable list
                 var path = request.Path.Value?.ToLowerInvariant();
                 if (_nonCacheableEndpoints.Any(endpoint => path?.StartsWith(endpoint.ToLowerInvariant()) == true))
-                    return false;
+                    return Task.FromResult(false);
 
                 // Check response type
                 if (response is ObjectResult objectResult)
                 {
                     // Don't cache error responses
                     if (objectResult.StatusCode >= 400)
-                        return false;
+                        return Task.FromResult(false);
 
                     // Check content type
                     var contentType = objectResult.ContentTypes?.FirstOrDefault();
                     if (!string.IsNullOrEmpty(contentType) && 
                         !_cacheableContentTypes.Any(ct => contentType.StartsWith(ct, StringComparison.OrdinalIgnoreCase)))
                     {
-                        return false;
+                        return Task.FromResult(false);
                     }
                 }
 
@@ -337,15 +337,15 @@ namespace TerraFusion.Core.Services
                 {
                     var cacheControl = request.Headers["Cache-Control"].ToString();
                     if (cacheControl.Contains("no-cache") || cacheControl.Contains("no-store"))
-                        return false;
+                        return Task.FromResult(false);
                 }
 
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error determining if response should be cached");
-                return false;
+                return Task.FromResult(false);
             }
         }
 
@@ -422,7 +422,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<List<CachedItem>> GetCachedItemsAsync(string? pattern = null)
+        public Task<List<CachedItem>> GetCachedItemsAsync(string? pattern = null)
         {
             try
             {
@@ -433,12 +433,12 @@ namespace TerraFusion.Core.Services
                 // and retrieve metadata for each cached item
                 
                 _logger.LogDebug("Retrieved cached items with pattern: {Pattern}", pattern ?? "all");
-                return items;
+                return Task.FromResult(items);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving cached items");
-                return new List<CachedItem>();
+                return Task.FromResult(new List<CachedItem>());
             }
         }
 

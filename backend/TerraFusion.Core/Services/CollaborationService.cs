@@ -1392,43 +1392,43 @@ namespace TerraFusion.Core.Services
 
         #region Session Management - Placeholder implementations
 
-        public async Task<CollaborationSessionDto> StartSessionAsync(CreateSessionDto createSessionDto, string hostId)
+        public Task<CollaborationSessionDto> StartSessionAsync(CreateSessionDto createSessionDto, string hostId)
         {
             // Placeholder implementation - would integrate with SignalR for real-time functionality
             throw new NotImplementedException("Session management requires SignalR integration");
         }
 
-        public async Task<CollaborationSessionDto?> GetSessionAsync(string sessionId)
+        public Task<CollaborationSessionDto?> GetSessionAsync(string sessionId)
         {
             throw new NotImplementedException("Session management requires SignalR integration");
         }
 
-        public async Task<List<CollaborationSessionDto>> GetProjectSessionsAsync(string projectId)
+        public Task<List<CollaborationSessionDto>> GetProjectSessionsAsync(string projectId)
         {
             throw new NotImplementedException("Session management requires SignalR integration");
         }
 
-        public async Task<bool> EndSessionAsync(string sessionId)
+        public Task<bool> EndSessionAsync(string sessionId)
         {
             throw new NotImplementedException("Session management requires SignalR integration");
         }
 
-        public async Task<bool> JoinSessionAsync(string sessionId, string userId, SessionRole role)
+        public Task<bool> JoinSessionAsync(string sessionId, string userId, SessionRole role)
         {
             throw new NotImplementedException("Session management requires SignalR integration");
         }
 
-        public async Task<bool> LeaveSessionAsync(string sessionId, string userId)
+        public Task<bool> LeaveSessionAsync(string sessionId, string userId)
         {
             throw new NotImplementedException("Session management requires SignalR integration");
         }
 
-        public async Task<List<ChatMessageDto>> GetSessionMessagesAsync(string sessionId)
+        public Task<List<ChatMessageDto>> GetSessionMessagesAsync(string sessionId)
         {
             throw new NotImplementedException("Session management requires SignalR integration");
         }
 
-        public async Task<ChatMessageDto> SendSessionMessageAsync(SendMessageDto sendMessageDto, string senderId)
+        public Task<ChatMessageDto> SendSessionMessageAsync(SendMessageDto sendMessageDto, string senderId)
         {
             throw new NotImplementedException("Session management requires SignalR integration");
         }

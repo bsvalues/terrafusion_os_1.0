@@ -7,7 +7,7 @@ The TerraFusion Playground API provides endpoints for AI model processing, syste
 ## Base URL
 
 ```
-http://localhost:3000/api
+http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api
 ```
 
 ## Authentication
@@ -144,15 +144,15 @@ const processData = async (data) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({ data })
     });
-    
+
     if (!response.ok) {
       throw new Error('Processing failed');
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error:', error);
@@ -169,7 +169,7 @@ import requests
 def process_data(data, token):
     try:
         response = requests.post(
-            'http://localhost:3000/api/process',
+            'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/process',
             headers={
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {token}'
@@ -185,4 +185,4 @@ def process_data(data, token):
 
 ## Support
 
-For API support, please contact the TerraFusion team or open an issue in the GitHub repository. 
+For API support, please contact the TerraFusion team or open an issue in the GitHub repository.

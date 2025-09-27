@@ -1,0 +1,16 @@
+{
+  "Name": "commercial-suite",
+  "DisplayName": "Commercial Suite",
+  "Description": "TerraFusion commercial suite for property management and revenue operations",
+  "Version": "1.0.0",
+  "Status": "active",
+  "Tier": "Tier 2",
+  "Category": "commercial",
+  "Author": "TerraFusion OS",
+  "Dependencies": [],
+  "Capabilities": [
+    "commercial-property-management",
+    "revenue-operations",
+    "marketplace-integration"
+  ]
+}

@@ -224,7 +224,7 @@ create_launch_scripts() {
 # Launch TerraFusion Shock & Awe Web Server
 
 echo "🚀 Launching TerraFusion Shock & Awe..."
-echo "Access at: http://localhost:8080"
+echo "Access at: http://localhost:\${{TF_ADMIN_PORT:-8080}}"
 echo "Press Ctrl+C to stop"
 
 # Try different HTTP servers
@@ -249,7 +249,7 @@ EOF
     cat > "$BUILD_DIR/launch-web.bat" << 'EOF'
 @echo off
 echo 🚀 Launching TerraFusion Shock & Awe...
-echo Access at: http://localhost:8080
+echo Access at: http://localhost:\${{TF_ADMIN_PORT:-8080}}
 echo Press Ctrl+C to stop
 
 python -m http.server 8080

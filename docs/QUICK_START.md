@@ -2,23 +2,29 @@
 
 **🚀 Get Your Government-Grade Development Environment Running in 15 Minutes**
 
-**Status**: Production Ready ✅ | **Version**: 1.0 | **Government Classification**: OFFICIAL USE ONLY  
-**Deployment Status**: 50,000 AI agents, 33 modules, 716 real tests (91.9% pass rate)
+**Status**: Production Ready ✅ | **Version**: 1.0 | **Government
+Classification**: OFFICIAL USE ONLY  
+**Deployment Status**: 50,000 AI agents, 33 modules, 716 real tests (91.9% pass
+rate)
 
 ## Overview
 
-TerraFusion Ultimate IDE is a complete government-grade development platform featuring:
+TerraFusion Ultimate IDE is a complete government-grade development platform
+featuring:
 
-- **50,000 AI Agent Swarm** - Supreme Commander + 7 Field Generals + 49,992 operational agents
+- **50,000 AI Agent Swarm** - Supreme Commander + 7 Field Generals + 49,992
+  operational agents
 - **33 Government Modules** - Complete government application ecosystem
 - **Real-Time Monitoring** - Prometheus + Grafana + ELK stack
 - **Government Compliance** - FISMA, FedRAMP, Section 508 ready
-- **Visual Development Tools** - Database designer, API builder, workflow orchestrator
+- **Visual Development Tools** - Database designer, API builder, workflow
+  orchestrator
 - **Hybrid Architecture** - .NET 8.0 + React 18 + Python ML + Rust performance
 
 ## Prerequisites
 
 ### System Requirements
+
 - **OS**: Windows 10/11 with WSL2, Ubuntu 20.04+, macOS 12+
 - **RAM**: 16GB minimum, 32GB recommended
 - **CPU**: 8 cores minimum, 16 cores recommended
@@ -26,6 +32,7 @@ TerraFusion Ultimate IDE is a complete government-grade development platform fea
 - **Network**: Stable internet connection
 
 ### Required Software
+
 - **Node.js 18+** - JavaScript runtime
 - **.NET 8.0 SDK** - Backend development
 - **Docker & Docker Compose** - Container orchestration
@@ -36,6 +43,7 @@ TerraFusion Ultimate IDE is a complete government-grade development platform fea
 ## 🚀 One-Command Setup
 
 ### Automated Installation (Recommended)
+
 ```bash
 # Clone and setup TerraFusion Ultimate IDE
 git clone https://github.com/your-org/terrafusion-os-1.0.git
@@ -49,15 +57,17 @@ cd terrafusion-os-1.0
 ```
 
 **Access Points After Setup:**
-- **IDE Frontend**: http://localhost:3000
-- **API Gateway**: http://localhost:5000
-- **AI Supreme Commander**: http://localhost:8080
-- **Monitoring Dashboard**: http://localhost:3001
-- **Logs & Analytics**: http://localhost:5601
+
+- **IDE Frontend**: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+- **API Gateway**: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+- **AI Supreme Commander**: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+- **Monitoring Dashboard**: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+- **Logs & Analytics**: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 
 ## Manual Installation (Advanced Users)
 
 ### Step 1: Install Dependencies
+
 ```bash
 # Update system packages
 sudo apt-get update && sudo apt-get upgrade -y
@@ -83,6 +93,7 @@ pip3 install numpy pandas scikit-learn tensorflow torch
 ```
 
 ### Step 2: Clone and Configure
+
 ```bash
 # Clone repository
 git clone https://github.com/your-org/terrafusion-os-1.0.git
@@ -98,6 +109,7 @@ cd backend && dotnet restore && cd ..
 ```
 
 ### Step 3: Initialize Database
+
 ```bash
 # Start database container
 docker run -d \
@@ -115,6 +127,7 @@ cd ../..
 ```
 
 ### Step 4: Start Services
+
 ```bash
 # Start all services
 npm run build
@@ -129,6 +142,7 @@ npm run ai:start       # AI swarm
 ## Development Workflow
 
 ### Daily Development Commands
+
 ```bash
 # Start development environment
 npm run dev
@@ -151,6 +165,7 @@ npm run ai:scale        # Scale agent count
 ```
 
 ### Code Quality & Linting
+
 ```bash
 # Frontend linting
 npm run lint
@@ -169,23 +184,30 @@ npm run compliance:validate
 ## Core Features Overview
 
 ### 1. Visual Development Tools
+
 - **Database Designer** - Visual schema design with government compliance
 - **API Builder** - REST API generator with automatic documentation
 - **Workflow Designer** - Visual process orchestration
 - **Component Gallery** - Reusable UI components
 
 ### 2. AI-Powered Development
+
 - **Code Completion** - 50,000 AI agents providing intelligent suggestions
 - **Code Generation** - Automatic component and service generation
 - **Performance Analysis** - AI-driven optimization recommendations
 - **Security Scanning** - Real-time security vulnerability detection
 
 ### 3. Government Modules (33 Active)
-- **Core Government (8 modules)** - Foundation platform with ai-swarm, government-edition
-- **Essential Operations (12 modules)** - terra-collections, unified-system, web-audit-tracker
-- **Extended Features (12 modules)** - commercial-suite, property-workbench, shock-and-awe
+
+- **Core Government (8 modules)** - Foundation platform with ai-swarm,
+  government-edition
+- **Essential Operations (12 modules)** - terra-collections, unified-system,
+  web-audit-tracker
+- **Extended Features (12 modules)** - commercial-suite, property-workbench,
+  shock-and-awe
 
 ### 4. Monitoring & Observability
+
 - **Real-Time Metrics** - System performance and health monitoring
 - **Log Aggregation** - Centralized logging with search capabilities
 - **Alert Management** - Automated alerting for critical issues
@@ -194,6 +216,7 @@ npm run compliance:validate
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 # Core Configuration
 NODE_ENV=development
@@ -220,6 +243,7 @@ REDIS_PASSWORD=redis_secure_password
 ```
 
 ### Module Configuration
+
 ```bash
 # Enable/disable specific modules
 GOVERNMENT_EDITION=true
@@ -237,6 +261,7 @@ UNIFIED_SYSTEM_COORDINATION=true
 ## Testing & Quality Assurance
 
 ### Running Tests
+
 ```bash
 # Run all tests (716 real tests)
 npm test
@@ -255,6 +280,7 @@ npm run test:compliance
 ```
 
 ### Government Compliance Validation
+
 ```bash
 # FISMA compliance check
 npm run compliance:fisma
@@ -274,6 +300,7 @@ npm run benchmark
 ### Common Issues
 
 #### Build Failures
+
 ```bash
 # Clear caches and rebuild
 npm run clean
@@ -283,6 +310,7 @@ npm run build
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Check database status
 docker ps | grep postgres
@@ -293,6 +321,7 @@ npm run db:health
 ```
 
 #### AI Agent Problems
+
 ```bash
 # Check AI agent health
 npm run ai:health
@@ -305,6 +334,7 @@ npm run ai:scale --agents=50000
 ```
 
 #### Port Conflicts
+
 ```bash
 # Check port usage
 netstat -tulpn | grep :5000
@@ -316,6 +346,7 @@ sudo kill -9 $(sudo lsof -t -i:3000)
 ```
 
 ### Performance Issues
+
 ```bash
 # Check system resources
 htop
@@ -330,6 +361,7 @@ docker-compose logs -f
 ```
 
 ### Getting Help
+
 ```bash
 # Run system diagnostics
 npm run diagnostics
@@ -347,6 +379,7 @@ npm run health:all
 ## Production Deployment
 
 ### Docker Deployment
+
 ```bash
 # Build production images
 npm run build:production
@@ -360,6 +393,7 @@ docker-compose scale api=3
 ```
 
 ### Kubernetes Deployment
+
 ```bash
 # Deploy to Kubernetes
 kubectl apply -f infrastructure/kubernetes/
@@ -372,6 +406,7 @@ kubectl scale deployment terrafusion-api --replicas=5
 ```
 
 ### Cloud Deployment
+
 ```bash
 # Deploy to Azure Government
 ./deployment/scripts/deploy-azure-gov.sh
@@ -386,32 +421,39 @@ kubectl scale deployment terrafusion-api --replicas=5
 ## Next Steps
 
 ### Advanced Configuration
+
 1. **Custom Module Development** - Create your own government modules
 2. **AI Model Training** - Train county-specific AI models
 3. **Performance Optimization** - Advanced caching and optimization
 4. **Security Hardening** - Additional security measures
 
 ### Integration Options
+
 1. **Legacy System Integration** - Connect to existing government systems
 2. **External API Integration** - Third-party service integration
 3. **Multi-County Deployment** - Regional coordination setup
 4. **Federal System Integration** - Federal data source connections
 
 ### Learning Resources
+
 - **[API Documentation](./API_REFERENCE.md)** - Complete API reference
-- **[Module Development Guide](./MODULE_DEVELOPMENT.md)** - Create custom modules
+- **[Module Development Guide](./MODULE_DEVELOPMENT.md)** - Create custom
+  modules
 - **[AI Integration Guide](./AI_INTEGRATION.md)** - AI swarm customization
-- **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Production deployment strategies
+- **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Production deployment
+  strategies
 
 ## Support & Community
 
 ### Documentation
+
 - **[Complete Documentation](./README.md)** - Full system documentation
 - **[API Reference](./API_REFERENCE.md)** - REST API documentation
 - **[Configuration Guide](./CONFIGURATION.md)** - Advanced configuration
 - **[Security Guide](./SECURITY.md)** - Security best practices
 
 ### Getting Support
+
 - **GitHub Issues** - Bug reports and feature requests
 - **Discussion Forum** - Community support and discussions
 - **Government Support** - Enterprise support for government agencies
@@ -421,7 +463,10 @@ kubectl scale deployment terrafusion-api --replicas=5
 
 **🎉 Welcome to TerraFusion Ultimate IDE!**
 
-You're now ready to develop government-grade applications with AI assistance, visual tools, and enterprise-class infrastructure. The platform provides everything you need for modern government software development with built-in compliance, security, and performance optimization.
+You're now ready to develop government-grade applications with AI assistance,
+visual tools, and enterprise-class infrastructure. The platform provides
+everything you need for modern government software development with built-in
+compliance, security, and performance optimization.
 
 **Happy coding! 🚀**
 

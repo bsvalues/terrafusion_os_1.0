@@ -92,7 +92,7 @@ if [ ! -d "node_modules" ]; then
 fi
 
 # Start the application (if not running)
-if ! curl -s http://localhost:3000 > /dev/null; then
+if ! curl -s http://localhost:\${{TF_FRONTEND_PORT:-3000}} > /dev/null; then
     echo "🚀 Starting TerraFusion application..."
     npm run dev &
     APP_PID=$!
@@ -100,7 +100,7 @@ if ! curl -s http://localhost:3000 > /dev/null; then
     
     # Wait for app to be ready
     for i in {1..30}; do
-        if curl -s http://localhost:3000 > /dev/null; then
+        if curl -s http://localhost:\${{TF_FRONTEND_PORT:-3000}} > /dev/null; then
             echo -e "${GREEN}✅ Application is running${NC}"
             break
         fi
@@ -133,7 +133,7 @@ for route in "${ROUTES[@]}"; do
     echo "Testing route: $route"
     
     # Test page load
-    response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3000$route")
+    response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:\${{TF_FRONTEND_PORT:-3000}}$route")
     if [ "$response" = "200" ] || [ "$response" = "301" ] || [ "$response" = "302" ]; then
         log_test "Route: $route" "PASS" "HTTP $response"
     else
@@ -185,7 +185,7 @@ for module in "${MODULES[@]}"; do
         route="/dashboard/$module/$page"
         
         # Test each module page
-        response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3000$route")
+        response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:\${{TF_FRONTEND_PORT:-3000}}$route")
         if [ "$response" = "200" ] || [ "$response" = "404" ]; then
             log_test "Module Page: $route" "PASS" "Accessible"
         else

@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3600,
-    host: true
+    host: true,
   },
   build: {
     outDir: 'dist',
@@ -15,9 +15,9 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'chart-vendor': ['recharts'],
-          'ui-vendor': ['lucide-react', 'framer-motion']
-        }
-      }
-    }
-  }
+          'ui-vendor': ['lucide-react', 'framer-motion'],
+        },
+      },
+    },
+  },
 });

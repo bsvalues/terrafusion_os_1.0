@@ -23,19 +23,18 @@
     },
     "test_server": {
       "status": "pass",
-      "port": 3000,
+      "port": \${{TF_FRONTEND_PORT:-3000}},
       "health_check_port": 3001
     }
   },
   "recommendations": [
-    
     "Monitor health endpoints continuously",
     "Set up automated deployment pipelines",
     "Implement rollback procedures"
   ],
   "next_steps": [
     "Configure production DNS",
-    "Set up SSL certificates", 
+    "Set up SSL certificates",
     "Configure load balancers",
     "Implement monitoring and alerting"
   ]

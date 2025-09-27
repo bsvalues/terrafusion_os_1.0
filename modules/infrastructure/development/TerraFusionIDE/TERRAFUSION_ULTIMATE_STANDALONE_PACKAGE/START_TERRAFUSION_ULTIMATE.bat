@@ -64,7 +64,7 @@ echo.
 REM Check if backend is already running
 netstat -an | findstr ":5000" >nul 2>&1
 if %errorlevel% equ 0 (
-    echo ℹ️  Backend API already running on port 5000
+    echo ℹ️  Backend API already running on port \${{TF_API_PORT:-5000}}
     set "BACKEND_RUNNING=true"
 ) else (
     set "BACKEND_RUNNING=false"
@@ -73,7 +73,7 @@ if %errorlevel% equ 0 (
 REM Check if frontend is already running
 netstat -an | findstr ":5173" >nul 2>&1
 if %errorlevel% equ 0 (
-    echo ℹ️  Frontend IDE already running on port 5173
+    echo ℹ️  Frontend IDE already running on port \${{TF_API_PORT:-5000}}
     set "FRONTEND_RUNNING=true"
 ) else (
     set "FRONTEND_RUNNING=false"
@@ -89,11 +89,11 @@ REM Step 1: Start Backend API
 if "%BACKEND_RUNNING%"=="false" (
     echo [1/3] 🚀 Starting Backend API...
     echo.
-    echo Starting .NET 8 API on port 5000...
+    echo Starting .NET 8 API on port \${{TF_API_PORT:-5000}}...
     echo This may take a moment for the first run...
     echo.
     
-    start "TerraFusion Backend API" cmd /k "cd /d "%CURRENT_DIR%backend" && dotnet run --project TerraFusion.API --urls "http://localhost:5000" --no-build"
+    start "TerraFusion Backend API" cmd /k "cd /d "%CURRENT_DIR%backend" && dotnet run --project TerraFusion.API --urls "http://localhost:\${{TF_API_PORT:-5000}}" --no-build"
     
     echo ⏳ Waiting for backend to initialize...
     timeout /t 10 /nobreak >nul
@@ -107,9 +107,9 @@ if "%BACKEND_RUNNING%"=="false" (
         goto BACKEND_CHECK_LOOP
     )
     
-    echo ✅ Backend API started successfully on port 5000
+    echo ✅ Backend API started successfully on port \${{TF_API_PORT:-5000}}
 ) else (
-    echo [1/3] ✅ Backend API already running on port 5000
+    echo [1/3] ✅ Backend API already running on port \${{TF_API_PORT:-5000}}
 )
 
 echo.
@@ -118,7 +118,7 @@ REM Step 2: Start Frontend IDE
 if "%FRONTEND_RUNNING%"=="false" (
     echo [2/3] 🚀 Starting Frontend IDE...
     echo.
-    echo Starting React development server on port 5173...
+    echo Starting React development server on port \${{TF_API_PORT:-5000}}...
     echo.
     
     start "TerraFusion Frontend IDE" cmd /k "cd /d "%CURRENT_DIR%IDE" && npm run dev"
@@ -135,9 +135,9 @@ if "%FRONTEND_RUNNING%"=="false" (
         goto FRONTEND_CHECK_LOOP
     )
     
-    echo ✅ Frontend IDE started successfully on port 5173
+    echo ✅ Frontend IDE started successfully on port \${{TF_API_PORT:-5000}}
 ) else (
-    echo [2/3] ✅ Frontend IDE already running on port 5173
+    echo [2/3] ✅ Frontend IDE already running on port \${{TF_API_PORT:-5000}}
 )
 
 echo.
@@ -150,7 +150,7 @@ REM Wait a bit more for everything to be fully ready
 timeout /t 5 /nobreak >nul
 
 REM Open the IDE in the default browser
-start http://localhost:5173
+start http://localhost:\${{TF_API_PORT:-5000}}
 
 echo ✅ TerraFusion Ultimate IDE launched successfully!
 echo.
@@ -159,8 +159,8 @@ echo ╔════════════════════════
 echo ║                           🎉 LAUNCH COMPLETE! 🎉                           ║
 echo ╚══════════════════════════════════════════════════════════════════════════════╝
 echo.
-echo 🌐 Frontend IDE: http://localhost:5173
-echo 🔌 Backend API: http://localhost:5000
+echo 🌐 Frontend IDE: http://localhost:\${{TF_API_PORT:-5000}}
+echo 🔌 Backend API: http://localhost:\${{TF_API_PORT:-5000}}
 echo.
 echo 🧠 AI Chat: Available in the IDE
 echo 🔧 Hybrid Agents: Windsurf, Devin, Cursor, Replit, Manus
@@ -175,7 +175,7 @@ echo Press any key to open the IDE in your browser...
 pause >nul
 
 REM Open IDE again in case it didn't open the first time
-start http://localhost:5173
+start http://localhost:\${{TF_API_PORT:-5000}}
 
 echo.
 echo 🚀 Welcome to the future of government development!

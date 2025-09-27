@@ -1,7 +1,7 @@
 /**
  * 🌌 Parallel Reality Visualization Engine
  * Simultaneous modeling of multiple government realities and decision outcomes
- * 
+ *
  * @version 2.0.0
  * @author MIT PhD Systems Engineer
  * @classification Quantum Government Reality Modeling
@@ -159,33 +159,33 @@ export class ParallelRealityEngine extends EventEmitter {
       timestamp: currentDate,
       governmentState: {
         departments: {
-          'assessor': {
+          assessor: {
             name: 'Assessor Office',
             budget: 8500000,
             efficiency: 87.4,
             staffing: 95,
             projectsActive: 12,
             citizenSatisfaction: 82.1,
-            innovationIndex: 76.3
+            innovationIndex: 76.3,
           },
-          'planning': {
+          planning: {
             name: 'Planning Department',
             budget: 3200000,
             efficiency: 91.2,
             staffing: 89,
             projectsActive: 8,
             citizenSatisfaction: 78.9,
-            innovationIndex: 84.7
+            innovationIndex: 84.7,
           },
-          'public_works': {
+          public_works: {
             name: 'Public Works',
             budget: 35000000,
             efficiency: 83.7,
             staffing: 92,
             projectsActive: 45,
             citizenSatisfaction: 79.4,
-            innovationIndex: 71.2
-          }
+            innovationIndex: 71.2,
+          },
         },
         citizenMetrics: {
           totalPopulation: 197000,
@@ -194,7 +194,7 @@ export class ParallelRealityEngine extends EventEmitter {
           trustInGovernment: 71.8,
           serviceAccessibility: 85.3,
           qualityOfLife: 82.7,
-          economicWellbeing: 76.9
+          economicWellbeing: 76.9,
         },
         resources: {
           totalBudget: 125000000,
@@ -202,7 +202,7 @@ export class ParallelRealityEngine extends EventEmitter {
           infrastructureSpending: 45000000,
           socialPrograms: 28000000,
           technologicalInvestment: 8500000,
-          emergencyFunds: 12000000
+          emergencyFunds: 12000000,
         },
         policies: [
           {
@@ -211,23 +211,23 @@ export class ParallelRealityEngine extends EventEmitter {
             type: 'REGULATORY',
             status: 'IMPLEMENTED',
             impact: 85,
-            publicSupport: 73
-          }
-        ]
+            publicSupport: 73,
+          },
+        ],
       },
       externalFactors: {
         economicConditions: 74.2,
         weatherPatterns: 'Mild Pacific Northwest',
         federalPolicies: ['Infrastructure Investment', 'Climate Action'],
         technologicalDisruptions: ['AI Revolution', 'Remote Work Shift'],
-        demographicChanges: 1.8
+        demographicChanges: 1.8,
       },
       quantumProperties: {
         waveFunction: 1.0,
         superposition: false,
         uncertainty: 0.1,
-        measurement: true
-      }
+        measurement: true,
+      },
     };
 
     this.baselineReality = {
@@ -244,14 +244,14 @@ export class ParallelRealityEngine extends EventEmitter {
         governmentEfficiency: 87.1,
         economicImpact: 76.9,
         socialCohesion: 74.8,
-        technologicalAdvancement: 79.2
+        technologicalAdvancement: 79.2,
       },
       quantumState: {
         coherence: 1.0,
         entanglement: [],
         stability: 95.0,
-        observerEffect: 0.0
-      }
+        observerEffect: 0.0,
+      },
     };
 
     this.activeDimensions.set('baseline', this.baselineReality);
@@ -277,7 +277,7 @@ export class ParallelRealityEngine extends EventEmitter {
 
     // Calculate quantum probability based on decision complexity
     const probability = this.calculateQuantumProbability(keyDecision);
-    
+
     // Generate alternative timeline
     const alternativeTimeline = await this.generateAlternativeTimeline(
       keyDecision,
@@ -301,8 +301,8 @@ export class ParallelRealityEngine extends EventEmitter {
         coherence: probability * 0.9,
         entanglement: this.findQuantumEntanglements(keyDecision),
         stability: 70 + Math.random() * 25,
-        observerEffect: Math.random() * 0.3
-      }
+        observerEffect: Math.random() * 0.3,
+      },
     };
 
     this.activeDimensions.set(parallelDimension.id, parallelDimension);
@@ -325,7 +325,7 @@ export class ParallelRealityEngine extends EventEmitter {
     // Apply decision effects over 24 months
     for (let month = 0; month < 24; month++) {
       const snapshotDate = new Date(divergencePoint.getTime() + month * 30 * 24 * 60 * 60 * 1000);
-      
+
       // Apply decision effects
       currentSnapshot = this.applyDecisionEffects(currentSnapshot, keyDecision, month);
       currentSnapshot.timestamp = snapshotDate;
@@ -333,7 +333,8 @@ export class ParallelRealityEngine extends EventEmitter {
       // Add quantum uncertainty
       if (month > 6) {
         currentSnapshot.quantumProperties.uncertainty = Math.min(0.8, month * 0.03);
-        currentSnapshot.quantumProperties.superposition = currentSnapshot.quantumProperties.uncertainty > 0.5;
+        currentSnapshot.quantumProperties.superposition =
+          currentSnapshot.quantumProperties.uncertainty > 0.5;
       }
 
       timeline.push(JSON.parse(JSON.stringify(currentSnapshot)));
@@ -355,45 +356,47 @@ export class ParallelRealityEngine extends EventEmitter {
 
     // Decision effect mappings
     const decisionEffects = {
-      'AI_AUTOMATION_FULL': {
+      AI_AUTOMATION_FULL: {
         efficiency: 25 * effectMultiplier,
         budget: -15 * effectMultiplier, // Cost savings
         satisfaction: 10 * effectMultiplier,
-        innovation: 35 * effectMultiplier
+        innovation: 35 * effectMultiplier,
       },
-      'CITIZEN_ENGAGEMENT_PLATFORM': {
+      CITIZEN_ENGAGEMENT_PLATFORM: {
         satisfaction: 20 * effectMultiplier,
         engagement: 40 * effectMultiplier,
         trust: 15 * effectMultiplier,
-        efficiency: 8 * effectMultiplier
+        efficiency: 8 * effectMultiplier,
       },
-      'QUANTUM_COMPUTING_INVESTMENT': {
+      QUANTUM_COMPUTING_INVESTMENT: {
         innovation: 50 * effectMultiplier,
         efficiency: 30 * effectMultiplier,
         budget: -25 * effectMultiplier, // Initial cost
-        technology: 60 * effectMultiplier
+        technology: 60 * effectMultiplier,
       },
-      'UNIVERSAL_BASIC_SERVICES': {
+      UNIVERSAL_BASIC_SERVICES: {
         satisfaction: 30 * effectMultiplier,
         qualityOfLife: 25 * effectMultiplier,
         budget: -40 * effectMultiplier, // High cost
-        socialCohesion: 35 * effectMultiplier
-      }
+        socialCohesion: 35 * effectMultiplier,
+      },
     };
 
     const effects = decisionEffects[decision as keyof typeof decisionEffects] || {
       efficiency: Math.random() * 10 - 5,
       satisfaction: Math.random() * 10 - 5,
       budget: Math.random() * 10 - 5,
-      innovation: Math.random() * 10 - 5
+      innovation: Math.random() * 10 - 5,
     };
 
     // Apply effects to departments
     Object.keys(newSnapshot.governmentState.departments).forEach(deptKey => {
       const dept = newSnapshot.governmentState.departments[deptKey];
       if (effects.efficiency) dept.efficiency = Math.min(100, dept.efficiency + effects.efficiency);
-      if (effects.innovation) dept.innovationIndex = Math.min(100, dept.innovationIndex + effects.innovation);
-      if (effects.satisfaction) dept.citizenSatisfaction = Math.min(100, dept.citizenSatisfaction + effects.satisfaction);
+      if (effects.innovation)
+        dept.innovationIndex = Math.min(100, dept.innovationIndex + effects.innovation);
+      if (effects.satisfaction)
+        dept.citizenSatisfaction = Math.min(100, dept.citizenSatisfaction + effects.satisfaction);
     });
 
     // Apply effects to citizen metrics
@@ -402,10 +405,16 @@ export class ParallelRealityEngine extends EventEmitter {
       citizens.satisfactionScore = Math.min(100, citizens.satisfactionScore + effects.satisfaction);
     }
     if (effects.engagement && 'engagement' in effects) {
-      citizens.engagementLevel = Math.min(100, citizens.engagementLevel + (effects as any).engagement);
+      citizens.engagementLevel = Math.min(
+        100,
+        citizens.engagementLevel + (effects as any).engagement
+      );
     }
     if (effects.trust && 'trust' in effects) {
-      citizens.trustInGovernment = Math.min(100, citizens.trustInGovernment + (effects as any).trust);
+      citizens.trustInGovernment = Math.min(
+        100,
+        citizens.trustInGovernment + (effects as any).trust
+      );
     }
 
     return newSnapshot;
@@ -416,15 +425,17 @@ export class ParallelRealityEngine extends EventEmitter {
    */
   private calculateQuantumProbability(decision: string): number {
     const complexityFactors = {
-      'AI_AUTOMATION_FULL': 0.85,
-      'CITIZEN_ENGAGEMENT_PLATFORM': 0.92,
-      'QUANTUM_COMPUTING_INVESTMENT': 0.65,
-      'UNIVERSAL_BASIC_SERVICES': 0.73,
-      'INFRASTRUCTURE_OVERHAUL': 0.78,
-      'REGULATORY_REFORM': 0.88
+      AI_AUTOMATION_FULL: 0.85,
+      CITIZEN_ENGAGEMENT_PLATFORM: 0.92,
+      QUANTUM_COMPUTING_INVESTMENT: 0.65,
+      UNIVERSAL_BASIC_SERVICES: 0.73,
+      INFRASTRUCTURE_OVERHAUL: 0.78,
+      REGULATORY_REFORM: 0.88,
     };
 
-    return complexityFactors[decision as keyof typeof complexityFactors] || 0.5 + Math.random() * 0.4;
+    return (
+      complexityFactors[decision as keyof typeof complexityFactors] || 0.5 + Math.random() * 0.4
+    );
   }
 
   /**
@@ -432,10 +443,10 @@ export class ParallelRealityEngine extends EventEmitter {
    */
   private findQuantumEntanglements(decision: string): string[] {
     const entanglementMap = {
-      'AI_AUTOMATION_FULL': ['QUANTUM_COMPUTING_INVESTMENT', 'CITIZEN_ENGAGEMENT_PLATFORM'],
-      'CITIZEN_ENGAGEMENT_PLATFORM': ['AI_AUTOMATION_FULL', 'UNIVERSAL_BASIC_SERVICES'],
-      'QUANTUM_COMPUTING_INVESTMENT': ['AI_AUTOMATION_FULL', 'INFRASTRUCTURE_OVERHAUL'],
-      'UNIVERSAL_BASIC_SERVICES': ['CITIZEN_ENGAGEMENT_PLATFORM', 'REGULATORY_REFORM']
+      AI_AUTOMATION_FULL: ['QUANTUM_COMPUTING_INVESTMENT', 'CITIZEN_ENGAGEMENT_PLATFORM'],
+      CITIZEN_ENGAGEMENT_PLATFORM: ['AI_AUTOMATION_FULL', 'UNIVERSAL_BASIC_SERVICES'],
+      QUANTUM_COMPUTING_INVESTMENT: ['AI_AUTOMATION_FULL', 'INFRASTRUCTURE_OVERHAUL'],
+      UNIVERSAL_BASIC_SERVICES: ['CITIZEN_ENGAGEMENT_PLATFORM', 'REGULATORY_REFORM'],
     };
 
     return entanglementMap[decision as keyof typeof entanglementMap] || [];
@@ -449,13 +460,21 @@ export class ParallelRealityEngine extends EventEmitter {
     const initialSnapshot = timeline[0];
 
     return {
-      budgetPerformance: this.calculateAverage(Object.values(finalSnapshot.governmentState.departments).map(d => d.efficiency)),
+      budgetPerformance: this.calculateAverage(
+        Object.values(finalSnapshot.governmentState.departments).map(d => d.efficiency)
+      ),
       citizenSatisfaction: finalSnapshot.governmentState.citizenMetrics.satisfactionScore,
-      governmentEfficiency: this.calculateAverage(Object.values(finalSnapshot.governmentState.departments).map(d => d.efficiency)),
+      governmentEfficiency: this.calculateAverage(
+        Object.values(finalSnapshot.governmentState.departments).map(d => d.efficiency)
+      ),
       economicImpact: finalSnapshot.governmentState.citizenMetrics.economicWellbeing,
-      socialCohesion: (finalSnapshot.governmentState.citizenMetrics.trustInGovernment + 
-                      finalSnapshot.governmentState.citizenMetrics.engagementLevel) / 2,
-      technologicalAdvancement: this.calculateAverage(Object.values(finalSnapshot.governmentState.departments).map(d => d.innovationIndex))
+      socialCohesion:
+        (finalSnapshot.governmentState.citizenMetrics.trustInGovernment +
+          finalSnapshot.governmentState.citizenMetrics.engagementLevel) /
+        2,
+      technologicalAdvancement: this.calculateAverage(
+        Object.values(finalSnapshot.governmentState.departments).map(d => d.innovationIndex)
+      ),
     };
   }
 
@@ -467,8 +486,10 @@ export class ParallelRealityEngine extends EventEmitter {
    * Compare multiple parallel dimensions
    */
   public async compareParallelDimensions(dimensionIds: string[]): Promise<ParallelComparison> {
-    const dimensions = dimensionIds.map(id => this.activeDimensions.get(id)).filter(Boolean) as RealityDimension[];
-    
+    const dimensions = dimensionIds
+      .map(id => this.activeDimensions.get(id))
+      .filter(Boolean) as RealityDimension[];
+
     if (dimensions.length < 2) {
       throw new Error('At least 2 dimensions required for comparison');
     }
@@ -478,16 +499,20 @@ export class ParallelRealityEngine extends EventEmitter {
     let optimalDimension = '';
 
     dimensions.forEach(dimension => {
-      const performance = (dimension.outcomes.budgetPerformance + 
-                          dimension.outcomes.citizenSatisfaction + 
-                          dimension.outcomes.governmentEfficiency) / 3;
-      
+      const performance =
+        (dimension.outcomes.budgetPerformance +
+          dimension.outcomes.citizenSatisfaction +
+          dimension.outcomes.governmentEfficiency) /
+        3;
+
       metrics[dimension.id] = {
         performance,
-        citizenWelfare: (dimension.outcomes.citizenSatisfaction + dimension.outcomes.socialCohesion) / 2,
-        sustainability: (dimension.outcomes.budgetPerformance + dimension.outcomes.economicImpact) / 2,
+        citizenWelfare:
+          (dimension.outcomes.citizenSatisfaction + dimension.outcomes.socialCohesion) / 2,
+        sustainability:
+          (dimension.outcomes.budgetPerformance + dimension.outcomes.economicImpact) / 2,
         innovation: dimension.outcomes.technologicalAdvancement,
-        risk: 100 - dimension.quantumState.stability
+        risk: 100 - dimension.quantumState.stability,
       };
 
       if (performance > bestPerformance) {
@@ -502,15 +527,15 @@ export class ParallelRealityEngine extends EventEmitter {
       reasoning: [
         'Highest overall performance score across all metrics',
         'Optimal balance between citizen welfare and government efficiency',
-        'Sustainable long-term outcomes with manageable risk profile'
-      ]
+        'Sustainable long-term outcomes with manageable risk profile',
+      ],
     };
 
     const comparison: ParallelComparison = {
       primaryDimension: dimensionIds[0],
       comparedDimensions: dimensionIds.slice(1),
       metrics,
-      optimalPath
+      optimalPath,
     };
 
     this.emit('dimensionComparison', comparison);
@@ -529,22 +554,26 @@ export class ParallelRealityEngine extends EventEmitter {
         probability: 0.35,
         timeframe: '18 months',
         impact: 85,
-        consequences: ['50% efficiency gain', '25% cost reduction', 'Initial citizen adjustment period']
+        consequences: [
+          '50% efficiency gain',
+          '25% cost reduction',
+          'Initial citizen adjustment period',
+        ],
       },
       {
         outcome: 'Gradual Implementation',
         probability: 0.45,
         timeframe: '36 months',
         impact: 65,
-        consequences: ['30% efficiency gain', '15% cost reduction', 'High citizen acceptance']
+        consequences: ['30% efficiency gain', '15% cost reduction', 'High citizen acceptance'],
       },
       {
         outcome: 'Hybrid Approach',
-        probability: 0.20,
+        probability: 0.2,
         timeframe: '24 months',
         impact: 75,
-        consequences: ['40% efficiency gain', '20% cost reduction', 'Balanced risk profile']
-      }
+        consequences: ['40% efficiency gain', '20% cost reduction', 'Balanced risk profile'],
+      },
     ];
 
     const analysis: QuantumDecisionAnalysis = {
@@ -553,25 +582,30 @@ export class ParallelRealityEngine extends EventEmitter {
       quantumSuperposition: {
         simultaneousStates: possibleOutcomes.length,
         coherenceTime: 45, // minutes
-        decoherenceFactors: ['Political pressure', 'Budget constraints', 'Citizen feedback', 'Federal mandates']
+        decoherenceFactors: [
+          'Political pressure',
+          'Budget constraints',
+          'Citizen feedback',
+          'Federal mandates',
+        ],
       },
       observerEffects: [
         {
           observer: 'County Commissioners',
           influence: 0.8,
-          bias: 'Risk-averse'
+          bias: 'Risk-averse',
         },
         {
           observer: 'Citizens',
           influence: 0.6,
-          bias: 'Convenience-focused'
+          bias: 'Convenience-focused',
         },
         {
           observer: 'Federal Oversight',
           influence: 0.4,
-          bias: 'Compliance-focused'
-        }
-      ]
+          bias: 'Compliance-focused',
+        },
+      ],
     };
 
     this.emit('quantumDecisionAnalysis', analysis);
@@ -582,7 +616,7 @@ export class ParallelRealityEngine extends EventEmitter {
    * Collapse quantum superposition by making observation/decision
    */
   public async collapseQuantumState(
-    dimensionId: string, 
+    dimensionId: string,
     observedOutcome: string
   ): Promise<RealityDimension> {
     const dimension = this.activeDimensions.get(dimensionId);
@@ -599,7 +633,7 @@ export class ParallelRealityEngine extends EventEmitter {
       quantumState: {
         ...dimension.quantumState,
         coherence: 1.0,
-        observerEffect: 1.0
+        observerEffect: 1.0,
       },
       timeline: dimension.timeline.map(snapshot => ({
         ...snapshot,
@@ -608,9 +642,9 @@ export class ParallelRealityEngine extends EventEmitter {
           superposition: false,
           measurement: true,
           uncertainty: 0.0,
-          waveFunction: 1.0
-        }
-      }))
+          waveFunction: 1.0,
+        },
+      })),
     };
 
     this.activeDimensions.set(dimensionId, collapsedDimension);
@@ -644,12 +678,14 @@ export class ParallelRealityEngine extends EventEmitter {
 
       // Add quantum fluctuations
       const quantumFluctuation = (Math.random() - 0.5) * 0.1;
-      
-      dimension.quantumState.coherence = Math.max(0.1, 
+
+      dimension.quantumState.coherence = Math.max(
+        0.1,
         Math.min(1.0, dimension.quantumState.coherence + quantumFluctuation)
       );
 
-      dimension.quantumState.observerEffect = Math.min(1.0, 
+      dimension.quantumState.observerEffect = Math.min(
+        1.0,
         dimension.quantumState.observerEffect + Math.random() * 0.05
       );
 
@@ -681,7 +717,7 @@ export class ParallelRealityEngine extends EventEmitter {
     if (!this.isSimulationActive) return;
 
     console.log('🛑 Stopping Parallel Reality Simulation...');
-    
+
     if (this.realityUpdateInterval) {
       clearInterval(this.realityUpdateInterval);
       this.realityUpdateInterval = null;
@@ -696,11 +732,11 @@ export class ParallelRealityEngine extends EventEmitter {
    */
   public async resetParallelRealities(): Promise<void> {
     console.log('🔄 Resetting Parallel Reality Engine...');
-    
+
     this.stopParallelSimulation();
     this.activeDimensions.clear();
     await this.initializeBaselineReality();
-    
+
     this.emit('realitiesReset');
   }
 }
@@ -723,7 +759,7 @@ class QuantumRealityProcessor {
   public calculateEntanglement(dimension1: RealityDimension, dimension2: RealityDimension): number {
     const coherence1 = dimension1.quantumState.coherence;
     const coherence2 = dimension2.quantumState.coherence;
-    
+
     return Math.sqrt(coherence1 * coherence2) * 0.8;
   }
 
@@ -733,7 +769,7 @@ class QuantumRealityProcessor {
   public applyDecoherence(dimension: RealityDimension, environmentalFactors: string[]): number {
     const baseCoherence = dimension.quantumState.coherence;
     const decoherenceFactor = environmentalFactors.length * 0.05;
-    
+
     return Math.max(0.1, baseCoherence - decoherenceFactor);
   }
 }

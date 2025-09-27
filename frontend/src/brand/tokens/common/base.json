@@ -1,0 +1,389 @@
+{
+  "color": {
+    "surface": {
+      "primary": {
+        "value": "#0b0f14",
+        "attributes": {
+          "category": "surface",
+          "type": "base"
+        }
+      },
+      "secondary": {
+        "value": "#1a2332",
+        "attributes": {
+          "category": "surface",
+          "type": "base"
+        }
+      },
+      "glass": {
+        "value": "rgba(255, 255, 255, 0.05)",
+        "attributes": {
+          "category": "surface",
+          "type": "base"
+        }
+      },
+      "glass-heavy": {
+        "value": "rgba(255, 255, 255, 0.08)",
+        "attributes": {
+          "category": "surface",
+          "type": "base"
+        }
+      }
+    },
+    "text": {
+      "primary": {
+        "value": "#e6f1ff",
+        "attributes": {
+          "category": "text",
+          "type": "base"
+        }
+      },
+      "secondary": {
+        "value": "#a8b5c7",
+        "attributes": {
+          "category": "text",
+          "type": "base"
+        }
+      },
+      "muted": {
+        "value": "#6b7788",
+        "attributes": {
+          "category": "text",
+          "type": "base"
+        }
+      }
+    },
+    "brand": {
+      "cosmic-blue": {
+        "value": "#0891b2",
+        "attributes": {
+          "category": "brand",
+          "type": "base"
+        }
+      },
+      "quantum-teal": {
+        "value": "#00d2ff",
+        "attributes": {
+          "category": "brand",
+          "type": "base"
+        }
+      },
+      "neural-purple": {
+        "value": "#667eea",
+        "attributes": {
+          "category": "brand",
+          "type": "base"
+        }
+      },
+      "stellar-white": {
+        "value": "#ffffff",
+        "attributes": {
+          "category": "brand",
+          "type": "base"
+        }
+      },
+      "deep-space": {
+        "value": "#0a0f1c",
+        "attributes": {
+          "category": "brand",
+          "type": "base"
+        }
+      }
+    },
+    "accent": {
+      "primary": {
+        "value": "#07D1D6",
+        "attributes": {
+          "category": "accent",
+          "type": "base"
+        }
+      },
+      "secondary": {
+        "value": "#22d3ee",
+        "attributes": {
+          "category": "accent",
+          "type": "base"
+        }
+      }
+    },
+    "status": {
+      "success": {
+        "value": "#00ff88",
+        "attributes": {
+          "category": "status",
+          "type": "base"
+        }
+      },
+      "error": {
+        "value": "#ff3333",
+        "attributes": {
+          "category": "status",
+          "type": "base"
+        }
+      },
+      "warning": {
+        "value": "#ffaa00",
+        "attributes": {
+          "category": "status",
+          "type": "base"
+        }
+      },
+      "info": {
+        "value": "#0099ff",
+        "attributes": {
+          "category": "status",
+          "type": "base"
+        }
+      }
+    }
+  },
+  "gradient": {
+    "clarity": {
+      "value": "linear-gradient(135deg, #00d2ff, #0891b2)",
+      "attributes": {
+        "category": "gradient",
+        "type": "base"
+      }
+    },
+    "transcend": {
+      "value": "linear-gradient(135deg, #0891b2, #667eea)",
+      "attributes": {
+        "category": "gradient",
+        "type": "base"
+      }
+    },
+    "dark": {
+      "value": "linear-gradient(135deg, #0a0f1c, #1a2332)",
+      "attributes": {
+        "category": "gradient",
+        "type": "base"
+      }
+    },
+    "success": {
+      "value": "linear-gradient(135deg, #00d2ff, #22d3ee)",
+      "attributes": {
+        "category": "gradient",
+        "type": "base"
+      }
+    }
+  },
+  "typography": {
+    "family": {
+      "primary": {
+        "value": "'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      },
+      "mono": {
+        "value": "'Cascadia Code', 'Fira Code', 'SF Mono', Consolas, monospace",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      }
+    },
+    "size": {
+      "xs": {
+        "value": "0.75rem",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      },
+      "sm": {
+        "value": "0.875rem",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      },
+      "base": {
+        "value": "1rem",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      },
+      "lg": {
+        "value": "1.125rem",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      },
+      "xl": {
+        "value": "1.25rem",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      },
+      "2xl": {
+        "value": "1.5rem",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      },
+      "3xl": {
+        "value": "1.875rem",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      },
+      "4xl": {
+        "value": "2.25rem",
+        "attributes": {
+          "category": "typography",
+          "type": "base"
+        }
+      }
+    }
+  },
+  "spacing": {
+    "xs": {
+      "value": "4px",
+      "attributes": {
+        "category": "spacing",
+        "type": "base"
+      }
+    },
+    "sm": {
+      "value": "8px",
+      "attributes": {
+        "category": "spacing",
+        "type": "base"
+      }
+    },
+    "md": {
+      "value": "16px",
+      "attributes": {
+        "category": "spacing",
+        "type": "base"
+      }
+    },
+    "lg": {
+      "value": "24px",
+      "attributes": {
+        "category": "spacing",
+        "type": "base"
+      }
+    },
+    "xl": {
+      "value": "32px",
+      "attributes": {
+        "category": "spacing",
+        "type": "base"
+      }
+    },
+    "2xl": {
+      "value": "48px",
+      "attributes": {
+        "category": "spacing",
+        "type": "base"
+      }
+    }
+  },
+  "radius": {
+    "sm": {
+      "value": "8px",
+      "attributes": {
+        "category": "radius",
+        "type": "base"
+      }
+    },
+    "md": {
+      "value": "12px",
+      "attributes": {
+        "category": "radius",
+        "type": "base"
+      }
+    },
+    "lg": {
+      "value": "20px",
+      "attributes": {
+        "category": "radius",
+        "type": "base"
+      }
+    },
+    "xl": {
+      "value": "24px",
+      "attributes": {
+        "category": "radius",
+        "type": "base"
+      }
+    },
+    "full": {
+      "value": "50px",
+      "attributes": {
+        "category": "radius",
+        "type": "base"
+      }
+    }
+  },
+  "shadow": {
+    "glow": {
+      "value": "0 0 30px rgba(0, 210, 255, 0.3)",
+      "attributes": {
+        "category": "shadow",
+        "type": "base"
+      }
+    },
+    "subtle": {
+      "value": "0 2px 8px rgba(0, 0, 0, 0.1)",
+      "attributes": {
+        "category": "shadow",
+        "type": "base"
+      }
+    },
+    "elevated": {
+      "value": "0 8px 32px rgba(0, 0, 0, 0.15)",
+      "attributes": {
+        "category": "shadow",
+        "type": "base"
+      }
+    }
+  },
+  "transition": {
+    "fast": {
+      "value": "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+      "attributes": {
+        "category": "transition",
+        "type": "base"
+      }
+    },
+    "base": {
+      "value": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      "attributes": {
+        "category": "transition",
+        "type": "base"
+      }
+    },
+    "spring": {
+      "value": "cubic-bezier(0.43, 0.13, 0.23, 0.96)",
+      "attributes": {
+        "category": "transition",
+        "type": "base"
+      }
+    }
+  },
+  "blur": {
+    "base": {
+      "value": "blur(15px)",
+      "attributes": {
+        "category": "blur",
+        "type": "base"
+      }
+    },
+    "heavy": {
+      "value": "blur(30px)",
+      "attributes": {
+        "category": "blur",
+        "type": "base"
+      }
+    }
+  }
+}

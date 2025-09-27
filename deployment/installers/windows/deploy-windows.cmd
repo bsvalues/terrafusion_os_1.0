@@ -87,8 +87,8 @@ powershell -Command "$WshShell = New-Object -comObject WScript.Shell; $Shortcut 
 
 REM Configure firewall
 echo Configuring Windows Firewall...
-netsh advfirewall firewall add rule name="TerraFusion OS Backend" dir=in action=allow protocol=TCP localport=5000
-netsh advfirewall firewall add rule name="TerraFusion OS Frontend" dir=in action=allow protocol=TCP localport=3000
+netsh advfirewall firewall add rule name="TerraFusion OS Backend" dir=in action=allow protocol=TCP localport=\${{TF_API_PORT:-5000}}
+netsh advfirewall firewall add rule name="TerraFusion OS Frontend" dir=in action=allow protocol=TCP localport=\${{TF_API_PORT:-5000}}
 
 REM Set registry entries
 echo Setting registry entries...
@@ -108,8 +108,8 @@ echo Installation Directory: %INSTALL_DIR%
 echo Data Directory: %DATA_DIR%
 echo Service Name: %SERVICE_NAME%
 echo.
-echo Access the application at: http://localhost:3000
-echo Backend API at: http://localhost:5000
+echo Access the application at: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+echo Backend API at: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 echo.
 echo Desktop shortcut created for easy access.
 echo.

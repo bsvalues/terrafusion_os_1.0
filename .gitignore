@@ -307,3 +307,4 @@ node_modules/
 .env.local
 target/
 **/Cargo.lock
+node_modules

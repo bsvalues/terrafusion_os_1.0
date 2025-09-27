@@ -1,0 +1,27 @@
+{
+  "name": "Golden Optimization Suite",
+  "version": "1.0.0",
+  "category": [
+    "Optimization",
+    "Analytics",
+    "Education"
+  ],
+  "service_endpoint": "/",
+  "features": [
+    "Golden-section optimization API",
+    "Golden Laplacian spectral filters",
+    "Fast Fibonacci service",
+    "Anyon (Fibonacci) educational primitives"
+  ],
+  "pricing": {
+    "foundation_usd_per_year": 25000,
+    "enterprise_addons": [
+      "batch spectral",
+      "GPU"
+    ]
+  },
+  "security": {
+    "auth": "JWT+RBAC",
+    "rate_limits": "per-tenant quotas"
+  }
+}

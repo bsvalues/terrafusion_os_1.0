@@ -257,8 +257,8 @@ check_network_connectivity() {
     
     # Check service connectivity
     local services=(
-        "terrafusion/terrafusion-backend-service:5000"
-        "terrafusion/terrafusion-frontend-service:3000"
+        "terrafusion/terrafusion-backend-service:${TF_API_PORT:-5046}"
+        "terrafusion/terrafusion-frontend-service:${TF_FRONTEND_PORT:-3102}"
         "database/postgresql-service:5432"
         "database/redis-service:6379"
     )

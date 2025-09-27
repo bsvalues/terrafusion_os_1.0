@@ -1,14 +1,16 @@
 # apps Directory Index
 
 ## Directory Overview
+
 **Location**: `/apps/`  
 **Purpose**: Application modules and user interface components  
 **Classification**: Frontend Application Architecture  
-**Security Level**: Government UI/UX Standards  
+**Security Level**: Government UI/UX Standards
 
 ## Architecture Summary
 
 ### Primary Components
+
 ```
 apps/
 ├── desktop-electron/                   # Electron desktop application
@@ -32,6 +34,7 @@ apps/
 ```
 
 ### Key Capabilities
+
 - **Desktop Application**: Electron-based desktop client for government users
 - **Property Valuation UI**: Advanced property assessment interfaces
 - **Comparable Analysis**: Sophisticated property comparison tools
@@ -43,6 +46,7 @@ apps/
 ### Electron Desktop Client (`desktop-electron/`)
 
 #### Main Process Configuration (`main.js`)
+
 ```javascript
 // Electron main process for government desktop application
 const { app, BrowserWindow, ipcMain } = require('electron');
@@ -52,13 +56,13 @@ class TerraFusionDesktopApp {
   constructor() {
     this.mainWindow = null;
     this.governmentSecurityConfig = {
-      nodeIntegration: false,           // Security: Disable node integration
-      contextIsolation: true,           // Security: Enable context isolation
-      enableRemoteModule: false,        // Security: Disable remote module
-      webSecurity: true                 // Security: Enable web security
+      nodeIntegration: false, // Security: Disable node integration
+      contextIsolation: true, // Security: Enable context isolation
+      enableRemoteModule: false, // Security: Disable remote module
+      webSecurity: true, // Security: Enable web security
     };
   }
-  
+
   createMainWindow() {
     this.mainWindow = new BrowserWindow({
       width: 1920,
@@ -66,25 +70,30 @@ class TerraFusionDesktopApp {
       icon: path.join(__dirname, 'assets/terrafusion-icon.png'),
       webPreferences: this.governmentSecurityConfig,
       titleBarStyle: 'default',
-      show: false                       // Don't show until ready
+      show: false, // Don't show until ready
     });
-    
+
     // Government security headers
-    this.mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      callback({
-        responseHeaders: {
-          ...details.responseHeaders,
-          'Content-Security-Policy': ['default-src \'self\' \'unsafe-inline\' data:'],
-          'X-Frame-Options': ['DENY'],
-          'X-Content-Type-Options': ['nosniff']
-        }
-      });
-    });
+    this.mainWindow.webContents.session.webRequest.onHeadersReceived(
+      (details, callback) => {
+        callback({
+          responseHeaders: {
+            ...details.responseHeaders,
+            'Content-Security-Policy': [
+              "default-src 'self' 'unsafe-inline' data:",
+            ],
+            'X-Frame-Options': ['DENY'],
+            'X-Content-Type-Options': ['nosniff'],
+          },
+        });
+      }
+    );
   }
 }
 ```
 
 #### Desktop Package Configuration (`package.json`)
+
 ```json
 {
   "name": "terrafusion-desktop",
@@ -107,12 +116,7 @@ class TerraFusionDesktopApp {
     "directories": {
       "output": "dist"
     },
-    "files": [
-      "main.js",
-      "preload.js",
-      "assets/**/*",
-      "build/**/*"
-    ],
+    "files": ["main.js", "preload.js", "assets/**/*", "build/**/*"],
     "win": {
       "target": "nsis",
       "certificateFile": "certificates/terrafusion-code-signing.p12"
@@ -134,6 +138,7 @@ class TerraFusionDesktopApp {
 ### Property Valuation System (`ui/src/components/valuation/`)
 
 #### Property Valuation Form Component
+
 ```tsx
 // PropertyValuationForm.tsx - Advanced property assessment interface
 import React, { useState, useEffect } from 'react';
@@ -151,7 +156,7 @@ export const PropertyValuationForm: React.FC<PropertyValuationFormProps> = ({
   propertyId,
   bentonCountyParcel,
   harrisPagessData,
-  onValuationComplete
+  onValuationComplete,
 }) => {
   const dispatch = useDispatch();
   const [valuationData, setValuationData] = useState<PropertyValuationData>({
@@ -159,16 +164,16 @@ export const PropertyValuationForm: React.FC<PropertyValuationFormProps> = ({
     assessedValue: 0,
     taxableValue: 0,
     comparables: [],
-    aiAnalysis: null
+    aiAnalysis: null,
   });
-  
+
   // Government compliance: Section 508 accessibility
   const accessibilityProps = {
     'aria-label': 'Property Valuation Form',
     'aria-describedby': 'property-valuation-description',
-    role: 'form'
+    role: 'form',
   };
-  
+
   // Integration with AI agents for property assessment
   useEffect(() => {
     const runAIAssessment = async () => {
@@ -178,23 +183,23 @@ export const PropertyValuationForm: React.FC<PropertyValuationFormProps> = ({
             propertyId,
             harrisData: harrisPagessData,
             agentType: 'property_assessor',
-            complianceLevel: 'government_grade'
+            complianceLevel: 'government_grade',
           })
         );
-        
+
         setValuationData(prev => ({
           ...prev,
-          aiAnalysis: aiAssessment.payload
+          aiAnalysis: aiAssessment.payload,
         }));
       }
     };
-    
+
     runAIAssessment();
   }, [propertyId, harrisPagessData, dispatch]);
-  
+
   const handleSubmitValuation = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     // Government audit trail
     const auditTrail = {
       timestamp: new Date().toISOString(),
@@ -202,13 +207,13 @@ export const PropertyValuationForm: React.FC<PropertyValuationFormProps> = ({
       action: 'property_valuation_submitted',
       propertyId,
       valuationData,
-      complianceValidation: await validateGovernmentCompliance(valuationData)
+      complianceValidation: await validateGovernmentCompliance(valuationData),
     };
-    
+
     dispatch(logGovernmentAuditTrail(auditTrail));
     onValuationComplete(valuationData);
   };
-  
+
   return (
     <Paper elevation={2} sx={{ p: 3 }} {...accessibilityProps}>
       <form onSubmit={handleSubmitValuation}>
@@ -224,7 +229,7 @@ export const PropertyValuationForm: React.FC<PropertyValuationFormProps> = ({
               />
             </FormControl>
           </Grid>
-          
+
           {/* Market Value Assessment */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
@@ -232,29 +237,31 @@ export const PropertyValuationForm: React.FC<PropertyValuationFormProps> = ({
                 label="Market Value"
                 type="number"
                 value={valuationData.marketValue}
-                onChange={(e) => setValuationData(prev => ({
-                  ...prev,
-                  marketValue: parseFloat(e.target.value)
-                }))}
+                onChange={e =>
+                  setValuationData(prev => ({
+                    ...prev,
+                    marketValue: parseFloat(e.target.value),
+                  }))
+                }
                 inputProps={{
                   'aria-label': 'Market Value in Dollars',
                   min: 0,
-                  step: 1000
+                  step: 1000,
                 }}
               />
             </FormControl>
           </Grid>
-          
+
           {/* AI Analysis Display */}
           {valuationData.aiAnalysis && (
             <Grid item xs={12}>
-              <AIAnalysisDisplay 
+              <AIAnalysisDisplay
                 analysis={valuationData.aiAnalysis}
                 complianceLevel="government_grade"
               />
             </Grid>
           )}
-          
+
           {/* Submit Actions */}
           <Grid item xs={12}>
             <Button
@@ -275,6 +282,7 @@ export const PropertyValuationForm: React.FC<PropertyValuationFormProps> = ({
 ```
 
 #### Property Valuation Tests
+
 ```tsx
 // __tests__/PropertyValuationForm.test.tsx
 import React from 'react';
@@ -287,17 +295,17 @@ describe('PropertyValuationForm', () => {
   const mockStore = configureStore({
     reducer: {
       valuation: valuationSlice.reducer,
-      ai: aiSlice.reducer
-    }
+      ai: aiSlice.reducer,
+    },
   });
-  
+
   const mockBentonCountyParcel = {
     parcelId: 'BENTON_123456',
     address: '123 Main St, Richland, WA',
     assessedValue: 350000,
-    harrisPagessId: 'HARRIS_789012'
+    harrisPagessId: 'HARRIS_789012',
   };
-  
+
   it('renders property valuation form with accessibility', () => {
     render(
       <Provider store={mockStore}>
@@ -308,16 +316,23 @@ describe('PropertyValuationForm', () => {
         />
       </Provider>
     );
-    
+
     // Test accessibility compliance
-    expect(screen.getByRole('form')).toHaveAttribute('aria-label', 'Property Valuation Form');
-    expect(screen.getByLabelText('Market Value in Dollars')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /submit property valuation/i })).toBeInTheDocument();
+    expect(screen.getByRole('form')).toHaveAttribute(
+      'aria-label',
+      'Property Valuation Form'
+    );
+    expect(
+      screen.getByLabelText('Market Value in Dollars')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /submit property valuation/i })
+    ).toBeInTheDocument();
   });
-  
+
   it('integrates with AI assessment agents', async () => {
     const mockOnComplete = jest.fn();
-    
+
     render(
       <Provider store={mockStore}>
         <PropertyValuationForm
@@ -328,22 +343,22 @@ describe('PropertyValuationForm', () => {
         />
       </Provider>
     );
-    
+
     // Wait for AI assessment to complete
     await waitFor(() => {
       expect(screen.getByText(/AI Analysis/i)).toBeInTheDocument();
     });
-    
+
     // Test government compliance validation
     const submitButton = screen.getByRole('button', { name: /submit/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(mockOnComplete).toHaveBeenCalledWith(
         expect.objectContaining({
           aiAnalysis: expect.objectContaining({
-            complianceValidation: 'passed'
-          })
+            complianceValidation: 'passed',
+          }),
         })
       );
     });
@@ -356,6 +371,7 @@ describe('PropertyValuationForm', () => {
 ### Comparable Properties Grid (`ui/src/features/compGrid/`)
 
 #### Comparable Grid Component
+
 ```tsx
 // ComparableGrid.tsx - Advanced property comparison interface
 import React, { useMemo, useCallback } from 'react';
@@ -368,81 +384,87 @@ export const ComparableGrid: React.FC = () => {
   const { comparables, loading, error } = useSelector(
     (state: RootState) => state.compGrid
   );
-  
+
   // Government compliance: Data columns with audit trails
-  const columns: GridColDef[] = useMemo(() => [
-    {
-      field: 'parcelId',
-      headerName: 'Parcel ID',
-      width: 120,
-      sortable: true,
-      filterable: true
-    },
-    {
-      field: 'address',
-      headerName: 'Property Address',
-      width: 300,
-      sortable: true,
-      filterable: true
-    },
-    {
-      field: 'marketValue',
-      headerName: 'Market Value',
-      width: 150,
-      type: 'number',
-      valueFormatter: (params) => `$${params.value.toLocaleString()}`
-    },
-    {
-      field: 'assessedValue',
-      headerName: 'Assessed Value',
-      width: 150,
-      type: 'number',
-      valueFormatter: (params) => `$${params.value.toLocaleString()}`
-    },
-    {
-      field: 'aiConfidenceScore',
-      headerName: 'AI Confidence',
-      width: 130,
-      type: 'number',
-      valueFormatter: (params) => `${(params.value * 100).toFixed(1)}%`
-    },
-    {
-      field: 'lastUpdated',
-      headerName: 'Last Updated',
-      width: 180,
-      type: 'dateTime',
-      valueFormatter: (params) => new Date(params.value).toLocaleString()
-    },
-    {
-      field: 'complianceStatus',
-      headerName: 'Gov Compliance',
-      width: 140,
-      renderCell: (params) => (
-        <ComplianceStatusChip status={params.value} />
-      )
-    }
-  ], []);
-  
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: 'parcelId',
+        headerName: 'Parcel ID',
+        width: 120,
+        sortable: true,
+        filterable: true,
+      },
+      {
+        field: 'address',
+        headerName: 'Property Address',
+        width: 300,
+        sortable: true,
+        filterable: true,
+      },
+      {
+        field: 'marketValue',
+        headerName: 'Market Value',
+        width: 150,
+        type: 'number',
+        valueFormatter: params => `$${params.value.toLocaleString()}`,
+      },
+      {
+        field: 'assessedValue',
+        headerName: 'Assessed Value',
+        width: 150,
+        type: 'number',
+        valueFormatter: params => `$${params.value.toLocaleString()}`,
+      },
+      {
+        field: 'aiConfidenceScore',
+        headerName: 'AI Confidence',
+        width: 130,
+        type: 'number',
+        valueFormatter: params => `${(params.value * 100).toFixed(1)}%`,
+      },
+      {
+        field: 'lastUpdated',
+        headerName: 'Last Updated',
+        width: 180,
+        type: 'dateTime',
+        valueFormatter: params => new Date(params.value).toLocaleString(),
+      },
+      {
+        field: 'complianceStatus',
+        headerName: 'Gov Compliance',
+        width: 140,
+        renderCell: params => <ComplianceStatusChip status={params.value} />,
+      },
+    ],
+    []
+  );
+
   // AI-enhanced comparable property selection
-  const handleRowSelection = useCallback(async (selectedRows: GridRowsProp) => {
-    const aiEnhancedComparables = await dispatch(
-      enhanceComparablesWithAI({
-        selectedProperties: selectedRows,
-        aiAgentType: 'property_assessor',
-        analysisType: 'comparative_market_analysis',
-        governmentCompliance: true
-      })
-    );
-    
-    // Government audit logging
-    dispatch(logComparableSelection({
-      timestamp: new Date().toISOString(),
-      selectedCount: selectedRows.length,
-      aiEnhancement: aiEnhancedComparables.payload,
-      complianceValidation: 'passed'
-    }));
-  }, [dispatch]);
-  
+  const handleRowSelection = useCallback(
+    async (selectedRows: GridRowsProp) => {
+      const aiEnhancedComparables = await dispatch(
+        enhanceComparablesWithAI({
+          selectedProperties: selectedRows,
+          aiAgentType: 'property_assessor',
+          analysisType: 'comparative_market_analysis',
+          governmentCompliance: true,
+        })
+      );
+
+      // Government audit logging
+      dispatch(
+        logComparableSelection({
+          timestamp: new Date().toISOString(),
+          selectedCount: selectedRows.length,
+          aiEnhancement: aiEnhancedComparables.payload,
+          complianceValidation: 'passed',
+        })
+      );
+    },
+    [dispatch]
+  );
+
   return (
     <div style={{ height: 600, width: '100%' }}>
       <DataGrid
@@ -453,17 +475,14 @@ export const ComparableGrid: React.FC = () => {
         onRowSelectionModelChange={handleRowSelection}
         pageSize={25}
         rowsPerPageOptions={[10, 25, 50, 100]}
-        
         // Government accessibility compliance
         componentsProps={{
           toolbar: {
-            'aria-label': 'Comparable Properties Grid Toolbar'
-          }
+            'aria-label': 'Comparable Properties Grid Toolbar',
+          },
         }}
-        
         // Government security: Disable export by default
         disableColumnExport={!hasGovernmentExportPermission()}
-        
         // Performance optimization for large datasets
         virtualization={true}
         disableRowSelectionOnClick={false}
@@ -474,6 +493,7 @@ export const ComparableGrid: React.FC = () => {
 ```
 
 #### Comparable Grid Integration Tests
+
 ```tsx
 // __tests__/ComparableGridWorkflow.int.test.tsx
 import React from 'react';
@@ -485,18 +505,18 @@ import { setupGovernmentTestStore } from '../../../test-utils/governmentTestStor
 
 describe('ComparableGrid Integration', () => {
   let store: ReturnType<typeof setupGovernmentTestStore>;
-  
+
   beforeEach(() => {
     store = setupGovernmentTestStore({
       compGrid: {
         comparables: mockBentonCountyComparables,
         loading: false,
         error: null,
-        aiAnalysis: mockAIAnalysis
-      }
+        aiAnalysis: mockAIAnalysis,
+      },
     });
   });
-  
+
   it('integrates with Harris PACS data and AI analysis', async () => {
     render(
       <Provider store={store}>
@@ -505,55 +525,55 @@ describe('ComparableGrid Integration', () => {
         </BrowserRouter>
       </Provider>
     );
-    
+
     // Verify Harris PACS data integration
     expect(screen.getByText('HARRIS_789012')).toBeInTheDocument();
     expect(screen.getByText('Benton County, WA')).toBeInTheDocument();
-    
+
     // Test AI confidence score display
     expect(screen.getByText('94.2%')).toBeInTheDocument(); // AI confidence
-    
+
     // Test government compliance status
     expect(screen.getByText('FISMA Compliant')).toBeInTheDocument();
   });
-  
+
   it('handles government export permissions', async () => {
     // Mock government user without export permissions
     jest.spyOn(global, 'hasGovernmentExportPermission').mockReturnValue(false);
-    
+
     render(
       <Provider store={store}>
         <ComparableGrid />
       </Provider>
     );
-    
+
     // Verify export is disabled for security
     const toolbar = screen.getByLabelText('Comparable Properties Grid Toolbar');
     expect(toolbar).not.toHaveTextContent('Export');
   });
-  
+
   it('validates AI-enhanced comparable selection workflow', async () => {
     const mockDispatch = jest.fn();
     jest.spyOn(store, 'dispatch').mockImplementation(mockDispatch);
-    
+
     render(
       <Provider store={store}>
         <ComparableGrid />
       </Provider>
     );
-    
+
     // Select comparable properties
     const firstCheckbox = screen.getAllByRole('checkbox')[1]; // Skip header checkbox
     fireEvent.click(firstCheckbox);
-    
+
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'compGrid/enhanceComparablesWithAI',
           payload: expect.objectContaining({
             aiAgentType: 'property_assessor',
-            governmentCompliance: true
-          })
+            governmentCompliance: true,
+          }),
         })
       );
     });
@@ -566,6 +586,7 @@ describe('ComparableGrid Integration', () => {
 ### Redux Store Configuration (`ui/src/store/`)
 
 #### Comparable Grid State Slice
+
 ```typescript
 // compGrid/slice.ts - Redux state management for comparable properties
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
@@ -605,20 +626,20 @@ export const enhanceComparablesWithAI = createAsyncThunk(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Government-Auth': getGovernmentAuthToken()
+        'X-Government-Auth': getGovernmentAuthToken(),
       },
       body: JSON.stringify({
         properties: payload.selectedProperties,
         agentType: payload.aiAgentType,
         analysis: payload.analysisType,
-        compliance: payload.governmentCompliance
-      })
+        compliance: payload.governmentCompliance,
+      }),
     });
-    
+
     if (!aiResponse.ok) {
       throw new Error('AI analysis failed');
     }
-    
+
     return await aiResponse.json();
   }
 );
@@ -631,52 +652,60 @@ const compGridSlice = createSlice({
     loading: false,
     error: null,
     aiAnalysis: null,
-    governmentAuditTrail: []
+    governmentAuditTrail: [],
   } as CompGridState,
-  
+
   reducers: {
     selectComparable: (state, action: PayloadAction<string>) => {
       if (!state.selectedComparables.includes(action.payload)) {
         state.selectedComparables.push(action.payload);
       }
     },
-    
+
     deselectComparable: (state, action: PayloadAction<string>) => {
       state.selectedComparables = state.selectedComparables.filter(
         id => id !== action.payload
       );
     },
-    
-    logGovernmentAuditEvent: (state, action: PayloadAction<GovernmentAuditEvent>) => {
+
+    logGovernmentAuditEvent: (
+      state,
+      action: PayloadAction<GovernmentAuditEvent>
+    ) => {
       state.governmentAuditTrail.push({
         ...action.payload,
         timestamp: new Date().toISOString(),
-        complianceValidated: true
+        complianceValidated: true,
       });
     },
-    
-    updateComplianceStatus: (state, action: PayloadAction<{
-      comparableId: string;
-      status: ComplianceStatus;
-    }>) => {
-      const comparable = state.comparables.find(c => c.id === action.payload.comparableId);
+
+    updateComplianceStatus: (
+      state,
+      action: PayloadAction<{
+        comparableId: string;
+        status: ComplianceStatus;
+      }>
+    ) => {
+      const comparable = state.comparables.find(
+        c => c.id === action.payload.comparableId
+      );
       if (comparable) {
         comparable.complianceStatus = action.payload.status;
         comparable.lastUpdated = new Date().toISOString();
       }
-    }
+    },
   },
-  
-  extraReducers: (builder) => {
+
+  extraReducers: builder => {
     builder
-      .addCase(enhanceComparablesWithAI.pending, (state) => {
+      .addCase(enhanceComparablesWithAI.pending, state => {
         state.loading = true;
         state.error = null;
       })
       .addCase(enhanceComparablesWithAI.fulfilled, (state, action) => {
         state.loading = false;
         state.aiAnalysis = action.payload;
-        
+
         // Update comparable properties with AI enhancements
         action.payload.enhancedProperties.forEach((enhanced: any) => {
           const existing = state.comparables.find(c => c.id === enhanced.id);
@@ -689,20 +718,21 @@ const compGridSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'AI analysis failed';
       });
-  }
+  },
 });
 
 export const {
   selectComparable,
   deselectComparable,
   logGovernmentAuditEvent,
-  updateComplianceStatus
+  updateComplianceStatus,
 } = compGridSlice.actions;
 
 export default compGridSlice.reducer;
 ```
 
 #### TypeScript Type Definitions
+
 ```typescript
 // types.ts - Application-wide TypeScript definitions
 export interface BentonCountyParcelData {
@@ -772,12 +802,14 @@ export interface RootState {
 ## Quick Reference
 
 ### Essential Components
+
 - **PropertyValuationForm**: Advanced property assessment interface
 - **ComparableGrid**: Property comparison and analysis tool
 - **AIAnalysisDisplay**: AI-powered insights and recommendations
 - **ComplianceStatusChip**: Government compliance status indicator
 
 ### Key Features
+
 - **Government Accessibility**: Full Section 508 compliance
 - **AI Integration**: Real-time AI agent analysis and recommendations
 - **Security**: Government-grade security headers and validation
@@ -785,6 +817,7 @@ export interface RootState {
 - **Performance**: Virtualized grids for large datasets
 
 ### Integration Points
+
 - **Harris PACS**: Property assessment system integration
 - **AI Agents**: 1,008 agent swarm for property analysis
 - **Redux Store**: Centralized state management
@@ -794,4 +827,4 @@ export interface RootState {
 
 **Last Updated**: August 27, 2025  
 **Version**: Terrafusion OS 1.0 Applications  
-**Authority**: Terrafusion Application Development Division  
+**Authority**: Terrafusion Application Development Division

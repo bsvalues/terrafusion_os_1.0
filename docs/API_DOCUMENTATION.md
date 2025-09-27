@@ -2,36 +2,40 @@
 
 **Status:** ✅ **PRODUCTION OPERATIONAL**  
 **Performance:** **6-7ms response times** (Prometheus validated)  
-**Base URL:** `http://0.0.0.0:5000` (Development) | `https://api.{county}.terrafusion.gov/v1` (Production)  
+**Base URL:** `http://0.0.0.0:\${{TF_API_PORT:-5000}}` (Development) |
+`https://api.{county}.terrafusion.gov/v1` (Production)  
 **Last Validation:** August 26, 2025
 
 ## 📊 **Live Performance Metrics**
 
-| Metric | Current Status | Target | Validation |
-|--------|----------------|--------|-----------|
-| **API Response Time** | **6-7ms** | <10ms | ✅ **EXCEEDING** |
-| **Health Endpoint** | **Operational** | Always Up | ✅ **ACTIVE** |
-| **Module System** | **33 modules loaded** | 32 target | ✅ **EXCEEDING** |
-| **Audit Logging** | **100% coverage** | Complete | ✅ **OPERATIONAL** |
-| **Prometheus Metrics** | **Real-time active** | Monitoring | ✅ **LIVE** |
+| Metric                 | Current Status        | Target     | Validation         |
+| ---------------------- | --------------------- | ---------- | ------------------ |
+| **API Response Time**  | **6-7ms**             | <10ms      | ✅ **EXCEEDING**   |
+| **Health Endpoint**    | **Operational**       | Always Up  | ✅ **ACTIVE**      |
+| **Module System**      | **33 modules loaded** | 32 target  | ✅ **EXCEEDING**   |
+| **Audit Logging**      | **100% coverage**     | Complete   | ✅ **OPERATIONAL** |
+| **Prometheus Metrics** | **Real-time active**  | Monitoring | ✅ **LIVE**        |
 
 ## 🌐 **REST API Reference**
 
-Complete API documentation for Terrafusion OS 1.0 backend services with validated production performance.
+Complete API documentation for Terrafusion OS 1.0 backend services with
+validated production performance.
 
 ## 🏗️ **Deployment Model API Access**
 
 ### 🏰 **Sovereign County Deployment**
+
 **County-Scoped API Access**
 
 **Base URL**: `https://api.{county}.terrafusion.gov/v1`  
 **Example**: `https://api.benton.terrafusion.gov/v1`  
-**Development**: `http://0.0.0.0:5000` *(Current operational endpoint)*  
+**Development**: `http://0.0.0.0:\${{TF_API_PORT:-5000}}` _(Current operational endpoint)_  
 **Authentication**: Bearer JWT Token (County-Scoped)  
 **Content-Type**: `application/json`  
 **Performance**: **6-7ms validated response times**
 
 **Features:**
+
 - Complete data isolation per county
 - County-specific authentication and authorization
 - Independent API rate limits per county
@@ -39,6 +43,7 @@ Complete API documentation for Terrafusion OS 1.0 backend services with validate
 - Zero cross-county data sharing
 
 ### 🌐 **Federated Counties Deployment**
+
 **Unified API Gateway Access**
 
 **Base URL**: `https://api.terrafusion.gov/v1`  
@@ -47,6 +52,7 @@ Complete API documentation for Terrafusion OS 1.0 backend services with validate
 **County Header**: `X-Terrafusion-County: {county-code}`
 
 **Features:**
+
 - Unified API gateway for multiple counties
 - Cross-county analytics and reporting
 - Shared infrastructure and resources
@@ -56,6 +62,7 @@ Complete API documentation for Terrafusion OS 1.0 backend services with validate
 ### **API Access Patterns**
 
 #### Sovereign County Pattern
+
 ```bash
 # County-specific endpoint
 curl -H "Authorization: Bearer {county-jwt}" \
@@ -65,6 +72,7 @@ curl -H "Authorization: Bearer {county-jwt}" \
 ```
 
 #### Federated Counties Pattern
+
 ```bash
 # Unified endpoint with county header
 curl -H "Authorization: Bearer {federated-jwt}" \
@@ -81,9 +89,11 @@ curl -H "Authorization: Bearer {federated-jwt}" \
 ## 🔐 **Authentication**
 
 ### **POST /auth/login**
+
 Authenticate user and receive JWT token.
 
 **Request Body:**
+
 ```json
 {
   "username": "string",
@@ -93,6 +103,7 @@ Authenticate user and receive JWT token.
 ```
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -108,9 +119,11 @@ Authenticate user and receive JWT token.
 ```
 
 ### **POST /auth/refresh**
+
 Refresh expired JWT token.
 
 **Request Body:**
+
 ```json
 {
   "refreshToken": "string"
@@ -122,9 +135,11 @@ Refresh expired JWT token.
 ## 🏠 **Property Management API**
 
 ### **GET /properties**
+
 Retrieve paginated list of properties.
 
 **Query Parameters:**
+
 - `page` (integer): Page number (default: 1)
 - `limit` (integer): Items per page (default: 50, max: 1000)
 - `county` (string): Filter by county
@@ -132,6 +147,7 @@ Retrieve paginated list of properties.
 - `search` (string): Search term
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -176,19 +192,28 @@ Retrieve paginated list of properties.
 ```
 
 ### **GET /properties/{id}**
+
 Retrieve specific property details.
 
 **Path Parameters:**
+
 - `id` (uuid): Property ID
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
   "parcelId": "string",
-  "address": { /* address object */ },
-  "assessment": { /* assessment object */ },
-  "propertyDetails": { /* property details */ },
+  "address": {
+    /* address object */
+  },
+  "assessment": {
+    /* assessment object */
+  },
+  "propertyDetails": {
+    /* property details */
+  },
   "history": [
     {
       "date": "2025-01-15T00:00:00Z",
@@ -198,17 +223,22 @@ Retrieve specific property details.
       "reason": "Market Analysis"
     }
   ],
-  "quantumMetrics": { /* quantum metrics */ }
+  "quantumMetrics": {
+    /* quantum metrics */
+  }
 }
 ```
 
 ### **POST /properties/{id}/assess**
+
 Trigger quantum-speed property assessment.
 
 **Path Parameters:**
+
 - `id` (uuid): Property ID
 
 **Request Body:**
+
 ```json
 {
   "assessmentType": "Full|Quick|Comparative",
@@ -219,6 +249,7 @@ Trigger quantum-speed property assessment.
 ```
 
 **Response:**
+
 ```json
 {
   "assessmentId": "uuid",
@@ -237,9 +268,11 @@ Trigger quantum-speed property assessment.
 ## 🤖 **AI Swarm API**
 
 ### **GET /ai-swarm/status**
+
 Get current AI swarm status and metrics.
 
 **Response:**
+
 ```json
 {
   "swarmStatus": "Active|Idle|Scaling|Maintenance",
@@ -277,9 +310,11 @@ Get current AI swarm status and metrics.
 ```
 
 ### **POST /ai-swarm/scale**
+
 Scale AI swarm up or down.
 
 **Request Body:**
+
 ```json
 {
   "targetAgents": 1500,
@@ -289,14 +324,17 @@ Scale AI swarm up or down.
 ```
 
 ### **GET /ai-swarm/tasks**
+
 Retrieve active and completed tasks.
 
 **Query Parameters:**
+
 - `status` (string): Filter by task status
 - `agentType` (string): Filter by agent type
 - `timeRange` (string): Time range filter
 
 **Response:**
+
 ```json
 {
   "activeTasks": [
@@ -321,9 +359,11 @@ Retrieve active and completed tasks.
 ## ⚡ **Quantum Performance API**
 
 ### **GET /quantum/metrics**
+
 Retrieve quantum performance metrics.
 
 **Response:**
+
 ```json
 {
   "overallPerformance": {
@@ -364,9 +404,11 @@ Retrieve quantum performance metrics.
 ```
 
 ### **POST /quantum/benchmark**
+
 Run quantum performance benchmark.
 
 **Request Body:**
+
 ```json
 {
   "benchmarkType": "Full|Quick|Specific",
@@ -380,14 +422,17 @@ Run quantum performance benchmark.
 ## 📊 **Analytics API**
 
 ### **GET /analytics/dashboard**
+
 Retrieve dashboard analytics data.
 
 **Query Parameters:**
+
 - `timeRange` (string): Time range (1h, 24h, 7d, 30d)
 - `county` (string): Filter by county
 - `metrics` (array): Specific metrics to include
 
 **Response:**
+
 ```json
 {
   "summary": {
@@ -424,12 +469,15 @@ Retrieve dashboard analytics data.
 ```
 
 ### **GET /analytics/reports/{reportId}**
+
 Retrieve specific analytics report.
 
 **Path Parameters:**
+
 - `reportId` (uuid): Report ID
 
 **Response:**
+
 ```json
 {
   "reportId": "uuid",
@@ -454,9 +502,11 @@ Retrieve specific analytics report.
 ## 🏛️ **Government Compliance API**
 
 ### **GET /compliance/status**
+
 Get current compliance status.
 
 **Response:**
+
 ```json
 {
   "overallStatus": "Compliant|Warning|NonCompliant",
@@ -488,15 +538,18 @@ Get current compliance status.
 ```
 
 ### **GET /compliance/audit-trail**
+
 Retrieve audit trail events.
 
 **Query Parameters:**
+
 - `startDate` (datetime): Start date filter
 - `endDate` (datetime): End date filter
 - `eventType` (string): Filter by event type
 - `severity` (string): Filter by severity level
 
 **Response:**
+
 ```json
 {
   "events": [
@@ -525,9 +578,11 @@ Retrieve audit trail events.
 ## 🔧 **System Management API**
 
 ### **GET /system/health**
+
 System health check endpoint.
 
 **Response:**
+
 ```json
 {
   "status": "Healthy|Degraded|Unhealthy",
@@ -564,9 +619,11 @@ System health check endpoint.
 ```
 
 ### **GET /system/version**
+
 Get system version information.
 
 **Response:**
+
 ```json
 {
   "version": "1.0.0",
@@ -593,23 +650,27 @@ Get system version information.
 ## 📝 **WebSocket API**
 
 ### **Connection**
+
 ```javascript
 const ws = new WebSocket('wss://api.terrafusion.gov/v1/ws');
-ws.onopen = function() {
+ws.onopen = function () {
   // Send authentication
-  ws.send(JSON.stringify({
-    type: 'auth',
-    token: 'your-jwt-token'
-  }));
+  ws.send(
+    JSON.stringify({
+      type: 'auth',
+      token: 'your-jwt-token',
+    })
+  );
 };
 ```
 
 ### **Real-time Events**
+
 ```javascript
-ws.onmessage = function(event) {
+ws.onmessage = function (event) {
   const data = JSON.parse(event.data);
-  
-  switch(data.type) {
+
+  switch (data.type) {
     case 'assessment_completed':
       // Handle assessment completion
       break;
@@ -628,6 +689,7 @@ ws.onmessage = function(event) {
 ## 🚨 **Error Handling**
 
 ### **Error Response Format**
+
 ```json
 {
   "error": {
@@ -643,6 +705,7 @@ ws.onmessage = function(event) {
 ```
 
 ### **HTTP Status Codes**
+
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request
@@ -658,12 +721,14 @@ ws.onmessage = function(event) {
 ## 📊 **Rate Limiting**
 
 **Default Limits:**
+
 - **Authenticated Users**: 10,000 requests/hour
 - **AI Swarm Operations**: 1,000 requests/hour
 - **Quantum Benchmarks**: 100 requests/hour
 - **Report Generation**: 50 requests/hour
 
 **Headers:**
+
 ```
 X-RateLimit-Limit: 10000
 X-RateLimit-Remaining: 9847
@@ -675,6 +740,7 @@ X-RateLimit-Reset: 1692297600
 ## 🔗 **SDKs and Libraries**
 
 ### **JavaScript/TypeScript**
+
 ```bash
 npm install @terrafusion/api-client
 ```
@@ -684,16 +750,17 @@ import { TerraFusionClient } from '@terrafusion/api-client';
 
 const client = new TerraFusionClient({
   baseUrl: 'https://api.terrafusion.gov/v1',
-  apiKey: 'your-api-key'
+  apiKey: 'your-api-key',
 });
 
 const properties = await client.properties.list({
   county: 'Benton',
-  limit: 100
+  limit: 100,
 });
 ```
 
 ### **Python**
+
 ```bash
 pip install terrafusion-api-client
 ```
@@ -710,6 +777,7 @@ properties = client.properties.list(county='Benton', limit=100)
 ```
 
 ### **.NET**
+
 ```bash
 dotnet add package Terrafusion.ApiClient
 ```
@@ -718,10 +786,10 @@ dotnet add package Terrafusion.ApiClient
 using Terrafusion.ApiClient;
 
 var client = new TerraFusionClient("https://api.terrafusion.gov/v1", "your-api-key");
-var properties = await client.Properties.ListAsync(new PropertyListRequest 
-{ 
-    County = "Benton", 
-    Limit = 100 
+var properties = await client.Properties.ListAsync(new PropertyListRequest
+{
+    County = "Benton",
+    Limit = 100
 });
 ```
 

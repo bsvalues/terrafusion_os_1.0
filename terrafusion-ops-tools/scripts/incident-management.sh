@@ -126,7 +126,7 @@ detect_incidents() {
     
     # Check Prometheus alerts
     if command -v curl &> /dev/null; then
-        local alerts=$(curl -s http://localhost:9090/api/v1/alerts 2>/dev/null | jq -r '.data.alerts[]? | select(.state=="firing")' 2>/dev/null || echo "")
+        local alerts=$(curl -s http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/api/v1/alerts 2>/dev/null | jq -r '.data.alerts[]? | select(.state=="firing")' 2>/dev/null || echo "")
         
         if [ -n "$alerts" ]; then
             echo "$alerts" | jq -r '. | "\(.labels.alertname)|\(.labels.severity)|\(.annotations.summary // .annotations.description // "No description")"' | while IFS='|' read -r alert_name severity summary; do
@@ -196,12 +196,12 @@ check_application_health() {
     log "Checking application health..."
     
     # API health check
-    if ! curl -sf http://localhost:8080/health &>/dev/null; then
+    if ! curl -sf http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/health &>/dev/null; then
         create_incident "P1" "API Service Down" "Primary API endpoint not responding"
     fi
     
     # Frontend health check
-    if ! curl -sf http://localhost:3003/health &>/dev/null; then
+    if ! curl -sf http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/health &>/dev/null; then
         create_incident "P2" "Frontend Service Issues" "Frontend service not responding"
     fi
     
@@ -211,7 +211,7 @@ check_application_health() {
     fi
     
     # AI Engine health
-    if ! curl -sf http://localhost:8001/health &>/dev/null; then
+    if ! curl -sf http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/health &>/dev/null; then
         create_incident "P2" "AI Engine Unavailable" "AI prediction service not responding"
     fi
 }

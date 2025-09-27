@@ -4,11 +4,10 @@
  * Part of the @terrafusion/ui component library
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import './GeniusButton.css';
 
-export interface GeniusButtonProps {
-  children: React.ReactNode;
+export interface GeniusButtonProps {children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'ghost';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
@@ -22,11 +21,9 @@ export interface GeniusButtonProps {
   fullWidth?: boolean;
   animate?: boolean;
   haptic?: boolean;
-  celebration?: boolean;
-}
+  celebration?: boolean;}
 
-export const GeniusButton: React.FC<GeniusButtonProps> = ({
-  children,
+export const GeniusButton: React.FC<GeniusButtonProps> = ({children,
   variant = 'primary',
   size = 'medium',
   disabled = false,
@@ -41,33 +38,26 @@ export const GeniusButton: React.FC<GeniusButtonProps> = ({
   animate = true,
   haptic = true,
   celebration = false,
-  ...props
-}) => {
-  const [isPressed, setIsPressed] = useState(false);
-  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  ...props}) => {const [isPressed, setIsPressed] = useState(false);
+  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number}>>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const rippleId = useRef(0);
 
   // Genius UX: Haptic feedback for supported devices
-  const triggerHaptic = () => {
-    if (haptic && 'vibrate' in navigator) {
-      navigator.vibrate(10); // Subtle haptic feedback
-    }
+  const triggerHaptic = () => {if (haptic && 'vibrate' in navigator) {
+      navigator.vibrate(10); // Subtle haptic feedback}
   };
 
   // Genius UX: Celebration animation for success actions
-  const triggerCelebration = () => {
-    if (celebration && buttonRef.current) {
+  const triggerCelebration = () => {if (celebration && buttonRef.current) {
       buttonRef.current.classList.add('genius-celebrate');
       setTimeout(() => {
-        buttonRef.current?.classList.remove('genius-celebrate');
-      }, 600);
+        buttonRef.current?.classList.remove('genius-celebrate');}, 600);
     }
   };
 
   // Genius UX: Material Design ripple effect
-  const createRipple = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (!animate || disabled || loading) return;
+  const createRipple = (event: React.MouseEvent<HTMLButtonElement>) => {if (!animate || disabled || loading) return;
 
     const button = event.currentTarget;
     const rect = button.getBoundingClientRect();
@@ -78,19 +68,15 @@ export const GeniusButton: React.FC<GeniusButtonProps> = ({
     const newRipple = {
       id: rippleId.current++,
       x,
-      y
-    };
+      y,};
 
     setRipples(prev => [...prev, newRipple]);
 
     // Remove ripple after animation
-    setTimeout(() => {
-      setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
-    }, 600);
+    setTimeout(() => {setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));}, 600);
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled || loading) return;
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {if (disabled || loading) return;
 
     // Genius UX: Immediate feedback
     setIsPressed(true);
@@ -104,23 +90,18 @@ export const GeniusButton: React.FC<GeniusButtonProps> = ({
 
     // Genius UX: Celebration for success actions
     if (variant === 'success') {
-      triggerCelebration();
-    }
+      triggerCelebration();}
 
     // Execute user's onClick handler
     onClick?.(event);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      setIsPressed(true);
-    }
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {if (event.key === 'Enter' || event.key === ' ') {
+      setIsPressed(true);}
   };
 
-  const handleKeyUp = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      setIsPressed(false);
-    }
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLButtonElement>) =>{if (event.key === 'Enter' || event.key === ' ') {
+      setIsPressed(false);}
   };
 
   // Genius UX: Dynamic class composition
@@ -133,11 +114,12 @@ export const GeniusButton: React.FC<GeniusButtonProps> = ({
     isPressed && 'genius-button--pressed',
     fullWidth && 'genius-button--full-width',
     animate && 'genius-button--animated',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  return (
-    <button
+  return (<button
       ref={buttonRef}
       type={type}
       className={buttonClasses}
@@ -148,49 +130,16 @@ export const GeniusButton: React.FC<GeniusButtonProps> = ({
       aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
       aria-disabled={disabled || loading}
       {...props}
-    >
-      {/* Loading spinner */}
-      {loading && (
-        <div className="genius-button__spinner">
-          <div className="genius-spinner"></div>
-        </div>
-      )}
+    >{/* Loading spinner */}
+      {loading && (<div className="genius-button__spinner"><div className="genius-spinner"></div></div>)}
 
-      {/* Icon and content */}
-      <div className="genius-button__content">
-        {icon && iconPosition === 'left' && (
-          <span className="genius-button__icon genius-button__icon--left">
-            {icon}
-          </span>
-        )}
-        
-        <span className="genius-button__text">
-          {children}
-        </span>
-        
-        {icon && iconPosition === 'right' && (
-          <span className="genius-button__icon genius-button__icon--right">
-            {icon}
-          </span>
-        )}
-      </div>
-
-      {/* Ripple effects */}
-      {animate && (
-        <div className="genius-button__ripples">
-          {ripples.map(ripple => (
-            <div
+      {/* Icon and content */}<div className="genius-button__content">{icon && iconPosition === 'left' && (<span className="genius-button__icon genius-button__icon--left">{icon}</span>)}<span className="genius-button__text">{children}</span>{icon && iconPosition === 'right' && (<span className="genius-button__icon genius-button__icon--right">{icon}</span>)}</div>{/* Ripple effects */}
+      {animate && (<div className="genius-button__ripples">{ripples.map(ripple => (<div
               key={ripple.id}
               className="genius-button__ripple"
               style={{
                 left: ripple.x,
-                top: ripple.y
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </button>
+                top: ripple.y,}} />))}</div>)}</button>
   );
 };
 

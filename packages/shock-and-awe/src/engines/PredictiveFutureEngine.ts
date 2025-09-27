@@ -1,7 +1,7 @@
 /**
  * 🔮 Predictive Future Modeling Engine
  * Advanced AI system for modeling and predicting government future scenarios
- * 
+ *
  * @version 2.0.0
  * @author MIT PhD Systems Engineer
  * @classification Predictive Government Intelligence
@@ -160,10 +160,10 @@ export class PredictiveFutureEngine extends EventEmitter {
 
     // Load historical data and establish baseline patterns
     await this.loadHistoricalPatterns();
-    
+
     // Generate initial future scenarios
     await this.generateBaselineScenarios();
-    
+
     // Start continuous modeling
     this.startContinuousModeling();
 
@@ -180,32 +180,32 @@ export class PredictiveFutureEngine extends EventEmitter {
         id: 'budget_growth',
         category: 'ECONOMIC' as const,
         historicalData: [2.1, 2.8, 1.9, 3.2, 2.4, 1.7, 2.9, 3.1, 2.3, 2.6],
-        currentValue: 2.6
+        currentValue: 2.6,
       },
       {
         id: 'population_growth',
         category: 'DEMOGRAPHIC' as const,
         historicalData: [1.8, 1.9, 2.1, 2.0, 1.7, 1.8, 1.9, 2.0, 1.8, 1.9],
-        currentValue: 1.9
+        currentValue: 1.9,
       },
       {
         id: 'tech_adoption',
         category: 'TECHNOLOGICAL' as const,
         historicalData: [15, 22, 28, 35, 42, 48, 55, 62, 68, 75],
-        currentValue: 75
+        currentValue: 75,
       },
       {
         id: 'citizen_satisfaction',
         category: 'SOCIAL' as const,
         historicalData: [72, 74, 71, 76, 73, 75, 78, 76, 79, 78],
-        currentValue: 78
+        currentValue: 78,
       },
       {
         id: 'ai_integration',
         category: 'TECHNOLOGICAL' as const,
         historicalData: [5, 12, 25, 38, 52, 67, 78, 85, 89, 94],
-        currentValue: 94
-      }
+        currentValue: 94,
+      },
     ];
 
     for (const factor of historicalFactors) {
@@ -217,7 +217,7 @@ export class PredictiveFutureEngine extends EventEmitter {
         cyclicality: this.calculateCyclicality(factor.historicalData),
         volatility: this.calculateVolatility(factor.historicalData),
         externalDrivers: await this.identifyExternalDrivers(factor.category),
-        inflectionPoints: await this.identifyInflectionPoints(factor.historicalData, factor.id)
+        inflectionPoints: await this.identifyInflectionPoints(factor.historicalData, factor.id),
       };
 
       this.trendAnalyses.set(factor.id, trendAnalysis);
@@ -233,7 +233,7 @@ export class PredictiveFutureEngine extends EventEmitter {
       await this.createQuantumLeapScenario(),
       await this.createCitizenEngagementScenario(),
       await this.createClimateAdaptationScenario(),
-      await this.createDigitalSovereigntyScenario()
+      await this.createDigitalSovereigntyScenario(),
     ];
 
     scenarios.forEach(scenario => {
@@ -260,7 +260,7 @@ export class PredictiveFutureEngine extends EventEmitter {
         trend: 'INCREASING',
         influence: 0.95,
         certainty: 0.87,
-        dataQuality: 0.92
+        dataQuality: 0.92,
       },
       {
         id: 'citizen_acceptance',
@@ -271,7 +271,7 @@ export class PredictiveFutureEngine extends EventEmitter {
         trend: 'INCREASING',
         influence: 0.78,
         certainty: 0.65,
-        dataQuality: 0.71
+        dataQuality: 0.71,
       },
       {
         id: 'regulatory_framework',
@@ -282,8 +282,8 @@ export class PredictiveFutureEngine extends EventEmitter {
         trend: 'INCREASING',
         influence: 0.82,
         certainty: 0.74,
-        dataQuality: 0.80
-      }
+        dataQuality: 0.8,
+      },
     ];
 
     const outcomes: FutureOutcome[] = [
@@ -293,9 +293,13 @@ export class PredictiveFutureEngine extends EventEmitter {
         description: 'Government efficiency increases by 45% through AI automation',
         quantifiedImpact: 45,
         timeline: new Date(Date.now() + 18 * 30 * 24 * 60 * 60 * 1000),
-        cascadingEffects: ['Reduced processing times', 'Lower operational costs', 'Higher citizen satisfaction'],
+        cascadingEffects: [
+          'Reduced processing times',
+          'Lower operational costs',
+          'Higher citizen satisfaction',
+        ],
         affectedStakeholders: ['Citizens', 'Government employees', 'Taxpayers'],
-        reversibility: 'DIFFICULT'
+        reversibility: 'DIFFICULT',
       },
       {
         id: 'service_transformation',
@@ -303,10 +307,14 @@ export class PredictiveFutureEngine extends EventEmitter {
         description: 'Complete digitization of citizen services with AI assistance',
         quantifiedImpact: 60,
         timeline: new Date(Date.now() + 24 * 30 * 24 * 60 * 60 * 1000),
-        cascadingEffects: ['24/7 service availability', 'Personalized interactions', 'Reduced wait times'],
+        cascadingEffects: [
+          '24/7 service availability',
+          'Personalized interactions',
+          'Reduced wait times',
+        ],
         affectedStakeholders: ['All citizens', 'Service departments'],
-        reversibility: 'MODERATE'
-      }
+        reversibility: 'MODERATE',
+      },
     ];
 
     const mitigationStrategies: MitigationStrategy[] = [
@@ -318,20 +326,25 @@ export class PredictiveFutureEngine extends EventEmitter {
         effectivenessScore: 85,
         implementationCost: 2500000,
         timeToImplement: 12,
-        resourceRequirements: ['Change Management Team', 'Training Programs', 'Communication Strategy'],
+        resourceRequirements: [
+          'Change Management Team',
+          'Training Programs',
+          'Communication Strategy',
+        ],
         politicalFeasibility: 78,
-        riskReduction: 40
-      }
+        riskReduction: 40,
+      },
     ];
 
     return {
       id: 'ai_government_transformation',
       name: 'Complete AI Government Transformation',
-      description: 'Full integration of AI systems across all government operations, creating the worlds first truly intelligent government',
+      description:
+        'Full integration of AI systems across all government operations, creating the worlds first truly intelligent government',
       timeframe: {
         startDate,
         endDate,
-        duration: 36
+        duration: 36,
       },
       probability: 0.87,
       confidence: 89,
@@ -346,25 +359,25 @@ export class PredictiveFutureEngine extends EventEmitter {
             origin: 'AI Implementation',
             magnitude: 0.9,
             reachTime: 6,
-            affectedAreas: ['All Departments', 'Citizen Services', 'Decision Making']
-          }
+            affectedAreas: ['All Departments', 'Citizen Services', 'Decision Making'],
+          },
         ],
         decisionPoints: [
           {
             date: new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000),
             decision: 'Full AI Authorization',
-            outcomeInfluence: 0.8
-          }
+            outcomeInfluence: 0.8,
+          },
         ],
         uncertaintyBands: [
           {
             factor: 'Public Acceptance',
             lowerBound: 60,
             upperBound: 95,
-            mostLikely: 78
-          }
-        ]
-      }
+            mostLikely: 78,
+          },
+        ],
+      },
     };
   }
 
@@ -385,7 +398,7 @@ export class PredictiveFutureEngine extends EventEmitter {
         trend: 'INCREASING',
         influence: 0.92,
         certainty: 0.68,
-        dataQuality: 0.75
+        dataQuality: 0.75,
       },
       {
         id: 'quantum_investment',
@@ -396,18 +409,19 @@ export class PredictiveFutureEngine extends EventEmitter {
         trend: 'INCREASING',
         influence: 0.85,
         certainty: 0.72,
-        dataQuality: 0.82
-      }
+        dataQuality: 0.82,
+      },
     ];
 
     return {
       id: 'quantum_government_leap',
       name: 'Quantum Government Computing Revolution',
-      description: 'Implementation of quantum computing systems enabling impossible computational capabilities in government operations',
+      description:
+        'Implementation of quantum computing systems enabling impossible computational capabilities in government operations',
       timeframe: {
         startDate,
         endDate,
-        duration: 48
+        duration: 48,
       },
       probability: 0.73,
       confidence: 71,
@@ -420,10 +434,14 @@ export class PredictiveFutureEngine extends EventEmitter {
           description: 'Quantum supremacy in government decision-making and optimization',
           quantifiedImpact: 75,
           timeline: new Date(Date.now() + 36 * 30 * 24 * 60 * 60 * 1000),
-          cascadingEffects: ['Exponential processing power', 'Real-time optimization', 'Predictive governance'],
+          cascadingEffects: [
+            'Exponential processing power',
+            'Real-time optimization',
+            'Predictive governance',
+          ],
           affectedStakeholders: ['All government operations', 'Citizens', 'Economy'],
-          reversibility: 'IRREVERSIBLE'
-        }
+          reversibility: 'IRREVERSIBLE',
+        },
       ],
       mitigationStrategies: [
         {
@@ -434,10 +452,14 @@ export class PredictiveFutureEngine extends EventEmitter {
           effectivenessScore: 92,
           implementationCost: 15000000,
           timeToImplement: 18,
-          resourceRequirements: ['Quantum Security Team', 'Advanced Encryption', 'Monitoring Systems'],
+          resourceRequirements: [
+            'Quantum Security Team',
+            'Advanced Encryption',
+            'Monitoring Systems',
+          ],
           politicalFeasibility: 85,
-          riskReduction: 65
-        }
+          riskReduction: 65,
+        },
       ],
       visualizationData: {
         probabilityTimeline: this.generateProbabilityTimeline(0.73, 48),
@@ -446,25 +468,25 @@ export class PredictiveFutureEngine extends EventEmitter {
             origin: 'Quantum Implementation',
             magnitude: 0.95,
             reachTime: 24,
-            affectedAreas: ['Computational Systems', 'Decision Making', 'Optimization']
-          }
+            affectedAreas: ['Computational Systems', 'Decision Making', 'Optimization'],
+          },
         ],
         decisionPoints: [
           {
             date: new Date(Date.now() + 18 * 30 * 24 * 60 * 60 * 1000),
             decision: 'Quantum Infrastructure Investment',
-            outcomeInfluence: 0.9
-          }
+            outcomeInfluence: 0.9,
+          },
         ],
         uncertaintyBands: [
           {
             factor: 'Technology Maturity',
             lowerBound: 40,
             upperBound: 90,
-            mostLikely: 68
-          }
-        ]
-      }
+            mostLikely: 68,
+          },
+        ],
+      },
     };
   }
 
@@ -475,11 +497,12 @@ export class PredictiveFutureEngine extends EventEmitter {
     return {
       id: 'citizen_engagement_revolution',
       name: 'Citizen Engagement Revolution',
-      description: 'Transformation to direct digital democracy with AI-mediated citizen participation',
+      description:
+        'Transformation to direct digital democracy with AI-mediated citizen participation',
       timeframe: {
         startDate: new Date(),
         endDate: new Date(Date.now() + 24 * 30 * 24 * 60 * 60 * 1000),
-        duration: 24
+        duration: 24,
       },
       probability: 0.68,
       confidence: 75,
@@ -493,9 +516,9 @@ export class PredictiveFutureEngine extends EventEmitter {
           predictedValue: 85,
           trend: 'INCREASING',
           influence: 0.75,
-          certainty: 0.80,
-          dataQuality: 0.85
-        }
+          certainty: 0.8,
+          dataQuality: 0.85,
+        },
       ],
       outcomes: [
         {
@@ -506,16 +529,16 @@ export class PredictiveFutureEngine extends EventEmitter {
           timeline: new Date(Date.now() + 18 * 30 * 24 * 60 * 60 * 1000),
           cascadingEffects: ['Increased legitimacy', 'Better policy outcomes', 'Higher trust'],
           affectedStakeholders: ['All citizens', 'Elected officials'],
-          reversibility: 'MODERATE'
-        }
+          reversibility: 'MODERATE',
+        },
       ],
       mitigationStrategies: [],
       visualizationData: {
         probabilityTimeline: this.generateProbabilityTimeline(0.68, 24),
         impactWaves: [],
         decisionPoints: [],
-        uncertaintyBands: []
-      }
+        uncertaintyBands: [],
+      },
     };
   }
 
@@ -527,7 +550,7 @@ export class PredictiveFutureEngine extends EventEmitter {
       timeframe: {
         startDate: new Date(),
         endDate: new Date(Date.now() + 120 * 30 * 24 * 60 * 60 * 1000), // 10 years
-        duration: 120
+        duration: 120,
       },
       probability: 0.92,
       confidence: 85,
@@ -542,8 +565,8 @@ export class PredictiveFutureEngine extends EventEmitter {
           trend: 'INCREASING',
           influence: 0.88,
           certainty: 0.75,
-          dataQuality: 0.82
-        }
+          dataQuality: 0.82,
+        },
       ],
       outcomes: [],
       mitigationStrategies: [],
@@ -551,8 +574,8 @@ export class PredictiveFutureEngine extends EventEmitter {
         probabilityTimeline: this.generateProbabilityTimeline(0.92, 120),
         impactWaves: [],
         decisionPoints: [],
-        uncertaintyBands: []
-      }
+        uncertaintyBands: [],
+      },
     };
   }
 
@@ -564,7 +587,7 @@ export class PredictiveFutureEngine extends EventEmitter {
       timeframe: {
         startDate: new Date(),
         endDate: new Date(Date.now() + 72 * 30 * 24 * 60 * 60 * 1000), // 6 years
-        duration: 72
+        duration: 72,
       },
       probability: 0.79,
       confidence: 82,
@@ -576,29 +599,33 @@ export class PredictiveFutureEngine extends EventEmitter {
         probabilityTimeline: this.generateProbabilityTimeline(0.79, 72),
         impactWaves: [],
         decisionPoints: [],
-        uncertaintyBands: []
-      }
+        uncertaintyBands: [],
+      },
     };
   }
 
   /**
    * Generate probability timeline
    */
-  private generateProbabilityTimeline(baseProbability: number, durationMonths: number): Array<{date: Date, probability: number}> {
+  private generateProbabilityTimeline(
+    baseProbability: number,
+    durationMonths: number
+  ): Array<{ date: Date; probability: number }> {
     const timeline = [];
     const currentDate = new Date();
-    
+
     for (let month = 0; month <= durationMonths; month += 3) {
       const date = new Date(currentDate.getTime() + month * 30 * 24 * 60 * 60 * 1000);
-      
+
       // Probability evolves over time with some randomness
       const timeProgress = month / durationMonths;
-      const probabilityAdjustment = (Math.sin(timeProgress * Math.PI) * 0.1) + (Math.random() - 0.5) * 0.05;
+      const probabilityAdjustment =
+        Math.sin(timeProgress * Math.PI) * 0.1 + (Math.random() - 0.5) * 0.05;
       const probability = Math.max(0.1, Math.min(0.99, baseProbability + probabilityAdjustment));
-      
+
       timeline.push({ date, probability });
     }
-    
+
     return timeline;
   }
 
@@ -627,16 +654,16 @@ export class PredictiveFutureEngine extends EventEmitter {
     for (const [scenarioId, scenario] of this.activeScenarios) {
       // Update probability based on current trends
       const updatedProbability = await this.recalculateProbability(scenario);
-      
+
       scenario.probability = updatedProbability;
       scenario.visualizationData.probabilityTimeline.push({
         date: new Date(),
-        probability: updatedProbability
+        probability: updatedProbability,
       });
 
       // Keep only last 100 data points
       if (scenario.visualizationData.probabilityTimeline.length > 100) {
-        scenario.visualizationData.probabilityTimeline = 
+        scenario.visualizationData.probabilityTimeline =
           scenario.visualizationData.probabilityTimeline.slice(-100);
       }
 
@@ -655,13 +682,13 @@ export class PredictiveFutureEngine extends EventEmitter {
       const trend = this.trendAnalyses.get(factor.id);
       if (trend) {
         const currentTrendStrength = this.calculateTrendStrength(trend);
-        adjustmentFactor *= (1 + (currentTrendStrength - 0.5) * factor.influence * 0.2);
+        adjustmentFactor *= 1 + (currentTrendStrength - 0.5) * factor.influence * 0.2;
       }
     });
 
     // Add random external events impact
     const externalEventsImpact = (Math.random() - 0.5) * 0.1;
-    adjustmentFactor *= (1 + externalEventsImpact);
+    adjustmentFactor *= 1 + externalEventsImpact;
 
     const newProbability = Math.max(0.05, Math.min(0.95, scenario.probability * adjustmentFactor));
     return newProbability;
@@ -692,7 +719,7 @@ export class PredictiveFutureEngine extends EventEmitter {
       timeframe: {
         startDate,
         endDate,
-        duration: timeframeMonths
+        duration: timeframeMonths,
       },
       probability,
       confidence,
@@ -704,8 +731,8 @@ export class PredictiveFutureEngine extends EventEmitter {
         probabilityTimeline: this.generateProbabilityTimeline(probability, timeframeMonths),
         impactWaves: await this.calculateImpactWaves(keyFactors),
         decisionPoints: await this.identifyDecisionPoints(timeframeMonths),
-        uncertaintyBands: this.calculateUncertaintyBands(keyFactors)
-      }
+        uncertaintyBands: this.calculateUncertaintyBands(keyFactors),
+      },
     };
 
     this.activeScenarios.set(scenario.id, scenario);
@@ -717,11 +744,14 @@ export class PredictiveFutureEngine extends EventEmitter {
   /**
    * Generate comprehensive government forecast
    */
-  public async generateGovernmentForecast(horizon: GovernmentForecast['horizon']): Promise<GovernmentForecast> {
+  public async generateGovernmentForecast(
+    horizon: GovernmentForecast['horizon']
+  ): Promise<GovernmentForecast> {
     console.log(`🔮 Generating Government Forecast: ${horizon}`);
 
-    const scenarios = Array.from(this.activeScenarios.values())
-      .filter(scenario => this.isScenarioRelevantToHorizon(scenario, horizon));
+    const scenarios = Array.from(this.activeScenarios.values()).filter(scenario =>
+      this.isScenarioRelevantToHorizon(scenario, horizon)
+    );
 
     const convergencePoints = await this.identifyConvergencePoints(scenarios);
     const wildcardEvents = await this.identifyWildcardEvents(horizon);
@@ -732,7 +762,7 @@ export class PredictiveFutureEngine extends EventEmitter {
       scenarios,
       convergencePoints,
       wildcardEvents,
-      systemicRisks
+      systemicRisks,
     };
 
     this.emit('forecastGenerated', forecast);
@@ -748,26 +778,31 @@ export class PredictiveFutureEngine extends EventEmitter {
     improvementRecommendations: string[];
   }> {
     const accuracyData = this.historicalAccuracy;
-    
+
     if (accuracyData.length === 0) {
       return {
         overallAccuracy: 0,
         accuracyByScenario: {},
-        improvementRecommendations: ['Insufficient historical data for accuracy analysis']
+        improvementRecommendations: ['Insufficient historical data for accuracy analysis'],
       };
     }
 
-    const overallAccuracy = accuracyData.reduce((sum, acc) => sum + acc.accuracy, 0) / accuracyData.length;
-    
-    const accuracyByScenario = accuracyData.reduce((acc, data) => {
-      if (!acc[data.scenarioId]) acc[data.scenarioId] = [];
-      acc[data.scenarioId].push(data.accuracy);
-      return acc;
-    }, {} as Record<string, number[]>);
+    const overallAccuracy =
+      accuracyData.reduce((sum, acc) => sum + acc.accuracy, 0) / accuracyData.length;
+
+    const accuracyByScenario = accuracyData.reduce(
+      (acc, data) => {
+        if (!acc[data.scenarioId]) acc[data.scenarioId] = [];
+        acc[data.scenarioId].push(data.accuracy);
+        return acc;
+      },
+      {} as Record<string, number[]>
+    );
 
     Object.keys(accuracyByScenario).forEach(scenarioId => {
       const accuracies = accuracyByScenario[scenarioId];
-      accuracyByScenario[scenarioId] = accuracies.reduce((sum, acc) => sum + acc, 0) / accuracies.length;
+      accuracyByScenario[scenarioId] =
+        accuracies.reduce((sum, acc) => sum + acc, 0) / accuracies.length;
     });
 
     const improvementRecommendations = await this.generateAccuracyImprovements(accuracyData);
@@ -775,7 +810,7 @@ export class PredictiveFutureEngine extends EventEmitter {
     return {
       overallAccuracy,
       accuracyByScenario: accuracyByScenario as Record<string, number>,
-      improvementRecommendations
+      improvementRecommendations,
     };
   }
 
@@ -805,21 +840,24 @@ export class PredictiveFutureEngine extends EventEmitter {
       SOCIAL: ['Demographics', 'Cultural Shifts', 'Education Levels'],
       POLITICAL: ['Election Cycles', 'Policy Changes', 'Public Opinion'],
       ENVIRONMENTAL: ['Climate Change', 'Natural Events', 'Resource Availability'],
-      DEMOGRAPHIC: ['Migration', 'Birth Rates', 'Aging Population']
+      DEMOGRAPHIC: ['Migration', 'Birth Rates', 'Aging Population'],
     };
 
     return driverMap[category] || ['General Economic Conditions'];
   }
 
-  private async identifyInflectionPoints(data: number[], factorId: string): Promise<Array<{date: Date, reason: string, significance: number}>> {
+  private async identifyInflectionPoints(
+    data: number[],
+    factorId: string
+  ): Promise<Array<{ date: Date; reason: string; significance: number }>> {
     const inflectionPoints = [];
     const currentDate = new Date();
-    
+
     // Add some predictive inflection points
     inflectionPoints.push({
       date: new Date(currentDate.getTime() + 6 * 30 * 24 * 60 * 60 * 1000),
       reason: `Projected trend change in ${factorId}`,
-      significance: 0.7
+      significance: 0.7,
     });
 
     return inflectionPoints;
@@ -846,13 +884,14 @@ export class PredictiveFutureEngine extends EventEmitter {
 
   private calculateConfidence(keyFactors: PredictiveFactor[]): number {
     const avgCertainty = keyFactors.reduce((sum, f) => sum + f.certainty, 0) / keyFactors.length;
-    const avgDataQuality = keyFactors.reduce((sum, f) => sum + f.dataQuality, 0) / keyFactors.length;
+    const avgDataQuality =
+      keyFactors.reduce((sum, f) => sum + f.dataQuality, 0) / keyFactors.length;
     return (avgCertainty + avgDataQuality) * 50; // Convert to 0-100 scale
   }
 
   private determineImpactLevel(keyFactors: PredictiveFactor[]): FutureScenario['impactLevel'] {
     const totalInfluence = keyFactors.reduce((sum, f) => sum + f.influence, 0) / keyFactors.length;
-    
+
     if (totalInfluence > 0.9) return 'PARADIGM_SHIFT';
     if (totalInfluence > 0.7) return 'TRANSFORMATIVE';
     if (totalInfluence > 0.5) return 'HIGH';
@@ -866,27 +905,31 @@ export class PredictiveFutureEngine extends EventEmitter {
       id: `outcome_${index}`,
       domain: this.mapCategoryToDomain(factor.category),
       description: `Impact from ${factor.name} changes`,
-      quantifiedImpact: (factor.predictedValue - factor.currentValue),
+      quantifiedImpact: factor.predictedValue - factor.currentValue,
       timeline: new Date(Date.now() + 12 * 30 * 24 * 60 * 60 * 1000),
       cascadingEffects: [`Secondary effects from ${factor.name}`],
       affectedStakeholders: ['Citizens', 'Government'],
-      reversibility: 'MODERATE' as const
+      reversibility: 'MODERATE' as const,
     }));
   }
 
-  private async generateMitigationStrategies(keyFactors: PredictiveFactor[]): Promise<MitigationStrategy[]> {
-    return [{
-      id: 'generic_mitigation',
-      name: 'Adaptive Management Strategy',
-      description: 'Flexible response strategy to emerging trends',
-      targetOutcomes: ['outcome_0'],
-      effectivenessScore: 75,
-      implementationCost: 1000000,
-      timeToImplement: 6,
-      resourceRequirements: ['Management Team', 'Monitoring Systems'],
-      politicalFeasibility: 70,
-      riskReduction: 30
-    }];
+  private async generateMitigationStrategies(
+    keyFactors: PredictiveFactor[]
+  ): Promise<MitigationStrategy[]> {
+    return [
+      {
+        id: 'generic_mitigation',
+        name: 'Adaptive Management Strategy',
+        description: 'Flexible response strategy to emerging trends',
+        targetOutcomes: ['outcome_0'],
+        effectivenessScore: 75,
+        implementationCost: 1000000,
+        timeToImplement: 6,
+        resourceRequirements: ['Management Team', 'Monitoring Systems'],
+        politicalFeasibility: 70,
+        riskReduction: 30,
+      },
+    ];
   }
 
   private mapCategoryToDomain(category: PredictiveFactor['category']): FutureOutcome['domain'] {
@@ -896,100 +939,117 @@ export class PredictiveFutureEngine extends EventEmitter {
       SOCIAL: 'CITIZEN_SERVICES' as const,
       POLITICAL: 'GOVERNANCE' as const,
       ENVIRONMENTAL: 'INFRASTRUCTURE' as const,
-      DEMOGRAPHIC: 'SOCIETY' as const
+      DEMOGRAPHIC: 'SOCIETY' as const,
     };
 
     return mapping[category] || 'GOVERNANCE';
   }
 
-  private async calculateImpactWaves(keyFactors: PredictiveFactor[]): Promise<ScenarioVisualization['impactWaves']> {
+  private async calculateImpactWaves(
+    keyFactors: PredictiveFactor[]
+  ): Promise<ScenarioVisualization['impactWaves']> {
     return keyFactors.map(factor => ({
       origin: factor.name,
       magnitude: factor.influence,
       reachTime: 6, // months
-      affectedAreas: [this.mapCategoryToDomain(factor.category)]
+      affectedAreas: [this.mapCategoryToDomain(factor.category)],
     }));
   }
 
-  private async identifyDecisionPoints(durationMonths: number): Promise<ScenarioVisualization['decisionPoints']> {
+  private async identifyDecisionPoints(
+    durationMonths: number
+  ): Promise<ScenarioVisualization['decisionPoints']> {
     const decisionPoints = [];
     for (let month = 6; month < durationMonths; month += 6) {
       decisionPoints.push({
         date: new Date(Date.now() + month * 30 * 24 * 60 * 60 * 1000),
         decision: `Strategic Decision Point ${month / 6}`,
-        outcomeInfluence: 0.3 + Math.random() * 0.4
+        outcomeInfluence: 0.3 + Math.random() * 0.4,
       });
     }
     return decisionPoints;
   }
 
-  private calculateUncertaintyBands(keyFactors: PredictiveFactor[]): ScenarioVisualization['uncertaintyBands'] {
+  private calculateUncertaintyBands(
+    keyFactors: PredictiveFactor[]
+  ): ScenarioVisualization['uncertaintyBands'] {
     return keyFactors.map(factor => ({
       factor: factor.name,
       lowerBound: factor.predictedValue * 0.8,
       upperBound: factor.predictedValue * 1.2,
-      mostLikely: factor.predictedValue
+      mostLikely: factor.predictedValue,
     }));
   }
 
-  private isScenarioRelevantToHorizon(scenario: FutureScenario, horizon: GovernmentForecast['horizon']): boolean {
+  private isScenarioRelevantToHorizon(
+    scenario: FutureScenario,
+    horizon: GovernmentForecast['horizon']
+  ): boolean {
     const horizonMonths = {
       '3_MONTHS': 3,
       '1_YEAR': 12,
       '5_YEARS': 60,
       '10_YEARS': 120,
-      '25_YEARS': 300
+      '25_YEARS': 300,
     }[horizon];
 
     return scenario.timeframe.duration <= horizonMonths * 1.5; // Allow some overlap
   }
 
-  private async identifyConvergencePoints(scenarios: FutureScenario[]): Promise<GovernmentForecast['convergencePoints']> {
+  private async identifyConvergencePoints(
+    scenarios: FutureScenario[]
+  ): Promise<GovernmentForecast['convergencePoints']> {
     // Simplified convergence identification
-    return [{
-      date: new Date(Date.now() + 18 * 30 * 24 * 60 * 60 * 1000),
-      description: 'Multiple scenarios converge on digital transformation milestone',
-      scenarios: scenarios.slice(0, 2).map(s => s.id)
-    }];
+    return [
+      {
+        date: new Date(Date.now() + 18 * 30 * 24 * 60 * 60 * 1000),
+        description: 'Multiple scenarios converge on digital transformation milestone',
+        scenarios: scenarios.slice(0, 2).map(s => s.id),
+      },
+    ];
   }
 
-  private async identifyWildcardEvents(horizon: GovernmentForecast['horizon']): Promise<GovernmentForecast['wildcardEvents']> {
+  private async identifyWildcardEvents(
+    horizon: GovernmentForecast['horizon']
+  ): Promise<GovernmentForecast['wildcardEvents']> {
     return [
       {
         event: 'Breakthrough in Quantum Computing',
         probability: 0.15,
         impact: 90,
-        preparedness: 40
+        preparedness: 40,
       },
       {
         event: 'Major Cyber Security Incident',
         probability: 0.25,
         impact: 70,
-        preparedness: 65
+        preparedness: 65,
       },
       {
         event: 'Revolutionary AI Breakthrough',
-        probability: 0.20,
+        probability: 0.2,
         impact: 95,
-        preparedness: 55
-      }
+        preparedness: 55,
+      },
     ];
   }
 
-  private async assessSystemicRisks(horizon: GovernmentForecast['horizon']): Promise<GovernmentForecast['systemicRisks']> {
+  private async assessSystemicRisks(
+    horizon: GovernmentForecast['horizon']
+  ): Promise<GovernmentForecast['systemicRisks']> {
     return [
       {
         risk: 'Technology Dependency Cascade Failure',
         buildupTime: 24, // months
         cascadePotential: 85,
-        monitoringMetrics: ['System Uptime', 'Redundancy Levels', 'Backup Readiness']
+        monitoringMetrics: ['System Uptime', 'Redundancy Levels', 'Backup Readiness'],
       },
       {
         risk: 'Citizen Trust Erosion',
         buildupTime: 36,
         cascadePotential: 70,
-        monitoringMetrics: ['Satisfaction Surveys', 'Service Usage', 'Complaint Levels']
-      }
+        monitoringMetrics: ['Satisfaction Surveys', 'Service Usage', 'Complaint Levels'],
+      },
     ];
   }
 
@@ -1003,12 +1063,14 @@ export class PredictiveFutureEngine extends EventEmitter {
     // This is a placeholder for trend identification logic
   }
 
-  private async generateAccuracyImprovements(accuracyData: PredictionAccuracy[]): Promise<string[]> {
+  private async generateAccuracyImprovements(
+    accuracyData: PredictionAccuracy[]
+  ): Promise<string[]> {
     return [
       'Increase data collection frequency for key factors',
       'Improve external driver monitoring',
       'Enhance model calibration procedures',
-      'Implement ensemble prediction methods'
+      'Implement ensemble prediction methods',
     ];
   }
 
@@ -1033,7 +1095,7 @@ export class PredictiveFutureEngine extends EventEmitter {
     if (!this.isModelingActive) return;
 
     console.log('🛑 Stopping Predictive Modeling...');
-    
+
     if (this.predictionInterval) {
       clearInterval(this.predictionInterval);
       this.predictionInterval = null;
@@ -1048,14 +1110,14 @@ export class PredictiveFutureEngine extends EventEmitter {
    */
   public async reset(): Promise<void> {
     console.log('🔄 Resetting Predictive Future Engine...');
-    
+
     this.stopPredictiveModeling();
     this.activeScenarios.clear();
     this.trendAnalyses.clear();
     this.historicalAccuracy = [];
-    
+
     await this.initializePredictiveModeling();
-    
+
     this.emit('predictiveSystemReset');
   }
 }
@@ -1068,25 +1130,25 @@ class AdvancedModelingEngine {
     // Simplified trend prediction using linear regression
     const predictions: number[] = [];
     const n = historicalData.length;
-    
+
     if (n < 2) return Array(monthsAhead).fill(historicalData[0] || 0);
-    
+
     // Calculate linear trend
     const xSum = (n * (n - 1)) / 2;
     const ySum = historicalData.reduce((sum, val) => sum + val, 0);
     const xySum = historicalData.reduce((sum, val, index) => sum + val * index, 0);
     const xSquaredSum = (n * (n - 1) * (2 * n - 1)) / 6;
-    
+
     const slope = (n * xySum - xSum * ySum) / (n * xSquaredSum - xSum * xSum);
     const intercept = (ySum - slope * xSum) / n;
-    
+
     // Generate predictions
     for (let i = 0; i < monthsAhead; i++) {
       const predicted = intercept + slope * (n + i);
       const noise = (Math.random() - 0.5) * 0.1 * predicted; // Add some realistic noise
       predictions.push(Math.max(0, predicted + noise));
     }
-    
+
     return predictions;
   }
 }

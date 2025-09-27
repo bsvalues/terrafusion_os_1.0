@@ -341,7 +341,7 @@ class AITrainingOrchestrator:
                 "error_rate": 0.01
             },
             "monitoring_interval": 300,  # 5 minutes
-            "dashboard_url": "http://localhost:3000/monitoring/ai-models",
+            "dashboard_url": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/monitoring/ai-models",
             "setup_timestamp": datetime.now().isoformat()
         }
         

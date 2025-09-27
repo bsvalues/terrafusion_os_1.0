@@ -17,7 +17,7 @@ set -euo pipefail
 
 # Configuration
 SOURCE_DB=""
-DEST_DB="postgresql://terrafusion_user:password@localhost:5432/terrafusion_production"
+DEST_DB="postgresql://terrafusion_user:password@localhost:\${{TF_POSTGRES_PORT:-5432}}/terrafusion_production"
 TABLE_FILTER="all"
 BATCH_SIZE=1000
 VALIDATE_DATA=false

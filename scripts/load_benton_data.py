@@ -2,7 +2,7 @@
 """
 Alternative loader you can run locally instead of the ephemeral container in 04_seed_data.sh
 Usage:
-  PGHOST=localhost PGPORT=5432 PGUSER=terrafusion PGPASSWORD=... PGDATABASE=terrafusion \
+  PGHOST=localhost PGPORT=\${{TF_POSTGRES_PORT:-5432}} PGUSER=terrafusion PGPASSWORD=... PGDATABASE=terrafusion \
   python scripts/load_benton_data.py ./data/benton
 """
 import os, sys, pandas as pd

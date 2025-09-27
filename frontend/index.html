@@ -19,6 +19,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
+    <!-- UI Fix for Animation Corruption -->
+    <link rel="stylesheet" href="/ui-fix.css" />
+
     <style>
       /* TerraFusion Loading Screen */
       #loading-screen {
@@ -45,7 +48,7 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        animation: glow 2s ease-in-out infinite alternate;
+        filter: drop-shadow(0 0 20px rgba(0, 153, 255, 0.5));
       }
 
       .loading-tagline {
@@ -61,7 +64,7 @@
         border: 3px solid rgba(0, 153, 255, 0.3);
         border-top: 3px solid #0099ff;
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        animation: spin 1s linear 3;
       }
 
       @keyframes glow {
@@ -80,6 +83,11 @@
         pointer-events: none;
         transition: opacity 0.5s ease-out;
       }
+      
+      /* Stop all animations after loading */
+      .app-loaded * {
+        animation: none !important;
+      }
 
       body {
         margin: 0;
@@ -94,7 +102,15 @@
         min-height: 100vh;
       }
     </style>
-  </head>
+    <script src="/shared/trust-fabric-adapter.js"></script>
+  <script>
+    try {
+      new TrustFabricAdapter().initialize();
+    } catch(e) {
+      console.warn("Trust Fabric initialization failed:", e);
+    }
+  </script>
+</head>
   <body>
     <!-- TerraFusion Loading Screen -->
     <div id="loading-screen">
@@ -118,6 +134,7 @@
     </script>
   </body>
 </html>
+
 
 
 

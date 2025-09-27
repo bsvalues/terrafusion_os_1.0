@@ -1,0 +1,9 @@
+{
+  "extract_id": "Benton_gis_system_20250916_095245",
+  "county": "Benton",
+  "system_type": "gis_system",
+  "extraction_date": "2025-09-16T09:52:45.257378",
+  "files_extracted": 4,
+  "extraction_status": "completed",
+  "data_integrity_hash": "c5319829627fb33bdac56665c4e698b6"
+}

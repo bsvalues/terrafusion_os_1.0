@@ -1,0 +1,37 @@
+{
+  "source": [
+    "tokens/common/*.json",
+    "tokens/county/**/*.json"
+  ],
+  "platforms": {
+    "css": {
+      "transformGroup": "css",
+      "buildPath": "public/brand/",
+      "files": [
+        {
+          "destination": "tokens-base.css",
+          "format": "css/variables",
+          "filter": "isBase"
+        },
+        {
+          "destination": "tokens-benton.css",
+          "format": "css/variables",
+          "filter": {
+            "attributes": {
+              "county": "Benton"
+            }
+          }
+        },
+        {
+          "destination": "tokens-yakima.css",
+          "format": "css/variables",
+          "filter": {
+            "attributes": {
+              "county": "Yakima"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

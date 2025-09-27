@@ -10,10 +10,7 @@
     "due_date": null,
     "estimated_hours": 12,
     "actual_hours": null,
-    "tags": [
-      "documentation",
-      "training"
-    ],
+    "tags": ["documentation", "training"],
     "dependencies": []
   },
   "task_20250609_181302": {

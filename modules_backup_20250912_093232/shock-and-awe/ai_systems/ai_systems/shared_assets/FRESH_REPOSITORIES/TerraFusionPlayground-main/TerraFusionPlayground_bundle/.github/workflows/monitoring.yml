@@ -1,0 +1,198 @@
+name: Monitoring and Alerting
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Run every 5 minutes
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  monitor:
+    name: Monitor
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Check application health
+      run: npm run monitor:health
+      env:
+        NODE_ENV: production
+        APP_URL: ${{ secrets.APP_URL }}
+
+    - name: Check database health
+      run: npm run monitor:database
+      env:
+        NODE_ENV: production
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+
+    - name: Check Redis health
+      run: npm run monitor:redis
+      env:
+        NODE_ENV: production
+        REDIS_HOST: ${{ secrets.REDIS_HOST }}
+        REDIS_PORT: ${{ secrets.REDIS_PORT }}
+        REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+
+    - name: Check disk space
+      run: npm run monitor:disk
+      env:
+        NODE_ENV: production
+        DISK_THRESHOLD: ${{ secrets.DISK_THRESHOLD }}
+
+    - name: Check memory usage
+      run: npm run monitor:memory
+      env:
+        NODE_ENV: production
+        MEMORY_THRESHOLD: ${{ secrets.MEMORY_THRESHOLD }}
+
+    - name: Check CPU usage
+      run: npm run monitor:cpu
+      env:
+        NODE_ENV: production
+        CPU_THRESHOLD: ${{ secrets.CPU_THRESHOLD }}
+
+    - name: Check network latency
+      run: npm run monitor:network
+      env:
+        NODE_ENV: production
+        NETWORK_THRESHOLD: ${{ secrets.NETWORK_THRESHOLD }}
+
+    - name: Check error rates
+      run: npm run monitor:errors
+      env:
+        NODE_ENV: production
+        ERROR_THRESHOLD: ${{ secrets.ERROR_THRESHOLD }}
+
+    - name: Check response times
+      run: npm run monitor:response
+      env:
+        NODE_ENV: production
+        RESPONSE_THRESHOLD: ${{ secrets.RESPONSE_THRESHOLD }}
+
+    - name: Check API endpoints
+      run: npm run monitor:api
+      env:
+        NODE_ENV: production
+        API_ENDPOINTS: ${{ secrets.API_ENDPOINTS }}
+
+    - name: Check SSL certificates
+      run: npm run monitor:ssl
+      env:
+        NODE_ENV: production
+        SSL_DOMAINS: ${{ secrets.SSL_DOMAINS }}
+
+    - name: Generate monitoring report
+      run: npm run monitor:report
+      env:
+        NODE_ENV: production
+
+    - name: Upload monitoring report
+      uses: actions/upload-artifact@v3
+      with:
+        name: monitoring-report
+        path: reports/monitoring
+        retention-days: 30
+
+    - name: Create alert issue
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('reports/monitoring/alert.json', 'utf8'));
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Monitoring Alert: ' + report.alert,
+            body: `## Monitoring Alert\n\n${report.description}\n\n### Details\n\n${report.details}`,
+            labels: ['monitoring', 'needs-review']
+          });
+
+    - name: Send Slack alert
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  metrics:
+    name: Collect Metrics
+    needs: monitor
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Collect application metrics
+      run: npm run metrics:collect
+      env:
+        NODE_ENV: production
+        APP_URL: ${{ secrets.APP_URL }}
+
+    - name: Collect system metrics
+      run: npm run metrics:system
+      env:
+        NODE_ENV: production
+
+    - name: Collect business metrics
+      run: npm run metrics:business
+      env:
+        NODE_ENV: production
+
+    - name: Process metrics
+      run: npm run metrics:process
+      env:
+        NODE_ENV: production
+
+    - name: Generate metrics report
+      run: npm run metrics:report
+      env:
+        NODE_ENV: production
+
+    - name: Upload metrics report
+      uses: actions/upload-artifact@v3
+      with:
+        name: metrics-report
+        path: reports/metrics
+        retention-days: 30
+
+    - name: Update dashboards
+      run: npm run metrics:dashboard
+      env:
+        NODE_ENV: production
+        GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+        GRAFANA_API_KEY: ${{ secrets.GRAFANA_API_KEY }}
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

@@ -10,8 +10,8 @@ data:
     cluster-config-file nodes.conf
     cluster-node-timeout 15000
     cluster-announce-ip ${POD_IP}
-    cluster-announce-port 6379
-    cluster-announce-bus-port 16379
+    cluster-announce-port \${{TF_REDIS_PORT:-6379}}
+    cluster-announce-bus-port \${{TF_REDIS_PORT:-6379}}
     
     # Memory and persistence
     maxmemory 2gb
@@ -30,7 +30,7 @@ data:
     
     # Network
     bind 0.0.0.0
-    port 6379
+    port \${{TF_REDIS_PORT:-6379}}
     tcp-backlog 511
     timeout 0
     tcp-keepalive 300

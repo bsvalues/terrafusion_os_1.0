@@ -84,13 +84,13 @@ monitor_application_health() {
         
         # Check backend health
         local backend_health="HEALTHY"
-        if ! kubectl exec -n $NAMESPACE deployment/terrafusion-backend -- curl -f -s http://localhost:8080/health &> /dev/null; then
+        if ! kubectl exec -n $NAMESPACE deployment/terrafusion-backend -- curl -f -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &> /dev/null; then
             backend_health="UNHEALTHY"
         fi
         
         # Check CostForge health
         local costforge_health="HEALTHY"
-        if ! kubectl exec -n $NAMESPACE deployment/terrafusion-costforge -- curl -f -s http://localhost:3001/health &> /dev/null; then
+        if ! kubectl exec -n $NAMESPACE deployment/terrafusion-costforge -- curl -f -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &> /dev/null; then
             costforge_health="UNHEALTHY"
         fi
         
@@ -101,7 +101,7 @@ monitor_application_health() {
         fi
         
         # Measure response time
-        local response_time=$(kubectl exec -n $NAMESPACE deployment/terrafusion-backend -- curl -w "%{time_total}" -s -o /dev/null http://localhost:8080/api/health 2>/dev/null | awk '{print $1*1000}' || echo "timeout")
+        local response_time=$(kubectl exec -n $NAMESPACE deployment/terrafusion-backend -- curl -w "%{time_total}" -s -o /dev/null http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/health 2>/dev/null | awk '{print $1*1000}' || echo "timeout")
         
         echo "$timestamp,$backend_health,$costforge_health,$database_health,$response_time" >> "$log_file"
         
@@ -164,7 +164,7 @@ spec:
       - name: backend-health-probe
         type: httpProbe
         httpProbe/inputs:
-          url: http://terrafusion-backend:8080/health
+          url: http://terrafusion-backend:${TF_STATIC_PORT:-8080}/health
           insecureSkipTLS: false
           method:
             get:
@@ -227,7 +227,7 @@ spec:
       - name: costforge-availability-probe
         type: httpProbe
         httpProbe/inputs:
-          url: http://terrafusion-costforge:3001/health
+          url: http://terrafusion-costforge:${TF_SHELL_PORT:-3103}/health
           insecureSkipTLS: false
           method:
             get:
@@ -406,7 +406,7 @@ spec:
       - name: backend-memory-probe
         type: httpProbe
         httpProbe/inputs:
-          url: http://terrafusion-backend:8080/api/health
+          url: http://terrafusion-backend:${TF_STATIC_PORT:-8080}/api/health
           insecureSkipTLS: false
           method:
             get:

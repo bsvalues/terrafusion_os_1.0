@@ -1,0 +1,201 @@
+# TerraFusion OS Kong Configuration Template
+# Government. Transcended.
+# Template for generating environment-aware Kong configuration
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kong-declarative-config-template
+  namespace: terrafusion-system
+  labels:
+    app: kong
+    component: api-gateway
+    government-compliance: "FISMA-SOC2"
+data:
+  kong-template.yml: |
+    _format_version: "3.0"
+    _transform: true
+    
+    # TerraFusion Government Services Configuration
+    # NO HARDCODED PORTS! Uses environment variables
+    services:
+    - name: terrafusion-api
+      url: http://terrafusion-api.terrafusion-system.svc.cluster.local:${TF_API_PORT:-5046}
+      plugins:
+      - name: prometheus
+        config:
+          per_consumer: true
+      - name: rate-limiting
+        config:
+          minute: 1000
+          hour: 10000
+          day: 100000
+          policy: cluster
+          redis_host: redis-cluster.terrafusion-system.svc.cluster.local
+          redis_port: 6379
+      - name: request-id
+        config:
+          header_name: X-TerraFusion-Request-ID
+          echo_downstream: true
+      - name: correlation-id
+        config:
+          header_name: X-Government-Correlation-ID
+          generator: uuid#counter
+          echo_downstream: true
+      
+    - name: terrafusion-frontend
+      url: http://terrafusion-frontend.terrafusion-system.svc.cluster.local:${TF_FRONTEND_PORT:-3102}
+      plugins:
+      - name: prometheus
+      - name: rate-limiting
+        config:
+          minute: 2000
+          hour: 20000
+          day: 200000
+      - name: cors
+        config:
+          origins: 
+          - "https://*.terrafusion.gov"
+          - "https://terrafusion.gov"
+          credentials: true
+          max_age: 3600
+          
+    # Government compliance routing
+    routes:
+    - name: api-v1
+      service: terrafusion-api
+      paths:
+      - /api/v1
+      plugins:
+      - name: jwt
+        config:
+          claims_to_verify: ["exp", "iss"]
+          key_claim_name: kid
+          secret_is_base64: false
+      - name: acl
+        config:
+          allow: ["government", "county", "municipality"]
+          
+    - name: modules-api
+      service: terrafusion-api
+      paths:
+      - /modules
+      plugins:
+      - name: request-size-limiting
+        config:
+          allowed_payload_size: 50
+          
+    - name: county-benton
+      service: terrafusion-api
+      paths:
+      - /county/benton
+      plugins:
+      - name: request-transformer
+        config:
+          add:
+            headers:
+            - "X-County-Theme: benton"
+            - "X-County-Primary: #00B3A4"
+            
+    - name: county-yakima
+      service: terrafusion-api
+      paths:
+      - /county/yakima
+      plugins:
+      - name: request-transformer
+        config:
+          add:
+            headers:
+            - "X-County-Theme: yakima"
+            - "X-County-Primary: #2FB3FF"
+            
+    - name: frontend-app
+      service: terrafusion-frontend
+      paths:
+      - /
+      plugins:
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Frame-Options: DENY"
+            - "X-Content-Type-Options: nosniff"
+            - "Referrer-Policy: strict-origin-when-cross-origin"
+            - "X-Government-Mode: true"
+            
+    # Government security plugins
+    plugins:
+    - name: prometheus
+      config:
+        per_consumer: true
+        status_code_metrics: true
+        latency_metrics: true
+        bandwidth_metrics: true
+        upstream_health_metrics: true
+        
+    - name: file-log
+      config:
+        path: /tmp/file.log
+        reopen: true
+        
+    # Government consumers (counties)
+    consumers:
+    - username: benton-county
+      tags: ["government", "county", "washington"]
+      
+    - username: yakima-county
+      tags: ["government", "county", "washington"]
+      
+    # JWT credentials for counties
+    jwt_secrets:
+    - consumer: benton-county
+      key: benton-county-jwt
+      secret: ${BENTON_COUNTY_JWT_SECRET}
+      
+    - username: yakima-county
+      key: yakima-county-jwt
+      secret: ${YAKIMA_COUNTY_JWT_SECRET}
+      
+    # ACL groups
+    acls:
+    - consumer: benton-county
+      group: government
+    - consumer: benton-county
+      group: county
+      
+    - consumer: yakima-county
+      group: government
+    - consumer: yakima-county
+      group: county
+      
+    # Upstreams for load balancing
+    upstreams:
+    - name: terrafusion-api-upstream
+      algorithm: round-robin
+      healthchecks:
+        active:
+          healthy:
+            interval: 30
+            successes: 3
+          unhealthy:
+            interval: 30
+            http_failures: 3
+      targets:
+      # NO HARDCODED PORTS! Use TF_API_PORT
+      - target: terrafusion-api.terrafusion-system.svc.cluster.local:${TF_API_PORT:-5046}
+        weight: 100
+        
+    - name: terrafusion-frontend-upstream
+      algorithm: round-robin
+      healthchecks:
+        active:
+          healthy:
+            interval: 30
+            successes: 3
+          unhealthy:
+            interval: 30
+            http_failures: 3
+      targets:
+      # NO HARDCODED PORTS! Use TF_FRONTEND_PORT
+      - target: terrafusion-frontend.terrafusion-system.svc.cluster.local:${TF_FRONTEND_PORT:-3102}
+        weight: 100

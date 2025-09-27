@@ -84,7 +84,7 @@ source venv/bin/activate 2>/dev/null || true
 pip install -q fastapi uvicorn sqlalchemy aiofiles
 python3 fastapi_server.py &
 echo $! > api_server.pid
-echo "API Server started on http://localhost:8000"
+echo "API Server started on http://localhost:\${{TF_DOCS_PORT:-8000}}"
 EOF
 chmod +x start_api_server.sh
 
@@ -293,8 +293,8 @@ echo "════════════════════════�
 echo "           TERRAFUSION PRODUCTION SYSTEMS ACTIVE               "
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
-echo "API Server:    http://localhost:8000"
-echo "Application:   http://localhost:1420"
+echo "API Server:    http://localhost:\${{TF_DOCS_PORT:-8000}}"
+echo "Application:   http://localhost:\${{TF_DOCS_PORT:-8000}}"
 echo "Monitoring:    file://$(pwd)/monitoring_dashboard.html"
 echo ""
 echo "Speed:         379,000,000× faster"
@@ -315,17 +315,17 @@ echo "Testing TerraFusion API..."
 
 # Test health endpoint
 echo "1. Health Check:"
-curl -s http://localhost:8000/health | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health | jq .
 
 # Test valuation speed
 echo "2. Speed Test:"
-curl -s -X POST http://localhost:8000/api/v1/valuation \
+curl -s -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/api/v1/valuation \
   -H "Content-Type: application/json" \
   -d '{"property_id": "BEN-2025-001"}' | jq .
 
 # Test batch valuation
 echo "3. Batch Valuation:"
-curl -s -X POST http://localhost:8000/api/v1/valuation/batch \
+curl -s -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/api/v1/valuation/batch \
   -H "Content-Type: application/json" \
   -d '{"property_ids": ["BEN-2025-001", "BEN-2025-002", "BEN-2025-003"]}' | jq .
 EOF

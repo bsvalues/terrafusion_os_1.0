@@ -3,12 +3,14 @@
 ## System Requirements
 
 ### Minimum Requirements
+
 - CPU: 4 cores
 - RAM: 8GB
 - Storage: 50GB SSD
 - Network: 100Mbps
 
 ### Recommended Requirements
+
 - CPU: 8+ cores
 - RAM: 16GB+
 - Storage: 100GB+ NVMe SSD
@@ -17,6 +19,7 @@
 ## Performance Metrics
 
 ### Key Metrics
+
 1. Response Time
    - API endpoints: < 200ms
    - Model inference: < 1s
@@ -38,6 +41,7 @@
 ### 1. Application Level
 
 #### Code Optimization
+
 ```javascript
 // Use efficient data structures
 const cache = new Map();
@@ -55,6 +59,7 @@ for (let i = 0; i < array.length; i++) {
 ```
 
 #### Memory Management
+
 ```javascript
 // Implement garbage collection hints
 global.gc();
@@ -69,6 +74,7 @@ largeObject = null;
 ### 2. Database Optimization
 
 #### Indexing Strategy
+
 ```sql
 -- Create composite indexes
 CREATE INDEX idx_composite ON table (col1, col2);
@@ -81,6 +87,7 @@ SELECT * FROM pg_stat_user_indexes;
 ```
 
 #### Query Optimization
+
 ```sql
 -- Use prepared statements
 PREPARE query (text) AS SELECT * FROM table WHERE col = $1;
@@ -95,6 +102,7 @@ CREATE MATERIALIZED VIEW mv AS SELECT * FROM table;
 ### 3. Caching Strategy
 
 #### Redis Configuration
+
 ```bash
 # Optimize memory usage
 maxmemory 2gb
@@ -106,6 +114,7 @@ appendfsync everysec
 ```
 
 #### Cache Patterns
+
 ```javascript
 // Implement cache-aside
 async function getData(id) {
@@ -127,11 +136,12 @@ async function updateData(id, data) {
 ### 4. Load Balancing
 
 #### Nginx Configuration
+
 ```nginx
 upstream backend {
-  server 127.0.0.1:3000;
-  server 127.0.0.1:3001;
-  server 127.0.0.1:3002;
+  server 127.0.0.1:\${{TF_FRONTEND_PORT:-3000}};
+  server 127.0.0.1:\${{TF_FRONTEND_PORT:-3000}};
+  server 127.0.0.1:\${{TF_FRONTEND_PORT:-3000}};
 }
 
 server {
@@ -148,20 +158,22 @@ server {
 ### 5. Monitoring and Alerts
 
 #### Prometheus Rules
+
 ```yaml
 groups:
-- name: performance
-  rules:
-  - alert: HighLatency
-    expr: http_request_duration_seconds > 0.5
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: High latency detected
+  - name: performance
+    rules:
+      - alert: HighLatency
+        expr: http_request_duration_seconds > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High latency detected
 ```
 
 #### Grafana Dashboards
+
 - System metrics
 - Application performance
 - Database metrics
@@ -170,15 +182,17 @@ groups:
 ## Performance Testing
 
 ### Load Testing
+
 ```bash
 # Using Apache Bench
-ab -n 1000 -c 100 http://localhost:3000/api/process
+ab -n 1000 -c 100 http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/process
 
 # Using Artillery
-artillery quick --count 1000 -n 100 http://localhost:3000/api/process
+artillery quick --count 1000 -n 100 http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/process
 ```
 
 ### Stress Testing
+
 ```bash
 # Using k6
 k6 run --vus 100 --duration 30s stress.js
@@ -189,6 +203,7 @@ k6 run --vus 100 --duration 30s stress.js
 ### Performance Issues
 
 1. High CPU Usage
+
 ```bash
 # Profile Node.js
 node --prof app.js
@@ -198,6 +213,7 @@ node --prof-process isolate-0xnnnnnnnnnnnn-v8.log
 ```
 
 2. Memory Leaks
+
 ```bash
 # Take heap snapshot
 node --heapsnapshot app.js
@@ -206,6 +222,7 @@ node --heapsnapshot app.js
 ```
 
 3. Slow Queries
+
 ```bash
 # Enable slow query log
 SET slow_query_log = 1;
@@ -215,21 +232,25 @@ SET long_query_time = 1;
 ## Best Practices
 
 1. Code Organization
+
 - Use async/await
 - Implement proper error handling
 - Follow SOLID principles
 
 2. Database
+
 - Regular maintenance
 - Proper indexing
 - Query optimization
 
 3. Caching
+
 - Appropriate cache size
 - Regular cache cleanup
 - Cache invalidation strategy
 
 4. Monitoring
+
 - Real-time metrics
 - Alert thresholds
 - Performance baselines
@@ -237,16 +258,19 @@ SET long_query_time = 1;
 ## Regular Maintenance
 
 1. Weekly
+
 - Check performance metrics
 - Review slow queries
 - Analyze error rates
 
 2. Monthly
+
 - Update dependencies
 - Optimize indexes
 - Review cache hit rates
 
 3. Quarterly
+
 - Full system audit
 - Performance testing
-- Capacity planning 
+- Capacity planning

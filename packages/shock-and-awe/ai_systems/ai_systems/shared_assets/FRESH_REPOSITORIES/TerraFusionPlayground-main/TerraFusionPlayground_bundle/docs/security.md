@@ -5,6 +5,7 @@
 ### 1. Authentication & Authorization
 
 #### JWT Implementation
+
 ```javascript
 // JWT Configuration
 const jwtConfig = {
@@ -30,6 +31,7 @@ const verifyToken = (token) => {
 ```
 
 #### Role-Based Access Control
+
 ```javascript
 // Role Definitions
 const roles = {
@@ -61,6 +63,7 @@ const checkPermission = (requiredPermission) => {
 ### 2. Data Protection
 
 #### Encryption
+
 ```javascript
 // AES Encryption
 const encrypt = (data) => {
@@ -84,17 +87,20 @@ const decrypt = (encrypted, iv) => {
 ```
 
 #### Secure Storage
+
 ```javascript
 // Secure Cookie Configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  cookie: {
-    secure: true,
-    httpOnly: true,
-    sameSite: 'strict',
-    maxAge: 3600000
-  }
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+      secure: true,
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 3600000
+    }
+  })
+);
 
 // Password Hashing
 const hashPassword = async (password) => {
@@ -106,6 +112,7 @@ const hashPassword = async (password) => {
 ### 3. API Security
 
 #### Rate Limiting
+
 ```javascript
 // Rate Limiter Configuration
 const limiter = rateLimit({
@@ -118,6 +125,7 @@ app.use('/api/', limiter);
 ```
 
 #### Input Validation
+
 ```javascript
 // Request Validation
 const validateRequest = (schema) => {
@@ -141,6 +149,7 @@ const userSchema = Joi.object({
 ### 4. Network Security
 
 #### SSL/TLS Configuration
+
 ```nginx
 # Nginx SSL Configuration
 server {
@@ -158,6 +167,7 @@ server {
 ```
 
 #### Firewall Rules
+
 ```bash
 # UFW Configuration
 ufw default deny incoming
@@ -171,14 +181,13 @@ ufw enable
 ### 5. Monitoring & Logging
 
 #### Security Logging
+
 ```javascript
 // Winston Logger Configuration
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
-  transports: [
-    new winston.transports.File({ filename: 'security.log' })
-  ]
+  transports: [new winston.transports.File({ filename: 'security.log' })]
 });
 
 // Security Event Logging
@@ -194,6 +203,7 @@ const logSecurityEvent = (event) => {
 ```
 
 #### Audit Trail
+
 ```javascript
 // Audit Logging
 const auditLog = (action, user, resource) => {
@@ -237,24 +247,28 @@ const auditLog = (action, user, resource) => {
 ## Security Checklist
 
 ### Daily Tasks
+
 - Review security logs
 - Check for failed login attempts
 - Monitor system resources
 - Verify backup status
 
 ### Weekly Tasks
+
 - Update security patches
 - Review access logs
 - Check for suspicious activities
 - Verify SSL certificates
 
 ### Monthly Tasks
+
 - Security assessment
 - Password rotation
 - Access review
 - Security training
 
 ### Quarterly Tasks
+
 - Penetration testing
 - Security audit
 - Policy review
@@ -263,37 +277,43 @@ const auditLog = (action, user, resource) => {
 ## Incident Response
 
 ### 1. Detection
+
 - Monitor security logs
 - Set up alerts
 - Regular scanning
 - User reporting
 
 ### 2. Analysis
+
 - Log analysis
 - Impact assessment
 - Root cause analysis
 - Evidence collection
 
 ### 3. Containment
+
 - Isolate affected systems
 - Block malicious IPs
 - Disable compromised accounts
 - Update security rules
 
 ### 4. Eradication
+
 - Remove malware
 - Patch vulnerabilities
 - Update security measures
 - Clean affected systems
 
 ### 5. Recovery
+
 - Restore from backup
 - Verify system integrity
 - Update documentation
 - Resume normal operations
 
 ### 6. Post-Incident
+
 - Document incident
 - Update procedures
 - Train staff
-- Review security measures 
+- Review security measures

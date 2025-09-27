@@ -1,0 +1,106 @@
+Let’s execute. I’ve generated a **Rollout Kit v4** with one-pass scripts so you can apply the **Experience Suite v4** to your repo, stand up infra, deploy the app, seed flags, run DB migrations, and smoke-test—without any freelancing from agents.
+
+# ⬇️ Downloads
+
+* **Experience Suite v4** (everything bundled):
+  ZIP: [experience-suite-v4.zip](sandbox:/mnt/data/experience-suite-v4.zip)
+  TAR.GZ: [experience-suite-v4.tar.gz](sandbox:/mnt/data/experience-suite-v4.tar.gz)
+
+* **Rollout Kit v4** (installer + bootstrap + helmfile + seeds):
+  ZIP: [rollout-kit-v4.zip](sandbox:/mnt/data/rollout-kit-v4.zip)
+
+# 10-minute “get it done” path
+
+## 0) Prep
+
+```
+# in your workstation shell
+export REPO_ROOT=/path/to/your/terrafusion/repo
+export SUITE_DIR=~/Downloads/suite-v4/experience-suite-v4  # unzip v4 first
+```
+
+## 1) Overlay v4 into your repo (no file clobbering)
+
+```
+unzip experience-suite-v4.zip -d ~/Downloads/suite-v4
+unzip rollout-kit-v4.zip -d ~/Downloads/rollout-kit
+cd ~/Downloads/rollout-kit
+./apply-v4.sh
+```
+
+This uses rsync `--ignore-existing` so it won’t overwrite your local changes.
+
+## 2) Configure secrets/env
+
+```
+export ROUTE53_ZONE_ID=Zxxxxxxxxxxxx
+export CDN_DOMAIN=media.terrafusion.gov
+export KONG_API_HOST=api.terrafusion.gov
+export APP_HOST=app.terrafusion.gov
+export DATABASE_URL=postgres://user:pass@host:5432/terrafusion_prod
+export TF_VAR_region=us-west-2
+```
+
+(For Azure AD / Okta frontends, set the variables from `.env.terrafusion.example` inside your UI build env.)
+
+## 3) Bootstrap infra → app → flags → DB → checks
+
+```
+./bootstrap-v4.sh
+```
+
+It will:
+
+* Terraform **CloudFront via Kong** (or skip if already provisioned),
+* Terraform **EKS root** (optional; skips if folder not present),
+* Helm deploy **Kong** and the **umbrella chart** (UI + API + ServiceMonitor),
+* Instruct you to `deck sync` CSP & OIDC (one line each),
+* Seed **Consul flags**,
+* Run **DB migrations** (telemetry + flag\_audit),
+* Run **brand scan**, **axe** test stub, and **smoke** on the live host.
+
+## 4) Apply Kong decK (CSP + choose your OIDC)
+
+```
+deck sync -s kong.csp.yml
+# choose Azure AD or Okta:
+deck sync -s sso-extensions/kong/kong.oidc.azuread.yml
+# or
+deck sync -s sso-extensions/kong/kong.oidc.okta.yml
+```
+
+## 5) Verify brand/perf/a11y gates
+
+* ESLint **brand rule** (no raw colors) must be clean.
+* **Playwright** tiered visual snapshots T0–T4 pass.
+* **Lighthouse** budgets + **FMF ≤ 1200 ms**.
+* **axe**: zero critical issues.
+* Grafana shows **tier mix** & **flag flip annotations**.
+
+---
+
+# What’s in the Rollout Kit v4
+
+* **apply-v4.sh** — rsync overlay into your repo
+* **bootstrap-v4.sh** — end-to-end bootstrap (TF → Helm → Consul → DB → tests)
+* **helmfile.yaml** — optional single command deploy if you prefer Helmfile
+* **seed-transcendence-flags.hcl** — Consul KV seeds
+* **kong.csp.yml** — CSP at the edge via decK (pair with OIDC YAMLs)
+* **db/all\_migrations.sql** — aggregator to run telemetry + audit migrations
+* **README.md** — quick instructions
+
+# What you already have from Suite v4
+
+* **SSO Admin** (MSAL pre-wired) + **Flag History** + **Transcendence Control**
+* **Terraform stacks** (CloudFront/Kong & EKS root)
+* **Helm umbrella chart** (UI + API + Kong ingress + ServiceMonitor)
+* **Brand tokens pipeline** (Style Dictionary → `--tf-*` CSS)
+* **ESLint brand guard**, **Storybook brand-lint**, **AI Co-Pilot Contract**
+* **Perf**: FPS gate, Lighthouse budgets, **First Motion Frame audit**
+* **A11y**: axe CI
+* **Obs**: Prom `/metrics`, Grafana *with* annotations on flag flips
+* **Security**: CSP headers + NEL/Report-To, Kong rate limits (from earlier packs)
+
+---
+
+If you hit any step that needs tuning (providers, subnets, certs), tell me your exact cloud/env details and I’ll generate the precise configuration blocks to slot in.

@@ -1,0 +1,56 @@
+{
+  "name": "property-workbench-frontend",
+  "version": "1.0.0",
+  "description": "TerraFusion OS Property Workbench - County Property Management Interface",
+  "main": "src/index.tsx",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "styled-components": "^6.0.7",
+    "react-router-dom": "^6.15.0",
+    "framer-motion": "^10.16.0",
+    "lucide-react": "^0.284.0",
+    "@tanstack/react-query": "^4.35.0",
+    "recharts": "^2.8.0",
+    "react-hook-form": "^7.46.0",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@types/styled-components": "^5.1.26",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  },
+  "keywords": [
+    "terrafusion",
+    "property",
+    "workbench",
+    "county",
+    "government",
+    "real-estate",
+    "assessment",
+    "tax",
+    "gis"
+  ],
+  "author": "TerraFusion OS",
+  "license": "MIT",
+  "homepage": "https://terrafusion.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/terrafusion-os"
+  }
+}

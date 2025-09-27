@@ -4,85 +4,85 @@
  */
 
 class TerraMiner {
-    constructor() {
-        this.aiAgents = 264; // Dedicated mining agents
-        this.isActive = false;
-        this.insights = [];
-        this.patterns = [];
-        this.currentDataset = null;
-        
-        this.miningMetrics = {
-            propertiesAnalyzed: 0,
-            patternsFound: 0,
-            confidenceScore: 0,
-            processingSpeed: '2.3M records/sec',
-            efficencyGain: '1,847x'
-        };
-        
-        this.init();
+  constructor() {
+    this.aiAgents = 264; // Dedicated mining agents
+    this.isActive = false;
+    this.insights = [];
+    this.patterns = [];
+    this.currentDataset = null;
+
+    this.miningMetrics = {
+      propertiesAnalyzed: 0,
+      patternsFound: 0,
+      confidenceScore: 0,
+      processingSpeed: '2.3M records/sec',
+      efficencyGain: '1,847x',
+    };
+
+    this.init();
+  }
+
+  init() {
+    console.log('🔍 Initializing Terra-Miner AI system...');
+    this.setupDataMiningEngine();
+    this.setupInsightGeneration();
+    this.setupVisualization();
+  }
+
+  setupDataMiningEngine() {
+    // Advanced pattern recognition algorithms
+    this.patternEngines = {
+      market_trends: {
+        name: 'Market Trend Analysis',
+        agents: 88,
+        algorithm: 'Advanced time-series with ML',
+        accuracy: '97.3%',
+      },
+      property_clusters: {
+        name: 'Property Classification',
+        agents: 66,
+        algorithm: 'K-means clustering with AI',
+        accuracy: '94.8%',
+      },
+      value_anomalies: {
+        name: 'Valuation Anomaly Detection',
+        agents: 55,
+        algorithm: 'Statistical outlier analysis',
+        accuracy: '99.1%',
+      },
+      geographic_patterns: {
+        name: 'Geographic Intelligence',
+        agents: 55,
+        algorithm: 'Spatial analysis with GIS AI',
+        accuracy: '96.2%',
+      },
+    };
+  }
+
+  setupInsightGeneration() {
+    // AI-powered insight generation
+    this.insightTypes = [
+      'Market opportunity identification',
+      'Revenue optimization patterns',
+      'Assessment efficiency improvements',
+      'Compliance risk analysis',
+      'Investment potential mapping',
+      'Tax policy impact modeling',
+    ];
+  }
+
+  setupVisualization() {
+    // Create Terra-Miner interface elements
+    this.createMinerInterface();
+  }
+
+  createMinerInterface() {
+    // Check if already exists
+    if (document.getElementById('terra-miner-container')) {
+      return;
     }
-    
-    init() {
-        console.log('🔍 Initializing Terra-Miner AI system...');
-        this.setupDataMiningEngine();
-        this.setupInsightGeneration();
-        this.setupVisualization();
-    }
-    
-    setupDataMiningEngine() {
-        // Advanced pattern recognition algorithms
-        this.patternEngines = {
-            market_trends: {
-                name: 'Market Trend Analysis',
-                agents: 88,
-                algorithm: 'Advanced time-series with ML',
-                accuracy: '97.3%'
-            },
-            property_clusters: {
-                name: 'Property Classification',
-                agents: 66,
-                algorithm: 'K-means clustering with AI',
-                accuracy: '94.8%'
-            },
-            value_anomalies: {
-                name: 'Valuation Anomaly Detection',
-                agents: 55,
-                algorithm: 'Statistical outlier analysis',
-                accuracy: '99.1%'
-            },
-            geographic_patterns: {
-                name: 'Geographic Intelligence',
-                agents: 55,
-                algorithm: 'Spatial analysis with GIS AI',
-                accuracy: '96.2%'
-            }
-        };
-    }
-    
-    setupInsightGeneration() {
-        // AI-powered insight generation
-        this.insightTypes = [
-            'Market opportunity identification',
-            'Revenue optimization patterns',
-            'Assessment efficiency improvements',
-            'Compliance risk analysis',
-            'Investment potential mapping',
-            'Tax policy impact modeling'
-        ];
-    }
-    
-    setupVisualization() {
-        // Create Terra-Miner interface elements
-        this.createMinerInterface();
-    }
-    
-    createMinerInterface() {
-        // Check if already exists
-        if (document.getElementById('terra-miner-container')) {
-            return;
-        }
-        
-        const minerHTML = `
+
+    const minerHTML = `
             <div id="terra-miner-container" class="tf-fullscreen-app" style="display: none;">
                 <div class="tf-cosmic-bg">
                     <div class="tf-fullscreen-modal">
@@ -201,14 +201,14 @@ class TerraMiner {
                 </div>
             </div>
         `;
-        
-        document.body.insertAdjacentHTML('beforeend', minerHTML);
-        this.populateMiningEngines();
-        this.addMinorStyles();
-    }
-    
-    addMinorStyles() {
-        const styles = `
+
+    document.body.insertAdjacentHTML('beforeend', minerHTML);
+    this.populateMiningEngines();
+    this.addMinorStyles();
+  }
+
+  addMinorStyles() {
+    const styles = `
             <style>
             .tf-modal {
                 position: fixed;
@@ -401,17 +401,17 @@ class TerraMiner {
             }
             </style>
         `;
-        
-        document.head.insertAdjacentHTML('beforeend', styles);
-    }
-    
-    populateMiningEngines() {
-        const enginesContainer = document.getElementById('mining-engines');
-        if (!enginesContainer) return;
-        
-        let enginesHTML = '';
-        Object.entries(this.patternEngines).forEach(([key, engine]) => {
-            enginesHTML += `
+
+    document.head.insertAdjacentHTML('beforeend', styles);
+  }
+
+  populateMiningEngines() {
+    const enginesContainer = document.getElementById('mining-engines');
+    if (!enginesContainer) return;
+
+    let enginesHTML = '';
+    Object.entries(this.patternEngines).forEach(([key, engine]) => {
+      enginesHTML += `
                 <div class="engine-item" data-engine="${key}">
                     <div>
                         <div class="engine-name">${engine.name}</div>
@@ -420,33 +420,33 @@ class TerraMiner {
                     <div class="tf-status-operational">Active</div>
                 </div>
             `;
-        });
-        
-        enginesContainer.innerHTML = enginesHTML;
+    });
+
+    enginesContainer.innerHTML = enginesHTML;
+  }
+
+  startMining() {
+    const dataset = document.getElementById('mining-dataset').value;
+    const analysisType = document.getElementById('mining-type').value;
+
+    if (!dataset || !analysisType) {
+      this.showNotification('Please select both dataset and analysis type', 'warning');
+      return;
     }
-    
-    startMining() {
-        const dataset = document.getElementById('mining-dataset').value;
-        const analysisType = document.getElementById('mining-type').value;
-        
-        if (!dataset || !analysisType) {
-            this.showNotification('Please select both dataset and analysis type', 'warning');
-            return;
-        }
-        
-        this.currentDataset = dataset;
-        this.isActive = true;
-        
-        this.showNotification(`Starting ${analysisType} on ${dataset}...`, 'info');
-        this.simulateMining(dataset, analysisType);
-    }
-    
-    simulateMining(dataset, analysisType) {
-        const resultsContainer = document.getElementById('mining-results');
-        const insightsContainer = document.getElementById('ai-insights');
-        
-        // Show mining progress
-        resultsContainer.innerHTML = `
+
+    this.currentDataset = dataset;
+    this.isActive = true;
+
+    this.showNotification(`Starting ${analysisType} on ${dataset}...`, 'info');
+    this.simulateMining(dataset, analysisType);
+  }
+
+  simulateMining(dataset, analysisType) {
+    const resultsContainer = document.getElementById('mining-results');
+    const insightsContainer = document.getElementById('ai-insights');
+
+    // Show mining progress
+    resultsContainer.innerHTML = `
             <div style="width: 100%; text-align: center;">
                 <h4 style="color: var(--tf-transcend-cyan); margin-bottom: 1rem;">
                     🔍 Mining ${dataset} with ${analysisType}
@@ -459,41 +459,43 @@ class TerraMiner {
                 </p>
             </div>
         `;
-        
-        // Simulate progress
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(progressInterval);
-                this.displayResults(dataset, analysisType);
-            }
-            
-            document.getElementById('mining-progress-bar').style.width = progress + '%';
-            document.getElementById('progress-text').textContent = Math.round(progress) + '%';
-            
-            // Update metrics
-            document.getElementById('patterns-found').textContent = Math.floor(progress * 1.7);
-            this.miningMetrics.propertiesAnalyzed = Math.floor(progress * 941);
-        }, 300);
-    }
-    
-    displayResults(dataset, analysisType) {
-        const resultsContainer = document.getElementById('mining-results');
-        const insightsContainer = document.getElementById('ai-insights');
-        
-        // Generate mock results based on dataset and analysis type
-        const results = this.generateMockResults(dataset, analysisType);
-        const insights = this.generateMockInsights(dataset, analysisType);
-        
-        // Display results
-        resultsContainer.innerHTML = `
+
+    // Simulate progress
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(progressInterval);
+        this.displayResults(dataset, analysisType);
+      }
+
+      document.getElementById('mining-progress-bar').style.width = progress + '%';
+      document.getElementById('progress-text').textContent = Math.round(progress) + '%';
+
+      // Update metrics
+      document.getElementById('patterns-found').textContent = Math.floor(progress * 1.7);
+      this.miningMetrics.propertiesAnalyzed = Math.floor(progress * 941);
+    }, 300);
+  }
+
+  displayResults(dataset, analysisType) {
+    const resultsContainer = document.getElementById('mining-results');
+    const insightsContainer = document.getElementById('ai-insights');
+
+    // Generate mock results based on dataset and analysis type
+    const results = this.generateMockResults(dataset, analysisType);
+    const insights = this.generateMockInsights(dataset, analysisType);
+
+    // Display results
+    resultsContainer.innerHTML = `
             <div class="results-grid">
                 <h4 style="color: var(--tf-success-green); margin-bottom: 1rem;">
                     ✅ Mining Complete: ${results.length} patterns discovered
                 </h4>
-                ${results.map(result => `
+                ${results
+                  .map(
+                    result => `
                     <div class="result-item">
                         <div class="result-header">
                             <span class="result-title">${result.title}</span>
@@ -504,84 +506,96 @@ class TerraMiner {
                         <div class="result-description">${result.description}</div>
                         <div class="result-impact">Impact: ${result.impact}</div>
                     </div>
-                `).join('')}
+                `
+                  )
+                  .join('')}
             </div>
         `;
-        
-        // Display insights
-        insightsContainer.innerHTML = insights.map(insight => `
+
+    // Display insights
+    insightsContainer.innerHTML = insights
+      .map(
+        insight => `
             <div class="insight-item">
                 <div class="insight-title">${insight.title}</div>
                 <div class="insight-content">${insight.content}</div>
             </div>
-        `).join('');
-        
-        this.showNotification('Mining complete! Results and insights generated.', 'success');
-        this.isActive = false;
-    }
-    
-    generateMockResults(dataset, analysisType) {
-        const results = [];
-        
-        if (dataset === 'property_values') {
-            results.push(
-                {
-                    title: 'Undervalued Property Cluster',
-                    description: 'Identified 347 properties valued 15-25% below market average in the Riverside district',
-                    confidence: 94,
-                    impact: '$2.3M potential revenue increase'
-                },
-                {
-                    title: 'Assessment Efficiency Pattern',
-                    description: 'Properties with recent renovations show 89% faster processing with AI-assisted evaluation',
-                    confidence: 97,
-                    impact: '379x faster than traditional methods'
-                },
-                {
-                    title: 'Geographic Value Correlation',
-                    description: 'Strong correlation (r=0.87) between school district ratings and property value growth',
-                    confidence: 91,
-                    impact: 'Predictive accuracy improvement of 23%'
-                }
-            );
+        `
+      )
+      .join('');
+
+    this.showNotification('Mining complete! Results and insights generated.', 'success');
+    this.isActive = false;
+  }
+
+  generateMockResults(dataset, analysisType) {
+    const results = [];
+
+    if (dataset === 'property_values') {
+      results.push(
+        {
+          title: 'Undervalued Property Cluster',
+          description:
+            'Identified 347 properties valued 15-25% below market average in the Riverside district',
+          confidence: 94,
+          impact: '$2.3M potential revenue increase',
+        },
+        {
+          title: 'Assessment Efficiency Pattern',
+          description:
+            'Properties with recent renovations show 89% faster processing with AI-assisted evaluation',
+          confidence: 97,
+          impact: '379x faster than traditional methods',
+        },
+        {
+          title: 'Geographic Value Correlation',
+          description:
+            'Strong correlation (r=0.87) between school district ratings and property value growth',
+          confidence: 91,
+          impact: 'Predictive accuracy improvement of 23%',
         }
-        
-        return results;
+      );
     }
-    
-    generateMockInsights(dataset, analysisType) {
-        const insights = [];
-        
-        insights.push(
-            {
-                title: '🎯 Revenue Optimization Opportunity',
-                content: 'AI analysis suggests implementing dynamic assessment intervals could increase revenue by 18% while reducing workload by 31%.'
-            },
-            {
-                title: '⚡ Process Improvement',
-                content: 'CostForge AI integration has achieved 379,000,000x speed improvement over traditional Marshall & Swift methods.'
-            },
-            {
-                title: '📈 Market Intelligence',
-                content: 'Property values in target zones show 12% annual growth - optimal timing for reassessment campaigns.'
-            }
-        );
-        
-        return insights;
+
+    return results;
+  }
+
+  generateMockInsights(dataset, analysisType) {
+    const insights = [];
+
+    insights.push(
+      {
+        title: '🎯 Revenue Optimization Opportunity',
+        content:
+          'AI analysis suggests implementing dynamic assessment intervals could increase revenue by 18% while reducing workload by 31%.',
+      },
+      {
+        title: '⚡ Process Improvement',
+        content:
+          'CostForge AI integration has achieved 379,000,000x speed improvement over traditional Marshall & Swift methods.',
+      },
+      {
+        title: '📈 Market Intelligence',
+        content:
+          'Property values in target zones show 12% annual growth - optimal timing for reassessment campaigns.',
+      }
+    );
+
+    return insights;
+  }
+
+  generateReport() {
+    if (!this.currentDataset) {
+      this.showNotification('No mining data available. Please run analysis first.', 'warning');
+      return;
     }
-    
-    generateReport() {
-        if (!this.currentDataset) {
-            this.showNotification('No mining data available. Please run analysis first.', 'warning');
-            return;
-        }
-        
-        this.showNotification('Generating comprehensive mining report...', 'info');
-        
-        // Simulate report generation
-        setTimeout(() => {
-            const reportWindow = window.open('', '_blank');
-            reportWindow.document.write(`
+
+    this.showNotification('Generating comprehensive mining report...', 'info');
+
+    // Simulate report generation
+    setTimeout(() => {
+      const reportWindow = window.open('', '_blank');
+      reportWindow.document.write(`
                 <html>
                 <head>
                     <title>Terra-Miner Analysis Report</title>
@@ -639,17 +653,17 @@ class TerraMiner {
                 </body>
                 </html>
             `);
-            
-            this.showNotification('Report generated successfully!', 'success');
-        }, 2000);
-    }
-    
-    showNotification(message, type = 'info') {
-        // Create notification system if it doesn't exist
-        if (!document.getElementById('notification-container')) {
-            const notificationContainer = document.createElement('div');
-            notificationContainer.id = 'notification-container';
-            notificationContainer.style.cssText = `
+
+      this.showNotification('Report generated successfully!', 'success');
+    }, 2000);
+  }
+
+  showNotification(message, type = 'info') {
+    // Create notification system if it doesn't exist
+    if (!document.getElementById('notification-container')) {
+      const notificationContainer = document.createElement('div');
+      notificationContainer.id = 'notification-container';
+      notificationContainer.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
@@ -658,18 +672,18 @@ class TerraMiner {
                 flex-direction: column;
                 gap: 10px;
             `;
-            document.body.appendChild(notificationContainer);
-        }
-        
-        const notification = document.createElement('div');
-        const colors = {
-            info: 'var(--tf-trust-blue)',
-            success: 'var(--tf-success-green)',
-            warning: 'var(--tf-transcend-cyan)',
-            error: '#ff4444'
-        };
-        
-        notification.style.cssText = `
+      document.body.appendChild(notificationContainer);
+    }
+
+    const notification = document.createElement('div');
+    const colors = {
+      info: 'var(--tf-trust-blue)',
+      success: 'var(--tf-success-green)',
+      warning: 'var(--tf-transcend-cyan)',
+      error: '#ff4444',
+    };
+
+    notification.style.cssText = `
             background: rgba(11, 16, 32, 0.95);
             backdrop-filter: blur(10px);
             border: 2px solid ${colors[type]};
@@ -681,8 +695,8 @@ class TerraMiner {
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             animation: slideInRight 0.3s ease;
         `;
-        
-        notification.innerHTML = `
+
+    notification.innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="color: ${colors[type]}; font-size: 1.2rem;">
                     ${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️'}
@@ -690,68 +704,68 @@ class TerraMiner {
                 <span>${message}</span>
             </div>
         `;
-        
-        document.getElementById('notification-container').appendChild(notification);
-        
-        // Auto-remove after 4 seconds
-        setTimeout(() => {
-            notification.style.animation = 'slideOutRight 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 4000);
-    }
+
+    document.getElementById('notification-container').appendChild(notification);
+
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      notification.style.animation = 'slideOutRight 0.3s ease';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 4000);
+  }
 }
 
 // Global functions for interface interaction
 function launchTerraMiner() {
-    const container = document.getElementById('terra-miner-container');
-    if (container) {
-        container.style.display = 'flex';
-        container.style.position = 'fixed';
-        container.style.top = '0';
-        container.style.left = '0';
-        container.style.width = '100vw';
-        container.style.height = '100vh';
-        container.style.zIndex = '9999';
-        document.body.style.overflow = 'hidden';
-        
-        // Animate in
-        container.style.opacity = '0';
-        container.style.transform = 'scale(0.95)';
-        
-        setTimeout(() => {
-            container.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-            container.style.opacity = '1';
-            container.style.transform = 'scale(1)';
-        }, 50);
-    }
+  const container = document.getElementById('terra-miner-container');
+  if (container) {
+    container.style.display = 'flex';
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '100vw';
+    container.style.height = '100vh';
+    container.style.zIndex = '9999';
+    document.body.style.overflow = 'hidden';
+
+    // Animate in
+    container.style.opacity = '0';
+    container.style.transform = 'scale(0.95)';
+
+    setTimeout(() => {
+      container.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      container.style.opacity = '1';
+      container.style.transform = 'scale(1)';
+    }, 50);
+  }
 }
 
 function closeTerraMinorModal() {
-    const container = document.getElementById('terra-miner-container');
-    if (container) {
-        container.style.opacity = '0';
-        container.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            container.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }, 300);
-    }
+  const container = document.getElementById('terra-miner-container');
+  if (container) {
+    container.style.opacity = '0';
+    container.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      container.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }, 300);
+  }
 }
 
 function startMining() {
-    if (window.terraMiner) {
-        window.terraMiner.startMining();
-    }
+  if (window.terraMiner) {
+    window.terraMiner.startMining();
+  }
 }
 
 function generateReport() {
-    if (window.terraMiner) {
-        window.terraMiner.generateReport();
-    }
+  if (window.terraMiner) {
+    window.terraMiner.generateReport();
+  }
 }
 
 // Add animation styles
@@ -816,11 +830,11 @@ document.head.insertAdjacentHTML('beforeend', animationStyles);
 
 // Initialize Terra-Miner when DOM is ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        window.terraMiner = new TerraMiner();
-    });
-} else {
+  document.addEventListener('DOMContentLoaded', () => {
     window.terraMiner = new TerraMiner();
+  });
+} else {
+  window.terraMiner = new TerraMiner();
 }
 
 console.log('🔍 Terra-Miner AI system loaded - 264 agents ready for data mining operations');

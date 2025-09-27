@@ -2,17 +2,17 @@
 
 /**
  * Terrafusion OS 1.0 Workspace Companion Agent Launcher
- * 
+ *
  * This script automatically launches your AI companion when you start working
  * in the Terrafusion OS 1.0 workspace.
- * 
+ *
  * Features:
  * - Automatic workspace detection
  * - Intelligent agent activation
  * - Interactive command interface
  * - Natural language processing
  * - Real-time workspace monitoring
- * 
+ *
  * Usage:
  *   npm run companion          # Launch the companion agent
  *   npm run companion:dev      # Launch in development mode
@@ -34,7 +34,7 @@ const CONFIG = {
   autoActivate: true,
   verboseMode: true,
   developmentMode: process.env['NODE_ENV'] === 'development',
-  quietMode: process.argv.includes('--quiet') || process.argv.includes('-q')
+  quietMode: process.argv.includes('--quiet') || process.argv.includes('-q'),
 };
 
 /**
@@ -56,7 +56,7 @@ class CompanionLauncher {
    */
   private setupAgentEventListeners(): void {
     // Agent activation events
-    this.agent.on('agent-activated', (data) => {
+    this.agent.on('agent-activated', data => {
       if (!CONFIG.quietMode) {
         console.log('🎉 Agent activated successfully!');
         console.log(`📊 Active capabilities: ${data.capabilities.length}`);
@@ -64,7 +64,7 @@ class CompanionLauncher {
     });
 
     // File change events
-    this.agent.on('file-changed', (change) => {
+    this.agent.on('file-changed', change => {
       if (CONFIG.verboseMode && !CONFIG.quietMode) {
         console.log(`📝 File change: ${change.filename} (${change.action})`);
       }
@@ -84,7 +84,7 @@ class CompanionLauncher {
     });
 
     // Agent deactivation events
-    this.agent.on('agent-deactivated', (data) => {
+    this.agent.on('agent-deactivated', data => {
       if (!CONFIG.quietMode) {
         console.log('🔄 Agent deactivated');
         console.log(`⏱️ Session duration: ${Math.round(data.sessionDuration / 1000)}s`);
@@ -137,7 +137,9 @@ class CompanionLauncher {
       console.error(`Current: ${workspaceName}`);
       console.error(`Path: ${currentDir}`);
       console.error('');
-      console.error('Please run this script from the Terrafusion OS 1.0 workspace directory or a subdirectory within it.');
+      console.error(
+        'Please run this script from the Terrafusion OS 1.0 workspace directory or a subdirectory within it.'
+      );
       return false;
     }
 
@@ -148,18 +150,22 @@ class CompanionLauncher {
       'README.md',
       'backend',
       'frontend',
-      'modules'
+      'modules',
     ];
 
     // If we're in a subdirectory, check the parent directory
-    const checkDir = currentDir.includes(CONFIG.workspaceName) && workspaceName !== CONFIG.workspaceName 
-      ? currentDir.substring(0, currentDir.indexOf(CONFIG.workspaceName) + CONFIG.workspaceName.length)
-      : currentDir;
+    const checkDir =
+      currentDir.includes(CONFIG.workspaceName) && workspaceName !== CONFIG.workspaceName
+        ? currentDir.substring(
+            0,
+            currentDir.indexOf(CONFIG.workspaceName) + CONFIG.workspaceName.length
+          )
+        : currentDir;
 
     this.workspaceRoot = checkDir;
 
     const missingFiles = essentialFiles.filter(file => !fs.existsSync(path.join(checkDir, file)));
-    
+
     if (missingFiles.length > 0) {
       console.error('❌ Missing essential Terrafusion files:');
       missingFiles.forEach(file => console.error(`   - ${file}`));
@@ -238,7 +244,6 @@ class CompanionLauncher {
       }
 
       this.isRunning = true;
-
     } catch (error) {
       console.error('❌ Failed to launch companion agent:', error);
       process.exit(1);
@@ -252,14 +257,13 @@ class CompanionLauncher {
     try {
       // Create and start the interactive interface
       this.interface = new InteractiveCommandInterface(this.agent);
-      
+
       if (!CONFIG.quietMode) {
         console.log('🎯 Launching interactive command interface...');
       }
 
       // Start the interface
       await this.interface.start();
-
     } catch (error) {
       console.error('❌ Failed to launch interactive interface:', error);
       throw error;
@@ -273,7 +277,7 @@ class CompanionLauncher {
     CONFIG.developmentMode = true;
     CONFIG.verboseMode = true;
     CONFIG.quietMode = false;
-    
+
     console.log('🔧 Launching in development mode...');
     await this.launch();
   }
@@ -284,7 +288,7 @@ class CompanionLauncher {
   public async launchQuiet(): Promise<void> {
     CONFIG.quietMode = true;
     CONFIG.verboseMode = false;
-    
+
     console.log('🔇 Launching in quiet mode...');
     await this.launch();
   }
@@ -308,7 +312,6 @@ class CompanionLauncher {
 
       this.isRunning = false;
       console.log('🛑 Companion agent stopped');
-
     } catch (error) {
       console.error('❌ Error stopping companion agent:', error);
     }
@@ -322,7 +325,7 @@ class CompanionLauncher {
       isRunning: this.isRunning,
       agentActive: this.agent.isAgentActive(),
       interfaceActive: this.interface !== null,
-      config: CONFIG
+      config: CONFIG,
     };
   }
 }
@@ -335,7 +338,7 @@ async function main(): Promise<void> {
 
   // Handle command line arguments
   const args = process.argv.slice(2);
-  
+
   if (args.includes('--dev') || args.includes('-d')) {
     await launcher.launchDev();
   } else if (args.includes('--quiet') || args.includes('-q')) {

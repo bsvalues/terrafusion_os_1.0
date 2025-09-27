@@ -1,6 +1,6 @@
 class TerraFusionApp {
   constructor() {
-    this.apiUrl = 'http://localhost:3000/api';
+    this.apiUrl = 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api';
     this.statusCheckInterval = 5000;
     this.metricsUpdateInterval = 2000;
     this.retryAttempts = 3;
@@ -33,16 +33,16 @@ class TerraFusionApp {
     };
     this.charts = {};
     this.commands = {
-      'process': { icon: 'play', shortcut: 'Ctrl+Enter', action: () => this.processData() },
-      'format': { icon: 'code', shortcut: 'Ctrl+Shift+F', action: () => this.formatInput() },
-      'clear': { icon: 'trash', shortcut: 'Ctrl+Delete', action: () => this.clearInput() },
-      'save': { icon: 'save', shortcut: 'Ctrl+S', action: () => this.saveToFile() },
-      'load': { icon: 'folder-open', shortcut: 'Ctrl+O', action: () => this.loadFromFile() },
-      'undo': { icon: 'undo', shortcut: 'Ctrl+Z', action: () => this.undo() },
-      'redo': { icon: 'redo', shortcut: 'Ctrl+Shift+Z', action: () => this.redo() },
-      'settings': { icon: 'cog', shortcut: 'Ctrl+,', action: () => this.toggleSettings() },
-      'theme': { icon: 'moon', shortcut: 'Ctrl+T', action: () => this.toggleTheme() },
-      'help': { icon: 'question-circle', shortcut: 'F1', action: () => this.showHelp() }
+      process: { icon: 'play', shortcut: 'Ctrl+Enter', action: () => this.processData() },
+      format: { icon: 'code', shortcut: 'Ctrl+Shift+F', action: () => this.formatInput() },
+      clear: { icon: 'trash', shortcut: 'Ctrl+Delete', action: () => this.clearInput() },
+      save: { icon: 'save', shortcut: 'Ctrl+S', action: () => this.saveToFile() },
+      load: { icon: 'folder-open', shortcut: 'Ctrl+O', action: () => this.loadFromFile() },
+      undo: { icon: 'undo', shortcut: 'Ctrl+Z', action: () => this.undo() },
+      redo: { icon: 'redo', shortcut: 'Ctrl+Shift+Z', action: () => this.redo() },
+      settings: { icon: 'cog', shortcut: 'Ctrl+,', action: () => this.toggleSettings() },
+      theme: { icon: 'moon', shortcut: 'Ctrl+T', action: () => this.toggleTheme() },
+      help: { icon: 'question-circle', shortcut: 'F1', action: () => this.showHelp() }
     };
 
     this.pluginManager = new PluginManager();
@@ -139,11 +139,15 @@ class TerraFusionApp {
     this.elements.pluginButton.addEventListener('click', () => this.togglePlugins());
     document.getElementById('formatButton').addEventListener('click', () => this.formatInput());
     document.getElementById('clearButton').addEventListener('click', () => this.clearInput());
-    document.getElementById('saveTemplateButton').addEventListener('click', () => this.saveTemplate());
+    document
+      .getElementById('saveTemplateButton')
+      .addEventListener('click', () => this.saveTemplate());
     document.getElementById('exportButton').addEventListener('click', () => this.exportResults());
     document.getElementById('compareButton').addEventListener('click', () => this.compareResults());
     document.getElementById('historyButton').addEventListener('click', () => this.toggleHistory());
-    document.getElementById('transformButton').addEventListener('click', () => this.transformData());
+    document
+      .getElementById('transformButton')
+      .addEventListener('click', () => this.transformData());
     document.getElementById('validateButton').addEventListener('click', () => this.validateData());
     document.getElementById('analyzeButton').addEventListener('click', () => this.analyzeData());
     this.elements.inputType.addEventListener('change', () => this.updateEditorMode());
@@ -172,21 +176,26 @@ class TerraFusionApp {
 
   filterCommands() {
     const query = this.elements.commandInput.value.toLowerCase();
-    const filteredCommands = Object.entries(this.commands).filter(([key, cmd]) => 
-      key.toLowerCase().includes(query) || cmd.shortcut.toLowerCase().includes(query)
+    const filteredCommands = Object.entries(this.commands).filter(
+      ([key, cmd]) =>
+        key.toLowerCase().includes(query) || cmd.shortcut.toLowerCase().includes(query)
     );
     this.renderCommandList(filteredCommands);
   }
 
   renderCommandList(commands) {
-    this.elements.commandList.innerHTML = commands.map(([key, cmd], index) => `
+    this.elements.commandList.innerHTML = commands
+      .map(
+        ([key, cmd], index) => `
       <div class="command-item ${index === 0 ? 'selected' : ''}" data-command="${key}">
         <i class="fas fa-${cmd.icon}" aria-hidden="true"></i>
         <span>${key}</span>
         <span class="command-shortcut">${cmd.shortcut}</span>
       </div>
-    `).join('');
-    this.elements.commandList.querySelectorAll('.command-item').forEach(item => {
+    `
+      )
+      .join('');
+    this.elements.commandList.querySelectorAll('.command-item').forEach((item) => {
       item.addEventListener('click', () => {
         const command = this.commands[item.dataset.command];
         if (command) {
@@ -199,7 +208,7 @@ class TerraFusionApp {
 
   navigateCommands(direction) {
     const items = this.elements.commandList.querySelectorAll('.command-item');
-    const currentIndex = Array.from(items).findIndex(item => item.classList.contains('selected'));
+    const currentIndex = Array.from(items).findIndex((item) => item.classList.contains('selected'));
     const newIndex = (currentIndex + direction + items.length) % items.length;
     items[currentIndex]?.classList.remove('selected');
     items[newIndex]?.classList.add('selected');
@@ -275,12 +284,12 @@ class TerraFusionApp {
 
   checkApiStatus() {
     fetch(`${this.apiUrl}/status`)
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         this.elements.systemStatus.textContent = data.status;
         this.elements.systemStatus.parentElement.dataset.status = data.status;
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('API status check failed:', error);
         this.elements.systemStatus.textContent = 'Disconnected';
         this.elements.systemStatus.parentElement.dataset.status = 'error';
@@ -293,15 +302,15 @@ class TerraFusionApp {
 
   updateMetrics() {
     fetch(`${this.apiUrl}/metrics`)
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         this.updateMetricDisplay('cpuUsage', data.cpuUsage);
         this.updateMetricDisplay('memoryUsage', data.memoryUsage);
         this.updateMetricDisplay('responseTime', data.responseTime);
         this.updateMetricDisplay('securityStatus', data.securityStatus);
         this.updateCharts(data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Metrics update failed:', error);
       });
   }
@@ -357,13 +366,15 @@ class TerraFusionApp {
         type: 'line',
         data: {
           labels: [],
-          datasets: [{
-            label: config.label,
-            data: [],
-            borderColor: config.color,
-            tension: 0.4,
-            fill: false
-          }]
+          datasets: [
+            {
+              label: config.label,
+              data: [],
+              borderColor: config.color,
+              tension: 0.4,
+              fill: false
+            }
+          ]
         },
         options: {
           responsive: true,
@@ -416,7 +427,7 @@ class TerraFusionApp {
     try {
       const now = Date.now();
       if (now - this.rateLimiter.lastRequest < this.rateLimiter.minInterval) {
-        await new Promise(resolve => 
+        await new Promise((resolve) =>
           setTimeout(resolve, this.rateLimiter.minInterval - (now - this.rateLimiter.lastRequest))
         );
       }
@@ -466,7 +477,7 @@ class TerraFusionApp {
         if (attempts === this.retryAttempts) {
           throw error;
         }
-        await new Promise(resolve => setTimeout(resolve, this.retryDelay * attempts));
+        await new Promise((resolve) => setTimeout(resolve, this.retryDelay * attempts));
       }
     }
   }
@@ -509,12 +520,16 @@ class TerraFusionApp {
         return `<span class="tree-value">${obj}</span>`;
       }
 
-      const items = Object.entries(obj).map(([key, value]) => `
+      const items = Object.entries(obj)
+        .map(
+          ([key, value]) => `
         <div class="tree-item" style="margin-left: ${level * 20}px">
           <span class="tree-key">${key}:</span>
           ${createNode(value, level + 1)}
         </div>
-      `).join('');
+      `
+        )
+        .join('');
 
       return `<div class="tree-container">${items}</div>`;
     };
@@ -528,14 +543,14 @@ class TerraFusionApp {
     }
 
     const headers = Object.keys(data[0] || {});
-    const rows = data.map(item => 
-      `<tr>${headers.map(header => `<td>${item[header]}</td>`).join('')}</tr>`
-    ).join('');
+    const rows = data
+      .map((item) => `<tr>${headers.map((header) => `<td>${item[header]}</td>`).join('')}</tr>`)
+      .join('');
 
     return `
       <table class="data-table">
         <thead>
-          <tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr>
+          <tr>${headers.map((header) => `<th>${header}</th>`).join('')}</tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>
@@ -555,11 +570,13 @@ class TerraFusionApp {
       type: 'bar',
       data: {
         labels: Object.keys(data),
-        datasets: [{
-          label: 'Values',
-          data: Object.values(data),
-          backgroundColor: '#3b82f6'
-        }]
+        datasets: [
+          {
+            label: 'Values',
+            data: Object.values(data),
+            backgroundColor: '#3b82f6'
+          }
+        ]
       },
       options: {
         responsive: true,
@@ -679,7 +696,9 @@ class TerraFusionApp {
   renderHistory() {
     const history = JSON.parse(localStorage.getItem('history') || '[]');
     const historyList = document.getElementById('historyList');
-    historyList.innerHTML = history.map(item => `
+    historyList.innerHTML = history
+      .map(
+        (item) => `
       <div class="history-item" data-timestamp="${item.timestamp}">
         <div class="history-content">${item.input.substring(0, 100)}${item.input.length > 100 ? '...' : ''}</div>
         <div class="history-meta">
@@ -689,12 +708,14 @@ class TerraFusionApp {
           </button>
         </div>
       </div>
-    `).join('');
+    `
+      )
+      .join('');
   }
 
   loadFromHistory(timestamp) {
     const history = JSON.parse(localStorage.getItem('history') || '[]');
-    const item = history.find(h => h.timestamp === timestamp);
+    const item = history.find((h) => h.timestamp === timestamp);
     if (item) {
       this.editor.setValue(item.input);
       this.toggleHistory();
@@ -706,8 +727,7 @@ class TerraFusionApp {
     document.body.dataset.theme = isDark ? 'light' : 'dark';
     this.settings.theme = isDark ? 'light' : 'dark';
     this.saveSettings();
-    this.elements.themeToggle.querySelector('i').className = 
-      `fas fa-${isDark ? 'moon' : 'sun'}`;
+    this.elements.themeToggle.querySelector('i').className = `fas fa-${isDark ? 'moon' : 'sun'}`;
   }
 
   updateEditorMode() {
@@ -762,9 +782,13 @@ class TerraFusionApp {
     const helpContent = `
       <h3>Keyboard Shortcuts</h3>
       <ul>
-        ${Object.entries(this.commands).map(([key, cmd]) => `
+        ${Object.entries(this.commands)
+          .map(
+            ([key, cmd]) => `
           <li><strong>${cmd.shortcut}</strong> - ${key}</li>
-        `).join('')}
+        `
+          )
+          .join('')}
       </ul>
       <h3>Features</h3>
       <ul>
@@ -885,18 +909,22 @@ class TerraFusionApp {
         size: new Blob([input]).size,
         properties: Object.keys(data).length,
         depth: this.getObjectDepth(data),
-        hasArrays: Array.isArray(data) || Object.values(data).some(v => Array.isArray(v)),
+        hasArrays: Array.isArray(data) || Object.values(data).some((v) => Array.isArray(v)),
         hasObjects: typeof data === 'object' && data !== null,
-        hasNulls: Object.values(data).some(v => v === null),
-        hasUndefined: Object.values(data).some(v => v === undefined)
+        hasNulls: Object.values(data).some((v) => v === null),
+        hasUndefined: Object.values(data).some((v) => v === undefined)
       };
 
       this.elements.resultsContainer.innerHTML = `
         <h3>Data Analysis</h3>
         <ul>
-          ${Object.entries(analysis).map(([key, value]) => `
+          ${Object.entries(analysis)
+            .map(
+              ([key, value]) => `
             <li><strong>${key}:</strong> ${value}</li>
-          `).join('')}
+          `
+            )
+            .join('')}
         </ul>
       `;
     } catch (error) {
@@ -906,7 +934,7 @@ class TerraFusionApp {
 
   getObjectDepth(obj) {
     if (typeof obj !== 'object' || obj === null) return 0;
-    return 1 + Math.max(...Object.values(obj).map(v => this.getObjectDepth(v)));
+    return 1 + Math.max(...Object.values(obj).map((v) => this.getObjectDepth(v)));
   }
 
   showNotification(message, type = 'info') {
@@ -928,14 +956,14 @@ class TerraFusionApp {
     }
 
     const headers = Object.keys(data[0]);
-    const rows = data.map(obj => headers.map(header => obj[header]));
-    return [headers, ...rows].map(row => row.join(',')).join('\n');
+    const rows = data.map((obj) => headers.map((header) => obj[header]));
+    return [headers, ...rows].map((row) => row.join(',')).join('\n');
   }
 
   csvToJson(csv) {
     const lines = csv.split('\n');
     const headers = lines[0].split(',');
-    return lines.slice(1).map(line => {
+    return lines.slice(1).map((line) => {
       const values = line.split(',');
       return headers.reduce((obj, header, index) => {
         obj[header] = values[index];
@@ -957,11 +985,7 @@ class TerraFusionApp {
 
   async loadPlugins() {
     // Load plugins from the plugins directory
-    const pluginFiles = [
-      'data-transform.js',
-      'data-validate.js',
-      'data-analyze.js'
-    ];
+    const pluginFiles = ['data-transform.js', 'data-validate.js', 'data-analyze.js'];
 
     const plugins = [];
     for (const file of pluginFiles) {
@@ -984,7 +1008,7 @@ class TerraFusionApp {
     if (roomId) {
       const userId = localStorage.getItem('userId') || this.generateUserId();
       const username = localStorage.getItem('username') || 'Anonymous';
-      
+
       this.collaborationManager.connect(roomId, userId, username);
     }
   }
@@ -1011,4 +1035,4 @@ class TerraFusionApp {
 }
 
 // Initialize the application
-const app = new TerraFusionApp(); 
+const app = new TerraFusionApp();

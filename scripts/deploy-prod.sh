@@ -129,7 +129,7 @@ az containerapp create \
     --registry-server "$DOCKER_REGISTRY" \
     --registry-username "$ACR_USERNAME" \
     --registry-password "$ACR_PASSWORD" \
-    --target-port 8080 \
+    --target-port \${{TF_ADMIN_PORT:-8080}} \
     --ingress external \
     --env-vars \
         "ASPNETCORE_ENVIRONMENT=Production" \
@@ -155,11 +155,11 @@ az containerapp create \
     --registry-server "$DOCKER_REGISTRY" \
     --registry-username "$ACR_USERNAME" \
     --registry-password "$ACR_PASSWORD" \
-    --target-port 3001 \
+    --target-port \${{TF_ADMIN_PORT:-8080}} \
     --ingress external \
     --env-vars \
         "NODE_ENV=production" \
-        "PORT=3001" \
+        "PORT=\${{TF_SHELL_PORT:-3001}}" \
         "API_BASE_URL=https://$BACKEND_URL" \
         "REDIS_URL=$REDIS_CONNECTION_STRING" \
     --cpu 1.0 \
@@ -179,7 +179,7 @@ az containerapp create \
     --registry-server "$DOCKER_REGISTRY" \
     --registry-username "$ACR_USERNAME" \
     --registry-password "$ACR_PASSWORD" \
-    --target-port 8080 \
+    --target-port \${{TF_ADMIN_PORT:-8080}} \
     --ingress external \
     --env-vars \
         "REACT_APP_API_BASE_URL=https://$BACKEND_URL" \

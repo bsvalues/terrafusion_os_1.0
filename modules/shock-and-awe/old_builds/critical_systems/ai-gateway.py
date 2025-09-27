@@ -15,43 +15,43 @@ logging.basicConfig(level=logging.INFO)
 AI_SERVICES = {
     'terrainsight': {
         'name': 'TerraInsight',
-        'url': 'http://localhost:3001',
+        'url': 'http://localhost:\${{TF_SHELL_PORT:-3001}}',
         'description': 'Main geospatial property intelligence agent',
         'status': 'active'
     },
     'gispro': {
         'name': 'GISPRO',
-        'url': 'http://localhost:5010',
+        'url': 'http://localhost:\${{TF_SHELL_PORT:-3001}}',
         'description': 'GIS Professional Tools',
         'status': 'active'
     },
     'assessor': {
         'name': 'TerraFusionAssessor',
-        'url': 'http://localhost:5012',
+        'url': 'http://localhost:\${{TF_SHELL_PORT:-3001}}',
         'description': 'Property Assessment Agent',
         'status': 'active'
     },
     'terraagent': {
         'name': 'TerraAgent',
-        'url': 'http://localhost:5013',
+        'url': 'http://localhost:\${{TF_SHELL_PORT:-3001}}',
         'description': 'Core Terra Agent',
         'status': 'active'
     },
     'terraflow': {
         'name': 'TerraFlow',
-        'url': 'http://localhost:5014',
+        'url': 'http://localhost:\${{TF_SHELL_PORT:-3001}}',
         'description': 'Workflow Management Agent',
         'status': 'active'
     },
     'terralevy': {
         'name': 'TerraLevy',
-        'url': 'http://localhost:5015',
+        'url': 'http://localhost:\${{TF_SHELL_PORT:-3001}}',
         'description': 'Tax/Levy Analysis Agent',
         'status': 'active'
     },
     'terraminer': {
         'name': 'TerraMiner',
-        'url': 'http://localhost:5016',
+        'url': 'http://localhost:\${{TF_SHELL_PORT:-3001}}',
         'description': 'Data Mining Agent',
         'status': 'active'
     }
@@ -240,7 +240,7 @@ if __name__ == '__main__':
     print("✅ Service Discovery: ENABLED")
     print("✅ Health Monitoring: ENABLED")
     print("✅ Request Proxying: ENABLED")
-    print("🌐 Dashboard: http://localhost:8000")
-    print("📡 API Endpoint: http://localhost:8000/api")
+    print("🌐 Dashboard: http://localhost:\${{TF_SHELL_PORT:-3001}}")
+    print("📡 API Endpoint: http://localhost:\${{TF_SHELL_PORT:-3001}}/api")
     
-    app.run(host='0.0.0.0', port=8001, debug=False)
+    app.run(host='0.0.0.0', port=\${{TF_SERVICE_8001_PORT:-8001}}, debug=False)

@@ -88,10 +88,10 @@ class StrategicRoadmapMasterController:
 
         ecosystem_components = {
             "core_applications": [
-                {"name": "TerraFusion Build", "port": 5000, "status": "monitoring"},
-                {"name": "TerraFlow", "port": 5001, "status": "monitoring"},
-                {"name": "TerraFusionSync", "port": 5002, "status": "monitoring"},
-                {"name": "TerraAgent", "port": 5003, "status": "monitoring"}
+                {"name": "TerraFusion Build", "port": \${{TF_API_PORT:-5000}}, "status": "monitoring"},
+                {"name": "TerraFlow", "port": \${{TF_API_PORT:-5000}}, "status": "monitoring"},
+                {"name": "TerraFusionSync", "port": \${{TF_API_PORT:-5000}}, "status": "monitoring"},
+                {"name": "TerraAgent", "port": \${{TF_API_PORT:-5000}}, "status": "monitoring"}
             ],
             "strategic_phases": [
                 {"name": "Phase 1 Force Multipliers", "process": "phase_1"},

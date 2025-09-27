@@ -66,7 +66,7 @@ services:
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:${TF_API_PORT:-5046}
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=terrafusion_dev;Username=postgres;Password=postgres
       - Redis__ConnectionString=redis:6379
       - AI__SwarmSize=1008
@@ -75,7 +75,7 @@ services:
       - Government__CountySeat=Prosser
       - Logging__LogLevel__Default=Information
     ports:
-      - "5000:5000"
+      - "5000:${TF_API_PORT:-5046}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -88,7 +88,7 @@ services:
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${TF_STATIC_PORT:-8080}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -102,16 +102,16 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - REACT_APP_API_BASE_URL=http://localhost:5000/api
+      - REACT_APP_API_BASE_URL=http://localhost:${TF_STATIC_PORT:-8080}/api
       - REACT_APP_COUNTY_NAME=Benton County
       - REACT_APP_STATE=Washington
       - REACT_APP_COUNTY_SEAT=Prosser
       - REACT_APP_AI_SWARM_SIZE=1008
       - CHOKIDAR_USEPOLLING=true
       - WDS_SOCKET_HOST=localhost
-      - WDS_SOCKET_PORT=3000
+      - WDS_SOCKET_PORT=\${{TF_FRONTEND_PORT:-3000}}
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     depends_on:
       - backend
     volumes:
@@ -121,7 +121,7 @@ services:
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:${TF_STATIC_PORT:-8080}"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -143,7 +143,7 @@ services:
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:${TF_STATIC_PORT:-8080}/_cluster/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -180,7 +180,7 @@ services:
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:${TF_STATIC_PORT:-8080}/minio/health/live"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -228,7 +228,7 @@ services:
       - COUNTY_CONTEXT=Benton County, Washington
       - COUNTY_SEAT=Prosser
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
     depends_on:
       - postgres
       - redis
@@ -287,7 +287,7 @@ EXPOSE 5000 5001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:5000/health || exit 1
+  CMD curl -f http://localhost:${TF_STATIC_PORT:-8080}/health || exit 1
 
 # Development startup
 CMD ["dotnet", "watch", "run", "--project", "TerraFusion.API/TerraFusion.API.csproj"]
@@ -331,7 +331,7 @@ EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:3000 || exit 1
+  CMD curl -f http://localhost:${TF_STATIC_PORT:-8080} || exit 1
 
 # Development startup with hot reload
 CMD ["npm", "start"]
@@ -349,11 +349,11 @@ events {
 
 http {
     upstream backend {
-        server backend:5000;
+        server backend:${TF_API_PORT:-5046};
     }
     
     upstream frontend {
-        server frontend:3000;
+        server frontend:${TF_FRONTEND_PORT:-3102};
     }
 
     # Government Security Headers
@@ -564,29 +564,29 @@ cmd_start() {
     sleep 30
     
     # Health checks
-    if curl -f http://localhost:3000 >/dev/null 2>&1; then
-        log_success "Frontend is running at http://localhost:3000"
+    if curl -f http://localhost:${TF_STATIC_PORT:-8080} >/dev/null 2>&1; then
+        log_success "Frontend is running at http://localhost:${TF_STATIC_PORT:-8080}"
     else
         log_warning "Frontend may still be starting up"
     fi
     
-    if curl -f http://localhost:5000/health >/dev/null 2>&1; then
-        log_success "Backend API is running at http://localhost:5000"
+    if curl -f http://localhost:${TF_STATIC_PORT:-8080}/health >/dev/null 2>&1; then
+        log_success "Backend API is running at http://localhost:${TF_STATIC_PORT:-8080}"
     else
         log_warning "Backend API may still be starting up"
     fi
     
     log_success "Development environment started successfully!"
     log_info "Access points:"
-    log_info "  • Frontend: http://localhost:3000"
-    log_info "  • Backend API: http://localhost:5000"
-    log_info "  • Database: localhost:5432"
-    log_info "  • Redis: localhost:6379"
-    log_info "  • Elasticsearch: http://localhost:9200"
-    log_info "  • Kibana: http://localhost:5601"
-    log_info "  • MinIO: http://localhost:9001"
-    log_info "  • Mailhog: http://localhost:8025"
-    log_info "  • AI Swarm: http://localhost:8080"
+    log_info "  • Frontend: http://localhost:${TF_STATIC_PORT:-8080}"
+    log_info "  • Backend API: http://localhost:${TF_STATIC_PORT:-8080}"
+    log_info "  • Database: localhost:${TF_STATIC_PORT:-8080}"
+    log_info "  • Redis: localhost:${TF_STATIC_PORT:-8080}"
+    log_info "  • Elasticsearch: http://localhost:${TF_STATIC_PORT:-8080}"
+    log_info "  • Kibana: http://localhost:${TF_STATIC_PORT:-8080}"
+    log_info "  • MinIO: http://localhost:${TF_STATIC_PORT:-8080}"
+    log_info "  • Mailhog: http://localhost:${TF_STATIC_PORT:-8080}"
+    log_info "  • AI Swarm: http://localhost:${TF_STATIC_PORT:-8080}"
 }
 
 cmd_stop() {
@@ -648,14 +648,14 @@ cmd_status() {
     log_info "Service Health Checks:"
     
     # Frontend
-    if curl -f http://localhost:3000 >/dev/null 2>&1; then
+    if curl -f http://localhost:${TF_STATIC_PORT:-8080} >/dev/null 2>&1; then
         log_success "Frontend: ✅ Healthy"
     else
         log_error "Frontend: ❌ Unhealthy"
     fi
     
     # Backend
-    if curl -f http://localhost:5000/health >/dev/null 2>&1; then
+    if curl -f http://localhost:${TF_STATIC_PORT:-8080}/health >/dev/null 2>&1; then
         log_success "Backend: ✅ Healthy"
     else
         log_error "Backend: ❌ Unhealthy"

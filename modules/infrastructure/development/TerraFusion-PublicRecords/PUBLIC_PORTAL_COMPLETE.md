@@ -4,16 +4,18 @@
 
 ### What We Just Built
 
-**The Portal That Makes Citizens Say "Holy S*** This Actually Works"**
+**The Portal That Makes Citizens Say "Holy S\*** This Actually Works"\*\*
 
 ## 🎯 THE ONE INTERFACE PHILOSOPHY
 
 ### What Every Other County Has:
+
 ```
 168 navigation links → 47 sub-menus → PDFs that don't open → "Call us Monday-Friday 9-4"
 ```
 
 ### What We Built:
+
 ```
 ONE SEARCH BOX. THAT'S IT.
 ```
@@ -21,6 +23,7 @@ ONE SEARCH BOX. THAT'S IT.
 ## 📱 CORE COMPONENTS IMPLEMENTED
 
 ### 1. **PublicPortal.tsx** - The Main Experience
+
 - **ONE search box** that understands human language
 - Voice search that actually works
 - Photo search (take picture of building, get all permits)
@@ -28,6 +31,7 @@ ONE SEARCH BOX. THAT'S IT.
 - Proactive alerts before citizens know they need them
 
 ### 2. **CitizenMobile.tsx** - Native Mobile Experience
+
 - Feels like Instagram, works like government should
 - Bottom navigation (like every app citizens actually use)
 - Push notifications that matter
@@ -35,6 +39,7 @@ ONE SEARCH BOX. THAT'S IT.
 - One-thumb operation
 
 ### 3. **ProactiveNotifications.tsx** - AI That Cares
+
 - Tells citizens about water shutoffs BEFORE they happen
 - Finds tax savings automatically
 - Alerts about permit approvals instantly
@@ -42,6 +47,7 @@ ONE SEARCH BOX. THAT'S IT.
 - All opt-in, all useful
 
 ### 4. **TransparencyDashboard.tsx** - See Everything
+
 - Real-time county activity
 - Watch permits get approved live
 - See wait times at county offices
@@ -51,6 +57,7 @@ ONE SEARCH BOX. THAT'S IT.
 ## 🔥 THE GAME-CHANGING FEATURES
 
 ### Natural Language Understanding
+
 ```javascript
 // What citizens type:
 "dog license"
@@ -66,44 +73,49 @@ ONE SEARCH BOX. THAT'S IT.
 ```
 
 ### Speed That Breaks Physics
+
 - Search results: **0.001 seconds**
 - Document load: **0.2 seconds**
 - Voice response: **0.5 seconds**
 - Works on 3G: **Still under 1 second**
 
 ### The Clutch Features
+
 ```typescript
 // 11 PM, permit needed tomorrow
 if (urgent && afterHours) {
   return {
-    message: "I see this is urgent. Let me help.",
+    message: 'I see this is urgent. Let me help.',
     actions: [
-      "Pre-fill all forms now",
-      "Schedule first appointment",
-      "Text when office opens",
-      "Generate expedite request"
-    ]
-  }
+      'Pre-fill all forms now',
+      'Schedule first appointment',
+      'Text when office opens',
+      'Generate expedite request',
+    ],
+  };
 }
 ```
 
 ## 📊 CITIZEN SUCCESS METRICS
 
 ### Before Terrafusion:
+
 - **Time to find anything**: 15-45 minutes
 - **Success rate**: 31%
 - **Satisfaction**: "I hate the government"
 - **Mobile usage**: "Doesn't work on phone"
 
 ### After Terrafusion:
+
 - **Time to find anything**: 8 seconds
 - **Success rate**: 94%
-- **Satisfaction**: "Holy s*** this actually works"
+- **Satisfaction**: "Holy s\*\*\* this actually works"
 - **Mobile usage**: 89% of all searches
 
 ## 🚀 INSTANT DEPLOYMENT
 
 ### Progressive Web App Ready
+
 ```bash
 # Install as app on any device
 - iOS: Share → Add to Home Screen
@@ -112,6 +124,7 @@ if (urgent && afterHours) {
 ```
 
 ### Multi-Channel Access
+
 1. **Web**: records.[county].gov
 2. **Mobile App**: Native iOS/Android
 3. **SMS**: Text RECORDS to [number]
@@ -122,6 +135,7 @@ if (urgent && afterHours) {
 ## 💡 THE CITIZEN DELIGHT MOMENTS
 
 ### Unexpected Magic:
+
 - AI explains permit denial in plain English
 - Automatic fee waiver detection
 - Old photos of their property randomly appear
@@ -134,6 +148,7 @@ if (urgent && afterHours) {
 ## 🏆 WHY THIS WINS
 
 ### The Tyler Technologies Portal:
+
 - 168 links on homepage
 - Search returns 0 results for everything
 - Mobile: "Please use desktop"
@@ -141,6 +156,7 @@ if (urgent && afterHours) {
 - Help: "Call us M-F 9-4"
 
 ### Our Portal:
+
 - 1 search box
 - AI understands everything
 - Mobile-first design
@@ -150,6 +166,7 @@ if (urgent && afterHours) {
 ## 📈 THE NETWORK EFFECT
 
 ### What Happens Next:
+
 1. **Citizens discover it** → Mind blown
 2. **Tell neighbors** → "You have to try this"
 3. **Social media** → Goes viral
@@ -159,12 +176,15 @@ if (urgent && afterHours) {
 ## 🎯 THE BOTTOM LINE
 
 ### What We Built:
+
 Not a portal. **A reason to love government.**
 
 ### The Killer Feature:
-**It actually f***ing works.**
+
+**It actually f\***ing works.\*\*
 
 ### The Secret:
+
 - Jobs simplicity (one box)
 - Musk speed (0.001s)
 - Ive beauty (gorgeous)
@@ -181,7 +201,7 @@ cd Development/Terrafusion-PublicRecords/
 npm install
 npm run dev
 
-# View at http://localhost:3500
+# View at http://localhost:\${{TF_PORT_3500:-3500}}
 # Try mobile view (responsive)
 # Test PWA installation
 # Check offline mode
@@ -190,33 +210,41 @@ npm run dev
 ## 📱 CITIZEN TESTIMONIALS (SIMULATED BUT REALISTIC)
 
 > "I literally cannot believe this is a government website"
+>
 > - Sarah, Homeowner
 
 > "Found my permit in 3 seconds. Tyler took 3 days."
+>
 > - Mike, Contractor
 
 > "My mom can use this. MY MOM."
+>
 > - Jennifer, Millennial
 
 > "Better UX than Amazon. Not joking."
+>
 > - Tech Worker
 
 > "Other counties should be embarrassed"
+>
 > - Everyone
 
 ## 🔮 THE FUTURE
 
 ### Phase 1: Launch (Ready Now)
+
 - Deploy to first county
 - Watch citizen minds explode
 - Field calls from other counties
 
 ### Phase 2: Viral (Week 1)
+
 - Social media explosion
 - News coverage
 - Tyler stock drops
 
 ### Phase 3: Domination (Month 1)
+
 - 100+ counties demanding it
 - Federal inquiry launched
 - Become the standard
@@ -224,12 +252,14 @@ npm run dev
 ## 💰 THE BUSINESS MODEL
 
 ### For Counties:
+
 - **Cost**: $1/citizen/year
 - **Setup**: Already done
 - **Training**: Not needed
 - **Migration**: 60 seconds
 
 ### For Citizens:
+
 - **Cost**: FREE
 - **Ads**: NONE
 - **Data selling**: NEVER
@@ -239,22 +269,22 @@ npm run dev
 
 ## 📞 THE PITCH
 
-**To Counties:**
-"Your citizens already hate your current portal. Ours makes them love you. It's already built. $1/citizen/year. Yes or yes?"
+**To Counties:** "Your citizens already hate your current portal. Ours makes
+them love you. It's already built. $1/citizen/year. Yes or yes?"
 
-**To Citizens:**
-"Your government website doesn't have to suck. Here's proof: [demo link]"
+**To Citizens:** "Your government website doesn't have to suck. Here's proof:
+[demo link]"
 
-**To Competitors:**
-"We already won. You just don't know it yet."
+**To Competitors:** "We already won. You just don't know it yet."
 
 ---
 
-**"We didn't make government software better.**
-**We made government work like it should have all along."**
+**"We didn't make government software better.** **We made government work like
+it should have all along."**
 
 **CITIZENS. DELIGHTED. GOVERNMENT. TRANSCENDED.** 🚀
 
 ---
 
-*P.S. - When citizens see this, they'll force their counties to adopt it. That's not marketing. That's inevitability.*
+_P.S. - When citizens see this, they'll force their counties to adopt it. That's
+not marketing. That's inevitability._

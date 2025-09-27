@@ -37,8 +37,8 @@ chmod +x LAUNCH_DYNASTY.sh
 ```
 
 **That's it!** Your dynasty is now running at:
-- 🌐 **Dashboard**: http://localhost:8090/championship_ui.html
-- 🔧 **API**: http://localhost:8000
+- 🌐 **Dashboard**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html
+- 🔧 **API**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}
 - 📊 **Status**: `./LAUNCH_DYNASTY.sh status`
 
 ---
@@ -165,9 +165,9 @@ Watch the **Live Terminal** to see intelligent routing decisions in real-time!
 ./LAUNCH_DYNASTY.sh restart    # Restart everything
 
 # Dashboard URLs
-http://localhost:8090/championship_ui.html  # Main dashboard
-http://localhost:8000/status                # System status API
-http://localhost:8080/stats                 # Router statistics
+http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html  # Main dashboard
+http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/status                # System status API
+http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/stats                 # Router statistics
 ```
 
 ---
@@ -202,7 +202,7 @@ BENTON_ASSESSOR_KEY=your-benton-county-key-here
 Your system continuously improves itself:
 ```bash
 # Trigger manual evolution
-curl -X POST http://localhost:8083/evolution/trigger
+curl -X POST http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/evolution/trigger
 
 # Watch evolution in action
 tail -f logs/evolution.log
@@ -212,7 +212,7 @@ tail -f logs/evolution.log
 Next-generation performance acceleration:
 ```bash
 # Check quantum advantages
-curl http://localhost:8084/quantum/status
+curl http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/quantum/status
 
 # Monitor quantum speedup
 grep "quantum_advantage" logs/orchestrator.log
@@ -364,7 +364,7 @@ chmod +x LAUNCH_DYNASTY.sh
 ./LAUNCH_DYNASTY.sh start
 
 # Open the championship dashboard
-# http://localhost:8090/championship_ui.html
+# http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html
 ```
 
 ### 🎯 **Next Steps**

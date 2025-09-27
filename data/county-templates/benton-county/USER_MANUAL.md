@@ -47,7 +47,7 @@ cd BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK
 ```
 
 ### Step 2: Open the Dashboard
-Visit: **http://localhost:8090/championship_ui.html**
+Visit: **http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html**
 
 ### Step 3: Start Querying!
 Type any property-related question and watch the magic happen!
@@ -367,7 +367,7 @@ Track system improvement over time:
 #### **Built-in Diagnostics**
 - Use **🏥 Health Check** for system overview
 - Monitor **Live Terminal** for real-time issues
-- Check **System Status** at http://localhost:8000/status
+- Check **System Status** at http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/status
 
 #### **Log Analysis**
 ```bash
@@ -506,9 +506,9 @@ You now have complete mastery over the most advanced AI property intelligence sy
 
 ## 📞 SUPPORT & RESOURCES
 
-- **Dashboard**: http://localhost:8090/championship_ui.html
+- **Dashboard**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html
 - **API Docs**: [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
-- **System Status**: http://localhost:8000/status
+- **System Status**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/status
 - **Logs**: `./LAUNCH_DYNASTY.sh logs`
 - **Health Check**: Click 🏥 in dashboard
 

@@ -1,0 +1,87 @@
+Dialed in. I extended **v5** with the exact extras we discussed—env profiles, a county theme switcher with persistence, and richer MSW data for Explain-Mode—so your co-pilot has zero wiggle room.
+
+# ⬇️ Grab the extended pack
+
+* **ZIP:** [experience-suite-v5-extended.zip](sandbox:/mnt/data/experience-suite-v5-extended.zip)
+* **TAR.GZ:** [experience-suite-v5-extended.tar.gz](sandbox:/mnt/data/experience-suite-v5-extended.tar.gz)
+
+# What’s new (and where)
+
+## 1) Helmfile environment profiles (issuer toggle)
+
+* `helmfile-apply-env.sh` — run `./helmfile-apply-env.sh staging` or `production`.
+* `helmfile.d/envs/staging.yaml` / `helmfile.d/envs/production.yaml` — per-env values for the umbrella chart.
+* `charts/terrafusion-umbrella/values.staging.yaml`
+
+  ```yaml
+  ingress:
+    host: staging.app.terrafusion.gov
+    clusterIssuer: letsencrypt-staging
+  ```
+* `charts/terrafusion-umbrella/values.production.yaml`
+
+  ```yaml
+  ingress:
+    host: app.terrafusion.gov
+    clusterIssuer: letsencrypt-prod
+  ```
+* Ingress template now reads the issuer dynamically:
+  `charts/terrafusion-umbrella/templates/ingress.yaml`
+
+  ```yaml
+  annotations:
+    cert-manager.io/cluster-issuer: "{{ .Values.ingress.clusterIssuer | default "letsencrypt-prod" }}"
+  ```
+
+## 2) County Theme Switcher (UI + API persistence)
+
+* **Context:** `ui/src/brand/countyContext.tsx`
+* **Switcher (Admin):** `ui/src/admin/CountyThemeSwitcher.tsx`
+* **Admin shell (with switcher):** `ui/src/admin/AppAdmin.extended.tsx`
+* **Runtime loader:** already in v5 `ui/src/brand/countyTheme.ts`
+* **Backend:** `backend/TerraFusion.API/Controllers/Admin/CountyThemeController.cs`
+
+  * `GET /api/admin/county-theme` returns current theme
+  * `POST /api/admin/county-theme` sets it
+* **Optional Postgres DDL:** `ops/db/county_theme.sql` (tenant-aware table)
+
+The switcher updates the theme instantly with `applyCountyTheme()` and persists to the server (fallback: localStorage).
+
+## 3) Rich MSW harness for Explain-Mode
+
+* **Explain-Mode handlers:** `ui/src/mocks/explainModeHandlers.ts`
+  Mocks the endpoints your executive dashboards expect:
+
+  * `/api/ide/velocity`, `/api/ide/pipeline`
+  * `/api/testing/summary`
+  * `/api/pipeline/status`
+  * `/api/executive/overview`
+* **Merged handlers:** `ui/src/mocks/handlers.ts`
+* **Docs:** `ui/src/mocks/README.explain.md`
+
+Use with the v5 dev entry (`ui/src/main.dev.tsx`) so MSW starts before React renders.
+
+---
+
+# Quick use
+
+```bash
+# 1) Unpack
+unzip experience-suite-v5-extended.zip -d ./v5x
+cd v5x/experience-suite-v5-extended
+
+# 2) Deploy with env profile
+./helmfile-apply-env.sh staging
+# …or
+./helmfile-apply-env.sh production
+
+# 3) Enable the CountyTheme switcher admin shell
+# Route <AppAdmin.extended/> at /admin (replace your admin mount if desired)
+
+# 4) Local offline dev with Explain-Mode
+npm i -D msw
+npx msw init public --save
+# ensure dev entry uses ui/src/main.dev.tsx
+```
+
+If you want me to also wire the **server-side DB persistence** end-to-end (repository + EF migration + read/write multi-tenant scoping) or add a **tenant-aware theming cookie** for CDN caching keys, say the word and I’ll add a v5.1 patch pack the same way.

@@ -1,0 +1,22 @@
+[package]
+name = "performance-monitor"
+version = "1.0.0"
+edition = "2021"
+authors = ["TerraFusion cOS Team"]
+description = "Elite System Monitoring for Government Deployment"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+uuid = { version = "1.0", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+sysinfo = "0.29"
+prometheus = "0.13"
+
+[lib]
+name = "performance_monitor"
+path = "src/lib.rs"

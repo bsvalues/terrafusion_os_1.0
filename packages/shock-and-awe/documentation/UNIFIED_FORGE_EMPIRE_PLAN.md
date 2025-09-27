@@ -1,4 +1,5 @@
 # 🔥 THE UNIFIED FORGE EMPIRE PLAN
+
 ## Complete System Architecture with All Agents, MCPs & Frontend Power
 
 ---
@@ -6,6 +7,7 @@
 ## 🎯 THE MASTER VISION
 
 ### Core Architecture:
+
 ```
 SINGLE BACKEND (Source of Truth)
          ↓
@@ -23,6 +25,7 @@ UNIFIED MARKETPLACE (30% Commission)
 ## 🏗️ THE FORGE REBRAND STRATEGY
 
 ### Keep Separate But Powerful:
+
 1. **CostForge AI** ← (TerraBuild/TerraFusionBuild) ✅
 2. **TerraFlow** → Keep (Workflow is unique)
 3. **TerraAgent** → Keep (AI Assistant brand)
@@ -39,6 +42,7 @@ UNIFIED MARKETPLACE (30% Commission)
 14. **WebAuditTracker** → Keep (Compliance)
 
 ### COMBINE These Three into ONE:
+
 **TerraFusion IDE** = TerraFusionPlayground + TFPlatformDev + IDE Components
 
 ---
@@ -46,6 +50,7 @@ UNIFIED MARKETPLACE (30% Commission)
 ## 🤖 AGENT & MCP INVENTORY
 
 ### System-Level Agents (Found):
+
 ```python
 SUPREME_ORCHESTRATOR = {
     "location": "/ai_systems/orchestrator.py",
@@ -55,7 +60,7 @@ SUPREME_ORCHESTRATOR = {
 
 FIELD_GENERAL = {
     "location": "/ai-swarms/",
-    "name": "Brady", 
+    "name": "Brady",
     "role": "Tactical execution"
 }
 
@@ -68,37 +73,27 @@ COORDINATORS = {
 ```
 
 ### Per-App Agents to Verify:
+
 ```javascript
 const AppAgents = {
-    "CostForge": [
-        "CostPredictionAgent",
-        "ValuationAgent",
-        "MarketAnalysisAgent",
-        "ComparisonAgent"
-    ],
-    "TerraAgent": [
-        "ConversationalAgent",
-        "TaskExecutionAgent",
-        "LearningAgent"
-    ],
-    "TerraFlow": [
-        "WorkflowAgent",
-        "AutomationAgent",
-        "ProcessAgent"
-    ],
-    "GISPro": [
-        "MappingAgent",
-        "SpatialAnalysisAgent",
-        "LayerAgent"
-    ]
-    // ... each app has 3-5 specialized agents
+  CostForge: [
+    'CostPredictionAgent',
+    'ValuationAgent',
+    'MarketAnalysisAgent',
+    'ComparisonAgent',
+  ],
+  TerraAgent: ['ConversationalAgent', 'TaskExecutionAgent', 'LearningAgent'],
+  TerraFlow: ['WorkflowAgent', 'AutomationAgent', 'ProcessAgent'],
+  GISPro: ['MappingAgent', 'SpatialAnalysisAgent', 'LayerAgent'],
+  // ... each app has 3-5 specialized agents
 };
 ```
 
 ### MCP (Model Context Protocol) Systems:
+
 ```yaml
 Global_MCPs:
-  location: "/mcp_real/"
+  location: '/mcp_real/'
   components:
     - mcp_core.py
     - mcp_agent_manager.py
@@ -111,11 +106,11 @@ Per_App_MCPs:
     - cost_prediction_mcp
     - valuation_context_mcp
     - market_analysis_mcp
-  
+
   TerraFlow:
     - workflow_context_mcp
     - automation_rules_mcp
-  
+
   GISPro:
     - spatial_context_mcp
     - layer_management_mcp
@@ -126,41 +121,43 @@ Per_App_MCPs:
 ## 🎮 TERRAFUSION IDE CONSOLIDATION
 
 ### Combine These Three:
+
 1. **TerraFusionPlayground** (`/TerraFusionPlayground-main/`)
 2. **TFPlatformDev** (`Ziped from D/Replit Ziped/TFPlatformDev (1).zip`)
 3. **TerraFusion IDE components** (scattered in various locations)
 
 ### Into ONE Development Environment:
+
 ```javascript
 const TerraFusionIDE = {
-    name: "TerraFusion IDE",
-    purpose: "Complete development environment for all modules",
-    
-    features: {
-        playground: {
-            from: "TerraFusionPlayground",
-            provides: "Live testing environment"
-        },
-        platform: {
-            from: "TFPlatformDev",
-            provides: "Platform development tools"
-        },
-        ide: {
-            from: "Various IDE components",
-            provides: "Code editing, debugging, deployment"
-        }
+  name: 'TerraFusion IDE',
+  purpose: 'Complete development environment for all modules',
+
+  features: {
+    playground: {
+      from: 'TerraFusionPlayground',
+      provides: 'Live testing environment',
     },
-    
-    capabilities: [
-        "Hot module reloading",
-        "Agent development toolkit",
-        "MCP configuration",
-        "API testing",
-        "Database management",
-        "Performance profiling",
-        "Plugin development",
-        "30% marketplace integration"
-    ]
+    platform: {
+      from: 'TFPlatformDev',
+      provides: 'Platform development tools',
+    },
+    ide: {
+      from: 'Various IDE components',
+      provides: 'Code editing, debugging, deployment',
+    },
+  },
+
+  capabilities: [
+    'Hot module reloading',
+    'Agent development toolkit',
+    'MCP configuration',
+    'API testing',
+    'Database management',
+    'Performance profiling',
+    'Plugin development',
+    '30% marketplace integration',
+  ],
 };
 ```
 
@@ -171,6 +168,7 @@ const TerraFusionIDE = {
 ### Frontend Capabilities We MUST Preserve:
 
 #### From CostForge/TerraBuild:
+
 - [ ] AI Cost Prediction UI
 - [ ] Cost Matrix Manager
 - [ ] PDF/Excel Export
@@ -179,24 +177,28 @@ const TerraFusionIDE = {
 - [ ] Confidence Score Display
 
 #### From TerraFlow:
+
 - [ ] Workflow Builder Canvas
 - [ ] Automation Rules Engine
 - [ ] Cross-App Integration UI
 - [ ] Process Monitoring Dashboard
 
 #### From TerraAgent:
+
 - [ ] Chat Interface
 - [ ] Task Management UI
 - [ ] Learning Progress Display
 - [ ] Agent Status Monitor
 
 #### From GISPro:
+
 - [ ] Interactive Map Canvas
 - [ ] Layer Management
 - [ ] Spatial Analysis Tools
 - [ ] Property Boundaries
 
 #### From TerraInsight:
+
 - [ ] Analytics Dashboards
 - [ ] Trend Charts
 - [ ] Predictive Models UI
@@ -207,6 +209,7 @@ const TerraFusionIDE = {
 ## 🚀 EXECUTION PRIORITY
 
 ### PHASE 1: CostForge Consolidation (TODAY)
+
 ```bash
 # 1. Unify all CostForge/TerraBuild versions
 # 2. Integrate all agents and MCPs
@@ -215,6 +218,7 @@ const TerraFusionIDE = {
 ```
 
 ### PHASE 2: IDE Consolidation (TOMORROW)
+
 ```bash
 # 1. Extract TFPlatformDev
 # 2. Merge with TerraFusionPlayground
@@ -223,6 +227,7 @@ const TerraFusionIDE = {
 ```
 
 ### PHASE 3: Agent/MCP Integration (DAY 3)
+
 ```bash
 # 1. Inventory all agents per app
 # 2. Wire MCPs to each module
@@ -231,6 +236,7 @@ const TerraFusionIDE = {
 ```
 
 ### PHASE 4: Frontend Preservation (DAY 4)
+
 ```bash
 # 1. Catalog ALL UI components
 # 2. Ensure nothing is lost
@@ -243,6 +249,7 @@ const TerraFusionIDE = {
 ## 🎯 CRITICAL SUCCESS FACTORS
 
 ### What We MUST Have:
+
 1. **Single Backend** - One source of truth ✅
 2. **All Frontends** - Every UI feature preserved ✅
 3. **All Agents** - Every AI agent integrated ✅
@@ -251,6 +258,7 @@ const TerraFusionIDE = {
 6. **30% Commission** - Marketplace revenue ✅
 
 ### What We DON'T Need:
+
 - Duplicate backends (remove)
 - Redundant agents (consolidate)
 - Conflicting MCPs (unify)
@@ -306,6 +314,7 @@ const TerraFusionIDE = {
 ## 🏆 THE ENDGAME
 
 When complete, we have:
+
 1. **14 Powerful Modules** - Each with unique purpose
 2. **Unified IDE** - For development and testing
 3. **Complete Agent Army** - AI at every level
@@ -324,7 +333,8 @@ When complete, we have:
 
 2. **MCP Sharing**: Should modules share MCPs or keep separate?
 
-3. **IDE Priority**: Build IDE first for easier development, or last after modules work?
+3. **IDE Priority**: Build IDE first for easier development, or last after
+   modules work?
 
 4. **Testing Strategy**: Test each module individually or as integrated system?
 

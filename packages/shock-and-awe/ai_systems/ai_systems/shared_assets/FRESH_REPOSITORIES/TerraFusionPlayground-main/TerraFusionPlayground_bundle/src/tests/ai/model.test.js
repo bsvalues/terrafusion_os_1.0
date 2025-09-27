@@ -41,7 +41,9 @@ describe('AIModel', () => {
     it('should handle initialization failure', async () => {
       mockSecurityManager.validateEnvironment.mockRejectedValue(new Error('Validation failed'));
 
-      await expect(aiModel.initialize()).rejects.toThrow('Model initialization failed: Validation failed');
+      await expect(aiModel.initialize()).rejects.toThrow(
+        'Model initialization failed: Validation failed'
+      );
       expect(aiModel.isInitialized).toBe(false);
     });
   });
@@ -93,4 +95,4 @@ describe('AIModel', () => {
       expect(mockPerformanceMonitor.stopMonitoring).toHaveBeenCalled();
     });
   });
-}); 
+});

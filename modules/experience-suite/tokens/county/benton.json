@@ -1,0 +1,16 @@
+{
+  "color": {
+    "accent": {
+      "value": "#00B3A4",
+      "attributes": {
+        "county": "Benton"
+      }
+    },
+    "hero": {
+      "value": "#0A1E2E",
+      "attributes": {
+        "county": "Benton"
+      }
+    }
+  }
+}

@@ -25,10 +25,10 @@ systemctl start grafana
 
 # Verify all systems
 echo "✅ Verifying systems..."
-curl -s http://localhost:11434/api/tags > /dev/null && echo "✅ Ollama: READY" || echo "❌ Ollama: DOWN"
+curl -s http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/api/tags > /dev/null && echo "✅ Ollama: READY" || echo "❌ Ollama: DOWN"
 redis-cli ping > /dev/null && echo "✅ Redis: READY" || echo "❌ Redis: DOWN"
-curl -s http://localhost:9090 > /dev/null && echo "✅ Prometheus: READY" || echo "❌ Prometheus: DOWN"
-curl -s http://localhost:3000 > /dev/null && echo "✅ Grafana: READY" || echo "❌ Grafana: DOWN"
+curl -s http://localhost:\${{TF_PROMETHEUS_PORT:-9090}} > /dev/null && echo "✅ Prometheus: READY" || echo "❌ Prometheus: DOWN"
+curl -s http://localhost:\${{TF_PROMETHEUS_PORT:-9090}} > /dev/null && echo "✅ Grafana: READY" || echo "❌ Grafana: DOWN"
 
 # Load balancer check
 echo "🔄 Checking load balancer..."

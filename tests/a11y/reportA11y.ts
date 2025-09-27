@@ -1,4 +1,4 @@
-import fs from 'node:fs'; 
+import fs from 'node:fs';
 import path from 'node:path';
 
 export function writeA11yViolations(count: number) {

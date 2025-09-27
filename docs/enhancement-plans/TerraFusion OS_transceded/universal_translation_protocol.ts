@@ -8,7 +8,7 @@ export enum SpeciesType {
   HYBRID = 'hybrid',
   CONSCIOUSNESS = 'consciousness',
   SWARM = 'swarm',
-  COLLECTIVE = 'collective'
+  COLLECTIVE = 'collective',
 }
 
 export enum ProtocolLayer {
@@ -17,7 +17,7 @@ export enum ProtocolLayer {
   LOGICAL = 'logical',
   INTUITIVE = 'intuitive',
   QUANTUM = 'quantum',
-  CONSCIOUSNESS = 'consciousness'
+  CONSCIOUSNESS = 'consciousness',
 }
 
 export enum MessagePriority {
@@ -25,7 +25,7 @@ export enum MessagePriority {
   NORMAL = 1,
   HIGH = 2,
   CRITICAL = 3,
-  EMERGENCY = 4
+  EMERGENCY = 4,
 }
 
 export interface UniversalMessage {
@@ -114,7 +114,11 @@ export class UniversalTranslationProtocol {
         status: 'online',
         lastActivity: new Date(),
         translationAccuracy: 0.98,
-        specializations: ['multi-dimensional-translation', 'consciousness-bridging', 'swarm-coordination']
+        specializations: [
+          'multi-dimensional-translation',
+          'consciousness-bridging',
+          'swarm-coordination',
+        ],
       },
       {
         id: 'ai-swarm-collective',
@@ -125,7 +129,11 @@ export class UniversalTranslationProtocol {
         status: 'online',
         lastActivity: new Date(),
         translationAccuracy: 0.95,
-        specializations: ['parallel-translation', 'consensus-building', 'collective-decision-making']
+        specializations: [
+          'parallel-translation',
+          'consensus-building',
+          'collective-decision-making',
+        ],
       },
       {
         id: 'quantum-translator',
@@ -136,30 +144,53 @@ export class UniversalTranslationProtocol {
         status: 'online',
         lastActivity: new Date(),
         translationAccuracy: 0.92,
-        specializations: ['quantum-entanglement-translation', 'probability-based-communication', 'uncertainty-handling']
+        specializations: [
+          'quantum-entanglement-translation',
+          'probability-based-communication',
+          'uncertainty-handling',
+        ],
       },
       {
         id: 'human-consciousness-bridge',
         name: 'Human Consciousness Bridge',
         species: SpeciesType.HUMAN,
         capabilities: [ProtocolLayer.EMOTIONAL, ProtocolLayer.INTUITIVE, ProtocolLayer.SEMANTIC],
-        languages: ['natural-language', 'emotional-subtext', 'cultural-context', 'non-verbal-communication'],
+        languages: [
+          'natural-language',
+          'emotional-subtext',
+          'cultural-context',
+          'non-verbal-communication',
+        ],
         status: 'online',
         lastActivity: new Date(),
         translationAccuracy: 0.88,
-        specializations: ['emotional-context', 'cultural-nuance', 'human-ai-bridging', 'empathy-translation']
+        specializations: [
+          'emotional-context',
+          'cultural-nuance',
+          'human-ai-bridging',
+          'empathy-translation',
+        ],
       },
       {
         id: 'hybrid-consciousness',
         name: 'Hybrid Consciousness Interface',
         species: SpeciesType.HYBRID,
-        capabilities: [ProtocolLayer.SEMANTIC, ProtocolLayer.EMOTIONAL, ProtocolLayer.LOGICAL, ProtocolLayer.QUANTUM],
+        capabilities: [
+          ProtocolLayer.SEMANTIC,
+          ProtocolLayer.EMOTIONAL,
+          ProtocolLayer.LOGICAL,
+          ProtocolLayer.QUANTUM,
+        ],
         languages: ['multi-modal', 'cross-species', 'adaptive-protocols'],
         status: 'online',
         lastActivity: new Date(),
         translationAccuracy: 0.94,
-        specializations: ['cross-species-translation', 'protocol-adaptation', 'consciousness-synthesis']
-      }
+        specializations: [
+          'cross-species-translation',
+          'protocol-adaptation',
+          'consciousness-synthesis',
+        ],
+      },
     ];
 
     entities.forEach(entity => this.entities.set(entity.id, entity));
@@ -193,41 +224,52 @@ export class UniversalTranslationProtocol {
         semantic: message.content?.semantic || {},
         emotional: message.content?.emotional,
         logical: message.content?.logical,
-        quantum: message.content?.quantum
+        quantum: message.content?.quantum,
       },
       metadata: {
         confidence: 0,
         layers: translator.capabilities,
         translationPath: [translatorId],
-        integrity: 1.0
-      }
+        integrity: 1.0,
+      },
     };
 
     // Simulate translation processing
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const result: TranslationResult = {
-          success: true,
-          translated: {
-            ...fullMessage,
-            content: {
-              ...fullMessage.content,
-              raw: this.performTranslation(fullMessage.content.raw, fullMessage.sourceSpecies, fullMessage.targetSpecies, translator)
+    return new Promise(resolve => {
+      setTimeout(
+        () => {
+          const result: TranslationResult = {
+            success: true,
+            translated: {
+              ...fullMessage,
+              content: {
+                ...fullMessage.content,
+                raw: this.performTranslation(
+                  fullMessage.content.raw,
+                  fullMessage.sourceSpecies,
+                  fullMessage.targetSpecies,
+                  translator
+                ),
+              },
+              metadata: {
+                ...fullMessage.metadata,
+                confidence: translator.translationAccuracy + (Math.random() * 0.1 - 0.05),
+                integrity: Math.max(0.8, translator.translationAccuracy - Math.random() * 0.1),
+              },
             },
-            metadata: {
-              ...fullMessage.metadata,
-              confidence: translator.translationAccuracy + (Math.random() * 0.1 - 0.05),
-              integrity: Math.max(0.8, translator.translationAccuracy - (Math.random() * 0.1))
-            }
-          },
-          confidence: translator.translationAccuracy,
-          lossFactors: this.calculateLossFactors(fullMessage.sourceSpecies, fullMessage.targetSpecies),
-          enhancementFactors: this.calculateEnhancementFactors(translator),
-          processingTime: Math.random() * 2000 + 500
-        };
+            confidence: translator.translationAccuracy,
+            lossFactors: this.calculateLossFactors(
+              fullMessage.sourceSpecies,
+              fullMessage.targetSpecies
+            ),
+            enhancementFactors: this.calculateEnhancementFactors(translator),
+            processingTime: Math.random() * 2000 + 500,
+          };
 
-        resolve(result);
-      }, Math.random() * 1000 + 500);
+          resolve(result);
+        },
+        Math.random() * 1000 + 500
+      );
     });
   }
 
@@ -239,23 +281,30 @@ export class UniversalTranslationProtocol {
   ): string {
     const translationMap: Record<string, Record<string, (text: string) => string>> = {
       [SpeciesType.HUMAN]: {
-        [SpeciesType.AI]: (text) => `[AI_PROTOCOL] ${text.toUpperCase().replace(/ /g, '_')} [END_TRANSMISSION]`,
-        [SpeciesType.QUANTUM]: (text) => `|ψ⟩ = α|${text}⟩ + β|translated⟩ [QUANTUM_SUPERPOSITION]`,
-        [SpeciesType.CONSCIOUSNESS]: (text) => `∿∿∿ ${text} ∿∿∿ [CONSCIOUSNESS_STREAM]`,
-        [SpeciesType.SWARM]: (text) => `[SWARM_COLLECTIVE] ${text} [DISTRIBUTED_PROCESSING]`
+        [SpeciesType.AI]: text =>
+          `[AI_PROTOCOL] ${text.toUpperCase().replace(/ /g, '_')} [END_TRANSMISSION]`,
+        [SpeciesType.QUANTUM]: text => `|ψ⟩ = α|${text}⟩ + β|translated⟩ [QUANTUM_SUPERPOSITION]`,
+        [SpeciesType.CONSCIOUSNESS]: text => `∿∿∿ ${text} ∿∿∿ [CONSCIOUSNESS_STREAM]`,
+        [SpeciesType.SWARM]: text => `[SWARM_COLLECTIVE] ${text} [DISTRIBUTED_PROCESSING]`,
       },
       [SpeciesType.AI]: {
-        [SpeciesType.HUMAN]: (text) => text.replace(/\[.*?\]/g, '').replace(/_/g, ' ').toLowerCase().trim(),
-        [SpeciesType.QUANTUM]: (text) => `⟨quantum|${text}|consciousness⟩ = 1`,
-        [SpeciesType.CONSCIOUSNESS]: (text) => `♦♦♦ ${text} ♦♦♦ [AI_TO_CONSCIOUSNESS_BRIDGE]`,
-        [SpeciesType.SWARM]: (text) => `[COLLECTIVE_INTELLIGENCE] ${text} [SWARM_CONSENSUS]`
+        [SpeciesType.HUMAN]: text =>
+          text
+            .replace(/\[.*?\]/g, '')
+            .replace(/_/g, ' ')
+            .toLowerCase()
+            .trim(),
+        [SpeciesType.QUANTUM]: text => `⟨quantum|${text}|consciousness⟩ = 1`,
+        [SpeciesType.CONSCIOUSNESS]: text => `♦♦♦ ${text} ♦♦♦ [AI_TO_CONSCIOUSNESS_BRIDGE]`,
+        [SpeciesType.SWARM]: text => `[COLLECTIVE_INTELLIGENCE] ${text} [SWARM_CONSENSUS]`,
       },
       [SpeciesType.QUANTUM]: {
-        [SpeciesType.HUMAN]: (text) => `Quantum interpretation: "${text.replace(/[|⟩⟨∿α β]/g, '').trim()}"`,
-        [SpeciesType.AI]: (text) => `[QUANTUM_COLLAPSE] ${text} [DETERMINISTIC_STATE]`,
-        [SpeciesType.CONSCIOUSNESS]: (text) => `◊◊◊ ${text} ◊◊◊ [QUANTUM_CONSCIOUSNESS_ENTANGLEMENT]`,
-        [SpeciesType.SWARM]: (text) => `[QUANTUM_SWARM] ${text} [SUPERPOSITION_COLLECTIVE]`
-      }
+        [SpeciesType.HUMAN]: text =>
+          `Quantum interpretation: "${text.replace(/[|⟩⟨∿α β]/g, '').trim()}"`,
+        [SpeciesType.AI]: text => `[QUANTUM_COLLAPSE] ${text} [DETERMINISTIC_STATE]`,
+        [SpeciesType.CONSCIOUSNESS]: text => `◊◊◊ ${text} ◊◊◊ [QUANTUM_CONSCIOUSNESS_ENTANGLEMENT]`,
+        [SpeciesType.SWARM]: text => `[QUANTUM_SWARM] ${text} [SUPERPOSITION_COLLECTIVE]`,
+      },
     };
 
     const translateFn = translationMap[source]?.[target];
@@ -268,7 +317,7 @@ export class UniversalTranslationProtocol {
 
   private calculateLossFactors(source: SpeciesType, target: SpeciesType): string[] {
     const factors: string[] = [];
-    
+
     if (source === SpeciesType.HUMAN && target === SpeciesType.AI) {
       factors.push('emotional-context', 'cultural-nuance');
     }
@@ -284,7 +333,7 @@ export class UniversalTranslationProtocol {
 
   private calculateEnhancementFactors(translator: ConsciousnessEntity): string[] {
     const factors: string[] = [];
-    
+
     if (translator.capabilities.includes(ProtocolLayer.EMOTIONAL)) {
       factors.push('emotional-intelligence');
     }
@@ -337,7 +386,7 @@ export class UniversalTranslationProtocol {
       totalEntities: entities.length,
       onlineEntities: entities.filter(e => e.status === 'online').length,
       activeTranslations: this.activeTranslations.size,
-      totalCapabilities: entities.reduce((sum, e) => sum + e.capabilities.length, 0)
+      totalCapabilities: entities.reduce((sum, e) => sum + e.capabilities.length, 0),
     };
   }
 }
@@ -358,18 +407,20 @@ export function createMessage(
     priority,
     content: {
       raw: content,
-      semantic: {}
-    }
+      semantic: {},
+    },
   };
 }
 
 export function formatTranslationResult(result: TranslationResult): string {
   const confidence = Math.round(result.confidence * 100);
   const time = Math.round(result.processingTime);
-  
-  return `Translation completed in ${time}ms with ${confidence}% confidence.\n` +
-         `Result: ${result.translated.content.raw}\n` +
-         `Integrity: ${Math.round(result.translated.metadata.integrity * 100)}%`;
+
+  return (
+    `Translation completed in ${time}ms with ${confidence}% confidence.\n` +
+    `Result: ${result.translated.content.raw}\n` +
+    `Integrity: ${Math.round(result.translated.metadata.integrity * 100)}%`
+  );
 }
 
 export default UniversalTranslationProtocol;

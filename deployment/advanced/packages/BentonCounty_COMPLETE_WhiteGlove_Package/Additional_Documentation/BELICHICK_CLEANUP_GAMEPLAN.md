@@ -1,4 +1,5 @@
 # 🏈 BELICHICK CODEBASE CLEANUP GAME PLAN
+
 **Operation**: Championship Codebase Reorganization  
 **Date**: January 10, 2025  
 **Orchestrator**: Claude (Supreme Auditor)  
@@ -9,6 +10,7 @@
 ## 📋 SITUATIONAL ASSESSMENT
 
 ### Current State: "The Mess"
+
 - **185+ MD files** → Reduced to 69, but still chaotic
 - **Duplicate systems** → Multiple versions of same functionality
 - **Scattered components** → No clear organization
@@ -17,6 +19,7 @@
 - **No clear build path** → Can't find what actually runs
 
 ### Target State: "Championship Organization"
+
 - **5 Core Directories** → Clear separation of concerns
 - **Production Ready** → One-command build and deploy
 - **Archive System** → Indexed, searchable, retrievable
@@ -53,40 +56,41 @@ PHASE 3: VERIFICATION (Hour 4)
 ### FIRST QUARTER: Deep Analysis & Categorization
 
 #### Play 1: Codebase Reconnaissance
+
 ```javascript
 const CATEGORIES = {
   ESSENTIAL: [
     // Core application files
-    'src-tauri/',           // Rust backend
-    'src/',                 // React frontend
-    'commercial-core/',     // Migrated commercial
-    'modules/',            // Hot-swappable modules
-    'swarm/',              // AI orchestration
-    
+    'src-tauri/', // Rust backend
+    'src/', // React frontend
+    'commercial-core/', // Migrated commercial
+    'modules/', // Hot-swappable modules
+    'swarm/', // AI orchestration
+
     // Critical configs
     'package.json',
     'Cargo.toml',
     'tauri.conf.json',
     'vite.config.ts',
-    'tsconfig.json'
+    'tsconfig.json',
   ],
-  
+
   KEEP_ORGANIZED: [
     // Active development
-    'apps/',               // 14 government apps
-    'scripts/',            // Build & deploy scripts
-    'data/',              // Databases and test data
-    'infrastructure/',     // Docker, CI/CD
-    
+    'apps/', // 14 government apps
+    'scripts/', // Build & deploy scripts
+    'data/', // Databases and test data
+    'infrastructure/', // Docker, CI/CD
+
     // Documentation
     'README.md',
     'CLAUDE.md',
     'docs/',
-    
+
     // Daily work
-    'TerraFusion_Daily_Work/'
+    'TerraFusion_Daily_Work/',
   ],
-  
+
   ARCHIVE_INDEXED: [
     // Old documentation (keep but archive)
     '*_REPORT.md',
@@ -94,42 +98,43 @@ const CATEGORIES = {
     '*_COMPLETE.md',
     '*_VICTORY.md',
     '*_ACHIEVEMENT.md',
-    
+
     // Test results
     'test-results-*/',
     '*_audit_*.json',
     '*_build_report_*.json',
-    
+
     // Old scripts
     '*.sh.old',
     '*.ps1',
     '*.bat',
-    
+
     // Temporary files
     '*.tmp',
     '*.log',
-    '*.pid'
+    '*.pid',
   ],
-  
+
   DELETE_SAFE: [
     // Build artifacts
     'node_modules/',
     'target/',
     'dist/',
     '.next/',
-    
+
     // Cache files
     '.cache/',
     '*.cache',
-    
+
     // OS files
     '.DS_Store',
-    'Thumbs.db'
-  ]
+    'Thumbs.db',
+  ],
 };
 ```
 
 #### Play 2: Dependency Mapping
+
 ```bash
 # Identify what actually needs what
 DEPENDENCY_MAP = {
@@ -155,6 +160,7 @@ DEPENDENCY_MAP = {
 ### SECOND QUARTER: New Structure Creation
 
 #### Play 3: Championship Directory Structure
+
 ```
 championship/
 ├── 🎯 CORE/                     # Essential runtime files
@@ -209,6 +215,7 @@ championship/
 ```
 
 #### Play 4: Archive Index System
+
 ```json
 // ARCHIVE/index.json
 {
@@ -246,6 +253,7 @@ championship/
 ### THIRD QUARTER: Execution Scripts
 
 #### Play 5: Cleanup Execution Script
+
 ```bash
 #!/bin/bash
 # cleanup-championship.sh
@@ -340,7 +348,7 @@ const index = {
       }))
     };
     index.total_files += files.length;
-    
+
     // Build search index
     files.forEach(f => {
       index.search_index[f.toLowerCase()] = cat + '/' + f;
@@ -384,6 +392,7 @@ echo "✅ Cleanup complete!"
 ```
 
 #### Play 6: Archive Search Tool
+
 ```javascript
 // scripts/search-archive.js
 const fs = require('fs');
@@ -398,17 +407,17 @@ class ArchiveSearcher {
   search(query) {
     const results = [];
     const searchTerm = query.toLowerCase();
-    
+
     Object.entries(this.index.search_index).forEach(([file, location]) => {
       if (file.includes(searchTerm)) {
         results.push({
           file,
           location,
-          category: location.split('/')[0]
+          category: location.split('/')[0],
         });
       }
     });
-    
+
     return results;
   }
 
@@ -417,10 +426,10 @@ class ArchiveSearcher {
     if (location) {
       const source = path.join(__dirname, '../ARCHIVE', location);
       const dest = path.join(__dirname, '../RESTORED', filename);
-      
+
       fs.mkdirSync(path.dirname(dest), { recursive: true });
       fs.copyFileSync(source, dest);
-      
+
       return `Restored: ${filename} to RESTORED/`;
     }
     return `File not found: ${filename}`;
@@ -448,6 +457,7 @@ if (command === 'search') {
 ### FOURTH QUARTER: Testing & Verification
 
 #### Play 7: Verification Tests
+
 ```bash
 #!/bin/bash
 # verify-cleanup.sh
@@ -519,6 +529,7 @@ fi
 ```
 
 #### Play 8: Final Archive Package
+
 ```bash
 #!/bin/bash
 # package-archive-for-f-drive.sh
@@ -570,24 +581,27 @@ echo "   Move to F: drive when ready"
 ## 📊 SUCCESS METRICS
 
 ### Before Cleanup
+
 - Files scattered: 500+
 - Duplicate code: 40%
 - Build clarity: 20%
 - Organization: CHAOS
 
 ### After Cleanup
+
 - Files organized: 100%
 - Duplicate code: 0%
 - Build clarity: 100%
 - Organization: CHAMPIONSHIP
 
 ### Performance Improvements
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Build time | Unknown | <30s | ✅ |
-| Find file | 5+ min | <5s | 60x faster |
-| Deploy ready | No | Yes | ✅ |
-| Archive searchable | No | Yes | ✅ |
+
+| Metric             | Before  | After | Improvement |
+| ------------------ | ------- | ----- | ----------- |
+| Build time         | Unknown | <30s  | ✅          |
+| Find file          | 5+ min  | <5s   | 60x faster  |
+| Deploy ready       | No      | Yes   | ✅          |
+| Archive searchable | No      | Yes   | ✅          |
 
 ---
 
@@ -628,27 +642,28 @@ mv championship_archive_*.tar.gz /mnt/f/
 - [ ] F: drive package created
 
 ### Audit Certification
+
 ```javascript
 const AUDIT_RESULT = {
   orchestrator: 'CLAUDE',
   operation: 'CHAMPIONSHIP_CLEANUP',
   date: '2025-01-10',
   status: 'PENDING_EXECUTION',
-  
+
   verification: {
     essential_files: 'READY',
     archive_system: 'READY',
     build_path: 'READY',
-    deployment: 'READY'
+    deployment: 'READY',
   },
-  
-  sign: function() {
+
+  sign: function () {
     return {
       verdict: 'APPROVED_FOR_EXECUTION',
       signature: 'CLAUDE_AI_ORCHESTRATOR',
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-  }
+  },
 };
 ```
 
@@ -656,11 +671,11 @@ const AUDIT_RESULT = {
 
 ## 🏆 BELICHICK'S FINAL WORDS
 
-*"We're not reorganizing files. We're building a dynasty."*
+_"We're not reorganizing files. We're building a dynasty."_
 
-*"Do your job. Keep what matters. Archive the rest."*
+_"Do your job. Keep what matters. Archive the rest."_
 
-*"Championships are won with preparation. This is preparation."*
+_"Championships are won with preparation. This is preparation."_
 
 ---
 

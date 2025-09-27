@@ -65,14 +65,14 @@ export class MLOptimizationEngine extends EventEmitter {
           learningRate: 0.001,
           batchSize: 32,
           epochs: 100,
-          layers: [64, 32, 16]
+          layers: [64, 32, 16],
         },
         performance: {
           precision: 0.87,
           recall: 0.91,
           f1Score: 0.89,
-          latency: 45
-        }
+          latency: 45,
+        },
       },
       {
         id: 'zoning-compliance',
@@ -85,14 +85,14 @@ export class MLOptimizationEngine extends EventEmitter {
           learningRate: 0.0005,
           batchSize: 64,
           epochs: 150,
-          layers: [128, 64, 32]
+          layers: [128, 64, 32],
         },
         performance: {
           precision: 0.93,
           recall: 0.95,
           f1Score: 0.94,
-          latency: 23
-        }
+          latency: 23,
+        },
       },
       {
         id: 'tax-assessment',
@@ -105,15 +105,15 @@ export class MLOptimizationEngine extends EventEmitter {
           learningRate: 0.002,
           batchSize: 128,
           epochs: 200,
-          layers: [256, 128, 64, 32]
+          layers: [256, 128, 64, 32],
         },
         performance: {
-          precision: 0.90,
+          precision: 0.9,
           recall: 0.94,
           f1Score: 0.92,
-          latency: 67
-        }
-      }
+          latency: 67,
+        },
+      },
     ];
 
     defaultModels.forEach(model => this.models.set(model.id, model));
@@ -136,8 +136,8 @@ export class MLOptimizationEngine extends EventEmitter {
         loss: [],
         accuracy: [],
         validationLoss: [],
-        validationAccuracy: []
-      }
+        validationAccuracy: [],
+      },
     };
 
     this.trainingJobs.set(jobId, job);
@@ -156,12 +156,12 @@ export class MLOptimizationEngine extends EventEmitter {
     const steps = 100;
     for (let i = 0; i <= steps; i++) {
       job.progress = (i / steps) * 100;
-      
+
       // Simulate training metrics
       if (i > 0) {
-        const loss = Math.max(0.1, 1 - (i / steps) + Math.random() * 0.1);
+        const loss = Math.max(0.1, 1 - i / steps + Math.random() * 0.1);
         const accuracy = Math.min(0.99, (i / steps) * 0.9 + Math.random() * 0.1);
-        
+
         job.metrics.loss.push(loss);
         job.metrics.accuracy.push(accuracy);
         job.metrics.validationLoss.push(loss + Math.random() * 0.05);
@@ -174,7 +174,7 @@ export class MLOptimizationEngine extends EventEmitter {
 
     job.status = 'completed';
     job.estimatedCompletion = new Date();
-    
+
     // Update model with optimized hyperparameters
     const model = this.models.get(job.modelId);
     if (model) {
@@ -192,12 +192,15 @@ export class MLOptimizationEngine extends EventEmitter {
       learningRate: 0.001,
       batchSize: 32,
       epochs: 100,
-      layers: [64, 32, 16]
+      layers: [64, 32, 16],
     };
 
     // Simulate hyperparameter optimization
     if (config.optimizationType === 'hyperparameter') {
-      baseParams.learningRate = Math.max(0.0001, Math.min(0.01, baseParams.learningRate * (0.8 + Math.random() * 0.4)));
+      baseParams.learningRate = Math.max(
+        0.0001,
+        Math.min(0.01, baseParams.learningRate * (0.8 + Math.random() * 0.4))
+      );
       baseParams.batchSize = [16, 32, 64, 128][Math.floor(Math.random() * 4)];
       baseParams.epochs = Math.floor(baseParams.epochs * (0.8 + Math.random() * 0.4));
     }
@@ -207,12 +210,12 @@ export class MLOptimizationEngine extends EventEmitter {
 
   private calculateOptimizedPerformance(model: MLModel): MLModel['performance'] {
     const improvement = 0.02 + Math.random() * 0.03;
-    
+
     return {
       precision: Math.min(0.99, model.performance.precision + improvement),
       recall: Math.min(0.99, model.performance.recall + improvement),
       f1Score: Math.min(0.99, model.performance.f1Score + improvement),
-      latency: Math.max(10, model.performance.latency * (0.9 + Math.random() * 0.2))
+      latency: Math.max(10, model.performance.latency * (0.9 + Math.random() * 0.2)),
     };
   }
 
@@ -230,14 +233,14 @@ export class MLOptimizationEngine extends EventEmitter {
   }
 
   public getActiveJobs(): TrainingJob[] {
-    return Array.from(this.trainingJobs.values()).filter(job => 
-      job.status === 'pending' || job.status === 'training'
+    return Array.from(this.trainingJobs.values()).filter(
+      job => job.status === 'pending' || job.status === 'training'
     );
   }
 
   public async autoOptimizeAll(): Promise<string[]> {
     const jobIds: string[] = [];
-    
+
     for (const model of this.models.values()) {
       const config: OptimizationConfig = {
         targetMetric: 'accuracy',
@@ -245,14 +248,14 @@ export class MLOptimizationEngine extends EventEmitter {
         constraints: {
           maxTrainingTime: 300000, // 5 minutes
           maxMemoryUsage: 2048, // 2GB
-          minAccuracy: model.accuracy
-        }
+          minAccuracy: model.accuracy,
+        },
       };
-      
+
       const jobId = await this.optimizeModel(model.id, config);
       jobIds.push(jobId);
     }
-    
+
     return jobIds;
   }
 
@@ -265,12 +268,16 @@ export class MLOptimizationEngine extends EventEmitter {
     if (!model) {
       throw new Error(`Model ${modelId} not found`);
     }
-    
-    return JSON.stringify({
-      ...model,
-      exportedAt: new Date(),
-      version: '1.0.0'
-    }, null, 2);
+
+    return JSON.stringify(
+      {
+        ...model,
+        exportedAt: new Date(),
+        version: '1.0.0',
+      },
+      null,
+      2
+    );
   }
 }
 

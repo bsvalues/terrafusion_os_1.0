@@ -87,65 +87,74 @@ export const useExecutiveDashboard = (jurisdiction: string, refreshInterval: num
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const refreshDashboard = useCallback(async (timeRange: string = '30d') => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const refreshDashboard = useCallback(
+    async (timeRange: string = '30d') => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      const [
-        dashboardResponse,
-        kpiResponse,
-        insightsResponse,
-        alertsResponse,
-        performanceResponse
-      ] = await Promise.all([
-        executiveDashboardService.getDashboardData(jurisdiction, timeRange),
-        executiveDashboardService.getKPIData(jurisdiction, timeRange),
-        executiveDashboardService.getStrategicInsights(jurisdiction),
-        executiveDashboardService.getAlerts(jurisdiction),
-        executiveDashboardService.getPerformanceMetrics(jurisdiction)
-      ]);
+        const [
+          dashboardResponse,
+          kpiResponse,
+          insightsResponse,
+          alertsResponse,
+          performanceResponse,
+        ] = await Promise.all([
+          executiveDashboardService.getDashboardData(jurisdiction, timeRange),
+          executiveDashboardService.getKPIData(jurisdiction, timeRange),
+          executiveDashboardService.getStrategicInsights(jurisdiction),
+          executiveDashboardService.getAlerts(jurisdiction),
+          executiveDashboardService.getPerformanceMetrics(jurisdiction),
+        ]);
 
-      setDashboardData(dashboardResponse);
-      setKpiData(kpiResponse);
-      setStrategicInsights(insightsResponse);
-      setAlerts(alertsResponse);
-      setPerformanceMetrics(performanceResponse);
-      setLastUpdated(new Date());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [jurisdiction]);
+        setDashboardData(dashboardResponse);
+        setKpiData(kpiResponse);
+        setStrategicInsights(insightsResponse);
+        setAlerts(alertsResponse);
+        setPerformanceMetrics(performanceResponse);
+        setLastUpdated(new Date());
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [jurisdiction]
+  );
 
-  const exportDashboard = useCallback(async (format: 'pdf' | 'excel') => {
-    try {
-      const downloadUrl = await executiveDashboardService.exportDashboard(jurisdiction, format);
-      // Trigger download
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = `executive-dashboard-${jurisdiction}-${new Date().toISOString().split('T')[0]}.${format}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'Failed to export dashboard');
-    }
-  }, [jurisdiction]);
+  const exportDashboard = useCallback(
+    async (format: 'pdf' | 'excel') => {
+      try {
+        const downloadUrl = await executiveDashboardService.exportDashboard(jurisdiction, format);
+        // Trigger download
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `executive-dashboard-${jurisdiction}-${new Date().toISOString().split('T')[0]}.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        throw new Error(err instanceof Error ? err.message : 'Failed to export dashboard');
+      }
+    },
+    [jurisdiction]
+  );
 
-  const updateSettings = useCallback(async (settings: any) => {
-    try {
-      await executiveDashboardService.updateSettings(jurisdiction, settings);
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'Failed to update settings');
-    }
-  }, [jurisdiction]);
+  const updateSettings = useCallback(
+    async (settings: any) => {
+      try {
+        await executiveDashboardService.updateSettings(jurisdiction, settings);
+      } catch (err) {
+        throw new Error(err instanceof Error ? err.message : 'Failed to update settings');
+      }
+    },
+    [jurisdiction]
+  );
 
   // Auto-refresh effect
   useEffect(() => {
     refreshDashboard();
-    
+
     const interval = setInterval(() => {
       refreshDashboard();
     }, refreshInterval);
@@ -164,6 +173,6 @@ export const useExecutiveDashboard = (jurisdiction: string, refreshInterval: num
     lastUpdated,
     refreshDashboard,
     exportDashboard,
-    updateSettings
+    updateSettings,
   };
 };

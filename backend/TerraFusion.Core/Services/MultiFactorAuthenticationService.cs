@@ -303,7 +303,7 @@ namespace TerraFusion.Core.Services
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
 
-                return result.ContainsKey("verified") && (bool)result["verified"];
+                return result != null && result.ContainsKey("verified") && (bool)result["verified"];
             }
             catch (Exception ex)
             {

@@ -7,3 +7,11 @@ exports[`App Component > Core Rendering > renders as expected 1`] = `
   TerraFusion OS
 </div>
 `;
+
+exports[`App Component > Core Rendering > renders as expected 2`] = `
+<div
+  data-testid="app"
+>
+  Terrafusion OS
+</div>
+`;

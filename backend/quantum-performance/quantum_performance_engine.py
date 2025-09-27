@@ -149,9 +149,9 @@ class QuantumIntelligenceDashboard:
             print(f"  ✅ {feature}")
             await asyncio.sleep(0.1)
         
-        print("🌐 Dashboard URL: http://localhost:9090/quantum-dashboard")
-        print("📊 Metrics API: http://localhost:9090/metrics/quantum")
-        print("⚡ Real-time WebSocket: ws://localhost:9090/quantum-stream")
+        print("🌐 Dashboard URL: http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/quantum-dashboard")
+        print("📊 Metrics API: http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/metrics/quantum")
+        print("⚡ Real-time WebSocket: ws://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/quantum-stream")
         print("=" * 60)
         
         return True

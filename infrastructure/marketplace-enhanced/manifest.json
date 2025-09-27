@@ -14,12 +14,27 @@
       "path": "apps/TerraFusionSync",
       "api": "/api/v1",
       "health_endpoint": "/api/v1/health",
-      "compliance": ["CountyOS-Verified", "Security-Audited", "API-Compliant", "Documentation-Complete"],
+      "compliance": [
+        "CountyOS-Verified",
+        "Security-Audited",
+        "API-Compliant",
+        "Documentation-Complete"
+      ],
       "category": "Infrastructure & Integration",
-      "tags": ["sync", "integration", "orchestration", "data-hub", "core-service"],
+      "tags": [
+        "sync",
+        "integration",
+        "orchestration",
+        "data-hub",
+        "core-service"
+      ],
       "registered_at": "2025-07-24T00:00:00Z",
       "compliance_score": 94,
-      "target_users": ["System Administrators", "Data Engineers", "Integration Specialists"],
+      "target_users": [
+        "System Administrators",
+        "Data Engineers",
+        "Integration Specialists"
+      ],
       "critical": true
     },
     {
@@ -33,12 +48,27 @@
       "path": "apps/CostForgeAI",
       "api": "/api/costforgeai/estimate",
       "health_endpoint": "/api/costforgeai/health",
-      "compliance": ["CountyOS-Verified", "Security-Audited", "API-Compliant", "Documentation-Complete"],
+      "compliance": [
+        "CountyOS-Verified",
+        "Security-Audited",
+        "API-Compliant",
+        "Documentation-Complete"
+      ],
       "category": "Assessment & Valuation",
-      "tags": ["ai", "construction", "cost-estimation", "analytics", "county-operations"],
+      "tags": [
+        "ai",
+        "construction",
+        "cost-estimation",
+        "analytics",
+        "county-operations"
+      ],
       "registered_at": "2025-07-23T23:40:00Z",
       "compliance_score": 95,
-      "target_users": ["County Assessors", "Planning Departments", "GIS Specialists"]
+      "target_users": [
+        "County Assessors",
+        "Planning Departments",
+        "GIS Specialists"
+      ]
     },
     {
       "name": "PropertyWorkbench",
@@ -51,12 +81,29 @@
       "path": "apps/PropertyWorkbench",
       "api": "/api/properties",
       "health_endpoint": "/api/health",
-      "compliance": ["CountyOS-Verified", "Security-Audited", "API-Compliant", "Documentation-Complete"],
+      "compliance": [
+        "CountyOS-Verified",
+        "Security-Audited",
+        "API-Compliant",
+        "Documentation-Complete"
+      ],
       "category": "Assessment & Valuation",
-      "tags": ["property", "assessment", "gis", "zoning", "parcel-management", "county-operations"],
+      "tags": [
+        "property",
+        "assessment",
+        "gis",
+        "zoning",
+        "parcel-management",
+        "county-operations"
+      ],
       "registered_at": "2025-07-24T00:00:00Z",
       "compliance_score": 92,
-      "target_users": ["County Assessors", "GIS Specialists", "Planning Departments", "Property Managers"]
+      "target_users": [
+        "County Assessors",
+        "GIS Specialists",
+        "Planning Departments",
+        "Property Managers"
+      ]
     },
     {
       "name": "TerraAgent",
@@ -69,12 +116,21 @@
       "path": "apps/TerraAgent",
       "api": "/api",
       "health_endpoint": "/api/health",
-      "compliance": ["CountyOS-Verified", "Security-Audited", "API-Compliant", "Documentation-Complete"],
+      "compliance": [
+        "CountyOS-Verified",
+        "Security-Audited",
+        "API-Compliant",
+        "Documentation-Complete"
+      ],
       "category": "AI & Analytics",
       "tags": ["ai", "property-analysis", "quantum", "valuation", "trends"],
       "registered_at": "2025-07-24T00:00:00Z",
       "compliance_score": 93,
-      "target_users": ["County Assessors", "Property Analysts", "Tax Administrators"]
+      "target_users": [
+        "County Assessors",
+        "Property Analysts",
+        "Tax Administrators"
+      ]
     },
     {
       "name": "TerraLevy",
@@ -87,12 +143,21 @@
       "path": "apps/TerraLevy",
       "api": "/api",
       "health_endpoint": "/api/health",
-      "compliance": ["CountyOS-Verified", "Security-Audited", "API-Compliant", "Documentation-Complete"],
+      "compliance": [
+        "CountyOS-Verified",
+        "Security-Audited",
+        "API-Compliant",
+        "Documentation-Complete"
+      ],
       "category": "Financial Management",
       "tags": ["tax", "levy", "financial", "compliance", "budgeting"],
       "registered_at": "2025-07-24T00:00:00Z",
       "compliance_score": 96,
-      "target_users": ["Tax Administrators", "Financial Officers", "Compliance Teams"],
+      "target_users": [
+        "Tax Administrators",
+        "Financial Officers",
+        "Compliance Teams"
+      ],
       "critical": true
     },
     {
@@ -106,12 +171,27 @@
       "path": "apps/TerraFlow",
       "api": "/api",
       "health_endpoint": "/api/health",
-      "compliance": ["CountyOS-Verified", "Security-Audited", "API-Compliant", "Documentation-Complete"],
+      "compliance": [
+        "CountyOS-Verified",
+        "Security-Audited",
+        "API-Compliant",
+        "Documentation-Complete"
+      ],
       "category": "Workflow & Automation",
-      "tags": ["workflow", "automation", "assessment", "compliance", "productivity"],
+      "tags": [
+        "workflow",
+        "automation",
+        "assessment",
+        "compliance",
+        "productivity"
+      ],
       "registered_at": "2025-07-24T00:00:00Z",
       "compliance_score": 91,
-      "target_users": ["Assessment Teams", "Workflow Managers", "Quality Assurance"]
+      "target_users": [
+        "Assessment Teams",
+        "Workflow Managers",
+        "Quality Assurance"
+      ]
     },
     {
       "name": "TerraMiner",
@@ -124,12 +204,27 @@
       "path": "apps/TerraMiner",
       "api": "/api",
       "health_endpoint": "/api/health",
-      "compliance": ["CountyOS-Verified", "Security-Audited", "API-Compliant", "Documentation-Complete"],
+      "compliance": [
+        "CountyOS-Verified",
+        "Security-Audited",
+        "API-Compliant",
+        "Documentation-Complete"
+      ],
       "category": "AI & Analytics",
-      "tags": ["data-mining", "analytics", "machine-learning", "insights", "big-data"],
+      "tags": [
+        "data-mining",
+        "analytics",
+        "machine-learning",
+        "insights",
+        "big-data"
+      ],
       "registered_at": "2025-07-24T00:00:00Z",
       "compliance_score": 90,
-      "target_users": ["Data Scientists", "Business Analysts", "Strategic Planning"]
+      "target_users": [
+        "Data Scientists",
+        "Business Analysts",
+        "Strategic Planning"
+      ]
     },
     {
       "name": "WebAuditTracker",
@@ -142,7 +237,12 @@
       "path": "apps/WebAuditTracker",
       "api": "/api",
       "health_endpoint": "/api/health",
-      "compliance": ["CountyOS-Verified", "Security-Audited", "API-Compliant", "Documentation-Complete"],
+      "compliance": [
+        "CountyOS-Verified",
+        "Security-Audited",
+        "API-Compliant",
+        "Documentation-Complete"
+      ],
       "category": "Compliance & Auditing",
       "tags": ["audit", "compliance", "tracking", "nextjs", "performance"],
       "registered_at": "2025-07-24T00:00:00Z",

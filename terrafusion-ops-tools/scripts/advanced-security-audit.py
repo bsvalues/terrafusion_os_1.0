@@ -92,7 +92,7 @@ class AdvancedSecurityAudit:
     def __init__(self):
         self.session_id = f"security_audit_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         
         # Security scan configuration
         self.scan_targets = self.load_scan_targets()
@@ -185,18 +185,18 @@ class AdvancedSecurityAudit:
                 '192.168.1.0/24'
             ],
             'web_applications': [
-                'http://localhost:8000',
-                'http://localhost:8080',
-                'https://localhost:8443'
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}',
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}',
+                'https://localhost:\${{TF_DOCS_PORT:-8000}}'
             ],
             'databases': [
-                'postgresql://localhost:5432/terrafusion',
-                'redis://localhost:6379'
+                'postgresql://localhost:\${{TF_DOCS_PORT:-8000}}/terrafusion',
+                'redis://localhost:\${{TF_DOCS_PORT:-8000}}'
             ],
             'api_endpoints': [
-                'http://localhost:8000/api/health',
-                'http://localhost:8000/api/users',
-                'http://localhost:8000/api/admin'
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/health',
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/users',
+                'http://localhost:\${{TF_DOCS_PORT:-8000}}/api/admin'
             ],
             'infrastructure': [
                 'localhost',

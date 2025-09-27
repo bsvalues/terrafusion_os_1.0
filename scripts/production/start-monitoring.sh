@@ -422,7 +422,7 @@ class TerraFusionMonitoringHandler(BaseHTTPRequestHandler):
         except:
             return ['Log file not accessible']
 
-def run_monitoring_server(port=8080):
+def run_monitoring_server(port=\${{TF_ADMIN_PORT:-8080}}):
     server = HTTPServer(('0.0.0.0', port), TerraFusionMonitoringHandler)
     print(f"TerraFusion Monitoring Server running on port {port}")
     server.serve_forever()

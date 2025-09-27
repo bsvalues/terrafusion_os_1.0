@@ -66,13 +66,13 @@ services:
       # Application
       APP_ENV: ${APP_ENV:-production}
       SECRET_KEY: ${SECRET_KEY:-your-secret-key-here}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3003}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:\${{TF_DESKTOP_PORT:-3003}}}
       # AI Engine
       AI_ENGINE_URL: http://ai-engine:8001
       # Monitoring
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_ENDPOINT:-http://otel-collector:4317}
     ports:
-      - "${BACKEND_PORT:-8080}:8080"
+      - "${BACKEND_PORT:-8080}:${TF_STATIC_PORT:-8080}"
     volumes:
       - ./logs/backend:/app/logs
       - ./uploads:/app/uploads
@@ -82,7 +82,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_DESKTOP_PORT:-3003}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -121,7 +121,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_DESKTOP_PORT:-3003}}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -142,8 +142,8 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_VERSION=18
-        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8080}
-        - REACT_APP_AI_URL=${REACT_APP_AI_URL:-http://localhost:8001}
+        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:\${{TF_DESKTOP_PORT:-3003}}}
+        - REACT_APP_AI_URL=${REACT_APP_AI_URL:-http://localhost:\${{TF_DESKTOP_PORT:-3003}}}
     image: terrafusion/frontend:latest
     container_name: terrafusion-frontend
     restart: unless-stopped
@@ -244,7 +244,7 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-TF_Grafana_2025}
       GF_INSTALL_PLUGINS: ${GRAFANA_PLUGINS:-grafana-clock-panel}
     ports:
-      - "${GRAFANA_PORT:-3000}:3000"
+      - "${GRAFANA_PORT:-3000}:${TF_FRONTEND_PORT:-3102}"
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro

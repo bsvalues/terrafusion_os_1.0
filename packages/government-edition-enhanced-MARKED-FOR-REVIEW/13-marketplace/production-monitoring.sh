@@ -14,7 +14,7 @@ ALERT_THRESHOLD_CPU=80
 ALERT_THRESHOLD_MEMORY=85
 ALERT_THRESHOLD_DISK=90
 HEALTH_CHECK_INTERVAL=30
-MONITORING_PORT=3001
+MONITORING_PORT=\${{TF_SHELL_PORT:-3001}}
 
 # Colors
 RED='\033[0;31m'
@@ -325,7 +325,7 @@ class HealthCheckHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, "Health check endpoint not found")
 
 if __name__ == "__main__":
-    PORT = 3001
+    PORT=\${{TF_SHELL_PORT:-3001}}
     try:
         with socketserver.TCPServer(("", PORT), HealthCheckHandler) as httpd:
             print(f"Health check endpoint running on port {PORT}")

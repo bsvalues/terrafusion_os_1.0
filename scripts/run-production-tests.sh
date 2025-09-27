@@ -40,7 +40,7 @@ sleep 2
 # Start backend
 echo "🔧 Starting backend..."
 cd backend/TerraFusion.API
-dotnet run --urls=http://localhost:5000 > /tmp/backend.log 2>&1 &
+dotnet run --urls=http://localhost:${TF_STATIC_PORT:-8080} > /tmp/backend.log 2>&1 &
 BACKEND_PID=$!
 cd ../..
 
@@ -53,7 +53,7 @@ fi
 
 # Test backend health
 echo "🩺 Testing backend health..."
-HEALTH_RESPONSE=$(curl -s http://localhost:5000/health || echo "ERROR")
+HEALTH_RESPONSE=$(curl -s http://localhost:${TF_STATIC_PORT:-8080}/health || echo "ERROR")
 if [[ "$HEALTH_RESPONSE" == *"ERROR"* ]]; then
     echo "❌ Backend health check failed"
     exit 1

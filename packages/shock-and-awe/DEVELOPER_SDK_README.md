@@ -1,25 +1,28 @@
 # TerraFusion Shock & Awe - Developer SDK
+
 **Comprehensive Development Kit for Government Property Assessment Platform**
 
 **Version:** 2.0.0  
 **Date:** September 3, 2025  
-**Target Audience:** Mid to Senior-level Contributors  
+**Target Audience:** Mid to Senior-level Contributors
 
 ---
 
 ## 🎯 Quick Start Guide
 
 ### Prerequisites
+
 ```bash
 # Required software versions
 Node.js >= 18.0.0
-npm >= 9.0.0  
+npm >= 9.0.0
 Rust >= 1.70 (for Tauri)
 PostgreSQL >= 13 (for database)
 Redis >= 7.0 (for caching)
 ```
 
 ### One-Command Setup
+
 ```bash
 # Clone and setup development environment
 git clone <repository-url> terrafusion-shock-awe
@@ -28,12 +31,13 @@ cd terrafusion-shock-awe
 ```
 
 ### Development Commands
+
 ```bash
 # Frontend development
 npm run dev                    # Start Vite dev server
 npm run tauri:dev             # Start Tauri desktop app
 
-# Backend development  
+# Backend development
 cd server && npm run dev       # Start Express API server
 
 # Testing
@@ -106,6 +110,7 @@ graph TB
 ### Technology Stack
 
 **Frontend Technologies:**
+
 ```json
 {
   "desktop": ["Tauri 1.5", "Rust", "React 18", "TypeScript 5.2"],
@@ -116,6 +121,7 @@ graph TB
 ```
 
 **Backend Technologies:**
+
 ```json
 {
   "server": ["Node.js", "Express.js", "Socket.IO"],
@@ -132,6 +138,7 @@ graph TB
 ### 1. Database Setup
 
 **PostgreSQL Database:**
+
 ```sql
 -- Create database and user
 CREATE DATABASE terrafusion_shock_awe;
@@ -154,6 +161,7 @@ CREATE INDEX idx_assessments_created_at ON assessments(created_at);
 ```
 
 **Redis Configuration:**
+
 ```bash
 # Install Redis
 brew install redis  # macOS
@@ -166,19 +174,20 @@ redis-server
 ### 2. Environment Configuration
 
 **Backend Environment (.env):**
+
 ```bash
 # Database
-DATABASE_URL=postgresql://tf_dev:dev_password_2025!@localhost:5432/terrafusion_shock_awe
-REDIS_URL=redis://localhost:6379
+DATABASE_URL=postgresql://tf_dev:dev_password_2025!@localhost:\${{TF_POSTGRES_PORT:-5432}}/terrafusion_shock_awe
+REDIS_URL=redis://localhost:\${{TF_POSTGRES_PORT:-5432}}
 
 # Security
 JWT_SECRET=your-256-bit-secret-key-here
 ENCRYPTION_KEY=your-encryption-key-here
 
 # API Configuration
-PORT=3001
+PORT=\${{TF_SHELL_PORT:-3001}}
 NODE_ENV=development
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=http://localhost:\${{TF_POSTGRES_PORT:-5432}}
 
 # Feature Flags
 QUANTUM_ENABLED=true
@@ -192,9 +201,10 @@ ANIMATION_SPEED=1000
 ```
 
 **Frontend Environment (.env.local):**
+
 ```bash
-VITE_API_BASE_URL=http://localhost:3001
-VITE_WS_URL=ws://localhost:3001
+VITE_API_BASE_URL=http://localhost:\${{TF_POSTGRES_PORT:-5432}}
+VITE_WS_URL=ws://localhost:\${{TF_POSTGRES_PORT:-5432}}
 VITE_ENVIRONMENT=development
 VITE_ENABLE_ANALYTICS=false
 ```
@@ -202,6 +212,7 @@ VITE_ENABLE_ANALYTICS=false
 ### 3. Development Scripts
 
 **setup-dev-environment.sh:**
+
 ```bash
 #!/bin/bash
 echo "🚀 Setting up TerraFusion Development Environment"
@@ -232,6 +243,7 @@ echo "Run 'npm run dev' to start the application"
 ### Backend Service Implementation
 
 **Critical Missing Implementation - DatabaseService:**
+
 ```typescript
 // server/services/database.ts
 import { Pool } from 'pg';
@@ -242,23 +254,34 @@ export class DatabaseService {
   async connect(): Promise<void> {
     this.pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
     });
-    
+
     // Test connection
     const client = await this.pool.connect();
     await client.query('SELECT NOW()');
     client.release();
-    
+
     console.log('✅ Database connected successfully');
   }
 
-  async saveAssessment(assessment: Assessment, userId: string): Promise<SavedAssessment> {
+  async saveAssessment(
+    assessment: Assessment,
+    userId: string
+  ): Promise<SavedAssessment> {
     const client = await this.pool.connect();
     try {
       const result = await client.query(
         'INSERT INTO assessments (user_id, property_data, assessment_result, processing_time) VALUES ($1, $2, $3, $4) RETURNING *',
-        [userId, assessment.propertyData, assessment.result, assessment.processingTime]
+        [
+          userId,
+          assessment.propertyData,
+          assessment.result,
+          assessment.processingTime,
+        ]
       );
       return result.rows[0];
     } finally {
@@ -284,19 +307,24 @@ export class DatabaseService {
 ```
 
 **Critical Missing Implementation - AI Assessment Service:**
+
 ```typescript
 // server/services/ai-assessment.ts
 export class AIAssessmentService {
-  async generateDemoAssessment(propertyData: DemoPropertyData): Promise<Assessment> {
+  async generateDemoAssessment(
+    propertyData: DemoPropertyData
+  ): Promise<Assessment> {
     const startTime = Date.now();
-    
+
     // Implement actual property valuation logic
     const baseValue = await this.calculateBaseValue(propertyData);
-    const marketAdjustments = await this.getMarketAdjustments(propertyData.county);
+    const marketAdjustments = await this.getMarketAdjustments(
+      propertyData.county
+    );
     const propertyAdjustments = this.calculatePropertyAdjustments(propertyData);
-    
+
     const estimatedValue = baseValue * marketAdjustments * propertyAdjustments;
-    
+
     return {
       id: `assessment_${Date.now()}`,
       estimatedValue,
@@ -304,16 +332,20 @@ export class AIAssessmentService {
       methodology: 'Comparative Market Analysis + AI Enhancement',
       comparableProperties: await this.findComparables(propertyData),
       marketTrends: await this.getMarketTrends(propertyData.county),
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     };
   }
 
-  private async calculateBaseValue(propertyData: DemoPropertyData): Promise<number> {
+  private async calculateBaseValue(
+    propertyData: DemoPropertyData
+  ): Promise<number> {
     // Implement actual valuation algorithms
     // This should replace the placeholder random number generation
     const baseRates = await this.getCountyBaseRates(propertyData.county);
-    const propertyTypeMultiplier = this.getPropertyTypeMultiplier(propertyData.type);
-    
+    const propertyTypeMultiplier = this.getPropertyTypeMultiplier(
+      propertyData.type
+    );
+
     return baseRates[propertyData.type] * propertyTypeMultiplier;
   }
 
@@ -324,6 +356,7 @@ export class AIAssessmentService {
 ### Frontend Component Patterns
 
 **Creating New Demonstration Components:**
+
 ```typescript
 // src/components/NewDemoComponent.tsx
 import React, { useState, useEffect, useRef } from 'react';
@@ -351,13 +384,13 @@ const NewDemoComponent: React.FC<NewDemoProps> = ({ onComplete, initialData }) =
 
   const handleStart = async () => {
     setIsActive(true);
-    
+
     // Demo logic here
     for (let i = 0; i <= 100; i += 10) {
       setProgress(i);
       await new Promise(resolve => setTimeout(resolve, 200));
     }
-    
+
     onComplete?.({ success: true, data: 'Demo completed' });
   };
 
@@ -366,13 +399,13 @@ const NewDemoComponent: React.FC<NewDemoProps> = ({ onComplete, initialData }) =
       <Typography variant="h3" gutterBottom sx={{ color: '#00ffee' }}>
         🎯 New Demo Component
       </Typography>
-      
+
       <Card sx={{ p: 3, mb: 3, bgcolor: 'background.paper' }}>
         <Typography variant="h6" gutterBottom>
           Demo Progress: {progress}%
         </Typography>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={handleStart}
           disabled={isActive}
           sx={{ mt: 2 }}
@@ -406,6 +439,7 @@ export default NewDemoComponent;
 ### Unit Testing Setup
 
 **Vitest Configuration (vitest.config.ts):**
+
 ```typescript
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
@@ -418,18 +452,14 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
-      exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-        '**/*.config.*'
-      ]
-    }
-  }
+      exclude: ['node_modules/', 'src/test/', '**/*.d.ts', '**/*.config.*'],
+    },
+  },
 });
 ```
 
 **Test Examples:**
+
 ```typescript
 // src/test/components/AssessmentAPI.test.ts
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -447,7 +477,7 @@ describe('Assessment API', () => {
       const propertyData = {
         address: '123 Test Street, Yakima, WA',
         type: 'residential',
-        county: 'yakima'
+        county: 'yakima',
       };
 
       const response = await request(app)
@@ -463,15 +493,17 @@ describe('Assessment API', () => {
 
     it('should handle rate limiting correctly', async () => {
       // Make multiple requests to test rate limiting
-      const requests = Array(15).fill().map(() => 
-        request(app)
-          .post('/api/assessment/demo')
-          .send({ address: 'Test', type: 'residential', county: 'yakima' })
-      );
+      const requests = Array(15)
+        .fill()
+        .map(() =>
+          request(app)
+            .post('/api/assessment/demo')
+            .send({ address: 'Test', type: 'residential', county: 'yakima' })
+        );
 
       const responses = await Promise.all(requests);
       const rateLimitedResponses = responses.filter(r => r.status === 429);
-      
+
       expect(rateLimitedResponses.length).toBeGreaterThan(0);
     });
   });
@@ -496,6 +528,7 @@ describe('Assessment API', () => {
 ### Production Deployment Checklist
 
 **Pre-Deployment:**
+
 ```bash
 # 1. Environment Setup
 ✅ Database migration completed
@@ -516,19 +549,20 @@ curl https://terrafusion.gov/
 ```
 
 **Government Deployment Requirements:**
+
 ```yaml
 # deployment/government-config.yml
 compliance:
-  fisma: "moderate"
+  fisma: 'moderate'
   section508: true
-  nist: "cybersecurity-framework"
-  
+  nist: 'cybersecurity-framework'
+
 security:
   encryption_at_rest: true
   encryption_in_transit: true
   audit_logging: true
-  access_controls: "role-based"
-  
+  access_controls: 'role-based'
+
 monitoring:
   health_checks: true
   performance_metrics: true
@@ -539,6 +573,7 @@ monitoring:
 ### Multi-Environment Configuration
 
 **Development → Staging → Production Pipeline:**
+
 ```bash
 # Development
 npm run dev                   # Local development
@@ -563,31 +598,33 @@ npm run test:e2e              # End-to-end tests
 ### Frontend Optimization
 
 **Bundle Size Management:**
+
 ```typescript
 // Lazy loading for large components
-const HeavyVisualization = lazy(() => 
-  import('./components/HeavyVisualization')
+const HeavyVisualization = lazy(
+  () => import('./components/HeavyVisualization')
 );
 
 // Code splitting for routes
 const routes = [
   {
     path: '/demo/:module',
-    component: lazy(() => import('./pages/DemoModule'))
-  }
+    component: lazy(() => import('./pages/DemoModule')),
+  },
 ];
 ```
 
 **3D Performance Optimization:**
+
 ```typescript
 // Efficient Three.js usage
 const optimized3DComponent = () => {
   // Use object pooling for frequently created/destroyed objects
   const meshPool = useMemo(() => new Set(), []);
-  
+
   // Implement level-of-detail (LOD) for complex scenes
   const lod = new THREE.LOD();
-  
+
   // Use instanced meshes for repetitive objects
   const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
 };
@@ -596,28 +633,30 @@ const optimized3DComponent = () => {
 ### Backend Performance
 
 **Database Optimization:**
+
 ```sql
 -- Essential indexes for performance
-CREATE INDEX CONCURRENTLY idx_assessments_user_created 
+CREATE INDEX CONCURRENTLY idx_assessments_user_created
 ON assessments(user_id, created_at DESC);
 
-CREATE INDEX CONCURRENTLY idx_assessments_county_type 
+CREATE INDEX CONCURRENTLY idx_assessments_county_type
 ON assessments((property_data->>'county'), (property_data->>'type'));
 ```
 
 **Caching Strategy:**
+
 ```typescript
 // Multi-layer caching
 const cacheStrategy = {
   redis: {
     demoAssessments: '5 minutes',
     marketData: '15 minutes',
-    countyData: '1 hour'
+    countyData: '1 hour',
   },
   memory: {
     staticConfig: 'application lifetime',
-    userSessions: '1 hour'
-  }
+    userSessions: '1 hour',
+  },
 };
 ```
 
@@ -628,9 +667,14 @@ const cacheStrategy = {
 ### Authentication & Authorization
 
 **JWT Implementation:**
+
 ```typescript
 // server/middleware/auth.ts
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -649,28 +693,28 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 ```
 
 **Input Validation:**
+
 ```typescript
 // server/middleware/validation.ts
 export const validateAssessmentInput = [
-  body('address')
-    .isString()
-    .trim()
-    .isLength({ min: 10, max: 200 })
-    .escape(),
-  body('type')
-    .isIn(['residential', 'commercial', 'industrial', 'agricultural']),
-  body('sqft')
-    .optional()
-    .isInt({ min: 100, max: 100000 }),
+  body('address').isString().trim().isLength({ min: 10, max: 200 }).escape(),
+  body('type').isIn([
+    'residential',
+    'commercial',
+    'industrial',
+    'agricultural',
+  ]),
+  body('sqft').optional().isInt({ min: 100, max: 100000 }),
   body('yearBuilt')
     .optional()
-    .isInt({ min: 1800, max: new Date().getFullYear() })
+    .isInt({ min: 1800, max: new Date().getFullYear() }),
 ];
 ```
 
 ### Data Protection
 
 **Encryption at Rest:**
+
 ```typescript
 // server/utils/encryption.ts
 import crypto from 'crypto';
@@ -682,28 +726,32 @@ export class DataEncryption {
   encrypt(text: string): { encrypted: string; iv: string; tag: string } {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipher(this.algorithm, this.key, { iv });
-    
+
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     return {
       encrypted,
       iv: iv.toString('hex'),
-      tag: cipher.getAuthTag().toString('hex')
+      tag: cipher.getAuthTag().toString('hex'),
     };
   }
 
-  decrypt(encryptedData: { encrypted: string; iv: string; tag: string }): string {
+  decrypt(encryptedData: {
+    encrypted: string;
+    iv: string;
+    tag: string;
+  }): string {
     const decipher = crypto.createDecipherGcm(
-      this.algorithm, 
-      this.key, 
+      this.algorithm,
+      this.key,
       Buffer.from(encryptedData.iv, 'hex')
     );
     decipher.setAuthTag(Buffer.from(encryptedData.tag, 'hex'));
-    
+
     let decrypted = decipher.update(encryptedData.encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
-    
+
     return decrypted;
   }
 }
@@ -716,6 +764,7 @@ export class DataEncryption {
 ### Application Monitoring
 
 **Health Check Implementation:**
+
 ```typescript
 // server/routes/health.ts
 export const healthCheck = async (req: Request, res: Response) => {
@@ -724,19 +773,20 @@ export const healthCheck = async (req: Request, res: Response) => {
     redis: await checkRedis(),
     memory: process.memoryUsage(),
     uptime: process.uptime(),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   const isHealthy = checks.database && checks.redis;
-  
+
   res.status(isHealthy ? 200 : 503).json({
     status: isHealthy ? 'healthy' : 'unhealthy',
-    checks
+    checks,
   });
 };
 ```
 
 **Structured Logging:**
+
 ```typescript
 // server/utils/logger.ts
 import winston from 'winston';
@@ -753,9 +803,9 @@ export const logger = winston.createLogger({
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
     new winston.transports.File({ filename: 'combined.log' }),
     new winston.transports.Console({
-      format: winston.format.simple()
-    })
-  ]
+      format: winston.format.simple(),
+    }),
+  ],
 });
 ```
 
@@ -766,6 +816,7 @@ export const logger = winston.createLogger({
 ### Development Workflow
 
 1. **Feature Development:**
+
    ```bash
    git checkout -b feature/new-assessment-type
    npm run dev                 # Start development
@@ -782,16 +833,20 @@ export const logger = winston.createLogger({
    - [ ] Accessibility compliance verified
 
 3. **Pull Request Template:**
+
    ```markdown
    ## Changes
+
    - Brief description of changes
-   
+
    ## Testing
+
    - [ ] Unit tests added
    - [ ] Integration tests pass
    - [ ] Manual testing completed
-   
+
    ## Security
+
    - [ ] No sensitive data exposed
    - [ ] Input validation implemented
    - [ ] Authentication/authorization updated
@@ -800,6 +855,7 @@ export const logger = winston.createLogger({
 ### Code Standards
 
 **TypeScript/JavaScript:**
+
 ```typescript
 // Use explicit types
 interface PropertyData {
@@ -816,7 +872,7 @@ async function processAssessment(data: PropertyData): Promise<Assessment> {
     if (!validation.isValid) {
       throw new ValidationError(validation.errors);
     }
-    
+
     return await generateAssessment(data);
   } catch (error) {
     logger.error('Assessment processing failed', { data, error });
@@ -826,6 +882,7 @@ async function processAssessment(data: PropertyData): Promise<Assessment> {
 ```
 
 **React Components:**
+
 ```tsx
 // Use proper prop types and error boundaries
 interface ComponentProps {
@@ -834,10 +891,10 @@ interface ComponentProps {
   className?: string;
 }
 
-const PropertyAssessmentComponent: React.FC<ComponentProps> = ({ 
-  data, 
-  onComplete, 
-  className = '' 
+const PropertyAssessmentComponent: React.FC<ComponentProps> = ({
+  data,
+  onComplete,
+  className = '',
 }) => {
   // Component implementation
 };
@@ -850,12 +907,13 @@ const PropertyAssessmentComponent: React.FC<ComponentProps> = ({
 ### Common Issues
 
 **Development Environment:**
+
 ```bash
 # Node modules issues
 rm -rf node_modules package-lock.json
 npm install
 
-# Tauri build issues  
+# Tauri build issues
 cd src-tauri
 cargo clean
 cd .. && npm run tauri:build
@@ -866,6 +924,7 @@ redis-cli ping                   # Test Redis connection
 ```
 
 **Production Issues:**
+
 ```bash
 # Memory issues
 pm2 restart all                  # Restart all processes
@@ -881,19 +940,20 @@ redis-cli flushall              # Clear Redis cache
 
 ### Error Codes Reference
 
-| Code | Description | Solution |
-|------|-------------|----------|
-| `ASSESSMENT_RATE_LIMIT` | Too many assessment requests | Wait 1 minute or upgrade plan |
-| `VALIDATION_FAILED` | Input validation error | Check request format |
-| `DATABASE_CONNECTION_ERROR` | Database unavailable | Check database status |
-| `AUTHENTICATION_REQUIRED` | No valid auth token | Login or refresh token |
-| `INSUFFICIENT_PERMISSIONS` | Access denied | Check user role |
+| Code                        | Description                  | Solution                      |
+| --------------------------- | ---------------------------- | ----------------------------- |
+| `ASSESSMENT_RATE_LIMIT`     | Too many assessment requests | Wait 1 minute or upgrade plan |
+| `VALIDATION_FAILED`         | Input validation error       | Check request format          |
+| `DATABASE_CONNECTION_ERROR` | Database unavailable         | Check database status         |
+| `AUTHENTICATION_REQUIRED`   | No valid auth token          | Login or refresh token        |
+| `INSUFFICIENT_PERMISSIONS`  | Access denied                | Check user role               |
 
 ---
 
 ## 📚 Additional Resources
 
 ### Documentation Links
+
 - [React 18 Documentation](https://react.dev/)
 - [Tauri Documentation](https://tauri.app/)
 - [Three.js Documentation](https://threejs.org/docs/)
@@ -901,11 +961,13 @@ redis-cli flushall              # Clear Redis cache
 - [Express.js Documentation](https://expressjs.com/)
 
 ### Government Integration Resources
+
 - [FISMA Compliance Guidelines](https://csrc.nist.gov/Projects/Risk-Management/FISMA-Background)
 - [Section 508 Accessibility](https://www.section508.gov/)
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
 
 ### Training Materials
+
 - Property Assessment Algorithms
 - 3D Visualization Best Practices
 - Government System Integration

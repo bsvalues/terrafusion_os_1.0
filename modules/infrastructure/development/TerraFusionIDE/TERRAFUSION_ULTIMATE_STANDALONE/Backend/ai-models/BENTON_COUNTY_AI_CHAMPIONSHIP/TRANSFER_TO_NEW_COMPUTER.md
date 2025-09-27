@@ -1,14 +1,17 @@
 # 📦 COMPLETE TRANSFER GUIDE - BENTON COUNTY AI CHAMPIONSHIP
+
 ## Everything You Need to Move Development to Another Computer
 
 **Created**: August 4, 2025  
-**Purpose**: Complete checklist for transferring the championship AI system to a new development machine
+**Purpose**: Complete checklist for transferring the championship AI system to a
+new development machine
 
 ---
 
 ## 📋 QUICK TRANSFER CHECKLIST
 
 ### Essential Files to Transfer
+
 ```
 ☐ /BENTON_COUNTY_AI_CHAMPIONSHIP/ (entire folder - 7 files)
   ☐ README.md
@@ -21,6 +24,7 @@
 ```
 
 ### Related Benton County Folders (if needed)
+
 ```
 ☐ /benton-county-ai-swarm/
 ☐ /benton-county-github-repo/
@@ -34,6 +38,7 @@
 ## 🖥️ NEW COMPUTER SETUP REQUIREMENTS
 
 ### 1. Operating System Requirements
+
 ```yaml
 Option A - Linux Native:
   - Ubuntu 22.04 LTS (recommended)
@@ -55,6 +60,7 @@ Option C - macOS:
 ### 2. Required Software Installation
 
 #### For Linux/WSL2:
+
 ```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
@@ -86,6 +92,7 @@ curl -fsSL https://ollama.ai/install.sh | sh
 ```
 
 #### For macOS:
+
 ```bash
 # Install Homebrew (if not installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -105,6 +112,7 @@ brew install ollama
 ```
 
 #### For Windows (Native):
+
 ```powershell
 # Install Chocolatey (if not installed)
 Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -128,6 +136,7 @@ wsl --install
 ### 3. Development Environment Setup
 
 #### IDE/Editor Setup:
+
 ```bash
 # VS Code (recommended)
 # Linux/WSL
@@ -149,6 +158,7 @@ code --install-extension dbaeumer.vscode-eslint
 ## 📂 FILE TRANSFER METHODS
 
 ### Method 1: ZIP Archive (Simplest)
+
 ```bash
 # On source computer
 cd /mnt/e/TerraFusion_Master_Workspace/
@@ -160,6 +170,7 @@ unzip BENTON_COUNTY_AI_CHAMPIONSHIP.zip
 ```
 
 ### Method 2: Git Repository (Recommended)
+
 ```bash
 # On source computer - Initialize git repo
 cd /mnt/e/TerraFusion_Master_Workspace/BENTON_COUNTY_AI_CHAMPIONSHIP/
@@ -177,6 +188,7 @@ cd benton-county-ai-championship
 ```
 
 ### Method 3: Direct Network Transfer
+
 ```bash
 # Using rsync (Linux/macOS)
 rsync -avzP /path/to/BENTON_COUNTY_AI_CHAMPIONSHIP/ user@target-computer:/destination/path/
@@ -193,6 +205,7 @@ scp -r /path/to/BENTON_COUNTY_AI_CHAMPIONSHIP/ user@target-computer:/destination
 ## 🔧 POST-TRANSFER SETUP
 
 ### 1. Verify File Integrity
+
 ```bash
 # Check all files transferred
 cd BENTON_COUNTY_AI_CHAMPIONSHIP
@@ -205,6 +218,7 @@ chmod +x scripts/ONE_CLICK_DEPLOY.sh
 ```
 
 ### 2. Environment Configuration
+
 ```bash
 # Create environment file
 cat > .env << EOF
@@ -222,6 +236,7 @@ chmod 600 .env
 ```
 
 ### 3. Test Docker Setup
+
 ```bash
 # Verify Docker installation
 docker --version
@@ -236,6 +251,7 @@ docker pull nginx:alpine
 ```
 
 ### 4. Test Ollama Setup
+
 ```bash
 # Start Ollama service
 ollama serve &
@@ -332,22 +348,27 @@ echo "🏆 Ready for Championship Deployment!"
 ## 🔐 SECURITY CONSIDERATIONS
 
 ### Before Transfer:
+
 1. **Remove Sensitive Data**:
+
    ```bash
    # Remove any .env files with passwords
    rm -f .env .env.local .env.production
-   
+
    # Remove any credential files
    find . -name "*.pem" -o -name "*.key" -delete
    ```
 
 2. **Create Secure Transfer**:
-   - Use encrypted ZIP: `zip -e -r championship.zip BENTON_COUNTY_AI_CHAMPIONSHIP/`
+   - Use encrypted ZIP:
+     `zip -e -r championship.zip BENTON_COUNTY_AI_CHAMPIONSHIP/`
    - Use SSH/SCP for network transfer
    - Use encrypted USB drive for physical transfer
 
 ### After Transfer:
+
 1. **Set Proper Permissions**:
+
    ```bash
    # Restrict access to sensitive files
    chmod 700 BENTON_COUNTY_AI_CHAMPIONSHIP
@@ -367,6 +388,7 @@ echo "🏆 Ready for Championship Deployment!"
 ## 📋 TRANSFER VERIFICATION CHECKLIST
 
 ### Documentation Files
+
 - [ ] README.md transferred and readable
 - [ ] THE_BELICHICK_BRADY_PLAYBOOK.md transferred and readable
 - [ ] LEGENDARY_AUDIT_REPORT.md transferred and readable
@@ -376,6 +398,7 @@ echo "🏆 Ready for Championship Deployment!"
 - [ ] scripts/ONE_CLICK_DEPLOY.sh transferred and executable
 
 ### System Requirements
+
 - [ ] Operating system compatible (Linux/WSL2/macOS)
 - [ ] Docker installed and running
 - [ ] Docker Compose installed
@@ -385,11 +408,13 @@ echo "🏆 Ready for Championship Deployment!"
 - [ ] Git installed
 
 ### Network Requirements
+
 - [ ] Internet connectivity for pulling Docker images
 - [ ] Firewall configured for required ports
 - [ ] DNS resolution working
 
 ### Development Environment
+
 - [ ] IDE/Editor installed (VS Code recommended)
 - [ ] Terminal/Shell access working
 - [ ] File permissions correct
@@ -402,12 +427,14 @@ echo "🏆 Ready for Championship Deployment!"
 ### Common Issues:
 
 1. **WSL2 File Permissions**:
+
    ```bash
    # Fix permissions in WSL2
    sudo chown -R $USER:$USER BENTON_COUNTY_AI_CHAMPIONSHIP/
    ```
 
 2. **Docker Permission Denied**:
+
    ```bash
    # Add user to docker group
    sudo usermod -aG docker $USER
@@ -415,6 +442,7 @@ echo "🏆 Ready for Championship Deployment!"
    ```
 
 3. **Port Already in Use**:
+
    ```bash
    # Find process using port
    sudo lsof -i :8001
@@ -461,4 +489,5 @@ The path to championship deployment starts with proper preparation!
 
 ---
 
-*Transfer guide complete. Championship excellence awaits on your new development machine.* 🏆
+_Transfer guide complete. Championship excellence awaits on your new development
+machine._ 🏆

@@ -1,10 +1,13 @@
 # Terrafusion Cosmic Observability Stack
 
-This directory contains the complete observability stack for the Terrafusion Cosmic Platform, providing comprehensive monitoring, logging, tracing, and alerting capabilities.
+This directory contains the complete observability stack for the Terrafusion
+Cosmic Platform, providing comprehensive monitoring, logging, tracing, and
+alerting capabilities.
 
 ## Components
 
 ### 1. **Prometheus** (Metrics)
+
 - Time-series metrics collection and storage
 - Service discovery for Kubernetes resources
 - Custom metrics for cosmic consciousness levels
@@ -12,6 +15,7 @@ This directory contains the complete observability stack for the Terrafusion Cos
 - High availability with StatefulSet (2 replicas)
 
 ### 2. **Grafana** (Visualization)
+
 - Unified dashboard for all observability data
 - Pre-configured datasources (Prometheus, Loki, Jaeger, Elasticsearch)
 - Custom cosmic platform dashboards
@@ -19,24 +23,28 @@ This directory contains the complete observability stack for the Terrafusion Cos
 - High availability deployment (2 replicas)
 
 ### 3. **Loki** (Log Aggregation)
+
 - Efficient log aggregation and querying
 - Minimal resource usage compared to traditional solutions
 - Integration with Grafana for unified experience
 - Distributed deployment with memberlist clustering (3 replicas)
 
 ### 4. **Elasticsearch** (Log Storage & Analysis)
+
 - Full-text search capabilities for logs
 - Index lifecycle management for automatic log rotation
 - Custom index templates for cosmic platform logs
 - Secure cluster with TLS and authentication (3 replicas)
 
 ### 5. **Fluentd/Fluent Bit** (Log Collection)
+
 - DaemonSet deployment for log collection from all nodes
 - Kubernetes metadata enrichment
 - Multi-destination output (Elasticsearch & Loki)
 - Custom parsing for cosmic platform services
 
 ### 6. **Jaeger** (Distributed Tracing)
+
 - End-to-end request tracing
 - Service dependency analysis
 - Performance bottleneck identification
@@ -44,6 +52,7 @@ This directory contains the complete observability stack for the Terrafusion Cos
 - Production deployment with Elasticsearch backend
 
 ### 7. **AlertManager** (Alert Routing)
+
 - Alert grouping and deduplication
 - Multi-channel notifications (Slack, PagerDuty, Email, Webhooks)
 - Custom routing for cosmic emergency alerts
@@ -52,12 +61,14 @@ This directory contains the complete observability stack for the Terrafusion Cos
 ## Quick Start
 
 1. **Create namespace and install CRDs:**
+
 ```bash
 kubectl create namespace monitoring
 kubectl apply -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/main/deploy/crds/jaegertracing.io_jaegers_crd.yaml
 ```
 
 2. **Configure secrets:**
+
 ```bash
 # Edit secrets in kustomization.yaml with your actual values
 vim kustomization.yaml
@@ -73,6 +84,7 @@ kubectl create secret generic monitoring-credentials \
 ```
 
 3. **Deploy the stack:**
+
 ```bash
 # Using kustomize
 kubectl apply -k .
@@ -88,6 +100,7 @@ kubectl apply -f alertmanager.yaml
 ```
 
 4. **Access the services:**
+
 ```bash
 # Port-forward to access locally
 kubectl port-forward -n monitoring svc/grafana 3000:3000
@@ -105,45 +118,43 @@ kubectl port-forward -n monitoring svc/alertmanager 9093:9093
 ### Prometheus Scraping
 
 Add these annotations to your pods/services to enable Prometheus scraping:
+
 ```yaml
 annotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "8080"
-  prometheus.io/path: "/metrics"
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '8080'
+  prometheus.io/path: '/metrics'
 ```
 
 ### Custom Dashboards
 
-Place dashboard JSON files in `dashboards/` directory and they will be automatically loaded into Grafana.
+Place dashboard JSON files in `dashboards/` directory and they will be
+automatically loaded into Grafana.
 
 ### Log Parsing
 
 For custom log formats, add parser configurations to the Fluentd ConfigMap:
+
 ```yaml
-<filter kubernetes.var.log.containers.your-service**>
-  @type parser
-  key_name log
-  <parse>
-    @type json
-    json_parser oj
-  </parse>
-</filter>
+<filter kubernetes.var.log.containers.your-service**> @type parser key_name log
+<parse> @type json json_parser oj </parse> </filter>
 ```
 
 ### Alert Rules
 
 Add custom alert rules to the `prometheus-rules` ConfigMap:
+
 ```yaml
 groups:
-- name: your-alerts
-  rules:
-  - alert: YourAlert
-    expr: your_metric > threshold
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Alert summary"
+  - name: your-alerts
+    rules:
+      - alert: YourAlert
+        expr: your_metric > threshold
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Alert summary'
 ```
 
 ## Cosmic Platform Integration
@@ -151,6 +162,7 @@ groups:
 ### Metrics
 
 The stack collects these cosmic-specific metrics:
+
 - `cosmic_consciousness_level`: Overall platform consciousness (0-100)
 - `cosmic_neural_operations_total`: Neural network operations count
 - `quantum_storage_dimensions`: Active quantum storage dimensions
@@ -159,6 +171,7 @@ The stack collects these cosmic-specific metrics:
 ### Logs
 
 Logs are enriched with cosmic metadata:
+
 - `cosmic_level`: Material, Ethereal, Astral, Celestial, Omniscient
 - `neural_activity`: Neural network activity level
 - `quantum_state`: Collapsed, Superposition, Entangled
@@ -166,6 +179,7 @@ Logs are enriched with cosmic metadata:
 ### Traces
 
 Distributed tracing includes:
+
 - Cross-dimensional request flow
 - Quantum entanglement correlation
 - Neural pathway visualization
@@ -231,10 +245,10 @@ kubectl logs -n monitoring daemonset/fluentd
 
 # Check Prometheus targets
 kubectl port-forward -n monitoring svc/prometheus 9090:9090
-# Visit http://localhost:9090/targets
+# Visit http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/targets
 
 # Verify Elasticsearch cluster
-kubectl exec -n monitoring elasticsearch-0 -- curl -k -u elastic:$PASSWORD https://localhost:9200/_cluster/health?pretty
+kubectl exec -n monitoring elasticsearch-0 -- curl -k -u elastic:$PASSWORD https://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/_cluster/health?pretty
 
 # Test AlertManager
 kubectl exec -n monitoring deployment/alertmanager -- amtool config routes
@@ -262,6 +276,7 @@ kubectl exec -n monitoring deployment/alertmanager -- amtool config routes
 ## Support
 
 For issues or questions:
+
 - Check component logs
 - Review Kubernetes events
 - Consult official documentation

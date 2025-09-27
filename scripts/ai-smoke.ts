@@ -28,7 +28,7 @@ async function main() {
   console.log(`Submitted model request: ${reqId}`);
 
   // Give the hub a moment to process (processing runs on intervals)
-  await new Promise((r) => setTimeout(r, 2000));
+  await new Promise(r => setTimeout(r, 2000));
 
   // Print quick status snapshots
   const agentStatus = aiAgentManager.getSystemStatus();
@@ -53,10 +53,12 @@ async function main() {
     activeRequests: hubStatus.activeRequests,
   });
 
-  console.log('\nSovereign-by-default usage verified in runtime (county-scoped deployment, non-federated providers preferred).');
+  console.log(
+    '\nSovereign-by-default usage verified in runtime (county-scoped deployment, non-federated providers preferred).'
+  );
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error('AI Smoke Test failed:', err);
   process.exit(1);
 });

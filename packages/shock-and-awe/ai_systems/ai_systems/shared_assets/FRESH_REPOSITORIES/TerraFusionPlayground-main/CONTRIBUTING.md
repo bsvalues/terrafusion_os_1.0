@@ -79,4 +79,4 @@ If you need help:
 
 ## License
 
-By contributing to TerraFusion, you agree that your contributions will be licensed under the project's license. 
+By contributing to TerraFusion, you agree that your contributions will be licensed under the project's license.

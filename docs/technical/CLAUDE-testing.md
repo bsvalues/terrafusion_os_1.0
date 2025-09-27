@@ -1,10 +1,12 @@
 # CLAUDE-testing.md
 
-Testing strategy and quality assurance guidance for Terrafusion OS comprehensive testing suite.
+Testing strategy and quality assurance guidance for Terrafusion OS comprehensive
+testing suite.
 
 ## Testing Strategy Overview
 
 ### Multi-Layer Testing Approach
+
 - **Unit Tests**: Individual component and service testing
 - **Integration Tests**: API endpoints and service integration
 - **E2E Tests**: Critical workflow validation with Playwright
@@ -14,6 +16,7 @@ Testing strategy and quality assurance guidance for Terrafusion OS comprehensive
 ## Testing Commands
 
 ### Core Testing
+
 ```bash
 # Run all tests
 npm test
@@ -29,6 +32,7 @@ cd frontend && npm run test:e2e
 ```
 
 ### Advanced Testing
+
 ```bash
 # Load testing with k6
 k6 run tests/load/api-load-test.js
@@ -46,6 +50,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 ## Unit Testing
 
 ### Backend Unit Tests (.NET)
+
 - Business logic testing with xUnit
 - Repository pattern testing
 - Service layer validation
@@ -53,6 +58,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 - Database context mocking
 
 ### Frontend Unit Tests (Jest)
+
 - React component testing with React Testing Library
 - Hook testing and validation
 - State management testing
@@ -60,6 +66,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 - Snapshot testing for components
 
 ### Testing Patterns
+
 ```bash
 # Unit test execution patterns
 dotnet test backend/Terrafusion.Tests/
@@ -69,6 +76,7 @@ npm test -- --coverage frontend/src/
 ## Integration Testing
 
 ### API Integration Tests
+
 - Controller endpoint testing
 - Authentication flow validation
 - Data persistence verification
@@ -76,6 +84,7 @@ npm test -- --coverage frontend/src/
 - Error handling validation
 
 ### Database Integration
+
 - Entity Framework integration testing
 - Migration testing
 - Data seeding validation
@@ -83,6 +92,7 @@ npm test -- --coverage frontend/src/
 - Transaction handling
 
 ### Test Configuration
+
 - Test database setup
 - Mock service configuration
 - Test data management
@@ -91,6 +101,7 @@ npm test -- --coverage frontend/src/
 ## End-to-End Testing
 
 ### Playwright E2E Tests
+
 ```bash
 # E2E test execution
 cd frontend && npm run test:e2e
@@ -101,6 +112,7 @@ npx playwright test tests/critical-workflows/
 ```
 
 ### Critical Workflows
+
 - User authentication flows
 - Property assessment workflows
 - Data entry and validation
@@ -108,6 +120,7 @@ npx playwright test tests/critical-workflows/
 - Multi-user collaboration scenarios
 
 ### Cross-Browser Testing
+
 - Chrome/Chromium testing
 - Firefox compatibility
 - Safari validation (when applicable)
@@ -117,6 +130,7 @@ npx playwright test tests/critical-workflows/
 ## Performance Testing
 
 ### Load Testing Strategy
+
 ```bash
 # Government-grade load testing
 ./scripts/load-testing-government.sh --users=50000-concurrent --duration=24hours
@@ -129,6 +143,7 @@ npx playwright test tests/critical-workflows/
 ```
 
 ### Performance Metrics
+
 - Response time monitoring
 - Throughput measurement
 - Resource utilization tracking
@@ -136,6 +151,7 @@ npx playwright test tests/critical-workflows/
 - Database performance analysis
 
 ### AI Performance Testing
+
 ```bash
 # AI agent performance testing
 ./scripts/ai-agent-performance-testing.sh --agents=1008 --workload=maximum
@@ -150,6 +166,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 ## Security Testing
 
 ### Automated Security Testing
+
 ```bash
 # Vulnerability assessment
 ./scripts/vulnerability-assessment.sh --tools=multiple --severity=all
@@ -162,6 +179,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 ```
 
 ### Security Test Categories
+
 - Authentication and authorization
 - Input validation and sanitization
 - SQL injection prevention
@@ -169,6 +187,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 - CSRF protection testing
 
 ### Government Security Standards
+
 - FISMA compliance testing
 - NIST framework validation
 - Section 508 accessibility testing
@@ -177,6 +196,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 ## AI & ML Testing
 
 ### Model Validation Testing
+
 ```bash
 # Model accuracy testing
 ./scripts/ai-model-accuracy-testing.sh --models=property-valuation --threshold=99%
@@ -189,6 +209,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 ```
 
 ### AI Agent Testing
+
 - Agent behavior validation
 - Swarm coordination testing
 - Performance under load
@@ -196,6 +217,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 - Communication protocol validation
 
 ### ML Pipeline Testing
+
 - Data pipeline validation
 - Feature engineering testing
 - Model training verification
@@ -205,6 +227,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 ## Quality Assurance Automation
 
 ### Continuous Testing
+
 ```bash
 # CI/CD test automation
 ./scripts/ci-test-pipeline.sh --parallel-execution --fail-fast
@@ -217,6 +240,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 ```
 
 ### Test Automation Framework
+
 - Automated test execution
 - Test result reporting
 - Failure analysis automation
@@ -224,6 +248,7 @@ python backend/quantum-performance/quantum_performance_benchmark.py
 - Environment provisioning
 
 ### Code Quality Testing
+
 ```bash
 # Code quality analysis
 sonar-scanner -Dsonar.projectKey=terrafusion-os
@@ -239,6 +264,7 @@ dotnet list package --vulnerable
 ## Government Compliance Testing
 
 ### Accessibility Testing
+
 ```bash
 # Section 508 compliance testing
 ./scripts/accessibility-testing.sh --standard=section-508 --automated
@@ -251,6 +277,7 @@ dotnet list package --vulnerable
 ```
 
 ### Compliance Automation
+
 - FISMA control testing
 - Privacy regulation compliance
 - Data retention policy validation
@@ -260,6 +287,7 @@ dotnet list package --vulnerable
 ## Test Data Management
 
 ### Test Data Strategy
+
 - Synthetic data generation
 - Production data masking
 - Test environment isolation
@@ -267,6 +295,7 @@ dotnet list package --vulnerable
 - County-specific test data
 
 ### Data Management Commands
+
 ```bash
 # Generate test data
 ./scripts/generate-test-data.sh --county=benton --size=large
@@ -281,6 +310,7 @@ dotnet list package --vulnerable
 ## Multi-County Testing
 
 ### County-Specific Testing
+
 ```bash
 # Test county deployment
 ./scripts/test-county-deployment.sh --county=new-county --template=benton
@@ -293,6 +323,7 @@ dotnet list package --vulnerable
 ```
 
 ### Cross-County Testing
+
 - Data synchronization testing
 - Multi-county workflow validation
 - Resource sharing testing
@@ -301,6 +332,7 @@ dotnet list package --vulnerable
 ## Monitoring & Reporting
 
 ### Test Reporting
+
 - Comprehensive test reports
 - Coverage analysis
 - Performance metrics
@@ -308,6 +340,7 @@ dotnet list package --vulnerable
 - Compliance validation reports
 
 ### Continuous Monitoring
+
 ```bash
 # Real-time test monitoring
 ./scripts/test-monitoring-dashboard.sh --real-time --all-environments
@@ -322,12 +355,14 @@ dotnet list package --vulnerable
 ## Troubleshooting Testing Issues
 
 ### Common Testing Problems
+
 - **Test Environment Issues**: Environment configuration and isolation
 - **Flaky Tests**: Non-deterministic test behavior
 - **Performance Test Failures**: Resource constraints and bottlenecks
 - **Data Dependencies**: Test data consistency and availability
 
 ### Testing Best Practices
+
 - Test isolation and independence
 - Consistent test data management
 - Parallel test execution optimization

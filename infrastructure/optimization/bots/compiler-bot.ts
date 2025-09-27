@@ -3,7 +3,7 @@
  * Optimizes quantum circuit compilation for various quantum backends
  */
 
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 
 export class CompilerBot extends EventEmitter {
   private isActive: boolean = false;
@@ -19,7 +19,7 @@ export class CompilerBot extends EventEmitter {
 
   private initializeCompilationPasses(): void {
     // Gate optimization passes
-    this.compilationPasses.set("gate_optimization", {
+    this.compilationPasses.set('gate_optimization', {
       commutation_analysis: true,
       gate_cancellation: true,
       gate_fusion: true,
@@ -27,22 +27,22 @@ export class CompilerBot extends EventEmitter {
     });
 
     // Routing optimization
-    this.compilationPasses.set("routing", {
-      algorithm: "sabre",
+    this.compilationPasses.set('routing', {
+      algorithm: 'sabre',
       lookahead: 20,
       swap_minimization: true,
-      layout_method: "dense",
+      layout_method: 'dense',
     });
 
     // Pulse optimization
-    this.compilationPasses.set("pulse", {
+    this.compilationPasses.set('pulse', {
       pulse_optimization: true,
       calibration_aware: true,
       cross_resonance_reduction: true,
     });
 
     // Error mitigation compilation
-    this.compilationPasses.set("error_aware", {
+    this.compilationPasses.set('error_aware', {
       noise_adaptive_layout: true,
       error_aware_routing: true,
       gate_error_mitigation: true,
@@ -50,13 +50,13 @@ export class CompilerBot extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    console.log("⚙️ Initializing Compiler Bot...");
+    console.log('⚙️ Initializing Compiler Bot...');
     this.isActive = true;
-    this.emit("initialized");
+    this.emit('initialized');
   }
 
   async deploy(): Promise<void> {
-    console.log("🚀 Deploying quantum circuit compiler...");
+    console.log('🚀 Deploying quantum circuit compiler...');
     this.startCompilationOptimization();
   }
 
@@ -72,7 +72,7 @@ export class CompilerBot extends EventEmitter {
     const circuit = this.generateSampleCircuit();
     const compiled = this.compileCircuit(circuit);
 
-    this.emit("circuit-compiled", {
+    this.emit('circuit-compiled', {
       originalGates: circuit.gates,
       optimizedGates: compiled.gates,
       reduction: (circuit.gates - compiled.gates) / circuit.gates,
@@ -80,7 +80,7 @@ export class CompilerBot extends EventEmitter {
     });
 
     if (compiled.optimizationApplied) {
-      this.emit("optimization-applied", compiled.optimizations);
+      this.emit('optimization-applied', compiled.optimizations);
     }
   }
 
@@ -102,25 +102,22 @@ export class CompilerBot extends EventEmitter {
       compilationTime: 100 + Math.random() * 200,
       optimizationApplied: true,
       optimizations: {
-        gates_eliminated:
-          circuit.gates - Math.floor(circuit.gates * optimizationFactor),
-        depth_reduction:
-          circuit.depth -
-          Math.floor(circuit.depth * (optimizationFactor + 0.1)),
+        gates_eliminated: circuit.gates - Math.floor(circuit.gates * optimizationFactor),
+        depth_reduction: circuit.depth - Math.floor(circuit.depth * (optimizationFactor + 0.1)),
         routing_swaps: Math.floor(Math.random() * 10),
       },
     };
   }
 
   async compileHybrid(hybridDesign: any): Promise<any> {
-    console.log("🔄 Compiling hybrid quantum-classical circuit...");
+    console.log('🔄 Compiling hybrid quantum-classical circuit...');
 
     return {
       quantum_circuits: await this.compileQuantumComponents(hybridDesign),
       classical_interface: await this.compileClassicalInterface(hybridDesign),
       synchronization_points: await this.compileSyncPoints(hybridDesign),
       optimization_level: this.optimizationLevel,
-      total_compilation_time: "250ms",
+      total_compilation_time: '250ms',
     };
   }
 
@@ -130,11 +127,11 @@ export class CompilerBot extends EventEmitter {
       total_gates: 500,
       optimized_gates: 350,
       transpilation_passes: [
-        "unroll_custom_definitions",
-        "basis_translation",
-        "optimize_1q_gates",
-        "cx_cancellation",
-        "optimize_swap_before_measure",
+        'unroll_custom_definitions',
+        'basis_translation',
+        'optimize_1q_gates',
+        'cx_cancellation',
+        'optimize_swap_before_measure',
       ],
     };
   }
@@ -142,18 +139,18 @@ export class CompilerBot extends EventEmitter {
   private async compileClassicalInterface(design: any): Promise<any> {
     return {
       interface_functions: design.interface_points.data_transfer_points.length,
-      marshalling_code: "generated",
-      data_validation: "included",
-      error_handling: "comprehensive",
+      marshalling_code: 'generated',
+      data_validation: 'included',
+      error_handling: 'comprehensive',
     };
   }
 
   private async compileSyncPoints(design: any): Promise<any> {
     return {
       barrier_insertions: design.interface_points.synchronization_points.length,
-      measurement_scheduling: "optimized",
-      classical_conditioning: "supported",
-      feed_forward: "enabled",
+      measurement_scheduling: 'optimized',
+      classical_conditioning: 'supported',
+      feed_forward: 'enabled',
     };
   }
 
@@ -162,27 +159,27 @@ export class CompilerBot extends EventEmitter {
 
     const backendOptimizations: any = {
       ibm_quantum: {
-        basis_gates: ["id", "rz", "sx", "x", "cx"],
-        coupling_map: "heavy_hex",
+        basis_gates: ['id', 'rz', 'sx', 'x', 'cx'],
+        coupling_map: 'heavy_hex',
         optimization_level: 3,
       },
       google_sycamore: {
-        basis_gates: ["sqrt_x", "sqrt_y", "sqrt_w", "cz"],
-        coupling_map: "grid",
+        basis_gates: ['sqrt_x', 'sqrt_y', 'sqrt_w', 'cz'],
+        coupling_map: 'grid',
         optimization_level: 2,
       },
       ionq: {
-        basis_gates: ["rx", "ry", "rz", "rxx"],
-        coupling_map: "all_to_all",
+        basis_gates: ['rx', 'ry', 'rz', 'rxx'],
+        coupling_map: 'all_to_all',
         optimization_level: 1,
       },
     };
 
-    return backendOptimizations[backend] || backendOptimizations["ibm_quantum"];
+    return backendOptimizations[backend] || backendOptimizations['ibm_quantum'];
   }
 
   increaseOptimizationLevel(): void {
-    console.log("📈 Increasing compilation optimization level...");
+    console.log('📈 Increasing compilation optimization level...');
     this.optimizationLevel = Math.min(3, this.optimizationLevel + 1);
   }
 
@@ -197,13 +194,13 @@ export class CompilerBot extends EventEmitter {
       active: this.isActive,
       optimization_level: this.optimizationLevel,
       compilation_passes: Array.from(this.compilationPasses.keys()),
-      average_gate_reduction: (avgReduction * 100).toFixed(1) + "%",
+      average_gate_reduction: (avgReduction * 100).toFixed(1) + '%',
       compilations_performed: this.compilationStats.length,
     };
   }
 
   async shutdown(): Promise<void> {
     this.isActive = false;
-    this.emit("shutdown");
+    this.emit('shutdown');
   }
 }

@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package terrafusion.valuation.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/rpc/status.proto";
+
+option csharp_namespace = "TerraFusion.Grpc.Valuation.V1";
+option go_package = "github.com/terrafusion/protos/valuation/v1;valuation";
+
+// Core domain types
+message ParcelId {
+  string parcel_id = 1;
+  string county_id = 2;
+}
+
+message BulkParcelIds {
+  repeated string parcel_ids = 1;
+  string county_id = 2;
+  int32 batch_size = 3;
+}
+
+message Valuation {
+  string parcel_id = 1;
+  string county_id = 2;
+  double market_value = 3;
+  double assessed_value = 4;
+  double confidence_score = 5;
+  string valuation_method = 6; // "sales_comparison", "cost_approach", "income"
+  google.protobuf.Timestamp calculated_at = 7;
+  repeated string comparables = 8;
+  ValuationMetadata metadata = 9;
+}
+
+message ValuationMetadata {
+  string engine_version = 1;
+  string model_type = 2;
+  map<string, string> features = 3;
+  repeated string warnings = 4;
+}
+
+message ValuationBatch {
+  repeated Valuation valuations = 1;
+  int32 total_processed = 2;
+  int32 successful = 3;
+  int32 failed = 4;
+  google.protobuf.Timestamp batch_completed_at = 5;
+}
+
+message ValuationRequest {
+  ParcelId parcel_id = 1;
+  ValuationOptions options = 2;
+}
+
+message ValuationOptions {
+  bool include_comparables = 1;
+  bool include_metadata = 2;
+  string force_method = 3; // Optional: force specific valuation method
+  double confidence_threshold = 4; // Minimum confidence score required
+}
+
+message StreamValuationRequest {
+  BulkParcelIds parcel_ids = 1;
+  ValuationOptions options = 2;
+  bool enable_progress_updates = 3;
+}
+
+message ValuationProgress {
+  int32 processed_count = 1;
+  int32 total_count = 2;
+  double progress_percentage = 3;
+  google.protobuf.Timestamp last_updated = 4;
+  string current_parcel_id = 5;
+}
+
+// Service definition
+service ValuationService {
+  // Single parcel valuation
+  rpc GetValuation(ValuationRequest) returns (Valuation);
+  
+  // Bulk valuation (request-response)
+  rpc BulkValuation(StreamValuationRequest) returns (ValuationBatch);
+  
+  // Streaming bulk valuation (server streaming)
+  rpc StreamBulkValuation(StreamValuationRequest) returns (stream Valuation);
+  
+  // Progress tracking for long-running valuations
+  rpc TrackValuationProgress(StreamValuationRequest) returns (stream ValuationProgress);
+  
+  // Health check
+  rpc Health(google.protobuf.Empty) returns (ValuationServiceHealth);
+}
+
+message ValuationServiceHealth {
+  bool is_healthy = 1;
+  string version = 2;
+  int32 active_valuations = 3;
+  double avg_response_time_ms = 4;
+  google.protobuf.Timestamp last_check = 5;
+}

@@ -310,7 +310,7 @@ jobs:
       env:
         ASPNETCORE_ENVIRONMENT: Test
         ConnectionStrings__DefaultConnection: Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres
-        Redis__ConnectionString: localhost:6379
+        Redis__ConnectionString: localhost:\${{TF_REDIS_PORT:-6379}}
     
     - name: 🎭 Install Playwright browsers
       run: npx playwright install --with-deps chromium firefox webkit
@@ -318,13 +318,13 @@ jobs:
     - name: 🧪 Run integration tests
       run: npm run test:integration
       env:
-        API_BASE_URL: http://localhost:5000
+        API_BASE_URL: http://localhost:\${{TF_REDIS_PORT:-6379}}
     
     - name: 🎭 Run E2E tests
       run: npm run test:e2e
       env:
-        BASE_URL: http://localhost:3000
-        API_BASE_URL: http://localhost:5000
+        BASE_URL: http://localhost:\${{TF_REDIS_PORT:-6379}}
+        API_BASE_URL: http://localhost:\${{TF_REDIS_PORT:-6379}}
     
     - name: 🤖 Test AI Swarm Integration
       run: |

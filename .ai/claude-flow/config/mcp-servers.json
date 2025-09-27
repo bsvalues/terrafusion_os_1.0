@@ -11,7 +11,7 @@
       }
     },
     "ruv-swarm": {
-      "command": "npx", 
+      "command": "npx",
       "args": ["ruv-swarm", "mcp-server"],
       "env": {
         "SWARM_MODE": "hive-mind",
@@ -40,7 +40,7 @@
       }
     },
     "revenue-discovery-tools": {
-      "command": "node", 
+      "command": "node",
       "args": ["./backend/mcp-servers/revenue-server/index.js"],
       "env": {
         "AI_SWARM_SIZE": "300",
@@ -50,7 +50,7 @@
     },
     "property-assessment-suite": {
       "command": "node",
-      "args": ["./backend/mcp-servers/property-server/index.js"], 
+      "args": ["./backend/mcp-servers/property-server/index.js"],
       "env": {
         "ASSESSMENT_AGENTS": "200",
         "VALUATION_MODELS": "comparative,cost,income",
@@ -61,7 +61,7 @@
       "command": "node",
       "args": ["./backend/mcp-servers/compliance-server/index.js"],
       "env": {
-        "COMPLIANCE_AGENTS": "150", 
+        "COMPLIANCE_AGENTS": "150",
         "REGULATION_FRAMEWORKS": "FISMA,NIST,SOC2",
         "AUDIT_TRAIL": "comprehensive"
       }

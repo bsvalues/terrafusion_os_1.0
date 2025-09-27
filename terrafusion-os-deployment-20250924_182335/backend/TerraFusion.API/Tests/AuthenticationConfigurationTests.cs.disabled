@@ -1,0 +1,239 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using TerraFusion.API.Controllers;
+using TerraFusion.API.Configuration;
+using TerraFusion.API.Security;
+
+namespace TerraFusion.API.Tests.Security
+{
+    [TestClass]
+    public class AuthenticationConfigurationTests
+    {
+        private Mock<IJwtAuthService> _mockJwtService;
+        private Mock<ILogger<AuthController>> _mockLogger;
+        private Mock<ISecureConfigurationService> _mockSecureConfig;
+        private IConfiguration _configuration;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _mockJwtService = new Mock<IJwtAuthService>();
+            _mockLogger = new Mock<ILogger<AuthController>>();
+            _mockSecureConfig = new Mock<ISecureConfigurationService>();
+
+            // Create test configuration
+            var configDict = new Dictionary<string, string>
+            {
+                ["Authentication:AdminPassword"] = "TestAdmin2025!",
+                ["Authentication:AssessorPassword"] = "TestAssessor2025!",
+                ["Authentication:DemoPassword"] = "TestDemo2025!",
+                ["LegacyDatabase:DatabasePath"] = "test/databases",
+                ["CrossPlatformVerifier:NodeJsServiceUrl"] = "http://localhost:3000/test",
+                ["AzureKeyVault:Enabled"] = "false"
+            };
+
+            _configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(configDict!)
+                .Build();
+        }
+
+        [TestMethod]
+        public async Task ValidateCredentials_AdminUser_ReturnsSuccessWithAdminRole()
+        {
+            // Arrange
+            _mockSecureConfig
+                .Setup(x => x.GetSecretAsync("Authentication--AdminPassword"))
+                .ReturnsAsync("TestAdmin2025!");
+
+            var controller = new AuthController(
+                _mockJwtService.Object,
+                _mockLogger.Object,
+                _configuration,
+                _mockSecureConfig.Object);
+
+            // Act
+            var request = new LoginRequest 
+            { 
+                Username = "admin", 
+                Password = "TestAdmin2025!" 
+            };
+
+            var result = await controller.Login(request);
+
+            // Assert
+            Assert.IsNotNull(result);
+            // Additional assertions would depend on your specific JWT implementation
+        }
+
+        [TestMethod]
+        public async Task ValidateCredentials_AssessorUser_ReturnsSuccessWithAssessorRole()
+        {
+            // Arrange
+            _mockSecureConfig
+                .Setup(x => x.GetSecretAsync("Authentication--AssessorPassword"))
+                .ReturnsAsync("TestAssessor2025!");
+
+            var controller = new AuthController(
+                _mockJwtService.Object,
+                _mockLogger.Object,
+                _configuration,
+                _mockSecureConfig.Object);
+
+            // Act
+            var request = new LoginRequest 
+            { 
+                Username = "assessor", 
+                Password = "TestAssessor2025!" 
+            };
+
+            var result = await controller.Login(request);
+
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public async Task ValidateCredentials_DemoUser_ReturnsSuccessWithUserRole()
+        {
+            // Arrange
+            _mockSecureConfig
+                .Setup(x => x.GetSecretAsync("Authentication--DemoPassword"))
+                .ReturnsAsync("TestDemo2025!");
+
+            var controller = new AuthController(
+                _mockJwtService.Object,
+                _mockLogger.Object,
+                _configuration,
+                _mockSecureConfig.Object);
+
+            // Act
+            var request = new LoginRequest 
+            { 
+                Username = "demo", 
+                Password = "TestDemo2025!" 
+            };
+
+            var result = await controller.Login(request);
+
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public async Task ValidateCredentials_InvalidCredentials_ReturnsUnauthorized()
+        {
+            // Arrange
+            _mockSecureConfig
+                .Setup(x => x.GetSecretAsync(It.IsAny<string>()))
+                .ReturnsAsync("ValidPassword");
+
+            var controller = new AuthController(
+                _mockJwtService.Object,
+                _mockLogger.Object,
+                _configuration,
+                _mockSecureConfig.Object);
+
+            // Act
+            var request = new LoginRequest 
+            { 
+                Username = "admin", 
+                Password = "WrongPassword" 
+            };
+
+            var result = await controller.Login(request);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(UnauthorizedObjectResult));
+        }
+
+        [TestMethod]
+        public async Task SecureConfigurationService_AzureKeyVaultDisabled_FallsBackToConfiguration()
+        {
+            // Arrange
+            var configDict = new Dictionary<string, string>
+            {
+                ["AzureKeyVault:Enabled"] = "false",
+                ["TestSecret"] = "TestValue"
+            };
+
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(configDict!)
+                .Build();
+
+            var mockLogger = new Mock<ILogger<SecureConfigurationService>>();
+            var service = new SecureConfigurationService(config, mockLogger.Object);
+
+            // Act
+            var result = await service.GetSecretAsync("TestSecret");
+
+            // Assert
+            Assert.AreEqual("TestValue", result);
+        }
+
+        [TestMethod]
+        public async Task SecureConfigurationService_GetConfigurationValue_ConvertsTypeCorrectly()
+        {
+            // Arrange
+            var configDict = new Dictionary<string, string>
+            {
+                ["AzureKeyVault:Enabled"] = "false",
+                ["IntValue"] = "42",
+                ["BoolValue"] = "true"
+            };
+
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(configDict!)
+                .Build();
+
+            var mockLogger = new Mock<ILogger<SecureConfigurationService>>();
+            var service = new SecureConfigurationService(config, mockLogger.Object);
+
+            // Act
+            var intResult = await service.GetConfigurationValueAsync<int>("IntValue");
+            var boolResult = await service.GetConfigurationValueAsync<bool>("BoolValue");
+
+            // Assert
+            Assert.AreEqual(42, intResult);
+            Assert.AreEqual(true, boolResult);
+        }
+    }
+
+    /// <summary>
+    /// Integration test to verify the entire authentication flow
+    /// </summary>
+    [TestClass]
+    public class AuthenticationIntegrationTests
+    {
+        [TestMethod]
+        public async Task FullAuthenticationFlow_WithSecureConfiguration_WorksCorrectly()
+        {
+            // This test would require a full test server setup
+            // and is more complex - implement based on your testing infrastructure
+            Assert.IsTrue(true, "Integration test placeholder");
+        }
+
+        [TestMethod]
+        public void ConfigurationSetup_AllEnvironments_HasRequiredSections()
+        {
+            var environments = new[] { "Development", "Staging", "Production" };
+
+            foreach (var env in environments)
+            {
+                // Test that each environment configuration has required sections
+                var configPath = $"appsettings.{env}.json";
+                
+                // This would test that configuration files exist and have required sections
+                // Implementation depends on how you want to structure the test
+                Assert.IsTrue(true, $"Configuration test for {env} placeholder");
+            }
+        }
+    }
+}

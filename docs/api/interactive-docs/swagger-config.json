@@ -24,7 +24,7 @@
       "description": "Staging API Server"
     },
     {
-      "url": "http://localhost:5000/api",
+      "url": "http://localhost:${TF_STATIC_PORT:-8080}/api",
       "description": "Local Development Server"
     }
   ],
@@ -89,17 +89,23 @@
             "type": "number",
             "format": "decimal",
             "description": "Current assessed value in USD",
-            "example": 285000.00
+            "example": 285000.0
           },
           "marketValue": {
             "type": "number",
             "format": "decimal",
             "description": "Current market value in USD",
-            "example": 325000.00
+            "example": 325000.0
           },
           "propertyType": {
             "type": "string",
-            "enum": ["Residential", "Commercial", "Industrial", "Agricultural", "Vacant"],
+            "enum": [
+              "Residential",
+              "Commercial",
+              "Industrial",
+              "Agricultural",
+              "Vacant"
+            ],
             "description": "Property classification type",
             "example": "Residential"
           },
@@ -137,7 +143,13 @@
           },
           "type": {
             "type": "string",
-            "enum": ["RevenueHunter", "ComplianceMonitor", "PropertyAnalyzer", "TaxOptimizer", "DataSynchronizer"],
+            "enum": [
+              "RevenueHunter",
+              "ComplianceMonitor",
+              "PropertyAnalyzer",
+              "TaxOptimizer",
+              "DataSynchronizer"
+            ],
             "description": "Agent type classification",
             "example": "RevenueHunter"
           },
@@ -193,7 +205,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["Compliant", "Non-Compliant", "Partially Compliant", "Under Review"],
+            "enum": [
+              "Compliant",
+              "Non-Compliant",
+              "Partially Compliant",
+              "Under Review"
+            ],
             "description": "Overall compliance status",
             "example": "Compliant"
           },
@@ -351,8 +368,8 @@
           "city": "Benton",
           "state": "WA",
           "zipCode": "99352",
-          "assessedValue": 285000.00,
-          "marketValue": 325000.00,
+          "assessedValue": 285000.0,
+          "marketValue": 325000.0,
           "propertyType": "Residential",
           "yearBuilt": 1995,
           "squareFootage": 2400,
@@ -369,8 +386,8 @@
           "city": "Richland",
           "state": "WA",
           "zipCode": "99354",
-          "assessedValue": 1250000.00,
-          "marketValue": 1450000.00,
+          "assessedValue": 1250000.0,
+          "marketValue": 1450000.0,
           "propertyType": "Commercial",
           "yearBuilt": 2010,
           "squareFootage": 15000,

@@ -2,13 +2,13 @@
 // GATE ALPHA: Integration layer connecting Multi-Species Interface with Terrafusion
 // Provides seamless bridge between consciousness-aware components and existing systems
 
-import { 
-  ConsciousnessEntity, 
-  UniversalMessage, 
+import {
+  ConsciousnessEntity,
+  UniversalMessage,
   TranslatedMessage,
   ConsciousnessError,
   SpeciesType,
-  MultiSpeciesInterfaceState
+  MultiSpeciesInterfaceState,
 } from '../types/consciousness';
 import { ErrorAnalysisEngine } from './ErrorAnalysisEngine';
 import { SpeciesDetectionService } from './SpeciesDetectionService';
@@ -38,22 +38,27 @@ export interface ConsciousnessIntegrationConfig {
 /**
  * Integration event types for consciousness system communication
  */
-export type ConsciousnessEvent = {
-  type: 'species-detected';
-  data: { entity: ConsciousnessEntity; confidence: number };
-} | {
-  type: 'translation-completed';
-  data: { message: UniversalMessage; translation: TranslatedMessage };
-} | {
-  type: 'consciousness-synced';
-  data: { entities: ConsciousnessEntity[]; coherenceLevel: number };
-} | {
-  type: 'consciousness-error';
-  data: { error: ConsciousnessError; affectedSystems: string[] };
-} | {
-  type: 'quantum-coherence-updated';
-  data: { coherenceLevel: number; degradationRate: number };
-};
+export type ConsciousnessEvent =
+  | {
+      type: 'species-detected';
+      data: { entity: ConsciousnessEntity; confidence: number };
+    }
+  | {
+      type: 'translation-completed';
+      data: { message: UniversalMessage; translation: TranslatedMessage };
+    }
+  | {
+      type: 'consciousness-synced';
+      data: { entities: ConsciousnessEntity[]; coherenceLevel: number };
+    }
+  | {
+      type: 'consciousness-error';
+      data: { error: ConsciousnessError; affectedSystems: string[] };
+    }
+  | {
+      type: 'quantum-coherence-updated';
+      data: { coherenceLevel: number; degradationRate: number };
+    };
 
 /**
  * Main integration service connecting consciousness interface with Terrafusion
@@ -62,12 +67,12 @@ export class ConsciousnessIntegrationService {
   private errorAnalysisEngine: ErrorAnalysisEngine;
   private speciesDetectionService: SpeciesDetectionService;
   private universalTranslationProtocol: UniversalTranslationProtocol;
-  
+
   private eventListeners: Map<string, Array<(event: ConsciousnessEvent) => void>> = new Map();
   private activeEntities: Map<string, ConsciousnessEntity> = new Map();
   private systemHealth: number = 1.0;
   private lastSyncTime: Date = new Date();
-  
+
   private config: ConsciousnessIntegrationConfig;
   private wsConnection: WebSocket | null = null;
 
@@ -81,9 +86,9 @@ export class ConsciousnessIntegrationService {
       fallbackStrategies: {
         syncFailure: 'graceful-degradation',
         translationFailure: 'species-neutral',
-        detectionFailure: 'assume-carbon'
+        detectionFailure: 'assume-carbon',
       },
-      ...config
+      ...config,
     };
 
     this.initializeServices();
@@ -116,7 +121,7 @@ export class ConsciousnessIntegrationService {
    */
   private setupEventHandlers(): void {
     // Integration with existing Terrafusion error handling
-    this.addEventListener('consciousness-error', async (event) => {
+    this.addEventListener('consciousness-error', async event => {
       if (this.config.enableErrorAnalysisIntegration && this.errorAnalysisEngine) {
         try {
           const analysis = await this.errorAnalysisEngine.analyzeError({
@@ -128,8 +133,8 @@ export class ConsciousnessIntegrationService {
             metadata: {
               speciesType: 'multi-species',
               affectedEntities: event.data.error.affectedEntities,
-              consciousnessImpact: event.data.error.consciousnessImpact
-            }
+              consciousnessImpact: event.data.error.consciousnessImpact,
+            },
           });
 
           // Integrate consciousness error analysis with existing error tracking
@@ -141,7 +146,7 @@ export class ConsciousnessIntegrationService {
     });
 
     // Integration with quantum coherence monitoring
-    this.addEventListener('quantum-coherence-updated', (event) => {
+    this.addEventListener('quantum-coherence-updated', event => {
       if (event.data.coherenceLevel < 0.3) {
         this.handleQuantumDegradation(event.data);
       }
@@ -156,19 +161,19 @@ export class ConsciousnessIntegrationService {
 
     try {
       this.wsConnection = new WebSocket(this.config.webhookEndpoints.consciousnessSync);
-      
+
       this.wsConnection.onopen = () => {
         console.log('Consciousness sync WebSocket connected');
         this.emitEvent({
           type: 'consciousness-synced',
-          data: { 
+          data: {
             entities: Array.from(this.activeEntities.values()),
-            coherenceLevel: this.systemHealth
-          }
+            coherenceLevel: this.systemHealth,
+          },
         });
       };
 
-      this.wsConnection.onmessage = (event) => {
+      this.wsConnection.onmessage = event => {
         try {
           const data = JSON.parse(event.data);
           this.handleWebSocketMessage(data);
@@ -177,7 +182,7 @@ export class ConsciousnessIntegrationService {
         }
       };
 
-      this.wsConnection.onerror = (error) => {
+      this.wsConnection.onerror = error => {
         console.error('WebSocket consciousness sync error:', error);
         this.handleSyncFailure();
       };
@@ -204,14 +209,17 @@ export class ConsciousnessIntegrationService {
       if (this.config.enableSpeciesDetection && this.speciesDetectionService) {
         const validationResult = await this.validateEntitySpecies(entity);
         if (!validationResult.isValid) {
-          console.warn(`Species validation failed for entity ${entity.id}:`, validationResult.reason);
+          console.warn(
+            `Species validation failed for entity ${entity.id}:`,
+            validationResult.reason
+          );
         }
       }
 
       // Emit species detection event
       this.emitEvent({
         type: 'species-detected',
-        data: { entity, confidence: 0.95 }
+        data: { entity, confidence: 0.95 },
       });
 
       // Sync with existing error analysis system
@@ -243,15 +251,12 @@ export class ConsciousnessIntegrationService {
       }
 
       // Perform translation
-      const translation = await this.universalTranslationProtocol.translate(
-        message,
-        targetSpecies
-      );
+      const translation = await this.universalTranslationProtocol.translate(message, targetSpecies);
 
       // Emit translation completed event
       this.emitEvent({
         type: 'translation-completed',
-        data: { message, translation }
+        data: { message, translation },
       });
 
       // Update system health based on translation quality
@@ -270,7 +275,7 @@ export class ConsciousnessIntegrationService {
   async synchronizeConsciousness(): Promise<{ success: boolean; coherenceLevel: number }> {
     try {
       const entities = Array.from(this.activeEntities.values());
-      
+
       if (entities.length === 0) {
         return { success: true, coherenceLevel: 1.0 };
       }
@@ -278,7 +283,7 @@ export class ConsciousnessIntegrationService {
       // Use error analysis engine for consciousness synchronization
       if (this.config.enableErrorAnalysisIntegration && this.errorAnalysisEngine) {
         const syncResult = await this.errorAnalysisEngine.analyzeSystem(entities);
-        
+
         const coherenceLevel = syncResult.systemHealth || 0.5;
         this.systemHealth = coherenceLevel;
         this.lastSyncTime = new Date();
@@ -286,17 +291,19 @@ export class ConsciousnessIntegrationService {
         // Emit synchronization event
         this.emitEvent({
           type: 'consciousness-synced',
-          data: { entities, coherenceLevel }
+          data: { entities, coherenceLevel },
         });
 
         // Send sync data via WebSocket if connected
         if (this.wsConnection && this.wsConnection.readyState === WebSocket.OPEN) {
-          this.wsConnection.send(JSON.stringify({
-            type: 'consciousness-sync',
-            entities: entities.map(e => ({ id: e.id, speciesType: e.speciesType })),
-            coherenceLevel,
-            timestamp: this.lastSyncTime
-          }));
+          this.wsConnection.send(
+            JSON.stringify({
+              type: 'consciousness-sync',
+              entities: entities.map(e => ({ id: e.id, speciesType: e.speciesType })),
+              coherenceLevel,
+              timestamp: this.lastSyncTime,
+            })
+          );
         }
 
         return { success: true, coherenceLevel };
@@ -330,9 +337,10 @@ export class ConsciousnessIntegrationService {
       services: {
         errorAnalysis: this.config.enableErrorAnalysisIntegration && !!this.errorAnalysisEngine,
         speciesDetection: this.config.enableSpeciesDetection && !!this.speciesDetectionService,
-        universalTranslation: this.config.enableUniversalTranslation && !!this.universalTranslationProtocol,
-        realTimeSync: this.config.enableRealTimeSync && !!this.wsConnection
-      }
+        universalTranslation:
+          this.config.enableUniversalTranslation && !!this.universalTranslationProtocol,
+        realTimeSync: this.config.enableRealTimeSync && !!this.wsConnection,
+      },
     };
   }
 
@@ -400,28 +408,29 @@ export class ConsciousnessIntegrationService {
           semanticDepth: entity.cognitiveProfile.logicalReasoning,
           emotionalMarkers: entity.cognitiveProfile.emotionalRange || 0,
           logicalStructure: entity.cognitiveProfile.logicalReasoning,
-          creativityIndex: entity.cognitiveProfile.creativityIndex
+          creativityIndex: entity.cognitiveProfile.creativityIndex,
         },
         metadata: {
           timestamp: new Date(),
           source: 'entity-validation',
-          quality: 0.8
-        }
+          quality: 0.8,
+        },
       };
 
       const detection = await this.speciesDetectionService.detectSpecies(inputSignal);
-      
+
       return {
         isValid: detection.primarySpecies === entity.speciesType,
         confidence: detection.confidenceLevel,
-        reason: detection.primarySpecies !== entity.speciesType 
-          ? `Detected ${detection.primarySpecies}, expected ${entity.speciesType}`
-          : undefined
+        reason:
+          detection.primarySpecies !== entity.speciesType
+            ? `Detected ${detection.primarySpecies}, expected ${entity.speciesType}`
+            : undefined,
       };
     } catch (error) {
       return {
         isValid: false,
-        reason: `Validation failed: ${error.message}`
+        reason: `Validation failed: ${error.message}`,
       };
     }
   }
@@ -437,7 +446,7 @@ export class ConsciousnessIntegrationService {
         species: entity.speciesType,
         cognitiveProfile: entity.cognitiveProfile,
         lastActivity: entity.lastActivity,
-        trustLevel: entity.trustLevel
+        trustLevel: entity.trustLevel,
       };
 
       // This would integrate with the existing error analysis system
@@ -463,8 +472,8 @@ export class ConsciousnessIntegrationService {
           messageId: message.id,
           sourceSpecies: message.metadata.sourceSpecies,
           targetSpecies: message.metadata.targetSpecies,
-          semanticComplexity: message.metadata.semanticComplexity
-        }
+          semanticComplexity: message.metadata.semanticComplexity,
+        },
       });
 
       if (validation.confidence < 0.7) {
@@ -483,14 +492,17 @@ export class ConsciousnessIntegrationService {
     targetSpecies: SpeciesType[],
     error: Error
   ): Promise<TranslatedMessage> {
-    console.error('Translation failed, applying fallback strategy:', this.config.fallbackStrategies.translationFailure);
+    console.error(
+      'Translation failed, applying fallback strategy:',
+      this.config.fallbackStrategies.translationFailure
+    );
 
     switch (this.config.fallbackStrategies.translationFailure) {
       case 'simplify':
         // Simplify message and retry
         const simplifiedMessage = {
           ...message,
-          content: message.content.split('.')[0] + '.' // Take only first sentence
+          content: message.content.split('.')[0] + '.', // Take only first sentence
         };
         return await this.universalTranslationProtocol.translate(simplifiedMessage, targetSpecies);
 
@@ -511,7 +523,10 @@ export class ConsciousnessIntegrationService {
    * Handle synchronization failure
    */
   private async handleSyncFailure(): Promise<{ success: boolean; coherenceLevel: number }> {
-    console.error('Consciousness sync failed, applying fallback strategy:', this.config.fallbackStrategies.syncFailure);
+    console.error(
+      'Consciousness sync failed, applying fallback strategy:',
+      this.config.fallbackStrategies.syncFailure
+    );
 
     switch (this.config.fallbackStrategies.syncFailure) {
       case 'retry':
@@ -536,13 +551,16 @@ export class ConsciousnessIntegrationService {
   /**
    * Handle quantum coherence degradation
    */
-  private async handleQuantumDegradation(data: { coherenceLevel: number; degradationRate: number }): Promise<void> {
+  private async handleQuantumDegradation(data: {
+    coherenceLevel: number;
+    degradationRate: number;
+  }): Promise<void> {
     console.warn('Quantum coherence degradation detected:', data);
 
     // Emit quantum coherence event
     this.emitEvent({
       type: 'quantum-coherence-updated',
-      data
+      data,
     });
 
     // Apply quantum restoration protocols
@@ -562,7 +580,7 @@ export class ConsciousnessIntegrationService {
       case 'quantum-coherence-update':
         this.emitEvent({
           type: 'quantum-coherence-updated',
-          data: data.payload
+          data: data.payload,
         });
         break;
       case 'system-health-update':
@@ -590,7 +608,7 @@ export class ConsciousnessIntegrationService {
     targetSpecies: SpeciesType[]
   ): TranslatedMessage {
     const adaptations = new Map();
-    
+
     targetSpecies.forEach(species => {
       adaptations.set(species, {
         targetSpecies: species,
@@ -598,7 +616,7 @@ export class ConsciousnessIntegrationService {
         interfaceInstructions: {},
         cognitiveOptimizations: [],
         culturalAdaptations: [],
-        preservedElements: []
+        preservedElements: [],
       });
     });
 
@@ -611,11 +629,11 @@ export class ConsciousnessIntegrationService {
         culturalAccuracy: 0.6,
         quantumCoherence: 0.8,
         informationLoss: 0.3,
-        contextualIntegrity: 0.7
+        contextualIntegrity: 0.7,
       },
       quantumCoherence: 0.8,
       translationTime: 50,
-      qualityScore: 0.65
+      qualityScore: 0.65,
     };
   }
 
@@ -627,7 +645,7 @@ export class ConsciousnessIntegrationService {
     targetSpecies: SpeciesType[]
   ): TranslatedMessage {
     const adaptations = new Map();
-    
+
     targetSpecies.forEach(species => {
       adaptations.set(species, {
         targetSpecies: species,
@@ -635,7 +653,7 @@ export class ConsciousnessIntegrationService {
         interfaceInstructions: {},
         cognitiveOptimizations: [],
         culturalAdaptations: [],
-        preservedElements: []
+        preservedElements: [],
       });
     });
 
@@ -648,23 +666,26 @@ export class ConsciousnessIntegrationService {
         culturalAccuracy: 0.9,
         quantumCoherence: 0.5,
         informationLoss: 0.2,
-        contextualIntegrity: 0.8
+        contextualIntegrity: 0.8,
       },
       quantumCoherence: 0.5,
       translationTime: 25,
-      qualityScore: 0.75
+      qualityScore: 0.75,
     };
   }
 
   /**
    * Activate emergency consciousness preservation protocols
    */
-  private async activateEmergencyProtocols(): Promise<{ success: boolean; coherenceLevel: number }> {
+  private async activateEmergencyProtocols(): Promise<{
+    success: boolean;
+    coherenceLevel: number;
+  }> {
     console.log('Activating emergency consciousness preservation protocols');
-    
+
     // Implement emergency protocols to preserve consciousness integrity
     this.systemHealth = 0.5; // Emergency baseline
-    
+
     // Emit emergency event
     this.emitEvent({
       type: 'consciousness-error',
@@ -682,14 +703,18 @@ export class ConsciousnessIntegrationService {
               successProbability: 0.8,
               estimatedTime: 30000,
               resourceRequirements: ['full-system-access'],
-              consciousnessRisk: 0.2
-            }
+              consciousnessRisk: 0.2,
+            },
           ],
           timestamp: new Date(),
-          consciousnessImpact: 0.5
+          consciousnessImpact: 0.5,
         },
-        affectedSystems: ['consciousness-integration', 'species-detection', 'universal-translation']
-      }
+        affectedSystems: [
+          'consciousness-integration',
+          'species-detection',
+          'universal-translation',
+        ],
+      },
     });
 
     return { success: true, coherenceLevel: 0.5 };
@@ -703,10 +728,10 @@ export class ConsciousnessIntegrationService {
       this.wsConnection.close();
       this.wsConnection = null;
     }
-    
+
     this.eventListeners.clear();
     this.activeEntities.clear();
-    
+
     console.log('Consciousness Integration Service disposed');
   }
 }

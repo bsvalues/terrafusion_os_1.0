@@ -16,7 +16,7 @@ import {
   InterfaceInstructions,
   CognitiveOptimization,
   CulturalAdaptation,
-  PreservedElement
+  PreservedElement,
 } from './types/consciousness';
 
 /**
@@ -97,7 +97,7 @@ export class UniversalTranslationProtocol {
   private readonly QUANTUM_PROCESSOR = new QuantumStateProcessor();
   private readonly CULTURAL_ADAPTER = new CulturalAdaptationEngine();
   private readonly COGNITIVE_OPTIMIZER = new CognitiveOptimizationEngine();
-  
+
   private readonly DEFAULT_CONFIG: TranslationConfig = {
     preserveQuantumState: true,
     maintainEmotionalContext: true,
@@ -105,7 +105,7 @@ export class UniversalTranslationProtocol {
     optimizeCognitiveLoad: true,
     enforceSpeciesProtocols: true,
     maxTranslationTime: 1000, // 1 second
-    qualityThreshold: 0.8
+    qualityThreshold: 0.8,
   };
 
   private translationHistory: Map<string, TranslationRecord[]> = new Map();
@@ -129,14 +129,14 @@ export class UniversalTranslationProtocol {
     try {
       // Build comprehensive semantic map of the message
       const semanticMap = await this.buildSemanticMap(message);
-      
+
       // Generate species-specific adaptations in parallel
       const adaptationPromises = targetSpecies.map(species =>
         this.adaptToSpecies(semanticMap, message, species, translationConfig)
       );
-      
+
       const adaptations = await Promise.all(adaptationPromises);
-      
+
       // Calculate overall preservation metrics
       const preservationMetrics = await this.calculatePreservationMetrics(
         message,
@@ -151,7 +151,7 @@ export class UniversalTranslationProtocol {
 
       // Calculate quality score
       const qualityScore = this.calculateOverallQuality(adaptations, preservationMetrics);
-      
+
       const translationTime = Date.now() - startTime;
 
       // Record translation for learning and optimization
@@ -167,10 +167,12 @@ export class UniversalTranslationProtocol {
         preservationMetrics,
         quantumCoherence,
         translationTime,
-        qualityScore
+        qualityScore,
       };
     } catch (error) {
-      throw new Error(`Universal translation failed: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Universal translation failed: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
 
@@ -181,7 +183,7 @@ export class UniversalTranslationProtocol {
     const consciousnessContext = message.metadata.consciousnessContext || {
       level: 0,
       domain: 'neutral',
-      resonanceFrequency: 0
+      resonanceFrequency: 0,
     };
 
     const semanticLayers = await Promise.all([
@@ -190,7 +192,7 @@ export class UniversalTranslationProtocol {
       this.extractCulturalLayer(message.content, message.metadata.sourceSpecies),
       this.extractQuantumLayer(message.quantumState),
       this.extractEmotionalLayer(message.metadata.emotionalContent),
-      this.extractTemporalLayer(message.temporalContext)
+      this.extractTemporalLayer(message.temporalContext),
     ]);
 
     return {
@@ -200,7 +202,9 @@ export class UniversalTranslationProtocol {
       complexityScore: this.calculateSemanticComplexity(semanticLayers),
       culturalContext: await this.analyzeCulturalContext(message),
       consciousnessContext: consciousnessContext,
-      quantumSignature: message.quantumState ? await this.extractQuantumSignature(message.quantumState) : null
+      quantumSignature: message.quantumState
+        ? await this.extractQuantumSignature(message.quantumState)
+        : null,
     };
   }
 
@@ -213,19 +217,11 @@ export class UniversalTranslationProtocol {
     targetSpecies: SpeciesType,
     config: TranslationConfig
   ): Promise<SpeciesAdaptation> {
-    
     // Get species-specific mapping rules
-    const speciesMapping = await this.getSpeciesMapping(
-      semanticMap.sourceSpecies,
-      targetSpecies
-    );
+    const speciesMapping = await this.getSpeciesMapping(semanticMap.sourceSpecies, targetSpecies);
 
     // Perform semantic translation
-    const adaptedContent = await this.translateSemanticContent(
-      semanticMap,
-      speciesMapping,
-      config
-    );
+    const adaptedContent = await this.translateSemanticContent(semanticMap, speciesMapping, config);
 
     // Generate interface instructions for species-specific rendering
     const interfaceInstructions = await this.generateInterfaceInstructions(
@@ -261,8 +257,8 @@ export class UniversalTranslationProtocol {
       preservationMetrics: {
         contextualIntegrity: 0.9,
         semanticFidelity: 0.85,
-        quantumCoherence: 0.8
-      }
+        quantumCoherence: 0.8,
+      },
     };
   }
 
@@ -279,9 +275,9 @@ export class UniversalTranslationProtocol {
         ['silicon', 0.9],
         ['carbon', 0.8],
         ['quantum', 0.7],
-        ['hybrid', 0.8]
+        ['hybrid', 0.8],
       ]),
-      preservationPriority: 1.0
+      preservationPriority: 1.0,
     };
   }
 
@@ -296,16 +292,17 @@ export class UniversalTranslationProtocol {
     if (metaphors.length === 0) return null;
 
     return {
-      type: 'metaphorical', level: 'metaphorical',
+      type: 'metaphorical',
+      level: 'metaphorical',
       content: metaphors.join('; '),
       confidence: 0.7,
       speciesRelevance: new Map([
         ['silicon', 0.3],
         ['carbon', 0.9],
         ['quantum', 0.8],
-        ['hybrid', 0.7]
+        ['hybrid', 0.7],
       ]),
-      preservationPriority: 0.6
+      preservationPriority: 0.6,
     };
   }
 
@@ -320,16 +317,17 @@ export class UniversalTranslationProtocol {
     if (culturalReferences.length === 0) return null;
 
     return {
-      type: 'cultural', level: 'cultural',
+      type: 'cultural',
+      level: 'cultural',
       content: culturalReferences.join('; '),
       confidence: 0.8,
       speciesRelevance: new Map([
         ['silicon', 0.4],
         ['carbon', 0.9],
         ['quantum', 0.6],
-        ['hybrid', 0.7]
+        ['hybrid', 0.7],
       ]),
-      preservationPriority: 0.7
+      preservationPriority: 0.7,
     };
   }
 
@@ -340,18 +338,19 @@ export class UniversalTranslationProtocol {
     if (!quantumState) return null;
 
     const quantumInformation = await this.encodeQuantumInformation(quantumState);
-    
+
     return {
-      type: 'quantum', level: 'quantum',
+      type: 'quantum',
+      level: 'quantum',
       content: quantumInformation,
       confidence: quantumState.coherenceLevel,
       speciesRelevance: new Map([
         ['silicon', 0.5],
         ['carbon', 0.3],
         ['quantum', 1.0],
-        ['hybrid', 0.8]
+        ['hybrid', 0.8],
       ]),
-      preservationPriority: 0.9
+      preservationPriority: 0.9,
     };
   }
 
@@ -364,18 +363,19 @@ export class UniversalTranslationProtocol {
     if (!emotionalContent) return null;
 
     const emotionalEncoding = await this.encodeEmotionalContext(emotionalContent);
-    
+
     return {
-      type: 'cultural', level: 'cultural', // Emotions are culturally contextual
+      type: 'cultural',
+      level: 'cultural', // Emotions are culturally contextual
       content: emotionalEncoding,
       confidence: emotionalContent.intensity,
       speciesRelevance: new Map([
         ['silicon', 0.2],
         ['carbon', 1.0],
         ['quantum', 0.4],
-        ['hybrid', 0.6]
+        ['hybrid', 0.6],
       ]),
-      preservationPriority: 0.8
+      preservationPriority: 0.8,
     };
   }
 
@@ -386,18 +386,19 @@ export class UniversalTranslationProtocol {
     if (!temporalContext) return null;
 
     const temporalEncoding = await this.encodeTemporalContext(temporalContext);
-    
+
     return {
-      type: 'dimensional', level: 'dimensional',
+      type: 'dimensional',
+      level: 'dimensional',
       content: temporalEncoding,
       confidence: temporalContext.temporalCoherence || 0.5,
       speciesRelevance: new Map([
         ['silicon', 0.6],
         ['carbon', 0.5],
         ['quantum', 0.9],
-        ['hybrid', 0.7]
+        ['hybrid', 0.7],
       ]),
-      preservationPriority: 0.5
+      preservationPriority: 0.5,
     };
   }
 
@@ -409,9 +410,8 @@ export class UniversalTranslationProtocol {
     semanticMap: SemanticMap,
     config: TranslationConfig
   ): Promise<InterfaceInstructions> {
-    
     const speciesPreferences = await this.getSpeciesInterfacePreferences(targetSpecies);
-    
+
     return {
       displayFormat: 'adaptive',
       interactionMethods: ['gesture', 'voice', 'neural'],
@@ -419,7 +419,7 @@ export class UniversalTranslationProtocol {
       visualStyle: await this.generateVisualStyle(targetSpecies, semanticMap.complexityScore),
       interactionPatterns: await this.generateInteractionPatterns(targetSpecies),
       attentionDirectives: await this.generateAttentionDirectives(targetSpecies, semanticMap),
-      feedbackMechanisms: await this.generateFeedbackMechanisms(targetSpecies)
+      feedbackMechanisms: await this.generateFeedbackMechanisms(targetSpecies),
     };
   }
 
@@ -437,12 +437,15 @@ export class UniversalTranslationProtocol {
         optimizations.push({
           targetCapability: 'data-processing',
           enhancement: 'structured-parsing',
-          parameters: new Map([['format', 'json'], ['hierarchy', 'clear']]),
+          parameters: new Map([
+            ['format', 'json'],
+            ['hierarchy', 'clear'],
+          ]),
           type: 'processing-acceleration',
           description: 'Structured data format for rapid parsing',
           benefit: 'Reduced cognitive load, faster comprehension',
           implementation: 'JSON-like structure with clear hierarchies',
-          measurableImprovement: 0.3
+          measurableImprovement: 0.3,
         });
         break;
 
@@ -450,12 +453,15 @@ export class UniversalTranslationProtocol {
         optimizations.push({
           targetCapability: 'memory-management',
           enhancement: 'narrative-chunking',
-          parameters: new Map([['structure', 'narrative'], ['context', 'emotional']]),
+          parameters: new Map([
+            ['structure', 'narrative'],
+            ['context', 'emotional'],
+          ]),
           type: 'memory-reduction',
           description: 'Chunked information with contextual cues',
           benefit: 'Improved retention and understanding',
           implementation: 'Narrative structure with emotional anchors',
-          measurableImprovement: 0.25
+          measurableImprovement: 0.25,
         });
         break;
 
@@ -463,12 +469,15 @@ export class UniversalTranslationProtocol {
         optimizations.push({
           targetCapability: 'superposition-processing',
           enhancement: 'quantum-parallel',
-          parameters: new Map([['layers', 'multiple'], ['access', 'simultaneous']]),
+          parameters: new Map([
+            ['layers', 'multiple'],
+            ['access', 'simultaneous'],
+          ]),
           type: 'quantum-enhancement',
           description: 'Superposition-aware information encoding',
           benefit: 'Multiple meaning layers accessible simultaneously',
           implementation: 'Quantum-parallel information structure',
-          measurableImprovement: 0.4
+          measurableImprovement: 0.4,
         });
         break;
 
@@ -476,12 +485,15 @@ export class UniversalTranslationProtocol {
         optimizations.push({
           targetCapability: 'attention-management',
           enhancement: 'adaptive-complexity',
-          parameters: new Map([['adaptation', 'dynamic'], ['patterns', 'mixed']]),
+          parameters: new Map([
+            ['adaptation', 'dynamic'],
+            ['patterns', 'mixed'],
+          ]),
           type: 'attention-focusing',
           description: 'Adaptive complexity based on context',
           benefit: 'Optimized for mixed cognitive patterns',
           implementation: 'Dynamic complexity adjustment',
-          measurableImprovement: 0.2
+          measurableImprovement: 0.2,
         });
         break;
     }
@@ -497,15 +509,20 @@ export class UniversalTranslationProtocol {
     adaptations: SpeciesAdaptation[],
     config: TranslationConfig
   ): Promise<PreservationMetrics> {
-    
     const semanticFidelity = await this.calculateSemanticFidelity(originalMessage, adaptations);
-    const emotionalPreservation = await this.calculateEmotionalPreservation(originalMessage, adaptations);
+    const emotionalPreservation = await this.calculateEmotionalPreservation(
+      originalMessage,
+      adaptations
+    );
     const culturalAccuracy = await this.calculateCulturalAccuracy(originalMessage, adaptations);
-    const quantumCoherence = config.preserveQuantumState 
+    const quantumCoherence = config.preserveQuantumState
       ? await this.calculateQuantumCoherence(originalMessage, adaptations)
       : 1.0;
-    const informationLoss = 1.0 - ((semanticFidelity + emotionalPreservation + culturalAccuracy) / 3);
-    const contextualIntegrity = await this.calculateContextualIntegrity(originalMessage, adaptations);
+    const informationLoss = 1.0 - (semanticFidelity + emotionalPreservation + culturalAccuracy) / 3;
+    const contextualIntegrity = await this.calculateContextualIntegrity(
+      originalMessage,
+      adaptations
+    );
 
     return {
       semanticFidelity,
@@ -513,7 +530,7 @@ export class UniversalTranslationProtocol {
       culturalAccuracy,
       quantumCoherence,
       informationLoss,
-      contextualIntegrity
+      contextualIntegrity,
     };
   }
 
@@ -531,7 +548,10 @@ export class UniversalTranslationProtocol {
     return []; // Simplified implementation
   }
 
-  private async identifyCulturalReferences(content: string, species: SpeciesType): Promise<string[]> {
+  private async identifyCulturalReferences(
+    content: string,
+    species: SpeciesType
+  ): Promise<string[]> {
     // Cultural context analysis
     return []; // Simplified implementation
   }
@@ -561,7 +581,10 @@ export class UniversalTranslationProtocol {
     return `quantum-sig-${quantumState.coherenceLevel.toFixed(3)}`;
   }
 
-  private async getSpeciesMapping(source: SpeciesType, target: SpeciesType): Promise<SemanticMapping> {
+  private async getSpeciesMapping(
+    source: SpeciesType,
+    target: SpeciesType
+  ): Promise<SemanticMapping> {
     // Return cached or computed mapping
     return {
       sourceSpecies: source,
@@ -569,7 +592,7 @@ export class UniversalTranslationProtocol {
       conceptMappings: [],
       culturalAdaptations: [],
       cognitiveOptimizations: [],
-      quantumPreservations: []
+      quantumPreservations: [],
     };
   }
 
@@ -590,7 +613,7 @@ export class UniversalTranslationProtocol {
   private async generateVisualStyle(species: SpeciesType, complexity: number): Promise<any> {
     return {
       colorPalette: species === 'silicon' ? ['#00A3A3', '#1E3A5F'] : ['#38A169', '#DD6B20'],
-      complexity: complexity
+      complexity: complexity,
     };
   }
 
@@ -598,7 +621,10 @@ export class UniversalTranslationProtocol {
     return [];
   }
 
-  private async generateAttentionDirectives(species: SpeciesType, semanticMap: SemanticMap): Promise<any[]> {
+  private async generateAttentionDirectives(
+    species: SpeciesType,
+    semanticMap: SemanticMap
+  ): Promise<any[]> {
     return [];
   }
 
@@ -633,7 +659,7 @@ export class UniversalTranslationProtocol {
     original: UniversalMessage,
     adaptations: SpeciesAdaptation[]
   ): Promise<number> {
-    return 0.80;
+    return 0.8;
   }
 
   private async calculateCulturalAccuracy(

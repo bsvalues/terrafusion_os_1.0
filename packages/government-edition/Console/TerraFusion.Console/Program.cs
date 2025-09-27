@@ -40,8 +40,8 @@ namespace TerraFusion.ConsoleApp
             logger.LogInformation($"API Server started with PID: {apiProcess.Id}");
             
             System.Console.WriteLine("\n✅ TerraFusion is running!");
-            System.Console.WriteLine("📍 API: http://localhost:5000");
-            System.Console.WriteLine("📍 PWA: http://localhost:5173");
+            System.Console.WriteLine("📍 API: http://localhost:${TF_STATIC_PORT:-8080}");
+            System.Console.WriteLine("📍 PWA: http://localhost:${TF_STATIC_PORT:-8080}");
             System.Console.WriteLine("\nPress Ctrl+C to exit...");
             
             // Keep running until interrupted

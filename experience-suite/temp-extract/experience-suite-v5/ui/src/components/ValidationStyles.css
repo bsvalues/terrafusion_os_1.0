@@ -1,0 +1,346 @@
+/* TerraFusion OS - Experience Suite v5 Validation & Visualization Styles */
+
+/* Validation Suite Styles */
+.tf-validation-suite {
+  margin: 2rem 0;
+  padding: 2rem;
+  background: linear-gradient(135deg, #0A1E2E 0%, #1a2332 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 179, 164, 0.15);
+  border: 1px solid rgba(0, 179, 164, 0.2);
+}
+
+.tf-validation-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #00B3A4;
+  padding-bottom: 1rem;
+}
+
+.tf-validation-header h2 {
+  color: #00B3A4;
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 179, 164, 0.3);
+}
+
+.tf-validation-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  color: #B0BEC5;
+  font-size: 0.9rem;
+}
+
+.tf-validation-meta span {
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 179, 164, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 179, 164, 0.3);
+}
+
+.tf-validation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.tf-validation-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 179, 164, 0.2);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.tf-validation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 179, 164, 0.2);
+  border-color: #00B3A4;
+}
+
+.tf-validation-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 179, 164, 0.2);
+}
+
+.tf-validation-card-header h3 {
+  color: #00B3A4;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.tf-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.tf-status-active {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+}
+
+.tf-status-operational {
+  background: rgba(0, 179, 164, 0.2);
+  color: #00B3A4;
+  border: 1px solid #00B3A4;
+}
+
+.tf-status-elite {
+  background: rgba(255, 193, 7, 0.2);
+  color: #FFC107;
+  border: 1px solid #FFC107;
+}
+
+.tf-status-enhanced {
+  background: rgba(156, 39, 176, 0.2);
+  color: #9C27B0;
+  border: 1px solid #9C27B0;
+}
+
+.tf-status-certified {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196F3;
+  border: 1px solid #2196F3;
+}
+
+.tf-validation-metrics {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tf-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: rgba(0, 179, 164, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #00B3A4;
+}
+
+.tf-metric-label {
+  color: #B0BEC5;
+  font-size: 0.9rem;
+}
+
+.tf-metric-value {
+  color: #00B3A4;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.tf-validation-summary {
+  background: rgba(0, 179, 164, 0.1);
+  border-radius: 10px;
+  padding: 2rem;
+  border: 1px solid rgba(0, 179, 164, 0.3);
+}
+
+.tf-validation-summary h3 {
+  color: #00B3A4;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.tf-implementation-checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.tf-check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 179, 164, 0.2);
+}
+
+.tf-check-icon {
+  font-size: 1.2rem;
+}
+
+.tf-implementation-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.tf-stat-block {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 179, 164, 0.2);
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.tf-stat-block h4 {
+  color: #00B3A4;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.tf-revenue-breakdown,
+.tf-agent-stats,
+.tf-performance-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tf-revenue-breakdown span,
+.tf-agent-stats span,
+.tf-performance-stats span {
+  color: #B0BEC5;
+  font-size: 0.9rem;
+}
+
+.tf-revenue-breakdown strong,
+.tf-agent-stats strong,
+.tf-performance-stats strong {
+  color: #00B3A4;
+  font-size: 1.1rem;
+}
+
+.tf-validation-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(0, 179, 164, 0.3);
+  color: #B0BEC5;
+}
+
+.tf-validation-footer p {
+  margin: 0.5rem 0;
+}
+
+.tf-validation-footer strong {
+  color: #00B3A4;
+}
+
+.tf-validation-footer em {
+  color: #4CAF50;
+  font-style: normal;
+  font-weight: bold;
+}
+
+/* Visualization Section Styles */
+.tf-visualization-section {
+  margin: 2rem 0;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a2332 0%, #0A1E2E 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 179, 164, 0.2);
+}
+
+.tf-visualization-section h2 {
+  color: #00B3A4;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  text-shadow: 0 2px 4px rgba(0, 179, 164, 0.3);
+}
+
+.tf-viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Chart.js canvas styling */
+.tf-chart-container canvas {
+  max-height: 300px !important;
+  border-radius: 8px;
+}
+
+/* Real-time indicator */
+.tf-realtime-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4CAF50;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.tf-realtime-indicator::before {
+  content: '●';
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  .tf-validation-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tf-viz-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tf-implementation-checklist {
+    grid-template-columns: 1fr;
+  }
+  
+  .tf-implementation-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .tf-validation-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* High contrast support for accessibility */
+@media (prefers-contrast: high) {
+  .tf-validation-card {
+    border-color: #00B3A4;
+    background: rgba(0, 179, 164, 0.1);
+  }
+  
+  .tf-metric {
+    background: rgba(0, 179, 164, 0.15);
+  }
+  
+  .tf-status {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .tf-validation-card {
+    transition: none;
+  }
+  
+  .tf-validation-card:hover {
+    transform: none;
+  }
+  
+  .tf-realtime-indicator::before {
+    animation: none;
+  }
+}

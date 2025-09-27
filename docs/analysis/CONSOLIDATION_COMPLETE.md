@@ -4,24 +4,27 @@
 
 **Date:** 2025-08-20 15:30 UTC  
 **Operation:** TerraBuild client merged into CostForge module  
-**Result:** Single unified application with full functionality  
+**Result:** Single unified application with full functionality
 
 ---
 
 ## **📊 CONSOLIDATION SUMMARY**
 
 ### **Files Merged:**
+
 - ✅ **TerraBuild Client Source** → `modules/costforge-ai/src/`
 - ✅ **TerraBuild Server** → `modules/costforge-ai/server/`
 - ✅ **HTML Entry Point** → `modules/costforge-ai/index.html`
 - ✅ **Dependencies** → Unified package.json (123 total)
 
 ### **Configuration Updated:**
+
 - ✅ **Vite Config** → Unified aliases and proxy
 - ✅ **Build System** → Optimized for large app
-- ✅ **Development Server** → Port 3008 with API proxy
+- ✅ **Development Server** → Port \${{TF_FRONTEND_3008_PORT:-3008}} with API proxy
 
 ### **Architecture:**
+
 ```
 modules/costforge-ai/               ← UNIFIED APPLICATION
 ├── src/
@@ -41,19 +44,22 @@ modules/costforge-ai/               ← UNIFIED APPLICATION
 ## **🚀 LAUNCH COMMANDS**
 
 ### **Development Mode:**
+
 ```bash
 cd modules/costforge-ai
 npm run dev
-# Opens: http://localhost:3008
+# Opens: http://localhost:\${{TF_FRONTEND_3008_PORT:-3008}}
 ```
 
 ### **Production Build:**
+
 ```bash
 cd modules/costforge-ai
 npm run build
 ```
 
 ### **Full-Stack Development:**
+
 ```bash
 # Terminal 1: Frontend
 cd modules/costforge-ai && npm run dev
@@ -67,6 +73,7 @@ cd modules/costforge-ai && npm run server:dev
 ## **🎯 FEATURES AVAILABLE**
 
 ### **From TerraBuild:**
+
 - ✅ **Cost Calculators** (BCBS, AI-powered)
 - ✅ **Data Visualizations** (Charts, analytics)
 - ✅ **Authentication System** (Multiple providers)
@@ -77,6 +84,7 @@ cd modules/costforge-ai && npm run server:dev
 - ✅ **AR Visualization** (3D property views)
 
 ### **From CostForge:**
+
 - ✅ **Tauri Desktop** (Native app capability)
 - ✅ **Module Integration** (Terrafusion ecosystem)
 - ✅ **Government Branding** ("Government. Transcended.")
@@ -86,12 +94,14 @@ cd modules/costforge-ai && npm run server:dev
 ## **📋 NEXT STEPS**
 
 ### **Immediate Testing:**
+
 1. **Install dependencies** (in progress)
 2. **Launch development server**
 3. **Verify all features work**
 4. **Test API connectivity**
 
 ### **Post-Launch Tasks:**
+
 1. **Remove duplicate code** (if any)
 2. **Optimize bundle size**
 3. **Add integration tests**
@@ -102,6 +112,7 @@ cd modules/costforge-ai && npm run server:dev
 ## **🔧 TECHNICAL DETAILS**
 
 ### **Dependencies Merged:**
+
 - **Total:** 123 dependencies
 - **React:** 18.3.1 (unified)
 - **TypeScript:** 5.6.3 (latest)
@@ -109,13 +120,15 @@ cd modules/costforge-ai && npm run server:dev
 - **UI Library:** Radix UI (complete set)
 
 ### **Build Optimization:**
+
 - **Manual Chunks:** Optimized for large app
 - **Tree Shaking:** Enhanced for performance
 - **Code Splitting:** Vendor/app separation
 - **Dev Server:** HMR optimized
 
 ### **API Integration:**
-- **Proxy:** `/api` → `http://localhost:5000`
+
+- **Proxy:** `/api` → `http://localhost:\${{TF_FRONTEND_3008_PORT:-3008}}`
 - **Development:** Full-stack ready
 - **Production:** Build optimized
 
@@ -131,6 +144,7 @@ cd modules/costforge-ai && npm run server:dev
 
 ---
 
-**The consolidation is complete. TerraBuild and CostForge are now a single, unified application with all functionality accessible from one entry point.**
+**The consolidation is complete. TerraBuild and CostForge are now a single,
+unified application with all functionality accessible from one entry point.**
 
 **🚀 Ready to launch: `cd modules/costforge-ai && npm run dev`**

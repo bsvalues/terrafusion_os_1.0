@@ -1,0 +1,61 @@
+{
+  "name": "terrafusion-cybersecurity-command-frontend",
+  "version": "1.0.0",
+  "description": "TerraFusion Cybersecurity Command Center - Advanced Security Operations Center (SOC) Dashboard",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port ${TF_FRONTEND_3013_PORT:-3013} --host",
+    "build": "vite build",
+    "preview": "vite preview --port ${TF_FRONTEND_3013_PORT:-3013} --host",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "lucide-react": "^0.294.0",
+    "recharts": "^2.8.0",
+    "socket.io-client": "^4.7.2",
+    "date-fns": "^2.30.0",
+    "react-virtualized": "^9.22.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@types/react-virtualized": "^9.21.29",
+    "@vitejs/plugin-react": "^4.1.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0",
+    "eslint": "^8.53.0",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0"
+  },
+  "keywords": [
+    "terrafusion",
+    "cybersecurity",
+    "security-operations-center",
+    "soc",
+    "threat-intelligence",
+    "quantum-security",
+    "government",
+    "security-dashboard"
+  ],
+  "author": "TerraFusion Technologies",
+  "license": "Proprietary",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/cybersecurity-command.git"
+  },
+  "homepage": "https://security.terrafusion.gov",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}

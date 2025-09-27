@@ -1,9 +1,11 @@
 # 🔧 CHAMPIONSHIP TECHNICAL EXECUTION GUIDE
-*For AI Agents and Developers - The Actual Implementation*
+
+_For AI Agents and Developers - The Actual Implementation_
 
 ## 🎯 IMMEDIATE ACTIONS (Day 1)
 
 ### 1. Create New Clean Repository
+
 ```bash
 # Create the new championship workspace
 mkdir /mnt/e/TerraFusionOS
@@ -34,6 +36,7 @@ npx lerna init
 ```
 
 ### 2. Create Directory Structure
+
 ```bash
 # Create all directories
 mkdir -p core/{dashboard,plugin-system,ipc,auth}
@@ -51,6 +54,7 @@ touch docs/{API.md,ARCHITECTURE.md,DEPLOYMENT.md,DEVELOPER.md}
 ```
 
 ### 3. Archive Everything Old
+
 ```bash
 # Create archive directory
 mkdir -p /mnt/e/ARCHIVE_2025/$(date +%Y%m%d)
@@ -68,6 +72,7 @@ echo "Archived all previous implementations on $(date)" > /mnt/e/ARCHIVE_2025/RE
 ## 🏗️ CORE DASHBOARD SETUP (Day 2-3)
 
 ### Extract and Modernize Dashboard
+
 ```bash
 cd /mnt/e/TerraFusionOS/core/dashboard
 
@@ -84,6 +89,7 @@ npx tailwindcss init -p
 ```
 
 ### Dashboard Core Structure
+
 ```typescript
 // core/dashboard/src/types/module.ts
 export interface CountyModule {
@@ -94,12 +100,12 @@ export interface CountyModule {
   icon: string;
   route: string;
   permissions: string[];
-  
+
   // Lifecycle hooks
   onLoad?: () => Promise<void>;
   onUnload?: () => Promise<void>;
   onError?: (error: Error) => void;
-  
+
   // Module component
   Component: React.LazyExoticComponent<React.ComponentType>;
 }
@@ -107,19 +113,19 @@ export interface CountyModule {
 // core/dashboard/src/services/ModuleLoader.ts
 export class ModuleLoader {
   private modules: Map<string, CountyModule> = new Map();
-  
+
   async loadModule(moduleId: string): Promise<void> {
     const module = await import(`/modules/${moduleId}/index.js`);
     this.modules.set(moduleId, module.default);
     await module.default.onLoad?.();
   }
-  
+
   async unloadModule(moduleId: string): Promise<void> {
     const module = this.modules.get(moduleId);
     await module?.onUnload?.();
     this.modules.delete(moduleId);
   }
-  
+
   getModule(moduleId: string): CountyModule | undefined {
     return this.modules.get(moduleId);
   }
@@ -131,6 +137,7 @@ export class ModuleLoader {
 ## 🔌 PLUGIN SYSTEM ARCHITECTURE (Day 4-5)
 
 ### Plugin Manifest Structure
+
 ```json
 // modules/assessment/manifest.json
 {
@@ -153,6 +160,7 @@ export class ModuleLoader {
 ```
 
 ### Module Wrapper Template
+
 ```typescript
 // modules/assessment/src/index.tsx
 import React from 'react';
@@ -169,18 +177,18 @@ const AssessmentModule: CountyModule = {
   icon: '/icons/assessment.svg',
   route: '/assessment',
   permissions: ['assessment:read', 'assessment:write'],
-  
+
   onLoad: async () => {
     console.log('Assessment module loaded');
     // Initialize module-specific services
   },
-  
+
   onUnload: async () => {
     console.log('Assessment module unloaded');
     // Cleanup
   },
-  
-  Component: React.lazy(() => import('./AssessmentApp'))
+
+  Component: React.lazy(() => import('./AssessmentApp')),
 };
 
 export default AssessmentModule;
@@ -191,6 +199,7 @@ export default AssessmentModule;
 ## 🏪 MARKETPLACE IMPLEMENTATION (Day 6-7)
 
 ### Marketplace Backend API
+
 ```typescript
 // marketplace/backend/src/routes/plugins.ts
 import express from 'express';
@@ -209,39 +218,39 @@ router.get('/available', async (req, res) => {
 // Install plugin
 router.post('/install', async (req, res) => {
   const { pluginId, countyId } = req.body;
-  
+
   // Verify license
   const license = await verifyLicense(pluginId, countyId);
   if (!license.valid) {
     return res.status(403).json({ error: 'Invalid license' });
   }
-  
+
   // Download plugin
   const pluginUrl = await getPluginDownloadUrl(pluginId);
   const pluginPath = await downloadPlugin(pluginUrl);
-  
+
   // Install to county
   await installPlugin(countyId, pluginPath);
-  
+
   // Track for revenue sharing
   await trackInstallation(pluginId, countyId, license.price);
-  
+
   res.json({ success: true, message: 'Plugin installed' });
 });
 
 // Purchase plugin
 router.post('/purchase', async (req, res) => {
   const { pluginId, countyId, paymentToken } = req.body;
-  
+
   // Process payment
   const payment = await processPayment(paymentToken);
-  
+
   // Calculate revenue split (70% to developer, 30% to platform)
   const split = calculateRevenueSplit(payment.amount);
-  
+
   // Create license
   const license = await createLicense(pluginId, countyId);
-  
+
   res.json({ license, transactionId: payment.id });
 });
 ```
@@ -251,6 +260,7 @@ router.post('/purchase', async (req, res) => {
 ## 📦 DATA MIGRATION STRATEGY
 
 ### Extract Best Data from Existing Systems
+
 ```python
 # scripts/migrate_data.py
 import sqlite3
@@ -261,14 +271,14 @@ def migrate_benton_county_data():
     """
     Extract real Benton County data from existing systems
     """
-    
+
     # Source databases
     sources = [
         '/mnt/d/TF_File_8_25/TerraFusion_platform/terrafusion.db',
         '/mnt/d/TF_File_8_25/DEPLOYED_APPLICATIONS/terrafusionsync_real.db',
         '/mnt/e/TerraFusion_Tauri_Master_Workspace/county-demo-system/data/benton.json'
     ]
-    
+
     # Target database
     target = psycopg2.connect(
         host='localhost',
@@ -276,16 +286,16 @@ def migrate_benton_county_data():
         user='admin',
         password='secure_password'
     )
-    
+
     # Migrate properties (94,149 records)
     migrate_properties(sources[0], target)
-    
+
     # Migrate permits (48,056 records)
     migrate_permits(sources[1], target)
-    
+
     # Migrate tax levies (12 active)
     migrate_levies(sources[2], target)
-    
+
     print("Migration complete!")
 ```
 
@@ -294,6 +304,7 @@ def migrate_benton_county_data():
 ## 🚀 DEPLOYMENT CONFIGURATION
 
 ### Docker Setup
+
 ```dockerfile
 # deployment/docker/Dockerfile
 FROM node:18-alpine AS builder
@@ -320,7 +331,7 @@ COPY --from=builder /app/node_modules ./node_modules
 
 # Environment variables
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=\${{TF_FRONTEND_PORT:-3000}}
 
 EXPOSE 3000
 
@@ -328,24 +339,25 @@ CMD ["node", "dist/server.js"]
 ```
 
 ### Docker Compose
+
 ```yaml
 # deployment/docker/docker-compose.yml
 version: '3.8'
 
 services:
   dashboard:
-    build: 
+    build:
       context: ../..
       dockerfile: deployment/docker/Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - DATABASE_URL=postgresql://user:pass@db:5432/terrafusion
       - REDIS_URL=redis://cache:6379
     depends_on:
       - db
       - cache
-      
+
   db:
     image: postgres:15-alpine
     environment:
@@ -354,12 +366,12 @@ services:
       - POSTGRES_PASSWORD=secure_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      
+
   cache:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
-      
+      - '6379:6379'
+
 volumes:
   postgres_data:
 ```
@@ -369,6 +381,7 @@ volumes:
 ## 📊 TESTING STRATEGY
 
 ### Module Testing
+
 ```typescript
 // modules/assessment/src/__tests__/assessment.test.ts
 import { render, screen } from '@testing-library/react';
@@ -379,12 +392,12 @@ describe('Assessment Module', () => {
     await AssessmentModule.onLoad();
     expect(AssessmentModule.id).toBe('assessment');
   });
-  
+
   test('can be unloaded', async () => {
     await AssessmentModule.onUnload();
     // Verify cleanup
   });
-  
+
   test('renders correctly', () => {
     const Component = AssessmentModule.Component;
     render(<Component />);
@@ -398,6 +411,7 @@ describe('Assessment Module', () => {
 ## 🌐 API STANDARDS
 
 ### RESTful API Structure
+
 ```
 GET    /api/modules              - List all modules
 GET    /api/modules/:id          - Get module details
@@ -418,13 +432,15 @@ GET    /api/marketplace/updates  - Check for updates
 ## 📋 DAILY CHECKLIST
 
 ### Day 1-3: Foundation
+
 - [ ] New repository created
 - [ ] Directory structure complete
 - [ ] Old code archived
 - [ ] Dashboard shell running
 - [ ] Plugin system designed
 
-### Day 4-7: Core Development  
+### Day 4-7: Core Development
+
 - [ ] Module loader working
 - [ ] First module converted (Assessment)
 - [ ] Second module converted (Tax Levy)
@@ -432,6 +448,7 @@ GET    /api/marketplace/updates  - Check for updates
 - [ ] Basic UI complete
 
 ### Day 8-14: Integration
+
 - [ ] All 5 core modules converted
 - [ ] Data migration complete
 - [ ] Authentication working
@@ -439,6 +456,7 @@ GET    /api/marketplace/updates  - Check for updates
 - [ ] Marketplace connected
 
 ### Day 15-21: Polish
+
 - [ ] UI/UX refined
 - [ ] Performance optimized
 - [ ] Documentation complete
@@ -446,6 +464,7 @@ GET    /api/marketplace/updates  - Check for updates
 - [ ] Demo video recorded
 
 ### Day 22-30: Go-Live
+
 - [ ] Production deployment
 - [ ] Domain configured (terrafusionmarket.io)
 - [ ] SSL certificates
@@ -457,12 +476,14 @@ GET    /api/marketplace/updates  - Check for updates
 ## 🎆 SUCCESS METRICS
 
 ### Technical Success
+
 - Module loads in <2 seconds
 - Module swap without restart
 - 99.9% uptime
 - <100ms API response time
 
-### Business Success  
+### Business Success
+
 - 5 counties see demo
 - 2 counties start pilot
 - 1 county signs contract
@@ -473,6 +494,7 @@ GET    /api/marketplace/updates  - Check for updates
 ## 🔴 IF STUCK OR DISCONNECTED
 
 ### Priority Order:
+
 1. Get dashboard running (even ugly)
 2. Get one module working
 3. Get marketplace listing modules
@@ -480,6 +502,7 @@ GET    /api/marketplace/updates  - Check for updates
 5. Make it pretty later
 
 ### Key Files to Check:
+
 ```
 /mnt/e/TerraFusionOS/core/dashboard/src/App.tsx
 /mnt/e/TerraFusionOS/modules/assessment/index.ts
@@ -488,10 +511,12 @@ GET    /api/marketplace/updates  - Check for updates
 ```
 
 ### Emergency Contacts:
+
 - Repository: github.com/[your-account]/TerraFusionOS
 - Documentation: This file
 - Backup: /mnt/e/ARCHIVE_2025
 
 ---
 
-*"Championships are won by teams who execute the fundamentals" - Do the basics perfectly.*
+_"Championships are won by teams who execute the fundamentals" - Do the basics
+perfectly._

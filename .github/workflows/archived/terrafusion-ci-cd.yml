@@ -298,7 +298,7 @@ jobs:
             res.json({ success: true, assessmentId: 'HARRIS_' + Date.now() });
           });
           
-          app.listen(8080, () => console.log('Harris PACS Mock Server running on port 8080'));
+          app.listen(8080, () => console.log('Harris PACS Mock Server running on port \${{TF_ADMIN_PORT:-8080}}'));
           EOF
           
           # Start mock server
@@ -318,7 +318,7 @@ jobs:
             --configuration Release \
             --logger "trx;LogFileName=harris-pacs-results.trx" \
             --collect:"XPlat Code Coverage" \
-            /p:HARRIS_PACS_ENDPOINT=http://localhost:8080
+            /p:HARRIS_PACS_ENDPOINT=http://localhost:\${{TF_ADMIN_PORT:-8080}}
             
       - name: Validate Government Compliance
         run: |
@@ -427,7 +427,7 @@ jobs:
           sleep 10
           
           # Load test with quantum performance measurement
-          curl -X POST http://localhost:5000/api/properties/bulk-process \
+          curl -X POST http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/properties/bulk-process \
             -H "Content-Type: application/json" \
             -d '{"properties": [{"id": 1}, {"id": 2}, {"id": 3}]}' \
             -w "Time: %{time_total}s\n" || true
@@ -515,14 +515,14 @@ jobs:
           sleep 15
           
           # Health check
-          curl -f http://localhost:5000/health || exit 1
+          curl -f http://localhost:\${{TF_ADMIN_PORT:-8080}}/health || exit 1
           
       - name: Execute Integration Tests
         run: |
           echo "🧪 Executing comprehensive integration test suite..."
           
           # Property assessment workflow test
-          curl -X POST http://localhost:5000/api/properties \
+          curl -X POST http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/properties \
             -H "Content-Type: application/json" \
             -d '{
               "parcelNumber": "TEST-12345",
@@ -532,7 +532,7 @@ jobs:
             }' | jq .
           
           # AI analytics test
-          curl -X POST http://localhost:5000/api/ai/analyze \
+          curl -X POST http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/ai/analyze \
             -H "Content-Type: application/json" \
             -d '{
               "propertyId": 1,
@@ -540,7 +540,7 @@ jobs:
             }' | jq .
           
           # Harris PACS integration test
-          curl -X GET http://localhost:5000/api/harris-pacs/status | jq .
+          curl -X GET http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/harris-pacs/status | jq .
           
           echo "✅ Integration testing completed successfully"
           

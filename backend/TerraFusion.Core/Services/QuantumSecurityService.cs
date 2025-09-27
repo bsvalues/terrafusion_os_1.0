@@ -425,7 +425,7 @@ namespace TerraFusion.Core.Services
             return actions;
         }
 
-        private async System.Threading.Tasks.Task UpdateThreatProfilesAsync(ThreatDetectionResult result)
+        private System.Threading.Tasks.Task UpdateThreatProfilesAsync(ThreatDetectionResult result)
         {
             var profileKey = $"{result.ThreatType}_{result.EventId.Substring(0, 8)}";
             
@@ -448,9 +448,11 @@ namespace TerraFusion.Core.Services
                     existing.IsActive = result.ThreatLevel >= ThreatLevel.Medium;
                     return existing;
                 });
+            
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
-        private async System.Threading.Tasks.Task TriggerSecurityAlertAsync(ThreatDetectionResult result)
+        private System.Threading.Tasks.Task TriggerSecurityAlertAsync(ThreatDetectionResult result)
         {
             var alert = new SecurityAlert
             {
@@ -468,23 +470,25 @@ namespace TerraFusion.Core.Services
             
             // Additional alert mechanisms would be implemented here
             // (email, SMS, dashboard notifications, etc.)
+            
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
-        private async Task<double> CalculateThreatDetectionAccuracyAsync()
+        private Task<double> CalculateThreatDetectionAccuracyAsync()
         {
             // Calculate accuracy based on validated threat detections
             var recentEvents = _securityEvents.Values
                 .Where(e => e.Timestamp > DateTime.UtcNow.AddDays(-1))
                 .ToList();
 
-            if (!recentEvents.Any()) return 0.999; // Default high accuracy
+            if (!recentEvents.Any()) return System.Threading.Tasks.Task.FromResult(0.999); // Default high accuracy
 
             var validatedEvents = recentEvents.Where(e => e.ValidationStatus == ValidationStatus.Validated).ToList();
             var truePositives = validatedEvents.Count(e => e.ActualThreat && e.DetectedAsThreat);
             var trueNegatives = validatedEvents.Count(e => !e.ActualThreat && !e.DetectedAsThreat);
             var totalValidated = validatedEvents.Count;
 
-            return totalValidated > 0 ? (double)(truePositives + trueNegatives) / totalValidated : 0.999;
+            return System.Threading.Tasks.Task.FromResult(totalValidated > 0 ? (double)(truePositives + trueNegatives) / totalValidated : 0.999);
         }
 
         private double CalculateSystemHealth()

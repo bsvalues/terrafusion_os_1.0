@@ -7,6 +7,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@microsoft/signalr": "^8.0.0",
+    "@monaco-editor/react": "4.7.0",
     "@mui/icons-material": "^5.18.0",
     "@mui/material": "^5.18.0",
     "@mui/x-data-grid": "^6.18.0",
@@ -14,17 +15,23 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@reduxjs/toolkit": "^2.0.1",
     "@types/react-rnd": "^7.4.4",
+    "@types/styled-components": "5.1.34",
     "@types/three": "^0.179.0",
+    "@types/ws": "8.18.1",
     "axios": "^1.6.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "concurrently": "^9.2.1",
+    "consul": "2.0.1",
     "date-fns": "^2.30.0",
-    "electron": "^28.3.3",
+    "dids": "5.0.3",
+    "electron": "^38.1.0",
     "framer-motion": "^10.16.16",
+    "key-did-provider-ed25519": "4.0.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.540.0",
     "monaco-editor": "0.52.2",
+    "opossum": "9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",
@@ -37,10 +44,12 @@
     "reactflow": "11.11.4",
     "recharts": "^2.15.4",
     "rxjs": "^7.8.2",
+    "styled-components": "6.1.19",
     "swagger-ui-react": "^5.10.5",
     "tailwind-merge": "^3.3.1",
     "three": "^0.179.1",
     "wait-on": "^8.0.4",
+    "ws": "7.5.10",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
@@ -71,8 +80,8 @@
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "electron": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron . --dev\"",
+    "electron": "concurrently \"npm run dev\" \"wait-on http://localhost:${TF_FRONTEND_PORT:-3000} && electron .\"",
+    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:${TF_FRONTEND_PORT:-3000} && electron . --dev\"",
     "electron:build": "npm run build && electron-builder",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -113,5 +122,10 @@
     ]
   },
   "main": "electron/main.js",
-  "homepage": "./"
+  "homepage": "./",
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
 }

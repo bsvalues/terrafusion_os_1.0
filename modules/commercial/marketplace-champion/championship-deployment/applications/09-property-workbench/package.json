@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 3009",
+    "dev": "vite dev --port ${TF_FRONTEND_3009_PORT:-3009}",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri"

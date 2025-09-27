@@ -37,11 +37,11 @@ POSTGRES_USER=terrafusion_spokane
 POSTGRES_PASSWORD=spokane_enterprise_championship_2024
 POSTGRES_DB=terrafusion_spokane
 POSTGRES_HOST=db
-POSTGRES_PORT=5432
+POSTGRES_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Redis Cluster =====
 REDIS_HOST=redis
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Application =====
 JWT_SECRET=spokane_enterprise_jwt_championship_2024
@@ -49,17 +49,17 @@ ENCRYPTION_KEY=spokane_enterprise_32byte_key_2024
 
 # ===== AI / MCP Enterprise =====
 MCP_ENABLED=true
-MCP_ENDPOINT=http://core:8080/mcp
+MCP_ENDPOINT=http://core:${TF_STATIC_PORT:-8080}/mcp
 AI_SWARM_SIZE=1008
 QUANTUM_CORES=true
 ENTERPRISE_MODE=true
 SPOKANE_SCALE=true
 
 # ===== Spokane Enterprise Ports =====
-SPOKANE_DEMO_PORT=3050
-SPOKANE_API_PORT=8050
-SPOKANE_GRAFANA_PORT=3051
-SPOKANE_PROMETHEUS_PORT=9091
+SPOKANE_DEMO_PORT=\${{TF_POSTGRES_PORT:-5432}}
+SPOKANE_API_PORT=\${{TF_POSTGRES_PORT:-5432}}
+SPOKANE_GRAFANA_PORT=\${{TF_POSTGRES_PORT:-5432}}
+SPOKANE_PROMETHEUS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Paths =====
 DATA_DIR=./data/spokane

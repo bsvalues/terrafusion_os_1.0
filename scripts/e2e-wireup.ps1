@@ -22,11 +22,11 @@ function Start-LoggedProcess {
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Resolve-Path (Join-Path $ScriptDir '..')
 
-# Launch backend (.NET hub on ws://localhost:7000/terrafusion/core)
+# Launch backend (.NET hub on ws://localhost:\${{TF_PORT_7000:-7000}}/terrafusion/core)
 Start-LoggedProcess -Title 'Boot: backend hub' -FilePath 'pwsh' -Arguments '-NoExit -Command "dotnet run"' -WorkingDirectory (Join-Path $RepoRoot 'backend/TerraFusion.API')
 Start-Sleep -Seconds $BackendWaitSeconds
 
-# Launch Vite dev server (http://localhost:3000)
+# Launch Vite dev server (http://localhost:\${{TF_PORT_7000:-7000}})
 Start-LoggedProcess -Title 'Boot: frontend (vite dev)' -FilePath 'pwsh' -Arguments '-NoExit -Command "npm run dev"' -WorkingDirectory (Join-Path $RepoRoot 'frontend')
 Start-Sleep -Seconds $ViteWaitSeconds
 

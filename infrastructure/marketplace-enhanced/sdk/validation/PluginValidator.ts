@@ -85,7 +85,7 @@ export class PluginValidator {
       security: { score: 0, maxScore: 0, violations: [] as ValidationViolation[] },
       performance: { score: 0, maxScore: 0, violations: [] as ValidationViolation[] },
       compliance: { score: 0, maxScore: 0, violations: [] as ValidationViolation[] },
-      quality: { score: 0, maxScore: 0, violations: [] as ValidationViolation[] }
+      quality: { score: 0, maxScore: 0, violations: [] as ValidationViolation[] },
     };
 
     // Run all validation rules
@@ -95,7 +95,7 @@ export class PluginValidator {
         categoryScores[rule.category].maxScore += 100;
 
         if (result.passed) {
-          categoryScores[rule.category].score += (result.score || 100);
+          categoryScores[rule.category].score += result.score || 100;
         } else {
           const violation: ValidationViolation = {
             ruleId: rule.id,
@@ -103,12 +103,12 @@ export class PluginValidator {
             category: rule.category,
             severity: rule.severity,
             message: result.message,
-            suggestions: result.suggestions || []
+            suggestions: result.suggestions || [],
           };
-          
+
           violations.push(violation);
           categoryScores[rule.category].violations.push(violation);
-          
+
           // Partial score for warnings and info
           if (rule.severity === 'warning') {
             categoryScores[rule.category].score += 50;
@@ -123,7 +123,7 @@ export class PluginValidator {
           category: rule.category,
           severity: 'error',
           message: `Validation rule failed: ${error.message}`,
-          suggestions: ['Review plugin structure and fix validation errors']
+          suggestions: ['Review plugin structure and fix validation errors'],
         };
         violations.push(violation);
         categoryScores[rule.category].violations.push(violation);
@@ -136,8 +136,9 @@ export class PluginValidator {
     const overallScore = maxTotalScore > 0 ? (totalScore / maxTotalScore) * 100 : 0;
 
     const certificationLevel = this.determineCertificationLevel(overallScore, violations);
-    const readyForMarketplace = certificationLevel !== 'failed' && 
-                               violations.filter(v => v.severity === 'error').length === 0;
+    const readyForMarketplace =
+      certificationLevel !== 'failed' &&
+      violations.filter(v => v.severity === 'error').length === 0;
 
     return {
       pluginId: context.manifest.id,
@@ -150,37 +151,42 @@ export class PluginValidator {
         structure: {
           score: Math.round(categoryScores.structure.score),
           maxScore: categoryScores.structure.maxScore,
-          passed: categoryScores.structure.violations.filter(v => v.severity === 'error').length === 0,
-          violations: categoryScores.structure.violations
+          passed:
+            categoryScores.structure.violations.filter(v => v.severity === 'error').length === 0,
+          violations: categoryScores.structure.violations,
         },
         security: {
           score: Math.round(categoryScores.security.score),
           maxScore: categoryScores.security.maxScore,
-          passed: categoryScores.security.violations.filter(v => v.severity === 'error').length === 0,
-          violations: categoryScores.security.violations
+          passed:
+            categoryScores.security.violations.filter(v => v.severity === 'error').length === 0,
+          violations: categoryScores.security.violations,
         },
         performance: {
           score: Math.round(categoryScores.performance.score),
           maxScore: categoryScores.performance.maxScore,
-          passed: categoryScores.performance.violations.filter(v => v.severity === 'error').length === 0,
-          violations: categoryScores.performance.violations
+          passed:
+            categoryScores.performance.violations.filter(v => v.severity === 'error').length === 0,
+          violations: categoryScores.performance.violations,
         },
         compliance: {
           score: Math.round(categoryScores.compliance.score),
           maxScore: categoryScores.compliance.maxScore,
-          passed: categoryScores.compliance.violations.filter(v => v.severity === 'error').length === 0,
-          violations: categoryScores.compliance.violations
+          passed:
+            categoryScores.compliance.violations.filter(v => v.severity === 'error').length === 0,
+          violations: categoryScores.compliance.violations,
         },
         quality: {
           score: Math.round(categoryScores.quality.score),
           maxScore: categoryScores.quality.maxScore,
-          passed: categoryScores.quality.violations.filter(v => v.severity === 'error').length === 0,
-          violations: categoryScores.quality.violations
-        }
+          passed:
+            categoryScores.quality.violations.filter(v => v.severity === 'error').length === 0,
+          violations: categoryScores.quality.violations,
+        },
       },
       violations,
       recommendations: this.generateRecommendations(violations, overallScore),
-      readyForMarketplace
+      readyForMarketplace,
     };
   }
 
@@ -192,20 +198,20 @@ export class PluginValidator {
       description: 'Plugin manifest must contain all required fields',
       category: 'structure',
       severity: 'error',
-      validator: async (context) => {
+      validator: async context => {
         const required = ['id', 'name', 'version', 'description', 'author', 'terrafusion'];
         const missing = required.filter(field => !context.manifest[field]);
-        
+
         if (missing.length > 0) {
           return {
             passed: false,
             message: `Missing required manifest fields: ${missing.join(', ')}`,
-            suggestions: [`Add missing fields to plugin manifest: ${missing.join(', ')}`]
+            suggestions: [`Add missing fields to plugin manifest: ${missing.join(', ')}`],
           };
         }
-        
+
         return { passed: true, message: 'All required manifest fields present' };
-      }
+      },
     });
 
     this.rules.push({
@@ -214,19 +220,19 @@ export class PluginValidator {
       description: 'Plugin version must follow semantic versioning',
       category: 'structure',
       severity: 'error',
-      validator: async (context) => {
+      validator: async context => {
         const versionRegex = /^\d+\.\d+\.\d+(-[a-zA-Z0-9-]+)?$/;
-        
+
         if (!versionRegex.test(context.manifest.version)) {
           return {
             passed: false,
             message: `Invalid version format: ${context.manifest.version}`,
-            suggestions: ['Use semantic versioning format (e.g., 1.0.0, 1.2.3-beta)']
+            suggestions: ['Use semantic versioning format (e.g., 1.0.0, 1.2.3-beta)'],
           };
         }
-        
+
         return { passed: true, message: 'Version format is valid' };
-      }
+      },
     });
 
     this.rules.push({
@@ -235,22 +241,23 @@ export class PluginValidator {
       description: 'Plugin main entry point must exist',
       category: 'structure',
       severity: 'error',
-      validator: async (context) => {
+      validator: async context => {
         const mainFile = context.manifest.main || 'index.js';
-        const hasMainFile = context.sourceCode.has(mainFile) || 
-                           context.sourceCode.has('src/index.ts') ||
-                           context.sourceCode.has('dist/index.js');
-        
+        const hasMainFile =
+          context.sourceCode.has(mainFile) ||
+          context.sourceCode.has('src/index.ts') ||
+          context.sourceCode.has('dist/index.js');
+
         if (!hasMainFile) {
           return {
             passed: false,
             message: `Main entry point not found: ${mainFile}`,
-            suggestions: ['Create the main entry point file specified in manifest']
+            suggestions: ['Create the main entry point file specified in manifest'],
           };
         }
-        
+
         return { passed: true, message: 'Main entry point exists' };
-      }
+      },
     });
 
     // Security Validation Rules
@@ -260,31 +267,31 @@ export class PluginValidator {
       description: 'Plugin permissions must be properly declared and justified',
       category: 'security',
       severity: 'error',
-      validator: async (context) => {
+      validator: async context => {
         const permissions = context.manifest.terrafusion?.permissions || [];
-        
+
         if (permissions.length === 0) {
           return {
             passed: false,
             message: 'No permissions declared - plugins must declare required permissions',
-            suggestions: ['Add required permissions to manifest.terrafusion.permissions']
+            suggestions: ['Add required permissions to manifest.terrafusion.permissions'],
           };
         }
 
-        const invalidPermissions = permissions.filter(perm => 
-          !perm.type || !perm.scope || !perm.description
+        const invalidPermissions = permissions.filter(
+          perm => !perm.type || !perm.scope || !perm.description
         );
 
         if (invalidPermissions.length > 0) {
           return {
             passed: false,
             message: 'Invalid permission declarations found',
-            suggestions: ['Ensure all permissions have type, scope, and description fields']
+            suggestions: ['Ensure all permissions have type, scope, and description fields'],
           };
         }
-        
+
         return { passed: true, message: 'Permissions properly declared' };
-      }
+      },
     });
 
     this.rules.push({
@@ -293,7 +300,7 @@ export class PluginValidator {
       description: 'Plugin code must pass security vulnerability scanning',
       category: 'security',
       severity: 'error',
-      validator: async (context) => {
+      validator: async context => {
         try {
           const scanResults = await this.securityScanner.scanPlugin({
             id: context.manifest.id,
@@ -302,9 +309,9 @@ export class PluginValidator {
             sourceFiles: Array.from(context.sourceCode.entries()).map(([path, content]) => ({
               path,
               content,
-              size: content.length
+              size: content.length,
             })),
-            dependencies: context.dependencies
+            dependencies: context.dependencies,
           });
 
           const criticalVulns = scanResults.vulnerabilities.filter(v => v.severity === 'critical');
@@ -314,7 +321,7 @@ export class PluginValidator {
             return {
               passed: false,
               message: `Critical security vulnerabilities found: ${criticalVulns.length}`,
-              suggestions: ['Fix all critical security vulnerabilities before submission']
+              suggestions: ['Fix all critical security vulnerabilities before submission'],
             };
           }
 
@@ -322,23 +329,23 @@ export class PluginValidator {
             return {
               passed: false,
               message: `High severity security vulnerabilities found: ${highVulns.length}`,
-              suggestions: ['Fix high severity security vulnerabilities']
+              suggestions: ['Fix high severity security vulnerabilities'],
             };
           }
 
-          return { 
-            passed: true, 
+          return {
+            passed: true,
             message: 'No critical security vulnerabilities found',
-            score: Math.max(0, 100 - (scanResults.vulnerabilities.length * 5))
+            score: Math.max(0, 100 - scanResults.vulnerabilities.length * 5),
           };
         } catch (error) {
           return {
             passed: false,
             message: `Security scan failed: ${error.message}`,
-            suggestions: ['Ensure plugin code is accessible for security scanning']
+            suggestions: ['Ensure plugin code is accessible for security scanning'],
           };
         }
-      }
+      },
     });
 
     // Performance Validation Rules
@@ -348,10 +355,12 @@ export class PluginValidator {
       description: 'Plugin bundle size should be reasonable',
       category: 'performance',
       severity: 'warning',
-      validator: async (context) => {
-        const totalSize = Array.from(context.sourceCode.values())
-          .reduce((sum, content) => sum + content.length, 0);
-        
+      validator: async context => {
+        const totalSize = Array.from(context.sourceCode.values()).reduce(
+          (sum, content) => sum + content.length,
+          0
+        );
+
         const maxSize = 5 * 1024 * 1024; // 5MB
         const warningSize = 2 * 1024 * 1024; // 2MB
 
@@ -359,7 +368,7 @@ export class PluginValidator {
           return {
             passed: false,
             message: `Plugin bundle too large: ${(totalSize / 1024 / 1024).toFixed(2)}MB`,
-            suggestions: ['Optimize bundle size by removing unused dependencies and code']
+            suggestions: ['Optimize bundle size by removing unused dependencies and code'],
           };
         }
 
@@ -368,16 +377,16 @@ export class PluginValidator {
             passed: true,
             message: `Plugin bundle size is large: ${(totalSize / 1024 / 1024).toFixed(2)}MB`,
             score: 75,
-            suggestions: ['Consider optimizing bundle size for better performance']
+            suggestions: ['Consider optimizing bundle size for better performance'],
           };
         }
 
-        return { 
-          passed: true, 
+        return {
+          passed: true,
           message: `Plugin bundle size is optimal: ${(totalSize / 1024 / 1024).toFixed(2)}MB`,
-          score: 100
+          score: 100,
         };
-      }
+      },
     });
 
     // Compliance Validation Rules
@@ -387,14 +396,14 @@ export class PluginValidator {
       description: 'Plugin must specify compatible Terrafusion version',
       category: 'compliance',
       severity: 'error',
-      validator: async (context) => {
+      validator: async context => {
         const minVersion = context.manifest.terrafusion?.minVersion;
-        
+
         if (!minVersion) {
           return {
             passed: false,
             message: 'Terrafusion minimum version not specified',
-            suggestions: ['Add terrafusion.minVersion to manifest']
+            suggestions: ['Add terrafusion.minVersion to manifest'],
           };
         }
 
@@ -403,12 +412,12 @@ export class PluginValidator {
           return {
             passed: false,
             message: `Invalid Terrafusion version format: ${minVersion}`,
-            suggestions: ['Use semantic versioning format for minVersion']
+            suggestions: ['Use semantic versioning format for minVersion'],
           };
         }
 
         return { passed: true, message: 'Terrafusion compatibility specified' };
-      }
+      },
     });
 
     this.rules.push({
@@ -417,24 +426,24 @@ export class PluginValidator {
       description: 'Plugin must declare compliance with required standards',
       category: 'compliance',
       severity: 'warning',
-      validator: async (context) => {
+      validator: async context => {
         const compliance = context.manifest.terrafusion?.compliance || [];
         const requiredStandards = ['CountyOS'];
-        
-        const missingStandards = requiredStandards.filter(standard => 
-          !compliance.some(comp => comp.standard === standard)
+
+        const missingStandards = requiredStandards.filter(
+          standard => !compliance.some(comp => comp.standard === standard)
         );
 
         if (missingStandards.length > 0) {
           return {
             passed: false,
             message: `Missing compliance declarations: ${missingStandards.join(', ')}`,
-            suggestions: ['Add required compliance standards to manifest']
+            suggestions: ['Add required compliance standards to manifest'],
           };
         }
 
         return { passed: true, message: 'Compliance standards declared' };
-      }
+      },
     });
 
     // Quality Validation Rules
@@ -444,19 +453,20 @@ export class PluginValidator {
       description: 'Plugin should have comprehensive documentation',
       category: 'quality',
       severity: 'warning',
-      validator: async (context) => {
-        const hasReadme = context.sourceCode.has('README.md') || 
-                         context.sourceCode.has('readme.md');
-        
+      validator: async context => {
+        const hasReadme =
+          context.sourceCode.has('README.md') || context.sourceCode.has('readme.md');
+
         if (!hasReadme) {
           return {
             passed: false,
             message: 'README.md file not found',
-            suggestions: ['Add comprehensive README.md with usage instructions']
+            suggestions: ['Add comprehensive README.md with usage instructions'],
           };
         }
 
-        const readme = context.sourceCode.get('README.md') || context.sourceCode.get('readme.md') || '';
+        const readme =
+          context.sourceCode.get('README.md') || context.sourceCode.get('readme.md') || '';
         const minLength = 500; // Minimum documentation length
 
         if (readme.length < minLength) {
@@ -464,12 +474,12 @@ export class PluginValidator {
             passed: false,
             message: 'Documentation is too brief',
             score: 60,
-            suggestions: ['Expand documentation with detailed usage examples and API reference']
+            suggestions: ['Expand documentation with detailed usage examples and API reference'],
           };
         }
 
         return { passed: true, message: 'Documentation quality is good', score: 100 };
-      }
+      },
     });
 
     this.rules.push({
@@ -478,9 +488,13 @@ export class PluginValidator {
       description: 'Plugin should include comprehensive tests',
       category: 'quality',
       severity: 'info',
-      validator: async (context) => {
-        const hasTests = Array.from(context.sourceCode.keys()).some(path => 
-          path.includes('test') || path.includes('spec') || path.endsWith('.test.ts') || path.endsWith('.spec.ts')
+      validator: async context => {
+        const hasTests = Array.from(context.sourceCode.keys()).some(
+          path =>
+            path.includes('test') ||
+            path.includes('spec') ||
+            path.endsWith('.test.ts') ||
+            path.endsWith('.spec.ts')
         );
 
         if (!hasTests) {
@@ -488,16 +502,19 @@ export class PluginValidator {
             passed: false,
             message: 'No test files found',
             score: 50,
-            suggestions: ['Add comprehensive test suite for better quality assurance']
+            suggestions: ['Add comprehensive test suite for better quality assurance'],
           };
         }
 
         return { passed: true, message: 'Test files present', score: 100 };
-      }
+      },
     });
   }
 
-  private determineCertificationLevel(score: number, violations: ValidationViolation[]): 'failed' | 'basic' | 'standard' | 'premium' | 'enterprise' {
+  private determineCertificationLevel(
+    score: number,
+    violations: ValidationViolation[]
+  ): 'failed' | 'basic' | 'standard' | 'premium' | 'enterprise' {
     const errorCount = violations.filter(v => v.severity === 'error').length;
     const warningCount = violations.filter(v => v.severity === 'warning').length;
 

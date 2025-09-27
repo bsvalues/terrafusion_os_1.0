@@ -486,7 +486,7 @@ run_comprehensive_tests() {
     
     # Run API health checks
     log_message "INFO" "Running API health checks..."
-    timeout 30s bash -c 'while [[ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health)" != "200" ]]; do sleep 1; done' || {
+    timeout 30s bash -c 'while [[ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:\${{TF_ADMIN_PORT:-8080}}/health)" != "200" ]]; do sleep 1; done' || {
         log_message "WARN" "API health check timeout - checking service status"
         kubectl get pods -n "$KUBERNETES_NAMESPACE" | grep -E "(api|supreme-commander)"
     }
@@ -495,7 +495,7 @@ run_comprehensive_tests() {
     if [[ "$DEPLOYMENT_MODE" == "full-system" || "$DEPLOYMENT_MODE" == "ai-swarm-only" ]]; then
         log_message "INFO" "Validating AI Swarm health..."
         kubectl exec -n "$KUBERNETES_NAMESPACE" deployment/ai-swarm-supreme-commander -- \
-            curl -f http://localhost:8080/health/ai-swarm || {
+            curl -f http://localhost:\${{TF_ADMIN_PORT:-8080}}/health/ai-swarm || {
             log_message "WARN" "AI Swarm health check failed"
         }
     fi

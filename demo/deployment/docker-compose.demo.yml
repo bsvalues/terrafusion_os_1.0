@@ -1,0 +1,379 @@
+# TerraFusion cOS Demo Environment
+# Complete demonstration environment with Harris PACS integration and vendor demos
+
+version: '3.8'
+
+networks:
+  terrafusion-demo:
+    driver: bridge
+
+volumes:
+  demo-postgres-data:
+  demo-redis-data:
+  demo-logs:
+
+services:
+  # Demo Database (Harris PACS replica)
+  demo-postgres:
+    image: postgis/postgis:15-3.3
+    container_name: terrafusion-demo-db
+    environment:
+      - POSTGRES_DB=terrafusion_demo
+      - POSTGRES_USER=demo_user
+      - POSTGRES_PASSWORD=demo_pass_2024
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    ports:
+      - "5433:5432"
+    volumes:
+      - demo-postgres-data:/var/lib/postgresql/data
+      - ./demo-init.sql:/docker-entrypoint-initdb.d/01-demo-init.sql
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo_user -d terrafusion_demo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Demo Redis Cache
+  demo-redis:
+    image: redis:7-alpine
+    container_name: terrafusion-demo-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - demo-redis-data:/data
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # TerraFusion Platform Core (Demo Mode)
+  platform-core-demo:
+    build:
+      context: ../../
+      dockerfile: deployment/containers/platform-core/Dockerfile
+      args:
+        - BUILD_ENV=demo
+    container_name: terrafusion-platform-demo
+    environment:
+      - NODE_ENV=demo
+      - PORT=3000
+      - HEALTH_PORT=8080
+      - METRICS_PORT=9090
+      - DATABASE_URL=postgresql://demo_user:demo_pass_2024@demo-postgres:5432/terrafusion_demo
+      - REDIS_URL=redis://demo-redis:6379/0
+      - PLATFORM_MODE=demo
+      - DEMO_DATA_ENABLED=true
+      - AI_AGENTS_SIMULATION=true
+      - VENDOR_INTEGRATIONS_ENABLED=true
+      - LOG_LEVEL=info
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+      - "9090:9090"
+    depends_on:
+      demo-postgres:
+        condition: service_healthy
+      demo-redis:
+        condition: service_healthy
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Vendor Integration Sidecar (Demo)
+  vendor-integration-demo:
+    build:
+      context: ../../
+      dockerfile: deployment/containers/vendor-integration/Dockerfile
+    container_name: terrafusion-vendor-integration-demo
+    environment:
+      - NODE_ENV=demo
+      - PORT=3001
+      - HEALTH_PORT=8081
+      - METRICS_PORT=9091
+      - PLATFORM_ENDPOINT=http://platform-core-demo:3000
+      - DEMO_MODE=true
+      - VENDOR_SIMULATIONS=acme-gis,govgis-solutions,paymentpro-gov
+    ports:
+      - "3001:3001"
+      - "8081:8081"
+      - "9091:9091"
+    depends_on:
+      - platform-core-demo
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Harris PACS Data Pipeline
+  harris-pacs-pipeline:
+    build:
+      context: ../data-pipeline
+      dockerfile: Dockerfile
+    container_name: terrafusion-harris-pacs-pipeline
+    environment:
+      - POSTGRES_URL=postgresql://demo_user:demo_pass_2024@demo-postgres:5432/terrafusion_demo
+      - REDIS_URL=redis://demo-redis:6379/0
+      - DEMO_MODE=true
+      - PROPERTY_COUNT=89247
+      - SYNC_INTERVAL_MINUTES=60
+      - ANONYMIZE_DATA=true
+    depends_on:
+      demo-postgres:
+        condition: service_healthy
+      demo-redis:
+        condition: service_healthy
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # ACME Assessment Demo Application
+  acme-assessment-demo:
+    build:
+      context: ../vendor-integrations
+      dockerfile: Dockerfile.acme-demo
+    container_name: acme-assessment-demo
+    environment:
+      - PLATFORM_ENDPOINT=http://vendor-integration-demo:3001
+      - VENDOR_ID=acme-assessment-pro
+      - API_KEY=acme-demo-api-key
+      - DEMO_MODE=true
+    ports:
+      - "8082:8080"
+    depends_on:
+      - vendor-integration-demo
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # GovGIS Solutions Demo Application
+  govgis-demo:
+    build:
+      context: ../vendor-integrations
+      dockerfile: Dockerfile.govgis-demo
+    container_name: govgis-solutions-demo
+    environment:
+      - PLATFORM_ENDPOINT=http://vendor-integration-demo:3001
+      - VENDOR_ID=govgis-solutions
+      - API_KEY=govgis-demo-api-key
+      - DEMO_MODE=true
+      - GIS_DATA_ENABLED=true
+    ports:
+      - "8083:8080"
+    depends_on:
+      - vendor-integration-demo
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # PaymentPro Government Demo
+  paymentpro-demo:
+    build:
+      context: ../vendor-integrations
+      dockerfile: Dockerfile.paymentpro-demo
+    container_name: paymentpro-government-demo
+    environment:
+      - PLATFORM_ENDPOINT=http://vendor-integration-demo:3001
+      - VENDOR_ID=paymentpro-government
+      - API_KEY=paymentpro-demo-api-key
+      - DEMO_MODE=true
+      - PAYMENT_SIMULATION=true
+    ports:
+      - "8084:8080"
+    depends_on:
+      - vendor-integration-demo
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # Demo Dashboard Web Application
+  demo-dashboard:
+    build:
+      context: ../web-app
+      dockerfile: Dockerfile
+    container_name: terrafusion-demo-dashboard
+    environment:
+      - PLATFORM_API=http://platform-core-demo:3000
+      - DEMO_MODE=true
+      - REAL_TIME_UPDATES=true
+    ports:
+      - "3002:80"
+    depends_on:
+      - platform-core-demo
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy for Demo
+  demo-nginx:
+    image: nginx:alpine
+    container_name: terrafusion-demo-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../config/nginx/demo.conf:/etc/nginx/conf.d/default.conf
+      - ../ssl:/etc/nginx/ssl
+    depends_on:
+      - demo-dashboard
+      - platform-core-demo
+      - acme-assessment-demo
+      - govgis-demo
+      - paymentpro-demo
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # Demo Monitoring (Prometheus)
+  demo-prometheus:
+    image: prom/prometheus:latest
+    container_name: terrafusion-demo-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=24h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ../config/prometheus/demo.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # Demo Metrics Visualization (Grafana)
+  demo-grafana:
+    image: grafana/grafana:latest
+    container_name: terrafusion-demo-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=demo_admin_2024
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=demo.terrafusion.gov
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+    volumes:
+      - ../config/grafana/demo-dashboards:/etc/grafana/provisioning/dashboards
+      - ../config/grafana/demo-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    ports:
+      - "3003:3000"
+    depends_on:
+      - demo-prometheus
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # AI Agent Simulation Service
+  ai-agent-simulator:
+    build:
+      context: ../ai-simulation
+      dockerfile: Dockerfile
+    container_name: terrafusion-ai-simulator
+    environment:
+      - TOTAL_AGENTS=50000
+      - REDIS_URL=redis://demo-redis:6379/1
+      - SIMULATION_SPEED=1.0
+      - DEMO_MODE=true
+      - PLATFORM_ENDPOINT=http://platform-core-demo:3000
+    depends_on:
+      demo-redis:
+        condition: service_healthy
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # Demo Log Aggregation
+  demo-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    container_name: terrafusion-demo-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - demo-logs:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  demo-kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    container_name: terrafusion-demo-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://demo-elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - demo-elasticsearch
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+  # Demo Health Monitor
+  demo-health-monitor:
+    build:
+      context: ../monitoring
+      dockerfile: Dockerfile
+    container_name: terrafusion-demo-health-monitor
+    environment:
+      - MONITOR_INTERVAL=30
+      - ALERT_WEBHOOK_URL=https://demo.terrafusion.gov/webhooks/health
+      - DEMO_MODE=true
+    depends_on:
+      - platform-core-demo
+      - vendor-integration-demo
+    networks:
+      - terrafusion-demo
+    restart: unless-stopped
+
+# Demo initialization and management scripts
+x-demo-scripts:
+  init-demo-data: &init-demo-data
+    command: python3 /app/scripts/init-demo-data.py
+    volumes:
+      - ../scripts:/app/scripts
+
+  start-demo-sequence: &start-demo-sequence
+    command: bash /app/scripts/start-demo-sequence.sh
+    volumes:
+      - ../scripts:/app/scripts
+
+# Service health checks and dependencies
+x-healthcheck-defaults: &default-healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+# Demo environment configuration
+x-demo-env: &demo-environment
+  DEMO_COUNTY: "Benton County"
+  DEMO_STATE: "Washington"
+  DEMO_PROPERTY_COUNT: "89247"
+  DEMO_ASSESSMENT_VALUE: "15200000000"
+  DEMO_SIMULATION_SPEED: "1.0"
+  FISMA_COMPLIANCE_MODE: "demo"
+  AI_AGENT_COUNT: "50000"
+  VENDOR_COUNT: "12"

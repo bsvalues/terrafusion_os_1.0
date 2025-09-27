@@ -4,23 +4,23 @@
  */
 
 class TerraLevyCalculator {
-    constructor() {
-        this.calculations = {};
-        this.scenarios = [];
-        this.init();
-    }
+  constructor() {
+    this.calculations = {};
+    this.scenarios = [];
+    this.init();
+  }
 
-    init() {
-        this.createLevyInterface();
-        this.bindEvents();
-    }
+  init() {
+    this.createLevyInterface();
+    this.bindEvents();
+  }
 
-    createLevyInterface() {
-        const levyContainer = document.createElement('div');
-        levyContainer.id = 'terra-levy';
-        levyContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
-        levyContainer.style.display = 'none';
-        levyContainer.innerHTML = `
+  createLevyInterface() {
+    const levyContainer = document.createElement('div');
+    levyContainer.id = 'terra-levy';
+    levyContainer.className = 'tf-fullscreen-app tf-cosmic-bg';
+    levyContainer.style.display = 'none';
+    levyContainer.innerHTML = `
             <div class="levy-container">
                 <div class="levy-header">
                     <div class="levy-title">
@@ -138,137 +138,137 @@ class TerraLevyCalculator {
                 </div>
             </div>
         `;
-        
-        document.body.appendChild(levyContainer);
+
+    document.body.appendChild(levyContainer);
+  }
+
+  bindEvents() {
+    // Close button
+    document.addEventListener('click', e => {
+      if (e.target.closest('#levy-close')) {
+        this.close();
+      }
+    });
+
+    // Calculate button
+    document.addEventListener('click', e => {
+      if (e.target.id === 'calculate-taxes') {
+        this.calculateTaxes();
+      }
+    });
+
+    // Close on backdrop click
+    document.addEventListener('click', e => {
+      if (e.target.id === 'terra-levy') {
+        this.close();
+      }
+    });
+
+    // Form inputs
+    ['property-value', 'property-type-levy', 'county-levy'].forEach(id => {
+      document.addEventListener('input', e => {
+        if (e.target.id === id) {
+          this.updateCalculations();
+        }
+      });
+    });
+  }
+
+  calculateTaxes() {
+    const propertyValue = parseFloat(document.getElementById('property-value')?.value) || 0;
+    const propertyType = document.getElementById('property-type-levy')?.value || '';
+    const county = document.getElementById('county-levy')?.value || '';
+
+    if (!propertyValue || !propertyType || !county) {
+      alert('Please fill in all required fields');
+      return;
     }
 
-    bindEvents() {
-        // Close button
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('#levy-close')) {
-                this.close();
-            }
-        });
+    console.log('💰 Calculating taxes for:', { propertyValue, propertyType, county });
 
-        // Calculate button
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'calculate-taxes') {
-                this.calculateTaxes();
-            }
-        });
+    // Calculate exemptions
+    const exemptions = this.calculateExemptions(propertyValue);
+    const taxableValue = Math.max(0, propertyValue - exemptions);
 
-        // Close on backdrop click
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'terra-levy') {
-                this.close();
-            }
-        });
+    // Tax rates by county (mills per $1000 of assessed value)
+    const taxRates = {
+      benton: { county: 2.85, state: 4.29, school: 8.45, fire: 1.24 },
+      yakima: { county: 3.12, state: 4.29, school: 9.67, fire: 1.58 },
+      clark: { county: 3.45, state: 4.29, school: 11.23, fire: 1.89 },
+      spokane: { county: 3.78, state: 4.29, school: 10.45, fire: 1.67 },
+      king: { county: 4.23, state: 4.29, school: 12.78, fire: 2.34 },
+    };
 
-        // Form inputs
-        ['property-value', 'property-type-levy', 'county-levy'].forEach(id => {
-            document.addEventListener('input', (e) => {
-                if (e.target.id === id) {
-                    this.updateCalculations();
-                }
-            });
-        });
+    const rates = taxRates[county] || taxRates.benton;
+
+    // Calculate individual taxes
+    const countyTax = (taxableValue * rates.county) / 1000;
+    const stateTax = (taxableValue * rates.state) / 1000;
+    const schoolTax = (taxableValue * rates.school) / 1000;
+    const fireTax = (taxableValue * rates.fire) / 1000;
+    const totalTax = countyTax + stateTax + schoolTax + fireTax;
+    const effectiveRate = ((totalTax / propertyValue) * 100).toFixed(3);
+
+    // Update UI
+    document.getElementById('total-tax').textContent = `$${totalTax.toLocaleString()}`;
+    document.getElementById('effective-rate').textContent = `${effectiveRate}%`;
+    document.getElementById('county-tax').textContent = `$${countyTax.toLocaleString()}`;
+    document.getElementById('state-tax').textContent = `$${stateTax.toLocaleString()}`;
+    document.getElementById('school-tax').textContent = `$${schoolTax.toLocaleString()}`;
+    document.getElementById('fire-tax').textContent = `$${fireTax.toLocaleString()}`;
+    document.getElementById('total-exemptions').textContent = `-$${exemptions.toLocaleString()}`;
+
+    // Show results
+    document.getElementById('no-results').style.display = 'none';
+    document.getElementById('tax-results').style.display = 'block';
+
+    console.log('💰 Tax calculation complete:', {
+      totalTax: totalTax.toLocaleString(),
+      effectiveRate: `${effectiveRate}%`,
+      exemptions: exemptions.toLocaleString(),
+    });
+  }
+
+  calculateExemptions(propertyValue) {
+    let totalExemptions = 0;
+
+    if (document.getElementById('senior-exemption')?.checked) {
+      totalExemptions += Math.min(propertyValue * 0.6, 60000); // 60% up to $60k
+    }
+    if (document.getElementById('veteran-exemption')?.checked) {
+      totalExemptions += 12000; // $12k veteran exemption
+    }
+    if (document.getElementById('homestead-exemption')?.checked) {
+      totalExemptions += Math.min(propertyValue * 0.35, 35000); // 35% up to $35k
+    }
+    if (document.getElementById('historic-exemption')?.checked) {
+      totalExemptions += Math.min(propertyValue * 0.25, 25000); // 25% up to $25k
     }
 
-    calculateTaxes() {
-        const propertyValue = parseFloat(document.getElementById('property-value')?.value) || 0;
-        const propertyType = document.getElementById('property-type-levy')?.value || '';
-        const county = document.getElementById('county-levy')?.value || '';
+    return totalExemptions;
+  }
 
-        if (!propertyValue || !propertyType || !county) {
-            alert('Please fill in all required fields');
-            return;
-        }
+  updateCalculations() {
+    // Real-time calculation preview could go here
+  }
 
-        console.log('💰 Calculating taxes for:', { propertyValue, propertyType, county });
-
-        // Calculate exemptions
-        const exemptions = this.calculateExemptions(propertyValue);
-        const taxableValue = Math.max(0, propertyValue - exemptions);
-
-        // Tax rates by county (mills per $1000 of assessed value)
-        const taxRates = {
-            benton: { county: 2.85, state: 4.29, school: 8.45, fire: 1.24 },
-            yakima: { county: 3.12, state: 4.29, school: 9.67, fire: 1.58 },
-            clark: { county: 3.45, state: 4.29, school: 11.23, fire: 1.89 },
-            spokane: { county: 3.78, state: 4.29, school: 10.45, fire: 1.67 },
-            king: { county: 4.23, state: 4.29, school: 12.78, fire: 2.34 }
-        };
-
-        const rates = taxRates[county] || taxRates.benton;
-
-        // Calculate individual taxes
-        const countyTax = (taxableValue * rates.county) / 1000;
-        const stateTax = (taxableValue * rates.state) / 1000;
-        const schoolTax = (taxableValue * rates.school) / 1000;
-        const fireTax = (taxableValue * rates.fire) / 1000;
-        const totalTax = countyTax + stateTax + schoolTax + fireTax;
-        const effectiveRate = ((totalTax / propertyValue) * 100).toFixed(3);
-
-        // Update UI
-        document.getElementById('total-tax').textContent = `$${totalTax.toLocaleString()}`;
-        document.getElementById('effective-rate').textContent = `${effectiveRate}%`;
-        document.getElementById('county-tax').textContent = `$${countyTax.toLocaleString()}`;
-        document.getElementById('state-tax').textContent = `$${stateTax.toLocaleString()}`;
-        document.getElementById('school-tax').textContent = `$${schoolTax.toLocaleString()}`;
-        document.getElementById('fire-tax').textContent = `$${fireTax.toLocaleString()}`;
-        document.getElementById('total-exemptions').textContent = `-$${exemptions.toLocaleString()}`;
-
-        // Show results
-        document.getElementById('no-results').style.display = 'none';
-        document.getElementById('tax-results').style.display = 'block';
-
-        console.log('💰 Tax calculation complete:', {
-            totalTax: totalTax.toLocaleString(),
-            effectiveRate: `${effectiveRate}%`,
-            exemptions: exemptions.toLocaleString()
-        });
+  show() {
+    const container = document.getElementById('terra-levy');
+    if (container) {
+      container.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      console.log('💰 Terra-Levy Tax Optimizer launched - FULL SCREEN');
     }
+  }
 
-    calculateExemptions(propertyValue) {
-        let totalExemptions = 0;
-
-        if (document.getElementById('senior-exemption')?.checked) {
-            totalExemptions += Math.min(propertyValue * 0.60, 60000); // 60% up to $60k
-        }
-        if (document.getElementById('veteran-exemption')?.checked) {
-            totalExemptions += 12000; // $12k veteran exemption
-        }
-        if (document.getElementById('homestead-exemption')?.checked) {
-            totalExemptions += Math.min(propertyValue * 0.35, 35000); // 35% up to $35k
-        }
-        if (document.getElementById('historic-exemption')?.checked) {
-            totalExemptions += Math.min(propertyValue * 0.25, 25000); // 25% up to $25k
-        }
-
-        return totalExemptions;
+  close() {
+    const container = document.getElementById('terra-levy');
+    if (container) {
+      container.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      console.log('💰 Tax optimizer closed');
     }
-
-    updateCalculations() {
-        // Real-time calculation preview could go here
-    }
-
-    show() {
-        const container = document.getElementById('terra-levy');
-        if (container) {
-            container.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            console.log('💰 Terra-Levy Tax Optimizer launched - FULL SCREEN');
-        }
-    }
-
-    close() {
-        const container = document.getElementById('terra-levy');
-        if (container) {
-            container.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            console.log('💰 Tax optimizer closed');
-        }
-    }
+  }
 }
 
 // Export for use in main application

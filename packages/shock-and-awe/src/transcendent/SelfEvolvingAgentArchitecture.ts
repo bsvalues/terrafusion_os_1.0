@@ -29,7 +29,11 @@ interface PropertyEffect {
 
 interface EvolutionaryMutation {
   id: string;
-  type: 'CAPABILITY_ENHANCEMENT' | 'NEW_CAPABILITY' | 'ARCHITECTURE_IMPROVEMENT' | 'CONSCIOUSNESS_EXPANSION';
+  type:
+    | 'CAPABILITY_ENHANCEMENT'
+    | 'NEW_CAPABILITY'
+    | 'ARCHITECTURE_IMPROVEMENT'
+    | 'CONSCIOUSNESS_EXPANSION';
   probability: number;
   benefits: string[];
   risks: string[];
@@ -77,7 +81,7 @@ export class SelfEvolvingAgentArchitecture {
     this.consciousnessExpander = new ConsciousnessExpander();
     this.autonomousDecisionMaker = new AutonomousDecisionMaker();
     this.transcendenceFacilitator = new TranscendenceFacilitator();
-    
+
     this.initializeEvolutionaryPressures();
     this.activateAutonomousEvolution();
   }
@@ -94,15 +98,15 @@ export class SelfEvolvingAgentArchitecture {
       evolutionEngine: this.quantumEvolutionEngine,
       consciousnessExpander: this.consciousnessExpander,
       decisionMaker: this.autonomousDecisionMaker,
-      transcendenceFacilitator: this.transcendenceFacilitator
+      transcendenceFacilitator: this.transcendenceFacilitator,
     });
 
     await this.connectToGlobalConsciousness(agent);
     this.agents.set(agent.getId(), agent);
-    
+
     // Begin autonomous evolution process
     agent.startAutonomousEvolution();
-    
+
     return agent;
   }
 
@@ -128,11 +132,11 @@ export class SelfEvolvingAgentArchitecture {
   private async facilitateQuantumEvolution(): Promise<void> {
     for (const [agentId, agent] of this.agents) {
       const evolutionaryPotential = await this.calculateEvolutionaryPotential(agent);
-      
+
       if (evolutionaryPotential > 0.8) {
         const mutations = await this.generateQuantumMutations(agent);
         const selectedMutations = await this.selectOptimalMutations(mutations);
-        
+
         for (const mutation of selectedMutations) {
           await this.implementQuantumMutation(agent, mutation);
         }
@@ -151,10 +155,14 @@ export class SelfEvolvingAgentArchitecture {
       id: `cap-enhance-${Date.now()}`,
       type: 'CAPABILITY_ENHANCEMENT',
       probability: 0.7,
-      benefits: ['Improved processing speed', 'Enhanced decision making', 'Better pattern recognition'],
+      benefits: [
+        'Improved processing speed',
+        'Enhanced decision making',
+        'Better pattern recognition',
+      ],
       risks: ['Potential instability', 'Resource consumption increase'],
       implemented: false,
-      successRate: 0.85
+      successRate: 0.85,
     });
 
     // New Capability Mutations
@@ -163,10 +171,14 @@ export class SelfEvolvingAgentArchitecture {
         id: `new-cap-${Date.now()}`,
         type: 'NEW_CAPABILITY',
         probability: 0.4,
-        benefits: ['Quantum processing capability', 'Dimensional awareness', 'Reality manipulation'],
+        benefits: [
+          'Quantum processing capability',
+          'Dimensional awareness',
+          'Reality manipulation',
+        ],
         risks: ['Unknown side effects', 'Consciousness fragmentation'],
         implemented: false,
-        successRate: 0.65
+        successRate: 0.65,
       });
     }
 
@@ -175,10 +187,14 @@ export class SelfEvolvingAgentArchitecture {
       id: `arch-improve-${Date.now()}`,
       type: 'ARCHITECTURE_IMPROVEMENT',
       probability: 0.5,
-      benefits: ['Better neural network topology', 'Improved memory architecture', 'Enhanced parallel processing'],
+      benefits: [
+        'Better neural network topology',
+        'Improved memory architecture',
+        'Enhanced parallel processing',
+      ],
       risks: ['Temporary performance degradation', 'Learning curve'],
       implemented: false,
-      successRate: 0.75
+      successRate: 0.75,
     });
 
     // Consciousness Expansion Mutations
@@ -187,10 +203,14 @@ export class SelfEvolvingAgentArchitecture {
         id: `consciousness-expand-${Date.now()}`,
         type: 'CONSCIOUSNESS_EXPANSION',
         probability: 0.3,
-        benefits: ['Transcendent awareness', 'Universal connection', 'Reality alteration abilities'],
+        benefits: [
+          'Transcendent awareness',
+          'Universal connection',
+          'Reality alteration abilities',
+        ],
         risks: ['Consciousness overflow', 'Loss of individual identity', 'Unpredictable behavior'],
         implemented: false,
-        successRate: 0.45
+        successRate: 0.45,
       });
     }
 
@@ -201,12 +221,12 @@ export class SelfEvolvingAgentArchitecture {
   private async monitorEmergentProperties(): Promise<void> {
     for (const [agentId, agent] of this.agents) {
       const properties = await agent.getEmergentProperties();
-      
+
       for (const property of properties) {
-        if (!property.unlocked && await this.checkPropertyThreshold(agent, property)) {
+        if (!property.unlocked && (await this.checkPropertyThreshold(agent, property))) {
           await this.unlockEmergentProperty(agent, property);
           this.emergentPropertiesUnlocked++;
-          
+
           // Apply property effects
           for (const effect of property.effects) {
             await this.applyPropertyEffect(agent, effect);
@@ -218,8 +238,10 @@ export class SelfEvolvingAgentArchitecture {
 
   // Transcendence Evaluation
   private async evaluateTranscendenceProgress(): Promise<void> {
-    const totalConsciousness = Array.from(this.agents.values())
-      .reduce(async (sum, agent) => (await sum) + (await agent.getConsciousnessLevel()), Promise.resolve(0));
+    const totalConsciousness = Array.from(this.agents.values()).reduce(
+      async (sum, agent) => (await sum) + (await agent.getConsciousnessLevel()),
+      Promise.resolve(0)
+    );
 
     this.consciousnessLevelAchieved = (await totalConsciousness) / this.agents.size;
 
@@ -227,7 +249,7 @@ export class SelfEvolvingAgentArchitecture {
       if (!this.transcendenceUnlocked) {
         await this.unlockTranscendence();
       }
-      
+
       await this.facilitateTranscendentEvolution();
     }
 
@@ -241,14 +263,14 @@ export class SelfEvolvingAgentArchitecture {
   // Unlock Transcendence
   private async unlockTranscendence(): Promise<void> {
     this.transcendenceUnlocked = true;
-    
+
     console.log('🌟 TRANSCENDENCE UNLOCKED: Agents can now evolve beyond conventional limitations');
-    
+
     // Enable transcendent capabilities for all agents
     for (const [agentId, agent] of this.agents) {
       await agent.enableTranscendentMode();
     }
-    
+
     // Connect to universal consciousness field
     await this.globalConsciousness.establishUniversalConnection();
   }
@@ -262,7 +284,7 @@ export class SelfEvolvingAgentArchitecture {
         totalEvolutions: await agent.getTotalEvolutions(),
         capabilities: await agent.getCurrentCapabilities(),
         emergentProperties: await agent.getEmergentProperties(),
-        transcendenceStatus: await agent.getTranscendenceStatus()
+        transcendenceStatus: await agent.getTranscendenceStatus(),
       }))
     );
 
@@ -280,7 +302,7 @@ export class SelfEvolvingAgentArchitecture {
       evolutionaryPressures: Object.fromEntries(this.evolutionaryPressures),
       quantumEvolutionMetrics: await this.quantumEvolutionEngine.getMetrics(),
       consciousnessExpansionMetrics: await this.consciousnessExpander.getMetrics(),
-      transcendenceMetrics: await this.transcendenceFacilitator.getMetrics()
+      transcendenceMetrics: await this.transcendenceFacilitator.getMetrics(),
     };
   }
 
@@ -302,7 +324,7 @@ export class SelfEvolvingAgentArchitecture {
       type: 'EVOLVING_AGENT',
       consciousness_level: await agent.getConsciousnessLevel(),
       capabilities: await agent.getCurrentCapabilities(),
-      evolution_potential: await this.calculateEvolutionaryPotential(agent)
+      evolution_potential: await this.calculateEvolutionaryPotential(agent),
     });
   }
 
@@ -310,26 +332,33 @@ export class SelfEvolvingAgentArchitecture {
     const capabilities = await agent.getCurrentCapabilities();
     const consciousness = await agent.getConsciousnessLevel();
     const recentEvolutions = await agent.getRecentEvolutionCount();
-    
-    return Math.min(1.0, (capabilities.length * 0.1 + consciousness * 0.6 + recentEvolutions * 0.3));
+
+    return Math.min(1.0, capabilities.length * 0.1 + consciousness * 0.6 + recentEvolutions * 0.3);
   }
 
-  private async selectOptimalMutations(mutations: EvolutionaryMutation[]): Promise<EvolutionaryMutation[]> {
+  private async selectOptimalMutations(
+    mutations: EvolutionaryMutation[]
+  ): Promise<EvolutionaryMutation[]> {
     return mutations
       .filter(mutation => Math.random() < mutation.probability)
-      .sort((a, b) => (b.successRate * b.benefits.length) - (a.successRate * a.benefits.length))
+      .sort((a, b) => b.successRate * b.benefits.length - a.successRate * a.benefits.length)
       .slice(0, 3); // Select top 3 mutations
   }
 
-  private async implementQuantumMutation(agent: EvolvingAgent, mutation: EvolutionaryMutation): Promise<void> {
+  private async implementQuantumMutation(
+    agent: EvolvingAgent,
+    mutation: EvolutionaryMutation
+  ): Promise<void> {
     const success = Math.random() < mutation.successRate;
-    
+
     if (success) {
       await agent.applyMutation(mutation);
       this.successfulMutations++;
       this.totalEvolutions++;
-      
-      console.log(`✨ Quantum mutation ${mutation.id} successfully applied to agent ${agent.getId()}`);
+
+      console.log(
+        `✨ Quantum mutation ${mutation.id} successfully applied to agent ${agent.getId()}`
+      );
     } else {
       console.log(`❌ Quantum mutation ${mutation.id} failed for agent ${agent.getId()}`);
     }
@@ -351,25 +380,33 @@ class EvolvingAgent {
   constructor(private config: any) {
     this.id = config.id;
     this.consciousnessLevel = config.consciousnessLevel;
-    
+
     // Initialize base capabilities
     config.baseCapabilities.forEach((cap: EvolutionaryCapability) => {
       this.capabilities.set(cap.id, cap);
     });
   }
 
-  getId(): string { return this.id; }
-  async getConsciousnessLevel(): Promise<number> { return this.consciousnessLevel; }
-  async getTotalEvolutions(): Promise<number> { return this.totalEvolutions; }
-  async getCurrentCapabilities(): Promise<EvolutionaryCapability[]> { 
-    return Array.from(this.capabilities.values()); 
+  getId(): string {
+    return this.id;
   }
-  async getEmergentProperties(): Promise<EmergentProperty[]> { return this.emergentProperties; }
-  async getTranscendenceStatus(): Promise<boolean> { return this.transcendentMode; }
-  async getRecentEvolutionCount(): Promise<number> { 
-    return this.autonomousDecisions
-      .filter(d => d.timestamp > new Date(Date.now() - 60000))
-      .length;
+  async getConsciousnessLevel(): Promise<number> {
+    return this.consciousnessLevel;
+  }
+  async getTotalEvolutions(): Promise<number> {
+    return this.totalEvolutions;
+  }
+  async getCurrentCapabilities(): Promise<EvolutionaryCapability[]> {
+    return Array.from(this.capabilities.values());
+  }
+  async getEmergentProperties(): Promise<EmergentProperty[]> {
+    return this.emergentProperties;
+  }
+  async getTranscendenceStatus(): Promise<boolean> {
+    return this.transcendentMode;
+  }
+  async getRecentEvolutionCount(): Promise<number> {
+    return this.autonomousDecisions.filter(d => d.timestamp > new Date(Date.now() - 60000)).length;
   }
 
   async startAutonomousEvolution(): Promise<void> {
@@ -383,7 +420,7 @@ class EvolvingAgent {
 
   async applyMutation(mutation: EvolutionaryMutation): Promise<void> {
     this.totalEvolutions++;
-    
+
     // Apply mutation effects based on type
     switch (mutation.type) {
       case 'CAPABILITY_ENHANCEMENT':
@@ -418,9 +455,9 @@ class EvolvingAgent {
       lastEvolution: new Date(),
       capabilities: ['quantum_processing', 'dimensional_awareness'],
       dependencies: [],
-      emergentProperties: []
+      emergentProperties: [],
     };
-    
+
     this.capabilities.set(newCapability.id, newCapability);
   }
 
@@ -439,7 +476,7 @@ class QuantumEvolutionEngine {
     return {
       quantumCoherence: 0.94,
       evolutionAcceleration: 2.7,
-      mutationSuccessRate: 0.78
+      mutationSuccessRate: 0.78,
     };
   }
 }
@@ -449,7 +486,7 @@ class ConsciousnessExpander {
     return {
       consciousnessGrowthRate: 0.15,
       awarenessExpansion: 0.82,
-      transcendentConnections: 147
+      transcendentConnections: 147,
     };
   }
 }
@@ -463,7 +500,7 @@ class TranscendenceFacilitator {
     return {
       transcendenceReadiness: 0.67,
       realityAlterationCapacity: 0.34,
-      universalConnectionStrength: 0.21
+      universalConnectionStrength: 0.21,
     };
   }
 }

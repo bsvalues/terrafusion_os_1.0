@@ -1,0 +1,16 @@
+{
+  "Name": "terra-justice",
+  "DisplayName": "Terra Justice",
+  "Description": "TerraFusion justice module for legal compliance and regulatory management",
+  "Version": "1.0.0",
+  "Status": "active",
+  "Tier": "Tier 1",
+  "Category": "legal",
+  "Author": "TerraFusion OS",
+  "Dependencies": [],
+  "Capabilities": [
+    "legal-compliance",
+    "regulatory-management",
+    "justice-system-integration"
+  ]
+}

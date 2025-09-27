@@ -1,0 +1,16 @@
+{
+  "name": "terramind",
+  "version": "1.0.0",
+  "title": "TerraMind",
+  "description": "Hybrid civic LLM: retrieval + policy + quantum optimization.",
+  "enabled": true,
+  "capabilities": ["llm", "retrieval", "policy-guard", "quantum-routing"],
+  "routes": [
+    { "method": "GET",  "path": "/api/terramind/status" },
+    { "method": "GET",  "path": "/api/terramind/models" },
+    { "method": "POST", "path": "/api/terramind/complete" },
+    { "method": "POST", "path": "/api/terramind/tools/run" }
+  ],
+  "entrypoint": { "type": "service", "assembly": "TerraMind.dll", "class": "TerraMind.Startup" },
+  "dependencies": ["terra-core", "rag-panel"]
+}

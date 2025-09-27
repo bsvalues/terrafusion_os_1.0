@@ -2,7 +2,8 @@
 
 ## 📦 Package Overview
 
-The **Terrafusion Ultimate IDE Standalone Package** is a complete, self-contained development environment that includes:
+The **Terrafusion Ultimate IDE Standalone Package** is a complete,
+self-contained development environment that includes:
 
 - **🎯 Complete IDE**: Monaco Editor with full development capabilities
 - **🧠 AI Integration**: Built-in AI chat and agent systems
@@ -16,12 +17,14 @@ The **Terrafusion Ultimate IDE Standalone Package** is a complete, self-containe
 ## 🎯 Quick Start (3 Steps)
 
 ### 1. **Extract Package**
+
 ```bash
 # Extract the ZIP file to your desired location
 # Example: C:\TerraFusionUltimate\
 ```
 
 ### 2. **Start the System**
+
 ```bash
 # Double-click: START_TERRAFUSION_ULTIMATE.bat
 # Or run from command line:
@@ -29,25 +32,30 @@ START_TERRAFUSION_ULTIMATE.bat
 ```
 
 ### 3. **Access Your IDE**
+
 ```
-Frontend: http://localhost:5173
-Backend: http://localhost:5000
+Frontend: http://localhost:\${{TF_PORT_5173:-5173}}
+Backend: http://localhost:\${{TF_PORT_5173:-5173}}
 ```
 
 ## 🔧 System Requirements
 
 ### **Minimum Requirements**
+
 - **OS**: Windows 10/11 (64-bit)
 - **RAM**: 8GB minimum (16GB recommended)
 - **Storage**: 5GB available space
 - **CPU**: Intel i5/AMD Ryzen 5 or better
 
 ### **Required Software**
-- **.NET 8.0 SDK**: [Download Here](https://dotnet.microsoft.com/download/dotnet/8.0)
+
+- **.NET 8.0 SDK**:
+  [Download Here](https://dotnet.microsoft.com/download/dotnet/8.0)
 - **Node.js 18+**: [Download Here](https://nodejs.org/)
 - **Git**: [Download Here](https://git-scm.com/)
 
 ### **Optional (Recommended)**
+
 - **PostgreSQL 15+**: For production database
 - **Visual Studio Code**: For additional development tools
 - **Docker Desktop**: For containerized deployment
@@ -55,13 +63,15 @@ Backend: http://localhost:5000
 ## 🚀 Deployment Options
 
 ### **Option 1: Local Development (Recommended)**
+
 ```bash
 # 1. Extract package
 # 2. Run START_TERRAFUSION_ULTIMATE.bat
-# 3. Access at http://localhost:5173
+# 3. Access at http://localhost:\${{TF_PORT_5173:-5173}}
 ```
 
 ### **Option 2: Production Server**
+
 ```bash
 # 1. Copy package to server
 # 2. Install .NET 8 and Node.js on server
@@ -71,6 +81,7 @@ Backend: http://localhost:5000
 ```
 
 ### **Option 3: Docker Deployment**
+
 ```bash
 # Docker deployment scripts included in package
 # See Docker/README.md for detailed instructions
@@ -105,15 +116,17 @@ TERRAFUSION_ULTIMATE_STANDALONE/
 ## ⚙️ Configuration
 
 ### **Environment Variables**
+
 ```bash
 # IDE Configuration
-IDE_PORT=5173
-BACKEND_PORT=5000
+IDE_PORT=\${{TF_PORT_5173:-5173}}
+BACKEND_PORT=\${{TF_PORT_5173:-5173}}
 DATABASE_TYPE=sqlite
 ENVIRONMENT=production
 ```
 
 ### **Database Configuration**
+
 ```json
 {
   "ConnectionStrings": {
@@ -124,6 +137,7 @@ ENVIRONMENT=production
 ```
 
 ### **AI Configuration**
+
 ```json
 {
   "AI": {
@@ -143,6 +157,7 @@ ENVIRONMENT=production
 ### **Common Issues & Solutions**
 
 #### **Port Already in Use**
+
 ```bash
 # Check what's using the ports
 netstat -ano | findstr :5173
@@ -152,6 +167,7 @@ netstat -ano | findstr :5000
 ```
 
 #### **Backend Won't Start**
+
 ```bash
 # Check .NET installation
 dotnet --version
@@ -163,6 +179,7 @@ dotnet build
 ```
 
 #### **Frontend Won't Start**
+
 ```bash
 # Check Node.js installation
 node --version
@@ -174,6 +191,7 @@ npm install
 ```
 
 #### **Database Connection Issues**
+
 ```bash
 # For SQLite: Check file permissions
 # For PostgreSQL: Verify service is running
@@ -181,6 +199,7 @@ npm install
 ```
 
 ### **Logs & Debugging**
+
 ```bash
 # Backend logs: Check console output
 # Frontend logs: Check browser console
@@ -190,6 +209,7 @@ npm install
 ## 🚀 Advanced Features
 
 ### **AI Agent System**
+
 - **Windsurf Agent**: Code generation and optimization
 - **Devin AI**: Autonomous development tasks
 - **Cursor Agent**: Intelligent code completion
@@ -197,18 +217,21 @@ npm install
 - **Manus Agent**: Advanced tool integration
 
 ### **ML Optimization Dashboard**
+
 - Model performance monitoring
 - Training job management
 - Performance metrics visualization
 - Automated optimization suggestions
 
 ### **Government Compliance Tools**
+
 - FISMA compliance monitoring
 - Audit trail generation
 - Risk assessment tools
 - Compliance reporting
 
 ### **Hybrid Development Environment**
+
 - Monaco Editor with IntelliSense
 - Integrated terminal
 - Git integration
@@ -218,6 +241,7 @@ npm install
 ## 📊 Performance Optimization
 
 ### **System Tuning**
+
 ```bash
 # Increase Node.js memory limit
 set NODE_OPTIONS=--max-old-space-size=4096
@@ -227,6 +251,7 @@ set DOTNET_GCHeapHardLimit=0x40000000
 ```
 
 ### **Database Optimization**
+
 ```sql
 -- Create indexes for common queries
 CREATE INDEX idx_properties_county ON Properties(CountyId);
@@ -236,6 +261,7 @@ CREATE INDEX idx_audit_logs_timestamp ON AuditLogs(Timestamp);
 ## 🔒 Security Considerations
 
 ### **Production Security**
+
 - Change default ports
 - Use HTTPS in production
 - Implement proper authentication
@@ -244,6 +270,7 @@ CREATE INDEX idx_audit_logs_timestamp ON AuditLogs(Timestamp);
 - Database encryption
 
 ### **Access Control**
+
 - Role-based permissions
 - API rate limiting
 - Audit logging
@@ -253,12 +280,14 @@ CREATE INDEX idx_audit_logs_timestamp ON AuditLogs(Timestamp);
 ## 📈 Scaling & Monitoring
 
 ### **Horizontal Scaling**
+
 - Load balancer configuration
 - Multiple backend instances
 - Database clustering
 - Cache distribution
 
 ### **Monitoring Tools**
+
 - Application performance monitoring
 - Database performance metrics
 - System resource monitoring
@@ -267,18 +296,21 @@ CREATE INDEX idx_audit_logs_timestamp ON AuditLogs(Timestamp);
 ## 🆘 Support & Resources
 
 ### **Documentation**
+
 - Complete API documentation
 - User guides and tutorials
 - Developer reference
 - Troubleshooting guides
 
 ### **Community**
+
 - GitHub repository
 - Issue tracking
 - Feature requests
 - Community forums
 
 ### **Professional Support**
+
 - Enterprise support packages
 - Custom development services
 - Training and certification
@@ -288,16 +320,19 @@ CREATE INDEX idx_audit_logs_timestamp ON AuditLogs(Timestamp);
 
 With the **Terrafusion Ultimate IDE Standalone Package**, you receive:
 
-✅ **Complete Development Environment** - Everything needed to build government applications  
+✅ **Complete Development Environment** - Everything needed to build government
+applications  
 ✅ **AI-Powered Development** - Intelligent assistance and automation  
 ✅ **Enterprise-Grade Backend** - Scalable, secure, compliant  
 ✅ **Government Compliance Tools** - Built-in FISMA and regulatory support  
 ✅ **Professional Documentation** - Comprehensive guides and references  
 ✅ **Management Scripts** - Easy deployment and maintenance  
-✅ **Future-Proof Architecture** - Built on modern, supported technologies  
+✅ **Future-Proof Architecture** - Built on modern, supported technologies
 
 ---
 
-**🚀 Ready to revolutionize government development? Deploy your Terrafusion Ultimate IDE today!**
+**🚀 Ready to revolutionize government development? Deploy your Terrafusion
+Ultimate IDE today!**
 
-*For additional support, see the included documentation or contact the Terrafusion team.*
+_For additional support, see the included documentation or contact the
+Terrafusion team._

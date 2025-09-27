@@ -1,0 +1,502 @@
+{
+  "registry_version": "1.0.0",
+  "last_updated": "2025-09-12T22:45:00Z",
+  "county_target": "Benton County, WA",
+  "modules": [
+    {
+      "id": "tf.core.trust-fabric",
+      "name": "Trust Fabric Cryptographic Kernel",
+      "category": "Core",
+      "service": { 
+        "path": "trust-fabric", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "frontend/src/modules/trust-fabric", 
+        "entry": "frontend/src/modules/trust-fabric/index.tsx", 
+        "routes": ["/trust", "/security/attestations"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "trust-fabric/api/openapi.yaml", 
+        "version": "1.0.0" 
+      }],
+      "db": { 
+        "migrations": "trust-fabric/migrations", 
+        "requires_postgis": false 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/trust-fabric.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/trust-fabric.cdx.json", 
+        "attestations": ["trust-fabric/attest/trust-fabric/*.json"] 
+      },
+      "status": "READY",
+      "owners": [{ 
+        "team": "Security", 
+        "contact": "security@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Security", "Core", "Quantum"]
+    },
+    {
+      "id": "tf.core.consciousness",
+      "name": "AI Consciousness Layer",
+      "category": "Core",
+      "service": { 
+        "path": "consciousness-service", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/consciousness/health" 
+      },
+      "ui": { 
+        "path": "frontend/src/consciousness", 
+        "entry": "frontend/src/consciousness/ConsciousnessService.ts", 
+        "routes": ["/ai/consciousness", "/ai/swarm"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "consciousness-service/api/openapi.yaml", 
+        "version": "1.0.0" 
+      }],
+      "db": { 
+        "migrations": "consciousness-service/migrations", 
+        "requires_postgis": false 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/consciousness.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/consciousness.cdx.json", 
+        "attestations": ["trust-fabric/attest/consciousness/*.json"] 
+      },
+      "status": "READY",
+      "owners": [{ 
+        "team": "AI", 
+        "contact": "ai-team@terrafusion.local" 
+      }],
+      "tags": ["Benton", "AI", "Core", "Swarm"]
+    },
+    {
+      "id": "tf.core.os-kernel",
+      "name": "TerraFusion OS API Gateway",
+      "category": "Core",
+      "service": { 
+        "path": "backend", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "frontend", 
+        "entry": "frontend/src/main.tsx", 
+        "routes": ["/", "/dashboard"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "backend/TerraFusion.API/swagger.json", 
+        "version": "1.0.0" 
+      }],
+      "db": { 
+        "migrations": "backend/migrations", 
+        "requires_postgis": true 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/os-kernel.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/os-kernel.cdx.json", 
+        "attestations": ["trust-fabric/attest/os-kernel/*.json"] 
+      },
+      "status": "INTEGRATING",
+      "owners": [{ 
+        "team": "Platform", 
+        "contact": "platform@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Core", "Platform"]
+    },
+    {
+      "id": "tf.gis.parcel-viewer",
+      "name": "Parcel Viewer & Analytics",
+      "category": "Essential",
+      "service": { 
+        "path": "services/parcel-viewer", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/health" 
+      },
+      "ui": { 
+        "path": "apps/parcel-viewer", 
+        "entry": "apps/parcel-viewer/src/main.tsx", 
+        "routes": ["/gis/parcel/:id", "/gis/map"] 
+      },
+      "apis": [
+        { 
+          "type": "GraphQL", 
+          "spec": "services/parcel-viewer/schema.graphql", 
+          "version": "1.2.0" 
+        },
+        { 
+          "type": "REST", 
+          "spec": "services/parcel-viewer/api/openapi.yaml", 
+          "version": "1.0.0" 
+        }
+      ],
+      "db": { 
+        "migrations": "services/parcel-viewer/migrations", 
+        "requires_postgis": true 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/parcel-viewer.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/parcel-viewer.cdx.json", 
+        "attestations": ["trust-fabric/attest/parcel-viewer/*.json"] 
+      },
+      "status": "READY",
+      "owners": [{ 
+        "team": "GIS", 
+        "contact": "gis-team@terrafusion.local" 
+      }],
+      "tags": ["Benton", "PostGIS", "Map", "Assessor"]
+    },
+    {
+      "id": "tf.assessor.valuation",
+      "name": "Property Valuation Engine",
+      "category": "Essential",
+      "service": { 
+        "path": "services/valuation-engine", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "apps/valuation", 
+        "entry": "apps/valuation/src/main.tsx", 
+        "routes": ["/assessor/valuation", "/assessor/comps"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "services/valuation-engine/api/openapi.yaml", 
+        "version": "2.0.0" 
+      }],
+      "db": { 
+        "migrations": "services/valuation-engine/migrations", 
+        "requires_postgis": true 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/valuation.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/valuation.cdx.json", 
+        "attestations": ["trust-fabric/attest/valuation/*.json"] 
+      },
+      "status": "INTEGRATING",
+      "owners": [{ 
+        "team": "Valuation", 
+        "contact": "valuation@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Assessor", "ML", "Analytics"]
+    },
+    {
+      "id": "tf.treasurer.payment",
+      "name": "Payment Processing Hub",
+      "category": "Essential",
+      "service": { 
+        "path": "services/payment-hub", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "apps/payment-portal", 
+        "entry": "apps/payment-portal/src/main.tsx", 
+        "routes": ["/treasurer/payments", "/treasurer/receipts"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "services/payment-hub/api/openapi.yaml", 
+        "version": "1.5.0" 
+      }],
+      "db": { 
+        "migrations": "services/payment-hub/migrations", 
+        "requires_postgis": false 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/payment-hub.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/payment-hub.cdx.json", 
+        "attestations": ["trust-fabric/attest/payment-hub/*.json"] 
+      },
+      "status": "READY",
+      "owners": [{ 
+        "team": "Treasury", 
+        "contact": "treasury@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Treasurer", "PCI-DSS", "Payments"]
+    },
+    {
+      "id": "tf.records.public",
+      "name": "Public Records Portal",
+      "category": "Essential",
+      "service": { 
+        "path": "services/public-records", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "apps/public-records", 
+        "entry": "apps/public-records/src/main.tsx", 
+        "routes": ["/records/search", "/records/request"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "services/public-records/api/openapi.yaml", 
+        "version": "1.0.0" 
+      }],
+      "db": { 
+        "migrations": "services/public-records/migrations", 
+        "requires_postgis": false 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/public-records.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/public-records.cdx.json", 
+        "attestations": ["trust-fabric/attest/public-records/*.json"] 
+      },
+      "status": "READY",
+      "owners": [{ 
+        "team": "Records", 
+        "contact": "records@terrafusion.local" 
+      }],
+      "tags": ["Benton", "PublicRecords", "FOIA", "Compliance"]
+    },
+    {
+      "id": "tf.permitting.workflow",
+      "name": "Permitting & Workflow Engine",
+      "category": "Essential",
+      "service": { 
+        "path": "services/permitting", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "apps/permitting", 
+        "entry": "apps/permitting/src/main.tsx", 
+        "routes": ["/permits/apply", "/permits/status", "/permits/inspection"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "services/permitting/api/openapi.yaml", 
+        "version": "1.3.0" 
+      }],
+      "db": { 
+        "migrations": "services/permitting/migrations", 
+        "requires_postgis": true 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/permitting.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/permitting.cdx.json", 
+        "attestations": ["trust-fabric/attest/permitting/*.json"] 
+      },
+      "status": "INTEGRATING",
+      "owners": [{ 
+        "team": "Permitting", 
+        "contact": "permitting@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Permitting", "Workflow", "Inspections"]
+    },
+    {
+      "id": "tf.appeals.board",
+      "name": "Board of Appeals System",
+      "category": "Extended",
+      "service": { 
+        "path": "services/appeals", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "apps/appeals", 
+        "entry": "apps/appeals/src/main.tsx", 
+        "routes": ["/appeals/file", "/appeals/hearing", "/appeals/decision"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "services/appeals/api/openapi.yaml", 
+        "version": "1.0.0" 
+      }],
+      "db": { 
+        "migrations": "services/appeals/migrations", 
+        "requires_postgis": false 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/appeals.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/appeals.cdx.json", 
+        "attestations": ["trust-fabric/attest/appeals/*.json"] 
+      },
+      "status": "DRAFT",
+      "owners": [{ 
+        "team": "Legal", 
+        "contact": "legal@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Appeals", "Legal", "Hearing"]
+    },
+    {
+      "id": "tf.tax.roll",
+      "name": "Tax Roll Management",
+      "category": "Essential",
+      "service": { 
+        "path": "services/tax-roll", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "apps/tax-roll", 
+        "entry": "apps/tax-roll/src/main.tsx", 
+        "routes": ["/tax/roll", "/tax/bills", "/tax/history"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "services/tax-roll/api/openapi.yaml", 
+        "version": "2.1.0" 
+      }],
+      "db": { 
+        "migrations": "services/tax-roll/migrations", 
+        "requires_postgis": false 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/tax-roll.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/tax-roll.cdx.json", 
+        "attestations": ["trust-fabric/attest/tax-roll/*.json"] 
+      },
+      "status": "READY",
+      "owners": [{ 
+        "team": "Tax", 
+        "contact": "tax@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Tax", "Roll", "Billing"]
+    },
+    {
+      "id": "tf.marketplace.store",
+      "name": "Government App Store",
+      "category": "Core",
+      "service": { 
+        "path": "services/marketplace", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "apps/marketplace", 
+        "entry": "apps/marketplace/src/main.tsx", 
+        "routes": ["/marketplace", "/marketplace/browse", "/marketplace/install"] 
+      },
+      "apis": [{ 
+        "type": "REST", 
+        "spec": "services/marketplace/api/openapi.yaml", 
+        "version": "1.0.0" 
+      }],
+      "db": { 
+        "migrations": "services/marketplace/migrations", 
+        "requires_postgis": false 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/marketplace.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/marketplace.cdx.json", 
+        "attestations": ["trust-fabric/attest/marketplace/*.json"] 
+      },
+      "status": "INTEGRATING",
+      "owners": [{ 
+        "team": "Platform", 
+        "contact": "platform@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Marketplace", "Core", "Revenue"]
+    },
+    {
+      "id": "tf.analytics.dashboard",
+      "name": "Analytics & Reporting Hub",
+      "category": "Extended",
+      "service": { 
+        "path": "services/analytics", 
+        "port": \${{TF_API_PORT:-5000}}, 
+        "health": "/api/health" 
+      },
+      "ui": { 
+        "path": "apps/analytics", 
+        "entry": "apps/analytics/src/main.tsx", 
+        "routes": ["/analytics", "/reports", "/insights"] 
+      },
+      "apis": [
+        { 
+          "type": "GraphQL", 
+          "spec": "services/analytics/schema.graphql", 
+          "version": "1.0.0" 
+        },
+        { 
+          "type": "REST", 
+          "spec": "services/analytics/api/openapi.yaml", 
+          "version": "1.0.0" 
+        }
+      ],
+      "db": { 
+        "migrations": "services/analytics/migrations", 
+        "requires_postgis": true 
+      },
+      "marketplace": { 
+        "manifest": "marketplace/manifests/analytics.json", 
+        "sdk_version": "2.7.1" 
+      },
+      "trust_fabric": { 
+        "sbom": "trust-fabric/sbom/analytics.cdx.json", 
+        "attestations": ["trust-fabric/attest/analytics/*.json"] 
+      },
+      "status": "INTEGRATING",
+      "owners": [{ 
+        "team": "DataScience", 
+        "contact": "datascience@terrafusion.local" 
+      }],
+      "tags": ["Benton", "Analytics", "BI", "Reporting"]
+    }
+  ],
+  "metadata": {
+    "total_modules": 12,
+    "status_breakdown": {
+      "READY": 5,
+      "INTEGRATING": 6,
+      "DRAFT": 1,
+      "BLOCKED": 0
+    },
+    "categories": {
+      "Core": 3,
+      "Essential": 7,
+      "Extended": 2
+    },
+    "deployment_readiness": {
+      "overall_score": 0.72,
+      "ready_for_staging": true,
+      "ready_for_production": false,
+      "blockers": [
+        "OS Kernel needs integration completion",
+        "Marketplace service deployment pending",
+        "Appeals module still in draft"
+      ]
+    }
+  }
+}
+

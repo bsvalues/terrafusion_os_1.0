@@ -1,0 +1,171 @@
+/* TerraFusion OS 1.0 Elite Brand Variables */
+:root {
+  /* TerraFusion Brand Colors */
+  --tf-primary: #0099ff;
+  --tf-primary-dark: #0077cc;
+  --tf-accent: #00ffaa;
+  --tf-accent-dark: #00cc88;
+  --tf-transcend: #00ffee;
+  --tf-dark: #0b1020;
+  --tf-dark-lighter: #1a1f3a;
+  --tf-light: #ffffff;
+  --tf-gray: #888888;
+  --tf-gray-light: #cccccc;
+  --tf-error: #ff3333;
+  --tf-success: #00ff88;
+  --tf-warning: #ffaa00;
+  --tf-clarity: #e0f7ff;
+}
+
+/* TerraFusion Transcendence Effects */
+.transcend-glow {
+    box-shadow:
+        0 0 20px rgba(0, 255, 238, 0.4),
+        0 0 40px rgba(0, 153, 255, 0.3),
+        0 0 60px rgba(0, 255, 170, 0.2);
+    transition: all 0.3s ease;
+}
+
+.transcend-glow:hover {
+    box-shadow:
+        0 0 30px rgba(0, 255, 238, 0.6),
+        0 0 60px rgba(0, 153, 255, 0.4),
+        0 0 90px rgba(0, 255, 170, 0.3);
+}
+
+/* Clarity Gradient */
+.clarity-gradient {
+    background: linear-gradient(135deg,
+        var(--tf-primary) 0%,
+        var(--tf-transcend) 50%,
+        var(--tf-accent) 100%);
+}
+
+.clarity-gradient-text {
+    background: linear-gradient(135deg,
+        var(--tf-primary) 0%,
+        var(--tf-transcend) 50%,
+        var(--tf-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Intelligence Pulse - Limited Animation */
+@keyframes intelligencePulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 0.95;
+    }
+}
+
+.intelligence-pulse {
+    animation: intelligencePulse 4s ease-in-out infinite;
+}
+
+/* Transcendence Animations */
+@keyframes transcendenceReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.transcend-reveal {
+    animation: transcendenceReveal 0.5s ease-out forwards;
+}
+
+/* Module Transcendence States */
+.module-transcending {
+    position: relative;
+    overflow: hidden;
+}
+
+.module-transcending::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg,
+        var(--tf-primary),
+        var(--tf-transcend),
+        var(--tf-accent),
+        var(--tf-transcend),
+        var(--tf-primary));
+    background-size: 400% 400%;
+    animation: transcendenceFlow 6s ease infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.module-transcending:hover::before {
+    opacity: 0.3;
+}
+
+@keyframes transcendenceFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Button States - Call to Transcendence */
+.btn-transcend {
+    background: linear-gradient(135deg,
+        var(--tf-primary) 0%,
+        var(--tf-transcend) 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-transcend:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 4px 12px rgba(0, 255, 238, 0.3),
+        0 2px 4px rgba(0, 153, 255, 0.2);
+}
+
+/* Motto Display */
+.motto-display {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--tf-gray-light);
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.motto-display:hover {
+    color: var(--tf-transcend);
+    opacity: 1;
+}
+
+/* Ensure interactive elements work properly */
+button, a, input, select, textarea {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}

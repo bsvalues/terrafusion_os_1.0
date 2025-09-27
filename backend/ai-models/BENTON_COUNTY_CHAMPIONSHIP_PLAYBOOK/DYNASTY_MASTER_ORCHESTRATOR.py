@@ -135,49 +135,49 @@ class DynastyMasterOrchestrator:
         self.components['ollama'] = DynastyComponent(
             name="Ollama LLM Service",
             command=["ollama", "serve"],
-            health_check_url="http://localhost:11434/api/tags"
+            health_check_url="http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/tags"
         )
         
         # 2. Hybrid Router API
         self.components['router'] = DynastyComponent(
             name="Hybrid Router API",
             command=["python3", "hybrid_llm_router.py", "--serve"],
-            health_check_url="http://localhost:8080/health"
+            health_check_url="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
         )
         
         # 3. Autonomous Orchestrator
         self.components['autonomous'] = DynastyComponent(
             name="Autonomous Orchestrator",
             command=["python3", "autonomous_orchestrator.py"],
-            health_check_url="http://localhost:8081/health"
+            health_check_url="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
         )
         
         # 4. Training Pipeline
         self.components['training'] = DynastyComponent(
             name="Training Pipeline",
             command=["python3", "continuous_training_pipeline.py"],
-            health_check_url="http://localhost:8082/health"
+            health_check_url="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
         )
         
         # 5. Evolution Engine
         self.components['evolution'] = DynastyComponent(
             name="Evolution Engine", 
             command=["python3", "autonomous_evolution_engine.py"],
-            health_check_url="http://localhost:8083/health"
+            health_check_url="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
         )
         
         # 6. Quantum Optimizer
         self.components['quantum'] = DynastyComponent(
             name="Quantum Optimizer",
             command=["python3", "quantum_optimization_layer.py"],
-            health_check_url="http://localhost:8084/health"
+            health_check_url="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
         )
         
         # 7. Dashboard Server
         self.components['dashboard'] = DynastyComponent(
             name="Championship Dashboard",
             command=["python3", "-m", "http.server", "8090", "--directory", "."],
-            health_check_url="http://localhost:8090/"
+            health_check_url="http://localhost:\${{TF_ADMIN_PORT:-8080}}/"
         )
         
         # 8. Neural Consciousness (Optional)
@@ -185,7 +185,7 @@ class DynastyMasterOrchestrator:
             self.components['consciousness'] = DynastyComponent(
                 name="Neural Consciousness",
                 command=["python3", "neural_consciousness_layer.py"],
-                health_check_url="http://localhost:8085/health"
+                health_check_url="http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
             )
     
     async def start_dynasty(self):
@@ -221,7 +221,7 @@ class DynastyMasterOrchestrator:
                     # Continue with other components
         
         logger.info("✅ All dynasty components started!")
-        logger.info(f"🌐 Dashboard: http://localhost:8090/championship_ui.html")
+        logger.info(f"🌐 Dashboard: http://localhost:\${{TF_ADMIN_PORT:-8080}}/championship_ui.html")
         
         # Start monitoring
         asyncio.create_task(self._monitor_health())

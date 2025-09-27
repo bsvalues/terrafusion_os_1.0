@@ -398,7 +398,9 @@ export interface DataSourceTestResponse {
 // Hook types
 export interface UseReportBuilderReturn {
   report: ReportConfiguration;
-  setReport: (report: ReportConfiguration | ((prev: ReportConfiguration) => ReportConfiguration)) => void;
+  setReport: (
+    report: ReportConfiguration | ((prev: ReportConfiguration) => ReportConfiguration)
+  ) => void;
   availableDataSources: DataSource[];
   availableMetrics: string[];
   availableTemplates: ReportTemplate[];

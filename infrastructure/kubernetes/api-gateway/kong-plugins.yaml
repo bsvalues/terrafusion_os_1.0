@@ -213,8 +213,8 @@ config:
     - https://terrafusion.cosmic
     - https://app.terrafusion.cosmic
     - https://api.terrafusion.cosmic
-    - http://localhost:3000
-    - http://localhost:5173
+    - http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+    - http://localhost:\${{TF_FRONTEND_PORT:-3000}}
   methods:
     - GET
     - POST
@@ -327,7 +327,7 @@ data:
     
     services:
     - name: cosmic-orchestrator
-      url: http://cosmic-orchestrator.terrafusion-cosmic.svc.cluster.local:8080
+      url: http://cosmic-orchestrator.terrafusion-cosmic.svc.cluster.local:${TF_STATIC_PORT:-8080}
       routes:
       - name: cosmic-orchestrator-route
         paths:
@@ -382,7 +382,7 @@ data:
           unhealthy:
             http_failures: 5
       targets:
-      - target: "cosmic-orchestrator.terrafusion-cosmic.svc.cluster.local:8080"
+      - target: "cosmic-orchestrator.terrafusion-cosmic.svc.cluster.local:${TF_STATIC_PORT:-8080}"
         weight: 100
       - target: "consciousness-service.terrafusion-cosmic.svc.cluster.local:8081"
         weight: 100

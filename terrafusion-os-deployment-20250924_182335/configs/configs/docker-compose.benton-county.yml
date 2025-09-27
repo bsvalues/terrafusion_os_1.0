@@ -1,0 +1,107 @@
+# Benton County White Glove Production Deployment
+# TerraFusion OS v1.0 - Government AI Operating System
+
+services:
+  # Benton County PostgreSQL Database
+  benton-postgres:
+    image: postgres:15-alpine
+    container_name: benton-terrafusion-postgres
+    environment:
+      POSTGRES_DB: benton_county_production
+      POSTGRES_USER: benton_assessor
+      POSTGRES_PASSWORD: ${BENTON_POSTGRES_PASSWORD:-secure_benton_2025}
+    volumes:
+      - benton_postgres_data:/var/lib/postgresql/data
+      - ./data/benton-county:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    networks:
+      - benton-county-network
+
+  # TerraFusion API - Benton County Instance
+  benton-api:
+    image: terrafusion/api:benton-county
+    container_name: benton-terrafusion-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=BentonCounty
+      - ConnectionStrings__DefaultConnection=Host=benton-postgres;Database=benton_county_production;Username=benton_assessor;Password=${BENTON_POSTGRES_PASSWORD:-secure_benton_2025}
+      - County__Name=Benton County
+      - County__State=Washington
+      - County__ParcelCount=89247
+      - HarrisPACS__Enabled=true
+      - HarrisPACS__ApiEndpoint=${HARRIS_PACS_ENDPOINT}
+      - HarrisPACS__ApiKey=${HARRIS_PACS_API_KEY}
+    ports:
+      - "5001:${TF_API_PORT:-5046}"
+    depends_on:
+      - benton-postgres
+    networks:
+      - benton-county-network
+
+  # TerraFusion Frontend - Benton County
+  benton-frontend:
+    image: terrafusion/frontend:benton-county
+    container_name: benton-terrafusion-frontend
+    environment:
+      - REACT_APP_API_URL=http://localhost:\${{TF_API_HTTPS_PORT:-5001}}
+      - REACT_APP_COUNTY_NAME=Benton County
+      - REACT_APP_COUNTY_LOGO=/assets/benton-county-logo.png
+      - REACT_APP_ASSESSOR_NAME=Benton County Assessor
+    ports:
+      - "3001:${TF_FRONTEND_PORT:-3102}"
+    depends_on:
+      - benton-api
+    networks:
+      - benton-county-network
+
+  # AI Orchestration - Benton County Swarm
+  benton-ai-swarm:
+    image: terrafusion/ai-swarm:benton-county
+    container_name: benton-ai-orchestration
+    environment:
+      - AI_SWARM_COUNT=50000
+      - COUNTY_SPECIALIZATION=PropertyAssessment
+      - PARCEL_COUNT=89247
+      - ASSESSMENT_AI=enabled
+      - REVENUE_AI=enabled
+      - COMPLIANCE_AI=enabled
+    ports:
+      - "8081:${TF_STATIC_PORT:-8080}"
+    networks:
+      - benton-county-network
+
+  # Harris PACS Integration Service
+  harris-pacs-integration:
+    image: terrafusion/harris-pacs:latest
+    container_name: benton-harris-pacs
+    environment:
+      - HARRIS_PACS_ENDPOINT=${HARRIS_PACS_ENDPOINT}
+      - HARRIS_PACS_API_KEY=${HARRIS_PACS_API_KEY}
+      - SYNC_FREQUENCY=15
+      - PARCEL_COUNT=89247
+      - GIS_PROJECTION=EPSG:2927
+    depends_on:
+      - benton-postgres
+    networks:
+      - benton-county-network
+
+  # Analytics & Reporting Engine
+  benton-analytics:
+    image: terrafusion/analytics:government
+    container_name: benton-analytics-engine
+    environment:
+      - COUNTY_NAME=Benton County
+      - ANALYTICS_MODE=assessor
+      - REVENUE_TRACKING=enabled
+      - PERFORMANCE_MONITORING=enabled
+    ports:
+      - "9091:9090"
+    networks:
+      - benton-county-network
+
+volumes:
+  benton_postgres_data:
+
+networks:
+  benton-county-network:
+    driver: bridge

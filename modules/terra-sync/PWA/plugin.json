@@ -1,0 +1,35 @@
+{
+  "name": "terra-sync",
+  "displayName": "Terra Sync",
+  "description": "Advanced data synchronization and workflow coordination system",
+  "version": "1.0.0",
+  "status": "active",
+  "tier": "Tier 2",
+  "category": "synchronization",
+  "author": "TerraFusion OS",
+  "port": 5142,
+  "pricing": {
+    "basePrice": 169,
+    "subscriptionModel": "monthly",
+    "enterprise": true
+  },
+  "endpoints": {
+    "health": "/health",
+    "api": "/api",
+    "ui": "/ui"
+  },
+  "dependencies": [],
+  "capabilities": [
+    "workflow-coordination",
+    "advanced-synchronization",
+    "process-automation",
+    "data-orchestration",
+    "system-coordination"
+  ],
+  "configuration": {
+    "autoStart": true,
+    "hotSwappable": true,
+    "governmentCompliant": true,
+    "security": "government-grade"
+  }
+}

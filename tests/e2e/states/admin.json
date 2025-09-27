@@ -13,7 +13,7 @@
   ],
   "origins": [
     {
-      "origin": "http://localhost:3000",
+      "origin": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
       "localStorage": [
         {
           "name": "user",

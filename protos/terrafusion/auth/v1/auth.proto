@@ -1,0 +1,190 @@
+syntax = "proto3";
+
+package terrafusion.auth.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "TerraFusion.Grpc.Auth.V1";
+option go_package = "github.com/terrafusion/protos/auth/v1;auth";
+
+// Authentication types
+message User {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
+  string county_id = 4;
+  repeated Role roles = 5;
+  repeated string permissions = 6;
+  SecurityClearance clearance = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp last_login = 9;
+  bool is_active = 10;
+}
+
+message Role {
+  string role_id = 1;
+  string name = 2;
+  string description = 3;
+  repeated string permissions = 4;
+  SecurityClearance required_clearance = 5;
+}
+
+enum SecurityClearance {
+  SECURITY_CLEARANCE_UNSPECIFIED = 0;
+  PUBLIC = 1;
+  CONFIDENTIAL = 2;
+  SECRET = 3;
+  TOP_SECRET = 4;
+}
+
+message AuthToken {
+  string token = 1;
+  string refresh_token = 2;
+  TokenType token_type = 3;
+  google.protobuf.Timestamp expires_at = 4;
+  string issued_for = 5; // user_id
+  repeated string scopes = 6;
+}
+
+enum TokenType {
+  TOKEN_TYPE_UNSPECIFIED = 0;
+  BEARER = 1;
+  API_KEY = 2;
+  SERVICE_ACCOUNT = 3;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+  string county_id = 3;
+  bool remember_me = 4;
+  string client_info = 5;
+}
+
+message LoginResponse {
+  bool success = 1;
+  AuthToken token = 2;
+  User user = 3;
+  string error_message = 4;
+  bool requires_mfa = 5;
+  string mfa_challenge_id = 6;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+  string user_id = 2;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+  repeated string required_permissions = 2;
+  SecurityClearance required_clearance = 3;
+}
+
+message ValidateTokenResponse {
+  bool is_valid = 1;
+  User user = 2;
+  google.protobuf.Timestamp expires_at = 3;
+  repeated string granted_permissions = 4;
+  string error_message = 5;
+}
+
+message PermissionCheck {
+  string user_id = 1;
+  string resource = 2;
+  string action = 3;
+  string county_id = 4;
+  map<string, string> context = 5;
+}
+
+message PermissionResponse {
+  bool granted = 1;
+  string reason = 2;
+  SecurityClearance user_clearance = 3;
+  SecurityClearance required_clearance = 4;
+}
+
+message AuditEvent {
+  string event_id = 1;
+  string user_id = 2;
+  string action = 3;
+  string resource = 4;
+  string county_id = 5;
+  bool success = 6;
+  string client_ip = 7;
+  string user_agent = 8;
+  google.protobuf.Timestamp timestamp = 9;
+  map<string, string> metadata = 10;
+}
+
+// MFA types
+message MfaChallenge {
+  string challenge_id = 1;
+  string user_id = 2;
+  MfaMethod method = 3;
+  string challenge_data = 4;
+  google.protobuf.Timestamp expires_at = 5;
+}
+
+enum MfaMethod {
+  MFA_METHOD_UNSPECIFIED = 0;
+  TOTP = 1;
+  SMS = 2;
+  EMAIL = 3;
+  PUSH_NOTIFICATION = 4;
+}
+
+message MfaVerificationRequest {
+  string challenge_id = 1;
+  string code = 2;
+  string user_id = 3;
+}
+
+// Service definitions
+service AuthenticationService {
+  // Authentication
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Logout(string) returns (google.protobuf.Empty); // user_id
+  rpc RefreshToken(RefreshTokenRequest) returns (AuthToken);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  
+  // Authorization
+  rpc CheckPermission(PermissionCheck) returns (PermissionResponse);
+  rpc GetUserPermissions(string) returns (repeated string); // user_id
+  
+  // MFA
+  rpc InitiateMfa(string) returns (MfaChallenge); // user_id
+  rpc VerifyMfa(MfaVerificationRequest) returns (LoginResponse);
+  
+  // User management
+  rpc GetUser(string) returns (User); // user_id
+  rpc UpdateUser(User) returns (User);
+  rpc DeactivateUser(string) returns (google.protobuf.Empty); // user_id
+  
+  // Audit
+  rpc LogAuditEvent(AuditEvent) returns (google.protobuf.Empty);
+  rpc StreamAuditEvents(string) returns (stream AuditEvent); // county_id
+}
+
+service ServiceAuthService {
+  // Service-to-service authentication
+  rpc AuthenticateService(ServiceAuthRequest) returns (ServiceAuthResponse);
+  rpc ValidateServiceToken(string) returns (ServiceAuthResponse); // token
+  rpc RevokeServiceToken(string) returns (google.protobuf.Empty); // token
+}
+
+message ServiceAuthRequest {
+  string service_name = 1;
+  string service_version = 2;
+  string certificate_fingerprint = 3;
+  repeated string requested_scopes = 4;
+}
+
+message ServiceAuthResponse {
+  bool success = 1;
+  string service_token = 2;
+  google.protobuf.Timestamp expires_at = 3;
+  repeated string granted_scopes = 4;
+  string error_message = 5;
+}

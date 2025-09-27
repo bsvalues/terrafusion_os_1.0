@@ -258,7 +258,7 @@ rule_files:
 scrape_configs:
   - job_name: 'terrafusion-api'
     static_configs:
-      - targets: ['api:5000']
+      - targets: ['api:${TF_API_PORT:-5046}']
     scrape_interval: 10s
     metrics_path: '/metrics'
     scheme: 'https'
@@ -272,7 +272,7 @@ scrape_configs:
     
   - job_name: 'harris-pacs-integration'
     static_configs:
-      - targets: ['harris-pacs:8080']
+      - targets: ['harris-pacs:${TF_STATIC_PORT:-8080}']
     scrape_interval: 30s
 
   - job_name: 'government-security-monitoring'

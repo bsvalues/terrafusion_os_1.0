@@ -119,15 +119,15 @@ public class EnterpriseAuthService : IEnterpriseAuthService
             var user = await _graphServiceClient.Users[userId].GetAsync();
             
             if (user == null)
-                return null;
+                return new UserProfile { Id = userId, DisplayName = "Unknown User", Email = "unknown@domain.com", FirstName = "Unknown", LastName = "Unknown", AccountEnabled = false };
 
             return new UserProfile
             {
-                Id = user.Id,
-                DisplayName = user.DisplayName,
-                Email = user.Mail ?? user.UserPrincipalName,
-                FirstName = user.GivenName,
-                LastName = user.Surname,
+                Id = user.Id ?? string.Empty,
+                DisplayName = user.DisplayName ?? "Unknown User",
+                Email = user.Mail ?? user.UserPrincipalName ?? "unknown@domain.com",
+                FirstName = user.GivenName ?? "Unknown",
+                LastName = user.Surname ?? "Unknown",
                 JobTitle = user.JobTitle,
                 Department = user.Department,
                 Office = user.OfficeLocation,
@@ -140,7 +140,7 @@ public class EnterpriseAuthService : IEnterpriseAuthService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get user profile for {UserId}", userId);
-            return null;
+            return new UserProfile { Id = userId, DisplayName = "Unknown User", Email = "unknown@domain.com", FirstName = "Unknown", LastName = "Unknown", AccountEnabled = false };
         }
     }
 
@@ -157,7 +157,8 @@ public class EnterpriseAuthService : IEnterpriseAuthService
             {
                 if (role is Microsoft.Graph.Models.DirectoryRole dirRole)
                 {
-                    roles.Add(dirRole.DisplayName);
+                    if (!string.IsNullOrEmpty(dirRole.DisplayName))
+                        roles.Add(dirRole.DisplayName);
                 }
             }
 
@@ -211,11 +212,11 @@ public class EnterpriseAuthService : IEnterpriseAuthService
                 {
                     groups.Add(new GroupMembership
                     {
-                        Id = group.Id,
-                        DisplayName = group.DisplayName,
-                        Description = group.Description,
+                        Id = group.Id ?? string.Empty,
+                        DisplayName = group.DisplayName ?? "Unknown Group",
+                        Description = group.Description ?? "No description available",
                         GroupType = group.GroupTypes?.Contains("Unified") == true ? "Microsoft365" : "Security",
-                        Mail = group.Mail
+                        Mail = group.Mail ?? string.Empty
                     });
                 }
             }

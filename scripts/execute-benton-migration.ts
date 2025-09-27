@@ -6,13 +6,13 @@ import path from 'path';
 
 async function main() {
   console.log('🚀 Terrafusion OS 1.0 - BentonCounty Migration Execution');
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
 
   try {
     // Validate prerequisites
     console.log('📋 Validating migration prerequisites...');
     const validation = await bentonCountyMigration.validatePrerequisites();
-    
+
     if (!validation.valid) {
       console.error('❌ Prerequisites validation failed:');
       validation.issues.forEach(issue => console.error(`   • ${issue}`));
@@ -32,11 +32,13 @@ async function main() {
     // Execute high-priority migration first
     console.log('\n🎯 Executing HIGH PRIORITY migration...');
     const highPriorityResult = await bentonCountyMigration.executeMigration(['high']);
-    
+
     if (highPriorityResult.success) {
       console.log(`✅ High priority migration completed successfully`);
       console.log(`   • Components processed: ${highPriorityResult.componentsProcessed}`);
-      console.log(`   • Total size migrated: ${highPriorityResult.totalSize.toLocaleString()} items`);
+      console.log(
+        `   • Total size migrated: ${highPriorityResult.totalSize.toLocaleString()} items`
+      );
     } else {
       console.error('❌ High priority migration failed:');
       highPriorityResult.errors.forEach(error => console.error(`   • ${error}`));
@@ -45,11 +47,13 @@ async function main() {
     // Execute medium-priority migration
     console.log('\n🎯 Executing MEDIUM PRIORITY migration...');
     const mediumPriorityResult = await bentonCountyMigration.executeMigration(['medium']);
-    
+
     if (mediumPriorityResult.success) {
       console.log(`✅ Medium priority migration completed successfully`);
       console.log(`   • Components processed: ${mediumPriorityResult.componentsProcessed}`);
-      console.log(`   • Total size migrated: ${mediumPriorityResult.totalSize.toLocaleString()} items`);
+      console.log(
+        `   • Total size migrated: ${mediumPriorityResult.totalSize.toLocaleString()} items`
+      );
     } else {
       console.error('❌ Medium priority migration had issues:');
       mediumPriorityResult.errors.forEach(error => console.error(`   • ${error}`));
@@ -60,14 +64,15 @@ async function main() {
       timestamp: new Date().toISOString(),
       highPriority: highPriorityResult,
       mediumPriority: mediumPriorityResult,
-      totalComponentsMigrated: highPriorityResult.componentsProcessed + mediumPriorityResult.componentsProcessed,
+      totalComponentsMigrated:
+        highPriorityResult.componentsProcessed + mediumPriorityResult.componentsProcessed,
       totalSizeMigrated: highPriorityResult.totalSize + mediumPriorityResult.totalSize,
-      overallSuccess: highPriorityResult.success && mediumPriorityResult.success
+      overallSuccess: highPriorityResult.success && mediumPriorityResult.success,
     };
 
     const reportPath = path.join(process.cwd(), 'migration-report.json');
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
-    
+
     console.log('\n📄 Migration Report Generated:');
     console.log(`   • Report saved to: ${reportPath}`);
     console.log(`   • Total components migrated: ${report.totalComponentsMigrated}`);
@@ -80,7 +85,6 @@ async function main() {
     } else {
       console.log('\n⚠️  Migration completed with some issues. Check the report for details.');
     }
-
   } catch (error) {
     console.error('💥 Migration execution failed:', error.message);
     process.exit(1);

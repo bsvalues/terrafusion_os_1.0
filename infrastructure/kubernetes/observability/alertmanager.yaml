@@ -38,7 +38,7 @@ data:
     
     - name: 'default'
       webhook_configs:
-      - url: 'http://cosmic-webhook.terrafusion-cosmic:8080/alerts'
+      - url: 'http://cosmic-webhook.terrafusion-cosmic:${TF_STATIC_PORT:-8080}/alerts'
         send_resolved: true
         
     - name: 'critical'
@@ -53,7 +53,7 @@ data:
       - service_key: '${PAGERDUTY_SERVICE_KEY}'
         severity: 'critical'
       webhook_configs:
-      - url: 'http://cosmic-webhook.terrafusion-cosmic:8080/alerts/critical'
+      - url: 'http://cosmic-webhook.terrafusion-cosmic:${TF_STATIC_PORT:-8080}/alerts/critical'
         
     - name: 'critical-cosmic'
       slack_configs:
@@ -212,7 +212,7 @@ spec:
         args:
         - --config.file=/etc/alertmanager/alertmanager.yml
         - --storage.path=/alertmanager
-        - --cluster.listen-address=0.0.0.0:9094
+        - --cluster.listen-address=0.0.0.0:\${{TF_PORT_9094:-9094}}
         - --cluster.peer=alertmanager-0.alertmanager:9094
         - --cluster.peer=alertmanager-1.alertmanager:9094
         - --cluster.peer=alertmanager-2.alertmanager:9094

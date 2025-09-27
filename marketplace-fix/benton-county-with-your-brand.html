@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benton County - TerraFusion OS Subscription Center</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            /* Core Brand Colors - FROM YOUR BRAND KIT */
+            --tf-primary: #0099ff;
+            --tf-accent: #00ffaa;
+            --tf-transcend: #00ffee;
+            --tf-dark: #0b1020;
+            --tf-dark-lighter: #1a1f3a;
+            --tf-surface: rgba(0,0,0,0.6);
+            --tf-glass: rgba(0,255,238,0.1);
+            
+            /* Semantic Colors */
+            --tf-success: #00ffaa;
+            --tf-warning: #ffaa00;
+            --tf-error: #ff4444;
+            --tf-info: #00ffee;
+            
+            /* Gradients - FROM YOUR BRAND KIT */
+            --tf-gradient-hero: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            --tf-gradient-dark: linear-gradient(180deg, #0b1020 0%, #0a0f1c 100%);
+            --tf-gradient-glass: linear-gradient(135deg, rgba(0,255,238,0.1) 0%, rgba(0,153,255,0.05) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* WebGL Background - YOUR TRANSCENDENCE CODE */
+        #webgl-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Hero Content - YOUR DESIGN */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.7) 100%);
+        }
+
+        .transcendence-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, rgba(0,153,255,0.2), rgba(0,255,238,0.2));
+            border: 1px solid rgba(0,255,238,0.5);
+            border-radius: 50px;
+            margin-bottom: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .hero-headline {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #0099ff, #00ffee, #00ffaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            filter: drop-shadow(0 0 30px rgba(0,255,238,0.5));
+        }
+
+        .hero-subhead {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 300;
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.5;
+        }
+
+        /* Content Sections */
+        .content-section {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section-card {
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,255,238,0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,255,238,0.2);
+        }
+
+        .warning-card {
+            background: linear-gradient(135deg, rgba(255,170,0,0.1), rgba(255,100,0,0.05));
+            border-color: #ffaa00;
+        }
+
+        .cost-card {
+            background: linear-gradient(135deg, rgba(255,68,68,0.1), rgba(220,38,38,0.05));
+            border-color: #ff4444;
+        }
+
+        .savings-card {
+            background: linear-gradient(135deg, rgba(0,255,170,0.1), rgba(16,185,129,0.05));
+            border-color: var(--tf-accent);
+        }
+
+        .metrics-bar {
+            display: flex;
+            gap: 3rem;
+            padding: 1.5rem 2rem;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,255,238,0.3);
+            border-radius: 100px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ffee, #00ffaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cost-value {
+            background: linear-gradient(135deg, #ff4444, #dc2626);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .savings-value {
+            background: var(--tf-gradient-hero);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 0.25rem;
+        }
+
+        /* Module Grid */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .module-card {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,255,238,0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .module-card.active {
+            border-color: var(--tf-accent);
+            background: linear-gradient(135deg, rgba(0,255,170,0.1), rgba(0,255,238,0.05));
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,255,238,0.3);
+        }
+
+        .module-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .module-name {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--tf-transcend);
+            margin-bottom: 1rem;
+        }
+
+        .status-active {
+            color: var(--tf-accent);
+        }
+
+        canvas {
+            display: block;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 300;
+            background: var(--tf-gradient-hero);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0,0,0,0.9);
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- WebGL Background - YOUR TRANSCENDENCE CODE -->
+    <div id="webgl-container">
+        <canvas id="transcendence-canvas"></canvas>
+    </div>
+
+    <!-- Hero Section - YOUR DESIGN -->
+    <div class="hero-content">
+        <div class="transcendence-badge">
+            <span>🏛️</span>
+            <span>GOVERNMENT TRANSCENDED</span>
+        </div>
+        
+        <h1 class="hero-headline">Benton County</h1>
+        <p class="hero-subhead">
+            TerraFusion OS Subscription & Cost Management Center<br>
+            <strong>Government. Transcended.</strong>
+        </p>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="content-section">
+        <!-- Government Compliance Warning -->
+        <div class="section-card warning-card">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-size: 2rem;">⚖️</span>
+                <div>
+                    <strong>Government Procurement Compliance:</strong> This dashboard shows your software licensing costs and operational savings only. Benton County does not receive any revenue from software sales - we are a customer of TerraFusion OS services.
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Summary -->
+        <div class="section-card cost-card">
+            <h2 style="color: #ff4444;">💰 Annual Software Licensing Costs</h2>
+            <div class="metrics-bar">
+                <div class="metric">
+                    <div class="metric-value cost-value">$5,724</div>
+                    <div class="metric-label">Base TerraFusion OS License<br><small>$477/month • Core AI & OS</small></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value cost-value">$1,704</div>
+                    <div class="metric-label">Module Subscriptions<br><small>$142/month avg • 12 modules</small></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value cost-value">$7,428</div>
+                    <div class="metric-label">Total Annual Investment<br><small>Complete government platform</small></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Savings Summary -->
+        <div class="section-card savings-card">
+            <h2 style="color: var(--tf-accent);">📈 Operational Savings & ROI</h2>
+            <div class="metrics-bar">
+                <div class="metric">
+                    <div class="metric-value savings-value">$42,000</div>
+                    <div class="metric-label">Staff Time Savings<br><small>AI automation • 340 hrs/month</small></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value savings-value">$18,500</div>
+                    <div class="metric-label">Legacy Cost Reduction<br><small>3 systems replaced</small></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value savings-value">$53,072</div>
+                    <div class="metric-label">Net Annual Profit<br><small>715% ROI on investment</small></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Licensed Modules -->
+        <div class="section-card">
+            <h2>📦 Licensed Government Modules</h2>
+            <div class="module-grid">
+                <div class="module-card active">
+                    <div class="module-icon">🤖</div>
+                    <div class="module-name">AI Swarm Coordination</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span class="status-active">✅ Active</span>
+                        <span style="color: rgba(255,255,255,0.5);">• 50,000 agents operational</span>
+                    </div>
+                    <p><strong>Cost:</strong> <span style="color: #ff4444;">$89/month</span></p>
+                    <p><strong>Savings:</strong> <span style="color: var(--tf-accent);">$12,000/year automation</span></p>
+                </div>
+                
+                <div class="module-card active">
+                    <div class="module-icon">🏛️</div>
+                    <div class="module-name">Government Edition Core</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span class="status-active">✅ Active</span>
+                        <span style="color: rgba(255,255,255,0.5);">• FISMA/NIST compliant</span>
+                    </div>
+                    <p><strong>Cost:</strong> <span style="color: #ff4444;">$67/month</span></p>
+                    <p><strong>Savings:</strong> <span style="color: var(--tf-accent);">$8,000/year compliance</span></p>
+                </div>
+                
+                <div class="module-card active">
+                    <div class="module-icon">💰</div>
+                    <div class="module-name">CostForge AI Assessment</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span class="status-active">✅ Active</span>
+                        <span style="color: rgba(255,255,255,0.5);">• 89,247 parcels processed</span>
+                    </div>
+                    <p><strong>Cost:</strong> <span style="color: #ff4444;">$45/month</span></p>
+                    <p><strong>Savings:</strong> <span style="color: var(--tf-accent);">$15,000/year accuracy</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="section-card">
+            <h2>⚡ System Performance & Health</h2>
+            <div class="metrics-bar">
+                <div class="metric">
+                    <div class="metric-value">99.97%</div>
+                    <div class="metric-label">System Uptime</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">94.2%</div>
+                    <div class="metric-label">AI Agent Efficiency</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">6.2ms</div>
+                    <div class="metric-label">Response Time</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">4.8/5.0</div>
+                    <div class="metric-label">User Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>🏛️ Benton County</strong> is a licensed customer of <strong>TerraFusion OS</strong></p>
+        <p>Support: 1-800-TERRA-OS • Compliance Verified ⚖️ • <strong>Government. Transcended.</strong></p>
+    </div>
+
+    <!-- WebGL Transcendence Engine - YOUR CODE -->
+    <script>
+        // WebGL setup using YOUR transcendence code
+        const canvas = document.getElementById('transcendence-canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            gl.viewport(0, 0, canvas.width, canvas.height);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Vertex shader - YOUR transcendence effects
+        const vertexShaderSource = `
+            attribute vec2 a_position;
+            uniform vec2 u_resolution;
+            uniform float u_time;
+            varying vec2 v_uv;
+            
+            void main() {
+                v_uv = a_position;
+                vec2 position = a_position;
+                
+                // Add wave distortion
+                position.y += sin(position.x * 10.0 + u_time * 2.0) * 0.02;
+                position.x += cos(position.y * 8.0 + u_time * 1.5) * 0.02;
+                
+                vec2 clipSpace = ((position / u_resolution) * 2.0 - 1.0) * vec2(1, -1);
+                gl_Position = vec4(clipSpace, 0, 1);
+            }
+        `;
+
+        // Fragment shader - YOUR transcendence colors
+        const fragmentShaderSource = `
+            precision mediump float;
+            uniform float u_time;
+            uniform vec2 u_mouse;
+            uniform vec2 u_resolution;
+            varying vec2 v_uv;
+            
+            void main() {
+                vec2 st = v_uv / u_resolution;
+                vec2 mouse = u_mouse / u_resolution;
+                
+                // Create flowing energy lines
+                float energy = 0.0;
+                for(float i = 0.0; i < 5.0; i++) {
+                    vec2 pos = vec2(
+                        sin(u_time * 0.5 + i * 1.5) * 0.3 + 0.5,
+                        cos(u_time * 0.7 + i * 2.1) * 0.3 + 0.5
+                    );
+                    float dist = distance(st, pos);
+                    energy += 0.01 / (dist + 0.01);
+                }
+                
+                // Mouse interaction
+                float mouseDist = distance(st, mouse);
+                float mouseGlow = 0.05 / (mouseDist + 0.05);
+                
+                // Transcendence gradient - YOUR COLORS
+                vec3 color1 = vec3(0.0, 0.6, 1.0);  // Trust blue
+                vec3 color2 = vec3(0.0, 1.0, 0.933); // Transcendence cyan
+                vec3 color3 = vec3(0.0, 1.0, 0.667); // Success green
+                
+                vec3 finalColor = mix(color1, color2, st.x + sin(u_time) * 0.1);
+                finalColor = mix(finalColor, color3, st.y + cos(u_time * 0.8) * 0.1);
+                
+                // Combine everything
+                finalColor += energy * 0.3;
+                finalColor += mouseGlow * vec3(0.2, 0.8, 1.0);
+                
+                // Grid overlay
+                float grid = step(0.98, sin(st.x * 50.0)) + step(0.98, sin(st.y * 50.0));
+                finalColor += grid * 0.05;
+                
+                // Fade edges
+                float fade = 1.0 - distance(st, vec2(0.5, 0.5)) * 1.5;
+                fade = clamp(fade, 0.0, 1.0);
+                
+                gl_FragColor = vec4(finalColor * fade * 0.3, 1.0);
+            }
+        `;
+
+        // Compile shader - YOUR CODE
+        function createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        // Create program
+        const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+        const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+        
+        const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+
+        // Get locations
+        const positionLocation = gl.getAttribLocation(program, 'a_position');
+        const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+        const timeLocation = gl.getUniformLocation(program, 'u_time');
+        const mouseLocation = gl.getUniformLocation(program, 'u_mouse');
+
+        // Create buffer
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        const positions = [
+            0, 0,
+            canvas.width, 0,
+            0, canvas.height,
+            canvas.width, canvas.height,
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+        // Mouse tracking
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Animation loop - YOUR TRANSCENDENCE ENGINE
+        let startTime = Date.now();
+        function render() {
+            const time = (Date.now() - startTime) * 0.001;
+            
+            gl.clearColor(0, 0, 0, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            
+            gl.useProgram(program);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+            
+            gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+            gl.uniform1f(timeLocation, time);
+            gl.uniform2f(mouseLocation, mouseX, mouseY);
+            
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            
+            requestAnimationFrame(render);
+        }
+        render();
+    </script>
+</body>
+</html>

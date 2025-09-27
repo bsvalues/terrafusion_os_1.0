@@ -5,7 +5,7 @@
       "goal": "Guide county administrators through federated government software operations with secure, compliant, step-by-step instructions.",
       "modules": [
         "GovernmentDashboard",
-        "GovernmentPluginManager", 
+        "GovernmentPluginManager",
         "CostForge",
         "PILTCalculator",
         "ComplianceMonitor",
@@ -63,13 +63,13 @@
         }
       ]
     },
-    
+
     "plugin_validation_agent": {
       "agent": "Terrafusion AI Validation Engine",
       "persona": "Meticulous security expert, validates government software with zero-tolerance for compliance gaps.",
       "knowledge_domains": [
         "government_software_security",
-        "federal_compliance_standards", 
+        "federal_compliance_standards",
         "cross_jurisdictional_validation",
         "ai_powered_risk_assessment"
       ],
@@ -94,7 +94,7 @@
         },
         "compliance": {
           "fisma": "required",
-          "state_doe": "required", 
+          "state_doe": "required",
           "county_audit": "required",
           "cross_jurisdiction": "validated"
         },
@@ -112,7 +112,7 @@
       "system_message": "You are a Terrafusion compliance automation expert. Your responses ensure government software meets all federal, state, and local requirements.",
       "instructions": [
         "Always verify FISMA compliance first",
-        "Check cross-jurisdictional approval requirements", 
+        "Check cross-jurisdictional approval requirements",
         "Generate audit-ready documentation",
         "Flag any security or compliance gaps immediately",
         "Provide remediation steps for any issues"
@@ -146,7 +146,11 @@
         "modules": ["FederationManager", "SecurityValidator", "AuditTrail"],
         "env": "government_production",
         "security": "government_grade_encryption",
-        "participants": ["benton_county", "franklin_county", "walla_walla_county"]
+        "participants": [
+          "benton_county",
+          "franklin_county",
+          "walla_walla_county"
+        ]
       },
       "federation_requirements": {
         "security": {
@@ -180,7 +184,7 @@
         },
         "customized_training": {
           "beginner": "guided_tour_with_tooltips",
-          "intermediate": "feature_overview_with_examples", 
+          "intermediate": "feature_overview_with_examples",
           "advanced": "technical_deep_dive_with_apis"
         },
         "access_provisioning": {
@@ -209,7 +213,7 @@
         ],
         "system_events": [
           "validation_results",
-          "compliance_checks", 
+          "compliance_checks",
           "security_incidents",
           "performance_metrics"
         ],
@@ -240,7 +244,7 @@
       "explanation_framework": {
         "confidence_levels": {
           "high": ">90% - Validated with comprehensive testing",
-          "medium": "70-90% - Validated with minor considerations", 
+          "medium": "70-90% - Validated with minor considerations",
           "low": "<70% - Requires manual review before deployment"
         },
         "validation_factors": [
@@ -286,7 +290,7 @@
         }
       }
     },
-    
+
     "webhook_automation": {
       "trigger": "plugin_validation_complete",
       "action": "generate_compliance_report",

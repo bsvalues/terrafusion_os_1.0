@@ -659,7 +659,7 @@ echo "🏆 AUTONOMOUS DYNASTY SYSTEM OPERATIONAL"
 echo "The championship machine will now run forever,"
 echo "continuously improving and maintaining excellence."
 echo ""
-echo "Monitor at: http://localhost:8080/dynasty-dashboard"
+echo "Monitor at: http://localhost:\${{TF_ADMIN_PORT:-8080}}/dynasty-dashboard"
 echo "Logs at: /var/log/benton-dynasty.log"
 ```
 

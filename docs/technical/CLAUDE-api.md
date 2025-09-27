@@ -1,16 +1,19 @@
 # CLAUDE-api.md
 
-API development and integration guidance for Terrafusion OS RESTful services and external integrations.
+API development and integration guidance for Terrafusion OS RESTful services and
+external integrations.
 
 ## API Architecture
 
 ### RESTful API Design
+
 - **Main API Gateway**: Terrafusion.API with controllers and SignalR hubs
 - **Unified API**: Consolidated API in `backend/api-unified/`
 - **OpenAPI Documentation**: Swagger/OpenAPI specification
 - **Versioning Strategy**: API versioning for backward compatibility
 
 ### API Configuration
+
 - `backend/Terrafusion.API/appsettings.json`: Main API settings
 - `backend/api-unified/appsettings.json`: Unified API configuration
 - `backend/Terrafusion.API/Program.cs`: API startup configuration
@@ -19,6 +22,7 @@ API development and integration guidance for Terrafusion OS RESTful services and
 ## API Development Commands
 
 ### Development & Testing
+
 ```bash
 # Start API development server
 npm run backend:dev
@@ -31,6 +35,7 @@ npm run backend:dev
 ```
 
 ### API Gateway Management
+
 ```bash
 # API gateway optimization
 ./scripts/api-gateway-optimization.sh --throughput=1M-requests --latency=sub-50ms
@@ -42,12 +47,14 @@ npm run backend:dev
 ## Core API Controllers
 
 ### Properties Controller
+
 - **Location**: `backend/Terrafusion.API/Controllers/PropertiesController.cs`
 - **Endpoints**: Property CRUD operations, valuation, assessment
 - **Features**: Property search, filtering, bulk operations
 - **Security**: Role-based access control, audit logging
 
 ### Security Controller
+
 - **Location**: `backend/Terrafusion.API/Controllers/SecurityController.cs`
 - **Endpoints**: Authentication, authorization, user management
 - **Features**: JWT token management, MFA, role assignment
@@ -56,6 +63,7 @@ npm run backend:dev
 ## API Design Patterns
 
 ### Request/Response Patterns
+
 - Consistent JSON structure
 - Standard HTTP status codes
 - Error response standardization
@@ -63,6 +71,7 @@ npm run backend:dev
 - Filtering and sorting capabilities
 
 ### Authentication & Authorization
+
 ```json
 {
   "Authorization": "Bearer {JWT_TOKEN}",
@@ -71,6 +80,7 @@ npm run backend:dev
 ```
 
 ### Error Handling
+
 ```json
 {
   "error": {
@@ -85,6 +95,7 @@ npm run backend:dev
 ## API Security
 
 ### Security Implementation
+
 - JWT authentication with refresh tokens
 - Role-based access control (RBAC)
 - API rate limiting and throttling
@@ -92,12 +103,14 @@ npm run backend:dev
 - CORS configuration for cross-origin requests
 
 ### Government Security Compliance
+
 - FISMA compliance requirements
 - NIST security framework adherence
 - Audit logging for all API operations
 - Data encryption in transit and at rest
 
 ### Security Headers
+
 ```http
 Content-Security-Policy: default-src 'self'
 X-Frame-Options: DENY
@@ -108,6 +121,7 @@ Strict-Transport-Security: max-age=31536000
 ## External System Integration
 
 ### ERP System Integration
+
 ```bash
 # ERP integration setup
 ./scripts/integrate-erp-system.sh --vendor=sap --module=financials --real-time
@@ -117,6 +131,7 @@ Strict-Transport-Security: max-age=31536000
 ```
 
 ### Third-Party APIs
+
 - Banking integration for tax payments
 - Insurance system connectivity
 - Utility company integrations
@@ -124,6 +139,7 @@ Strict-Transport-Security: max-age=31536000
 - Document management systems
 
 ### Integration Patterns
+
 - API-first integration approach
 - Event-driven architecture
 - Message queue integration
@@ -133,6 +149,7 @@ Strict-Transport-Security: max-age=31536000
 ## API Documentation
 
 ### OpenAPI/Swagger Specification
+
 - Comprehensive API documentation
 - Interactive API explorer
 - Code generation capabilities
@@ -140,6 +157,7 @@ Strict-Transport-Security: max-age=31536000
 - Version-controlled API specs
 
 ### Documentation Generation
+
 ```bash
 # Generate API documentation
 ./scripts/generate-api-docs.sh --format=openapi --government-standards
@@ -151,6 +169,7 @@ Strict-Transport-Security: max-age=31536000
 ## Real-Time Communication
 
 ### SignalR Implementation
+
 - Real-time property updates
 - Live dashboard notifications
 - Multi-user collaboration features
@@ -158,6 +177,7 @@ Strict-Transport-Security: max-age=31536000
 - Performance monitoring streams
 
 ### WebSocket Patterns
+
 - Connection management
 - Message broadcasting
 - Group communications
@@ -167,6 +187,7 @@ Strict-Transport-Security: max-age=31536000
 ## API Performance
 
 ### Performance Optimization
+
 - Response caching strategies
 - Database query optimization
 - Async/await implementation
@@ -174,9 +195,10 @@ Strict-Transport-Security: max-age=31536000
 - Background job processing
 
 ### Monitoring & Metrics
+
 ```bash
 # API performance monitoring
-curl http://localhost:9090/metrics
+curl http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/metrics
 
 # Response time analysis
 ./scripts/api-response-time-analysis.sh --endpoints=all
@@ -186,6 +208,7 @@ curl http://localhost:9090/metrics
 ```
 
 ### Load Balancing
+
 - Multi-instance deployment
 - Health check endpoints
 - Circuit breaker patterns
@@ -195,6 +218,7 @@ curl http://localhost:9090/metrics
 ## Multi-County API Architecture
 
 ### County-Specific Endpoints
+
 - County isolation patterns
 - Multi-tenant architecture
 - County-specific configurations
@@ -202,6 +226,7 @@ curl http://localhost:9090/metrics
 - Cross-county data sharing protocols
 
 ### County API Management
+
 ```bash
 # Deploy county-specific API
 ./scripts/deploy-county-api.sh --county=benton --configuration=production
@@ -213,6 +238,7 @@ curl http://localhost:9090/metrics
 ## API Versioning & Evolution
 
 ### Versioning Strategy
+
 - Semantic versioning (v1, v2, etc.)
 - Backward compatibility maintenance
 - Deprecation policies
@@ -220,6 +246,7 @@ curl http://localhost:9090/metrics
 - Version lifecycle management
 
 ### API Evolution
+
 - Non-breaking changes priority
 - Feature flags for new functionality
 - Gradual rollout strategies
@@ -229,6 +256,7 @@ curl http://localhost:9090/metrics
 ## API Testing
 
 ### Testing Strategies
+
 - Unit tests for controllers
 - Integration tests for endpoints
 - Contract testing with consumers
@@ -236,6 +264,7 @@ curl http://localhost:9090/metrics
 - Security testing for vulnerabilities
 
 ### Test Automation
+
 ```bash
 # API test execution
 ./scripts/api-test-suite.sh --endpoints=all --coverage=comprehensive
@@ -250,6 +279,7 @@ curl http://localhost:9090/metrics
 ## Government API Standards
 
 ### Compliance Requirements
+
 - Section 508 accessibility
 - Government data standards
 - Privacy regulation compliance
@@ -257,6 +287,7 @@ curl http://localhost:9090/metrics
 - Data retention policies
 
 ### API Governance
+
 - API design standards
 - Security review processes
 - Performance requirements
@@ -266,12 +297,14 @@ curl http://localhost:9090/metrics
 ## Troubleshooting APIs
 
 ### Common API Issues
+
 - **Authentication Failures**: JWT token validation, expiration
 - **Performance Problems**: Database queries, caching issues
 - **Integration Errors**: External service connectivity
 - **Rate Limiting**: Request throttling, quota management
 
 ### Debugging Tools
+
 - API logging and monitoring
 - Request/response tracing
 - Performance profiling
@@ -279,11 +312,12 @@ curl http://localhost:9090/metrics
 - Health check monitoring
 
 ### API Health Monitoring
+
 ```bash
 # API health checks
-curl http://localhost:5000/health
-curl http://localhost:5000/health/ready
-curl http://localhost:5000/health/live
+curl http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/health
+curl http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/health/ready
+curl http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/health/live
 
 # API status dashboard
 ./scripts/api-health-dashboard.sh --real-time --all-endpoints
@@ -292,6 +326,7 @@ curl http://localhost:5000/health/live
 ## Message Queue Integration
 
 ### Queue Implementation
+
 - Background task processing
 - Event-driven architecture
 - Message reliability patterns
@@ -299,6 +334,7 @@ curl http://localhost:5000/health/live
 - Priority queue management
 
 ### Queue Monitoring
+
 ```bash
 # Message queue health
 ./scripts/message-queue-monitoring.sh --queues=all --metrics=depth,throughput
@@ -310,6 +346,7 @@ curl http://localhost:5000/health/live
 ## API Deployment
 
 ### Deployment Patterns
+
 - Blue-green deployments
 - Canary releases
 - Rolling updates
@@ -317,6 +354,7 @@ curl http://localhost:5000/health/live
 - Zero-downtime deployments
 
 ### Production Configuration
+
 - Environment-specific settings
 - Secret management
 - SSL/TLS configuration
@@ -324,6 +362,7 @@ curl http://localhost:5000/health/live
 - CDN integration
 
 ### Scaling Strategies
+
 - Horizontal scaling patterns
 - Auto-scaling configuration
 - Resource allocation optimization

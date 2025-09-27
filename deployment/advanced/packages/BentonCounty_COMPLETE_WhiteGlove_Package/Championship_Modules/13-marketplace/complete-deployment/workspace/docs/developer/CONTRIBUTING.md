@@ -1,6 +1,7 @@
 # Contributing to Terrafusion Platform
 
-Thank you for your interest in contributing to Terrafusion! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to Terrafusion! This document
+provides guidelines and instructions for contributing to the project.
 
 ## Table of Contents
 
@@ -33,7 +34,8 @@ Thank you for your interest in contributing to Terrafusion! This document provid
 
 ### Enforcement
 
-Violations should be reported to conduct@terrafusion.gov. All complaints will be reviewed and investigated promptly and fairly.
+Violations should be reported to conduct@terrafusion.gov. All complaints will be
+reviewed and investigated promptly and fairly.
 
 ## Getting Started
 
@@ -183,7 +185,7 @@ async function fetchUser(id: string): Promise<User> {
     const user = await userService.findById(id);
     return user;
   } catch (error) {
-    logger.error("Failed to fetch user", { id, error });
+    logger.error('Failed to fetch user', { id, error });
     throw new UserNotFoundError(id);
   }
 }
@@ -217,7 +219,7 @@ interface CreateTenantRequest {
  */
 function calculateProbabilityDistribution(
   qubits: QubitState[],
-  measurementBasis: MeasurementBasis,
+  measurementBasis: MeasurementBasis
 ): ProbabilityDistribution {
   // Implementation
 }
@@ -296,8 +298,8 @@ for x in values:
 - Use descriptive test names
 
 ```typescript
-describe("QuantumEntanglementService", () => {
-  it("should create entangled qubit pair with Bell state", async () => {
+describe('QuantumEntanglementService', () => {
+  it('should create entangled qubit pair with Bell state', async () => {
     const service = new QuantumEntanglementService();
     const [qubit1, qubit2] = await service.createBellPair();
 
@@ -306,13 +308,13 @@ describe("QuantumEntanglementService", () => {
     expect(qubit1.entangledWith).toContain(qubit2.id);
   });
 
-  it("should throw error when entangling already entangled qubits", async () => {
+  it('should throw error when entangling already entangled qubits', async () => {
     const service = new QuantumEntanglementService();
     const [q1, q2] = await service.createBellPair();
     const q3 = await service.createQubit();
 
     await expect(service.entangle(q1, q3)).rejects.toThrow(
-      "Qubit is already entangled",
+      'Qubit is already entangled'
     );
   });
 });
@@ -325,20 +327,20 @@ describe("QuantumEntanglementService", () => {
 - Use test databases
 
 ```typescript
-describe("POST /api/v1/tenants", () => {
-  it("should create a new tenant with valid data", async () => {
+describe('POST /api/v1/tenants', () => {
+  it('should create a new tenant with valid data', async () => {
     const response = await request(app)
-      .post("/api/v1/tenants")
-      .set("Authorization", `Bearer ${adminToken}`)
+      .post('/api/v1/tenants')
+      .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        name: "Test County",
-        domain: "testcounty.gov",
-        adminEmail: "admin@testcounty.gov",
+        name: 'Test County',
+        domain: 'testcounty.gov',
+        adminEmail: 'admin@testcounty.gov',
       });
 
     expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty("id");
-    expect(response.body.name).toBe("Test County");
+    expect(response.body).toHaveProperty('id');
+    expect(response.body.name).toBe('Test County');
   });
 });
 ```
@@ -353,13 +355,17 @@ describe("POST /api/v1/tenants", () => {
 
 ### AI Agent Protocols
 
-All AI agent operational protocols, deployment strategies, and swarm instructions are now centralized in the `/ai-agent-instructions/` folder at the workspace root. Contributors must consult this folder for:
+All AI agent operational protocols, deployment strategies, and swarm
+instructions are now centralized in the `/ai-agent-instructions/` folder at the
+workspace root. Contributors must consult this folder for:
+
 - Master agent governance protocols
 - Subagent swarm build and deployment instructions
 - Historical protocols and deployment scripts
 
-When contributing to any AI agent, automation, or swarm-related functionality, update the relevant protocol files in `/ai-agent-instructions/` to ensure canonical documentation and operational consistency.
-
+When contributing to any AI agent, automation, or swarm-related functionality,
+update the relevant protocol files in `/ai-agent-instructions/` to ensure
+canonical documentation and operational consistency.
 
 ### Code Documentation
 
@@ -498,4 +504,5 @@ Contributors are recognized through:
 
 ---
 
-Thank you for contributing to Terrafusion! Your efforts help build better government technology for everyone.
+Thank you for contributing to Terrafusion! Your efforts help build better
+government technology for everyone.

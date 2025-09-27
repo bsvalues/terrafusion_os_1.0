@@ -8,7 +8,7 @@ const fs = require('fs');
 '
 'class ComprehensiveFeatureTester {
 '    constructor() {
-'        this.baseUrl = 'http://127.0.0.1:8080';
+'        this.baseUrl = 'http://127.0.0.1:\${{TF_ADMIN_PORT:-8080}}';
 '        this.features = [
 '            {
 '                name: 'CostForge AI',

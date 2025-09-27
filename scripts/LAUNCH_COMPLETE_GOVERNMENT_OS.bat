@@ -31,7 +31,7 @@ echo.
 REM Step 1: Start Backend API
 echo 🔧 Step 1: Starting .NET Backend API (Database + AI services)...
 start "TerraFusion Backend API" cmd /k "cd /d %~dp0backend && dotnet run --project TerraFusion.API"
-echo    💡 Backend starting at http://localhost:5000
+echo    💡 Backend starting at http://localhost:\${{TF_API_PORT:-5000}}
 timeout /t 5
 
 REM Step 2: Start AI Swarm Services  
@@ -49,13 +49,13 @@ timeout /t 3
 REM Step 4: Start Enhanced Operations Dashboard
 echo 📊 Step 4: Starting Operations Dashboard...
 start "Operations Dashboard" cmd /k "cd /d %~dp0 && python modules/operations_dashboard/enhanced_api_server.py"
-echo    💡 Real-time monitoring dashboard at http://localhost:9090
+echo    💡 Real-time monitoring dashboard at http://localhost:\${{TF_API_PORT:-5000}}
 timeout /t 3
 
 REM Step 5: Wait for backend to be ready
 echo ⏳ Step 5: Waiting for backend services to initialize...
 :waitloop
-curl -s http://localhost:5000/health >nul 2>&1
+curl -s http://localhost:\${{TF_API_PORT:-5000}}/health >nul 2>&1
 if %errorlevel% neq 0 (
     echo    ⏳ Backend still starting... waiting 3 seconds
     timeout /t 3 >nul
@@ -67,7 +67,7 @@ echo.
 REM Step 6: Start Frontend
 echo 🎨 Step 6: Starting Government Frontend Interface...
 start "TerraFusion Frontend" cmd /k "cd /d %~dp0frontend && npm run dev"
-echo    💡 Government interface starting at http://localhost:3000
+echo    💡 Government interface starting at http://localhost:\${{TF_API_PORT:-5000}}
 timeout /t 5
 
 REM Step 7: Launch Desktop Application
@@ -81,9 +81,9 @@ echo ================================================================
 echo  🎉 TERRAFUSION GOVERNMENT OS - FULLY OPERATIONAL!
 echo ================================================================
 echo.
-echo  ✅ Backend API: http://localhost:5000 (Database + AI services)
-echo  ✅ Frontend UI: http://localhost:3000 (Government interface)
-echo  ✅ Operations Dashboard: http://localhost:9090 (Real-time monitoring)
+echo  ✅ Backend API: http://localhost:\${{TF_API_PORT:-5000}} (Database + AI services)
+echo  ✅ Frontend UI: http://localhost:\${{TF_API_PORT:-5000}} (Government interface)
+echo  ✅ Operations Dashboard: http://localhost:\${{TF_API_PORT:-5000}} (Real-time monitoring)
 echo  ✅ AI Swarm: 1,008 agents coordinating government operations
 echo  ✅ Quantum Engine: 949x performance optimization active
 echo  ✅ Desktop OS: Windows/macOS-style government interface
@@ -96,7 +96,7 @@ echo ================================================================
 echo.
 echo  FOR FULL GOVERNMENT OS EXPERIENCE:
 echo  • Wait for desktop window to open (Government OS interface)
-echo  • Or visit http://localhost:3000 in browser (Web interface)
+echo  • Or visit http://localhost:\${{TF_API_PORT:-5000}} in browser (Web interface)
 echo.
 echo  FOR TESTING SPECIFIC FEATURES:
 echo  • Property Assessment: Click CostForge icon (949x faster)
@@ -105,8 +105,8 @@ echo  • Tax Management: Click TerraLevy icon (Complete tax system)
 echo  • AI Assistant: Right-click anywhere (1,008 agent help)
 echo.
 echo  FOR MONITORING:
-echo  • System Health: http://localhost:9090/dashboard
-echo  • API Status: http://localhost:5000/health
+echo  • System Health: http://localhost:\${{TF_API_PORT:-5000}}/dashboard
+echo  • API Status: http://localhost:\${{TF_API_PORT:-5000}}/health
 echo  • Performance: Real-time in desktop OS
 echo.
 echo ================================================================
@@ -118,14 +118,14 @@ REM Show final status
 echo.
 echo 🔍 SYSTEM STATUS CHECK:
 echo.
-curl -s http://localhost:5000/health >nul 2>&1
+curl -s http://localhost:\${{TF_API_PORT:-5000}}/health >nul 2>&1
 if %errorlevel% equ 0 (
     echo ✅ Backend API: OPERATIONAL
 ) else (
     echo ❌ Backend API: STARTING... (may need more time)
 )
 
-curl -s http://localhost:3000 >nul 2>&1  
+curl -s http://localhost:\${{TF_API_PORT:-5000}} >nul 2>&1  
 if %errorlevel% equ 0 (
     echo ✅ Frontend UI: OPERATIONAL
 ) else (

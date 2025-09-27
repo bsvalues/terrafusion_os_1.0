@@ -1,31 +1,38 @@
 # Terrafusion Deployment Guide
 
 ## Deployment Overview
-Terrafusion supports multiple deployment strategies to deliver "Infrastructure Intelligence, Infinite Scale" across development, staging, and production environments.
+
+Terrafusion supports multiple deployment strategies to deliver "Infrastructure
+Intelligence, Infinite Scale" across development, staging, and production
+environments.
 
 ## Environment Types
 
 ### Development Environment
+
 **Purpose**: Local development and testing  
 **Infrastructure**: Docker Compose  
 **Database**: Local PostgreSQL + Redis  
-**Monitoring**: Basic logging and metrics  
+**Monitoring**: Basic logging and metrics
 
 ### Staging Environment
+
 **Purpose**: Pre-production testing and validation  
 **Infrastructure**: Kubernetes cluster  
 **Database**: Managed PostgreSQL + Redis cluster  
-**Monitoring**: Full monitoring stack with alerts  
+**Monitoring**: Full monitoring stack with alerts
 
 ### Production Environment
+
 **Purpose**: Live government operations  
 **Infrastructure**: Multi-region Kubernetes  
 **Database**: High-availability PostgreSQL cluster  
-**Monitoring**: Enterprise monitoring with 24/7 alerting  
+**Monitoring**: Enterprise monitoring with 24/7 alerting
 
 ## Prerequisites
 
 ### System Requirements
+
 ```bash
 # Minimum Requirements
 CPU: 4 cores
@@ -41,6 +48,7 @@ Network: 10Gbps
 ```
 
 ### Software Dependencies
+
 ```bash
 # Container Runtime
 Docker 24.0+
@@ -61,6 +69,7 @@ Nginx 1.24+
 ## Development Deployment
 
 ### Quick Start
+
 ```bash
 # Clone repository
 git clone <repository-url>
@@ -82,13 +91,14 @@ npm run dev
 ```
 
 ### Development Services
+
 ```yaml
 # docker-compose.yml
 version: '3.8'
 services:
   postgres:
     image: postgres:15
-    ports: ["5432:5432"]
+    ports: ['5432:5432']
     environment:
       POSTGRES_DB: terrafusion_dev
       POSTGRES_USER: terrafusion
@@ -98,14 +108,14 @@ services:
 
   redis:
     image: redis:7-alpine
-    ports: ["6379:6379"]
+    ports: ['6379:6379']
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
 
   frontend:
     build: .
-    ports: ["1420:1420"]
+    ports: ['1420:1420']
     volumes:
       - ./src:/app/src
     environment:
@@ -113,7 +123,7 @@ services:
 
   backend:
     build: ./Backend
-    ports: ["8080:8080"]
+    ports: ['8080:8080']
     depends_on: [postgres, redis]
     environment:
       - NODE_ENV=development
@@ -123,6 +133,7 @@ services:
 ## Staging Deployment
 
 ### Kubernetes Configuration
+
 ```yaml
 # k8s/staging/namespace.yaml
 apiVersion: v1
@@ -135,6 +146,7 @@ metadata:
 ```
 
 ### Application Deployment
+
 ```yaml
 # k8s/staging/frontend-deployment.yaml
 apiVersion: apps/v1
@@ -153,25 +165,26 @@ spec:
         app: terrafusion-frontend
     spec:
       containers:
-      - name: frontend
-        image: terrafusion/frontend:staging
-        ports:
-        - containerPort: 1420
-        env:
-        - name: NODE_ENV
-          value: "staging"
-        - name: API_BASE_URL
-          value: "https://api-staging.terrafusion.gov"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: frontend
+          image: terrafusion/frontend:staging
+          ports:
+            - containerPort: 1420
+          env:
+            - name: NODE_ENV
+              value: 'staging'
+            - name: API_BASE_URL
+              value: 'https://api-staging.terrafusion.gov'
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
 ```
 
 ### Database Configuration
+
 ```yaml
 # k8s/staging/postgres-deployment.yaml
 apiVersion: apps/v1
@@ -190,87 +203,72 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:15
-        env:
-        - name: POSTGRES_DB
-          value: "terrafusion_staging"
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: username
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: password
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
+        - name: postgres
+          image: postgres:15
+          env:
+            - name: POSTGRES_DB
+              value: 'terrafusion_staging'
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
       volumes:
-      - name: postgres-storage
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
 ```
 
 ## Production Deployment
 
 ### Infrastructure as Code
+
 ```yaml
 # terraform/production/main.tf
-resource "kubernetes_cluster" "terrafusion_prod" {
-  name     = "terrafusion-production"
-  location = "us-west-2"
-  
-  node_pool {
-    name       = "default-pool"
-    node_count = 6
-    
-    node_config {
-      machine_type = "n1-standard-4"
-      disk_size_gb = 100
-      disk_type    = "pd-ssd"
-    }
-  }
-}
+resource "kubernetes_cluster" "terrafusion_prod" { name     =
+"terrafusion-production" location = "us-west-2"
 
-resource "google_sql_database_instance" "postgres_prod" {
-  name             = "terrafusion-prod-db"
-  database_version = "POSTGRES_15"
-  region           = "us-west-2"
-  
-  settings {
-    tier = "db-n1-standard-4"
-    
-    backup_configuration {
-      enabled    = true
-      start_time = "02:00"
-    }
-    
-    ip_configuration {
-      ipv4_enabled = false
-      private_network = google_compute_network.vpc.id
-    }
-  }
-}
+node_pool { name       = "default-pool" node_count = 6
+
+node_config { machine_type = "n1-standard-4" disk_size_gb = 100 disk_type    =
+"pd-ssd" } } }
+
+resource "google_sql_database_instance" "postgres_prod" { name             =
+"terrafusion-prod-db" database_version = "POSTGRES_15" region           =
+"us-west-2"
+
+settings { tier = "db-n1-standard-4"
+
+backup_configuration { enabled    = true start_time = "02:00" }
+
+ip_configuration { ipv4_enabled = false private_network =
+google_compute_network.vpc.id } } }
 ```
 
 ### Production Helm Chart
+
 ```yaml
 # helm/terrafusion/values.yaml
 replicaCount: 6
 
 image:
   repository: terrafusion/app
-  tag: "1.0.0"
+  tag: '1.0.0'
   pullPolicy: IfNotPresent
 
 service:
@@ -325,6 +323,7 @@ autoscaling:
 ## Deployment Scripts
 
 ### Automated Deployment
+
 ```bash
 #!/bin/bash
 # deploy.sh - Automated deployment script
@@ -361,6 +360,7 @@ echo "Deployment completed successfully"
 ```
 
 ### Database Migration
+
 ```bash
 #!/bin/bash
 # migrate.sh - Database migration script
@@ -369,7 +369,7 @@ ENVIRONMENT=${1:-development}
 
 case $ENVIRONMENT in
   "development")
-    DATABASE_URL="postgresql://terrafusion:dev_password@localhost:5432/terrafusion_dev"
+    DATABASE_URL="postgresql://terrafusion:dev_password@localhost:\${{TF_POSTGRES_PORT:-5432}}/terrafusion_dev"
     ;;
   "staging")
     DATABASE_URL=$(kubectl get secret postgres-secret -n terrafusion-staging -o jsonpath='{.data.url}' | base64 -d)
@@ -391,6 +391,7 @@ fi
 ## Monitoring & Health Checks
 
 ### Health Check Endpoints
+
 ```javascript
 // Health check configuration
 const healthChecks = {
@@ -398,20 +399,21 @@ const healthChecks = {
     database: () => checkDatabaseConnection(),
     redis: () => checkRedisConnection(),
     services: () => checkMicroservices(),
-    version: () => process.env.APP_VERSION
+    version: () => process.env.APP_VERSION,
   },
   '/health/ready': {
     database: () => checkDatabaseReady(),
-    migrations: () => checkMigrationStatus()
+    migrations: () => checkMigrationStatus(),
   },
   '/health/live': {
     memory: () => checkMemoryUsage(),
-    cpu: () => checkCPUUsage()
-  }
+    cpu: () => checkCPUUsage(),
+  },
 };
 ```
 
 ### Monitoring Configuration
+
 ```yaml
 # monitoring/prometheus-config.yaml
 apiVersion: v1
@@ -422,7 +424,7 @@ data:
   prometheus.yml: |
     global:
       scrape_interval: 15s
-    
+
     scrape_configs:
     - job_name: 'terrafusion-frontend'
       kubernetes_sd_configs:
@@ -431,7 +433,7 @@ data:
       - source_labels: [__meta_kubernetes_pod_label_app]
         action: keep
         regex: terrafusion-frontend
-    
+
     - job_name: 'terrafusion-backend'
       kubernetes_sd_configs:
       - role: pod
@@ -444,6 +446,7 @@ data:
 ## Security Configuration
 
 ### SSL/TLS Setup
+
 ```yaml
 # k8s/production/tls-secret.yaml
 apiVersion: v1
@@ -458,6 +461,7 @@ data:
 ```
 
 ### Network Policies
+
 ```yaml
 # k8s/production/network-policy.yaml
 apiVersion: networking.k8s.io/v1
@@ -470,31 +474,32 @@ spec:
     matchLabels:
       app: terrafusion
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: ingress-nginx
-    ports:
-    - protocol: TCP
-      port: 1420
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 1420
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: kube-system
-    ports:
-    - protocol: TCP
-      port: 53
-    - protocol: UDP
-      port: 53
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
 ```
 
 ## Rollback Procedures
 
 ### Automatic Rollback
+
 ```bash
 #!/bin/bash
 # rollback.sh - Automated rollback script
@@ -520,6 +525,7 @@ echo "Rollback completed successfully"
 ## Disaster Recovery
 
 ### Backup Procedures
+
 ```bash
 #!/bin/bash
 # backup.sh - Database backup script
@@ -540,6 +546,7 @@ aws s3 cp $BACKUP_DIR s3://terrafusion-backups/$ENVIRONMENT/ --recursive
 ```
 
 ### Recovery Procedures
+
 ```bash
 #!/bin/bash
 # restore.sh - Database restore script

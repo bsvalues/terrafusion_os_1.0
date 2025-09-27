@@ -1,10 +1,12 @@
 # CLAUDE-frontend.md
 
-Frontend development guidance for Terrafusion OS 1.0 React 18 application with complete PWA shell and brand integration.
+Frontend development guidance for Terrafusion OS 1.0 React 18 application with
+complete PWA shell and brand integration.
 
 ## Current Frontend Architecture - PRODUCTION READY
 
 ### Tech Stack
+
 - **React 18** with TypeScript 5.0
 - **Vite** for build tooling and dev server
 - **PWA Shell** with complete module loading system
@@ -13,6 +15,7 @@ Frontend development guidance for Terrafusion OS 1.0 React 18 application with c
 - **Brand Asset Components** - All 14 modules integrated
 
 ### Project Structure
+
 ```
 frontend/
 ├── src/
@@ -37,9 +40,10 @@ frontend/
 └── components-enhanced/    # Shared UI components
 ```
 
-### COMPLETED BRAND INTEGRATION 
+### COMPLETED BRAND INTEGRATION
 
 **All 14 Official Terrafusion Brand Assets Implemented:**
+
 1. **BrandKit** - Complete brand guidelines and design system
 2. **GovernmentArchitecture** - Championship deployment framework
 3. **ABTestingFramework** - County-specific variant testing
@@ -56,6 +60,7 @@ frontend/
 14. **Animations** - Glass morphism and particle effects
 
 #### Build & Deploy
+
 ```bash
 # Frontend build (React/TypeScript)
 npm run frontend:build
@@ -68,6 +73,7 @@ npm run deploy:windows
 ```
 
 #### Code Quality
+
 ```bash
 # Lint frontend code
 npm run lint
@@ -79,12 +85,14 @@ npm run format
 ## Key Frontend Configuration
 
 ### Configuration Files
+
 - `frontend/package.json`: React dependencies and scripts
 - `frontend/vite.config.ts`: Vite build configuration
 - `frontend/tsconfig.json`: TypeScript compiler settings
 - `frontend/electron/main.js`: Electron main process
 
 ### Component Structure
+
 - React components in `frontend/src/` with TypeScript
 - Shared UI components in `frontend/components-enhanced/`
 - Module-specific components within each module directory
@@ -93,17 +101,20 @@ npm run format
 ## Development Patterns
 
 ### Component Organization
+
 - Follow domain-driven design for component structure
 - Use TypeScript interfaces for type safety
 - Implement Material-UI components with custom theming
 - Apply React.memo and useMemo for expensive operations
 
 ### State Management
+
 - Shared state through Redux/Zustand
 - Real-time updates via SignalR
 - Inter-module messaging via event bus
 
 ### Performance Optimization
+
 - Use React.memo and useMemo for expensive operations
 - Optimize bundle sizes with Vite
 - Implement code splitting for module loading
@@ -112,12 +123,14 @@ npm run format
 ## Module System Integration
 
 ### Frontend Module Development
+
 - Module-specific components in each module directory
 - Follow Tauri patterns for native modules
 - Material-UI integration for consistent UX
 - Hot-swappable module architecture
 
 ### Module Communication
+
 - Inter-module messaging via event bus
 - Shared state through Redux/Zustand
 - Real-time updates via SignalR
@@ -125,12 +138,14 @@ npm run format
 ## Electron Integration
 
 ### Desktop Application
+
 - Electron wrapper for native desktop experience
 - Main process configuration in `frontend/electron/main.js`
 - Native OS integration capabilities
 - Cross-platform desktop deployment
 
 ### Native Features
+
 - File system access
 - Native notifications
 - System tray integration
@@ -139,6 +154,7 @@ npm run format
 ## Testing Strategy
 
 ### Frontend Testing
+
 ```bash
 # Frontend tests (Jest)
 npm run frontend:test
@@ -148,6 +164,7 @@ cd frontend && npm run test:e2e
 ```
 
 ### Testing Patterns
+
 - Unit tests for all React components
 - Integration tests for component interactions
 - E2E tests with Playwright for critical workflows
@@ -156,12 +173,14 @@ cd frontend && npm run test:e2e
 ## Development Environment
 
 ### Local Setup
-- Uses Vite dev server on port 3000
+
+- Uses Vite dev server on port \${{TF_FRONTEND_PORT:-3000}}
 - Hot module replacement for rapid development
 - TypeScript compilation with strict mode
 - ESLint and Prettier for code quality
 
 ### Debugging
+
 - Use browser dev tools for frontend profiling
 - React Developer Tools for component debugging
 - Vite debugging for build issues
@@ -170,12 +189,14 @@ cd frontend && npm run test:e2e
 ## Troubleshooting
 
 ### Common Frontend Issues
+
 - **Build Failures**: Check Node.js version (18+) and dependencies
 - **TypeScript Errors**: Verify TypeScript configuration and types
 - **Electron Issues**: Clear cache and rebuild native modules
 - **Component Rendering**: Check React hooks usage and state management
 
 ### Performance Debugging
+
 - Use React Profiler for component performance
 - Vite bundle analyzer for bundle optimization
 - Browser performance tools for runtime analysis
@@ -184,12 +205,14 @@ cd frontend && npm run test:e2e
 ## Module-Specific Frontend Components
 
 ### Government Module UI Components
+
 - 32 specialized government applications in `modules/` directory
 - Each module has dedicated frontend components
 - Consistent Material-UI theming across modules
 - Responsive design for mobile and desktop
 
 ### Tauri-Enhanced Modules
+
 - Several modules use Rust+Tauri for native performance
 - TypeScript interfaces for Rust backend communication
 - Native system integration through Tauri APIs
@@ -198,12 +221,14 @@ cd frontend && npm run test:e2e
 ## Security Considerations
 
 ### Frontend Security
+
 - JWT token handling with secure storage
 - XSS prevention with proper data sanitization
 - CSRF protection for form submissions
 - Content Security Policy implementation
 
 ### Government Compliance
+
 - Section 508 accessibility compliance
 - FISMA security standards adherence
 - Government UI/UX guidelines following

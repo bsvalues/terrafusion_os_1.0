@@ -1,7 +1,7 @@
 /**
  * Terrafusion OS 1.0 Workspace Companion Agent
  * Your dedicated AI companion for intelligent workspace assistance
- * 
+ *
  * Features:
  * - Automatic workspace context detection
  * - Intelligent codebase understanding
@@ -153,7 +153,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   private async initializeContext(): Promise<WorkspaceContext> {
     const resolvedRoot = this.findWorkspaceRoot(process.cwd());
     const projectName = path.basename(resolvedRoot);
-    
+
     return {
       projectName,
       projectType: 'government-ai-os',
@@ -165,7 +165,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
       aiSwarmStatus: await this.getAISwarmStatus(),
       developmentMode: 'development',
       userPreferences: this.getDefaultUserPreferences(),
-      sessionHistory: []
+      sessionHistory: [],
     };
   }
 
@@ -179,56 +179,56 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         description: 'Automatically detects and maintains workspace context',
         category: 'monitoring',
         priority: 'high',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Codebase Intelligence',
         description: 'Deep understanding of Terrafusion OS 1.0 architecture',
         category: 'assistance',
         priority: 'high',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Development Task Assistance',
         description: 'Helps with coding, debugging, and development tasks',
         category: 'development',
         priority: 'high',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'System Health Monitoring',
         description: 'Monitors backend, frontend, database, and AI swarm health',
         category: 'monitoring',
         priority: 'high',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Performance Optimization',
         description: 'Suggests performance improvements and optimizations',
         category: 'optimization',
         priority: 'medium',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Compliance Validation',
         description: 'Ensures government compliance standards are met',
         category: 'assistance',
         priority: 'high',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Testing Coordination',
         description: 'Coordinates and executes comprehensive testing',
         category: 'development',
         priority: 'medium',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Documentation Assistant',
         description: 'Helps create and maintain documentation',
         category: 'assistance',
         priority: 'medium',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'AI Code Generation',
@@ -237,7 +237,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         priority: 'high',
         isActive: true,
         aiPowered: true,
-        requiresContext: true
+        requiresContext: true,
       },
       {
         name: 'AI Code Review',
@@ -246,7 +246,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         priority: 'high',
         isActive: true,
         aiPowered: true,
-        requiresContext: true
+        requiresContext: true,
       },
       {
         name: 'AI Testing Assistant',
@@ -255,7 +255,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         priority: 'medium',
         isActive: true,
         aiPowered: true,
-        requiresContext: true
+        requiresContext: true,
       },
       {
         name: 'AI Refactoring',
@@ -264,7 +264,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         priority: 'medium',
         isActive: true,
         aiPowered: true,
-        requiresContext: true
+        requiresContext: true,
       },
       {
         name: 'AI Problem Solver',
@@ -273,7 +273,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         priority: 'high',
         isActive: true,
         aiPowered: true,
-        requiresContext: true
+        requiresContext: true,
       },
       {
         name: 'AI Architecture Advisor',
@@ -282,7 +282,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         priority: 'medium',
         isActive: true,
         aiPowered: true,
-        requiresContext: true
+        requiresContext: true,
       },
       {
         name: 'AI Compliance Validator',
@@ -291,8 +291,8 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         priority: 'critical',
         isActive: true,
         aiPowered: true,
-        requiresContext: true
-      }
+        requiresContext: true,
+      },
     ];
 
     capabilities.forEach(capability => {
@@ -317,40 +317,43 @@ export class WorkspaceCompanionAgent extends EventEmitter {
 
     console.log('🚀 ACTIVATING TERRAFUSION OS 1.0 WORKSPACE COMPANION AGENT');
     console.log('='.repeat(80));
-    
+
     try {
       // Initialize workspace monitoring
       await this.startWorkspaceMonitoring();
-      
+
       // Perform initial system health check
       await this.performSystemHealthCheck();
-      
+
       // Initialize AI swarm monitoring
       await this.initializeAISwarmMonitoring();
-      
+
       // Start file change monitoring
       await this.startFileChangeMonitoring();
-      
+
       // Set agent as active
       this.isActive = true;
-      
+
       // Emit activation event
       this.emit('agent-activated', {
         timestamp: new Date(),
         context: this.context,
-        capabilities: Array.from(this.capabilities.values())
+        capabilities: Array.from(this.capabilities.values()),
       });
-      
+
       console.log('✅ Workspace Companion Agent ACTIVATED');
-      console.log(`📊 Active Capabilities: ${Array.from(this.capabilities.values()).filter(c => c.isActive).length}`);
+      console.log(
+        `📊 Active Capabilities: ${Array.from(this.capabilities.values()).filter(c => c.isActive).length}`
+      );
       console.log(`🏛️ Project: ${this.context.projectName}`);
       console.log(`🔧 Development Mode: ${this.context.developmentMode}`);
-      console.log(`🧠 AI Swarm Status: ${this.context.aiSwarmStatus.activeAgents}/${this.context.aiSwarmStatus.totalAgents} agents active`);
+      console.log(
+        `🧠 AI Swarm Status: ${this.context.aiSwarmStatus.activeAgents}/${this.context.aiSwarmStatus.totalAgents} agents active`
+      );
       console.log('='.repeat(80));
-      
+
       // Display welcome message
       this.displayWelcomeMessage();
-      
     } catch (error) {
       console.error('❌ Failed to activate Workspace Companion Agent:', error);
       throw error;
@@ -369,7 +372,9 @@ export class WorkspaceCompanionAgent extends EventEmitter {
     console.log(`   🏛️ Project: ${this.context.projectName}`);
     console.log(`   📁 Directory: ${this.context.currentDirectory}`);
     console.log(`   🔧 Mode: ${this.context.developmentMode}`);
-    console.log(`   🧠 AI Swarm: ${this.context.aiSwarmStatus.activeAgents}/${this.context.aiSwarmStatus.totalAgents} agents`);
+    console.log(
+      `   🧠 AI Swarm: ${this.context.aiSwarmStatus.activeAgents}/${this.context.aiSwarmStatus.totalAgents} agents`
+    );
     console.log(`   💚 Health: ${this.context.systemHealth.overallHealth}`);
     console.log('');
     console.log('🚀 Available Commands:');
@@ -389,7 +394,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
     console.log('   .ai-architecture - Get architecture advice');
     console.log('   .ai-compliance   - Validate compliance');
     console.log('');
-    console.log('💡 I\'m here to help you with:');
+    console.log("💡 I'm here to help you with:");
     console.log('   • Code development and debugging');
     console.log('   • System monitoring and health checks');
     console.log('   • Performance optimization');
@@ -397,7 +402,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
     console.log('   • Testing coordination');
     console.log('   • Documentation assistance');
     console.log('');
-    console.log('🎪 Let\'s build something amazing together! 🚀');
+    console.log("🎪 Let's build something amazing together! 🚀");
     console.log('');
     console.log('🔬 Advanced Features Available:');
     console.log('   • Quantum Performance Engine (949x optimization)');
@@ -416,18 +421,20 @@ export class WorkspaceCompanionAgent extends EventEmitter {
       const { stdout: currentBranch } = await execAsync('git branch --show-current');
       const { stdout: lastCommit } = await execAsync('git log -1 --format="%H"');
       const { stdout: statusOutput } = await execAsync('git status --porcelain');
-      
+
       const uncommittedChanges = statusOutput.split('\n').filter(line => line.trim());
-      const stagedFiles = uncommittedChanges.filter(line => line.startsWith('M ') || line.startsWith('A '));
+      const stagedFiles = uncommittedChanges.filter(
+        line => line.startsWith('M ') || line.startsWith('A ')
+      );
       const untrackedFiles = uncommittedChanges.filter(line => line.startsWith('??'));
-      
+
       return {
         currentBranch: currentBranch.trim(),
         lastCommit: lastCommit.trim(),
         uncommittedChanges,
         remoteStatus: 'up-to-date', // Simplified for now
         stagedFiles,
-        untrackedFiles
+        untrackedFiles,
       };
     } catch (error) {
       return {
@@ -436,7 +443,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         uncommittedChanges: [],
         remoteStatus: 'up-to-date',
         stagedFiles: [],
-        untrackedFiles: []
+        untrackedFiles: [],
       };
     }
   }
@@ -448,35 +455,35 @@ export class WorkspaceCompanionAgent extends EventEmitter {
     try {
       // Check backend status
       const backendStatus = await this.checkBackendStatus();
-      
+
       // Check frontend status
       const frontendStatus = await this.checkFrontendStatus();
-      
+
       // Check database status
       const databaseStatus = await this.checkDatabaseStatus();
-      
+
       // Check AI swarm status
       const aiSwarmStatus = await this.checkAISwarmStatus();
-      
+
       // Check quantum engine status
       const quantumEngineStatus = await this.checkQuantumEngineStatus();
-      
+
       // Calculate overall health
       const overallHealth = this.calculateOverallHealth({
         backendStatus,
         frontendStatus,
         databaseStatus,
         aiSwarmStatus,
-        quantumEngineStatus
+        quantumEngineStatus,
       });
-      
+
       return {
         backendStatus,
         frontendStatus,
         databaseStatus,
         aiSwarmStatus,
         quantumEngineStatus,
-        overallHealth
+        overallHealth,
       };
     } catch (error) {
       return {
@@ -485,7 +492,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         databaseStatus: 'error',
         aiSwarmStatus: 'error',
         quantumEngineStatus: 'error',
-        overallHealth: 'critical'
+        overallHealth: 'critical',
       };
     }
   }
@@ -507,7 +514,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
           complianceMonitor: Number(cfg?.agentTypes?.complianceMonitor) || 0,
           dataProcessor: Number(cfg?.agentTypes?.dataProcessor) || 0,
           analyst: Number(cfg?.agentTypes?.analyst) || 0,
-          coordinator: Number(cfg?.agentTypes?.coordinator) || 0
+          coordinator: Number(cfg?.agentTypes?.coordinator) || 0,
         };
         return {
           totalAgents,
@@ -517,8 +524,8 @@ export class WorkspaceCompanionAgent extends EventEmitter {
             responseTime: Number(cfg?.performance?.responseTimeMs) || 50,
             throughput: Number(cfg?.performance?.throughputOpsSec) || 1000,
             accuracy: Number(cfg?.performance?.accuracyPct) || 99.7,
-            uptime: Number(cfg?.performance?.uptimePct) || 99.99
-          }
+            uptime: Number(cfg?.performance?.uptimePct) || 99.99,
+          },
         };
       }
 
@@ -535,17 +542,17 @@ export class WorkspaceCompanionAgent extends EventEmitter {
             complianceMonitor: 0,
             dataProcessor: 0,
             analyst: 0,
-            coordinator: 0
+            coordinator: 0,
           },
           performanceMetrics: {
             responseTime: 0,
             throughput: 0,
             accuracy: 0,
-            uptime: 0
-          }
+            uptime: 0,
+          },
         };
       }
-      
+
       // Count agent files
       const agentTypes = {
         revenueHunter: this.countAgentFiles(aiSwarmPath, 'revenue'),
@@ -553,11 +560,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         complianceMonitor: this.countAgentFiles(aiSwarmPath, 'compliance'),
         dataProcessor: this.countAgentFiles(aiSwarmPath, 'data'),
         analyst: this.countAgentFiles(aiSwarmPath, 'analyst'),
-        coordinator: this.countAgentFiles(aiSwarmPath, 'coordinator')
+        coordinator: this.countAgentFiles(aiSwarmPath, 'coordinator'),
       };
-      
+
       const totalAgents = Object.values(agentTypes).reduce((sum, count) => sum + count, 0);
-      
+
       return {
         totalAgents,
         activeAgents: totalAgents, // Simplified for now
@@ -566,8 +573,8 @@ export class WorkspaceCompanionAgent extends EventEmitter {
           responseTime: 50, // ms
           throughput: 1000, // operations/sec
           accuracy: 99.7, // %
-          uptime: 99.99 // %
-        }
+          uptime: 99.99, // %
+        },
       };
     } catch (error) {
       return {
@@ -579,14 +586,14 @@ export class WorkspaceCompanionAgent extends EventEmitter {
           complianceMonitor: 0,
           dataProcessor: 0,
           analyst: 0,
-          coordinator: 0
+          coordinator: 0,
         },
         performanceMetrics: {
           responseTime: 0,
           throughput: 0,
           accuracy: 0,
-          uptime: 0
-        }
+          uptime: 0,
+        },
       };
     }
   }
@@ -606,9 +613,8 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   private countAgentFiles(aiSwarmPath: string, type: string): number {
     try {
       const files = fs.readdirSync(aiSwarmPath, { recursive: true });
-      return files.filter(file => 
-        typeof file === 'string' && 
-        file.toLowerCase().includes(type.toLowerCase())
+      return files.filter(
+        file => typeof file === 'string' && file.toLowerCase().includes(type.toLowerCase())
       ).length;
     } catch {
       return 0;
@@ -625,7 +631,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
       focusAreas: ['ai-swarm', 'quantum-performance', 'government-compliance'],
       notificationLevel: 'moderate',
       autoSuggestions: true,
-      contextAwareness: true
+      contextAwareness: true,
     };
   }
 
@@ -637,11 +643,15 @@ export class WorkspaceCompanionAgent extends EventEmitter {
 
     try {
       // Monitor file changes - try recursive first, fallback to non-recursive
-      this.workspaceWatcher = fs.watch(this.context.currentDirectory, { recursive: true }, (eventType, filename) => {
-        if (filename && !filename.includes('node_modules') && !filename.includes('.git')) {
-          this.handleFileChange(eventType, filename);
+      this.workspaceWatcher = fs.watch(
+        this.context.currentDirectory,
+        { recursive: true },
+        (eventType, filename) => {
+          if (filename && !filename.includes('node_modules') && !filename.includes('.git')) {
+            this.handleFileChange(eventType, filename);
+          }
         }
-      });
+      );
       console.log('✅ Workspace monitoring started (recursive mode)');
     } catch (error: any) {
       // Fallback to non-recursive monitoring for platforms that don't support it
@@ -680,16 +690,16 @@ export class WorkspaceCompanionAgent extends EventEmitter {
       timestamp: new Date(),
       eventType,
       filename,
-      action: this.determineActionFromChange(eventType, filename)
+      action: this.determineActionFromChange(eventType, filename),
     };
-    
+
     this.context.recentChanges.unshift(change);
-    
+
     // Keep only last 50 changes
     if (this.context.recentChanges.length > 50) {
       this.context.recentChanges = this.context.recentChanges.slice(0, 50);
     }
-    
+
     // Emit change event
     this.emit('file-changed', change);
   }
@@ -724,10 +734,10 @@ export class WorkspaceCompanionAgent extends EventEmitter {
    */
   private async performSystemHealthCheck(): Promise<void> {
     console.log('🏥 Performing system health check...');
-    
+
     // Update system health
     this.context.systemHealth = await this.getSystemHealth();
-    
+
     // Check for critical issues
     if (this.context.systemHealth.overallHealth === 'critical') {
       console.log('🚨 CRITICAL SYSTEM HEALTH ISSUES DETECTED!');
@@ -745,15 +755,19 @@ export class WorkspaceCompanionAgent extends EventEmitter {
    */
   private async initializeAISwarmMonitoring(): Promise<void> {
     console.log('🧠 Initializing AI swarm monitoring...');
-    
+
     // Update AI swarm status
     this.context.aiSwarmStatus = await this.getAISwarmStatus();
-    
+
     if (this.context.aiSwarmStatus.totalAgents > 0) {
       console.log(`✅ AI Swarm detected: ${this.context.aiSwarmStatus.totalAgents} agents`);
       console.log(`   🎯 Revenue Hunter: ${this.context.aiSwarmStatus.agentTypes.revenueHunter}`);
-      console.log(`   🏠 Property Assessor: ${this.context.aiSwarmStatus.agentTypes.propertyAssessor}`);
-      console.log(`   🛡️ Compliance Monitor: ${this.context.aiSwarmStatus.agentTypes.complianceMonitor}`);
+      console.log(
+        `   🏠 Property Assessor: ${this.context.aiSwarmStatus.agentTypes.propertyAssessor}`
+      );
+      console.log(
+        `   🛡️ Compliance Monitor: ${this.context.aiSwarmStatus.agentTypes.complianceMonitor}`
+      );
       console.log(`   📊 Data Processor: ${this.context.aiSwarmStatus.agentTypes.dataProcessor}`);
       console.log(`   🔍 Analyst: ${this.context.aiSwarmStatus.agentTypes.analyst}`);
       console.log(`   🎪 Coordinator: ${this.context.aiSwarmStatus.agentTypes.coordinator}`);
@@ -767,23 +781,17 @@ export class WorkspaceCompanionAgent extends EventEmitter {
    */
   private async startFileChangeMonitoring(): Promise<void> {
     console.log('📁 Starting file change monitoring...');
-    
+
     // Monitor key directories
-    const keyDirectories = [
-      'backend',
-      'frontend',
-      'modules',
-      'scripts',
-      'tests'
-    ];
-    
+    const keyDirectories = ['backend', 'frontend', 'modules', 'scripts', 'tests'];
+
     keyDirectories.forEach(dir => {
       const dirPath = path.join(this.context.currentDirectory, dir);
       if (fs.existsSync(dirPath)) {
         console.log(`   📂 Monitoring: ${dir}`);
       }
     });
-    
+
     console.log('✅ File change monitoring started');
   }
 
@@ -797,7 +805,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
       if (!this.pathExists(backendPath)) {
         return 'stopped';
       }
-      
+
       // Check for running processes (simplified)
       return 'running';
     } catch {
@@ -815,7 +823,7 @@ export class WorkspaceCompanionAgent extends EventEmitter {
       if (!this.pathExists(frontendPath)) {
         return 'stopped';
       }
-      
+
       // Check for running processes (simplified)
       return 'running';
     } catch {
@@ -829,7 +837,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   private async checkDatabaseStatus(): Promise<'connected' | 'disconnected' | 'error'> {
     try {
       // Prefer deployment configuration if present
-      const deploymentConfig = path.join(this.context.currentDirectory, 'deployment', 'config.json');
+      const deploymentConfig = path.join(
+        this.context.currentDirectory,
+        'deployment',
+        'config.json'
+      );
       if (this.pathExists(deploymentConfig)) {
         const cfg = this.readJsonSafe(deploymentConfig) as any;
         const dbEnabled = Boolean(cfg?.database?.enabled ?? true);
@@ -849,7 +861,10 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   private async checkAISwarmStatus(): Promise<'active' | 'inactive' | 'error'> {
     try {
       const aiSwarmPath = path.join(this.context.currentDirectory, 'backend', 'ai-swarm');
-      if (this.pathExists(aiSwarmPath) || this.pathExists(path.join(this.context.currentDirectory, 'ai-swarm-config.json'))) {
+      if (
+        this.pathExists(aiSwarmPath) ||
+        this.pathExists(path.join(this.context.currentDirectory, 'ai-swarm-config.json'))
+      ) {
         return 'active';
       }
       return 'inactive';
@@ -863,7 +878,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
    */
   private async checkQuantumEngineStatus(): Promise<'optimized' | 'standard' | 'error'> {
     try {
-      const quantumPath = path.join(this.context.currentDirectory, 'backend', 'quantum-performance');
+      const quantumPath = path.join(
+        this.context.currentDirectory,
+        'backend',
+        'quantum-performance'
+      );
       if (fs.existsSync(quantumPath)) {
         return 'optimized';
       }
@@ -876,12 +895,20 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   /**
    * Calculate overall health
    */
-  private calculateOverallHealth(health: Omit<SystemHealth, 'overallHealth'>): 'excellent' | 'good' | 'warning' | 'critical' {
-    const statuses = [health.backendStatus, health.frontendStatus, health.databaseStatus, health.aiSwarmStatus, health.quantumEngineStatus];
-    
+  private calculateOverallHealth(
+    health: Omit<SystemHealth, 'overallHealth'>
+  ): 'excellent' | 'good' | 'warning' | 'critical' {
+    const statuses = [
+      health.backendStatus,
+      health.frontendStatus,
+      health.databaseStatus,
+      health.aiSwarmStatus,
+      health.quantumEngineStatus,
+    ];
+
     const criticalCount = statuses.filter(s => s === 'error').length;
     const stoppedCount = statuses.filter(s => s === 'stopped').length;
-    
+
     if (criticalCount > 0) return 'critical';
     if (stoppedCount > 2) return 'warning';
     if (stoppedCount > 0) return 'good';
@@ -903,8 +930,6 @@ export class WorkspaceCompanionAgent extends EventEmitter {
     this.context.systemHealth = await this.getSystemHealth();
     return this.context.systemHealth;
   }
-
-
 
   /**
    * List agent capabilities
@@ -953,26 +978,27 @@ export class WorkspaceCompanionAgent extends EventEmitter {
     }
 
     console.log('🔄 Deactivating Workspace Companion Agent...');
-    
+
     try {
       // Stop workspace monitoring
       if (this.workspaceWatcher) {
         this.workspaceWatcher.close();
         this.workspaceWatcher = null;
       }
-      
+
       // Set agent as inactive
       this.isActive = false;
-      
+
       // Emit deactivation event
       this.emit('agent-deactivated', {
         timestamp: new Date(),
-        sessionDuration: Date.now() - this.sessionStartTime.getTime()
+        sessionDuration: Date.now() - this.sessionStartTime.getTime(),
       });
-      
+
       console.log('✅ Workspace Companion Agent deactivated');
-      console.log(`⏱️ Session duration: ${Math.round((Date.now() - this.sessionStartTime.getTime()) / 1000)}s`);
-      
+      console.log(
+        `⏱️ Session duration: ${Math.round((Date.now() - this.sessionStartTime.getTime()) / 1000)}s`
+      );
     } catch (error) {
       console.error('❌ Failed to deactivate agent:', error);
       throw error;
@@ -1004,11 +1030,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
           language,
           workspace: this.context.projectName,
           currentDirectory: this.context.currentDirectory,
-          additionalContext: context || this.getCurrentFileContext()
+          additionalContext: context || this.getCurrentFileContext(),
         },
         workspace: this.context.projectName,
         compliance: ['FISMA', 'NIST-800-53', 'Section-508'],
-        priority: 'high'
+        priority: 'high',
       };
 
       const response: AIResponse = await this.aiService.processRequest(request);
@@ -1030,7 +1056,10 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   /**
    * Review code using AI with advanced analysis and compliance validation
    */
-  public async reviewCode(code: string, language: string): Promise<{
+  public async reviewCode(
+    code: string,
+    language: string
+  ): Promise<{
     quality: number;
     suggestions: string[];
     issues: string[];
@@ -1049,11 +1078,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
           language,
           code,
           workspace: this.context.projectName,
-          currentDirectory: this.context.currentDirectory
+          currentDirectory: this.context.currentDirectory,
         },
         workspace: this.context.projectName,
         compliance: ['FISMA', 'NIST-800-53', 'Section-508'],
-        priority: 'high'
+        priority: 'high',
       };
 
       const response: AIResponse = await this.aiService.processRequest(request);
@@ -1075,7 +1104,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   /**
    * Generate tests using AI with comprehensive coverage and compliance validation
    */
-  public async generateTests(code: string, language: string, framework?: string): Promise<{
+  public async generateTests(
+    code: string,
+    language: string,
+    framework?: string
+  ): Promise<{
     unitTests: string[];
     integrationTests: string[];
     testCases: string[];
@@ -1097,11 +1130,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
           code,
           framework: detectedFramework,
           workspace: this.context.projectName,
-          currentDirectory: this.context.currentDirectory
+          currentDirectory: this.context.currentDirectory,
         },
         workspace: this.context.projectName,
         compliance: ['FISMA', 'NIST-800-53', 'Section-508'],
-        priority: 'high'
+        priority: 'high',
       };
 
       const response: AIResponse = await this.aiService.processRequest(request);
@@ -1123,7 +1156,10 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   /**
    * Suggest refactoring using AI with quantum optimization and compliance considerations
    */
-  public async suggestRefactoring(code: string, language: string): Promise<{
+  public async suggestRefactoring(
+    code: string,
+    language: string
+  ): Promise<{
     suggestions: string[];
     priority: 'low' | 'medium' | 'high' | 'critical';
     impact: string;
@@ -1142,11 +1178,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
           language,
           code,
           workspace: this.context.projectName,
-          currentDirectory: this.context.currentDirectory
+          currentDirectory: this.context.currentDirectory,
         },
         workspace: this.context.projectName,
         compliance: ['FISMA', 'NIST-800-53', 'Section-508'],
-        priority: 'high'
+        priority: 'high',
       };
 
       const response: AIResponse = await this.aiService.processRequest(request);
@@ -1168,7 +1204,11 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   /**
    * Solve problems using AI with advanced diagnostics and Terrafusion context
    */
-  public async solveProblem(description: string, errorLogs?: string, context?: string): Promise<{
+  public async solveProblem(
+    description: string,
+    errorLogs?: string,
+    context?: string
+  ): Promise<{
     solution: string;
     explanation: string;
     steps: string[];
@@ -1199,11 +1239,11 @@ System Health: ${this.context.systemHealth.overallHealth}
           workspace: this.context.projectName,
           currentDirectory: this.context.currentDirectory,
           systemHealth: this.context.systemHealth,
-          aiSwarmStatus: this.context.aiSwarmStatus
+          aiSwarmStatus: this.context.aiSwarmStatus,
         },
         workspace: this.context.projectName,
         compliance: ['FISMA', 'NIST-800-53', 'Section-508'],
-        priority: 'high'
+        priority: 'high',
       };
 
       const response: AIResponse = await this.aiService.processRequest(request);
@@ -1225,7 +1265,10 @@ System Health: ${this.context.systemHealth.overallHealth}
   /**
    * Get architecture advice using AI with Terrafusion OS integration and compliance validation
    */
-  public async getArchitectureAdvice(component: string, requirements: string[]): Promise<{
+  public async getArchitectureAdvice(
+    component: string,
+    requirements: string[]
+  ): Promise<{
     recommendations: string[];
     patterns: string[];
     tradeoffs: string[];
@@ -1262,11 +1305,11 @@ Terrafusion OS Context:
           availableModules: 32,
           aiAgents: this.context.aiSwarmStatus.totalAgents,
           marketplaceIntegration: true,
-          quantumEngine: true
+          quantumEngine: true,
         },
         workspace: this.context.projectName,
         compliance: ['FISMA', 'NIST-800-53', 'Section-508'],
-        priority: 'high'
+        priority: 'high',
       };
 
       const response: AIResponse = await this.aiService.processRequest(request);
@@ -1288,7 +1331,10 @@ Terrafusion OS Context:
   /**
    * Validate compliance using AI with government standards and audit trails
    */
-  public async validateCompliance(code: string, standards: string[]): Promise<{
+  public async validateCompliance(
+    code: string,
+    standards: string[]
+  ): Promise<{
     compliant: boolean;
     violations: string[];
     recommendations: string[];
@@ -1310,11 +1356,11 @@ Terrafusion OS Context:
           code,
           standards: validationStandards,
           workspace: this.context.projectName,
-          currentDirectory: this.context.currentDirectory
+          currentDirectory: this.context.currentDirectory,
         },
         workspace: this.context.projectName,
         compliance: validationStandards,
-        priority: 'critical'
+        priority: 'critical',
       };
 
       const response: AIResponse = await this.aiService.processRequest(request);
@@ -1354,11 +1400,11 @@ Terrafusion OS Context:
    */
   private detectTestingFramework(language: string): string {
     const frameworks: Record<string, string> = {
-      'typescript': 'jest',
-      'javascript': 'jest',
-      'python': 'pytest',
-      'csharp': 'xunit',
-      'java': 'junit'
+      typescript: 'jest',
+      javascript: 'jest',
+      python: 'pytest',
+      csharp: 'xunit',
+      java: 'junit',
     };
     return frameworks[language.toLowerCase()] || 'default';
   }
@@ -1383,7 +1429,7 @@ Terrafusion OS Context:
         lastAuditEntry: auditTrail[auditTrail.length - 1] || null,
         encryptionStatus: 'AES-256 enabled',
         accessControl: 'RBAC implemented',
-        auditLogging: 'Comprehensive logging active'
+        auditLogging: 'Comprehensive logging active',
       };
     } catch (error) {
       console.error('Failed to get security metrics:', error);
@@ -1406,7 +1452,7 @@ Terrafusion OS Context:
         recommendations: complianceStatus.recommendations,
         riskLevel: complianceStatus.riskLevel,
         lastValidation: new Date().toISOString(),
-        certificationStatus: 'FISMA Ready, NIST Compliant'
+        certificationStatus: 'FISMA Ready, NIST Compliant',
       };
     } catch (error) {
       console.error('Failed to get compliance status:', error);
@@ -1429,7 +1475,7 @@ Terrafusion OS Context:
         averageGain: quantumMetrics.averagePerformanceGain,
         successRate: quantumMetrics.successRate,
         processingMode: 'quantum-accelerated',
-        efficiency: '99.7% optimization success'
+        efficiency: '99.7% optimization success',
       };
     } catch (error) {
       console.error('Failed to get quantum metrics:', error);
@@ -1446,31 +1492,36 @@ Terrafusion OS Context:
         totalAgents: this.context.aiSwarmStatus.totalAgents,
         activeAgents: this.context.aiSwarmStatus.activeAgents,
         agentTypes: this.context.aiSwarmStatus.agentTypes,
-        performance: this.context.aiSwarmStatus.performanceMetrics
+        performance: this.context.aiSwarmStatus.performanceMetrics,
       },
       modules: {
         totalAvailable: 32,
         loadedModules: this.context.systemHealth.backendStatus === 'running' ? 32 : 0,
         marketplaceIntegration: true,
-        hotSwappable: true
+        hotSwappable: true,
       },
       marketplace: {
         status: 'operational',
         appsAvailable: '1000+ government applications',
         revenuePotential: '$5.4M annual',
-        deploymentModel: 'White Glove Professional Installation'
+        deploymentModel: 'White Glove Professional Installation',
       },
       quantumEngine: {
         status: this.context.systemHealth.quantumEngineStatus,
         optimizationFactor: '949x',
-        algorithms: ['quantum-annealing', 'quantum-walk', 'quantum-fourier', 'quantum-approximation'],
-        performanceGain: '94.9% improvement'
+        algorithms: [
+          'quantum-annealing',
+          'quantum-walk',
+          'quantum-fourier',
+          'quantum-approximation',
+        ],
+        performanceGain: '94.9% improvement',
       },
       compliance: {
         standards: ['FISMA', 'NIST-800-53', 'Section-508', 'FedRAMP'],
         certification: 'Government Ready',
-        auditTrail: 'Complete logging active'
-      }
+        auditTrail: 'Complete logging active',
+      },
     };
   }
 
@@ -1493,14 +1544,14 @@ Terrafusion OS Context:
         localModelStatus: 'available',
         quantumEngine: 'active',
         complianceValidator: 'ready',
-        securityAuditor: 'monitoring'
+        securityAuditor: 'monitoring',
       },
       recommendations: [
         'Regular security audits recommended',
         'Monitor quantum optimization performance',
         'Keep compliance standards up-to-date',
-        'Review AI agent coordination metrics'
-      ]
+        'Review AI agent coordination metrics',
+      ],
     };
 
     console.log('✅ Advanced diagnostics completed');
