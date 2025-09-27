@@ -157,7 +157,8 @@ ci-build: ## Fast CI build: dotnet API + core Rust workspace (local parity for C
 	fi
 	@echo "==> CI build: Rust core workspace"
 	if command -v $(CARGO) >/dev/null 2>&1; then \
-		$(CARGO) build --manifest-path terrafusion-cos/rust-performance-engine/Cargo.toml --release || true; \
+		# Delegate crate-by-crate builds to an executable script to avoid Makefile quoting issues; execute as a single command \
+		./ops/ci/build-rust-crates.sh; \
 	else \
 		echo "cargo not found, skipping Rust build"; \
 	fi
@@ -213,3 +214,7 @@ build-rust-all:  ## Build all Rust crates (CI-friendly)
 .PHONY: build-ci
 build-ci: build-api build-images build-rust-all  ## CI build (API, images, all Rust)
 	@echo "CI build complete."
+
+.PHONY: rust-verify
+rust-verify: ## Verify Rust crates (metadata + build per manifest)
+	@ops/rust/verify.sh .ci/rust-manifests.txt
