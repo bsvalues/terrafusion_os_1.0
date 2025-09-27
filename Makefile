@@ -201,7 +201,11 @@ build-rust-all:  ## Build all Rust crates (CI-friendly)
 	for mf in "$${MANIFESTS[@]}"; do \
 	  echo "---- building $$mf ----"; \
 	  dir="$$(dirname "$$mf")"; \
-	  (cd "$$dir" && cargo build --release); \
+	  if [ -d "$$dir" ]; then \
+	    (cd "$$dir" && cargo build --release); \
+	  else \
+	    echo "Warning: manifest $$mf points to missing directory $$dir - skipping"; \
+	  fi; \
 	done; \
 	echo "All Rust crates built.";
 
