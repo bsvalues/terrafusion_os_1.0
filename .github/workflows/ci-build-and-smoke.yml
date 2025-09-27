@@ -1,4 +1,4 @@
-name: Build • Test • Compose Smoke
+name: Build - Test - Compose Smoke
 
 'on':
   push:
