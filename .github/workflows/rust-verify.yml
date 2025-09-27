@@ -15,6 +15,9 @@ jobs:
   rust-verify:
     name: Rust verify (per-crate metadata + build)
     runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        toolchain: [stable, nightly]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,19 +25,32 @@ jobs:
           fetch-depth: 0
           submodules: 'false'
 
+
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: ${{ matrix.toolchain }}
           override: true
 
       - name: Ensure cargo is available
         run: cargo --version
 
+      - name: Cache cargo registry + target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ matrix.toolchain }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.toolchain }}-
+
       - name: Run rust verify
         run: |
           set -euo pipefail
+          echo "Running rust-verify with toolchain=${{ matrix.toolchain }}"
           make rust-verify
 
       - name: Upload verifier logs
