@@ -1,94 +1,138 @@
-name: CI - Build and Smoke
+name: Build • Test • Compose Smoke
 
-on:
+'on':
   push:
-    name: CI - Build and Smoke
+    branches: [ main, develop, feature/** ]
+  pull_request:
+    branches: [ main, develop ]
 
-    on:
-      push:
-        branches: [ main, 'feature/**' ]
-      pull_request:
-        branches: [ main ]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-    jobs:
-      build:
-        name: Build and Test (dotnet + rust)
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v4
+env:
+  DOTNET_ROLL_FORWARD: Major
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
 
-          - name: Setup .NET 8
-            uses: actions/setup-dotnet@v3
-            with:
-              dotnet-version: '8.0.x'
+jobs:
+  build-test-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
 
-          - name: Cache NuGet packages
-            uses: actions/cache@v4
-            with:
-              path: |
-                ~/.nuget/packages
-              key: nuget-packages-${{ runner.os }}-v1-${{ hashFiles('**/global.json') }}
-              restore-keys: |
-                nuget-packages-${{ runner.os }}-v1-
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-          - name: Setup Rust toolchain
-            uses: dtolnay/rust-toolchain-action@stable
+      # ---------- Toolchains ----------
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
 
-          - name: Cache Cargo registry & git
-            uses: actions/cache@v4
-            with:
-              path: |
-                ~/.cargo/registry
-                ~/.cargo/git
-              key: cargo-registry-${{ runner.os }}-v1-${{ hashFiles('**/Cargo.lock') }}
-              restore-keys: |
-                cargo-registry-${{ runner.os }}-v1-
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
 
-          - name: Install k6 (optional)
-            run: |
-              sudo apt-get update || true
-              sudo apt-get install -y gnupg2 ca-certificates wget || true
-              wget -q -O - https://dl.k6.io/key.gpg | sudo apt-key add - || true
-              echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list || true
-              sudo apt-get update || true
-              sudo apt-get install -y k6 || true
+      - name: Setup Node (optional)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-          - name: CI: Run ci-build
-            run: make ci-build
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-          - name: CI: Run ci-test
-            run: make ci-test
+      # ---------- Caches ----------
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.sln', '**/*.csproj', 'global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
 
-          - name: Optionally run k6 smoke if API is reachable
-            env:
-              TF_API: http://localhost:5046
-            run: |
-              if command -v curl >/dev/null 2>&1 && curl -sS --max-time 3 $TF_API/health >/dev/null 2>&1; then
-                echo "API reachable, running k6 smoke"
-                k6 run ops/k6/smoke.js || true
-              else
-                echo "API not reachable or curl missing, skipping k6"
-              fi
+      - name: Cache Cargo registry + git + target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-
 
-      collect-artifacts:
-        name: Collect diagnostics on failure
-        needs: build
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: buildx-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            buildx-${{ runner.os }}-
+
+      # ---------- Build & Tests ----------
+      - name: Print versions
+        run: |
+          dotnet --info
+          rustc --version
+          cargo --version
+          docker version
+
+      - name: Build backends & images
+        run: |
+          make build
+        env:
+          BUILDKIT_PROGRESS: plain
+
+      - name: Unit tests (.NET + Rust)
+        run: |
+          make test
+
+      # ---------- Compose Up + Health ----------
+      - name: Compose up (detached)
+        run: |
+          docker compose -f docker-compose.dev.yml up -d db redis nats keycloak
+          # Wait for Keycloak before API
+          echo "Waiting for Keycloak..."
+          for i in {1..60}; do
+            if curl -sf http://localhost:8080 > /dev/null; then
+              echo "Keycloak is up"; break
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.dev.yml up -d api valuation-worker gis-worker
+
+      - name: Wait for API health
+        run: |
+          echo "Waiting for API health..."
+          for i in {1..60}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5046/health || true)
+            if [ "$code" = "200" ]; then
+              echo "API healthy"; exit 0
+            fi
+            sleep 2
+          done
+          echo "API did not become healthy in time"; docker compose -f docker-compose.dev.yml logs api; exit 1
+
+      # ---------- k6 Smoke ----------
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+      - name: Run k6 smoke
+        run: |
+          k6 run ops/k6/smoke.js
+
+      # ---------- Artifacts & Teardown ----------
+      - name: Dump logs on failure
         if: failure()
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v4
+        run: |
+          docker compose -f docker-compose.dev.yml logs --no-color > compose-logs.txt || true
+      - name: Upload compose logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-logs
+          path: compose-logs.txt
+          if-no-files-found: ignore
 
-          - name: Gather logs and diagnostics
-            run: |
-              mkdir -p artifacts
-              echo '{"note":"CI failure diagnostics"}' > artifacts/diag.json || true
-
-          - name: Upload artifacts
-            uses: actions/upload-artifact@v4
-            with:
-              name: ci-diagnostics-${{ github.run_id }}
-              path: artifacts
-              retention-days: 14
-            retention-days: 14
+      - name: Compose down
+        if: always()
+        run: docker compose -f docker-compose.dev.yml down -v
