@@ -88,50 +88,53 @@ jobs:
           make test
 
       # ---------- Compose Up + Health ----------
-      - name: Compose up (detached)
+      - name: Compose up (infra)
         run: |
+          docker compose -f docker-compose.dev.yml pull db redis nats keycloak || true
           docker compose -f docker-compose.dev.yml up -d db redis nats keycloak
-          # Wait for Keycloak before API
-          echo "Waiting for Keycloak..."
-          for i in {1..60}; do
-            if curl -sf http://localhost:8080 > /dev/null; then
-              echo "Keycloak is up"; break
-            fi
-            sleep 2
-          done
+
+      - name: Wait for Keycloak (up to 15 min)
+        run: |
+          bash ops/ci/wait-for.sh "http://localhost:8080" 900
+          # optional: check realm import page exists (not required for health)
+          curl -sf "http://localhost:8080" >/dev/null
+
+      - name: Compose up (apps)
+        run: |
           docker compose -f docker-compose.dev.yml up -d api valuation-worker gis-worker
 
-      - name: Wait for API health
+      - name: Wait for API health (up to 10 min)
         run: |
-          echo "Waiting for API health..."
-          for i in {1..60}; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5046/health || true)
-            if [ "$code" = "200" ]; then
-              echo "API healthy"; exit 0
-            fi
-            sleep 2
-          done
-          echo "API did not become healthy in time"; docker compose -f docker-compose.dev.yml logs api; exit 1
+          bash ops/ci/wait-for.sh "http://localhost:5046/health" 600
 
       # ---------- k6 Smoke ----------
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
       - name: Run k6 smoke
-        run: |
-          k6 run ops/k6/smoke.js
+        run: k6 run ops/k6/smoke.js
 
       # ---------- Artifacts & Teardown ----------
-      - name: Dump logs on failure
-        if: failure()
+      - name: Collect compose/system diagnostics
+        if: always()
         run: |
-          docker compose -f docker-compose.dev.yml logs --no-color > compose-logs.txt || true
-      - name: Upload compose logs
+          mkdir -p .ci_artifacts
+          docker compose -f docker-compose.dev.yml ps --format json > .ci_artifacts/compose-ps.json || true
+          docker ps --no-trunc > .ci_artifacts/docker-ps.txt || true
+          docker compose -f docker-compose.dev.yml logs --no-color > .ci_artifacts/compose-logs.txt || true
+          # Grab per-container logs (more reliable if compose logs fail)
+          for c in $(docker ps --format '{{.Names}}'); do
+            docker logs --timestamps "$c" > ".ci_artifacts/${c}.log" 2>&1 || true
+          done
+          # Snapshot compose file used
+          cp docker-compose.dev.yml .ci_artifacts/ || true
+
+      - name: Upload CI artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: compose-logs
-          path: compose-logs.txt
-          if-no-files-found: ignore
+          name: compose-and-docker-logs
+          path: .ci_artifacts
+          if-no-files-found: warn
 
       - name: Compose down
         if: always()
