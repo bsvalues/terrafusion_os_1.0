@@ -1,0 +1,130 @@
+﻿2025-09-27T17:08:29.9481343Z ##[group]Run actions/checkout@v4
+2025-09-27T17:08:29.9482688Z with:
+2025-09-27T17:08:29.9483541Z   repository: bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:29.9484886Z   token: ***
+2025-09-27T17:08:29.9485654Z   ssh-strict: true
+2025-09-27T17:08:29.9486640Z   ssh-user: git
+2025-09-27T17:08:29.9487459Z   persist-credentials: true
+2025-09-27T17:08:29.9488393Z   clean: true
+2025-09-27T17:08:29.9489208Z   sparse-checkout-cone-mode: true
+2025-09-27T17:08:29.9490216Z   fetch-depth: 1
+2025-09-27T17:08:29.9491012Z   fetch-tags: false
+2025-09-27T17:08:29.9491823Z   show-progress: true
+2025-09-27T17:08:29.9492642Z   lfs: false
+2025-09-27T17:08:29.9493388Z   submodules: false
+2025-09-27T17:08:29.9494209Z   set-safe-directory: true
+2025-09-27T17:08:29.9495334Z env:
+2025-09-27T17:08:29.9496182Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:29.9496984Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:29.9497897Z   TF_VAR_environment: production
+2025-09-27T17:08:29.9498829Z ##[endgroup]
+2025-09-27T17:08:30.0570406Z Syncing repository: bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:30.0573507Z ##[group]Getting Git version info
+2025-09-27T17:08:30.0575128Z Working directory is '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+2025-09-27T17:08:30.0577813Z [command]/usr/bin/git version
+2025-09-27T17:08:30.0660835Z git version 2.51.0
+2025-09-27T17:08:30.0686544Z ##[endgroup]
+2025-09-27T17:08:30.0700795Z Temporarily overriding HOME='/home/runner/work/_temp/6aaef478-81d2-474f-9fe6-3df7d29f7c5b' before making global git config changes
+2025-09-27T17:08:30.0704454Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-27T17:08:30.0707903Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T17:08:30.0740438Z Deleting the contents of '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+2025-09-27T17:08:30.0743732Z ##[group]Initializing the repository
+2025-09-27T17:08:30.0748087Z [command]/usr/bin/git init /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T17:08:30.0857927Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-09-27T17:08:30.0861709Z hint: is subject to change. To configure the initial branch name to use in all
+2025-09-27T17:08:30.0864523Z hint: of your new repositories, which will suppress this warning, call:
+2025-09-27T17:08:30.0866185Z hint:
+2025-09-27T17:08:30.0867310Z hint: 	git config --global init.defaultBranch <name>
+2025-09-27T17:08:30.0869188Z hint:
+2025-09-27T17:08:30.0870752Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-09-27T17:08:30.0872975Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-09-27T17:08:30.0874470Z hint:
+2025-09-27T17:08:30.0875211Z hint: 	git branch -m <name>
+2025-09-27T17:08:30.0876323Z hint:
+2025-09-27T17:08:30.0877513Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-09-27T17:08:30.0879720Z Initialized empty Git repository in /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0/.git/
+2025-09-27T17:08:30.0883156Z [command]/usr/bin/git remote add origin https://github.com/bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:30.0915447Z ##[endgroup]
+2025-09-27T17:08:30.0917672Z ##[group]Disabling automatic garbage collection
+2025-09-27T17:08:30.0919720Z [command]/usr/bin/git config --local gc.auto 0
+2025-09-27T17:08:30.0946157Z ##[endgroup]
+2025-09-27T17:08:30.0947567Z ##[group]Setting up auth
+2025-09-27T17:08:30.0951548Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-27T17:08:30.0981085Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-27T17:08:30.1300549Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-09-27T17:08:30.1337621Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-09-27T17:08:30.1557354Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-09-27T17:08:30.1590914Z ##[endgroup]
+2025-09-27T17:08:30.1593358Z ##[group]Fetching the repository
+2025-09-27T17:08:30.1603040Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e7d13e9abe73a043c7d18956601c356c78ad1354:refs/remotes/pull/1/merge
+2025-09-27T17:08:34.9682406Z From https://github.com/bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:34.9683365Z  * [new ref]         e7d13e9abe73a043c7d18956601c356c78ad1354 -> pull/1/merge
+2025-09-27T17:08:34.9718038Z ##[endgroup]
+2025-09-27T17:08:34.9718908Z ##[group]Determining the checkout info
+2025-09-27T17:08:34.9720657Z ##[endgroup]
+2025-09-27T17:08:34.9726919Z [command]/usr/bin/git sparse-checkout disable
+2025-09-27T17:08:34.9770646Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-09-27T17:08:34.9802501Z ##[group]Checking out the ref
+2025-09-27T17:08:34.9803738Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1/merge
+2025-09-27T17:08:36.0394961Z Updating files:  61% (11511/18790)
+2025-09-27T17:08:36.0497361Z Updating files:  62% (11650/18790)
+2025-09-27T17:08:36.0622026Z Updating files:  63% (11838/18790)
+2025-09-27T17:08:36.0732604Z Updating files:  64% (12026/18790)
+2025-09-27T17:08:36.0850879Z Updating files:  65% (12214/18790)
+2025-09-27T17:08:36.0932960Z Updating files:  66% (12402/18790)
+2025-09-27T17:08:36.1055306Z Updating files:  67% (12590/18790)
+2025-09-27T17:08:36.1246689Z Updating files:  68% (12778/18790)
+2025-09-27T17:08:36.1375060Z Updating files:  69% (12966/18790)
+2025-09-27T17:08:36.1504548Z Updating files:  70% (13153/18790)
+2025-09-27T17:08:36.1611793Z Updating files:  71% (13341/18790)
+2025-09-27T17:08:36.1742528Z Updating files:  72% (13529/18790)
+2025-09-27T17:08:36.1900398Z Updating files:  73% (13717/18790)
+2025-09-27T17:08:36.2044590Z Updating files:  74% (13905/18790)
+2025-09-27T17:08:36.2142258Z Updating files:  75% (14093/18790)
+2025-09-27T17:08:36.2297224Z Updating files:  76% (14281/18790)
+2025-09-27T17:08:36.2382640Z Updating files:  77% (14469/18790)
+2025-09-27T17:08:36.2461945Z Updating files:  78% (14657/18790)
+2025-09-27T17:08:36.2949012Z Updating files:  79% (14845/18790)
+2025-09-27T17:08:36.3050150Z Updating files:  80% (15032/18790)
+2025-09-27T17:08:36.3126528Z Updating files:  81% (15220/18790)
+2025-09-27T17:08:36.3222014Z Updating files:  82% (15408/18790)
+2025-09-27T17:08:36.3362611Z Updating files:  83% (15596/18790)
+2025-09-27T17:08:36.3527789Z Updating files:  84% (15784/18790)
+2025-09-27T17:08:36.3630661Z Updating files:  85% (15972/18790)
+2025-09-27T17:08:36.3898329Z Updating files:  86% (16160/18790)
+2025-09-27T17:08:36.4075103Z Updating files:  87% (16348/18790)
+2025-09-27T17:08:36.4218993Z Updating files:  88% (16536/18790)
+2025-09-27T17:08:36.4401320Z Updating files:  89% (16724/18790)
+2025-09-27T17:08:36.4664373Z Updating files:  90% (16911/18790)
+2025-09-27T17:08:36.4901891Z Updating files:  91% (17099/18790)
+2025-09-27T17:08:36.5017565Z Updating files:  92% (17287/18790)
+2025-09-27T17:08:36.5154551Z Updating files:  93% (17475/18790)
+2025-09-27T17:08:36.5314821Z Updating files:  94% (17663/18790)
+2025-09-27T17:08:36.5530190Z Updating files:  95% (17851/18790)
+2025-09-27T17:08:36.5642756Z Updating files:  96% (18039/18790)
+2025-09-27T17:08:36.5821576Z Updating files:  97% (18227/18790)
+2025-09-27T17:08:36.5951182Z Updating files:  98% (18415/18790)
+2025-09-27T17:08:36.6080088Z Updating files:  99% (18603/18790)
+2025-09-27T17:08:36.6080638Z Updating files: 100% (18790/18790)
+2025-09-27T17:08:36.6081178Z Updating files: 100% (18790/18790), done.
+2025-09-27T17:08:36.6300213Z Note: switching to 'refs/remotes/pull/1/merge'.
+2025-09-27T17:08:36.6300747Z 
+2025-09-27T17:08:36.6301174Z You are in 'detached HEAD' state. You can look around, make experimental
+2025-09-27T17:08:36.6302411Z changes and commit them, and you can discard any commits you make in this
+2025-09-27T17:08:36.6303290Z state without impacting any branches by switching back to a branch.
+2025-09-27T17:08:36.6303801Z 
+2025-09-27T17:08:36.6304131Z If you want to create a new branch to retain commits you create, you may
+2025-09-27T17:08:36.6304888Z do so (now or later) by using -c with the switch command. Example:
+2025-09-27T17:08:36.6305336Z 
+2025-09-27T17:08:36.6305543Z   git switch -c <new-branch-name>
+2025-09-27T17:08:36.6306059Z 
+2025-09-27T17:08:36.6306235Z Or undo this operation with:
+2025-09-27T17:08:36.6306524Z 
+2025-09-27T17:08:36.6306715Z   git switch -
+2025-09-27T17:08:36.6306927Z 
+2025-09-27T17:08:36.6307285Z Turn off this advice by setting config variable advice.detachedHead to false
+2025-09-27T17:08:36.6307632Z 
+2025-09-27T17:08:36.6308033Z HEAD is now at e7d13e9 Merge 4157581266391becfc401509c4be79567996f403 into 68c8b3a5a3b09a7f227bfbf9fcabbf1f9f497fb8
+2025-09-27T17:08:36.6342649Z ##[endgroup]
+2025-09-27T17:08:36.6382561Z [command]/usr/bin/git log -1 --format=%H
+2025-09-27T17:08:36.6404338Z e7d13e9abe73a043c7d18956601c356c78ad1354

@@ -827,3 +827,11 @@ class GovernmentAnalyticsEngine:
 
 # Initialize the government analytics engine
 analytics_engine = GovernmentAnalyticsEngine()
+
+
+def prime_caches():
+    """Shim to prime analytics caches and return a sample dashboard."""
+    try:
+        return analytics_engine.generate_executive_dashboard()
+    except Exception:
+        return {}

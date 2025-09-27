@@ -6,19 +6,21 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>TerraFusion cOS Desktop Shell</title>
+    <title>TerraFusion cOS Desktop Shell - Applications Integrated</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="brand/terrafusion-brand.css">
     <style>
-        /* TerraFusion cOS 2.0 Styles - Updated 2025-09-26 22:45 */
+        /* TerraFusion cOS 2.0 Styles - Using REAL TerraFusion Brand Assets */
         :root {
-            --primary-color: #0099ff;
-            --accent-color: #00ffaa;
-            --transcend-color: #00ffee;
-            --dark-bg: #0b1020;
-            --glass-effect: rgba(0, 255, 238, 0.1);
-            --glass-border: rgba(0, 255, 238, 0.2);
-            --text-primary: #ffffff;
-            --text-secondary: #b0c4de;
+            /* Using Official TerraFusion Brand Variables */
+            --primary-color: var(--tf-trust-blue);
+            --accent-color: var(--tf-success-green);
+            --transcend-color: var(--tf-transcend-cyan);
+            --dark-bg: var(--tf-deep-space);
+            --glass-effect: var(--tf-glass);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: var(--tf-white);
+            --text-secondary: var(--tf-gray-300);
         }
 
         * {
@@ -28,9 +30,9 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
+            font-family: var(--tf-font-body);
+            background: var(--tf-dark-gradient);
+            color: var(--tf-white);
             height: 100vh;
             margin: 0;
             padding: 0;
@@ -51,14 +53,14 @@
 
         .sidebar {
             grid-area: sidebar;
-            background: var(--glass-effect);
+            background: var(--tf-midnight);
             backdrop-filter: blur(20px);
             border-right: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding: 20px;
-            transition: all 0.3s ease;
+            padding: var(--tf-space-3);
+            transition: all var(--tf-duration-normal) var(--tf-easing-smooth);
         }
 
         .logo-section {
@@ -254,7 +256,7 @@
             border-left-color: #00ff55;
         }
 
-        /* Application Window Styles */
+        /* Application Window Styles - SINGLE DEFINITION */
         .app-window {
             position: fixed;
             top: 50px;
@@ -263,14 +265,15 @@
             height: 600px;
             background: var(--tf-deep-space);
             border: 1px solid var(--tf-trust-blue);
-            border-radius: 8px;
-            box-shadow: 0 8px 32px rgba(0, 153, 255, 0.3);
+            border-radius: var(--tf-radius-md);
+            box-shadow: var(--tf-shadow-xl), var(--tf-glow-trust);
             backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
             z-index: 1000;
             resize: both;
             overflow: hidden;
+        }
         }
 
         .window-header {
@@ -356,9 +359,25 @@
         }
 
         .quick-access-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .quick-access-grid .nav-btn {
+            width: 100%;
+            height: 40px;
+            font-size: 12px;
+            padding: 0 10px;
+        }
+        
+        .quick-access-grid .nav-btn-icon {
+            font-size: 14px;
+            width: 14px;
+        }
+        
+        .quick-access-grid .nav-btn-text {
+            font-size: 11px;
         }
 
         .quick-access-item {
@@ -3930,26 +3949,7 @@
             white-space: nowrap;
         }
 
-        /* Application Window Styles */
-        .app-window {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            max-width: 90vw;
-            height: 400px;
-            max-height: 80vh;
-            background: linear-gradient(135deg, rgba(11, 16, 32, 0.98), rgba(0, 20, 40, 0.95));
-            border: 2px solid rgba(0, 255, 238, 0.4);
-            border-radius: 12px;
-            backdrop-filter: blur(25px);
-            box-shadow: 0 8px 32px rgba(0, 255, 238, 0.2);
-            display: none;
-            flex-direction: column;
-            z-index: 1000;
-            font-family: 'Inter', sans-serif;
-        }
+        /* Application Window Styles - REMOVED DUPLICATE */
 
         .window-header {
             background: rgba(0, 255, 238, 0.1);
@@ -4104,18 +4104,18 @@
             color: #00ffee;
         }
 
-        /* Taskbar Auto-Hide Functionality */
-        .terrafusion-taskbar.auto-hide {
-            transform: translateY(calc(100% - 5px));
+        /* Sidebar Auto-Hide Functionality */
+        .sidebar.auto-hide {
+            transform: translateX(calc(-100% + 20px));
             transition: transform 0.3s ease;
         }
 
-        .terrafusion-taskbar.auto-hide:hover {
-            transform: translateY(0);
+        .sidebar.auto-hide:hover {
+            transform: translateX(0);
         }
 
-        .terrafusion-taskbar.auto-hide.force-show {
-            transform: translateY(0);
+        .sidebar.auto-hide.force-show {
+            transform: translateX(0);
         }
 
         .notification-count {
@@ -4532,9 +4532,48 @@
                 </div>
             </div>
             
-            <!-- Sidebar Collapse Toggle -->
-            <div class="sidebar-toggle" onclick="toggleSidebar()" title="Collapse/Expand Sidebar">
-                <span class="toggle-icon">‹</span>
+            <!-- Quick Access Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Quick Access</div>
+                <div class="quick-access-grid">
+                    <button class="nav-btn" onclick="launchApp('costforge-ai')" title="CostForge AI">
+                        <span class="nav-btn-icon">💰</span>
+                        <span class="nav-btn-text">CostForge AI</span>
+                    </button>
+                    <button class="nav-btn" onclick="launchApp('terrafusion-ide')" title="TerraFusion IDE">
+                        <span class="nav-btn-icon">💻</span>
+                        <span class="nav-btn-text">TerraFusion IDE</span>
+                    </button>
+                    <button class="nav-btn" onclick="launchApp('report-builder')" title="Report Builder">
+                        <span class="nav-btn-icon">📊</span>
+                        <span class="nav-btn-text">Report Builder</span>
+                    </button>
+                    <button class="nav-btn" onclick="launchApp('analytics')" title="Analytics">
+                        <span class="nav-btn-icon">📈</span>
+                        <span class="nav-btn-text">Analytics</span>
+                    </button>
+                    <button class="nav-btn" onclick="launchApp('ai-swarm')" title="AI Swarm">
+                        <span class="nav-btn-icon">🤖</span>
+                        <span class="nav-btn-text">AI Swarm</span>
+                    </button>
+                    <button class="nav-btn" onclick="launchApp('terrafusion-sync')" title="TerraFusion Sync">
+                        <span class="nav-btn-icon">🔄</span>
+                        <span class="nav-btn-text">TerraFusion Sync</span>
+                    </button>
+                    <button class="nav-btn" onclick="launchApp('terra-flow')" title="TerraFlow">
+                        <span class="nav-btn-icon">🌊</span>
+                        <span class="nav-btn-text">TerraFlow</span>
+                    </button>
+                    <button class="nav-btn" onclick="launchApp('security-mesh')" title="Security Mesh">
+                        <span class="nav-btn-icon">🛡️</span>
+                        <span class="nav-btn-text">Security Mesh</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Sidebar Auto-Hide Toggle -->
+            <div class="sidebar-toggle" onclick="toggleSidebarAutoHide()" title="Auto-Hide Sidebar">
+                <span class="toggle-icon" id="sidebar-hide-icon">◀</span>
             </div>
         </div>
 
@@ -4670,8 +4709,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Quick Access Section -->
 
                 <!-- AI Command Center Panel -->
                 <div id="ai-command-center" class="content-panel">
@@ -8826,25 +8863,20 @@
             }
         }
 
-        // TASKBAR AUTO-HIDE FUNCTIONALITY
-        function toggleTaskbarAutoHide() {
-            const taskbar = document.querySelector('.terrafusion-taskbar');
-            const autohideBtn = document.querySelector('#taskbar-autohide-btn');
-            const autohideIcon = autohideBtn.querySelector('.autohide-icon');
-            const isAutoHide = taskbar.classList.contains('auto-hide');
+        // SIDEBAR AUTO-HIDE FUNCTIONALITY
+        function toggleSidebarAutoHide() {
+            const sidebar = document.querySelector('.sidebar');
+            const hideIcon = document.querySelector('#sidebar-hide-icon');
+            const isAutoHide = sidebar.classList.contains('auto-hide');
             
             if (isAutoHide) {
-                taskbar.classList.remove('auto-hide');
-                autohideBtn.classList.remove('active');
-                autohideIcon.textContent = '⬇';
-                autohideBtn.title = 'Enable Taskbar Auto-Hide';
-                console.log('◊ Taskbar auto-hide disabled');
+                sidebar.classList.remove('auto-hide');
+                hideIcon.textContent = '◀';
+                console.log('◊ Sidebar auto-hide disabled');
             } else {
-                taskbar.classList.add('auto-hide');
-                autohideBtn.classList.add('active');
-                autohideIcon.textContent = '⬆';
-                autohideBtn.title = 'Disable Taskbar Auto-Hide';
-                console.log('◊ Taskbar auto-hide enabled');
+                sidebar.classList.add('auto-hide');
+                hideIcon.textContent = '▶';
+                console.log('◊ Sidebar auto-hide enabled');
             }
         }
 
@@ -8939,7 +8971,7 @@
                 case 'costforge-ai':
                     showAppWindow('costforge-ai', 'CostForge AI - Financial Intelligence', `
                         <div class="app-content">
-                            <iframe src="http://localhost:5002" 
+                            <iframe src="http://localhost:8090/apps/costforge-ai" 
                                     style="width: 100%; height: 100%; border: none; background: var(--tf-deep-space);"
                                     title="CostForge AI Application">
                             </iframe>
@@ -8949,7 +8981,7 @@
                 case 'terrafusion-ide':
                     showAppWindow('terrafusion-ide', 'TerraFusion IDE - Development Environment', `
                         <div class="app-content">
-                            <iframe src="http://localhost:5003" 
+                            <iframe src="http://localhost:8090/apps/terrafusion-ide" 
                                     style="width: 100%; height: 100%; border: none; background: var(--tf-deep-space);"
                                     title="TerraFusion IDE Application">
                             </iframe>
@@ -8959,7 +8991,7 @@
                 case 'report-builder':
                     showAppWindow('report-builder', 'Report Builder - Analytics Platform', `
                         <div class="app-content">
-                            <iframe src="http://localhost:5004" 
+                            <iframe src="http://localhost:8090/apps/report-builder" 
                                     style="width: 100%; height: 100%; border: none; background: var(--tf-deep-space);"
                                     title="Report Builder Application">
                             </iframe>
@@ -8969,7 +9001,7 @@
                 case 'analytics':
                     showAppWindow('analytics', 'Analytics - Data Visualization', `
                         <div class="app-content">
-                            <iframe src="http://localhost:5005" 
+                            <iframe src="http://localhost:8090/apps/analytics" 
                                     style="width: 100%; height: 100%; border: none; background: var(--tf-deep-space);"
                                     title="Analytics Application">
                             </iframe>
@@ -13160,47 +13192,6 @@
         console.log('Government. Transcended.');
     </script>
 
-    <!-- Quick Access Section - Above Taskbar -->
-    <div class="quick-access-section">
-        <div class="section-header">
-            <span class="section-icon">⚡</span>
-            Quick Access
-        </div>
-        <div class="quick-access-grid">
-            <div class="quick-access-item" onclick="launchApp('costforge-ai')">
-                <div class="quick-icon">💰</div>
-                <div class="quick-label">CostForge AI</div>
-            </div>
-            <div class="quick-access-item" onclick="launchApp('terrafusion-ide')">
-                <div class="quick-icon">💻</div>
-                <div class="quick-label">TerraFusion IDE</div>
-            </div>
-            <div class="quick-access-item" onclick="launchApp('report-builder')">
-                <div class="quick-icon">📊</div>
-                <div class="quick-label">Report Builder</div>
-            </div>
-            <div class="quick-access-item" onclick="launchApp('analytics')">
-                <div class="quick-icon">📈</div>
-                <div class="quick-label">Analytics</div>
-            </div>
-            <div class="quick-access-item" onclick="launchApp('ai-swarm')">
-                <div class="quick-icon">🤖</div>
-                <div class="quick-label">AI Swarm</div>
-            </div>
-            <div class="quick-access-item" onclick="launchApp('terrafusion-sync')">
-                <div class="quick-icon">🔄</div>
-                <div class="quick-label">TerraFusion Sync</div>
-            </div>
-            <div class="quick-access-item" onclick="launchApp('terra-flow')">
-                <div class="quick-icon">🌊</div>
-                <div class="quick-label">TerraFlow</div>
-            </div>
-            <div class="quick-access-item" onclick="launchApp('security-mesh')">
-                <div class="quick-icon">🛡️</div>
-                <div class="quick-label">Security Mesh</div>
-            </div>
-        </div>
-    </div>
 
     <!-- Enhanced TerraFusion Taskbar -->
     <div class="terrafusion-taskbar" id="terrafusion-taskbar">
@@ -13253,9 +13244,6 @@
                 <div class="tray-status" title="System Status">
                     <span class="status-icon">✅</span>
                     <span class="status-text">OPERATIONAL</span>
-                </div>
-                <div class="tray-autohide" onclick="toggleTaskbarAutoHide()" title="Toggle Taskbar Auto-Hide" id="taskbar-autohide-btn">
-                    <span class="autohide-icon">⬇</span>
                 </div>
                 <div class="tray-notification" id="notification-center" onclick="toggleNotificationCenter()" title="Notifications">
                     <span class="notification-icon">🔔</span>

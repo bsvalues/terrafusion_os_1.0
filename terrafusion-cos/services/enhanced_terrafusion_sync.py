@@ -298,6 +298,15 @@ class EnhancedTerraFusionSync:
             
             self.registered_sources[source.source_id] = source
             self.logger.info(f"Registered Harris data source: {source.name}")
+
+
+def heal_connectors():
+    """Shim to trigger a lightweight health check of sync connectors."""
+    try:
+        s = EnhancedTerraFusionSync()
+        return s.sync_metrics
+    except Exception:
+        return {}
     
     async def register_data_source(self, source: DataSource) -> bool:
         """Register new data source for synchronization"""

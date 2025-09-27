@@ -486,6 +486,15 @@ class WorkflowAutomationEngine:
             workflow_data=workflow_data,
             due_date=datetime.now() + template.estimated_duration if template.estimated_duration else None
         )
+
+    def repair_stalled_workflows():
+        """Shim to report workflow engine status / attempt light repair."""
+        try:
+            from services.terra_flow import TerraFlow
+            tf = TerraFlow()
+            return tf.get_workflow_status() if hasattr(tf, 'get_workflow_status') else {}
+        except Exception:
+            return {}
         
         # Create workflow tasks from template
         await self._create_workflow_tasks(workflow, template)

@@ -281,7 +281,17 @@ class TerraFusionSync:
         def get_data_sources():
             return jsonify({
                 "status": "success",
-                "data_sources": [asdict(source) for source in self.data_sources.values()]
+                "data_sources": [{
+                    "id": source.id,
+                    "name": source.name,
+                    "type": source.type.value,
+                    "endpoint": source.endpoint,
+                    "status": source.status.value,
+                    "last_sync": source.last_sync.isoformat() if source.last_sync else None,
+                    "conflict_resolution": source.conflict_resolution.value,
+                    "sync_frequency": source.sync_frequency,
+                    "record_count": source.record_count
+                } for source in self.data_sources.values()]
             })
         
         @self.app.route('/api/sync-operations')
@@ -376,11 +386,13 @@ class TerraFusionSync:
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
             background: var(--tf-dark-gradient);
             color: var(--tf-white);
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .sync-container {

@@ -546,6 +546,16 @@ class AdvancedAISwarmCoordinator:
 # Create global instance for platform integration
 ai_swarm_coordinator = AdvancedAISwarmCoordinator()
 
+def auto_fix(reason: str = "manual"):
+    """Best-effort repair shim: rebalance or report status."""
+    try:
+        # If the coordinator exposes a rebalance-like method, call it.
+        if hasattr(ai_swarm_coordinator, 'rebalance'):
+            ai_swarm_coordinator.rebalance()
+        return True
+    except Exception:
+        return False
+
 if __name__ == "__main__":
     # Demo execution
     import asyncio

@@ -258,7 +258,18 @@ class TerraFusionAISwarm:
         def get_missions():
             return jsonify({
                 "status": "success",
-                "missions": [asdict(mission) for mission in self.missions.values()]
+                "missions": [{
+                    "id": mission.id,
+                    "name": mission.name,
+                    "description": mission.description,
+                    "mission_type": mission.mission_type.value,
+                    "priority": mission.priority.value,
+                    "status": mission.status.value,
+                    "assigned_agents": mission.assigned_agents,
+                    "progress": mission.progress,
+                    "created_at": mission.created_at.isoformat(),
+                    "deadline": mission.deadline.isoformat() if mission.deadline else None
+                } for mission in self.missions.values()]
             })
         
         @self.app.route('/api/deploy-agents', methods=['POST'])
@@ -322,11 +333,13 @@ class TerraFusionAISwarm:
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
             background: var(--tf-dark-gradient);
             color: var(--tf-white);
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .swarm-container {

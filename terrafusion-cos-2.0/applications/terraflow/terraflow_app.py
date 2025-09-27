@@ -386,11 +386,13 @@ class TerraFlow:
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
             background: var(--tf-dark-gradient);
             color: var(--tf-white);
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .terraflow-container {

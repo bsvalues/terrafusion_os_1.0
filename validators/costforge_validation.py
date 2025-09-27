@@ -499,7 +499,7 @@ else:
             integration_tests = [
                 {"service": "OS_Core", "endpoint": "http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/modules/costforge/status"},
                 {"service": "Desktop_Shell", "endpoint": "http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/modules/costforge"},
-                {"service": "Marketplace", "endpoint": "http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/plugins/costforge"}
+                {"service": "Platform", "endpoint": "http://localhost:\${{TF_API_HTTPS_PORT:-5001}}/api/plugins/costforge"}
             ]
             
             integration_results = {}

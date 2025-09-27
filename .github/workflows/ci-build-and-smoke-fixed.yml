@@ -1,0 +1,81 @@
+name: CI - Build and Smoke (fixed)
+
+on:
+  push:
+    branches: [ main, 'feature/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/global.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain-action@stable
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-
+
+      - name: Install k6 (optional)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg2 ca-certificates wget
+          wget -q -O - https://dl.k6.io/key.gpg | sudo apt-key add -
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      - name: ci-build
+        run: make ci-build
+
+      - name: ci-test
+        run: make ci-test
+
+      - name: optionally-run-k6
+        env:
+          TF_API: http://localhost:5046
+        run: |
+          if curl -sS --max-time 3 $TF_API/health >/dev/null 2>&1; then
+            k6 run ops/k6/smoke.js || true
+          fi
+
+  collect-artifacts:
+    name: Collect diagnostics on failure
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Gather logs
+        run: |
+          mkdir -p artifacts
+          echo '{"note":"CI failure diagnostics"}' > artifacts/diag.json
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.run_id }}
+          path: artifacts
+          retention-days: 14

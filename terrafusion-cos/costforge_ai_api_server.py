@@ -410,7 +410,7 @@ def vendor_partnership_info():
                     "Professional implementation and support",
                     "Customer authority and credibility"
                 ],
-                "revenue_model": "$619/month per county (base + marketplace)",
+                "revenue_model": "$619/month per county (base + platform)",
                 "scaling_potential": "Unlimited with proven technology"
             }
         },

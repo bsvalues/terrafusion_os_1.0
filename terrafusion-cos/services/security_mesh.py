@@ -79,3 +79,13 @@ class AuthenticationSystem:
             del self.active_sessions[token]
             return True
         return False
+
+
+def reconcile_policies():
+    """Shim to reconcile or restart security mesh policies."""
+    try:
+        sm = SecurityMesh()
+        sm.start_security_mesh()
+        return True
+    except Exception:
+        return False

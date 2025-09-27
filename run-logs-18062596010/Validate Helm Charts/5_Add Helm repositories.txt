@@ -1,0 +1,19 @@
+﻿2025-09-27T17:08:38.2312685Z ##[group]Run helm repo add bitnami https://charts.bitnami.com/bitnami
+2025-09-27T17:08:38.2313239Z [36;1mhelm repo add bitnami https://charts.bitnami.com/bitnami[0m
+2025-09-27T17:08:38.2313766Z [36;1mhelm repo add prometheus-community https://prometheus-community.github.io/helm-charts[0m
+2025-09-27T17:08:38.2314273Z [36;1mhelm repo add grafana https://grafana.github.io/helm-charts[0m
+2025-09-27T17:08:38.2314590Z [36;1mhelm repo update[0m
+2025-09-27T17:08:38.2350107Z shell: /usr/bin/bash -e {0}
+2025-09-27T17:08:38.2350353Z env:
+2025-09-27T17:08:38.2350517Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:38.2350716Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:38.2350933Z   TF_VAR_environment: production
+2025-09-27T17:08:38.2351155Z ##[endgroup]
+2025-09-27T17:08:41.0944380Z "bitnami" has been added to your repositories
+2025-09-27T17:08:41.6316171Z "prometheus-community" has been added to your repositories
+2025-09-27T17:08:42.0664499Z "grafana" has been added to your repositories
+2025-09-27T17:08:42.1011928Z Hang tight while we grab the latest from your chart repositories...
+2025-09-27T17:08:42.6094440Z ...Successfully got an update from the "grafana" chart repository
+2025-09-27T17:08:42.7168804Z ...Successfully got an update from the "prometheus-community" chart repository
+2025-09-27T17:08:45.0565391Z ...Successfully got an update from the "bitnami" chart repository
+2025-09-27T17:08:45.0566368Z Update Complete. ⎈Happy Helming!⎈

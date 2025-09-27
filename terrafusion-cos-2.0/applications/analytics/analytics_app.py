@@ -247,15 +247,23 @@ class TerraFusionAnalytics:
     <title>TerraFusion Analytics</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        /* TerraFusion Official Brand System */
         :root {
-            --primary-color: #0099ff;
-            --accent-color: #00ffaa;
-            --transcend-color: #00ffee;
-            --dark-bg: #0b1020;
-            --glass-effect: rgba(0, 255, 238, 0.1);
-            --glass-border: rgba(0, 255, 238, 0.2);
-            --text-primary: #ffffff;
-            --text-secondary: #b0c4de;
+            --tf-trust-blue: #0099ff;
+            --tf-transcend-cyan: #00ffee;
+            --tf-success-green: #00ffaa;
+            --tf-deep-space: #0b1020;
+            --tf-midnight: #1a1f3a;
+            --tf-white: #ffffff;
+            --tf-gray-300: #cbd5e1;
+            --tf-gray-500: #64748b;
+            --tf-gray-700: #334155;
+            --tf-clarity-gradient: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            --tf-transcend-gradient: linear-gradient(135deg, #00ffee 0%, #00ffaa 100%);
+            --tf-dark-gradient: linear-gradient(180deg, #0b1020 0%, #0a0f1c 100%);
+            --tf-glow-trust: 0 0 24px rgba(0, 153, 255, 0.4);
+            --tf-glow-transcend: 0 0 24px rgba(0, 255, 238, 0.4);
+            --tf-glow-success: 0 0 24px rgba(0, 255, 170, 0.4);
         }
 
         * {
@@ -265,22 +273,25 @@ class TerraFusionAnalytics:
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0b1020 0%, #1a1f3a 100%);
-            color: var(--text-primary);
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+            background: var(--tf-dark-gradient);
+            color: var(--tf-white);
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .analytics-container {
             display: flex;
             height: 100vh;
+            background: var(--tf-deep-space);
         }
 
         .sidebar {
             width: 300px;
-            background: rgba(11, 16, 32, 0.95);
-            border-right: 1px solid var(--glass-border);
+            background: var(--tf-midnight);
+            border-right: 1px solid var(--tf-gray-700);
             backdrop-filter: blur(20px);
             padding: 20px;
             overflow-y: auto;
@@ -327,7 +338,7 @@ class TerraFusionAnalytics:
         }
 
         .overview-title {
-            color: var(--transcend-color);
+            color: var(--tf-transcend-cyan);
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 15px;
@@ -344,14 +355,14 @@ class TerraFusionAnalytics:
         }
 
         .metric-value {
-            color: var(--transcend-color);
+            color: var(--tf-transcend-cyan);
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 5px;
         }
 
         .metric-label {
-            color: var(--text-secondary);
+            color: var(--tf-gray-300);
             font-size: 12px;
         }
 
@@ -363,8 +374,8 @@ class TerraFusionAnalytics:
         }
 
         .dashboard-card {
-            background: var(--glass-effect);
-            border: 1px solid var(--glass-border);
+            background: rgba(0, 255, 238, 0.1);
+            border: 1px solid var(--tf-gray-700);
             border-radius: 12px;
             padding: 20px;
             backdrop-filter: blur(20px);
@@ -386,14 +397,14 @@ class TerraFusionAnalytics:
         }
 
         .dashboard-title {
-            color: var(--transcend-color);
+            color: var(--tf-transcend-cyan);
             font-size: 18px;
             font-weight: 600;
         }
 
         .dashboard-widgets {
             background: rgba(0, 255, 170, 0.2);
-            color: #00ffaa;
+            color: var(--tf-success-green);
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -401,7 +412,7 @@ class TerraFusionAnalytics:
         }
 
         .dashboard-description {
-            color: var(--text-secondary);
+            color: var(--tf-gray-300);
             font-size: 14px;
             margin-bottom: 15px;
             line-height: 1.5;
@@ -417,7 +428,7 @@ class TerraFusionAnalytics:
         .source-badge {
             background: rgba(0, 255, 238, 0.1);
             border: 1px solid rgba(0, 255, 238, 0.3);
-            color: var(--transcend-color);
+            color: var(--tf-transcend-cyan);
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 11px;
@@ -431,14 +442,14 @@ class TerraFusionAnalytics:
         }
 
         .last-updated {
-            color: var(--text-secondary);
+            color: var(--tf-gray-300);
             font-size: 12px;
         }
 
         .view-btn {
             background: linear-gradient(135deg, rgba(0, 255, 238, 0.2), rgba(0, 255, 170, 0.1));
             border: 1px solid rgba(0, 255, 238, 0.4);
-            color: var(--transcend-color);
+            color: var(--tf-transcend-cyan);
             padding: 8px 16px;
             border-radius: 6px;
             font-size: 12px;
@@ -453,15 +464,15 @@ class TerraFusionAnalytics:
         }
 
         .metrics-section {
-            background: var(--glass-effect);
-            border: 1px solid var(--glass-border);
+            background: rgba(0, 255, 238, 0.1);
+            border: 1px solid var(--tf-gray-700);
             border-radius: 12px;
             padding: 20px;
             backdrop-filter: blur(20px);
         }
 
         .metrics-title {
-            color: var(--transcend-color);
+            color: var(--tf-transcend-cyan);
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 15px;
@@ -475,20 +486,20 @@ class TerraFusionAnalytics:
 
         .metric-card {
             background: rgba(0, 20, 40, 0.6);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--tf-gray-700);
             border-radius: 8px;
             padding: 15px;
             text-align: center;
         }
 
         .metric-name {
-            color: var(--text-secondary);
+            color: var(--tf-gray-300);
             font-size: 12px;
             margin-bottom: 8px;
         }
 
         .metric-value-large {
-            color: var(--transcend-color);
+            color: var(--tf-transcend-cyan);
             font-size: 20px;
             font-weight: 700;
             margin-bottom: 4px;

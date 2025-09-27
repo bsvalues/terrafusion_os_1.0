@@ -158,10 +158,11 @@ jobs:
 
     - name: Template Helm charts
       run: |
-        helm template test-backend charts/terrafusion-backend
-        helm template test-frontend charts/terrafusion-frontend
-        helm template test-ai-swarm charts/terrafusion-ai-swarm
-        helm template test-terrafusion charts/terrafusion
+        helm template test-backend infrastructure/helm/charts/terrafusion-backend \
+          --values infrastructure/helm/charts/terrafusion-backend/tests/ci-values.yaml > /dev/null
+        helm template test-frontend infrastructure/helm/charts/terrafusion-frontend > /dev/null
+        helm template test-ai-swarm infrastructure/helm/charts/terrafusion-ai-swarm > /dev/null
+        helm template test-terrafusion infrastructure/helm/charts/terrafusion > /dev/null
 
   security-scan:
     name: Security Scan

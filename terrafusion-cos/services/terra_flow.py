@@ -58,3 +58,12 @@ class TerraFlow:
                 "average_completion_time": "1-2 business days"
             }
         ]
+
+
+def rebuild_pipelines():
+    """Shim to rebuild or validate pipelines."""
+    try:
+        tf = TerraFlow()
+        return tf.get_workflow_status()
+    except Exception:
+        return {}

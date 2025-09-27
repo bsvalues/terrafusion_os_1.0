@@ -904,10 +904,8 @@ class TerraFusionIDE:
                         </div>
                         <div class="code-content">
                             <div class="code-line">#!/usr/bin/env python3</div>
-                            <div class="code-line">"""</div>
-                            <div class="code-line">TerraFusion Harris PACS Integration</div>
-                            <div class="code-line">AI-Enhanced Government Software Platform</div>
-                            <div class="code-line">"""</div>
+                            <div class="code-line"># TerraFusion Harris PACS Integration</div>
+                            <div class="code-line"># AI-Enhanced Government Software Platform</div>
                             <div class="code-line"></div>
                             <div class="code-line">import terrafusion_sync</div>
                             <div class="code-line">from ai_swarm import SupremeCommander</div>
