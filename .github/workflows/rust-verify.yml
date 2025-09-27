@@ -1,0 +1,46 @@
+name: CI • Rust Verify
+
+on:
+  pull_request:
+    paths:
+      - 'terrafusion-cos/**'
+      - 'ops/**'
+      - 'Makefile'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  rust-verify:
+    name: Rust verify (per-crate metadata + build)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'false'
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Ensure cargo is available
+        run: cargo --version
+
+      - name: Run rust verify
+        run: |
+          set -euo pipefail
+          make rust-verify
+
+      - name: Upload verifier logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-verify-logs
+          path: |
+            .ci_artifacts_local/**
