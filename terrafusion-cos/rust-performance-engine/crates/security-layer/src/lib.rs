@@ -9,8 +9,8 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
-use aes_gcm::{Aes256Gcm, Key, Nonce};
-use aes_gcm::aead::{Aead, NewAead};
+use aes_gcm::{Aes256Gcm, Nonce};
+use aes_gcm::aead::{Aead, KeyInit};
 use argon2::Argon2;
 use rand::Rng;
 
@@ -53,7 +53,7 @@ pub struct EncryptedData {
 }
 
 pub struct GovernmentSecurityLayer {
-    encryption_keys: HashMap<SecurityClassification, Key<Aes256Gcm>>,
+    encryption_keys: HashMap<SecurityClassification, Vec<u8>>,
     security_events: Vec<SecurityEvent>,
     active_sessions: HashMap<Uuid, SecurityContext>,
     threat_patterns: Vec<String>,
@@ -67,8 +67,8 @@ impl GovernmentSecurityLayer {
         for classification in &[SecurityClassification::Public, SecurityClassification::Internal,
                               SecurityClassification::Confidential, SecurityClassification::Secret,
                               SecurityClassification::TopSecret] {
-            let key = Key::<Aes256Gcm>::from_slice(&rand::thread_rng().gen::<[u8; 32]>());
-            encryption_keys.insert(classification.clone(), *key);
+            let rand_bytes = rand::thread_rng().gen::<[u8; 32]>();
+            encryption_keys.insert(classification.clone(), rand_bytes.to_vec());
         }
 
         Self {
@@ -162,12 +162,12 @@ impl GovernmentSecurityLayer {
 
     pub async fn encrypt_data(&self, data: &[u8], classification: &SecurityClassification)
                               -> Result<EncryptedData, Box<dyn std::error::Error + Send + Sync>> {
-        let key = self.encryption_keys.get(classification)
+        let key_bytes = self.encryption_keys.get(classification)
             .ok_or("No encryption key for classification level")?;
 
-        let cipher = Aes256Gcm::new(key);
-        let nonce = rand::thread_rng().gen::<[u8; 12]>();
-        let nonce = Nonce::from_slice(&nonce);
+        let cipher = Aes256Gcm::new_from_slice(key_bytes.as_slice())?;
+        let nonce_arr = rand::thread_rng().gen::<[u8; 12]>();
+        let nonce = Nonce::from_slice(&nonce_arr);
 
         let ciphertext = cipher.encrypt(nonce, data)
             .map_err(|e| format!("Encryption failed: {:?}", e))?;
@@ -181,10 +181,10 @@ impl GovernmentSecurityLayer {
 
     pub async fn decrypt_data(&self, encrypted_data: &EncryptedData, classification: &SecurityClassification)
                               -> Result<Vec<u8>, Box<dyn std::error::Error + Send + Sync>> {
-        let key = self.encryption_keys.get(classification)
+        let key_bytes = self.encryption_keys.get(classification)
             .ok_or("No decryption key for classification level")?;
 
-        let cipher = Aes256Gcm::new(key);
+        let cipher = Aes256Gcm::new_from_slice(key_bytes.as_slice())?;
         let nonce = Nonce::from_slice(&encrypted_data.nonce);
 
         let plaintext = cipher.decrypt(nonce, encrypted_data.ciphertext.as_ref())

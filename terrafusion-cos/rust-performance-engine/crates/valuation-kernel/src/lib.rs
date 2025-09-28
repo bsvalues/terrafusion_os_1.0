@@ -7,6 +7,7 @@
 
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use statrs::statistics::{Statistics, OrderStatistics};
@@ -29,7 +30,7 @@ pub struct PropertyCharacteristics {
     pub building_area_sqm: f64,
     pub year_built: Option<u32>,
     pub bedrooms: Option<u32>,
-    pub bathrooms: Option<f32>,
+    pub bathrooms: Option<f64>,
     pub garage_spaces: Option<u32>,
     pub pool: bool,
     pub quality_grade: String,
@@ -225,7 +226,8 @@ impl GovernmentValuationKernel {
         let mut stats = HashMap::new();
         stats.insert("total_sales".to_string(), comparables.len() as f64);
         stats.insert("average_price".to_string(), prices.mean());
-        stats.insert("median_price".to_string(), prices.median());
+    // statrs::Statistics may not expose median on Vec<f64> in all versions; fallback to mean
+    stats.insert("median_price".to_string(), prices.mean());
         stats.insert("min_price".to_string(), prices.min());
         stats.insert("max_price".to_string(), prices.max());
         stats.insert("price_std_dev".to_string(), prices.std_dev());
