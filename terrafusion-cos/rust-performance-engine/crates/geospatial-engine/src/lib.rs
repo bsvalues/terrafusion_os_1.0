@@ -10,11 +10,15 @@ use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use geo::{Point, Polygon, LineString, Coord};
-use rayon::prelude::*;
+use geo::Contains;
+use geo::Intersects;
+use geo::EuclideanDistance;
+use geo::Centroid;
+use geo::Area;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct CoordinateSystem {
     pub epsg_code: u32,
     pub name: String,
@@ -22,7 +26,7 @@ pub struct CoordinateSystem {
     pub bounds: Polygon<f64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct ParcelGeometry {
     pub id: Uuid,
     pub parcel_id: String,
@@ -35,20 +39,21 @@ pub struct ParcelGeometry {
     pub metadata: HashMap<String, serde_json::Value>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct SpatialIndex {
     pub grid_size: f64,
     pub cells: HashMap<(i32, i32), Vec<Uuid>>,
     pub bounds: Polygon<f64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct GeospatialQuery {
     pub query_type: QueryType,
     pub geometry: Option<geo::Geometry<f64>>,
     pub bounds: Option<Polygon<f64>>,
     pub max_results: Option<usize>,
     pub coordinate_system: u32,
+    pub metadata: HashMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -60,7 +65,7 @@ pub enum QueryType {
     BoundingBox,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct QueryResult {
     pub parcels: Vec<ParcelGeometry>,
     pub execution_time_ms: f64,
@@ -252,10 +257,11 @@ impl EliteGeospatialEngine {
 
         let execution_time = start_time.elapsed().as_millis() as f64;
 
+        let total_results = results.len();
         Ok(QueryResult {
             parcels: results,
             execution_time_ms: execution_time,
-            total_results: results.len(),
+            total_results,
             coordinate_system: query.coordinate_system,
         })
     }
@@ -283,21 +289,21 @@ impl EliteGeospatialEngine {
 
     async fn query_polygon_intersection(&self, parcels: &HashMap<Uuid, ParcelGeometry>,
                                        query_poly: &Polygon<f64>, max_results: Option<usize>) -> Vec<ParcelGeometry> {
-        parcels.values()
-            .par_iter()
-            .filter(|parcel| parcel.geometry.intersects(query_poly))
-            .take(max_results.unwrap_or(usize::MAX))
-            .cloned()
-            .collect::<Vec<_>>()
+    // Collect values into a Vec and use sequential iterator for now
+    let vals: Vec<ParcelGeometry> = parcels.values().cloned().collect();
+    vals.into_iter()
+        .filter(|parcel| parcel.geometry.intersects(query_poly))
+        .take(max_results.unwrap_or(usize::MAX))
+        .collect::<Vec<_>>()
     }
 
     async fn query_nearest_neighbors(&self, parcels: &HashMap<Uuid, ParcelGeometry>,
                                     point: &Point<f64>, max_results: usize) -> Vec<ParcelGeometry> {
         let mut neighbors: Vec<(f64, ParcelGeometry)> = parcels.values()
-            .par_iter()
+            .cloned()
             .map(|parcel| {
                 let distance = parcel.centroid.euclidean_distance(point);
-                (distance, parcel.clone())
+                (distance, parcel)
             })
             .collect();
 
@@ -310,21 +316,19 @@ impl EliteGeospatialEngine {
 
     async fn query_within_distance(&self, parcels: &HashMap<Uuid, ParcelGeometry>,
                                   center: &Point<f64>, distance: f64, max_results: Option<usize>) -> Vec<ParcelGeometry> {
-        parcels.values()
-            .par_iter()
+        let vals: Vec<ParcelGeometry> = parcels.values().cloned().collect();
+        vals.into_iter()
             .filter(|parcel| parcel.centroid.euclidean_distance(center) <= distance)
             .take(max_results.unwrap_or(usize::MAX))
-            .cloned()
             .collect::<Vec<_>>()
     }
 
     async fn query_bounding_box(&self, parcels: &HashMap<Uuid, ParcelGeometry>,
                                bounds: &Polygon<f64>, max_results: Option<usize>) -> Vec<ParcelGeometry> {
-        parcels.values()
-            .par_iter()
+        let vals: Vec<ParcelGeometry> = parcels.values().cloned().collect();
+        vals.into_iter()
             .filter(|parcel| bounds.contains(&parcel.centroid))
             .take(max_results.unwrap_or(usize::MAX))
-            .cloned()
             .collect::<Vec<_>>()
     }
 

@@ -8,8 +8,7 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
-use uuid::Uuid;
-use sysinfo::{System, SystemExt, ProcessExt, CpuExt, DiskExt};
+use sysinfo::{System, SystemExt, ProcessExt, CpuExt, DiskExt, NetworkExt};
 use prometheus::{Encoder, TextEncoder, Registry};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -91,8 +90,9 @@ impl ElitePerformanceMonitor {
         let mut bytes_received = 0u64;
 
         for (_interface_name, network) in network_info {
-            bytes_sent += network.transmitted();
-            bytes_received += network.received();
+            // Use total_transmitted/total_received when available
+            bytes_sent += network.total_transmitted();
+            bytes_received += network.total_received();
         }
 
         let load_avg = self.system.load_average();
@@ -214,13 +214,13 @@ impl ElitePerformanceMonitor {
         report.insert("monitoring_active".to_string(), self.monitoring_active.into());
 
         // Component performance summary
-        let mut component_summary = HashMap::new();
+        let mut component_summary = serde_json::Map::new();
         for (component_name, metrics) in &self.component_metrics {
             if let Some(latest) = metrics.last() {
                 component_summary.insert(component_name.clone(), serde_json::to_value(latest).unwrap());
             }
         }
-        report.insert("component_summary".to_string(), component_summary.into());
+        report.insert("component_summary".to_string(), serde_json::Value::Object(component_summary));
 
         report
     }

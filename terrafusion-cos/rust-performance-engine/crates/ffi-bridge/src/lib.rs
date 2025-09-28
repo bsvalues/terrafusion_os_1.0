@@ -6,10 +6,8 @@
 //! MIT/PhD Level Systems Design - September 26, 2025
 
 use std::ffi::{CStr, CString};
-use std::os::raw::{c_char, c_int, c_double};
+use std::os::raw::{c_char, c_int};
 use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
-use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FFIResult {

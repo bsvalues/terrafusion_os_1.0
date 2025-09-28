@@ -14,7 +14,7 @@ thiserror = "1"
 tracing = "0.1"
 uuid = { version = "1", features = ["serde", "v4"] }
 chrono = { version = "0.4", features = ["serde"] }
-aes-gcm = { version = "0.10", features = ["aes256"] }
+aes-gcm = { version = "0.10", features = ["aes"] }
 argon2 = "0.5"
 rand = "0.8"
 async-trait = "0.1"

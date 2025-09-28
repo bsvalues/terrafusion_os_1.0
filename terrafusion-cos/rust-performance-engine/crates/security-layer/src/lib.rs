@@ -11,7 +11,6 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use aes_gcm::{Aes256Gcm, Nonce};
 use aes_gcm::aead::{Aead, KeyInit};
-use argon2::Argon2;
 use rand::Rng;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -125,7 +124,7 @@ impl GovernmentSecurityLayer {
         Ok(context)
     }
 
-    pub async fn authorize_access(&self, context: &SecurityContext, required_level: &SecurityClassification,
+    pub async fn authorize_access(&mut self, context: &SecurityContext, required_level: &SecurityClassification,
                                  resource: &str) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
         // Check if session is valid
         if context.expires_at < Utc::now() {
@@ -165,7 +164,7 @@ impl GovernmentSecurityLayer {
         let key_bytes = self.encryption_keys.get(classification)
             .ok_or("No encryption key for classification level")?;
 
-        let cipher = Aes256Gcm::new_from_slice(key_bytes.as_slice())?;
+    let cipher = Aes256Gcm::new_from_slice(key_bytes.as_slice()).map_err(|e| Box::<dyn std::error::Error + Send + Sync>::from(format!("Invalid key length: {:?}", e)))?;
         let nonce_arr = rand::thread_rng().gen::<[u8; 12]>();
         let nonce = Nonce::from_slice(&nonce_arr);
 
@@ -184,7 +183,7 @@ impl GovernmentSecurityLayer {
         let key_bytes = self.encryption_keys.get(classification)
             .ok_or("No decryption key for classification level")?;
 
-        let cipher = Aes256Gcm::new_from_slice(key_bytes.as_slice())?;
+    let cipher = Aes256Gcm::new_from_slice(key_bytes.as_slice()).map_err(|e| Box::<dyn std::error::Error + Send + Sync>::from(format!("Invalid key length: {:?}", e)))?;
         let nonce = Nonce::from_slice(&encrypted_data.nonce);
 
         let plaintext = cipher.decrypt(nonce, encrypted_data.ciphertext.as_ref())

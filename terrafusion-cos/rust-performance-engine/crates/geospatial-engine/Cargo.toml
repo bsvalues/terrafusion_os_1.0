@@ -12,9 +12,9 @@ serde_json = "1.0"
 anyhow = "1.0"
 thiserror = "1.0"
 tracing = "0.1"
-uuid = { version = "1.0", features = ["v4"] }
+uuid = { version = "1", features = ["serde", "v4"] }
 chrono = { version = "0.4", features = ["serde"] }
-geo = "0.23"
+geo = { version = "0.28", features = ["serde"] }
 geozero = "0.9"
 proj = "0.27"
 rayon = "1.7"

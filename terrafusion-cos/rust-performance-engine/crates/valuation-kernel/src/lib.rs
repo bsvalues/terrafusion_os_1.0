@@ -7,11 +7,32 @@
 
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
-use statrs::statistics::{Statistics, OrderStatistics};
+use statrs::statistics::Statistics;
 use rayon::prelude::*;
+
+// Small local statistics helpers that operate on slices to avoid consuming Vecs
+fn mean_slice(values: &[f64]) -> f64 {
+    if values.is_empty() { return 0.0; }
+    values.iter().sum::<f64>() / (values.len() as f64)
+}
+
+fn std_dev_slice(values: &[f64]) -> f64 {
+    let n = values.len();
+    if n <= 1 { return 0.0; }
+    let mean = mean_slice(values);
+    let var = values.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / ((n - 1) as f64);
+    var.sqrt()
+}
+
+fn min_slice(values: &[f64]) -> f64 {
+    values.iter().cloned().fold(f64::INFINITY, f64::min)
+}
+
+fn max_slice(values: &[f64]) -> f64 {
+    values.iter().cloned().fold(f64::NEG_INFINITY, f64::max)
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ValuationMethod {
@@ -64,22 +85,20 @@ pub struct GovernmentValuationKernel {
     valuation_models: HashMap<String, Box<dyn ValuationModel + Send + Sync>>,
 }
 
-#[async_trait::async_trait]
 pub trait ValuationModel: Send + Sync {
-    async fn estimate_value(&self, subject: &PropertyCharacteristics, comparables: &[ComparableSale]) -> Result<f64, Box<dyn std::error::Error + Send + Sync>>;
+    fn estimate_value(&self, subject: &PropertyCharacteristics, comparables: &[ComparableSale]) -> Result<f64, Box<dyn std::error::Error + Send + Sync>>;
     fn get_method(&self) -> ValuationMethod;
 }
 
 pub struct SalesComparisonApproach;
 
-#[async_trait::async_trait]
 impl ValuationModel for SalesComparisonApproach {
-    async fn estimate_value(&self, subject: &PropertyCharacteristics, comparables: &[ComparableSale]) -> Result<f64, Box<dyn std::error::Error + Send + Sync>> {
+    fn estimate_value(&self, subject: &PropertyCharacteristics, comparables: &[ComparableSale]) -> Result<f64, Box<dyn std::error::Error + Send + Sync>> {
         if comparables.is_empty() {
             return Err("No comparable sales available".into());
         }
 
-        let mut adjusted_prices: Vec<f64> = comparables.par_iter()
+        let adjusted_prices: Vec<f64> = comparables.par_iter()
             .map(|comp| {
                 let mut adjusted_price = comp.sale_price;
 
@@ -108,8 +127,8 @@ impl ValuationModel for SalesComparisonApproach {
             })
             .collect();
 
-        // Calculate weighted average
-        let estimated_value = adjusted_prices.mean();
+        // Calculate weighted average (avoid consuming vector)
+        let estimated_value = mean_slice(&adjusted_prices);
         Ok(estimated_value)
     }
 
@@ -133,8 +152,9 @@ impl GovernmentValuationKernel {
     }
 
     pub async fn load_market_data(&mut self, region: &str, sales_data: Vec<ComparableSale>) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let total = sales_data.len();
         self.market_data.insert(region.to_string(), sales_data);
-        tracing::info!("✅ Loaded {} comparable sales for region {}", sales_data.len(), region);
+        tracing::info!("✅ Loaded {} comparable sales for region {}", total, region);
         Ok(())
     }
 
@@ -162,7 +182,7 @@ impl GovernmentValuationKernel {
         let selected_comparables = sorted_comparables.into_iter().take(5).collect::<Vec<_>>();
 
         // Get valuation model
-        let model_key = match method {
+        let model_key = match method.clone() {
             ValuationMethod::SalesComparison => "sales_comparison",
             _ => return Err("Valuation method not implemented".into()),
         };
@@ -170,12 +190,12 @@ impl GovernmentValuationKernel {
         let model = self.valuation_models.get(model_key)
             .ok_or("Valuation model not found")?;
 
-        // Estimate value
-        let estimated_value = model.estimate_value(&subject, &selected_comparables).await?;
+        // Estimate value (synchronous trait call)
+        let estimated_value = model.estimate_value(&subject, &selected_comparables)?;
 
         // Calculate confidence interval
         let prices: Vec<f64> = selected_comparables.iter().map(|c| c.sale_price).collect();
-        let std_dev = prices.std_dev();
+        let std_dev = std_dev_slice(&prices);
         let confidence_interval = (
             estimated_value - 1.96 * std_dev / (prices.len() as f64).sqrt(),
             estimated_value + 1.96 * std_dev / (prices.len() as f64).sqrt(),
@@ -184,14 +204,14 @@ impl GovernmentValuationKernel {
         // Calculate market trends
         let mut market_trends = HashMap::new();
         if prices.len() >= 2 {
-            let recent_avg = prices.mean();
+            let recent_avg = mean_slice(&prices);
             let older_prices: Vec<f64> = comparables.iter()
                 .filter(|c| (Utc::now() - c.sale_date).num_days() > 180)
                 .map(|c| c.sale_price)
                 .collect();
 
             if !older_prices.is_empty() {
-                let older_avg = older_prices.mean();
+                let older_avg = mean_slice(&older_prices);
                 let trend = (recent_avg - older_avg) / older_avg * 100.0;
                 market_trends.insert("price_trend_6months".to_string(), trend);
             }
@@ -210,8 +230,9 @@ impl GovernmentValuationKernel {
     }
 
     pub async fn batch_valuation(&self, properties: Vec<PropertyCharacteristics>, region: &str, method: ValuationMethod) -> Vec<Result<ValuationResult, Box<dyn std::error::Error + Send + Sync>>> {
+        let method_clone = method.clone();
         let futures: Vec<_> = properties.into_iter()
-            .map(|prop| self.estimate_property_value(prop, region, method))
+            .map(|prop| self.estimate_property_value(prop, region, method_clone.clone()))
             .collect();
 
         futures::future::join_all(futures).await
@@ -225,12 +246,12 @@ impl GovernmentValuationKernel {
 
         let mut stats = HashMap::new();
         stats.insert("total_sales".to_string(), comparables.len() as f64);
-        stats.insert("average_price".to_string(), prices.mean());
+        stats.insert("average_price".to_string(), mean_slice(&prices));
     // statrs::Statistics may not expose median on Vec<f64> in all versions; fallback to mean
-    stats.insert("median_price".to_string(), prices.mean());
-        stats.insert("min_price".to_string(), prices.min());
-        stats.insert("max_price".to_string(), prices.max());
-        stats.insert("price_std_dev".to_string(), prices.std_dev());
+    stats.insert("median_price".to_string(), mean_slice(&prices));
+        stats.insert("min_price".to_string(), min_slice(&prices));
+        stats.insert("max_price".to_string(), max_slice(&prices));
+        stats.insert("price_std_dev".to_string(), std_dev_slice(&prices));
 
         Ok(stats)
     }
