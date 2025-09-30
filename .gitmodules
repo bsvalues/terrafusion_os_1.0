@@ -14,7 +14,7 @@
 	path = modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/BCBSWebhub_PRODUCTION
 	url = https://github.com/bsvalues/BCBSWebhub.git
 
-[submodule "modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/BSIncomeValuation_PRODUCTION"]
+[submodule "modules/shock-and-awe/old_builds/everything/BSIncomeValuation_PRODUCTION"]
 	path = modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/BSIncomeValuation_PRODUCTION
 	url = https://github.com/bsvalues/BSIncomeValuation.git
 
