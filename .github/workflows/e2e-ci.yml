@@ -21,6 +21,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+
+      - name: Verify Node runtime
+        run: |
+          echo "Node version:" $(node -v)
+          echo "NPM version:" $(npm -v)
+          node -v
+          npm -v
 
       - name: Build frontend (deterministic)
         working-directory: terrafusion-cos/frontend_engine
@@ -45,9 +53,9 @@ jobs:
         env:
           TF_FRONTEND_PORT: 3102
         run: |
-          # serve the deterministic build from terrafusion-cos/ui on port $env:TF_FRONTEND_PORT
+          # serve the deterministic build from terrafusion-cos/ui on port $TF_FRONTEND_PORT
           npm ci --no-audit --silent
-          npx http-server ../ui -p $env:TF_FRONTEND_PORT &
+          npx http-server ../ui -p $TF_FRONTEND_PORT &
           sleep 2
 
       - name: Run Playwright E2E (smoke + preload test)
