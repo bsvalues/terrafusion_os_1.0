@@ -24,6 +24,19 @@ jobs:
           check-latest: true
           cache: 'npm'
 
+      - name: CI Diagnostics (git & node)
+        run: |
+          echo "--- Git status ---"
+          git --version
+          git status --porcelain || true
+          git submodule status --recursive || true
+          echo "--- Workspace listing (top-level) ---"
+          ls -la
+          echo "--- Node details ---"
+          which node || true
+          node -v || true
+          npm -v || true
+
       - name: Verify Node runtime
         run: |
           echo "Node version:" $(node -v)
