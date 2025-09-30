@@ -22,7 +22,7 @@
 	path = modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/DEPLOYED_APPLICATIONS/TerraFusionPlayground_PRODUCTION
 	url = https://github.com/bsvalues/TerraFusionPlayground.git
 
-[submodule "modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/TerraAgent_PRODUCTION"]
+[submodule "modules/shock-and-awe/old_builds/everything/TerraAgent_PRODUCTION"]
 	path = modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/TerraAgent_PRODUCTION
 	url = https://github.com/bsvalues/TerraAgent.git
 
