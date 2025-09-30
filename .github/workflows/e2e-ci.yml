@@ -1,0 +1,53 @@
+name: E2E Smoke + Unit Tests
+
+on:
+  push:
+    branches: [ main, feature/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend (deterministic)
+        working-directory: terrafusion-cos/frontend_engine
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run unit tests (electron)
+        working-directory: terrafusion-cos/electron
+        run: |
+          npm ci
+          npm test
+
+      - name: Install Playwright and browsers
+        working-directory: terrafusion-cos/e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Run Playwright E2E (smoke + preload test)
+        working-directory: terrafusion-cos/e2e
+        env:
+          CI: true
+        run: |
+          npx playwright test --reporter=list preload-ipc.spec.js smoke.spec.js
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: |
+            terrafusion-cos/logs/artifacts/renderer-screenshot.png
+            terrafusion-cos/logs/electron-main.log
