@@ -68,7 +68,7 @@ impl TerraFusionFFIBridge {
         })
     }
 
-    pub async fn create_process(&self, name: &str) -> Result<u32, Box<dyn std::error::Error + Send + Sync>> {
+    pub async fn create_process(&self, _name: &str) -> Result<u32, Box<dyn std::error::Error + Send + Sync>> {
         if !self.initialized {
             return Err("FFI Bridge not initialized".into());
         }
@@ -77,7 +77,7 @@ impl TerraFusionFFIBridge {
         Ok(12345)
     }
 
-    pub async fn terminate_process(&self, pid: u32) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
+    pub async fn terminate_process(&self, _pid: u32) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
         if !self.initialized {
             return Err("FFI Bridge not initialized".into());
         }
@@ -113,6 +113,13 @@ impl TerraFusionFFIBridge {
 
 // C FFI Interface for .NET 8.0
 static mut FFI_BRIDGE: Option<TerraFusionFFIBridge> = None;
+
+// Provide a Default implementation here (before tests) so clippy's
+// `items_after_test_module` check is satisfied and we don't end up with
+// duplicate impls after the test module.
+impl Default for TerraFusionFFIBridge {
+    fn default() -> Self { Self::new() }
+}
 
 #[no_mangle]
 pub extern "C" fn tf_initialize_bridge() -> c_int {
@@ -151,12 +158,16 @@ pub extern "C" fn tf_get_system_status() -> *mut c_char {
     })
 }
 
+/// # Safety
+///
+/// The caller must ensure `name` is a valid, null-terminated C string pointer.
+/// Passing an invalid pointer or one not owned by the caller is undefined behavior.
 #[no_mangle]
-pub extern "C" fn tf_create_process(name: *const c_char) -> c_int {
-    let name_str = unsafe {
-        if name.is_null() {
-            return -1;
-        }
+pub unsafe extern "C" fn tf_create_process(name: *const c_char) -> c_int {
+    let name_str = if name.is_null() {
+        return -1;
+    } else {
+        // SAFETY: caller must provide a valid C string pointer
         CStr::from_ptr(name).to_string_lossy().into_owned()
     };
 
@@ -211,12 +222,14 @@ pub extern "C" fn tf_get_process_list() -> *mut c_char {
     })
 }
 
+/// # Safety
+///
+/// Caller must ensure `ptr` was obtained from this library and is a valid pointer.
 #[no_mangle]
-pub extern "C" fn tf_free_string(ptr: *mut c_char) {
+pub unsafe extern "C" fn tf_free_string(ptr: *mut c_char) {
     if !ptr.is_null() {
-        unsafe {
-            let _ = CString::from_raw(ptr);
-        }
+        // SAFETY: caller must only pass pointers previously returned by tf_get_* functions
+        let _ = CString::from_raw(ptr);
     }
 }
 
@@ -253,6 +266,6 @@ mod tests {
         assert!(terminated);
 
         let processes = bridge.get_process_list().await.unwrap();
-        assert!(processes.len() > 0);
+        assert!(!processes.is_empty());
     }
 }

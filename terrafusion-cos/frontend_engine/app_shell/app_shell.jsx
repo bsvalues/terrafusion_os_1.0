@@ -96,7 +96,9 @@ class TerraFusionPluginHost {
             return await this.loadRemoteModule(pluginConfig.remoteEntry, pluginConfig.moduleName);
         } else if (pluginConfig.type === 'local') {
             // Local module import
-            return await import(pluginConfig.modulePath);
+            // Use webpackIgnore so the bundler does not attempt to resolve dynamic local plugin paths at build time.
+            // In production the plugin will be loaded from the runtime filesystem/path provided in pluginConfig.modulePath.
+            return await import(/* webpackIgnore: true */ pluginConfig.modulePath);
         } else {
             throw new Error(`Unsupported plugin type: ${pluginConfig.type}`);
         }
@@ -104,7 +106,8 @@ class TerraFusionPluginHost {
 
     async loadRemoteModule(remoteEntry, moduleName) {
         // Dynamic import for module federation
-        const container = await import(remoteEntry);
+        // remoteEntry is a runtime URL; tell webpack to ignore static resolution so it remains a runtime import
+        const container = await import(/* webpackIgnore: true */ remoteEntry);
         await container.init(__webpack_share_scopes__.default);
         const factory = await container.get(moduleName);
         return factory();
@@ -459,9 +462,24 @@ export const TerraFusionAppShell = ({
     const [pluginHost] = useState(() => new TerraFusionPluginHost());
     const [loadedPlugins, setLoadedPlugins] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
-    const [currentRoute, setCurrentRoute] = useState('/');
+    const [currentRoute, setCurrentRoute] = useState('/costforge-ai');
     const [isLoading, setIsLoading] = useState(false);
     const shellRef = useRef();
+
+    // Import CostForge AI Plugin using dynamic import so webpack doesn't statically try to resolve local plugin files.
+    const CostForgeAIPlugin = React.useMemo(() => {
+        let plugin = null;
+        (async () => {
+            try {
+                const mod = await import(/* webpackIgnore: true */ '../plugins/CostForgeAIPlugin.jsx');
+                plugin = mod.default || mod;
+            } catch (e) {
+                // plugin unavailable in this build/runtime
+                plugin = null;
+            }
+        })();
+        return plugin;
+    }, []);
 
     useEffect(() => {
         // Set up plugin host event listeners
@@ -480,11 +498,44 @@ export const TerraFusionAppShell = ({
         pluginHost.eventBus.addEventListener('pluginLoaded', handlePluginLoaded);
         pluginHost.eventBus.addEventListener('pluginUnloaded', handlePluginUnloaded);
 
+        // Auto-load CostForge AI plugin at startup
+        (async () => {
+            if (CostForgeAIPlugin) {
+                await pluginHost.loadPlugin({
+                    id: 'costforge-ai',
+                    name: 'CostForge AI',
+                    version: '3.0.0',
+                    type: 'local',
+                    modulePath: '../plugins/CostForgeAIPlugin.jsx',
+                    menuItems: [
+                        {
+                            id: 'costforge-ai',
+                            label: 'CostForge AI',
+                            icon: null,
+                            path: '/costforge-ai',
+                            order: 1
+                        }
+                    ],
+                    routes: [
+                        {
+                            path: '/costforge-ai',
+                            component: CostForgeAIPlugin,
+                            permissions: ['all'],
+                            metadata: { title: 'CostForge AI' }
+                        }
+                    ],
+                    signature: 'gov-certified',
+                    permissions: ['all'],
+                    performanceBudget: 'default',
+                });
+            }
+        })();
+
         return () => {
             pluginHost.eventBus.removeEventListener('pluginLoaded', handlePluginLoaded);
             pluginHost.eventBus.removeEventListener('pluginUnloaded', handlePluginUnloaded);
         };
-    }, [pluginHost, onPluginLoad, onPluginUnload]);
+    }, [pluginHost, onPluginLoad, onPluginUnload, CostForgeAIPlugin]);
 
     const loadPlugin = useCallback(async (pluginConfig) => {
         setIsLoading(true);

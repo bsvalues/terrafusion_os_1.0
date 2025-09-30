@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
-use statrs::statistics::Statistics;
+// OrderStatistics not used in current helpers
 use rayon::prelude::*;
 
 // Small local statistics helpers that operate on slices to avoid consuming Vecs
@@ -257,6 +257,10 @@ impl GovernmentValuationKernel {
     }
 }
 
+impl Default for GovernmentValuationKernel {
+    fn default() -> Self { Self::new() }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -309,7 +313,7 @@ mod tests {
         };
 
         let result = kernel.estimate_property_value(subject, "benton_county", ValuationMethod::SalesComparison).await.unwrap();
-        assert!(result.estimated_value > 0.0);
-        assert!(result.comparables_used.len() > 0);
+    assert!(result.estimated_value > 0.0);
+    assert!(!result.comparables_used.is_empty());
     }
 }

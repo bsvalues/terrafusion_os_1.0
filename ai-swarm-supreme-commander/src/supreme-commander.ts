@@ -7,6 +7,8 @@ import { z } from 'zod';
 import { OpenAI } from 'openai';
 import { PythonShell } from 'python-shell';
 import { createHash } from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
 // AI Swarm Architecture
 interface AIAgent {
@@ -115,6 +117,8 @@ class SupremeCommanderClaude {
   private contextStorage = new AsyncLocalStorage<{ requestId: string; userId: string }>();
   private openai?: OpenAI;
 
+  private config: any;
+
   constructor() {
     this.app = express();
     this.server = createServer(this.app);
@@ -126,9 +130,12 @@ class SupremeCommanderClaude {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
-      retryDelayOnFailover: 100,
       maxRetriesPerRequest: 3,
     });
+
+    // Load config from swarm-config.json
+    const configPath = path.resolve(__dirname, '../swarm-config/swarm-config.json');
+    this.config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 
     if (process.env.OPENAI_API_KEY) {
       this.openai = new OpenAI({
@@ -143,7 +150,7 @@ class SupremeCommanderClaude {
   }
 
   private setupRoutes(): void {
-    this.app.use(express.json({ limit: '50mb' }));
+  this.app.use(express.json({ limit: `${this.config.jsonLimitMb}mb` }));
     this.app.use(express.urlencoded({ extended: true }));
 
     // Health check
@@ -408,7 +415,7 @@ class SupremeCommanderClaude {
       );
     });
 
-    // Operational Agents (49,992 total capacity - 1,000 currently deployed in Phase 1)
+    // Operational Agents
     const operationalSpecializations = [
       'TYPESCRIPT_EXPERT',
       'CSHARP_SPECIALIST',
@@ -429,38 +436,32 @@ class SupremeCommanderClaude {
       'GOVERNMENT_INTEGRATION_SPECIALIST',
     ];
 
-    // Phase 1: Deploy first 1,000 agents (currently operational)
-    for (let i = 1; i <= 1000; i++) {
-      const specialization = operationalSpecializations[i % operationalSpecializations.length];
-      const securityClearance = i <= 100 ? 'YELLOW' : 'GREEN';
-      this.createAgent(
-        `OA-${String(i).padStart(5, '0')}`,
-        'OPERATIONAL_AGENT',
-        [specialization],
-        securityClearance
-      );
+    // Deploy agents for all phases
+    let agentIndex = 1;
+    for (const phase of this.config.deploymentPhases) {
+      for (let i = 1; i <= phase.agents; i++, agentIndex++) {
+        const specialization = operationalSpecializations[agentIndex % operationalSpecializations.length];
+        const securityClearance = agentIndex <= this.config.securityClearanceThreshold ? 'YELLOW' : 'GREEN';
+        this.createAgent(
+          `OA-${String(agentIndex).padStart(5, '0')}`,
+          'OPERATIONAL_AGENT',
+          [specialization],
+          securityClearance
+        );
+      }
     }
 
     // Initialize agent pool metadata for future expansions (Phases 2-5)
-    await this.redis.set('swarm:total_capacity', '50000');
+    await this.redis.set('swarm:total_capacity', String(this.config.swarmTotalCapacity));
     await this.redis.set('swarm:current_phase', '1');
-    await this.redis.set(
-      'swarm:expansion_plan',
-      JSON.stringify({
-        phase1: { agents: 1008, status: 'OPERATIONAL', deployment_date: '2025-08-01' },
-        phase2: { agents: 5000, status: 'SCHEDULED', deployment_date: '2026-02-01' },
-        phase3: { agents: 15000, status: 'PLANNED', deployment_date: '2026-08-01' },
-        phase4: { agents: 35000, status: 'PLANNED', deployment_date: '2027-02-01' },
-        phase5: { agents: 50000, status: 'TARGET', deployment_date: '2027-08-01' },
-      })
-    );
+    await this.redis.set('swarm:expansion_plan', JSON.stringify(this.config.deploymentPhases));
 
     console.log(
       `🚀 TerraFusion AI Swarm Phase 1 Initialized: ${this.agents.size} agents operational`
     );
-    console.log(`📈 Total Swarm Capacity: 50,000 agents across 5 deployment phases`);
+    console.log(`📈 Total Swarm Capacity: ${this.config.swarmTotalCapacity} agents across ${this.config.deploymentPhases.length} deployment phases`);
     console.log(
-      `🎯 Current Phase: 1/5 (${((this.agents.size / 50000) * 100).toFixed(1)}% of total capacity)`
+      `🎯 Current Phase: 1/${this.config.deploymentPhases.length} (${((this.agents.size / this.config.swarmTotalCapacity) * 100).toFixed(1)}% of total capacity)`
     );
     await this.redis.set('swarm:initialized', new Date().toISOString());
   }
@@ -478,7 +479,7 @@ class SupremeCommanderClaude {
       status: 'IDLE',
       capabilities: specializations.map(spec => ({
         name: spec,
-        proficiency: Math.floor(Math.random() * 30) + 70, // 70-100% proficiency
+        proficiency: Math.floor(Math.random() * (this.config.proficiencyRange.max - this.config.proficiencyRange.min + 1)) + this.config.proficiencyRange.min,
         languages: this.getLanguagesForSpecialization(spec),
         frameworks: this.getFrameworksForSpecialization(spec),
         governmentStandards: ['FISMA', 'NIST', 'Section508'],

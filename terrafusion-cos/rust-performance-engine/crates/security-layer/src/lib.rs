@@ -143,20 +143,19 @@ impl GovernmentSecurityLayer {
     }
 
     fn has_clearance(&self, user_level: &SecurityClassification, required_level: &SecurityClassification) -> bool {
-        match (user_level, required_level) {
-            (SecurityClassification::TopSecret, _) => true,
-            (SecurityClassification::Secret, SecurityClassification::Secret) => true,
-            (SecurityClassification::Secret, SecurityClassification::Confidential) => true,
-            (SecurityClassification::Secret, SecurityClassification::Internal) => true,
-            (SecurityClassification::Secret, SecurityClassification::Public) => true,
-            (SecurityClassification::Confidential, SecurityClassification::Confidential) => true,
-            (SecurityClassification::Confidential, SecurityClassification::Internal) => true,
-            (SecurityClassification::Confidential, SecurityClassification::Public) => true,
-            (SecurityClassification::Internal, SecurityClassification::Internal) => true,
-            (SecurityClassification::Internal, SecurityClassification::Public) => true,
-            (SecurityClassification::Public, SecurityClassification::Public) => true,
-            _ => false,
-        }
+        matches!((user_level, required_level),
+            (SecurityClassification::TopSecret, _) |
+            (SecurityClassification::Secret, SecurityClassification::Secret) |
+            (SecurityClassification::Secret, SecurityClassification::Confidential) |
+            (SecurityClassification::Secret, SecurityClassification::Internal) |
+            (SecurityClassification::Secret, SecurityClassification::Public) |
+            (SecurityClassification::Confidential, SecurityClassification::Confidential) |
+            (SecurityClassification::Confidential, SecurityClassification::Internal) |
+            (SecurityClassification::Confidential, SecurityClassification::Public) |
+            (SecurityClassification::Internal, SecurityClassification::Internal) |
+            (SecurityClassification::Internal, SecurityClassification::Public) |
+            (SecurityClassification::Public, SecurityClassification::Public)
+        )
     }
 
     pub async fn encrypt_data(&self, data: &[u8], classification: &SecurityClassification)
@@ -236,6 +235,10 @@ impl GovernmentSecurityLayer {
     pub fn get_active_sessions(&self) -> Vec<&SecurityContext> {
         self.active_sessions.values().collect()
     }
+}
+
+impl Default for GovernmentSecurityLayer {
+    fn default() -> Self { Self::new() }
 }
 
 #[cfg(test)]

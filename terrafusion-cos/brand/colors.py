@@ -31,6 +31,10 @@ class TerraFusionColors:
     ERROR = "#dc3545"
     INFO = "#17a2b8"
     
+    # Legacy color constants for compatibility
+    GOVERNMENT_BLUE = PRIMARY_MAIN
+    TECH_GREEN = ACCENT_MAIN
+    
     @classmethod
     def get_primary_palette(cls):
         """Get primary color palette dictionary"""

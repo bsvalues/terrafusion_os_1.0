@@ -13,7 +13,7 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use dashmap::DashMap;
 use parking_lot::RwLock as ParkingRwLock;
-use futures::stream::StreamExt;
+// futures::stream::StreamExt not used currently
 use async_trait::async_trait;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -95,6 +95,7 @@ pub struct SupremeCommanderClaude {
     tasks: Arc<DashMap<Uuid, Task>>,
     metrics: Arc<ParkingRwLock<CoordinationMetrics>>,
     task_queue: mpsc::UnboundedSender<Task>,
+    #[allow(dead_code)]
     task_receiver: Arc<ParkingRwLock<Option<mpsc::UnboundedReceiver<Task>>>>,
 }
 
@@ -341,6 +342,10 @@ impl SupremeCommanderClaude {
             .map(|t| t.clone())
             .collect()
     }
+}
+
+impl Default for SupremeCommanderClaude {
+    fn default() -> Self { Self::new() }
 }
 
 #[async_trait]

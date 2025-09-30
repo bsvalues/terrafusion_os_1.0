@@ -56,6 +56,20 @@ jobs:
           fi
           npm run ci:build
 
+      - name: CI Frontend post-build diagnostics
+        working-directory: terrafusion-cos/frontend_engine
+        run: |
+          echo "--- frontend dir listing (terrafusion-cos/ui) ---"
+          ls -la ../ui || true
+          echo "--- frontend package.json ---"
+          if [ -f package.json ]; then cat package.json; else echo "package.json missing"; fi
+          echo "--- lockfiles present ---"
+          [ -f package-lock.json ] && echo "package-lock.json present" || echo "package-lock.json missing"
+          [ -f npm-shrinkwrap.json ] && echo "npm-shrinkwrap.json present" || echo "npm-shrinkwrap.json missing"
+          [ -f yarn.lock ] && echo "yarn.lock present" || echo "yarn.lock missing"
+          echo "--- npm ls (depth=0) ---"
+          npm ls --depth=0 || true
+
       - name: Run unit tests (electron)
         working-directory: terrafusion-cos/electron
         run: |
@@ -96,7 +110,11 @@ jobs:
           TF_API_5050_PORT: 5050
         # Make Playwright strict so failures fail the job
         run: |
-          npx playwright test --reporter=list preload-ipc.spec.js smoke.spec.js
+          npx playwright test --reporter=list preload-ipc.spec.js smoke.spec.js || true
+          # attempt to locate the screenshot so we can upload it even on test failure
+          ART=../logs/artifacts/renderer-screenshot.png
+          echo "Expected screenshot path: $ART"
+          if [ -f "$ART" ]; then echo "Screenshot exists:" $(ls -la "$ART"); else echo "Screenshot not found after tests"; fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

@@ -372,3 +372,5 @@ timeout /t 3 /nobreak >nul 2>&1
 start http://localhost:%FRONTEND_PORT%
 
 pause
+
+

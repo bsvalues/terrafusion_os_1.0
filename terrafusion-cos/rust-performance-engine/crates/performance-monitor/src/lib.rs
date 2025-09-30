@@ -8,7 +8,8 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
-use sysinfo::{System, SystemExt, ProcessExt, CpuExt, DiskExt, NetworkExt};
+// uuid not used in this crate currently
+use sysinfo::{System, SystemExt, CpuExt, DiskExt, NetworkExt};
 use prometheus::{Encoder, TextEncoder, Registry};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -63,7 +64,7 @@ impl ElitePerformanceMonitor {
         tracing::info!("🚀 Started elite performance monitoring");
 
         // Start background monitoring task
-        let monitor_handle = tokio::spawn(async move {
+        let _monitor_handle = tokio::spawn(async move {
             // In a real implementation, this would run continuously
             // For now, we'll just collect initial metrics
         });
@@ -121,7 +122,7 @@ impl ElitePerformanceMonitor {
 
     pub async fn record_component_metrics(&mut self, component_name: &str, metrics: ComponentMetrics) {
         self.component_metrics.entry(component_name.to_string())
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(metrics);
     }
 
@@ -225,6 +226,8 @@ impl ElitePerformanceMonitor {
         report
     }
 }
+
+impl Default for ElitePerformanceMonitor { fn default() -> Self { Self::new() } }
 
 #[cfg(test)]
 mod tests {

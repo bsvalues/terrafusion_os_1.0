@@ -384,4 +384,6 @@ class TerraFusionThemeManager {
 
 // Export theme manager instance
 export const terraFusionThemeManager = new TerraFusionThemeManager();
+// Provide named export for the class to satisfy re-exports elsewhere in the codebase
+export { TerraFusionThemeManager };
 export default TerraFusionThemeManager;

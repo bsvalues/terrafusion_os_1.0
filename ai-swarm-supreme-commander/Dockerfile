@@ -10,36 +10,46 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (including dev)
+    RUN npm install
 
 # Copy source code
 COPY src/ ./src/
 COPY config/ ./config/
 
-# Build TypeScript
-RUN npm run build
+    # Ensure TypeScript is installed and build
+    RUN npm install && npm install --save-dev typescript && npx tsc
 
 # Production stage
 FROM node:20-alpine AS runtime
 
-# Install runtime dependencies
+
+# Install runtime dependencies and build tools
 RUN apk add --no-cache \
     python3 \
     py3-pip \
     curl \
-    ca-certificates
+    ca-certificates \
+    gcc \
+    g++ \
+    make
 
-# Install Python AI dependencies
-RUN pip3 install --no-cache-dir \
-    numpy \
-    pandas \
-    scikit-learn \
-    transformers \
-    torch \
-    asyncio-mqtt \
-    redis \
-    psycopg2-binary
+
+
+# Install Python AI dependencies in a virtual environment
+RUN python3 -m venv /venv && \
+    . /venv/bin/activate && \
+    pip install --no-cache-dir \
+        numpy \
+        pandas \
+        scikit-learn \
+        transformers \
+        torch \
+        asyncio-mqtt \
+        redis \
+        psycopg2-binary && \
+    deactivate && \
+    apk del gcc g++ make
 
 WORKDIR /app
 
