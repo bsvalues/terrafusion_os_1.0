@@ -5,7 +5,7 @@ import { UniversalTranslationProtocol } from './universal_translation_protocol';
 import { UniversalMessage, SpeciesType, MessagePriority } from './types/consciousness';
 
 const app = express();
-const PORT=\${{TF_MONITORING_PORT:-3004}};
+const PORT = process.env.TF_MONITORING_PORT ? Number(process.env.TF_MONITORING_PORT) : 3004;
 const SERVICE_NAME = 'consciousness-layer';
 
 app.use(cors());
@@ -90,7 +90,7 @@ const mockEntities = [
 app.get('/api/consciousness/detect-species', (req, res) => {
   // Simulate detecting a new entity periodically
   const detectionCount = Math.floor(Math.random() * 3) + 1; // 1 to 3 new entities
-  const detected = [];
+  const detected = [] as any[];
   for (let i = 0; i < detectionCount; i++) {
     const randomEntity = mockEntities[Math.floor(Math.random() * mockEntities.length)];
     detected.push({

@@ -26,11 +26,11 @@
 	path = modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/TerraAgent_PRODUCTION
 	url = https://github.com/bsvalues/TerraAgent.git
 
-[submodule "modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/MCP_Servers_PRODUCTION"]
+[submodule "modules/shock-and-awe/old_builds/everything/MCP_Servers_PRODUCTION"]
 	path = modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/MCP_Servers_PRODUCTION
 	url = https://github.com/modelcontextprotocol/servers.git
 
-[submodule "modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/SystemPrompts_AI_Tools_PRODUCTION"]
+[submodule "modules/shock-and-awe/old_builds/everything/SystemPrompts_AI_Tools_PRODUCTION"]
 	path = modules/shock-and-awe/old_builds/everything/DEPLOYED_APPLICATIONS_ALL/SystemPrompts_AI_Tools_PRODUCTION
 	url = https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools.git
 
