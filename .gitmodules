@@ -1,6 +1,3 @@
-; .gitmodules - submodule mapping for the repository
-; Legacy and archived submodules were consolidated; restore intentionally if needed.
-
 [submodule "modules/shock-and-awe/ai_systems/ai-agents/TerraInsight/TerraInsight"]
 	path = modules/shock-and-awe/ai_systems/ai-agents/TerraInsight/TerraInsight
 	url = https://github.com/bsvalues/TerraGama.git
