@@ -30,7 +30,7 @@ jobs:
           restore-keys: nuget-${{ runner.os }}-
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain-action@stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Cache Cargo
         uses: actions/cache@v4
