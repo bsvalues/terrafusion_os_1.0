@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -22,19 +22,19 @@ jobs:
       - name: Build frontend (deterministic)
         working-directory: terrafusion-cos/frontend_engine
         run: |
-          npm ci
+          npm install --no-audit --no-fund
           npm run ci:build
 
       - name: Run unit tests (electron)
         working-directory: terrafusion-cos/electron
         run: |
-          npm ci
+          npm install --no-audit --no-fund
           npm test
 
       - name: Install Playwright and browsers
         working-directory: terrafusion-cos/e2e
         run: |
-          npm ci
+          npm install --no-audit --no-fund
           npx playwright install --with-deps
 
       - name: Serve built frontend for E2E
