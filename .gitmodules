@@ -1,7 +1,10 @@
 
 [submodule "modules/web-audit-tracker"]
-	path = modules/web-audit-tracker
-	url = https://github.com/bsvalues/BCBSWebhub.git
+# Temporarily commented out: this legacy/third-party module is not part of the TerraFusion cOS CI path
+# and previously caused CI git submodule initialization errors. If/when this module is required again,
+# restore the url and path below or move it to a dedicated legacy archive repository.
+#	path = modules/web-audit-tracker
+#	url = https://github.com/bsvalues/BCBSWebhub.git
 
 [submodule "modules/shock-and-awe/ai_systems/ai-agents/TerraInsight/TerraInsight"]
  	path = modules/shock-and-awe/ai_systems/ai-agents/TerraInsight/TerraInsight

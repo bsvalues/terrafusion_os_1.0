@@ -12,12 +12,15 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 1
 
-      - name: Setup Node.js
+      - name: Setup Node.js (use Node 22 to satisfy engine requirements)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Build frontend (deterministic)
         working-directory: terrafusion-cos/frontend_engine
