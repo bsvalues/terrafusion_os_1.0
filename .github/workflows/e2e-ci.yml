@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          check-latest: true
           cache: 'npm'
 
       - name: Verify Node runtime
@@ -33,7 +34,13 @@ jobs:
       - name: Build frontend (deterministic)
         working-directory: terrafusion-cos/frontend_engine
         run: |
-          npm install --no-audit --no-fund
+          # Use npm ci when a lockfile is present for deterministic installs,
+          # otherwise fall back to npm install to avoid failing on runners without a lockfile.
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ] || [ -f yarn.lock ]; then
+            npm ci --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+          fi
           npm run ci:build
 
       - name: Run unit tests (electron)
@@ -45,6 +52,7 @@ jobs:
       - name: Install Playwright and browsers
         working-directory: terrafusion-cos/e2e
         run: |
+          # Install dependencies required by Playwright. Use npm install as CI may not have a lockfile.
           npm install --no-audit --no-fund
           npx playwright install --with-deps
 
@@ -53,10 +61,19 @@ jobs:
         env:
           TF_FRONTEND_PORT: 3102
         run: |
-          # serve the deterministic build from terrafusion-cos/ui on port $TF_FRONTEND_PORT
-          npm ci --no-audit --silent
+          # Serve the deterministic build from terrafusion-cos/ui on port $TF_FRONTEND_PORT
+          # Don't run `npm ci` here (it requires a lockfile); just serve the already-built `../ui` directory.
           npx http-server ../ui -p $TF_FRONTEND_PORT &
-          sleep 2
+
+          # Wait until the server responds before running Playwright (10s timeout)
+          for i in $(seq 1 10); do
+            if curl -sSf "http://localhost:${TF_FRONTEND_PORT}" >/dev/null 2>&1; then
+              echo "Frontend server is up"
+              break
+            fi
+            echo "Waiting for frontend server... ($i)"
+            sleep 1
+          done
 
       - name: Run Playwright E2E (smoke + preload test)
         working-directory: terrafusion-cos/e2e
