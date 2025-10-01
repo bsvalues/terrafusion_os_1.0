@@ -1,0 +1,30 @@
+{
+  "task_20250609_175506": {
+    "id": "task_20250609_175506",
+    "title": "Documentation and Training Materials",
+    "description": "Create comprehensive documentation and training materials",
+    "priority": "medium",
+    "status": "backlog",
+    "assignee": null,
+    "created_at": "2025-06-09T17:55:06.325564",
+    "due_date": null,
+    "estimated_hours": 12,
+    "actual_hours": null,
+    "tags": ["documentation", "training"],
+    "dependencies": []
+  },
+  "task_20250609_181302": {
+    "id": "task_20250609_181302",
+    "title": "Production Security Audit",
+    "description": "Complete comprehensive security audit for production deployment",
+    "priority": "high",
+    "status": "backlog",
+    "assignee": "DevOps Engineer",
+    "created_at": "2025-06-09T18:13:02.238989",
+    "due_date": "2025-12-15T00:00:00",
+    "estimated_hours": 6.0,
+    "actual_hours": null,
+    "tags": [],
+    "dependencies": []
+  }
+}

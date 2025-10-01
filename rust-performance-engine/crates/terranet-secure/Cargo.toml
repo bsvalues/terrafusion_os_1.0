@@ -1,0 +1,65 @@
+[package]
+name = "terranet-secure"
+version = "1.0.0"
+edition = "2021"
+description = "TerraNet Secure Network - SD-WAN overlay with post-quantum cryptography and FirstNet integration"
+authors = ["TerraFusion OS Team"]
+license = "Government-Use"
+repository = "https://github.com/terrafusion/terranet-secure"
+keywords = ["government", "sd-wan", "post-quantum", "firstnet", "secure-network"]
+categories = ["network-programming", "cryptography", "government"]
+
+[dependencies]
+# Core networking
+tokio = { version = "1.35", features = ["full"] }
+tokio-tungstenite = "0.21"
+async-trait = "0.1"
+futures = "0.3"
+
+# Cryptography - Post-Quantum (Updated for security) 
+# Note: Post-quantum crypto temporarily disabled for security update
+# pqcrypto-mlkem = { version = "0.1", optional = true }  # Replaces pqcrypto-kyber
+# pqcrypto-mldsa = { version = "0.1", optional = true }  # Replaces pqcrypto-dilithium
+ring = "0.17.12"  # Fixed vulnerability RUSTSEC-2025-0009
+aes-gcm = "0.10"
+chacha20poly1305 = "0.10"
+
+# Network protocols
+quinn = "0.11"  # Updated QUIC implementation
+socket2 = "0.5"
+hickory-resolver = "0.24"  # Replaces trust-dns-resolver
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+
+thiserror = "1.0"
+# Monitoring and logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+prometheus = "0.13.4"
+
+# FirstNet integration
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+
+# Security and compliance
+zeroize = "1.6"
+secrecy = "0.8"
+
+# Utilities
+uuid = { version = "1.6", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+base64 = "0.21"
+
+[dev-dependencies]
+criterion = "0.5"
+proptest = "1.0"
+
+[features]
+default = ["firstnet", "mesh-coordination"]
+firstnet = []
+mesh-coordination = []
+# quantum-crypto = ["pqcrypto-mlkem", "pqcrypto-mldsa"]  # Temporarily disabled
+government-compliance = []
+emergency-priority = []

@@ -1,0 +1,22 @@
+{
+  "integration": {
+    "type": "Harris PACS",
+    "version": "v12.4.7",
+    "status": "ready",
+    "parcels": 89247,
+    "gisProjection": "EPSG:2927"
+  },
+  "connection": {
+    "endpoint": "https://harris-pacs.bentoncountywa.gov/api",
+    "apiKey": "PRODUCTION_KEY_REQUIRED",
+    "syncFrequency": 15,
+    "lastSync": null
+  },
+  "fieldMapping": {
+    "PARID": "TF_PARCEL_UUID",
+    "OWNER": "PROPERTY_OWNER",
+    "ADDR": "PROPERTY_ADDRESS",
+    "AVAL": "ASSESSED_VALUE",
+    "MVAL": "MARKET_VALUE"
+  }
+}

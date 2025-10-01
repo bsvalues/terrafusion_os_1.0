@@ -440,7 +440,7 @@ Current Performance:
 Action Required:
 {'IMMEDIATE ATTENTION' if alert.severity == 'critical' else 'Review and Monitor'}
 
-Dashboard: http://localhost:3000/monitoring/championship
+Dashboard: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/monitoring/championship
             """
             
             msg.attach(MIMEText(body, 'plain'))

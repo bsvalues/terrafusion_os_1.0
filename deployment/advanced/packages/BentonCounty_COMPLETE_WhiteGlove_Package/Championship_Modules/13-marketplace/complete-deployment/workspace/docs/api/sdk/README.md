@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Terrafusion Platform provides SDKs in multiple programming languages to facilitate integration with our API. Each SDK provides a consistent interface while following language-specific conventions.
+The Terrafusion Platform provides SDKs in multiple programming languages to
+facilitate integration with our API. Each SDK provides a consistent interface
+while following language-specific conventions.
 
 ## Available SDKs
 
@@ -15,17 +17,17 @@ npm install @terrafusion/sdk
 #### Quick Start
 
 ```typescript
-import { TerraFusionClient } from "@terrafusion/sdk";
+import { TerraFusionClient } from '@terrafusion/sdk';
 
 const client = new TerraFusionClient({
-  apiKey: "your-api-key",
-  environment: "production", // or 'staging', 'development'
+  apiKey: 'your-api-key',
+  environment: 'production', // or 'staging', 'development'
 });
 
 // Authentication
 const auth = await client.auth.login({
-  email: "user@example.gov",
-  password: "secure-password",
+  email: 'user@example.gov',
+  password: 'secure-password',
 });
 
 // Multi-tenant operations
@@ -36,15 +38,15 @@ const tenants = await client.tenants.list({
 
 // AI Workflow execution
 const workflow = await client.ai.createWorkflow({
-  name: "Document Processing",
+  name: 'Document Processing',
   steps: [
-    { type: "ocr", config: { language: "en" } },
-    { type: "classify", config: { model: "v2" } },
+    { type: 'ocr', config: { language: 'en' } },
+    { type: 'classify', config: { model: 'v2' } },
   ],
 });
 
 const execution = await client.ai.executeWorkflow(workflow.id, {
-  documentUrl: "https://example.com/document.pdf",
+  documentUrl: 'https://example.com/document.pdf',
 });
 ```
 
@@ -236,7 +238,7 @@ All SDKs provide consistent error handling:
 ```typescript
 // TypeScript
 try {
-  const result = await client.tenants.create({ name: "New Tenant" });
+  const result = await client.tenants.create({ name: 'New Tenant' });
 } catch (error) {
   if (error instanceof TerraFusionError) {
     console.error(`API Error: ${error.code} - ${error.message}`);
@@ -279,7 +281,7 @@ Built-in retry logic with exponential backoff:
 ```typescript
 // TypeScript
 const client = new TerraFusionClient({
-  apiKey: "your-api-key",
+  apiKey: 'your-api-key',
   retryConfig: {
     maxRetries: 3,
     retryDelay: 1000,
@@ -295,11 +297,11 @@ Add custom logic to requests:
 ```typescript
 // TypeScript
 client.addInterceptor({
-  request: async (config) => {
-    config.headers["X-Custom-Header"] = "value";
+  request: async config => {
+    config.headers['X-Custom-Header'] = 'value';
     return config;
   },
-  response: async (response) => {
+  response: async response => {
     console.log(`Request took ${response.duration}ms`);
     return response;
   },
@@ -313,9 +315,9 @@ client.addInterceptor({
 ```typescript
 // TypeScript
 const webhook = client.webhooks.create({
-  url: "https://example.com/webhook",
-  events: ["tenant.created", "workflow.completed"],
-  secret: "webhook-secret",
+  url: 'https://example.com/webhook',
+  events: ['tenant.created', 'workflow.completed'],
+  secret: 'webhook-secret',
 });
 
 // Verify webhook signature
@@ -327,12 +329,12 @@ const isValid = client.webhooks.verifySignature(payload, signature, secret);
 ```typescript
 // TypeScript
 const stream = await client.analytics.streamReport({
-  reportId: "large-report",
-  format: "csv",
+  reportId: 'large-report',
+  format: 'csv',
 });
 
-stream.on("data", (chunk) => {
-  console.log("Received chunk:", chunk);
+stream.on('data', chunk => {
+  console.log('Received chunk:', chunk);
 });
 ```
 
@@ -341,7 +343,7 @@ stream.on("data", (chunk) => {
 ```typescript
 // TypeScript
 const job = await client.quantum.submitComputation({
-  algorithm: "optimization",
+  algorithm: 'optimization',
   qubits: 20,
 });
 
@@ -356,7 +358,8 @@ const result = await client.quantum.waitForCompletion(job.jobId, {
 
 ### Contributing
 
-See our [SDK Contributing Guide](https://github.com/terrafusion/sdk-contrib) for information on:
+See our [SDK Contributing Guide](https://github.com/terrafusion/sdk-contrib) for
+information on:
 
 - Building SDKs from OpenAPI specs
 - Testing guidelines

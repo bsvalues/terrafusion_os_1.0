@@ -1,0 +1,18 @@
+[Unit]
+Description=TerraFusion API socket
+
+[Socket]
+ListenStream=127.0.0.1:8090
+Accept=no
+
+[Install]
+WantedBy=sockets.target
+[Unit]
+Description=TerraFusion API Socket
+
+[Socket]
+ListenStream=8090
+NoDelay=true
+
+[Install]
+WantedBy=sockets.target

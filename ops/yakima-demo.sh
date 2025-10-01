@@ -38,11 +38,11 @@ POSTGRES_USER=terrafusion_yakima
 POSTGRES_PASSWORD=yakima_championship_secure_2024
 POSTGRES_DB=terrafusion_yakima
 POSTGRES_HOST=db
-POSTGRES_PORT=5432
+POSTGRES_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Redis =====
 REDIS_HOST=redis
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Application =====
 JWT_SECRET=yakima_flagship_jwt_secret_championship_2024
@@ -50,17 +50,17 @@ ENCRYPTION_KEY=yakima_championship_32byte_key_2024
 
 # ===== AI / MCP Championship =====
 MCP_ENABLED=true
-MCP_ENDPOINT=http://core:8080/mcp
+MCP_ENDPOINT=http://core:${TF_STATIC_PORT:-8080}/mcp
 AI_SWARM_SIZE=1008
 QUANTUM_CORES=true
 CHAMPIONSHIP_MODE=true
 CONFIDENCE_TARGET=0.977
 
 # ===== Yakima Flagship Ports =====
-YAKIMA_DEMO_PORT=3000
-YAKIMA_API_PORT=8080
-YAKIMA_GRAFANA_PORT=3001
-YAKIMA_PROMETHEUS_PORT=9090
+YAKIMA_DEMO_PORT=\${{TF_POSTGRES_PORT:-5432}}
+YAKIMA_API_PORT=\${{TF_POSTGRES_PORT:-5432}}
+YAKIMA_GRAFANA_PORT=\${{TF_POSTGRES_PORT:-5432}}
+YAKIMA_PROMETHEUS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Paths =====
 DATA_DIR=./data/yakima
@@ -276,7 +276,7 @@ services:
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_started }
-    ports: ["\${YAKIMA_API_PORT}:8080"]
+    ports: ["\${YAKIMA_API_PORT}:${TF_STATIC_PORT:-8080}"]
     networks: [ \${TF_NETWORK} ]
 
   ui:
@@ -289,7 +289,7 @@ services:
       NEXT_PUBLIC_YAKIMA_FLAGSHIP: "true"
     depends_on:
       core: { condition: service_started }
-    ports: ["\${YAKIMA_DEMO_PORT}:3000"]
+    ports: ["\${YAKIMA_DEMO_PORT}:${TF_FRONTEND_PORT:-3102}"]
     networks: [ \${TF_NETWORK} ]
 
   prometheus:
@@ -303,7 +303,7 @@ services:
   grafana:
     image: grafana/grafana-oss:latest
     container_name: yakima-grafana-flagship
-    ports: ["\${YAKIMA_GRAFANA_PORT}:3000"]
+    ports: ["\${YAKIMA_GRAFANA_PORT}:${TF_FRONTEND_PORT:-3102}"]
     networks: [ \${TF_NETWORK} ]
     volumes:
       - yakima_grafana_data:/var/lib/grafana
@@ -329,10 +329,10 @@ global:
 scrape_configs:
   - job_name: 'yakima-core'
     static_configs:
-      - targets: ['core:8080']
+      - targets: ['core:${TF_STATIC_PORT:-8080}']
   - job_name: 'yakima-ui'
     static_configs:
-      - targets: ['ui:3000']
+      - targets: ['ui:${TF_FRONTEND_PORT:-3102}']
 PROM
 
 export COMPOSE_PROJECT_NAME=terrafusion_yakima_flagship

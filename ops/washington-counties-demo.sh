@@ -141,11 +141,11 @@ POSTGRES_USER=terrafusion_${county_name}
 POSTGRES_PASSWORD=terrafusion_${county_name}_password
 POSTGRES_DB=terrafusion_${county_name}
 POSTGRES_HOST=db
-POSTGRES_PORT=5432
+POSTGRES_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Redis =====
 REDIS_HOST=redis
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # ===== Application =====
 JWT_SECRET=change_me_${county_name}_secret
@@ -153,7 +153,7 @@ ENCRYPTION_KEY=${county_name}_32byte_key_${county_name}_32byte
 
 # ===== AI / MCP =====
 MCP_ENABLED=true
-MCP_ENDPOINT=http://core:8080/mcp
+MCP_ENDPOINT=http://core:${TF_STATIC_PORT:-8080}/mcp
 
 # ===== Paths =====
 DATA_DIR=./data/${county_name}

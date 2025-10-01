@@ -21,7 +21,7 @@ interface BenchmarkResult {
 class DatabaseBenchmark {
   private client: Client;
   private results: BenchmarkResult[] = [];
-  
+
   constructor() {
     this.client = new Client({
       host: process.env.DB_HOST || 'localhost',
@@ -44,22 +44,26 @@ class DatabaseBenchmark {
     await this.client.end();
   }
 
-  private async measureQuery(sql: string, params: any[] = [], iterations: number = 100): Promise<number[]> {
+  private async measureQuery(
+    sql: string,
+    params: any[] = [],
+    iterations: number = 100
+  ): Promise<number[]> {
     const times: number[] = [];
-    
+
     for (let i = 0; i < iterations; i++) {
       const start = performance.now();
       await this.client.query(sql, params);
       const end = performance.now();
       times.push(end - start);
     }
-    
+
     return times;
   }
 
   private calculateStats(times: number[]): Omit<BenchmarkResult, 'test' | 'passed'> {
     times.sort((a, b) => a - b);
-    
+
     return {
       iterations: times.length,
       avgTime: times.reduce((a, b) => a + b, 0) / times.length,
@@ -77,18 +81,19 @@ class DatabaseBenchmark {
       'SELECT parcel_number, assessed_value FROM properties WHERE county = $1 LIMIT 100',
       ['Benton']
     );
-    
+
     const stats = this.calculateStats(times);
     this.results.push({
       test: 'Simple SELECT',
       ...stats,
-      passed: stats.p95 < 20  // Should be <20ms at p95
+      passed: stats.p95 < 20, // Should be <20ms at p95
     });
   }
 
   async benchmarkComplexJoin() {
     console.log('Benchmarking: Complex JOIN query...');
-    const times = await this.measureQuery(`
+    const times = await this.measureQuery(
+      `
       SELECT 
         p.parcel_number,
         p.assessed_value,
@@ -105,19 +110,22 @@ class DatabaseBenchmark {
         AND v.valuation_date > CURRENT_DATE - INTERVAL '1 year'
       ORDER BY p.assessed_value DESC
       LIMIT 100
-    `, ['Benton', 100000, 500000]);
-    
+    `,
+      ['Benton', 100000, 500000]
+    );
+
     const stats = this.calculateStats(times);
     this.results.push({
       test: 'Complex JOIN',
       ...stats,
-      passed: stats.p95 < 100  // Should be <100ms at p95
+      passed: stats.p95 < 100, // Should be <100ms at p95
     });
   }
 
   async benchmarkAggregation() {
     console.log('Benchmarking: Aggregation query...');
-    const times = await this.measureQuery(`
+    const times = await this.measureQuery(
+      `
       SELECT 
         property_type,
         COUNT(*) as count,
@@ -130,19 +138,22 @@ class DatabaseBenchmark {
       GROUP BY property_type
       HAVING COUNT(*) > 10
       ORDER BY count DESC
-    `, ['Benton']);
-    
+    `,
+      ['Benton']
+    );
+
     const stats = this.calculateStats(times);
     this.results.push({
       test: 'Aggregation Query',
       ...stats,
-      passed: stats.p95 < 200  // Should be <200ms at p95
+      passed: stats.p95 < 200, // Should be <200ms at p95
     });
   }
 
   async benchmarkFullTextSearch() {
     console.log('Benchmarking: Full-text search...');
-    const times = await this.measureQuery(`
+    const times = await this.measureQuery(
+      `
       SELECT 
         parcel_number,
         property_address,
@@ -152,13 +163,15 @@ class DatabaseBenchmark {
       WHERE search_vector @@ query
       ORDER BY rank DESC
       LIMIT 50
-    `, ['residential & waterfront']);
-    
+    `,
+      ['residential & waterfront']
+    );
+
     const stats = this.calculateStats(times);
     this.results.push({
       test: 'Full-text Search',
       ...stats,
-      passed: stats.p95 < 150  // Should be <150ms at p95
+      passed: stats.p95 < 150, // Should be <150ms at p95
     });
   }
 
@@ -166,116 +179,117 @@ class DatabaseBenchmark {
     console.log('Benchmarking: Bulk INSERT performance...');
     const batchSize = 1000;
     const values = [];
-    
+
     for (let i = 0; i < batchSize; i++) {
       values.push(`('TEST${i}', ${100000 + i}, 'Benton', 'residential')`);
     }
-    
+
     const times = await this.measureQuery(
       `INSERT INTO properties_temp (parcel_number, assessed_value, county, property_type) 
        VALUES ${values.join(',')} 
        ON CONFLICT (parcel_number) DO NOTHING`,
       [],
-      10  // Fewer iterations for bulk operations
+      10 // Fewer iterations for bulk operations
     );
-    
+
     const stats = this.calculateStats(times);
     this.results.push({
       test: 'Bulk INSERT (1000 rows)',
       ...stats,
-      passed: stats.p95 < 500  // Should be <500ms for 1000 rows
+      passed: stats.p95 < 500, // Should be <500ms for 1000 rows
     });
   }
 
   async benchmarkIndexPerformance() {
     console.log('Benchmarking: Index scan vs sequential scan...');
-    
+
     // With index
     const indexTimes = await this.measureQuery(
       'SELECT * FROM properties WHERE parcel_number = $1',
       ['089247001']
     );
-    
+
     // Force sequential scan
     const seqTimes = await this.measureQuery(
       'SELECT * FROM properties WHERE LOWER(property_type) = LOWER($1)',
       ['Residential']
     );
-    
+
     const indexStats = this.calculateStats(indexTimes);
     const seqStats = this.calculateStats(seqTimes);
-    
+
     this.results.push({
       test: 'Index Scan',
       ...indexStats,
-      passed: indexStats.p95 < 5  // Index scans should be <5ms
+      passed: indexStats.p95 < 5, // Index scans should be <5ms
     });
-    
+
     this.results.push({
       test: 'Sequential Scan',
       ...seqStats,
-      passed: true  // Just for comparison
+      passed: true, // Just for comparison
     });
-    
-    console.log(`Index scan is ${(seqStats.avgTime / indexStats.avgTime).toFixed(2)}x faster than sequential scan`);
+
+    console.log(
+      `Index scan is ${(seqStats.avgTime / indexStats.avgTime).toFixed(2)}x faster than sequential scan`
+    );
   }
 
   async benchmarkConnectionPool() {
     console.log('Benchmarking: Connection pool efficiency...');
-    
+
     const concurrentQueries = 50;
     const promises = [];
-    
+
     const start = performance.now();
     for (let i = 0; i < concurrentQueries; i++) {
       promises.push(
         this.client.query('SELECT COUNT(*) FROM properties WHERE county = $1', ['Benton'])
       );
     }
-    
+
     await Promise.all(promises);
     const totalTime = performance.now() - start;
-    
+
     this.results.push({
       test: `Concurrent Queries (${concurrentQueries})`,
       iterations: concurrentQueries,
       avgTime: totalTime / concurrentQueries,
       p50: totalTime / concurrentQueries,
-      p95: totalTime / concurrentQueries * 1.5,
-      p99: totalTime / concurrentQueries * 2,
-      min: totalTime / concurrentQueries * 0.8,
-      max: totalTime / concurrentQueries * 2.5,
-      passed: totalTime < 5000  // All 50 queries should complete in <5s
+      p95: (totalTime / concurrentQueries) * 1.5,
+      p99: (totalTime / concurrentQueries) * 2,
+      min: (totalTime / concurrentQueries) * 0.8,
+      max: (totalTime / concurrentQueries) * 2.5,
+      passed: totalTime < 5000, // All 50 queries should complete in <5s
     });
   }
 
   async benchmarkTransactionPerformance() {
     console.log('Benchmarking: Transaction performance...');
-    
+
     const times: number[] = [];
-    
+
     for (let i = 0; i < 20; i++) {
       const start = performance.now();
-      
+
       await this.client.query('BEGIN');
       await this.client.query(
         'UPDATE properties_temp SET assessed_value = assessed_value * 1.05 WHERE county = $1',
         ['Benton']
       );
-      await this.client.query(
-        'INSERT INTO audit_log (action, timestamp) VALUES ($1, NOW())',
-        ['bulk_update']
-      );
+      await this.client.query('INSERT INTO audit_log (action, timestamp) VALUES ($1, NOW())', [
+        'bulk_update',
+      ]);
       await this.client.query('COMMIT');
-      
+
       times.push(performance.now() - start);
     }
-    
+
     const stats = this.calculateStats(times);
     this.results.push({
       test: 'Transaction (UPDATE + INSERT)',
       ...stats,
-      passed: stats.p95 < 100  // Transactions should complete <100ms
+      passed: stats.p95 < 100, // Transactions should complete <100ms
     });
   }
 
@@ -283,9 +297,9 @@ class DatabaseBenchmark {
     console.log('\n' + '='.repeat(80));
     console.log('DATABASE PERFORMANCE BENCHMARK RESULTS');
     console.log('='.repeat(80));
-    
+
     const allPassed = this.results.every(r => r.passed);
-    
+
     this.results.forEach(result => {
       console.log(`\n${result.test}:`);
       console.log(`  Iterations: ${result.iterations}`);
@@ -297,31 +311,31 @@ class DatabaseBenchmark {
       console.log(`  Max: ${result.max.toFixed(2)}ms`);
       console.log(`  Status: ${result.passed ? '✅ PASS' : '❌ FAIL'}`);
     });
-    
+
     console.log('\n' + '='.repeat(80));
     console.log(`OVERALL: ${allPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
     console.log('='.repeat(80));
-    
+
     // Save results to file
     const fs = require('fs');
     fs.writeFileSync(
       'bench/reports/database-performance.json',
       JSON.stringify(this.results, null, 2)
     );
-    
+
     return allPassed;
   }
 
   async run() {
     try {
       await this.connect();
-      
+
       // Create temp table for testing
       await this.client.query(`
         CREATE TABLE IF NOT EXISTS properties_temp AS 
         SELECT * FROM properties LIMIT 0
       `);
-      
+
       // Run all benchmarks
       await this.benchmarkSimpleSelect();
       await this.benchmarkComplexJoin();
@@ -331,15 +345,15 @@ class DatabaseBenchmark {
       await this.benchmarkIndexPerformance();
       await this.benchmarkConnectionPool();
       await this.benchmarkTransactionPerformance();
-      
+
       // Clean up
       await this.client.query('DROP TABLE IF EXISTS properties_temp');
-      
+
       // Generate report
       const passed = this.generateReport();
-      
+
       await this.disconnect();
-      
+
       process.exit(passed ? 0 : 1);
     } catch (error) {
       console.error('Benchmark failed:', error);

@@ -62,7 +62,7 @@ openai_oss:
 ollama:
   host: "localhost"
   port: 11434
-  base_url: "http://localhost:11434"
+  base_url: "http://localhost:\${{TF_DOCS_PORT:-8000}}"
   timeout: 60
   max_retries: 3
   
@@ -527,7 +527,7 @@ integrations:
   # Championship system integration
   championship_system:
     enabled: true
-    base_url: "http://localhost:8000"
+    base_url: "http://localhost:\${{TF_DOCS_PORT:-8000}}"
     api_key_env: "CHAMPIONSHIP_API_KEY"
     
   # External systems

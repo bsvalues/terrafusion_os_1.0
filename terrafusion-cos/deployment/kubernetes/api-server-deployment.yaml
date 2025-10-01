@@ -1,0 +1,223 @@
+# TerraFusion cOS Production Kubernetes Deployment
+# Government-grade scalable deployment for 150K+ users
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-cos-api
+  namespace: terrafusion-production
+  labels:
+    app: terrafusion-cos
+    component: api-server
+    version: 2.0.0-enterprise
+    tier: production
+    classification: confidential
+spec:
+  replicas: 12
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 2
+  selector:
+    matchLabels:
+      app: terrafusion-cos
+      component: api-server
+  template:
+    metadata:
+      labels:
+        app: terrafusion-cos
+        component: api-server
+        version: 2.0.0-enterprise
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: terrafusion-cos-api
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: api-server
+        image: terrafusion/cos-api:2.0.0-enterprise-prod
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8090
+          name: http
+          protocol: TCP
+        env:
+        - name: TERRAFUSION_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-db-secret
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-redis-secret
+              key: redis-url
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-auth-secret
+              key: jwt-secret
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-auth-secret
+              key: encryption-key
+        - name: PROMETHEUS_MULTIPROC_DIR
+          value: "/tmp/prometheus_multiproc"
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2000m"
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8090
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8090
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8090
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: app-logs
+          mountPath: /app/logs
+        - name: app-data
+          mountPath: /app/data
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
+      - name: app-logs
+        emptyDir: {}
+      - name: app-data
+        emptyDir: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - terrafusion-cos
+              topologyKey: kubernetes.io/hostname
+      tolerations:
+      - key: "terrafusion.gov/dedicated"
+        operator: "Equal"
+        value: "production"
+        effect: "NoSchedule"
+      nodeSelector:
+        terrafusion.gov/node-type: "production"
+        kubernetes.io/arch: "amd64"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-cos-api-service
+  namespace: terrafusion-production
+  labels:
+    app: terrafusion-cos
+    component: api-server
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8090"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8090
+    targetPort: 8090
+    protocol: TCP
+    name: http
+  selector:
+    app: terrafusion-cos
+    component: api-server
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: terrafusion-cos-api-hpa
+  namespace: terrafusion-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: terrafusion-cos-api
+  minReplicas: 8
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-cos-api-pdb
+  namespace: terrafusion-production
+spec:
+  minAvailable: 50%
+  selector:
+    matchLabels:
+      app: terrafusion-cos
+      component: api-server

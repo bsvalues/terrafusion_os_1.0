@@ -1,3 +1,4 @@
+// NO HARDCODED PORTS! Use environment variables.
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -5,7 +6,7 @@ import path from 'path';
 // Championship-level Vite configuration
 export default defineConfig({
   plugins: [react()],
-  
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -15,45 +16,45 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/utils'),
     },
   },
-  
+
   server: {
     port: 3500,
     host: true,
     open: true,
     cors: true,
-    
+
     // Hot Module Replacement for instant updates
     hmr: {
       overlay: true,
     },
-    
+
     // Proxy API calls to backend
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:${TF_STATIC_PORT:-8080}',
         changeOrigin: true,
         secure: false,
       },
     },
   },
-  
+
   build: {
     outDir: 'dist',
     sourcemap: true,
     minify: 'terser',
-    
+
     // Optimize chunks for performance
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'animation': ['framer-motion'],
-          'charts': ['recharts'],
-          'ui': ['@headlessui/react', '@heroicons/react', 'lucide-react'],
+          animation: ['framer-motion'],
+          charts: ['recharts'],
+          ui: ['@headlessui/react', '@heroicons/react', 'lucide-react'],
         },
       },
     },
-    
+
     // Performance optimizations
     terserOptions: {
       compress: {
@@ -61,21 +62,15 @@ export default defineConfig({
         drop_debugger: true,
       },
     },
-    
+
     // Asset size warnings
     chunkSizeWarningLimit: 1000,
   },
-  
+
   optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'framer-motion',
-      'recharts',
-      '@tanstack/react-query',
-    ],
+    include: ['react', 'react-dom', 'framer-motion', 'recharts', '@tanstack/react-query'],
   },
-  
+
   // Environment variables
   define: {
     'process.env.VITE_APP_VERSION': JSON.stringify('1.0.0-domination'),

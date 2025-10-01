@@ -246,7 +246,7 @@ class BentonAIServer:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    'http://localhost:11434/api/generate',
+                    'http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/api/generate',
                     json={
                         'model': 'llama3.1:7b',
                         'prompt': f"""You are a helpful Benton County, Washington assessment office assistant. 
@@ -307,7 +307,7 @@ class BentonAIServer:
         ollama_healthy = False
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get('http://localhost:11434/api/tags') as resp:
+                async with session.get('http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/api/tags') as resp:
                     if resp.status == 200:
                         ollama_healthy = True
         except:
@@ -331,10 +331,10 @@ app.router.add_get('/health', server.health_check)
 app.router.add_get('/', lambda r: web.Response(text='Benton County AI Server Running'))
 
 if __name__ == '__main__':
-    print("🚀 Benton County AI Server starting on http://localhost:8095")
-    print("📍 Query endpoint: POST http://localhost:8095/api/query")
-    print("🏥 Health check: GET http://localhost:8095/health")
-    web.run_app(app, host='0.0.0.0', port=8095)
+    print("🚀 Benton County AI Server starting on http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}")
+    print("📍 Query endpoint: POST http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/api/query")
+    print("🏥 Health check: GET http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/health")
+    web.run_app(app, host='0.0.0.0', port=\${{TF_SERVICE_8095_PORT:-8095}})
 '''
         
         # Save server code
@@ -348,7 +348,7 @@ if __name__ == '__main__':
         # Wait for server to start
         await asyncio.sleep(3)
         
-        logger.info("✅ AI server started on http://localhost:8095")
+        logger.info("✅ AI server started on http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}")
     
     async def test_deployment(self):
         """Test the deployment with sample queries"""
@@ -367,7 +367,7 @@ if __name__ == '__main__':
         async with aiohttp.ClientSession() as session:
             # Check health first
             try:
-                async with session.get('http://localhost:8095/health') as resp:
+                async with session.get('http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/health') as resp:
                     health = await resp.json()
                     logger.info(f"Health check: {health['status']}")
             except Exception as e:
@@ -378,7 +378,7 @@ if __name__ == '__main__':
             for query in test_queries:
                 try:
                     async with session.post(
-                        'http://localhost:8095/api/query',
+                        'http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/api/query',
                         json={'query': query},
                         timeout=aiohttp.ClientTimeout(total=30)
                     ) as resp:
@@ -408,11 +408,11 @@ echo "Starting AI server..."
 python ai_server.py &
 
 echo "✅ Benton County AI is running!"
-echo "📍 API: http://localhost:8095/api/query"
-echo "🏥 Health: http://localhost:8095/health"
+echo "📍 API: http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/api/query"
+echo "🏥 Health: http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/health"
 echo ""
 echo "Example usage:"
-echo 'curl -X POST http://localhost:8095/api/query -H "Content-Type: application/json" -d \'{"query": "What is the tax rate?"}\''
+echo 'curl -X POST http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/api/query -H "Content-Type: application/json" -d \'{"query": "What is the tax rate?"}\''
 '''
         
         script_file = self.base_dir / "start-ai.sh"
@@ -456,10 +456,10 @@ echo 'curl -X POST http://localhost:8095/api/query -H "Content-Type: application
         logger.info("\nYour AI system is now running with:")
         logger.info("✅ Local Ollama inference")
         logger.info("✅ Benton County knowledge base")
-        logger.info("✅ REST API on port 8095")
+        logger.info("✅ REST API on port \${{TF_SERVICE_8095_PORT:-8095}}")
         logger.info("✅ Common questions answered instantly")
         logger.info("\nNext steps:")
-        logger.info("1. Test with: curl -X POST http://localhost:8095/api/query -d '{\"query\": \"What is the tax rate?\"}'")
+        logger.info("1. Test with: curl -X POST http://localhost:\${{TF_SERVICE_8095_PORT:-8095}}/api/query -d '{\"query\": \"What is the tax rate?\"}'")
         logger.info("2. Integrate with existing TerraFusion apps")
         logger.info("3. Add GPU acceleration when budget allows")
         logger.info("\nTo restart: ./start-ai.sh")

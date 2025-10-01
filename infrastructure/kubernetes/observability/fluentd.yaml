@@ -53,7 +53,7 @@ data:
         scheme https
         ssl_verify false
         host elasticsearch-lb.monitoring.svc.cluster.local
-        port 9200
+        port \${{TF_ELASTICSEARCH_PORT:-9200}}
         user elastic
         password "#{ENV['ELASTICSEARCH_PASSWORD']}"
         logstash_format true
@@ -185,7 +185,7 @@ data:
     <source>
       @type prometheus
       bind 0.0.0.0
-      port 24231
+      port \${{TF_ELASTICSEARCH_PORT:-9200}}
       metrics_path /metrics
     </source>
     
@@ -295,7 +295,7 @@ data:
         Parsers_File custom_parsers.conf
         HTTP_Server On
         HTTP_Listen 0.0.0.0
-        HTTP_Port 2020
+        HTTP_Port \${{TF_ELASTICSEARCH_PORT:-9200}}
         Health_Check On
         HC_Errors_Count 5
         HC_Retry_Failure_Count 5
@@ -333,7 +333,7 @@ data:
         Name es
         Match *
         Host elasticsearch-lb.monitoring.svc.cluster.local
-        Port 9200
+        Port \${{TF_ELASTICSEARCH_PORT:-9200}}
         HTTP_User elastic
         HTTP_Passwd ${ELASTICSEARCH_PASSWORD}
         Logstash_Format On
@@ -346,7 +346,7 @@ data:
         Name loki
         Match *
         Host loki.monitoring.svc.cluster.local
-        Port 3100
+        Port \${{TF_ELASTICSEARCH_PORT:-9200}}
         Labels job=fluent-bit, cosmic=true
         
   parsers.conf: |

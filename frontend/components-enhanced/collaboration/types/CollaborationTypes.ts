@@ -1,12 +1,12 @@
 /**
  * Terrafusion OS 1.0 - Collaboration System Types
  * Government-Grade Multi-User Collaboration Platform
- * 
+ *
  * Defines comprehensive types for enterprise collaboration functionality
  * integrating with 1,008-agent AI swarm and government compliance requirements.
  */
 
-import { LucideIcon  } from '@mui/icons-material';
+import { LucideIcon } from '@mui/icons-material';
 
 // Core User and Team Types
 export interface CollaborationUser {
@@ -389,7 +389,7 @@ export enum UserRole {
   SENIOR_ANALYST = 'senior_analyst',
   ANALYST = 'analyst',
   TECHNICIAN = 'technician',
-  GUEST = 'guest'
+  GUEST = 'guest',
 }
 
 export enum SecurityClearance {
@@ -397,7 +397,7 @@ export enum SecurityClearance {
   INTERNAL = 'internal',
   CONFIDENTIAL = 'confidential',
   SECRET = 'secret',
-  TOP_SECRET = 'top_secret'
+  TOP_SECRET = 'top_secret',
 }
 
 export enum ProjectType {
@@ -408,7 +408,7 @@ export enum ProjectType {
   DATA_MIGRATION = 'data_migration',
   REPORTING = 'reporting',
   AUDIT = 'audit',
-  TRAINING = 'training'
+  TRAINING = 'training',
 }
 
 export enum ProjectStatus {
@@ -418,7 +418,7 @@ export enum ProjectStatus {
   ON_HOLD = 'on_hold',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
-  ARCHIVED = 'archived'
+  ARCHIVED = 'archived',
 }
 
 export enum ProjectPriority {
@@ -426,7 +426,7 @@ export enum ProjectPriority {
   MEDIUM = 'medium',
   HIGH = 'high',
   CRITICAL = 'critical',
-  EMERGENCY = 'emergency'
+  EMERGENCY = 'emergency',
 }
 
 export enum ProjectRole {
@@ -434,7 +434,7 @@ export enum ProjectRole {
   MANAGER = 'manager',
   CONTRIBUTOR = 'contributor',
   REVIEWER = 'reviewer',
-  OBSERVER = 'observer'
+  OBSERVER = 'observer',
 }
 
 export enum TaskType {
@@ -444,7 +444,7 @@ export enum TaskType {
   DOCUMENTATION = 'documentation',
   TESTING = 'testing',
   DEPLOYMENT = 'deployment',
-  MAINTENANCE = 'maintenance'
+  MAINTENANCE = 'maintenance',
 }
 
 export enum TaskStatus {
@@ -454,7 +454,7 @@ export enum TaskStatus {
   IN_REVIEW = 'in_review',
   TESTING = 'testing',
   DONE = 'done',
-  BLOCKED = 'blocked'
+  BLOCKED = 'blocked',
 }
 
 export enum TaskPriority {
@@ -462,14 +462,14 @@ export enum TaskPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  HIGHEST = 'highest'
+  HIGHEST = 'highest',
 }
 
 export enum CommentType {
   COMMENT = 'comment',
   SYSTEM = 'system',
   MENTION = 'mention',
-  STATUS_CHANGE = 'status_change'
+  STATUS_CHANGE = 'status_change',
 }
 
 export enum MilestoneStatus {
@@ -477,14 +477,14 @@ export enum MilestoneStatus {
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   DELAYED = 'delayed',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export enum PhaseStatus {
   NOT_STARTED = 'not_started',
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
-  DELAYED = 'delayed'
+  DELAYED = 'delayed',
 }
 
 export enum SessionType {
@@ -492,7 +492,7 @@ export enum SessionType {
   BRAINSTORM = 'brainstorm',
   REVIEW = 'review',
   TRAINING = 'training',
-  PRESENTATION = 'presentation'
+  PRESENTATION = 'presentation',
 }
 
 export enum SessionStatus {
@@ -500,14 +500,14 @@ export enum SessionStatus {
   ACTIVE = 'active',
   PAUSED = 'paused',
   ENDED = 'ended',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export enum SessionRole {
   HOST = 'host',
   PRESENTER = 'presenter',
   PARTICIPANT = 'participant',
-  OBSERVER = 'observer'
+  OBSERVER = 'observer',
 }
 
 export enum MessageType {
@@ -515,7 +515,7 @@ export enum MessageType {
   FILE = 'file',
   IMAGE = 'image',
   SYSTEM = 'system',
-  MENTION = 'mention'
+  MENTION = 'mention',
 }
 
 export enum CanvasElementType {
@@ -523,7 +523,7 @@ export enum CanvasElementType {
   SHAPE = 'shape',
   LINE = 'line',
   IMAGE = 'image',
-  STICKY_NOTE = 'sticky_note'
+  STICKY_NOTE = 'sticky_note',
 }
 
 export enum WhiteboardTool {
@@ -532,7 +532,7 @@ export enum WhiteboardTool {
   ERASER = 'eraser',
   TEXT = 'text',
   SHAPE = 'shape',
-  SELECT = 'select'
+  SELECT = 'select',
 }
 
 export enum PermissionCategory {
@@ -540,7 +540,7 @@ export enum PermissionCategory {
   PROJECT = 'project',
   TEAM = 'team',
   DOCUMENT = 'document',
-  COLLABORATION = 'collaboration'
+  COLLABORATION = 'collaboration',
 }
 
 export enum PermissionLevel {
@@ -548,7 +548,7 @@ export enum PermissionLevel {
   READ = 'read',
   WRITE = 'write',
   ADMIN = 'admin',
-  OWNER = 'owner'
+  OWNER = 'owner',
 }
 
 export enum PermissionScope {
@@ -556,7 +556,7 @@ export enum PermissionScope {
   DEPARTMENT = 'department',
   TEAM = 'team',
   PROJECT = 'project',
-  DOCUMENT = 'document'
+  DOCUMENT = 'document',
 }
 
 export enum ProjectPermissionScope {
@@ -564,7 +564,7 @@ export enum ProjectPermissionScope {
   TASKS = 'tasks',
   DOCUMENTS = 'documents',
   TEAM = 'team',
-  SETTINGS = 'settings'
+  SETTINGS = 'settings',
 }
 
 export enum ConditionType {
@@ -572,7 +572,7 @@ export enum ConditionType {
   LOCATION = 'location',
   DEPARTMENT = 'department',
   ROLE = 'role',
-  CLEARANCE = 'clearance'
+  CLEARANCE = 'clearance',
 }
 
 export enum ConditionOperator {
@@ -581,7 +581,7 @@ export enum ConditionOperator {
   GREATER_THAN = 'greater_than',
   LESS_THAN = 'less_than',
   CONTAINS = 'contains',
-  IN = 'in'
+  IN = 'in',
 }
 
 export enum DocumentType {
@@ -591,7 +591,7 @@ export enum DocumentType {
   PDF = 'pdf',
   IMAGE = 'image',
   VIDEO = 'video',
-  FORM = 'form'
+  FORM = 'form',
 }
 
 export enum DocumentStatus {
@@ -599,7 +599,7 @@ export enum DocumentStatus {
   REVIEW = 'review',
   APPROVED = 'approved',
   PUBLISHED = 'published',
-  ARCHIVED = 'archived'
+  ARCHIVED = 'archived',
 }
 
 export enum DocumentPermissionLevel {
@@ -607,7 +607,7 @@ export enum DocumentPermissionLevel {
   VIEW = 'view',
   COMMENT = 'comment',
   EDIT = 'edit',
-  ADMIN = 'admin'
+  ADMIN = 'admin',
 }
 
 export enum AuditEventType {
@@ -618,7 +618,7 @@ export enum AuditEventType {
   SHARE = 'share',
   PERMISSION_CHANGE = 'permission_change',
   LOGIN = 'login',
-  LOGOUT = 'logout'
+  LOGOUT = 'logout',
 }
 
 export enum AIAssistantType {
@@ -626,7 +626,7 @@ export enum AIAssistantType {
   TECHNICAL = 'technical',
   COMPLIANCE = 'compliance',
   ANALYTICS = 'analytics',
-  DOCUMENTATION = 'documentation'
+  DOCUMENTATION = 'documentation',
 }
 
 export enum CapabilityType {
@@ -635,7 +635,7 @@ export enum CapabilityType {
   DATA_ANALYSIS = 'data_analysis',
   DOCUMENT_REVIEW = 'document_review',
   MEETING_SUMMARY = 'meeting_summary',
-  TASK_SUGGESTION = 'task_suggestion'
+  TASK_SUGGESTION = 'task_suggestion',
 }
 
 export enum NotificationType {
@@ -646,14 +646,14 @@ export enum NotificationType {
   MENTION = 'mention',
   MEETING_REMINDER = 'meeting_reminder',
   DOCUMENT_SHARED = 'document_shared',
-  TEAM_INVITATION = 'team_invitation'
+  TEAM_INVITATION = 'team_invitation',
 }
 
 export enum NotificationPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  URGENT = 'urgent'
+  URGENT = 'urgent',
 }
 
 // Utility Types
@@ -693,7 +693,7 @@ export enum ResourceType {
   HUMAN = 'human',
   HARDWARE = 'hardware',
   SOFTWARE = 'software',
-  EXTERNAL_SERVICE = 'external_service'
+  EXTERNAL_SERVICE = 'external_service',
 }
 
 export interface RiskAssessment {
@@ -706,7 +706,7 @@ export enum RiskLevel {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 export interface Risk {
@@ -724,7 +724,7 @@ export enum RiskCategory {
   BUDGET = 'budget',
   RESOURCE = 'resource',
   COMPLIANCE = 'compliance',
-  EXTERNAL = 'external'
+  EXTERNAL = 'external',
 }
 
 export interface MitigationStrategy {
@@ -748,14 +748,14 @@ export enum IntegrationType {
   DATABASE = 'database',
   FILE_SYSTEM = 'file_system',
   WEBHOOK = 'webhook',
-  ETL = 'etl'
+  ETL = 'etl',
 }
 
 export enum IntegrationStatus {
   CONFIGURED = 'configured',
   ACTIVE = 'active',
   ERROR = 'error',
-  DISABLED = 'disabled'
+  DISABLED = 'disabled',
 }
 
 export interface ScreenShare {
@@ -771,7 +771,7 @@ export enum ScreenShareQuality {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  HD = 'hd'
+  HD = 'hd',
 }
 
 export interface SessionRecording {
@@ -791,7 +791,7 @@ export enum VideoQuality {
   LOW_240P = '240p',
   MEDIUM_480P = '480p',
   HIGH_720P = '720p',
-  HD_1080P = '1080p'
+  HD_1080P = '1080p',
 }
 
 export interface SessionPermission {
@@ -805,7 +805,7 @@ export enum SessionPermissionType {
   SCREEN_SHARE = 'screen_share',
   CHAT = 'chat',
   WHITEBOARD = 'whiteboard',
-  RECORDING = 'recording'
+  RECORDING = 'recording',
 }
 
 // Component Props Interface

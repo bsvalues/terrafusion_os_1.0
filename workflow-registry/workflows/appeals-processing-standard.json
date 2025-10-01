@@ -1,0 +1,414 @@
+{
+  "$schema": "../schemas/workflow-schema.json",
+  "id": "tf-workflow-appeals-processing-standard",
+  "name": "Property Assessment Appeals Processing",
+  "description": "Automated processing of property assessment appeals including petition review, evidence evaluation, hearing coordination, and decision documentation",
+  "version": "1.0.0",
+  "category": "appeals",
+  "department": "assessor",
+  "created_date": "2025-01-15T00:00:00Z",
+  "last_modified": "2025-01-15T00:00:00Z",
+  "author": "TerraFusion AI Swarm",
+  "compliance": {
+    "regulations": ["RCW 84.48", "RCW 84.08", "WAC 458-14"],
+    "standards": ["USPAP 2024-2025", "IAAO Standard on Assessment Appeal"],
+    "certifications": ["Washington State Department of Revenue"]
+  },
+  "sla_requirements": {
+    "max_duration": "P90D",
+    "target_completion": "P60D",
+    "availability": 0.999,
+    "error_threshold": 0.001
+  },
+  "triggers": [
+    {
+      "type": "citizen_request",
+      "description": "Property owner submits assessment appeal petition"
+    },
+    {
+      "type": "manual",
+      "description": "Staff initiates appeal review process"
+    },
+    {
+      "type": "scheduled",
+      "schedule": "0 8 1 7 *",
+      "description": "Annual appeal period processing (July 1st)"
+    }
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "parcel_id": {
+        "type": "string",
+        "description": "County parcel identification number"
+      },
+      "appellant_info": {
+        "type": "object",
+        "description": "Information about the person filing the appeal"
+      },
+      "current_assessment": {
+        "type": "number",
+        "description": "Current assessed value being appealed"
+      },
+      "requested_assessment": {
+        "type": "number",
+        "description": "Assessment value requested by appellant"
+      },
+      "appeal_grounds": {
+        "type": "string",
+        "enum": ["overvaluation", "unequal_assessment", "unlawful_assessment", "incorrect_exemption"],
+        "description": "Basis for the appeal"
+      },
+      "supporting_evidence": {
+        "type": "array",
+        "description": "Documents and evidence submitted with appeal"
+      },
+      "filing_date": {
+        "type": "string",
+        "format": "date",
+        "description": "Date appeal was filed"
+      }
+    },
+    "required": ["parcel_id", "appellant_info", "current_assessment", "appeal_grounds", "filing_date"]
+  },
+  "outputs": {
+    "appeal_decision": {
+      "type": "object",
+      "description": "Final decision on the appeal with reasoning"
+    },
+    "revised_assessment": {
+      "type": "object",
+      "description": "New assessment value if changed"
+    },
+    "hearing_record": {
+      "type": "object",
+      "description": "Complete record of hearing proceedings"
+    },
+    "decision_notice": {
+      "type": "object",
+      "description": "Official notice of appeal decision"
+    }
+  },
+  "steps": [
+    {
+      "id": "step_001_petition_review",
+      "name": "Review Appeal Petition",
+      "description": "Initial review of appeal petition for completeness and timeliness",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["document_processing", "deadline_verification"]
+      },
+      "integrations": [
+        {
+          "system": "harris_pacs",
+          "action": "retrieve_assessment_record",
+          "parameters": ["parcel_id", "tax_year"]
+        },
+        {
+          "system": "document_management",
+          "action": "validate_petition_documents",
+          "parameters": ["submitted_documents"]
+        }
+      ],
+      "inputs": ["appeal_petition", "supporting_evidence"],
+      "outputs": ["validated_petition", "assessment_record"],
+      "next_steps": [
+        {
+          "condition": "petition_valid",
+          "step_id": "step_002_initial_analysis"
+        },
+        {
+          "condition": "petition_incomplete",
+          "step_id": "step_008_incomplete_notice"
+        },
+        {
+          "condition": "petition_untimely",
+          "step_id": "step_009_dismissal_notice"
+        }
+      ]
+    },
+    {
+      "id": "step_002_initial_analysis",
+      "name": "Conduct Initial Analysis",
+      "description": "Perform preliminary analysis of appeal merits",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["valuation_analysis", "market_research"]
+      },
+      "integrations": [
+        {
+          "system": "valuation_kernel",
+          "action": "analyze_property_value",
+          "parameters": ["parcel_data", "comparable_sales"]
+        },
+        {
+          "system": "market_data",
+          "action": "retrieve_comparable_sales",
+          "parameters": ["property_characteristics", "sale_date_range"]
+        }
+      ],
+      "inputs": ["validated_petition", "assessment_record"],
+      "outputs": ["initial_analysis", "comparable_sales_data"],
+      "next_steps": [
+        {
+          "condition": "analysis_complete",
+          "step_id": "step_003_evidence_review"
+        }
+      ]
+    },
+    {
+      "id": "step_003_evidence_review",
+      "name": "Review Supporting Evidence",
+      "description": "Analyze evidence submitted by appellant",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["evidence_analysis", "appraisal_review"]
+      },
+      "integrations": [
+        {
+          "system": "document_analyzer",
+          "action": "analyze_submitted_evidence",
+          "parameters": ["evidence_documents"]
+        },
+        {
+          "system": "valuation_kernel",
+          "action": "validate_appraisal_methodology",
+          "parameters": ["submitted_appraisals"]
+        }
+      ],
+      "inputs": ["supporting_evidence", "initial_analysis"],
+      "outputs": ["evidence_analysis", "credibility_assessment"],
+      "next_steps": [
+        {
+          "condition": "informal_resolution_possible",
+          "step_id": "step_004_informal_resolution"
+        },
+        {
+          "condition": "formal_hearing_required",
+          "step_id": "step_005_hearing_scheduling"
+        }
+      ]
+    },
+    {
+      "id": "step_004_informal_resolution",
+      "name": "Attempt Informal Resolution",
+      "description": "Try to resolve appeal through informal conference",
+      "type": "human_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["negotiation", "valuation_expertise"]
+      },
+      "integrations": [
+        {
+          "system": "notification_service",
+          "action": "schedule_informal_conference",
+          "parameters": ["appellant_contact", "proposed_resolution"]
+        }
+      ],
+      "inputs": ["evidence_analysis", "initial_analysis"],
+      "outputs": ["conference_results", "proposed_settlement"],
+      "next_steps": [
+        {
+          "condition": "resolution_accepted",
+          "step_id": "step_007_decision_documentation"
+        },
+        {
+          "condition": "resolution_rejected",
+          "step_id": "step_005_hearing_scheduling"
+        }
+      ]
+    },
+    {
+      "id": "step_005_hearing_scheduling",
+      "name": "Schedule Formal Hearing",
+      "description": "Schedule and coordinate formal appeal hearing",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["scheduling", "hearing_coordination"]
+      },
+      "integrations": [
+        {
+          "system": "hearing_scheduler",
+          "action": "schedule_appeal_hearing",
+          "parameters": ["appellant_availability", "board_calendar"]
+        },
+        {
+          "system": "notification_service",
+          "action": "send_hearing_notice",
+          "parameters": ["hearing_details", "required_notifications"]
+        }
+      ],
+      "inputs": ["appeal_case_file"],
+      "outputs": ["hearing_schedule", "notice_records"],
+      "next_steps": [
+        {
+          "condition": "hearing_scheduled",
+          "step_id": "step_006_hearing_conduct"
+        }
+      ]
+    },
+    {
+      "id": "step_006_hearing_conduct",
+      "name": "Conduct Appeal Hearing",
+      "description": "Facilitate formal appeal hearing before Board of Equalization",
+      "type": "human_task",
+      "agent_requirements": {
+        "agent_type": "specialist",
+        "skills_required": ["hearing_facilitation", "legal_procedures"]
+      },
+      "integrations": [
+        {
+          "system": "hearing_recorder",
+          "action": "record_proceedings",
+          "parameters": ["hearing_session"]
+        },
+        {
+          "system": "evidence_manager",
+          "action": "manage_hearing_exhibits",
+          "parameters": ["submitted_exhibits"]
+        }
+      ],
+      "inputs": ["hearing_materials", "case_file"],
+      "outputs": ["hearing_record", "board_deliberation"],
+      "next_steps": [
+        {
+          "condition": "hearing_complete",
+          "step_id": "step_007_decision_documentation"
+        }
+      ]
+    },
+    {
+      "id": "step_007_decision_documentation",
+      "name": "Document Final Decision",
+      "description": "Document final decision and prepare official notices",
+      "type": "human_task",
+      "agent_requirements": {
+        "agent_type": "field_general",
+        "skills_required": ["decision_writing", "legal_documentation"]
+      },
+      "integrations": [
+        {
+          "system": "harris_pacs",
+          "action": "update_assessment_record",
+          "parameters": ["revised_assessment", "decision_basis"]
+        },
+        {
+          "system": "notification_service",
+          "action": "send_decision_notice",
+          "parameters": ["decision_details", "appeal_rights"]
+        }
+      ],
+      "inputs": ["board_decision", "hearing_record"],
+      "outputs": ["decision_document", "assessment_update"],
+      "next_steps": [
+        {
+          "condition": "decision_finalized",
+          "step_id": "step_999_completion"
+        }
+      ]
+    },
+    {
+      "id": "step_008_incomplete_notice",
+      "name": "Send Incomplete Petition Notice",
+      "description": "Notify appellant of incomplete petition requirements",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["notification_services", "customer_service"]
+      },
+      "integrations": [
+        {
+          "system": "notification_service",
+          "action": "send_incomplete_notice",
+          "parameters": ["missing_requirements", "deadline_information"]
+        }
+      ],
+      "inputs": ["petition_deficiencies"],
+      "outputs": ["incomplete_notice"],
+      "next_steps": []
+    },
+    {
+      "id": "step_009_dismissal_notice",
+      "name": "Send Dismissal Notice",
+      "description": "Notify appellant of petition dismissal",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["legal_notifications", "documentation"]
+      },
+      "integrations": [
+        {
+          "system": "notification_service",
+          "action": "send_dismissal_notice",
+          "parameters": ["dismissal_reasons", "appeal_options"]
+        }
+      ],
+      "inputs": ["dismissal_grounds"],
+      "outputs": ["dismissal_notice"],
+      "next_steps": []
+    },
+    {
+      "id": "step_999_completion",
+      "name": "Complete Appeals Process",
+      "description": "Finalize appeals processing workflow",
+      "type": "automated_task",
+      "agent_requirements": {
+        "agent_type": "operational_force",
+        "skills_required": ["workflow_finalization", "record_archiving"]
+      },
+      "integrations": [
+        {
+          "system": "audit_log",
+          "action": "log_completion",
+          "parameters": ["appeal_summary"]
+        },
+        {
+          "system": "archive_system",
+          "action": "archive_case_file",
+          "parameters": ["complete_record"]
+        }
+      ],
+      "inputs": ["all_workflow_outputs"],
+      "outputs": ["completion_summary"],
+      "next_steps": []
+    }
+  ],
+  "error_handling": {
+    "max_retries": 2,
+    "retry_delay": "P1D",
+    "escalation_triggers": [
+      "deadline_approaching",
+      "complex_legal_issue",
+      "board_member_conflict"
+    ],
+    "escalation_contacts": ["appeals.coordinator@bentoncountywa.gov"]
+  },
+  "monitoring": {
+    "metrics": [
+      "processing_time",
+      "resolution_rate",
+      "hearing_efficiency",
+      "decision_upheld_rate"
+    ],
+    "alerts": [
+      {
+        "condition": "processing_time > P75D",
+        "severity": "warning"
+      },
+      {
+        "condition": "deadline_approaching < P7D",
+        "severity": "critical"
+      }
+    ]
+  },
+  "security": {
+    "classification": "Confidential",
+    "encryption_required": true,
+    "audit_logging": true,
+    "access_controls": ["AppraiserI", "AppraiserII", "BoardOfEqualization", "AppealsCoordinator"]
+  }
+}

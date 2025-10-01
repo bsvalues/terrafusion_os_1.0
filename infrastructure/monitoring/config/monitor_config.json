@@ -2,57 +2,57 @@
   "monitor_name": "Terrafusion Health Monitor",
   "version": "1.0.0",
   "belichick_standard": "Do Your Job - Every Service, Every Time",
-  
+
   "check_interval": 60,
   "alert_threshold": 3,
   "timeout": 5,
   "max_retries": 3,
-  
+
   "notifications": {
     "email_notifications": false,
     "slack_notifications": false,
     "webhook_notifications": true,
     "console_notifications": true
   },
-  
+
   "auto_recovery": {
     "enabled": true,
     "max_restart_attempts": 3,
     "restart_delay": 30,
     "escalation_threshold": 5
   },
-  
+
   "system_metrics": {
     "enabled": true,
     "collect_docker_stats": true,
     "collect_process_info": true,
     "collect_network_info": true
   },
-  
+
   "logging": {
     "level": "INFO",
     "log_retention_days": 30,
     "max_log_size_mb": 100,
     "enable_structured_logging": true
   },
-  
+
   "services": {
     "costforge": {
-      "url": "http://localhost:3001/health",
+      "url": "http://localhost:\${{TF_SHELL_PORT:-3001}}/health",
       "timeout": 5,
       "expected_status": 200,
       "critical": true,
       "auto_restart": true
     },
     "propertyworkbench": {
-      "url": "http://localhost:3002/health", 
+      "url": "http://localhost:\${{TF_SHELL_PORT:-3001}}/health",
       "timeout": 5,
       "expected_status": 200,
       "critical": true,
       "auto_restart": true
     },
     "terrainsight": {
-      "url": "http://localhost:3003/health",
+      "url": "http://localhost:\${{TF_SHELL_PORT:-3001}}/health",
       "timeout": 5,
       "expected_status": 200,
       "critical": true,
@@ -60,13 +60,13 @@
     },
     "postgres": {
       "type": "database",
-      "connection": "postgresql://localhost:5432",
+      "connection": "postgresql://localhost:\${{TF_SHELL_PORT:-3001}}",
       "critical": true,
       "auto_restart": true
     },
     "redis": {
       "type": "cache",
-      "connection": "redis://localhost:6379",
+      "connection": "redis://localhost:\${{TF_SHELL_PORT:-3001}}",
       "critical": true,
       "auto_restart": true
     },
@@ -78,21 +78,21 @@
       "auto_restart": true
     },
     "prometheus": {
-      "url": "http://localhost:9090/-/healthy",
+      "url": "http://localhost:\${{TF_SHELL_PORT:-3001}}/-/healthy",
       "timeout": 5,
       "expected_status": 200,
       "critical": false,
       "auto_restart": true
     },
     "grafana": {
-      "url": "http://localhost:3000/api/health",
+      "url": "http://localhost:\${{TF_SHELL_PORT:-3001}}/api/health",
       "timeout": 5,
       "expected_status": 200,
       "critical": false,
       "auto_restart": true
     }
   },
-  
+
   "alert_rules": {
     "service_down": {
       "threshold": 1,
@@ -101,7 +101,7 @@
     },
     "high_response_time": {
       "threshold": 5.0,
-      "severity": "warning", 
+      "severity": "warning",
       "message": "Service {{ service }} response time is {{ value }}s"
     },
     "high_error_rate": {
@@ -110,21 +110,21 @@
       "message": "Service {{ service }} error rate is {{ value }}%"
     }
   },
-  
+
   "business_metrics": {
     "track_property_valuations": true,
     "track_user_sessions": true,
     "track_api_usage": true,
     "track_error_rates": true
   },
-  
+
   "security": {
     "track_failed_logins": true,
     "track_suspicious_activity": true,
     "ssl_cert_monitoring": true,
     "vulnerability_scanning": false
   },
-  
+
   "performance": {
     "cpu_threshold_warning": 80,
     "cpu_threshold_critical": 95,
@@ -133,7 +133,7 @@
     "disk_threshold_warning": 85,
     "disk_threshold_critical": 95
   },
-  
+
   "maintenance": {
     "enable_scheduled_maintenance": true,
     "maintenance_windows": [
@@ -146,10 +146,10 @@
     ],
     "suppress_alerts_during_maintenance": true
   },
-  
+
   "dynasty_principles": {
     "preparation": "Know exactly what you have before you start",
-    "fundamentals": "Get the basics right - paths, dependencies, health checks", 
+    "fundamentals": "Get the basics right - paths, dependencies, health checks",
     "consistency": "Every service follows the same patterns",
     "accountability": "Daily checks, no excuses",
     "improvement": "Learn from every failure, document everything",

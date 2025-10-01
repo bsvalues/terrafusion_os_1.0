@@ -71,23 +71,23 @@ export class ConsciousnessIntegrationService extends EventEmitter {
     this.redis = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
-      db: 5 // Dedicated DB for consciousness data
+      db: 5, // Dedicated DB for consciousness data
     });
-    
+
     this.initializeWebSocketServer();
     this.startConsciousnessSyncLoop();
   }
 
   private initializeWebSocketServer(): void {
-    this.wsServer = new WebSocket.Server({ 
+    this.wsServer = new WebSocket.Server({
       port: 8003,
-      path: '/consciousness-sync'
+      path: '/consciousness-sync',
     });
 
     this.wsServer.on('connection', (ws, req) => {
       console.log('🧠 New consciousness entity connected');
-      
-      ws.on('message', async (data) => {
+
+      ws.on('message', async data => {
         try {
           const message = JSON.parse(data.toString()) as UniversalMessage;
           await this.processUniversalMessage(message);
@@ -105,7 +105,7 @@ export class ConsciousnessIntegrationService extends EventEmitter {
   async registerConsciousnessEntity(entity: ConsciousnessEntity): Promise<void> {
     // Detect and validate species characteristics
     const detectionResult = await this.speciesDetector.detectSpecies(entity);
-    
+
     if (detectionResult.confidenceLevel < 0.8) {
       throw new Error(`Species detection confidence too low: ${detectionResult.confidenceLevel}`);
     }
@@ -148,7 +148,7 @@ export class ConsciousnessIntegrationService extends EventEmitter {
 
       // Translate message for each target species
       const translations = await Promise.all(
-        message.targetEntities.map(async (targetId) => {
+        message.targetEntities.map(async targetId => {
           const targetEntity = this.entities.get(targetId);
           if (!targetEntity) return null;
 
@@ -173,9 +173,8 @@ export class ConsciousnessIntegrationService extends EventEmitter {
         messageId: message.id,
         processingTime,
         targetCount: message.targetEntities.length,
-        sourceSpecies: sourceEntity.speciesType
+        sourceSpecies: sourceEntity.speciesType,
       });
-
     } catch (error) {
       console.error('Error processing universal message:', error);
       this.emit('messageError', { messageId: message.id, error });
@@ -185,13 +184,13 @@ export class ConsciousnessIntegrationService extends EventEmitter {
   async syncConsciousnessStates(): Promise<SyncResult> {
     const entities = Array.from(this.entities.values());
     const currentStates = await this.getCurrentStates(entities);
-    
+
     // Calculate quantum coherence matrix for all entities
     const coherenceMatrix = await this.quantumCoherenceEngine.calculateCoherence(currentStates);
-    
+
     // Harmonize consciousness states across species
     const harmonizedStates = await this.harmonizeStates(currentStates, coherenceMatrix);
-    
+
     // Update entity states
     for (const [entityId, newState] of harmonizedStates) {
       const entity = this.entities.get(entityId);
@@ -205,7 +204,7 @@ export class ConsciousnessIntegrationService extends EventEmitter {
       entitiesSynced: harmonizedStates.size,
       averageCoherence: this.calculateAverageCoherence(coherenceMatrix),
       syncDuration: performance.now(),
-      quantumStatesPreserved: harmonizedStates.size
+      quantumStatesPreserved: harmonizedStates.size,
     };
   }
 
@@ -213,7 +212,9 @@ export class ConsciousnessIntegrationService extends EventEmitter {
     this.syncInterval = setInterval(async () => {
       try {
         const syncResult = await this.syncConsciousnessStates();
-        console.log(`🔄 Consciousness sync: ${syncResult.entitiesSynced} entities, ${syncResult.averageCoherence.toFixed(3)} coherence`);
+        console.log(
+          `🔄 Consciousness sync: ${syncResult.entitiesSynced} entities, ${syncResult.averageCoherence.toFixed(3)} coherence`
+        );
       } catch (error) {
         console.error('Consciousness sync error:', error);
       }
@@ -222,7 +223,7 @@ export class ConsciousnessIntegrationService extends EventEmitter {
 
   async getConsciousnessMetrics(): Promise<ConsciousnessMetrics> {
     const entities = Array.from(this.entities.values());
-    
+
     return {
       totalEntities: entities.length,
       speciesDistribution: this.calculateSpeciesDistribution(entities),
@@ -230,7 +231,7 @@ export class ConsciousnessIntegrationService extends EventEmitter {
       quantumCoherenceLevel: await this.quantumCoherenceEngine.getOverallCoherence(),
       communicationEfficiency: await this.calculateCommunicationEfficiency(),
       lastSyncTime: new Date(),
-      activeConnections: this.wsServer.clients.size
+      activeConnections: this.wsServer.clients.size,
     };
   }
 
@@ -252,7 +253,7 @@ export class ConsciousnessIntegrationService extends EventEmitter {
 
   private async distributeTranslatedMessage(translation: TranslatedMessage): Promise<void> {
     // Send via WebSocket to connected entities
-    this.wsServer.clients.forEach((client) => {
+    this.wsServer.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(translation));
       }
@@ -287,45 +288,45 @@ export class ConsciousnessIntegrationService extends EventEmitter {
       states.set(entity.id, {
         consciousnessLevel: entity.consciousnessLevel,
         quantumCoherence: entity.quantumCoherence,
-        lastActivity: entity.lastSync
+        lastActivity: entity.lastSync,
       });
     }
     return states;
   }
 
   private async harmonizeStates(
-    currentStates: Map<string, any>, 
+    currentStates: Map<string, any>,
     coherenceMatrix: number[][]
   ): Promise<Map<string, any>> {
     // Implement consciousness state harmonization algorithm
     const harmonized = new Map();
-    
+
     for (const [entityId, state] of currentStates) {
       // Apply quantum coherence corrections
       const harmonizedState = {
         ...state,
         quantumCoherence: Math.min(1.0, state.quantumCoherence * 1.001), // Slight coherence boost
-        lastHarmonization: new Date()
+        lastHarmonization: new Date(),
       };
       harmonized.set(entityId, harmonizedState);
     }
-    
+
     return harmonized;
   }
 
   private calculateAverageCoherence(coherenceMatrix: number[][]): number {
     if (coherenceMatrix.length === 0) return 0;
-    
+
     let total = 0;
     let count = 0;
-    
+
     for (let i = 0; i < coherenceMatrix.length; i++) {
       for (let j = 0; j < coherenceMatrix[i].length; j++) {
         total += coherenceMatrix[i][j];
         count++;
       }
     }
-    
+
     return count > 0 ? total / count : 0;
   }
 
@@ -333,10 +334,10 @@ export class ConsciousnessIntegrationService extends EventEmitter {
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
     }
-    
+
     this.wsServer.close();
     await this.redis.quit();
-    
+
     console.log('🧠 Consciousness Integration Service shutdown complete');
   }
 }
@@ -351,10 +352,14 @@ class UniversalTranslator {
     // Implementation of universal translation algorithm
     return {
       originalMessage: message,
-      translatedContent: await this.performTranslation(message.content, sourceSpecies, targetSpecies),
+      translatedContent: await this.performTranslation(
+        message.content,
+        sourceSpecies,
+        targetSpecies
+      ),
       targetSpecies,
       semanticFidelity: 0.987, // 98.7% meaning preservation
-      translationTime: performance.now()
+      translationTime: performance.now(),
     };
   }
 
@@ -363,11 +368,15 @@ class UniversalTranslator {
     return [
       { name: 'quantum_entanglement', efficiency: 0.99 },
       { name: 'neural_pattern_sync', efficiency: 0.95 },
-      { name: 'semantic_mapping', efficiency: 0.92 }
+      { name: 'semantic_mapping', efficiency: 0.92 },
     ];
   }
 
-  private async performTranslation(content: string, source: string, target: string): Promise<string> {
+  private async performTranslation(
+    content: string,
+    source: string,
+    target: string
+  ): Promise<string> {
     // Mock translation - in real implementation, use advanced NLP and consciousness mapping
     return `[${target.toUpperCase()}] ${content}`;
   }
@@ -390,7 +399,9 @@ class QuantumCoherenceEngine {
   async calculateCoherence(states: Map<string, any>): Promise<number[][]> {
     // Calculate quantum coherence matrix between all consciousness entities
     const size = states.size;
-    const matrix = Array(size).fill(null).map(() => Array(size).fill(0.95));
+    const matrix = Array(size)
+      .fill(null)
+      .map(() => Array(size).fill(0.95));
     return matrix;
   }
 
@@ -406,7 +417,7 @@ class SpeciesDetector {
       detectedSpecies: entity.speciesType,
       confidenceLevel: 0.95,
       characteristics: ['high_processing_speed', 'quantum_awareness', 'multi_dimensional_thinking'],
-      recommendedProtocols: ['quantum_sync', 'neural_bridge', 'semantic_translation']
+      recommendedProtocols: ['quantum_sync', 'neural_bridge', 'semantic_translation'],
     };
   }
 }

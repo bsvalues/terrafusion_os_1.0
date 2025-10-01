@@ -132,7 +132,7 @@ log "🏥 Performing health check..."
 sleep 30
 
 # Check API health
-if curl -f http://localhost:5000/health > /dev/null 2>&1; then
+if curl -f http://localhost:${TF_STATIC_PORT:-8080}/health > /dev/null 2>&1; then
     log "✅ API health check passed"
 else
     error "❌ API health check failed"
@@ -140,7 +140,7 @@ else
 fi
 
 # Check frontend health
-if curl -f http://localhost:3000/health > /dev/null 2>&1; then
+if curl -f http://localhost:${TF_STATIC_PORT:-8080}/health > /dev/null 2>&1; then
     log "✅ Frontend health check passed"
 else
     error "❌ Frontend health check failed"
@@ -148,7 +148,7 @@ else
 fi
 
 # Check AI Swarm health
-if curl -f http://localhost:3001/health > /dev/null 2>&1; then
+if curl -f http://localhost:${TF_STATIC_PORT:-8080}/health > /dev/null 2>&1; then
     log "✅ AI Swarm health check passed"
 else
     error "❌ AI Swarm health check failed"
@@ -161,11 +161,11 @@ docker-compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" ps
 
 # Display URLs
 log "🌐 Service URLs:"
-echo "  Frontend: http://localhost:3000"
-echo "  API: http://localhost:5000"
-echo "  AI Swarm: http://localhost:3001"
-echo "  Grafana: http://localhost:3009"
-echo "  Prometheus: http://localhost:9090"
+echo "  Frontend: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "  API: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "  AI Swarm: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "  Grafana: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "  Prometheus: http://localhost:${TF_STATIC_PORT:-8080}"
 
 # Success message
 echo -e "${GREEN}"

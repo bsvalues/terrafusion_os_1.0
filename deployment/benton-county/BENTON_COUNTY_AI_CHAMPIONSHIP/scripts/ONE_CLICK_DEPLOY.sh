@@ -217,7 +217,7 @@ services:
     restart: unless-stopped
     environment:
       - CHROMA_SERVER_HOST=0.0.0.0
-      - CHROMA_SERVER_HTTP_PORT=8000
+      - CHROMA_SERVER_HTTP_PORT=\${{TF_DOCS_PORT:-8000}}
 
   # GENIUS Agent (The Mastermind)
   genius-agent:
@@ -337,10 +337,10 @@ check_service() {
 
 echo "🏆 BENTON COUNTY AI CHAMPIONSHIP - Health Check"
 echo "=============================================="
-check_service "GENIUS Agent" "http://localhost:8001/health"
-check_service "HELPER Agent" "http://localhost:8002/health"
-check_service "GUARDIAN Agent" "http://localhost:8003/health"
-check_service "ChromaDB" "http://localhost:8000/api/v1/heartbeat"
+check_service "GENIUS Agent" "http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/health"
+check_service "HELPER Agent" "http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/health"
+check_service "GUARDIAN Agent" "http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/health"
+check_service "ChromaDB" "http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/api/v1/heartbeat"
 check_service "Frontend" "http://localhost/"
 echo "=============================================="
 EOF
@@ -374,7 +374,7 @@ run_championship_tests() {
     fi
     
     # Test ChromaDB
-    if curl -s http://localhost:8000/api/v1/heartbeat > /dev/null; then
+    if curl -s http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/api/v1/heartbeat > /dev/null; then
         log_success "✅ ChromaDB: READY"
     else
         log_error "❌ ChromaDB: NOT READY"
@@ -397,11 +397,11 @@ championship_summary() {
     echo -e "${NC}"
     
     echo -e "${CYAN}Championship Services:${NC}"
-    echo "  🧠 GENIUS Agent:    http://localhost:8001"
-    echo "  🤝 HELPER Agent:    http://localhost:8002"
-    echo "  🛡️  GUARDIAN Agent:  http://localhost:8003"
+    echo "  🧠 GENIUS Agent:    http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}"
+    echo "  🤝 HELPER Agent:    http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}"
+    echo "  🛡️  GUARDIAN Agent:  http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}"
     echo "  🌐 Frontend:        http://localhost"
-    echo "  🔍 ChromaDB:        http://localhost:8000"
+    echo "  🔍 ChromaDB:        http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}"
     
     echo -e "${CYAN}Championship Management:${NC}"
     echo "  📊 Monitor:         $DEPLOYMENT_DIR/monitor.sh"

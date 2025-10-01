@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "@typescript-eslint/recommended",
-    "../../.eslintrc.json"
-  ],
+  "extends": ["@typescript-eslint/recommended", "../../.eslintrc.json"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2020,
@@ -16,9 +13,5 @@
     "prefer-const": "error",
     "no-var": "error"
   },
-  "ignorePatterns": [
-    "dist/",
-    "node_modules/",
-    "coverage/"
-  ]
+  "ignorePatterns": ["dist/", "node_modules/", "coverage/"]
 }

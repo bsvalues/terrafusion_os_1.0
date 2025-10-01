@@ -1,0 +1,33 @@
+Terrafusion-Gov-Edition/
+├── Terrafusion.Shell/          # WebView2 WPF Application
+│   ├── MainWindow.xaml
+│   ├── MainWindow.xaml.cs
+│   ├── App.xaml
+│   ├── App.xaml.cs
+│   └── Terrafusion.Shell.csproj
+├── Terrafusion.API/            # Local Companion API
+│   ├── Program.cs
+│   ├── Controllers/
+│   │   ├── ValuationController.cs
+│   │   ├── ModulesController.cs
+│   │   └── UserController.cs
+│   ├── Services/
+│   │   ├── CapabilityBroker.cs
+│   │   └── CountyDataService.cs
+│   ├── wwwroot/               # PWA Files
+│   │   ├── index.html
+│   │   ├── manifest.json
+│   │   ├── sw.js
+│   │   ├── css/
+│   │   │   └── terrafusion.css
+│   │   ├── js/
+│   │   │   └── app.js
+│   │   └── modules/          # Your 14 modules
+│   └── Terrafusion.API.csproj
+├── Shared/                     # Shared components
+│   ├── Terrafusion.Core/
+│   └── Terrafusion.UI/
+├── Installer/                  # MSI/MSIX packaging
+│   └── installer.wxs
+├── launch.bat                  # Quick launch script
+└── build.bat                   # Build everything

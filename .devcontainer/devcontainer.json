@@ -35,20 +35,13 @@
       }
     }
   },
-  "forwardPorts": [
-    3000,
-    5000,
-    5001,
-    8080,
-    9090,
-    3001
-  ],
+  "forwardPorts": [3000, 5000, 5001, 8080, 9090, 3001],
   "portsAttributes": {
-    "3000": {
+    ${TF_FRONTEND_PORT:-3102}: {
       "label": "TerraFusion UI",
       "onAutoForward": "notify"
     },
-    "5000": {
+    ${TF_API_PORT:-5046}: {
       "label": "TerraFusion API",
       "onAutoForward": "notify"
     },

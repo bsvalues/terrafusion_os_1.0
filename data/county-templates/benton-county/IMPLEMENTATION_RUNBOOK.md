@@ -498,7 +498,7 @@ class ChampionshipPerformance:
     def __init__(self):
         self.redis_client = redis.Redis(
             host='localhost',
-            port=6379,
+            port=\${{TF_REDIS_PORT:-6379}},
             decode_responses=False
         )
         self.cache_ttl = {
@@ -644,7 +644,7 @@ class ChampionshipLoadTester:
             
             try:
                 response_start = time.time()
-                async with session.post('http://localhost:8080/query', json={'query': query}) as response:
+                async with session.post('http://localhost:\${{TF_ADMIN_PORT:-8080}}/query', json={'query': query}) as response:
                     await response.text()
                     response_time = (time.time() - response_start) * 1000
                     

@@ -1,4 +1,5 @@
 # 🚀 TERRAFUSION API DOCUMENTATION
+
 ## Infrastructure Intelligence, Infinite Scale
 
 ---
@@ -8,19 +9,21 @@
 **Base URL**: `https://api.terrafusionmarket.io`  
 **Version**: 1.0.0  
 **Authentication**: Bearer Token / API Key  
-**Rate Limit**: 1000 requests/minute  
+**Rate Limit**: 1000 requests/minute
 
 ---
 
 ## 🔐 Authentication
 
 ### API Key Authentication
+
 ```http
 GET /api/v1/properties
 Authorization: Bearer YOUR_API_KEY_HERE
 ```
 
 ### OAuth 2.0 Flow
+
 ```javascript
 // Authorization URL
 https://api.terrafusionmarket.io/oauth/authorize?
@@ -44,11 +47,13 @@ POST /oauth/token
 ## 🏠 Property Assessment API
 
 ### Get Property Details
+
 ```http
 GET /api/v1/properties/{propertyId}
 ```
 
 **Response**:
+
 ```json
 {
   "propertyId": "BEN-2025-000001",
@@ -72,6 +77,7 @@ GET /api/v1/properties/{propertyId}
 ```
 
 ### Batch Property Lookup
+
 ```http
 POST /api/v1/properties/batch
 Content-Type: application/json
@@ -86,6 +92,7 @@ Content-Type: application/json
 ```
 
 ### Search Properties
+
 ```http
 GET /api/v1/properties/search?
   address=Main%20St&
@@ -100,6 +107,7 @@ GET /api/v1/properties/search?
 ## 💰 CostForge AI Valuation API
 
 ### Request Valuation
+
 ```http
 POST /api/v1/costforge/valuation
 Content-Type: application/json
@@ -113,6 +121,7 @@ Content-Type: application/json
 ```
 
 **Response**:
+
 ```json
 {
   "valuationId": "VAL-2025-ABC123",
@@ -142,6 +151,7 @@ Content-Type: application/json
 ```
 
 ### Bulk Valuation
+
 ```http
 POST /api/v1/costforge/bulk-valuation
 Content-Type: application/json
@@ -158,11 +168,13 @@ Content-Type: application/json
 ## 🗺️ GIS Mapping API
 
 ### Get Parcel Geometry
+
 ```http
 GET /api/v1/gis/parcels/{parcelId}/geometry
 ```
 
 **Response**:
+
 ```json
 {
   "parcelId": "BEN-PARCEL-12345",
@@ -171,8 +183,8 @@ GET /api/v1/gis/parcels/{parcelId}/geometry
     "coordinates": [
       [
         [-122.4194, 47.2529],
-        [-122.4190, 47.2529],
-        [-122.4190, 47.2525],
+        [-122.419, 47.2529],
+        [-122.419, 47.2525],
         [-122.4194, 47.2525],
         [-122.4194, 47.2529]
       ]
@@ -184,6 +196,7 @@ GET /api/v1/gis/parcels/{parcelId}/geometry
 ```
 
 ### Search by Location
+
 ```http
 POST /api/v1/gis/search/location
 Content-Type: application/json
@@ -197,6 +210,7 @@ Content-Type: application/json
 ```
 
 ### Get Zoning Information
+
 ```http
 GET /api/v1/gis/zoning/{parcelId}
 ```
@@ -206,6 +220,7 @@ GET /api/v1/gis/zoning/{parcelId}
 ## 💳 Tax Management API
 
 ### Calculate Property Tax
+
 ```http
 POST /api/v1/tax/calculate
 Content-Type: application/json
@@ -218,6 +233,7 @@ Content-Type: application/json
 ```
 
 **Response**:
+
 ```json
 {
   "propertyId": "BEN-2025-000001",
@@ -256,6 +272,7 @@ Content-Type: application/json
 ```
 
 ### Get Tax History
+
 ```http
 GET /api/v1/tax/history/{propertyId}?years=5
 ```
@@ -265,6 +282,7 @@ GET /api/v1/tax/history/{propertyId}?years=5
 ## 📋 Permit Management API
 
 ### Submit Permit Application
+
 ```http
 POST /api/v1/permits/apply
 Content-Type: application/json
@@ -282,11 +300,13 @@ Content-Type: application/json
 ```
 
 ### Check Permit Status
+
 ```http
 GET /api/v1/permits/{permitId}/status
 ```
 
 ### Get Permit History
+
 ```http
 GET /api/v1/permits/property/{propertyId}
 ```
@@ -296,6 +316,7 @@ GET /api/v1/permits/property/{propertyId}
 ## 📊 Analytics & Reporting API
 
 ### Generate Market Report
+
 ```http
 POST /api/v1/analytics/market-report
 Content-Type: application/json
@@ -311,11 +332,13 @@ Content-Type: application/json
 ```
 
 ### Get County Statistics
+
 ```http
 GET /api/v1/analytics/county-stats
 ```
 
 **Response**:
+
 ```json
 {
   "county": "Benton",
@@ -339,6 +362,7 @@ GET /api/v1/analytics/county-stats
 ## 🤖 AI Swarm API
 
 ### Deploy Agent Task
+
 ```http
 POST /api/v1/swarm/deploy
 Content-Type: application/json
@@ -358,6 +382,7 @@ Content-Type: application/json
 ```
 
 ### Monitor Swarm Status
+
 ```http
 GET /api/v1/swarm/status/{taskId}
 ```
@@ -367,6 +392,7 @@ GET /api/v1/swarm/status/{taskId}
 ## 🔔 Webhooks
 
 ### Register Webhook
+
 ```http
 POST /api/v1/webhooks
 Content-Type: application/json
@@ -383,6 +409,7 @@ Content-Type: application/json
 ```
 
 ### Webhook Payload Example
+
 ```json
 {
   "event": "property.assessed",
@@ -402,6 +429,7 @@ Content-Type: application/json
 ## 🚨 Error Handling
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -416,20 +444,22 @@ Content-Type: application/json
 ```
 
 ### Common Error Codes
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `UNAUTHORIZED` | 401 | Invalid or missing API key |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `NOT_FOUND` | 404 | Resource not found |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
-| `VALIDATION_ERROR` | 400 | Invalid request parameters |
-| `INTERNAL_ERROR` | 500 | Server error |
+
+| Code                  | HTTP Status | Description                |
+| --------------------- | ----------- | -------------------------- |
+| `UNAUTHORIZED`        | 401         | Invalid or missing API key |
+| `FORBIDDEN`           | 403         | Insufficient permissions   |
+| `NOT_FOUND`           | 404         | Resource not found         |
+| `RATE_LIMIT_EXCEEDED` | 429         | Too many requests          |
+| `VALIDATION_ERROR`    | 400         | Invalid request parameters |
+| `INTERNAL_ERROR`      | 500         | Server error               |
 
 ---
 
 ## 📈 Rate Limiting
 
 ### Headers
+
 ```http
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -437,27 +467,31 @@ X-RateLimit-Reset: 1641900000
 ```
 
 ### Rate Limit Tiers
-| Tier | Requests/Minute | Requests/Day |
-|------|----------------|--------------|
-| Free | 100 | 10,000 |
-| Pro | 1,000 | 100,000 |
-| Enterprise | 10,000 | Unlimited |
+
+| Tier       | Requests/Minute | Requests/Day |
+| ---------- | --------------- | ------------ |
+| Free       | 100             | 10,000       |
+| Pro        | 1,000           | 100,000      |
+| Enterprise | 10,000          | Unlimited    |
 
 ---
 
 ## 🧪 Testing Endpoints
 
 ### Health Check
+
 ```http
 GET /api/v1/health
 ```
 
 ### API Status
+
 ```http
 GET /api/v1/status
 ```
 
 **Response**:
+
 ```json
 {
   "status": "operational",
@@ -476,12 +510,13 @@ GET /api/v1/status
 ## 🔧 SDKs & Libraries
 
 ### JavaScript/TypeScript
+
 ```javascript
 import { TerraFusionClient } from '@terrafusion/sdk';
 
 const client = new TerraFusionClient({
   apiKey: 'YOUR_API_KEY',
-  environment: 'production'
+  environment: 'production',
 });
 
 const property = await client.properties.get('BEN-2025-000001');
@@ -489,6 +524,7 @@ const valuation = await client.costforge.valuate(property.id);
 ```
 
 ### Python
+
 ```python
 from terrafusion import TerraFusionAPI
 
@@ -499,6 +535,7 @@ valuation = api.costforge.valuate(property['id'])
 ```
 
 ### cURL Examples
+
 ```bash
 # Get property
 curl -H "Authorization: Bearer YOUR_API_KEY" \

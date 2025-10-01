@@ -64,7 +64,7 @@ data:
   servers.conf: |
     server {
         listen 8080;
-        listen [::]:8080;
+        listen [::]:${TF_STATIC_PORT:-8080};
         server_name _;
         
         location /health {
@@ -123,11 +123,11 @@ spec:
               name: kong-postgres-password
               key: password
         - name: KONG_PROXY_LISTEN
-          value: "0.0.0.0:8000 reuseport backlog=16384, 0.0.0.0:8443 http2 ssl reuseport backlog=16384"
+          value: "0.0.0.0:\${{TF_DOCS_PORT:-8000}} reuseport backlog=16384, 0.0.0.0:\${{TF_DOCS_PORT:-8000}} http2 ssl reuseport backlog=16384"
         - name: KONG_ADMIN_LISTEN
-          value: "127.0.0.1:8001"
+          value: "127.0.0.1:\${{TF_SERVICE_8001_PORT:-8001}}"
         - name: KONG_STATUS_LISTEN
-          value: "0.0.0.0:8100"
+          value: "0.0.0.0:\${{TF_DOCS_PORT:-8000}}"
         - name: KONG_NGINX_WORKER_PROCESSES
           value: "auto"
         - name: KONG_PROXY_ACCESS_LOG

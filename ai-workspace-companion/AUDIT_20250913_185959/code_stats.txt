@@ -1,0 +1,12 @@
+js: 4021 files
+ts: 1559 files
+tsx: 0 files
+jsx: 0 files
+py: 1 files
+cs: 0 files
+java: 0 files
+go: 0 files
+rs: 0 files
+md: 666 files
+json: 565 files
+yaml: 0 files

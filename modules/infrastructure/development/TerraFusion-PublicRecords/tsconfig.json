@@ -19,7 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    
+
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
@@ -29,13 +29,13 @@
       "@services/*": ["src/services/*"],
       "@utils/*": ["src/utils/*"]
     },
-    
+
     /* Type checking */
     "allowJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    
+
     /* Advanced */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true

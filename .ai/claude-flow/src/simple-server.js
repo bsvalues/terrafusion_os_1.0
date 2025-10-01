@@ -14,16 +14,16 @@ const server = fastify({
       options: {
         colorize: true,
         translateTime: 'HH:MM:ss Z',
-        ignore: 'pid,hostname'
-      }
-    }
-  }
+        ignore: 'pid,hostname',
+      },
+    },
+  },
 });
 
 // Enable CORS for localhost
 server.register(require('@fastify/cors'), {
   origin: true,
-  credentials: true
+  credentials: true,
 });
 
 // Enable WebSocket support
@@ -41,13 +41,21 @@ for (let i = 1; i <= 87; i++) {
     description: `Government operation tool ${i}`,
     category: ['data_processing', 'harris_pacs', 'compliance', 'security', 'analytics'][i % 5],
     enabled: true,
-    parameters: { county: 'benton', classification: 'government' }
+    parameters: { county: 'benton', classification: 'government' },
   });
 }
 
 // Initialize mock agents
 const agentTypes = ['queen', 'architect', 'coder', 'tester', 'researcher', 'security', 'devops'];
-const agentCounts = { queen: 1, architect: 3, coder: 5, tester: 4, researcher: 3, security: 2, devops: 4 };
+const agentCounts = {
+  queen: 1,
+  architect: 3,
+  coder: 5,
+  tester: 4,
+  researcher: 3,
+  security: 2,
+  devops: 4,
+};
 
 for (const [type, count] of Object.entries(agentCounts)) {
   for (let i = 1; i <= count; i++) {
@@ -56,7 +64,7 @@ for (const [type, count] of Object.entries(agentCounts)) {
       type,
       status: ['idle', 'active', 'busy'][Math.floor(Math.random() * 3)],
       performance: 0.85 + Math.random() * 0.15,
-      lastActivity: new Date().toISOString()
+      lastActivity: new Date().toISOString(),
     });
   }
 }
@@ -75,7 +83,7 @@ server.get('/health', async (request, reply) => {
     agents: hiveMindAgents.length,
     workflows: 2,
     uptime: Math.floor(uptime),
-    government: 'transcended'
+    government: 'transcended',
   };
 });
 
@@ -83,7 +91,7 @@ server.get('/mcp/tools', async (request, reply) => {
   return {
     tools: mcpTools,
     total: mcpTools.length,
-    enabled: mcpTools.filter(t => t.enabled).length
+    enabled: mcpTools.filter(t => t.enabled).length,
   };
 });
 
@@ -106,9 +114,9 @@ server.post('/mcp/tools/:toolId/execute', async (request, reply) => {
       data: `Executed ${tool.name} with government compliance`,
       processingTime: Math.floor(Math.random() * 1000) + 100,
       complianceValidated: true,
-      auditTrail: `audit_${Date.now()}`
+      auditTrail: `audit_${Date.now()}`,
     },
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 });
 
@@ -116,7 +124,7 @@ server.get('/hive/agents', async (request, reply) => {
   return {
     agents: hiveMindAgents,
     total: hiveMindAgents.length,
-    active: hiveMindAgents.filter(a => a.status === 'active').length
+    active: hiveMindAgents.filter(a => a.status === 'active').length,
   };
 });
 
@@ -134,10 +142,13 @@ server.post('/hive/coordinate', async (request, reply) => {
   selectedAgent.currentTask = task;
 
   // Reset agent after delay
-  setTimeout(() => {
-    selectedAgent.status = 'idle';
-    selectedAgent.currentTask = undefined;
-  }, 2000 + Math.random() * 3000);
+  setTimeout(
+    () => {
+      selectedAgent.status = 'idle';
+      selectedAgent.currentTask = undefined;
+    },
+    2000 + Math.random() * 3000
+  );
 
   return {
     coordinationId: `coord_${Date.now()}`,
@@ -145,7 +156,7 @@ server.post('/hive/coordinate', async (request, reply) => {
     task,
     priority: priority || 1,
     county: county || 'benton',
-    estimatedCompletion: new Date(Date.now() + 5000).toISOString()
+    estimatedCompletion: new Date(Date.now() + 5000).toISOString(),
   };
 });
 
@@ -156,16 +167,16 @@ server.get('/workflows', async (request, reply) => {
         id: 'benton_harris_sync',
         name: 'Benton County Harris PACS Synchronization',
         description: 'Automated sync of 89,247 parcels with Harris PACS v12.4.7',
-        county: 'benton'
+        county: 'benton',
       },
       {
         id: 'quantum_optimization',
         name: 'Quantum Performance Optimization',
         description: 'AI Swarm quantum performance enhancement',
-        county: 'benton'
-      }
+        county: 'benton',
+      },
     ],
-    total: 2
+    total: 2,
   };
 });
 
@@ -174,8 +185,8 @@ server.post('/workflows/:workflowId/execute', async (request, reply) => {
   const { input } = request.body || {};
 
   const workflows = {
-    'benton_harris_sync': 'Benton County Harris PACS Synchronization',
-    'quantum_optimization': 'Quantum Performance Optimization'
+    benton_harris_sync: 'Benton County Harris PACS Synchronization',
+    quantum_optimization: 'Quantum Performance Optimization',
   };
 
   const workflowName = workflows[workflowId];
@@ -195,9 +206,9 @@ server.post('/workflows/:workflowId/execute', async (request, reply) => {
       processed_parcels: workflowId === 'benton_harris_sync' ? 89247 : undefined,
       performance_improvement: workflowId === 'quantum_optimization' ? '3.5x' : undefined,
       compliance_validated: true,
-      audit_trail: `audit_${workflowId}_${Date.now()}`
+      audit_trail: `audit_${workflowId}_${Date.now()}`,
     },
-    completedAt: new Date().toISOString()
+    completedAt: new Date().toISOString(),
   };
 });
 
@@ -205,12 +216,12 @@ server.post('/workflows/:workflowId/execute', async (request, reply) => {
 server.register(async function (fastify) {
   fastify.get('/ws/coordination', { websocket: true }, (connection, req) => {
     console.log('🔗 WebSocket client connected');
-    
-    connection.socket.on('message', async (message) => {
+
+    connection.socket.on('message', async message => {
       try {
         const data = JSON.parse(message.toString());
         console.log('📨 WebSocket message:', data);
-        
+
         // Echo back with coordination response
         const response = {
           type: 'coordination_response',
@@ -218,16 +229,16 @@ server.register(async function (fastify) {
             status: 'processed',
             timestamp: new Date().toISOString(),
             hiveMindStatus: 'active',
-            mcpToolsAvailable: mcpTools.length
-          }
+            mcpToolsAvailable: mcpTools.length,
+          },
         };
-        
+
         connection.socket.send(JSON.stringify(response));
       } catch (error) {
         connection.socket.send(JSON.stringify({ error: 'Invalid message format' }));
       }
     });
-    
+
     connection.socket.on('close', () => {
       console.log('🔌 WebSocket client disconnected');
     });
@@ -239,16 +250,15 @@ const start = async () => {
   try {
     await server.listen({
       port: 8080,
-      host: '0.0.0.0'
+      host: '0.0.0.0',
     });
-    
+
     console.log('🏛️ Claude-Flow v2.0.0 Alpha started successfully');
     console.log(`🤖 Hive-Mind: ${hiveMindAgents.length} agents active`);
     console.log(`🛠️ MCP Tools: ${mcpTools.length} tools available`);
     console.log(`📋 Workflows: 2 workflows ready`);
-    console.log('🌐 Server running on http://localhost:8080');
+    console.log('🌐 Server running on http://localhost:\${{TF_ADMIN_PORT:-8080}}');
     console.log('Government. Transcended. ✨');
-    
   } catch (error) {
     console.error(`Failed to start Claude-Flow: ${error}`);
     process.exit(1);

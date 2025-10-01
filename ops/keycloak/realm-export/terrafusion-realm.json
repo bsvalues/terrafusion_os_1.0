@@ -1,0 +1,25 @@
+{
+  "realm": "terrafusion",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "terrafusion-api",
+      "directAccessGrantsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "redirectUris": ["*"],
+      "serviceAccountsEnabled": true
+    }
+  ],
+  "roles": {
+    "realm": ["admin", "user", "operator"]
+  },
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "admin", "temporary": false }],
+      "realmRoles": ["admin"]
+    }
+  ]
+}

@@ -72,7 +72,7 @@ export interface NotificationPreferences {
   quietHours?: {
     enabled: boolean;
     start: string; // HH:MM format
-    end: string;   // HH:MM format
+    end: string; // HH:MM format
   };
 }
 
@@ -85,7 +85,7 @@ class NotificationService {
   private baseUrl: string;
   private authToken: string | null = null;
 
-  constructor(baseUrl: string = 'http://localhost:3000/api') {
+  constructor(baseUrl: string = 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api') {
     this.baseUrl = baseUrl;
     this.preferences = this.getDefaultPreferences();
     this.initializeBrowserNotifications();
@@ -93,16 +93,18 @@ class NotificationService {
   }
 
   // Notification Management
-  async createNotification(notification: Omit<Notification, 'id' | 'timestamp' | 'read'>): Promise<Notification> {
+  async createNotification(
+    notification: Omit<Notification, 'id' | 'timestamp' | 'read'>
+  ): Promise<Notification> {
     const fullNotification: Notification = {
       ...notification,
       id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date().toISOString(),
-      read: false
+      read: false,
     };
 
     this.notifications.set(fullNotification.id, fullNotification);
-    
+
     // Check if notification should be shown based on preferences
     if (this.shouldShowNotification(fullNotification)) {
       await this.displayNotification(fullNotification);
@@ -110,7 +112,7 @@ class NotificationService {
 
     // Store notification
     this.storeNotifications();
-    
+
     // Emit event
     this.emit('notification_created', fullNotification);
 
@@ -153,7 +155,9 @@ class NotificationService {
       }
     }
 
-    return notifications.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return notifications.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
   }
 
   markAsRead(notificationId: string): void {
@@ -207,7 +211,7 @@ class NotificationService {
   async createComplianceAlert(alert: Omit<ComplianceAlert, 'id'>): Promise<ComplianceAlert> {
     const fullAlert: ComplianceAlert = {
       ...alert,
-      id: `comp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      id: `comp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     };
 
     this.complianceAlerts.set(fullAlert.id, fullAlert);
@@ -222,7 +226,7 @@ class NotificationService {
       county: fullAlert.county,
       pluginId: fullAlert.pluginId,
       persistent: true,
-      metadata: { complianceAlertId: fullAlert.id }
+      metadata: { complianceAlertId: fullAlert.id },
     });
 
     this.emit('compliance_alert_created', fullAlert);
@@ -268,12 +272,14 @@ class NotificationService {
   }
 
   // Security Alerts
-  async createSecurityAlert(alert: Omit<SecurityAlert, 'id' | 'timestamp' | 'resolved'>): Promise<SecurityAlert> {
+  async createSecurityAlert(
+    alert: Omit<SecurityAlert, 'id' | 'timestamp' | 'resolved'>
+  ): Promise<SecurityAlert> {
     const fullAlert: SecurityAlert = {
       ...alert,
       id: `sec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date().toISOString(),
-      resolved: false
+      resolved: false,
     };
 
     this.securityAlerts.set(fullAlert.id, fullAlert);
@@ -286,7 +292,7 @@ class NotificationService {
       priority: fullAlert.severity === 'critical' ? 'critical' : 'high',
       category: 'security',
       persistent: true,
-      metadata: { securityAlertId: fullAlert.id }
+      metadata: { securityAlertId: fullAlert.id },
     });
 
     this.emit('security_alert_created', fullAlert);
@@ -348,12 +354,16 @@ class NotificationService {
 
   private async displayNotification(notification: Notification): Promise<void> {
     // Browser notification
-    if (this.preferences.browser && 'Notification' in window && Notification.permission === 'granted') {
+    if (
+      this.preferences.browser &&
+      'Notification' in window &&
+      Notification.permission === 'granted'
+    ) {
       const browserNotification = new Notification(notification.title, {
         body: notification.message,
         icon: '/favicon.ico',
         tag: notification.id,
-        requireInteraction: notification.priority === 'critical'
+        requireInteraction: notification.priority === 'critical',
       });
 
       browserNotification.onclick = () => {
@@ -390,7 +400,7 @@ class NotificationService {
       const now = new Date();
       const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
       const { start, end } = this.preferences.quietHours;
-      
+
       if (start <= end) {
         // Same day quiet hours
         if (currentTime >= start && currentTime <= end) {
@@ -416,10 +426,10 @@ class NotificationService {
     await fetch(`${this.baseUrl}/notifications`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.authToken}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${this.authToken}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(notification)
+      body: JSON.stringify(notification),
     });
   }
 
@@ -429,13 +439,13 @@ class NotificationService {
     try {
       const response = await fetch(`${this.baseUrl}/notifications`, {
         headers: {
-          'Authorization': `Bearer ${this.authToken}`
-        }
+          Authorization: `Bearer ${this.authToken}`,
+        },
       });
 
       if (response.ok) {
         const backendNotifications = await response.json();
-        
+
         // Merge with local notifications
         backendNotifications.forEach((notification: Notification) => {
           if (!this.notifications.has(notification.id)) {
@@ -530,19 +540,19 @@ class NotificationService {
         deployment: true,
         compliance: true,
         audit: true,
-        security: true
+        security: true,
       },
       priorities: {
         low: false,
         medium: true,
         high: true,
-        critical: true
+        critical: true,
       },
       quietHours: {
         enabled: false,
         start: '22:00',
-        end: '08:00'
-      }
+        end: '08:00',
+      },
     };
   }
 
@@ -556,8 +566,10 @@ class NotificationService {
     const criticalNotifications = this.getNotifications({ priority: 'critical', read: false });
     const openComplianceAlerts = this.getComplianceAlerts({ status: 'open' });
     const unresolvedSecurityAlerts = this.getSecurityAlerts({ resolved: false });
-    
-    return criticalNotifications.length + openComplianceAlerts.length + unresolvedSecurityAlerts.length;
+
+    return (
+      criticalNotifications.length + openComplianceAlerts.length + unresolvedSecurityAlerts.length
+    );
   }
 
   // Cleanup

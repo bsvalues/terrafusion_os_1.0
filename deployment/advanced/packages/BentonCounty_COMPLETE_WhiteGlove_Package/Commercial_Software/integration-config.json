@@ -7,24 +7,24 @@
     "backend": {
       "language": "Rust",
       "framework": "Axum",
-      "port": 3002,
+      "port": \${{TF_CONSCIOUSNESS_PORT:-3002}},
       "path": "./backend"
     },
     "frontend": {
       "language": "TypeScript",
       "framework": "React",
-      "port": 3000,
+      "port": \${{TF_CONSCIOUSNESS_PORT:-3002}},
       "path": "./frontend"
     },
     "database": {
       "type": "PostgreSQL",
-      "port": 5432,
+      "port": \${{TF_CONSCIOUSNESS_PORT:-3002}},
       "schemas": ["commercial", "appraisal", "market"]
     },
     "services": {
-      "redis": { "port": 6379 },
-      "prometheus": { "port": 9090 },
-      "grafana": { "port": 3001 }
+      "redis": { "port": \${{TF_CONSCIOUSNESS_PORT:-3002}} },
+      "prometheus": { "port": \${{TF_CONSCIOUSNESS_PORT:-3002}} },
+      "grafana": { "port": \${{TF_CONSCIOUSNESS_PORT:-3002}} }
     }
   },
   "features": {

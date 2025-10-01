@@ -394,7 +394,7 @@ if __name__ == "__main__":
         )
     except ImportError:
         # Fallback if port management service not available
-        port = 5001
+        port=\${{TF_API_HTTPS_PORT:-5001}}
         print(f"⚠️ Port management service not available, using fallback port: {port}")
         print(f"🚀 Starting TerraFusion Gauge Field Theory API Server")
         print(f"🔬 Revolutionary physics-based governance optimization")

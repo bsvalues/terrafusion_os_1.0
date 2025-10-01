@@ -1,0 +1,126 @@
+{
+  "name": "autonomous-research-engine",
+  "version": "1.0.0",
+  "description": "Autonomous Research Engine - Self-directed research system with AI-powered data discovery, analysis, and insight generation for government operations",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "build": "npm run lint && npm run test",
+    "research:analyze": "node src/analyzers/data-analyzer.js",
+    "research:discover": "node src/discovery/data-discovery.js",
+    "research:insights": "node src/insights/insight-generator.js",
+    "research:reports": "node src/reports/report-generator.js",
+    "research:validate": "node src/validation/research-validator.js",
+    "research:ethics": "node src/ethics/ethics-monitor.js",
+    "research:health": "node src/health/research-health-check.js"
+  },
+  "keywords": [
+    "autonomous-research",
+    "ai-research",
+    "data-analysis",
+    "government-research",
+    "machine-learning",
+    "data-discovery",
+    "research-automation"
+  ],
+  "author": "TerraFusion Research Division",
+  "license": "Government-Research-Commercial",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.0.0",
+    "redis": "^4.6.0",
+    "elasticsearch": "^16.7.0",
+    "winston": "^3.11.0",
+    "axios": "^1.6.0",
+    "lodash": "^4.17.0",
+    "uuid": "^9.0.0",
+    "dotenv": "^16.3.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.0",
+    "rate-limiter-flexible": "^3.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.0",
+    "crypto-js": "^4.2.0",
+    "node-cron": "^3.0.0",
+    "async": "^3.2.0",
+    "moment": "^2.30.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.0",
+    "inquirer": "^9.2.0",
+    "yargs": "^17.7.0",
+    "natural": "^6.12.0",
+    "compromise": "^14.10.0",
+    "simple-statistics": "^7.8.0",
+    "ml-regression": "^6.0.1",
+    "ml-matrix": "^6.11.0",
+    "d3": "^7.9.0",
+    "plotly.js": "^2.35.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0",
+    "@types/node": "^20.10.0",
+    "@types/express": "^4.17.0",
+    "@types/uuid": "^9.0.0",
+    "@types/lodash": "^4.14.0",
+    "@types/cors": "^2.8.0",
+    "@types/compression": "^1.7.0",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/bcryptjs": "^2.4.0",
+    "@types/crypto-js": "^4.2.0",
+    "@types/d3": "^7.4.0",
+    "supertest": "^6.3.0",
+    "cross-env": "^7.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion-os/autonomous-research-engine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/terrafusion-os/autonomous-research-engine/issues"
+  },
+  "homepage": "https://github.com/terrafusion-os/autonomous-research-engine#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.test.js"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2022": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-unused-vars": "warn",
+      "no-console": "off"
+    }
+  }
+}

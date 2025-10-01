@@ -28,7 +28,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui', 'dist', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.TF_FRONTEND_PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Terrafusion Marketplace API listening on port ${PORT}`);
 });

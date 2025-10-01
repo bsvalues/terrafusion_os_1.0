@@ -33,11 +33,7 @@
           "icon": "☸️"
         }
       },
-      "permissions": [
-        "property:read",
-        "map:view",
-        "export:image"
-      ],
+      "permissions": ["property:read", "map:view", "export:image"],
       "config": {
         "defaultZoom": 13,
         "maxZoom": 18,
@@ -77,11 +73,7 @@
           "icon": "☸️"
         }
       },
-      "permissions": [
-        "property:read",
-        "analytics:execute",
-        "export:data"
-      ],
+      "permissions": ["property:read", "analytics:execute", "export:data"],
       "config": {
         "defaultRadius": 1000,
         "maxRadius": 10000,
@@ -111,11 +103,7 @@
           "icon": "🖥️"
         }
       },
-      "permissions": [
-        "property:read",
-        "quantum:compute",
-        "valuation:write"
-      ],
+      "permissions": ["property:read", "quantum:compute", "valuation:write"],
       "config": {
         "quantumDepth": 5,
         "iterations": 1000
@@ -144,11 +132,7 @@
           "icon": "🖥️"
         }
       },
-      "permissions": [
-        "market:read",
-        "prediction:execute",
-        "export:report"
-      ],
+      "permissions": ["market:read", "prediction:execute", "export:report"],
       "config": {
         "predictionWindow": 90,
         "confidenceThreshold": 0.85
@@ -177,10 +161,7 @@
           "icon": "🖥️"
         }
       },
-      "permissions": [
-        "property:read",
-        "comparison:create"
-      ],
+      "permissions": ["property:read", "comparison:create"],
       "config": {
         "maxCompareItems": 5
       }
@@ -208,11 +189,7 @@
           "icon": "🖥️"
         }
       },
-      "permissions": [
-        "property:read",
-        "calculation:execute",
-        "export:pdf"
-      ],
+      "permissions": ["property:read", "calculation:execute", "export:pdf"],
       "config": {
         "defaultHoldingPeriod": 5,
         "taxRate": 0.28

@@ -1,0 +1,118 @@
+{
+  "name": "ai-swarm",
+  "version": "1.0.0",
+  "description": "1,008 Agent Orchestration System - Distributed AI swarm coordination with 15 components, 8GB RAM requirement, and federal AI governance compliance",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "build": "npm run lint && npm run test",
+    "swarm:monitor": "node src/monitoring/swarm-monitor.js",
+    "swarm:coordinator": "node src/coordinators/supreme-commander.js",
+    "swarm:agents": "node src/agents/agent-manager.js",
+    "swarm:consensus": "node src/consensus/consensus-engine.js",
+    "swarm:health": "node src/health/swarm-health-check.js",
+    "swarm:optimize": "node src/optimization/swarm-optimizer.js"
+  },
+  "keywords": [
+    "ai-swarm",
+    "distributed-ai",
+    "agent-orchestration",
+    "swarm-intelligence",
+    "government-ai",
+    "federal-compliance",
+    "machine-learning"
+  ],
+  "author": "TerraFusion AI Swarm Division",
+  "license": "Government-AI-Commercial",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.7.0",
+    "redis": "^4.6.0",
+    "mongoose": "^8.0.0",
+    "winston": "^3.11.0",
+    "axios": "^1.6.0",
+    "lodash": "^4.17.0",
+    "uuid": "^9.0.0",
+    "dotenv": "^16.3.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.0",
+    "rate-limiter-flexible": "^3.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.0",
+    "crypto-js": "^4.2.0",
+    "node-cron": "^3.0.0",
+    "async": "^3.2.0",
+    "moment": "^2.30.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.0",
+    "inquirer": "^9.2.0",
+    "yargs": "^17.7.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0",
+    "@types/node": "^20.10.0",
+    "@types/express": "^4.17.0",
+    "@types/socket.io": "^3.0.0",
+    "@types/uuid": "^9.0.0",
+    "@types/lodash": "^4.14.0",
+    "@types/cors": "^2.8.0",
+    "@types/compression": "^1.7.0",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/bcryptjs": "^2.4.0",
+    "@types/crypto-js": "^4.2.0",
+    "supertest": "^6.3.0",
+    "cross-env": "^7.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion-os/ai-swarm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/terrafusion-os/ai-swarm/issues"
+  },
+  "homepage": "https://github.com/terrafusion-os/ai-swarm#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.test.js"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2022": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-unused-vars": "warn",
+      "no-console": "off"
+    }
+  }
+}

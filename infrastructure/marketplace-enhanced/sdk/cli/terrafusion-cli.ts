@@ -20,10 +20,7 @@ const CLI_VERSION = '1.0.0';
 const TEMPLATE_REPO = 'https://github.com/terrafusion/plugin-templates';
 
 // Main CLI setup
-program
-  .name('terrafusion')
-  .description('Terrafusion Plugin Development CLI')
-  .version(CLI_VERSION);
+program.name('terrafusion').description('Terrafusion Plugin Development CLI').version(CLI_VERSION);
 
 // Create new plugin command
 program
@@ -161,7 +158,9 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
 
   // Validate plugin name
   if (!/^[a-z][a-z0-9-]*$/.test(pluginName)) {
-    throw new Error('Plugin name must start with a letter and contain only lowercase letters, numbers, and hyphens');
+    throw new Error(
+      'Plugin name must start with a letter and contain only lowercase letters, numbers, and hyphens'
+    );
   }
 
   // Interactive setup
@@ -170,13 +169,13 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
       type: 'input',
       name: 'description',
       message: 'Plugin description:',
-      default: `A Terrafusion plugin for ${pluginName}`
+      default: `A Terrafusion plugin for ${pluginName}`,
     },
     {
       type: 'input',
       name: 'author',
       message: 'Author name:',
-      default: 'Your Name'
+      default: 'Your Name',
     },
     {
       type: 'list',
@@ -185,8 +184,8 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
       choices: [
         { name: 'Foundation (Free, basic features)', value: 'foundation' },
         { name: 'Professional (Paid, advanced features)', value: 'professional' },
-        { name: 'Enterprise (Premium, full features)', value: 'enterprise' }
-      ]
+        { name: 'Enterprise (Premium, full features)', value: 'enterprise' },
+      ],
     },
     {
       type: 'list',
@@ -200,8 +199,8 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
         'Compliance & Audit',
         'Public Services',
         'Financial Management',
-        'GIS & Mapping'
-      ]
+        'GIS & Mapping',
+      ],
     },
     {
       type: 'checkbox',
@@ -214,8 +213,8 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
         { name: 'Background tasks', value: 'tasks' },
         { name: 'Email notifications', value: 'email' },
         { name: 'File uploads', value: 'uploads' },
-        { name: 'External integrations', value: 'integrations' }
-      ]
+        { name: 'External integrations', value: 'integrations' },
+      ],
     },
     {
       type: 'checkbox',
@@ -224,9 +223,9 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
       choices: [
         { name: 'Small counties (<50k population)', value: 'small' },
         { name: 'Medium counties (50k-200k population)', value: 'medium' },
-        { name: 'Large counties (>200k population)', value: 'large' }
-      ]
-    }
+        { name: 'Large counties (>200k population)', value: 'large' },
+      ],
+    },
   ]);
 
   // Create plugin directory
@@ -236,9 +235,10 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
   // Generate plugin manifest
   const manifest: PluginManifest = {
     id: pluginName,
-    name: pluginName.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' '),
+    name: pluginName
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' '),
     version: '1.0.0',
     description: answers.description,
     author: answers.author,
@@ -255,14 +255,14 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
       ui: generateUIComponents(answers.features),
       hooks: generateHooks(answers.features),
       compliance: [
-        { standard: 'CountyOS', level: 'required', description: 'Basic CountyOS compliance' }
-      ]
+        { standard: 'CountyOS', level: 'required', description: 'Basic CountyOS compliance' },
+      ],
     },
     targeting: {
       county_sizes: answers.countyTypes,
       county_types: ['rural', 'urban', 'suburban'],
-      specialties: []
-    }
+      specialties: [],
+    },
   };
 
   // Write manifest
@@ -275,23 +275,23 @@ async function createPlugin(pluginName: string, options: any): Promise<void> {
     description: answers.description,
     main: 'dist/index.js',
     scripts: {
-      'build': 'terrafusion build',
-      'test': 'terrafusion test',
-      'dev': 'terrafusion dev',
-      'validate': 'terrafusion validate',
-      'package': 'terrafusion package',
-      'deploy': 'terrafusion deploy'
+      build: 'terrafusion build',
+      test: 'terrafusion test',
+      dev: 'terrafusion dev',
+      validate: 'terrafusion validate',
+      package: 'terrafusion package',
+      deploy: 'terrafusion deploy',
     },
     dependencies: {
-      '@terrafusion/sdk': '^1.0.0'
+      '@terrafusion/sdk': '^1.0.0',
     },
     devDependencies: {
       '@terrafusion/cli': '^1.0.0',
-      'typescript': '^5.0.0',
+      typescript: '^5.0.0',
       '@types/node': '^20.0.0',
-      'jest': '^29.0.0',
-      '@types/jest': '^29.0.0'
-    }
+      jest: '^29.0.0',
+      '@types/jest': '^29.0.0',
+    },
   };
 
   await fs.writeJSON(path.join(pluginDir, 'package.json'), packageJson, { spaces: 2 });
@@ -340,20 +340,20 @@ async function initializePlugin(): Promise<void> {
           return 'Plugin ID must start with a letter and contain only lowercase letters, numbers, and hyphens';
         }
         return true;
-      }
+      },
     },
     {
       type: 'input',
       name: 'name',
       message: 'Plugin name:',
-      default: (existingPackage as any).name || path.basename(process.cwd())
+      default: (existingPackage as any).name || path.basename(process.cwd()),
     },
     {
       type: 'input',
       name: 'description',
       message: 'Description:',
-      default: (existingPackage as any).description || 'A Terrafusion plugin'
-    }
+      default: (existingPackage as any).description || 'A Terrafusion plugin',
+    },
   ]);
 
   // Generate minimal manifest
@@ -375,13 +375,13 @@ async function initializePlugin(): Promise<void> {
       api: [],
       ui: [],
       hooks: [],
-      compliance: []
+      compliance: [],
     },
     targeting: {
       county_sizes: ['small', 'medium', 'large'],
       county_types: ['rural', 'urban', 'suburban'],
-      specialties: []
-    }
+      specialties: [],
+    },
   };
 
   await fs.writeJSON('terrafusion.json', manifest, { spaces: 2 });
@@ -396,7 +396,7 @@ async function validatePlugin(options: any): Promise<void> {
   // Check for required files
   const requiredFiles = ['terrafusion.json', 'package.json'];
   for (const file of requiredFiles) {
-    if (!await fs.pathExists(file)) {
+    if (!(await fs.pathExists(file))) {
       throw new Error(`Required file ${file} not found`);
     }
   }
@@ -484,7 +484,7 @@ async function listTemplates(): Promise<void> {
     { name: 'api', description: 'Plugin with REST API endpoints' },
     { name: 'analytics', description: 'Analytics and reporting plugin' },
     { name: 'integration', description: 'External system integration plugin' },
-    { name: 'workflow', description: 'Workflow automation plugin' }
+    { name: 'workflow', description: 'Workflow automation plugin' },
   ];
 
   templates.forEach(template => {
@@ -502,7 +502,7 @@ function generatePermissions(features: string[]): any[] {
       type: 'data_write',
       scope: 'plugin_data',
       description: 'Store plugin data',
-      required: true
+      required: true,
     });
   }
 
@@ -511,7 +511,7 @@ function generatePermissions(features: string[]): any[] {
       type: 'api_access',
       scope: 'terrafusion_api',
       description: 'Access Terrafusion APIs',
-      required: true
+      required: true,
     });
   }
 
@@ -526,8 +526,8 @@ function generateApiEndpoints(features: string[]): any[] {
       path: '/health',
       method: 'GET',
       description: 'Health check endpoint',
-      auth_required: false
-    }
+      auth_required: false,
+    },
   ];
 }
 
@@ -539,7 +539,7 @@ function generateUIComponents(features: string[]): any[] {
       name: 'main-dashboard',
       type: 'dashboard',
       path: '/dashboard',
-      permissions: ['data_read']
+      permissions: ['data_read'],
     });
   }
 
@@ -551,17 +551,21 @@ function generateHooks(features: string[]): any[] {
     {
       event: 'install',
       handler: 'onInstall',
-      async: false
+      async: false,
     },
     {
       event: 'activate',
       handler: 'onActivate',
-      async: false
-    }
+      async: false,
+    },
   ];
 }
 
-async function generateTemplateFiles(pluginDir: string, pluginName: string, answers: any): Promise<void> {
+async function generateTemplateFiles(
+  pluginDir: string,
+  pluginName: string,
+  answers: any
+): Promise<void> {
   // Generate main plugin file
   const mainContent = `
 import TerraFusionSDK, { PluginContext } from '@terrafusion/sdk';
@@ -611,10 +615,10 @@ export default class ${toPascalCase(pluginName)}Plugin {
       forceConsistentCasingInFileNames: true,
       declaration: true,
       declarationMap: true,
-      sourceMap: true
+      sourceMap: true,
     },
     include: ['src/**/*'],
-    exclude: ['node_modules', 'dist', 'tests']
+    exclude: ['node_modules', 'dist', 'tests'],
   };
 
   await fs.writeJSON(path.join(pluginDir, 'tsconfig.json'), tsConfig, { spaces: 2 });
@@ -702,9 +706,10 @@ function validateManifest(manifest: any): string[] {
 }
 
 function toPascalCase(str: string): string {
-  return str.split('-').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1)
-  ).join('');
+  return str
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
 }
 
 function getGitIgnoreContent(): string {

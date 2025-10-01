@@ -236,7 +236,7 @@ namespace TerraFusion.Core.Services
                 }
                 
                 _logger.LogInformation("Retrieved {Count} properties for jurisdiction {Jurisdiction} from Harris PACS", 
-                    properties.Count, jurisdiction);
+                    properties?.Count ?? 0, jurisdiction);
                 
                 return properties ?? new List<PACSProperty>();
             }
@@ -440,7 +440,7 @@ namespace TerraFusion.Core.Services
                     PropertyNameCaseInsensitive = true
                 });
 
-                return syncStatus;
+                return syncStatus ?? new PACSSyncStatus { Jurisdiction = jurisdiction, Status = "Offline", LastSync = DateTime.UtcNow, RecordsProcessed = 0 };
             }
             catch (Exception ex)
             {

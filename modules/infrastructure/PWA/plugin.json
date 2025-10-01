@@ -1,0 +1,35 @@
+{
+  "name": "infrastructure",
+  "displayName": "Infrastructure Management",
+  "description": "Infrastructure monitoring and management systems",
+  "version": "1.0.0",
+  "status": "active",
+  "tier": "Tier 1",
+  "category": "infrastructure",
+  "author": "TerraFusion OS",
+  "port": 5136,
+  "pricing": {
+    "basePrice": 299,
+    "subscriptionModel": "monthly",
+    "enterprise": true
+  },
+  "endpoints": {
+    "health": "/health",
+    "api": "/api",
+    "ui": "/ui"
+  },
+  "dependencies": [],
+  "capabilities": [
+    "infrastructure-monitoring",
+    "system-management",
+    "performance-tracking",
+    "resource-allocation",
+    "maintenance-scheduling"
+  ],
+  "configuration": {
+    "autoStart": true,
+    "hotSwappable": true,
+    "governmentCompliant": true,
+    "security": "government-grade"
+  }
+}

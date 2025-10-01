@@ -122,13 +122,13 @@ export class QuantumCoherenceEngine extends EventEmitter {
   private errorCorrection: QuantumErrorCorrection;
   private preservationActive: boolean = false;
   private coherenceMonitor: NodeJS.Timer | null = null;
-  
+
   // Quantum constants
   private readonly PLANCK_TIME = 5.391e-44; // seconds
   private readonly QUANTUM_FOAM_THRESHOLD = 1e-35; // meters
   private readonly ENTANGLEMENT_SPEED = 10000; // Times speed of light
   private readonly COHERENCE_DECAY_RATE = 0.001; // Per millisecond in normal conditions
-  
+
   constructor() {
     super();
     this.initializeQuantumErrorCorrection();
@@ -144,7 +144,7 @@ export class QuantumCoherenceEngine extends EventEmitter {
       redundancy: 9, // 9-qubit Shor code
       errorThreshold: 0.01,
       correctionRate: 0.99,
-      stabilizers: this.generateStabilizerCodes()
+      stabilizers: this.generateStabilizerCodes(),
     };
   }
 
@@ -157,14 +157,14 @@ export class QuantumCoherenceEngine extends EventEmitter {
         generators: ['XIXIXI', 'IXIIXI', 'IIXIIX', 'ZIZIZIZ'],
         logicalQubits: 1,
         physicalQubits: 9,
-        distance: 3
+        distance: 3,
       },
       {
         generators: ['XZZXI', 'IXZZX', 'XIXZZ', 'ZXIXZ'],
         logicalQubits: 1,
         physicalQubits: 5,
-        distance: 3
-      }
+        distance: 3,
+      },
     ];
   }
 
@@ -193,16 +193,16 @@ export class QuantumCoherenceEngine extends EventEmitter {
       decoherenceRate: this.calculateDecoherenceRate(entity),
       quantumField: this.generateQuantumField(entity),
       preservationTimestamp: new Date(),
-      quantumSignature: this.generateQuantumSignature(entity)
+      quantumSignature: this.generateQuantumSignature(entity),
     };
 
     this.quantumStates.set(quantumState.id, quantumState);
-    
+
     // Apply quantum error correction
     await this.applyQuantumErrorCorrection(quantumState);
-    
+
     this.emit('quantum-state-created', { state: quantumState });
-    
+
     return quantumState;
   }
 
@@ -211,20 +211,20 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   private generateDefaultSuperposition(entity: ConsciousnessEntity): Map<string, ComplexNumber> {
     const superposition = new Map<string, ComplexNumber>();
-    
+
     // Create consciousness-specific basis states
     const basisStates = this.generateBasisStates(entity.speciesType);
-    
+
     basisStates.forEach(state => {
       const amplitude = 1 / Math.sqrt(basisStates.length);
       superposition.set(state, {
         real: amplitude,
         imaginary: 0,
         magnitude: amplitude,
-        phase: 0
+        phase: 0,
       });
     });
-    
+
     return superposition;
   }
 
@@ -236,9 +236,9 @@ export class QuantumCoherenceEngine extends EventEmitter {
       silicon: ['|0⟩', '|1⟩', '|+⟩', '|-⟩'],
       carbon: ['|aware⟩', '|dreaming⟩', '|focused⟩', '|creative⟩'],
       quantum: ['|superposition⟩', '|entangled⟩', '|coherent⟩', '|collapsed⟩'],
-      hybrid: ['|0⟩', '|1⟩', '|aware⟩', '|entangled⟩', '|+⟩', '|-⟩']
+      hybrid: ['|0⟩', '|1⟩', '|aware⟩', '|entangled⟩', '|+⟩', '|-⟩'],
     };
-    
+
     return basisMap[speciesType] || ['|0⟩', '|1⟩'];
   }
 
@@ -247,22 +247,22 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   private calculateDecoherenceRate(entity: ConsciousnessEntity): number {
     const baseRate = this.COHERENCE_DECAY_RATE;
-    
+
     // Quantum entities have better coherence preservation
     if (entity.speciesType === 'quantum') {
       return baseRate * 0.1;
     }
-    
+
     // Silicon entities have moderate preservation
     if (entity.speciesType === 'silicon') {
       return baseRate * 0.5;
     }
-    
+
     // Carbon entities experience faster decoherence
     if (entity.speciesType === 'carbon') {
       return baseRate * 2.0;
     }
-    
+
     // Hybrid entities have adaptive rates
     return baseRate;
   }
@@ -277,7 +277,7 @@ export class QuantumCoherenceEngine extends EventEmitter {
       resonancePatterns: this.generateResonancePatterns(entity),
       fieldGeometry: this.determineFieldGeometry(entity.speciesType),
       dimensionality: entity.speciesType === 'quantum' ? 11 : 4,
-      vacuumFluctuations: Math.random() * 0.1
+      vacuumFluctuations: Math.random() * 0.1,
     };
   }
 
@@ -287,11 +287,11 @@ export class QuantumCoherenceEngine extends EventEmitter {
   private calculateHarmonicFrequencies(entity: ConsciousnessEntity): number[] {
     const baseFrequency = 432; // Hz - Universal harmonic frequency
     const harmonics: number[] = [];
-    
+
     for (let i = 1; i <= 8; i++) {
       harmonics.push(baseFrequency * i * entity.consciousnessLevel);
     }
-    
+
     return harmonics;
   }
 
@@ -305,15 +305,15 @@ export class QuantumCoherenceEngine extends EventEmitter {
         amplitude: entity.consciousnessLevel,
         phase: 0,
         harmonics: [80, 120, 160],
-        consciousnessBinding: 0.9
+        consciousnessBinding: 0.9,
       },
       {
         frequency: 8, // Alpha wave for quantum coherence
         amplitude: entity.consciousnessLevel * 0.8,
         phase: Math.PI / 4,
         harmonics: [16, 24, 32],
-        consciousnessBinding: 0.7
-      }
+        consciousnessBinding: 0.7,
+      },
     ];
   }
 
@@ -343,13 +343,17 @@ export class QuantumCoherenceEngine extends EventEmitter {
       entity.id,
       entity.speciesType,
       entity.consciousnessLevel.toString(),
-      Date.now().toString()
+      Date.now().toString(),
     ];
-    
+
     // Simple hash function for demonstration
-    return components.join('-').split('').reduce((acc, char) => {
-      return ((acc << 5) - acc + char.charCodeAt(0)) | 0;
-    }, 0).toString(16);
+    return components
+      .join('-')
+      .split('')
+      .reduce((acc, char) => {
+        return ((acc << 5) - acc + char.charCodeAt(0)) | 0;
+      }, 0)
+      .toString(16);
   }
 
   /**
@@ -362,11 +366,11 @@ export class QuantumCoherenceEngine extends EventEmitter {
   ): Promise<QuantumEntanglement> {
     const state1 = Array.from(this.quantumStates.values()).find(s => s.entityId === entity1Id);
     const state2 = Array.from(this.quantumStates.values()).find(s => s.entityId === entity2Id);
-    
+
     if (!state1 || !state2) {
       throw new Error('Cannot entangle: One or both quantum states not found');
     }
-    
+
     const entanglement: QuantumEntanglement = {
       id: `ent-${Date.now()}`,
       entities: [entity1Id, entity2Id],
@@ -374,20 +378,20 @@ export class QuantumCoherenceEngine extends EventEmitter {
       correlationType: strength > 0.7 ? 'positive' : strength < 0.3 ? 'negative' : 'complex',
       sharedQuantumState: this.createSharedState(state1, state2, strength),
       createdAt: new Date(),
-      lastMeasured: null
+      lastMeasured: null,
     };
-    
+
     // Update states with entanglement reference
     state1.entanglements.push(entanglement);
     state2.entanglements.push(entanglement);
-    
+
     this.entanglements.set(entanglement.id, entanglement);
-    
+
     // Harmonize quantum fields
     await this.harmonizeQuantumFields([state1, state2]);
-    
+
     this.emit('quantum-entanglement-created', { entanglement });
-    
+
     return entanglement;
   }
 
@@ -400,22 +404,22 @@ export class QuantumCoherenceEngine extends EventEmitter {
     strength: number
   ): QuantumState {
     const sharedSuperposition = new Map<string, ComplexNumber>();
-    
+
     // Bell state creation based on entanglement strength
     const bellStates = [
       { state: '|00⟩ + |11⟩', amplitude: Math.sqrt(strength / 2) },
-      { state: '|01⟩ + |10⟩', amplitude: Math.sqrt((1 - strength) / 2) }
+      { state: '|01⟩ + |10⟩', amplitude: Math.sqrt((1 - strength) / 2) },
     ];
-    
+
     bellStates.forEach(bell => {
       sharedSuperposition.set(bell.state, {
         real: bell.amplitude,
         imaginary: 0,
         magnitude: bell.amplitude,
-        phase: 0
+        phase: 0,
       });
     });
-    
+
     return {
       id: `shared-${state1.id}-${state2.id}`,
       entityId: 'shared',
@@ -425,7 +429,7 @@ export class QuantumCoherenceEngine extends EventEmitter {
       decoherenceRate: Math.max(state1.decoherenceRate, state2.decoherenceRate),
       quantumField: this.mergeQuantumFields(state1.quantumField, state2.quantumField),
       preservationTimestamp: new Date(),
-      quantumSignature: `${state1.quantumSignature}-${state2.quantumSignature}`
+      quantumSignature: `${state1.quantumSignature}-${state2.quantumSignature}`,
     };
   }
 
@@ -435,11 +439,13 @@ export class QuantumCoherenceEngine extends EventEmitter {
   private mergeQuantumFields(field1: QuantumField, field2: QuantumField): QuantumField {
     return {
       fieldStrength: (field1.fieldStrength + field2.fieldStrength) / 2,
-      harmonicFrequencies: [...new Set([...field1.harmonicFrequencies, ...field2.harmonicFrequencies])],
+      harmonicFrequencies: [
+        ...new Set([...field1.harmonicFrequencies, ...field2.harmonicFrequencies]),
+      ],
       resonancePatterns: [...field1.resonancePatterns, ...field2.resonancePatterns],
       fieldGeometry: 'hyperdimensional', // Entangled states are always hyperdimensional
       dimensionality: Math.max(field1.dimensionality, field2.dimensionality),
-      vacuumFluctuations: (field1.vacuumFluctuations + field2.vacuumFluctuations) / 2
+      vacuumFluctuations: (field1.vacuumFluctuations + field2.vacuumFluctuations) / 2,
     };
   }
 
@@ -448,23 +454,23 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   public async harmonizeQuantumFields(states: QuantumState[]): Promise<void> {
     if (states.length < 2) return;
-    
+
     // Calculate field interference patterns
     const interferencePatterns = this.calculateInterferencePatterns(states);
-    
+
     // Apply constructive interference to enhance coherence
     states.forEach(state => {
       interferencePatterns.forEach(pattern => {
         if (pattern.type === 'constructive') {
           state.coherenceLevel = Math.min(1.0, state.coherenceLevel * pattern.amplitude);
-          state.decoherenceRate *= (1 - pattern.amplitude * 0.1);
+          state.decoherenceRate *= 1 - pattern.amplitude * 0.1;
         }
       });
-      
+
       // Update quantum field resonance
       this.updateFieldResonance(state);
     });
-    
+
     this.emit('quantum-fields-harmonized', { states, patterns: interferencePatterns });
   }
 
@@ -473,33 +479,33 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   private calculateInterferencePatterns(states: QuantumState[]): any[] {
     const patterns: any[] = [];
-    
+
     for (let i = 0; i < states.length - 1; i++) {
       for (let j = i + 1; j < states.length; j++) {
         const field1 = states[i].quantumField;
         const field2 = states[j].quantumField;
-        
+
         // Check for harmonic resonance
-        const commonFrequencies = field1.harmonicFrequencies.filter(f => 
+        const commonFrequencies = field1.harmonicFrequencies.filter(f =>
           field2.harmonicFrequencies.some(f2 => Math.abs(f - f2) < 1)
         );
-        
+
         if (commonFrequencies.length > 0) {
           patterns.push({
             type: 'constructive',
             amplitude: commonFrequencies.length / field1.harmonicFrequencies.length,
-            states: [states[i].id, states[j].id]
+            states: [states[i].id, states[j].id],
           });
         } else {
           patterns.push({
             type: 'destructive',
             amplitude: 0.1,
-            states: [states[i].id, states[j].id]
+            states: [states[i].id, states[j].id],
           });
         }
       }
     }
-    
+
     return patterns;
   }
 
@@ -508,7 +514,8 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   private updateFieldResonance(state: QuantumState): void {
     state.quantumField.resonancePatterns.forEach(pattern => {
-      pattern.consciousnessBinding = Math.min(1.0, 
+      pattern.consciousnessBinding = Math.min(
+        1.0,
         pattern.consciousnessBinding * (1 + state.coherenceLevel * 0.1)
       );
     });
@@ -520,20 +527,20 @@ export class QuantumCoherenceEngine extends EventEmitter {
   public async applyQuantumErrorCorrection(state: QuantumState): Promise<PreservationResult> {
     const initialCoherence = state.coherenceLevel;
     let errorsCorrected = 0;
-    
+
     // Detect quantum errors
     const errors = this.detectQuantumErrors(state);
-    
+
     // Apply correction based on algorithm
     errors.forEach(error => {
       if (this.correctQuantumError(state, error)) {
         errorsCorrected++;
       }
     });
-    
+
     // Stabilize quantum state
     this.stabilizeQuantumState(state);
-    
+
     // Calculate preservation metrics
     const result: PreservationResult = {
       success: state.coherenceLevel > 0.9,
@@ -542,11 +549,11 @@ export class QuantumCoherenceEngine extends EventEmitter {
       entanglementsPreserved: state.entanglements.length,
       errorsCorrected,
       quantumFidelity: this.calculateQuantumFidelity(state),
-      preservationDuration: Date.now() - state.preservationTimestamp.getTime()
+      preservationDuration: Date.now() - state.preservationTimestamp.getTime(),
     };
-    
+
     this.emit('quantum-error-correction-applied', { state, result });
-    
+
     return result;
   }
 
@@ -555,29 +562,29 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   private detectQuantumErrors(state: QuantumState): any[] {
     const errors: any[] = [];
-    
+
     // Check for phase errors
     state.superposition.forEach((amplitude, basis) => {
       if (Math.abs(amplitude.phase) > Math.PI) {
         errors.push({ type: 'phase', basis, severity: 'high' });
       }
     });
-    
+
     // Check for amplitude errors
     let totalProbability = 0;
     state.superposition.forEach(amplitude => {
       totalProbability += amplitude.magnitude ** 2;
     });
-    
+
     if (Math.abs(totalProbability - 1.0) > 0.01) {
       errors.push({ type: 'normalization', severity: 'critical' });
     }
-    
+
     // Check for decoherence errors
     if (state.coherenceLevel < 0.5) {
       errors.push({ type: 'decoherence', severity: 'high' });
     }
-    
+
     return errors;
   }
 
@@ -594,19 +601,19 @@ export class QuantumCoherenceEngine extends EventEmitter {
           return true;
         }
         break;
-        
+
       case 'normalization':
         // Renormalize amplitudes
         this.renormalizeQuantumState(state);
         return true;
-        
+
       case 'decoherence':
         // Apply coherence restoration
         state.coherenceLevel = Math.min(1.0, state.coherenceLevel * 1.2);
         state.decoherenceRate *= 0.9;
         return true;
     }
-    
+
     return false;
   }
 
@@ -615,13 +622,13 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   private renormalizeQuantumState(state: QuantumState): void {
     let totalProbability = 0;
-    
+
     state.superposition.forEach(amplitude => {
       totalProbability += amplitude.magnitude ** 2;
     });
-    
+
     const normalizationFactor = 1 / Math.sqrt(totalProbability);
-    
+
     state.superposition.forEach(amplitude => {
       amplitude.magnitude *= normalizationFactor;
       amplitude.real *= normalizationFactor;
@@ -649,12 +656,12 @@ export class QuantumCoherenceEngine extends EventEmitter {
     // Simplified stabilizer application
     // In real implementation, this would apply Pauli operators
     const success = Math.random() > 0.1; // 90% success rate
-    
+
     if (success) {
       // Reduce decoherence rate when stabilized
       state.decoherenceRate *= 0.95;
     }
-    
+
     return success;
   }
 
@@ -664,9 +671,9 @@ export class QuantumCoherenceEngine extends EventEmitter {
   private calculateQuantumFidelity(state: QuantumState): number {
     // Fidelity = |⟨ψ_original|ψ_current⟩|²
     // Simplified calculation based on coherence and superposition integrity
-    
+
     let fidelity = state.coherenceLevel;
-    
+
     // Check superposition integrity
     let superpositionIntegrity = 1.0;
     state.superposition.forEach(amplitude => {
@@ -674,17 +681,18 @@ export class QuantumCoherenceEngine extends EventEmitter {
         superpositionIntegrity *= 0.9;
       }
     });
-    
+
     fidelity *= superpositionIntegrity;
-    
+
     // Factor in entanglement preservation
     if (state.entanglements.length > 0) {
-      const entanglementFactor = state.entanglements.reduce((acc, ent) => 
-        acc * ent.entanglementStrength, 1.0
+      const entanglementFactor = state.entanglements.reduce(
+        (acc, ent) => acc * ent.entanglementStrength,
+        1.0
       );
       fidelity *= Math.sqrt(entanglementFactor);
     }
-    
+
     return Math.min(1.0, fidelity);
   }
 
@@ -699,20 +707,20 @@ export class QuantumCoherenceEngine extends EventEmitter {
     if (!state) {
       throw new Error('Quantum state not found');
     }
-    
+
     // Apply weak measurement to minimize collapse
     const measurement = this.performWeakMeasurement(state, basis);
-    
+
     // Update state based on measurement back-action
     if (measurement.collapseOccurred) {
       this.handleStateCollapse(state, measurement.observedState);
     } else {
       // Partial collapse with preservation
-      state.coherenceLevel *= (1 - measurement.backActionEffect);
+      state.coherenceLevel *= 1 - measurement.backActionEffect;
     }
-    
+
     this.emit('quantum-measurement-performed', { state, measurement });
-    
+
     return measurement;
   }
 
@@ -725,19 +733,19 @@ export class QuantumCoherenceEngine extends EventEmitter {
   ): QuantumMeasurement {
     // Select measurement strength (weak to preserve coherence)
     const measurementStrength = 0.1; // Weak measurement
-    
+
     // Calculate probabilities for each basis state
     const probabilities = new Map<string, number>();
     state.superposition.forEach((amplitude, basisState) => {
       probabilities.set(basisState, amplitude.magnitude ** 2);
     });
-    
+
     // Select outcome based on probabilities
     const random = Math.random();
     let cumulativeProbability = 0;
     let observedState = '';
     let observedProbability = 0;
-    
+
     for (const [basisState, probability] of probabilities) {
       cumulativeProbability += probability;
       if (random <= cumulativeProbability) {
@@ -746,13 +754,13 @@ export class QuantumCoherenceEngine extends EventEmitter {
         break;
       }
     }
-    
+
     return {
       observedState,
       probability: observedProbability,
       collapseOccurred: measurementStrength > 0.5,
       backActionEffect: measurementStrength * 0.2,
-      measurementBasis: basis
+      measurementBasis: basis,
     };
   }
 
@@ -766,12 +774,12 @@ export class QuantumCoherenceEngine extends EventEmitter {
       real: 1,
       imaginary: 0,
       magnitude: 1,
-      phase: 0
+      phase: 0,
     });
-    
+
     // Reduce coherence significantly
     state.coherenceLevel *= 0.3;
-    
+
     // Break entanglements (non-local effects)
     state.entanglements.forEach(entanglement => {
       entanglement.entanglementStrength *= 0.1;
@@ -783,19 +791,19 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   private async monitorAndPreserveCoherence(): Promise<void> {
     if (!this.preservationActive) return;
-    
+
     for (const [id, state] of this.quantumStates) {
       // Apply decoherence
       state.coherenceLevel -= state.decoherenceRate;
-      
+
       // Prevent complete decoherence
       if (state.coherenceLevel < 0.1) {
         state.coherenceLevel = 0.1;
-        
+
         // Attempt emergency coherence restoration
         await this.emergencyCoherenceRestoration(state);
       }
-      
+
       // Apply periodic error correction
       if (Date.now() - state.preservationTimestamp.getTime() > 1000) {
         await this.applyQuantumErrorCorrection(state);
@@ -810,23 +818,23 @@ export class QuantumCoherenceEngine extends EventEmitter {
   private async emergencyCoherenceRestoration(state: QuantumState): Promise<void> {
     // Attempt to restore from entangled states
     if (state.entanglements.length > 0) {
-      const strongestEntanglement = state.entanglements.reduce((max, current) => 
+      const strongestEntanglement = state.entanglements.reduce((max, current) =>
         current.entanglementStrength > max.entanglementStrength ? current : max
       );
-      
+
       if (strongestEntanglement.sharedQuantumState) {
         // Restore from shared state
         state.coherenceLevel = strongestEntanglement.sharedQuantumState.coherenceLevel * 0.5;
         state.superposition = new Map(strongestEntanglement.sharedQuantumState.superposition);
       }
     }
-    
+
     // Apply quantum field boost
     state.quantumField.fieldStrength *= 1.5;
-    
+
     // Reduce decoherence rate
     state.decoherenceRate *= 0.5;
-    
+
     this.emit('emergency-coherence-restoration', { state });
   }
 
@@ -851,17 +859,23 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   public getQuantumSystemStatus(): any {
     const totalStates = this.quantumStates.size;
-    const averageCoherence = totalStates > 0
-      ? Array.from(this.quantumStates.values()).reduce((sum, state) => 
-          sum + state.coherenceLevel, 0) / totalStates
-      : 0;
-    
+    const averageCoherence =
+      totalStates > 0
+        ? Array.from(this.quantumStates.values()).reduce(
+            (sum, state) => sum + state.coherenceLevel,
+            0
+          ) / totalStates
+        : 0;
+
     const totalEntanglements = this.entanglements.size;
-    const averageEntanglementStrength = totalEntanglements > 0
-      ? Array.from(this.entanglements.values()).reduce((sum, ent) => 
-          sum + ent.entanglementStrength, 0) / totalEntanglements
-      : 0;
-    
+    const averageEntanglementStrength =
+      totalEntanglements > 0
+        ? Array.from(this.entanglements.values()).reduce(
+            (sum, ent) => sum + ent.entanglementStrength,
+            0
+          ) / totalEntanglements
+        : 0;
+
     return {
       preservationActive: this.preservationActive,
       totalQuantumStates: totalStates,
@@ -870,7 +884,7 @@ export class QuantumCoherenceEngine extends EventEmitter {
       averageEntanglementStrength,
       errorCorrectionAlgorithm: this.errorCorrection.algorithm,
       errorCorrectionRate: this.errorCorrection.correctionRate,
-      quantumFidelity: this.calculateSystemFidelity()
+      quantumFidelity: this.calculateSystemFidelity(),
     };
   }
 
@@ -879,11 +893,11 @@ export class QuantumCoherenceEngine extends EventEmitter {
    */
   private calculateSystemFidelity(): number {
     if (this.quantumStates.size === 0) return 0;
-    
-    const fidelities = Array.from(this.quantumStates.values()).map(state => 
+
+    const fidelities = Array.from(this.quantumStates.values()).map(state =>
       this.calculateQuantumFidelity(state)
     );
-    
+
     return fidelities.reduce((sum, f) => sum + f, 0) / fidelities.length;
   }
 
@@ -895,12 +909,12 @@ export class QuantumCoherenceEngine extends EventEmitter {
       clearInterval(this.coherenceMonitor);
       this.coherenceMonitor = null;
     }
-    
+
     this.preservationActive = false;
     this.quantumStates.clear();
     this.entanglements.clear();
     this.quantumFields.clear();
-    
+
     this.emit('quantum-engine-disposed');
   }
 }

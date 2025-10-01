@@ -1,0 +1,98 @@
+{
+  "name": "Golden Ratio Engine",
+  "slug": "golden-ratio-engine",
+  "version": "1.0.0",
+  "displayName": "Golden Ratio Engine (φ)",
+  "description": "φ-governed mathematical doctrine for government property valuations, φ-ring analysis, and harmonic data processing in TerraFusion OS.",
+  "category": "core-government",
+  "tier": "Tier 1",
+  "pricing": {
+    "base": 89,
+    "per_analysis": 1.618,
+    "enterprise": 233
+  },
+  "service": {
+    "baseUrl": "http://localhost:${GRE_SERVICE_PORT:-8080}",
+    "healthPath": "/health",
+    "endpoints": {
+      "fib": "/fib",
+      "goldenSection": "/opt/golden-section", 
+      "goldenLaplacian": "/graph/golden-laplacian",
+      "gre_score": "/api/v1/gre/score",
+      "gre_tune": "/api/v1/gre/tune",
+      "gre_health": "/api/v1/gre/health"
+    }
+  },lden Optimization Suite",
+  "slug": "golden-optimization-suite",
+  "version": "1.0.0",
+  "displayName": "Golden Optimization Suite (\u03c6)",
+  "description": "Graph denoising, \u03c6-optimizers, and Fibonacci services powered by the Golden Ratio Engine.",
+  "service": {
+    "baseUrl": "http://grfe.golden:8080",
+    "healthPath": "/health",
+    "endpoints": {
+      "fib": "/fib",
+      "goldenSection": "/opt/golden-section",
+      "goldenLaplacian": "/graph/golden-laplacian"
+    }
+  },
+  "rbac": {
+    "roles": [
+      "Public",
+      "User",
+      "Assessor",
+      "Realtor",
+      "CountyAdmin",
+      "EnterpriseAdmin"
+    ],
+    "permissions": {
+      "Public": [
+        "ui:read"
+      ],
+      "User": [
+        "ui:read",
+        "fib:read"
+      ],
+      "Assessor": [
+        "ui:read",
+        "fib:read",
+        "opt:run",
+        "graph:run"
+      ],
+      "Realtor": [
+        "ui:read",
+        "fib:read",
+        "opt:run"
+      ],
+      "CountyAdmin": [
+        "*"
+      ],
+      "EnterpriseAdmin": [
+        "*"
+      ]
+    }
+  },
+  "billing": {
+    "plan": "foundation",
+    "annualUSD": 25000,
+    "addons": [
+      "batch spectral",
+      "GPU"
+    ],
+    "webhook": "/api/billing/webhook"
+  },
+  "routes": [
+    {
+      "path": "/golden",
+      "auth": "User"
+    },
+    {
+      "path": "/golden/graph",
+      "auth": "Assessor"
+    },
+    {
+      "path": "/golden/opt",
+      "auth": "Assessor"
+    }
+  ]
+}

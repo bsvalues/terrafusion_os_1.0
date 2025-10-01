@@ -32,10 +32,14 @@ Send notifications to Slack channels when workspace phases complete or fail.
 The plugin requires the following configuration:
 
 - **webhook_url** (required): Your Slack webhook URL
-- **channel** (optional): Default channel to send notifications to (default: #general)
-- **username** (optional): Bot username to display (default: Terrafusion Launcher)
-- **notify_on_success** (optional): Send notifications for successful phases (default: true)
-- **notify_on_error** (optional): Send notifications for failed phases (default: true)
+- **channel** (optional): Default channel to send notifications to (default:
+  #general)
+- **username** (optional): Bot username to display (default: Terrafusion
+  Launcher)
+- **notify_on_success** (optional): Send notifications for successful phases
+  (default: true)
+- **notify_on_error** (optional): Send notifications for failed phases (default:
+  true)
 
 ## Usage
 
@@ -48,10 +52,10 @@ You can also manually send notifications using the integration action:
 
 ```javascript
 // Send a custom notification
-await launcher.executePluginAction("slack-notifications", "send-notification", {
-  message: "Custom deployment notification",
-  channel: "#deployments",
-  color: "warning",
+await launcher.executePluginAction('slack-notifications', 'send-notification', {
+  message: 'Custom deployment notification',
+  channel: '#deployments',
+  color: 'warning',
 });
 ```
 
@@ -78,9 +82,12 @@ This plugin requires the following permissions:
 
 ## Troubleshooting
 
-1. **Plugin not sending notifications**: Check that the webhook URL is correctly configured
-2. **Messages not appearing in expected channel**: Verify the channel name includes the # prefix
-3. **Permission errors**: Ensure the webhook has permission to post to the specified channel
+1. **Plugin not sending notifications**: Check that the webhook URL is correctly
+   configured
+2. **Messages not appearing in expected channel**: Verify the channel name
+   includes the # prefix
+3. **Permission errors**: Ensure the webhook has permission to post to the
+   specified channel
 
 ## Development
 

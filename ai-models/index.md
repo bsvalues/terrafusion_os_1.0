@@ -1,14 +1,17 @@
 # Terrafusion AI Models Directory Index
 
 ## Directory Overview
+
 **Location**: `/ai-models/`  
-**Purpose**: AI/ML models, swarm orchestration, and intelligent service management  
+**Purpose**: AI/ML models, swarm orchestration, and intelligent service
+management  
 **Classification**: Core AI Infrastructure  
-**Security Level**: Government-Grade Production  
+**Security Level**: Government-Grade Production
 
 ## Architecture Summary
 
 ### Primary Components
+
 ```
 ai-models/
 ├── swarm/orchestrator.py    # 1,008 agent orchestration system
@@ -18,8 +21,10 @@ ai-models/
 ```
 
 ### Key Capabilities
+
 - **AI Swarm Orchestration**: Manages 1,008 AI agents across 6 specialized types
-- **Government Operations**: Property assessment, revenue optimization, compliance monitoring
+- **Government Operations**: Property assessment, revenue optimization,
+  compliance monitoring
 - **Real-time Processing**: FastAPI-based coordination with Redis backend
 - **Legacy Integration**: Harris PACS, Tyler Technologies, and county systems
 - **Claude-Flow Integration**: Advanced AI workflows and MCP tool coordination
@@ -27,17 +32,19 @@ ai-models/
 ## Agent Distribution Architecture
 
 ### Agent Types & Allocation
-| Agent Type | Count | Primary Capabilities |
-|------------|-------|---------------------|
-| **Property Assessor** | 300 | Property assessment, market analysis, GIS integration, Harris PACS sync |
-| **Revenue Hunter** | 200 | Property valuation, tax optimization, revenue analysis, financial modeling |
-| **Data Processor** | 200 | Data ingestion, ETL processing, Harris PACS migration, validation |
-| **Compliance Monitor** | 150 | Regulatory compliance, audit tracking, FISMA validation, security |
-| **Analyst** | 100 | Statistical analysis, predictive modeling, reporting, dashboard generation |
-| **Coordinator** | 58 | Task orchestration, agent coordination, Claude-Flow integration |
-| **Total** | **1,008** | **Distributed Government AI Operations** |
+
+| Agent Type             | Count     | Primary Capabilities                                                       |
+| ---------------------- | --------- | -------------------------------------------------------------------------- |
+| **Property Assessor**  | 300       | Property assessment, market analysis, GIS integration, Harris PACS sync    |
+| **Revenue Hunter**     | 200       | Property valuation, tax optimization, revenue analysis, financial modeling |
+| **Data Processor**     | 200       | Data ingestion, ETL processing, Harris PACS migration, validation          |
+| **Compliance Monitor** | 150       | Regulatory compliance, audit tracking, FISMA validation, security          |
+| **Analyst**            | 100       | Statistical analysis, predictive modeling, reporting, dashboard generation |
+| **Coordinator**        | 58        | Task orchestration, agent coordination, Claude-Flow integration            |
+| **Total**              | **1,008** | **Distributed Government AI Operations**                                   |
 
 ### Performance Metrics
+
 - **Response Time**: <2ms average agent response
 - **Throughput**: 10,000+ tasks per hour capacity
 - **Availability**: 99.9% uptime target with automatic recovery
@@ -46,6 +53,7 @@ ai-models/
 ## Technical Infrastructure
 
 ### Core Dependencies
+
 ```python
 # AI/ML Framework
 fastapi==0.104.1           # High-performance API framework
@@ -68,6 +76,7 @@ structlog==23.2.0          # Structured logging
 ```
 
 ### Container Architecture
+
 ```dockerfile
 FROM python:3.11-alpine
 # Lightweight AI orchestration container
@@ -83,6 +92,7 @@ EXPOSE 9000  # Swarm coordination port
 ## API Endpoints
 
 ### Core Swarm Operations
+
 ```http
 GET  /swarm/health         # System health and operational status
 GET  /swarm/metrics        # Real-time performance metrics
@@ -93,11 +103,12 @@ POST /swarm/agents/{id}/assign  # Direct task assignment
 ```
 
 ### Integration Points
+
 ```http
 # Claude-Flow Integration
 http://claude-flow:8080    # AI workflow coordination
 
-# Backend Integration  
+# Backend Integration
 http://backend:5000        # Terrafusion API services
 
 # Redis Coordination
@@ -107,6 +118,7 @@ redis://redis:6379         # Agent state and metrics
 ## Government AI Applications
 
 ### Property Assessment Pipeline
+
 1. **Data Ingestion**: Harris PACS property records (89,247 parcels)
 2. **AI Processing**: 300 Property Assessor agents analyze valuations
 3. **Quality Control**: 150 Compliance Monitor agents validate accuracy
@@ -114,6 +126,7 @@ redis://redis:6379         # Agent state and metrics
 5. **Reporting**: 100 Analyst agents generate insights and dashboards
 
 ### Compliance & Audit Framework
+
 - **FISMA Compliance**: Automated security validation and monitoring
 - **Audit Trail**: Complete task tracking and performance metrics
 - **Data Privacy**: Government-grade data protection and access controls
@@ -122,6 +135,7 @@ redis://redis:6379         # Agent state and metrics
 ## Development & Operations
 
 ### Local Development
+
 ```bash
 # Install dependencies
 pip install -r requirements.txt
@@ -130,10 +144,11 @@ pip install -r requirements.txt
 python -m swarm.orchestrator
 
 # Health check
-curl http://localhost:9000/swarm/health
+curl http://localhost:\${{TF_PORT_9000:-9000}}/swarm/health
 ```
 
 ### Production Deployment
+
 ```bash
 # Docker build
 docker build -f Dockerfile.swarm -t terrafusion-ai-swarm .
@@ -147,6 +162,7 @@ docker run -d \
 ```
 
 ### Monitoring & Alerts
+
 - **Prometheus Metrics**: Agent performance and system health
 - **Structured Logging**: JSON-formatted audit trails
 - **Real-time Dashboards**: Grafana integration for operations teams
@@ -155,12 +171,14 @@ docker run -d \
 ## Security Architecture
 
 ### Access Control
+
 - **User Isolation**: Dedicated swarm user (uid:1001, gid:1001)
 - **Network Security**: Internal container networking only
 - **API Security**: CORS and authentication middleware
 - **Resource Limits**: Memory and CPU constraints per agent
 
 ### Data Protection
+
 - **Encryption**: In-transit and at-rest data encryption
 - **Audit Logging**: Complete operation tracking
 - **Secure Dependencies**: Verified Python packages only
@@ -169,12 +187,14 @@ docker run -d \
 ## Integration Ecosystem
 
 ### External Systems
+
 - **Harris PACS v12.4.7**: Property assessment system integration
 - **Tyler Technologies**: ERP and financial systems
 - **Claude-Flow v2.0.0**: AI workflow orchestration
 - **MCP Tools**: Model Context Protocol integration
 
 ### Internal Services
+
 - **Terrafusion API**: Core backend services
 - **PostgreSQL**: Government data storage
 - **Redis**: High-performance agent coordination
@@ -183,6 +203,7 @@ docker run -d \
 ## Performance Benchmarks
 
 ### Operational Metrics
+
 - **Agent Initialization**: 1,008 agents < 30 seconds
 - **Task Processing**: Average 2-second completion
 - **Concurrent Tasks**: 500+ simultaneous operations
@@ -190,6 +211,7 @@ docker run -d \
 - **CPU Efficiency**: 95% utilization optimal range
 
 ### Government Workload Performance
+
 - **Property Assessment**: 1,000 parcels per hour per agent
 - **Revenue Analysis**: Real-time optimization calculations
 - **Compliance Checking**: Continuous regulatory monitoring
@@ -200,26 +222,29 @@ docker run -d \
 ## Quick Reference
 
 ### Essential Commands
+
 ```bash
 # Start AI swarm
 python -m swarm.orchestrator
 
 # Check swarm status
-curl http://localhost:9000/swarm/metrics
+curl http://localhost:\${{TF_PORT_9000:-9000}}/swarm/metrics
 
 # Submit task
-curl -X POST http://localhost:9000/swarm/tasks \
+curl -X POST http://localhost:\${{TF_PORT_9000:-9000}}/swarm/tasks \
   -H "Content-Type: application/json" \
   -d '{"task_type":"property_assessment","priority":1,"data":{}}'
 ```
 
 ### Key Files
+
 - `swarm/orchestrator.py`: Main orchestration engine (400 lines)
 - `requirements.txt`: AI/ML dependencies (32 packages)
 - `Dockerfile.swarm`: Production container configuration
 - `README.md`: Basic setup and migration notes
 
 ### Related Documentation
+
 - **[CLAUDE-ai.md](../CLAUDE-ai.md)**: AI strategy and architecture
 - **[CLAUDE-backend.md](../CLAUDE-backend.md)**: Backend integration patterns
 - **[CLAUDE-api.md](../CLAUDE-api.md)**: API design and endpoints
@@ -228,4 +253,4 @@ curl -X POST http://localhost:9000/swarm/tasks \
 
 **Last Updated**: August 27, 2025  
 **Version**: Terrafusion OS 1.0 Production  
-**Authority**: Terrafusion AI Swarm Division  
+**Authority**: Terrafusion AI Swarm Division

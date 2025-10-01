@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Terrafusion API provides programmatic access to all platform capabilities across three evolutionary phases. This reference covers authentication, endpoints, request/response formats, and best practices.
+The Terrafusion API provides programmatic access to all platform capabilities
+across three evolutionary phases. This reference covers authentication,
+endpoints, request/response formats, and best practices.
 
 ## Base URLs
 
@@ -10,7 +12,7 @@ The Terrafusion API provides programmatic access to all platform capabilities ac
 | ----------- | ---------------------------------------- |
 | Production  | `https://api.terrafusion.gov/v1`         |
 | Staging     | `https://staging-api.terrafusion.gov/v1` |
-| Development | `http://localhost:4000/v1`               |
+| Development | `http://localhost:\${{TF_PORT_4000:-4000}}/v1`               |
 
 ## Authentication
 
@@ -211,17 +213,17 @@ Content-Type: application/json
 Verify the signature in the `X-Terrafusion-Signature` header:
 
 ```javascript
-const crypto = require("crypto");
+const crypto = require('crypto');
 
 function verifyWebhook(payload, signature, secret) {
   const expectedSignature = crypto
-    .createHmac("sha256", secret)
+    .createHmac('sha256', secret)
     .update(payload)
-    .digest("hex");
+    .digest('hex');
 
   return crypto.timingSafeEqual(
     Buffer.from(signature),
-    Buffer.from(expectedSignature),
+    Buffer.from(expectedSignature)
   );
 }
 ```
@@ -300,7 +302,7 @@ function verifyWebhook(payload, signature, secret) {
 ### JavaScript/TypeScript
 
 ```typescript
-import { TerraFusionClient } from "@terrafusion/sdk";
+import { TerraFusionClient } from '@terrafusion/sdk';
 
 const client = new TerraFusionClient({
   apiKey: process.env.TERRAFUSION_API_KEY,
@@ -308,13 +310,13 @@ const client = new TerraFusionClient({
 
 // List tenants
 const tenants = await client.tenants.list({
-  status: "active",
+  status: 'active',
   limit: 50,
 });
 
 // Execute AI workflow
-const workflow = await client.ai.executeWorkflow("wf_123", {
-  input: { document: "base64..." },
+const workflow = await client.ai.executeWorkflow('wf_123', {
+  input: { document: 'base64...' },
 });
 ```
 

@@ -6,8 +6,8 @@
 set -e
 
 # Configuration
-HAPROXY_STATS_URL="http://localhost:8404"
-API_HEALTH_URL="http://terrafusion-api:5000/health"
+HAPROXY_STATS_URL="http://localhost:\${{TF_PORT_8404:-8404}}"
+API_HEALTH_URL="http://terrafusion-api:${TF_API_PORT:-5046}/health"
 MAX_RETRIES=3
 RETRY_DELAY=2
 

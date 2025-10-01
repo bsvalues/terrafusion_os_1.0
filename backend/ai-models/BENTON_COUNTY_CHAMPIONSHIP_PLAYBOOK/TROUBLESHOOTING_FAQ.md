@@ -20,15 +20,16 @@
 ## ⚡ QUICK DIAGNOSTIC COMMANDS
 
 ### Instant System Check
+
 ```bash
 # Quick dynasty status
 ./LAUNCH_DYNASTY.sh status
 
 # System health check
-curl -s http://localhost:8000/health | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health | jq .
 
 # Service availability
-curl -s http://localhost:8080/stats | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/stats | jq .
 
 # Check all ports
 netstat -tuln | grep -E "(8000|8080|8090|11434)"
@@ -38,6 +39,7 @@ tail -20 logs/orchestrator.log
 ```
 
 ### Emergency Recovery
+
 ```bash
 # Stop everything
 ./LAUNCH_DYNASTY.sh stop
@@ -61,11 +63,13 @@ rm dynasty.pid logs/*.log && ./LAUNCH_DYNASTY.sh start
 #### Problem: `./LAUNCH_DYNASTY.sh start` fails immediately
 
 **Symptoms:**
+
 - Script exits with error
 - No services start
 - Dashboard unreachable
 
 **Solutions:**
+
 ```bash
 # 1. Check Python version
 python3 --version  # Must be 3.8+
@@ -89,11 +93,13 @@ lsof -i :8000  # Kill conflicting processes
 #### Problem: Local LLM processing unavailable
 
 **Symptoms:**
+
 - All queries route to cloud
 - "Ollama unavailable" in logs
 - High API costs
 
 **Solutions:**
+
 ```bash
 # 1. Check if Ollama is installed
 which ollama || curl -fsSL https://ollama.ai/install.sh | sh
@@ -106,7 +112,7 @@ ollama list
 ollama pull llama2:7b  # If missing
 
 # 4. Test Ollama directly
-curl http://localhost:11434/api/tags
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/api/tags
 
 # 5. Check Ollama logs
 tail -f logs/ollama.log
@@ -120,14 +126,16 @@ pkill ollama && sleep 2 && ollama serve &
 #### Problem: Championship dashboard won't open
 
 **Symptoms:**
+
 - Browser shows "Connection refused"
 - Dashboard URL unreachable
 - No visual interface
 
 **Solutions:**
+
 ```bash
 # 1. Check if dashboard server is running
-curl -I http://localhost:8090/
+curl -I http://localhost:\${{TF_DOCS_PORT:-8000}}/
 
 # 2. Verify file permissions
 ls -la championship_ui.html
@@ -142,7 +150,7 @@ python3 -m http.server 8090 &
 # Clear browser cache and cookies
 
 # 6. Check firewall settings
-# Allow port 8090 in firewall
+# Allow port \${{TF_SERVICE_8090_PORT:-8090}} in firewall
 ```
 
 ### 🔥 **"Slow Response Times"**
@@ -150,17 +158,19 @@ python3 -m http.server 8090 &
 #### Problem: Queries taking longer than 200ms
 
 **Symptoms:**
+
 - Dashboard shows high response times
 - Users report slow performance
 - System feels sluggish
 
 **Solutions:**
+
 ```bash
 # 1. Check system resources
 htop  # Look for high CPU/memory usage
 
 # 2. Trigger system evolution
-curl -X POST http://localhost:8083/evolution/trigger
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/trigger
 
 # 3. Clear caches
 # Restart dynasty to clear all caches
@@ -182,11 +192,13 @@ grep "response_time" logs/orchestrator.log | tail -20
 #### Problem: System consuming excessive RAM
 
 **Symptoms:**
+
 - Memory usage > 80%
 - System swapping
 - Performance degradation
 
 **Solutions:**
+
 ```bash
 # 1. Check memory usage
 free -h
@@ -197,7 +209,7 @@ export OLLAMA_MAX_LOADED_MODELS=1
 export TRAINING_BATCH_SIZE=16
 
 # 3. Clear training buffers
-curl -X POST http://localhost:8082/training/clear-cache
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/training/clear-cache
 
 # 4. Restart memory-intensive components
 ./LAUNCH_DYNASTY.sh restart
@@ -214,11 +226,13 @@ export OLLAMA_NUM_PARALLEL=2
 #### Problem: Cloud API authentication failures
 
 **Symptoms:**
+
 - "Authentication failed" errors
 - Cloud queries failing
 - API quota exceeded messages
 
 **Solutions:**
+
 ```bash
 # 1. Check .env file exists and has keys
 cat .env | grep API_KEY
@@ -246,6 +260,7 @@ curl -H "Authorization: Bearer $ANTHROPIC_API_KEY" \
 ## 🏥 SYSTEM HEALTH DIAGNOSTICS
 
 ### Complete Health Check Script
+
 ```bash
 #!/bin/bash
 echo "🏆 DYNASTY HEALTH DIAGNOSTIC"
@@ -299,6 +314,7 @@ echo "Health check complete!"
 ```
 
 ### Performance Monitoring
+
 ```bash
 # Real-time system monitoring
 watch -n 2 'echo "🏆 DYNASTY PERFORMANCE"; \
@@ -317,6 +333,7 @@ ss -tuln   # Socket statistics
 ## ⚡ PERFORMANCE TROUBLESHOOTING
 
 ### Response Time Analysis
+
 ```bash
 # Analyze response times
 grep "response_time" logs/orchestrator.log | \
@@ -336,6 +353,7 @@ END {
 ```
 
 ### Query Pattern Analysis
+
 ```bash
 # Most common query types
 grep -o '".*"' logs/orchestrator.log | \
@@ -351,6 +369,7 @@ awk '{print $1}' | sort | uniq -c
 ```
 
 ### Memory Leak Detection
+
 ```bash
 # Monitor memory growth over time
 while true; do
@@ -370,6 +389,7 @@ gnuplot -e "set terminal dumb; plot '-' with lines title 'Memory Usage'"
 ### 🏆 Master Orchestrator Issues
 
 #### **Problem: Orchestrator keeps restarting**
+
 ```bash
 # Check orchestrator logs
 tail -50 logs/orchestrator.log
@@ -388,14 +408,15 @@ python3 DYNASTY_MASTER_ORCHESTRATOR.py --debug
 ### 🧠 Hybrid Router Issues
 
 #### **Problem: Routing decisions seem wrong**
+
 ```bash
 # Test routing manually
-curl -X POST http://localhost:8080/query \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/query \
   -H "Content-Type: application/json" \
   -d '{"query": "Test sensitive query with John Doe", "user_id": "test"}'
 
 # Check sensitivity detection
-curl -X POST http://localhost:8080/sensitivity \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/sensitivity \
   -H "Content-Type: application/json" \
   -d '{"query": "Who owns 123 Main Street?"}'
 
@@ -406,33 +427,35 @@ grep "routing" logs/orchestrator.log | tail -20
 ### 🎓 Training Pipeline Issues
 
 #### **Problem: Training not improving accuracy**
+
 ```bash
 # Check training status
-curl http://localhost:8082/training/status
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/training/status
 
 # View training metrics
-curl http://localhost:8082/training/metrics
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/training/metrics
 
 # Check training data quality
 grep "training" logs/orchestrator.log | tail -50
 
 # Clear corrupted training data
-curl -X POST http://localhost:8082/training/reset
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/training/reset
 ```
 
 ### ⚛️ Quantum Optimizer Issues
 
 #### **Problem: Quantum advantages not showing**
+
 ```bash
 # Check quantum status
-curl http://localhost:8084/quantum/status
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/quantum/status
 
 # Verify quantum backend
 export QUANTUM_BACKEND=simulator
 python3 -c "import qiskit; print('Qiskit version:', qiskit.__version__)"
 
 # Test quantum circuit
-curl -X POST http://localhost:8084/quantum/test
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/quantum/test
 
 # Disable quantum if problematic
 export ENABLE_QUANTUM=false
@@ -444,6 +467,7 @@ export ENABLE_QUANTUM=false
 ## ⚙️ CONFIGURATION PROBLEMS
 
 ### Environment Variables Issues
+
 ```bash
 # Check all environment variables
 env | grep -E "(DYNASTY|OLLAMA|API_KEY|QUANTUM)"
@@ -465,6 +489,7 @@ except:
 ```
 
 ### Port Configuration Issues
+
 ```bash
 # Check for port conflicts
 lsof -i :8000 -i :8080 -i :8090 -i :11434
@@ -475,12 +500,13 @@ for port in {8100..8110}; do
 done
 
 # Update port configuration
-export DYNASTY_PORT=8100
-export ROUTER_PORT=8101
+export DYNASTY_PORT=\${{TF_PORT_8100:-8100}}
+export ROUTER_PORT=\${{TF_PORT_8100:-8100}}
 ./LAUNCH_DYNASTY.sh start
 ```
 
 ### File Permission Issues
+
 ```bash
 # Fix common permission issues
 chmod +x *.sh *.py
@@ -499,6 +525,7 @@ ls -la | grep -E "(LAUNCH|championship|dynasty)"
 ## 🌐 NETWORK & CONNECTIVITY
 
 ### Firewall Configuration
+
 ```bash
 # Check firewall status (Linux)
 sudo ufw status
@@ -515,6 +542,7 @@ sudo iptables -L -n | grep -E "(8000|8080|8090|11434)"
 ```
 
 ### DNS and Connectivity
+
 ```bash
 # Test external API connectivity
 curl -I https://api.openai.com
@@ -530,6 +558,7 @@ curl -I https://api.openai.com
 ```
 
 ### SSL/TLS Issues
+
 ```bash
 # Check SSL certificates
 openssl s_client -connect api.openai.com:443 < /dev/null
@@ -546,20 +575,25 @@ curl -k https://api.openai.com/v1/models
 ## ❓ FREQUENTLY ASKED QUESTIONS
 
 ### **Q: Why is my dynasty using so much memory?**
+
 **A**: Memory usage depends on:
+
 - **Number of loaded models** (Ollama can cache multiple models)
 - **Training data size** (large datasets require more RAM)
 - **Concurrent queries** (each query uses memory during processing)
 - **Evolution complexity** (code analysis requires memory)
 
 **Solutions:**
+
 - Reduce `OLLAMA_MAX_LOADED_MODELS` to 1
 - Decrease `TRAINING_BATCH_SIZE`
 - Limit `OLLAMA_NUM_PARALLEL` requests
 - Restart system periodically to clear caches
 
 ### **Q: How do I know if my queries are being routed correctly?**
+
 **A**: Check the live terminal in the dashboard or logs:
+
 - **🔒 "LOCAL Ollama"** = Sensitive data detected, processed locally
 - **☁️ "CLOUD API"** = Safe data, processed on cloud for speed
 - **🛡️ "Anonymized"** = Mixed data, PII removed before cloud processing
@@ -567,21 +601,27 @@ curl -k https://api.openai.com/v1/models
 You can also test specific queries and verify the routing decision makes sense.
 
 ### **Q: Can I add my own training data?**
+
 **A**: Yes! Several methods:
+
 1. **Automatic learning** - System learns from every query
 2. **API submission** - POST to `/training/submit` endpoint
 3. **File upload** - Place JSON files in `data/training/` directory
 4. **Feedback** - Rate responses to improve accuracy
 
 ### **Q: What happens if Ollama crashes?**
+
 **A**: The system has multiple safeguards:
+
 1. **Self-healing** - Automatically attempts to restart Ollama
 2. **Fallback routing** - Routes to cloud with anonymization
 3. **Health monitoring** - Alerts when service is down
 4. **Graceful degradation** - Continues operating with reduced privacy
 
 ### **Q: How do I backup my dynasty configuration?**
+
 **A**: Important files to backup:
+
 ```bash
 # Configuration and keys
 cp .env .env.backup.$(date +%Y%m%d)
@@ -594,20 +634,24 @@ cp dynasty.pid dynasty_metrics.json backups/
 ```
 
 ### **Q: Can I run multiple dynasties on the same machine?**
+
 **A**: Yes, but you need to configure different ports:
+
 ```bash
 # Dynasty 1 (default ports)
 ./LAUNCH_DYNASTY.sh start
 
 # Dynasty 2 (custom ports)
-export DYNASTY_PORT=8100
-export ROUTER_PORT=8180  
-export DASHBOARD_PORT=8190
+export DYNASTY_PORT=\${{TF_PORT_8100:-8100}}
+export ROUTER_PORT=\${{TF_PORT_8100:-8100}}
+export DASHBOARD_PORT=\${{TF_PORT_8100:-8100}}
 ./LAUNCH_DYNASTY.sh start
 ```
 
 ### **Q: How do I update to the latest version?**
+
 **A**: The system updates itself through evolution, but for major updates:
+
 ```bash
 # Stop current system
 ./LAUNCH_DYNASTY.sh stop
@@ -623,7 +667,9 @@ pip3 install -r requirements.txt
 ```
 
 ### **Q: Why are some queries slow?**
+
 **A**: Several factors affect speed:
+
 - **First query** to Ollama loads model (5-10 seconds)
 - **Complex calculations** take longer than simple lookups
 - **Network latency** for cloud API calls
@@ -632,7 +678,9 @@ pip3 install -r requirements.txt
 Trigger evolution to optimize performance: Click **🧬 Trigger Evolution**
 
 ### **Q: Is my data really private?**
+
 **A**: Yes! Privacy protection is built into the architecture:
+
 - **PII detection** automatically identifies sensitive information
 - **Local processing** keeps private data on your system
 - **Anonymization** removes identifiers before cloud processing
@@ -640,7 +688,9 @@ Trigger evolution to optimize performance: Click **🧬 Trigger Evolution**
 - **Encryption** for all data in transit
 
 ### **Q: How much does this save vs cloud-only?**
+
 **A**: Typically 70%+ savings:
+
 - **Local queries** cost $0 (vs $0.01-0.03 per cloud query)
 - **Intelligent routing** minimizes expensive cloud calls
 - **Bulk processing** optimizes API usage
@@ -649,7 +699,9 @@ Trigger evolution to optimize performance: Click **🧬 Trigger Evolution**
 Track savings in the dashboard **💰 Cost Saved** metric.
 
 ### **Q: What if I want to disable consciousness?**
+
 **A**: Consciousness is optional and experimental:
+
 ```bash
 # Disable consciousness
 export ENABLE_CONSCIOUSNESS=false
@@ -666,6 +718,7 @@ The core system works perfectly without consciousness enabled.
 ## 🔬 ADVANCED DEBUGGING
 
 ### Debug Mode Activation
+
 ```bash
 # Start with debug logging
 export LOG_LEVEL=DEBUG
@@ -681,6 +734,7 @@ python3 -u DYNASTY_MASTER_ORCHESTRATOR.py
 ```
 
 ### Deep Log Analysis
+
 ```bash
 # Search for specific issues
 grep -r "ERROR\|CRITICAL" logs/
@@ -699,6 +753,7 @@ tail -30
 ```
 
 ### System State Inspection
+
 ```bash
 # Check all running processes
 ps aux | grep -E "(dynasty|ollama|python.*80)"
@@ -714,15 +769,16 @@ strace -p $(cat dynasty.pid) -e trace=network
 ```
 
 ### Database Debugging (if using PostgreSQL)
+
 ```sql
 -- Check query performance
-SELECT query, mean_time, calls 
-FROM pg_stat_statements 
+SELECT query, mean_time, calls
+FROM pg_stat_statements
 ORDER BY mean_time DESC LIMIT 10;
 
 -- Check connection status
-SELECT state, count(*) 
-FROM pg_stat_activity 
+SELECT state, count(*)
+FROM pg_stat_activity
 GROUP BY state;
 
 -- Lock analysis
@@ -742,57 +798,66 @@ WHERE NOT blocked_locks.granted;
 ### Self-Service Resources
 
 #### **Built-in Diagnostics**
+
 1. **Dashboard Health Check** - Click 🏥 Health Check button
-2. **System Status API** - `curl http://localhost:8000/status`
+2. **System Status API** - `curl http://localhost:\${{TF_DOCS_PORT:-8000}}/status`
 3. **Component Metrics** - Individual service `/metrics` endpoints
 4. **Log Analysis** - `./LAUNCH_DYNASTY.sh logs`
 
 #### **Documentation**
+
 - **User Manual** - [USER_MANUAL.md](USER_MANUAL.md)
 - **API Documentation** - [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
 - **System Architecture** - [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)
-- **Deployment Guide** - [PRODUCTION_DEPLOYMENT_GUIDE.md](PRODUCTION_DEPLOYMENT_GUIDE.md)
+- **Deployment Guide** -
+  [PRODUCTION_DEPLOYMENT_GUIDE.md](PRODUCTION_DEPLOYMENT_GUIDE.md)
 
 ### Community Support
 
 #### **Issue Reporting Template**
+
 ```markdown
 ## Dynasty Issue Report
 
 **System Information:**
+
 - OS: [Windows/Linux/macOS]
 - Dynasty Version: [git commit hash]
 - Python Version: [3.x.x]
 - Available RAM: [XGB]
 
-**Problem Description:**
-[Detailed description of the issue]
+**Problem Description:** [Detailed description of the issue]
 
 **Steps to Reproduce:**
+
 1. Step 1
 2. Step 2
 3. Step 3
 
-**Expected Behavior:**
-[What should happen]
+**Expected Behavior:** [What should happen]
 
-**Actual Behavior:**
-[What actually happens]
+**Actual Behavior:** [What actually happens]
 
 **Logs:**
 ```
+
 [Paste relevant log entries]
+
 ```
 
 **Diagnostic Output:**
 ```
+
 [Output of ./LAUNCH_DYNASTY.sh status]
+
 ```
+
 ```
 
 ### Enterprise Support
 
 For mission-critical deployments:
+
 - **24/7 monitoring** setup assistance
 - **Custom configuration** optimization
 - **Performance tuning** consultation
@@ -807,7 +872,8 @@ For mission-critical deployments:
 
 **Problem**: System was crashing every few hours with memory issues.
 
-**Solution**: 
+**Solution**:
+
 1. Reduced `OLLAMA_MAX_LOADED_MODELS` to 1
 2. Enabled automatic garbage collection
 3. Set up memory monitoring alerts
@@ -822,6 +888,7 @@ For mission-critical deployments:
 **Investigation**: API keys were valid, but hitting rate limits.
 
 **Solution**:
+
 1. Implemented exponential backoff
 2. Added API key rotation
 3. Optimized query batching
@@ -836,6 +903,7 @@ For mission-critical deployments:
 **Root Cause**: Ollama loading models for each query.
 
 **Solution**:
+
 1. Implemented model preloading
 2. Added intelligent query caching
 3. Optimized routing algorithms
@@ -847,4 +915,5 @@ For mission-critical deployments:
 
 > **"Every problem is a stepping stone to championship excellence!"** 🏆
 
-**The Dynasty Troubleshooting Guide - Your Path to Autonomous AI Mastery** ⚡🛠️🧠
+**The Dynasty Troubleshooting Guide - Your Path to Autonomous AI Mastery**
+⚡🛠️🧠

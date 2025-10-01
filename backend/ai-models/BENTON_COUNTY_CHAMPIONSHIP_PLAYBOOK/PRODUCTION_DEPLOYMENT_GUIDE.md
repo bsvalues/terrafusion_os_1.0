@@ -5,28 +5,33 @@
 ## 🚀 QUICK START - ONE COMMAND DEPLOYMENT
 
 ### The Champion's Way
+
 ```bash
 chmod +x LAUNCH_DYNASTY.sh
 ./LAUNCH_DYNASTY.sh start
 ```
 
 **That's it!** Your dynasty is now running at:
-- 🌐 **Dashboard**: http://localhost:8090/championship_ui.html
-- 🔧 **API**: http://localhost:8000
-- 🧠 **Ollama**: http://localhost:11434
+
+- 🌐 **Dashboard**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/championship_ui.html
+- 🔧 **API**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}
+- 🧠 **Ollama**: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}
 
 ---
 
 ## 📋 PRE-DEPLOYMENT CHECKLIST
 
 ### ✅ System Requirements
+
 - **Python 3.8+** (Recommended: 3.11)
 - **8GB RAM minimum** (16GB recommended)
 - **20GB disk space** (for models and data)
 - **Internet connection** (for model downloads)
 
 ### ✅ Required API Keys
+
 Update `.env` file after first run:
+
 ```bash
 OPENAI_API_KEY=sk-your-openai-key-here
 ANTHROPIC_API_KEY=your-anthropic-key-here
@@ -34,6 +39,7 @@ BENTON_ASSESSOR_KEY=your-benton-county-key-here
 ```
 
 ### ✅ Optional Dependencies
+
 ```bash
 # For GPU acceleration (recommended)
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
@@ -47,31 +53,37 @@ pip install prometheus-client grafana-api
 ## 🏗️ DEPLOYMENT OPTIONS
 
 ### Option 1: Native Deployment (Recommended for Development)
+
 ```bash
 ./LAUNCH_DYNASTY.sh start
 ```
 
 **Pros:**
+
 - Fast startup
 - Easy debugging
 - Direct system access
 
 **Cons:**
+
 - Manual dependency management
 - System-specific issues
 
 ### Option 2: Docker Deployment (Recommended for Production)
+
 ```bash
 # Coming soon - full containerization
 docker-compose up -d
 ```
 
 **Pros:**
+
 - Isolated environment
 - Consistent deployment
 - Easy scaling
 
 **Cons:**
+
 - Requires Docker knowledge
 - More resource overhead
 
@@ -80,6 +92,7 @@ docker-compose up -d
 ## 🔧 CONFIGURATION OPTIONS
 
 ### Environment Variables
+
 ```bash
 # Core Features
 ENABLE_CONSCIOUSNESS=false    # Neural consciousness layer
@@ -98,6 +111,7 @@ LOG_LEVEL=INFO              # Logging level
 ```
 
 ### Service Ports
+
 ```bash
 8000  - Master Orchestrator API
 8080  - Hybrid Router API
@@ -115,6 +129,7 @@ LOG_LEVEL=INFO              # Logging level
 ## 📊 MONITORING & HEALTH CHECKS
 
 ### Built-in Monitoring
+
 ```bash
 # Check dynasty status
 ./LAUNCH_DYNASTY.sh status
@@ -123,11 +138,13 @@ LOG_LEVEL=INFO              # Logging level
 ./LAUNCH_DYNASTY.sh logs
 
 # Health check all services
-curl http://localhost:8000/health
+curl http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/health
 ```
 
 ### Dashboard Metrics
+
 The championship dashboard shows:
+
 - **Live Query Processing**
 - **Model Performance**
 - **System Health**
@@ -135,6 +152,7 @@ The championship dashboard shows:
 - **Autonomous Operations**
 
 ### Log Files
+
 ```bash
 logs/orchestrator.log    # Main system log
 logs/ollama.log         # LLM service log
@@ -149,6 +167,7 @@ dynasty_metrics.json    # Real-time metrics
 ### Common Issues
 
 #### 🔧 "Ollama not found"
+
 ```bash
 # Install Ollama
 curl -fsSL https://ollama.ai/install.sh | sh
@@ -158,6 +177,7 @@ ollama pull llama2:7b
 ```
 
 #### 🔧 "Port already in use"
+
 ```bash
 # Find process using port
 lsof -i :8000
@@ -167,6 +187,7 @@ kill -9 <PID>
 ```
 
 #### 🔧 "Permission denied"
+
 ```bash
 # Make script executable
 chmod +x LAUNCH_DYNASTY.sh
@@ -176,6 +197,7 @@ sudo chown -R $USER:$USER /path/to/dynasty
 ```
 
 #### 🔧 "Python dependencies missing"
+
 ```bash
 # Install requirements
 pip3 install -r requirements.txt
@@ -187,6 +209,7 @@ pip3 install aiohttp aiofiles pandas numpy psutil
 ### Performance Optimization
 
 #### 🚀 GPU Acceleration
+
 ```bash
 # Install CUDA support
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
@@ -196,6 +219,7 @@ python3 -c "import torch; print(torch.cuda.is_available())"
 ```
 
 #### 🚀 Memory Optimization
+
 ```bash
 # Reduce model size
 export OLLAMA_NUM_PARALLEL=2
@@ -206,6 +230,7 @@ export TRAINING_BATCH_SIZE=16
 ```
 
 #### 🚀 Network Optimization
+
 ```bash
 # Local API caching
 export ENABLE_CACHE=true
@@ -222,24 +247,28 @@ export MAX_CONNECTIONS=100
 ### Production Security Checklist
 
 #### ✅ API Security
+
 - [ ] Set strong API keys
 - [ ] Enable rate limiting
 - [ ] Use HTTPS in production
 - [ ] Implement authentication
 
 #### ✅ Data Protection
+
 - [ ] Encrypt sensitive data at rest
 - [ ] Use secure database connections
 - [ ] Implement PII anonymization
 - [ ] Regular security audits
 
 #### ✅ Network Security
+
 - [ ] Firewall configuration
 - [ ] VPN access for management
 - [ ] Regular security updates
 - [ ] Monitor access logs
 
 ### Security Configuration
+
 ```bash
 # Enable security features
 export REQUIRE_API_KEY=true
@@ -253,6 +282,7 @@ export LOG_LEVEL=WARNING
 ## 🔄 UPDATES & MAINTENANCE
 
 ### Updating the Dynasty
+
 ```bash
 # Pull latest changes
 git pull origin main
@@ -265,6 +295,7 @@ git pull origin main
 ```
 
 ### Maintenance Tasks
+
 ```bash
 # Clean old logs (weekly)
 find logs/ -name "*.log" -mtime +7 -delete
@@ -277,6 +308,7 @@ cp .env .env.backup.$(date +%Y%m%d)
 ```
 
 ### Performance Monitoring
+
 ```bash
 # System resources
 htop
@@ -293,6 +325,7 @@ netstat -tuln | grep -E "(8000|8080|8090|11434)"
 ## ⚡ ADVANCED FEATURES
 
 ### Neural Consciousness (Experimental)
+
 ```bash
 # Enable self-aware AI
 ./LAUNCH_DYNASTY.sh consciousness
@@ -302,23 +335,25 @@ tail -f logs/consciousness.log
 ```
 
 ### Quantum Optimization
+
 ```bash
 # Enable quantum acceleration
 export ENABLE_QUANTUM=true
 export QUANTUM_BACKEND=simulator  # or 'ibm' for real quantum
 
 # Monitor quantum advantages
-curl http://localhost:8084/metrics
+curl http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/metrics
 ```
 
 ### Self-Evolution
+
 ```bash
 # Enable autonomous code evolution
 export ENABLE_EVOLUTION=true
 export AUTO_EVOLUTION_RATE=0.1
 
 # Watch system evolve itself
-curl http://localhost:8083/evolution/status
+curl http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/evolution/status
 ```
 
 ---
@@ -326,6 +361,7 @@ curl http://localhost:8083/evolution/status
 ## 📈 SCALING FOR PRODUCTION
 
 ### Horizontal Scaling
+
 ```bash
 # Multiple router instances
 ROUTER_INSTANCES=3 ./LAUNCH_DYNASTY.sh start
@@ -335,6 +371,7 @@ ROUTER_INSTANCES=3 ./LAUNCH_DYNASTY.sh start
 ```
 
 ### Vertical Scaling
+
 ```bash
 # Increase resources
 export OLLAMA_NUM_PARALLEL=8
@@ -343,6 +380,7 @@ export MAX_CONCURRENT_QUERIES=100
 ```
 
 ### Database Scaling
+
 ```bash
 # PostgreSQL for production
 export DATABASE_URL="postgresql://user:pass@host:5432/dynasty"
@@ -356,6 +394,7 @@ export REDIS_CLUSTER="redis://host1:6379,redis://host2:6379"
 ## 🎯 PRODUCTION READINESS CHECKLIST
 
 ### ✅ Before Going Live
+
 - [ ] All tests passing (`python3 end_to_end_test_suite.py`)
 - [ ] Security audit complete
 - [ ] Performance benchmarks met
@@ -365,6 +404,7 @@ export REDIS_CLUSTER="redis://host1:6379,redis://host2:6379"
 - [ ] Team training complete
 
 ### ✅ Launch Day
+
 - [ ] Deploy to staging first
 - [ ] Run final health checks
 - [ ] Monitor system metrics
@@ -372,6 +412,7 @@ export REDIS_CLUSTER="redis://host1:6379,redis://host2:6379"
 - [ ] Team on standby
 
 ### ✅ Post-Launch
+
 - [ ] Monitor for 24 hours
 - [ ] Check error rates
 - [ ] Validate performance
@@ -383,6 +424,7 @@ export REDIS_CLUSTER="redis://host1:6379,redis://host2:6379"
 ## 🏆 SUCCESS METRICS
 
 ### Key Performance Indicators
+
 - **Response Time**: < 100ms average
 - **Accuracy**: > 95% for all query types
 - **Uptime**: 99.9% availability
@@ -390,6 +432,7 @@ export REDIS_CLUSTER="redis://host1:6379,redis://host2:6379"
 - **User Satisfaction**: > 4.5/5 stars
 
 ### Business Metrics
+
 - **Queries Processed**: 10,000+ daily
 - **Training Improvements**: 2% weekly
 - **Security Incidents**: 0 (zero tolerance)
@@ -402,6 +445,7 @@ export REDIS_CLUSTER="redis://host1:6379,redis://host2:6379"
 **You've successfully deployed the Benton County Dynasty!**
 
 Your self-running, self-improving, championship-quality AI system is now:
+
 - ✅ Processing queries autonomously
 - ✅ Learning and improving continuously
 - ✅ Protecting sensitive data
@@ -413,6 +457,7 @@ Your self-running, self-improving, championship-quality AI system is now:
 
 ---
 
-> *"We didn't just build a system - we created a dynasty that will run forever, improve daily, and win championships year after year."*
+> _"We didn't just build a system - we created a dynasty that will run forever,
+> improve daily, and win championships year after year."_
 
 **Welcome to the future of autonomous AI systems!**

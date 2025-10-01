@@ -1,0 +1,155 @@
+syntax = "proto3";
+
+package terrafusion.modules.v1;
+
+service ModuleManagementService {
+  // Load a hot-swappable module
+  rpc LoadModule(LoadModuleRequest) returns (LoadModuleResponse);
+  
+  // Unload a module safely
+  rpc UnloadModule(UnloadModuleRequest) returns (UnloadModuleResponse);
+  
+  // Get all loaded modules status
+  rpc GetModuleStatus(ModuleStatusRequest) returns (ModuleStatusResponse);
+  
+  // Stream module health updates
+  rpc StreamModuleHealth(ModuleHealthRequest) returns (stream ModuleHealthResponse);
+  
+  // Hot-swap module update
+  rpc HotSwapModule(HotSwapRequest) returns (HotSwapResponse);
+}
+
+message LoadModuleRequest {
+  string module_name = 1;
+  string module_version = 2;
+  map<string, string> configuration = 3;
+  bool force_reload = 4;
+}
+
+message LoadModuleResponse {
+  string module_id = 1;
+  LoadStatus status = 2;
+  string status_message = 3;
+  ModuleInfo module_info = 4;
+  string load_time_ms = 5;
+}
+
+message UnloadModuleRequest {
+  string module_id = 1;
+  bool force_unload = 2;
+  string reason = 3;
+}
+
+message UnloadModuleResponse {
+  bool success = 1;
+  string status_message = 2;
+  string unload_time_ms = 3;
+}
+
+message ModuleStatusRequest {
+  repeated string module_ids = 1;
+  bool include_performance_metrics = 2;
+}
+
+message ModuleStatusResponse {
+  repeated ModuleStatus modules = 1;
+  SystemSummary system_summary = 2;
+}
+
+message ModuleHealthRequest {
+  repeated string module_ids = 1;
+  int32 update_interval_seconds = 2;
+}
+
+message ModuleHealthResponse {
+  string module_id = 1;
+  HealthStatus health = 2;
+  PerformanceData performance = 3;
+  repeated string warnings = 4;
+  string timestamp = 5;
+}
+
+message HotSwapRequest {
+  string module_id = 1;
+  string new_version = 2;
+  map<string, string> migration_config = 3;
+  bool preserve_state = 4;
+}
+
+message HotSwapResponse {
+  bool success = 1;
+  string old_module_id = 2;
+  string new_module_id = 3;
+  string swap_time_ms = 4;
+  string status_message = 5;
+}
+
+message ModuleInfo {
+  string module_id = 1;
+  string name = 2;
+  string version = 3;
+  string description = 4;
+  repeated string dependencies = 5;
+  repeated string capabilities = 6;
+  map<string, string> metadata = 7;
+}
+
+message ModuleStatus {
+  string module_id = 1;
+  ModuleState state = 2;
+  string uptime_seconds = 3;
+  PerformanceData performance = 4;
+  repeated string active_connections = 5;
+  string last_error = 6;
+}
+
+message SystemSummary {
+  int32 total_modules = 1;
+  int32 active_modules = 2;
+  int32 inactive_modules = 3;
+  int32 error_modules = 4;
+  double overall_health_score = 5;
+}
+
+message HealthStatus {
+  HealthLevel level = 1;
+  string status_message = 2;
+  repeated string issues = 3;
+  double health_score = 4;
+}
+
+message PerformanceData {
+  double cpu_usage_percent = 1;
+  int64 memory_usage_bytes = 2;
+  int32 active_connections = 3;
+  double requests_per_second = 4;
+  double average_response_time_ms = 5;
+  int32 error_count = 6;
+}
+
+enum LoadStatus {
+  LOAD_STATUS_UNSPECIFIED = 0;
+  LOAD_STATUS_SUCCESS = 1;
+  LOAD_STATUS_FAILED = 2;
+  LOAD_STATUS_ALREADY_LOADED = 3;
+  LOAD_STATUS_DEPENDENCY_MISSING = 4;
+  LOAD_STATUS_VERSION_CONFLICT = 5;
+}
+
+enum ModuleState {
+  MODULE_STATE_UNSPECIFIED = 0;
+  MODULE_STATE_LOADING = 1;
+  MODULE_STATE_ACTIVE = 2;
+  MODULE_STATE_INACTIVE = 3;
+  MODULE_STATE_ERROR = 4;
+  MODULE_STATE_UNLOADING = 5;
+  MODULE_STATE_UPDATING = 6;
+}
+
+enum HealthLevel {
+  HEALTH_LEVEL_UNSPECIFIED = 0;
+  HEALTH_LEVEL_HEALTHY = 1;
+  HEALTH_LEVEL_WARNING = 2;
+  HEALTH_LEVEL_CRITICAL = 3;
+  HEALTH_LEVEL_FAILED = 4;
+}

@@ -1,6 +1,6 @@
 /**
  * Schema Registry Tests
- * 
+ *
  * This file contains tests for the MCP Schema Registry functionality
  * which validates the registration, retrieval, and validation capabilities.
  */
@@ -19,7 +19,7 @@ describe('SchemaRegistry', () => {
     // Register schemas
     registry.register('CostMatrix', costMatrixSchema);
     registry.register('BuildingType', buildingTypeSchema);
-    
+
     // Retrieve and verify schemas
     expect(registry.get('CostMatrix')).toEqual(costMatrixSchema);
     expect(registry.get('BuildingType')).toEqual(buildingTypeSchema);
@@ -27,7 +27,7 @@ describe('SchemaRegistry', () => {
 
   test('should check if schema exists', () => {
     registry.register('CostMatrix', costMatrixSchema);
-    
+
     expect(registry.exists('CostMatrix')).toBe(true);
     expect(registry.exists('NonExistentSchema')).toBe(false);
   });
@@ -35,7 +35,7 @@ describe('SchemaRegistry', () => {
   test('should list all registered schemas', () => {
     registry.register('CostMatrix', costMatrixSchema);
     registry.register('BuildingType', buildingTypeSchema);
-    
+
     const schemaList = registry.listAll();
     expect(schemaList).toHaveLength(2);
     expect(schemaList).toContain('CostMatrix');
@@ -56,7 +56,7 @@ describe('SchemaValidator', () => {
   beforeEach(() => {
     registry = new SchemaRegistry();
     registry.register('CostMatrix', costMatrixSchema);
-    
+
     validator = new SchemaValidator(registry);
   });
 
@@ -71,9 +71,9 @@ describe('SchemaValidator', () => {
       complexityFactorBase: 1.1,
       qualityFactorBase: 1.2,
       conditionFactorBase: 1.0,
-      year: 2025
+      year: 2025,
     };
-    
+
     const result = validator.validate('CostMatrix', validCostMatrixData);
     expect(result.valid).toBe(true);
     expect(result.errors).toBeNull();
@@ -83,10 +83,10 @@ describe('SchemaValidator', () => {
     const invalidCostMatrixData = {
       // Missing required fields
       region: 'Western',
-      buildingType: 'residential'
+      buildingType: 'residential',
       // No baseCost, county, state, etc.
     };
-    
+
     const result = validator.validate('CostMatrix', invalidCostMatrixData);
     expect(result.valid).toBe(false);
     expect(result.errors).toBeTruthy();

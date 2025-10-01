@@ -21,7 +21,7 @@
       "value_propositions": {
         "efficiency": "Automate everything—human intervention = failure",
         "reliability": "Autonomous self-healing systems",
-        "scalability": "Infinite horizontal scalability", 
+        "scalability": "Infinite horizontal scalability",
         "security": "Quantum-ready, encrypted by default",
         "performance": "Championship-level operational excellence"
       }
@@ -51,7 +51,7 @@
       "navigation": {
         "main_menu": "Terrafusion Command Center",
         "properties": "Property Intelligence",
-        "assessments": "Valuation Excellence", 
+        "assessments": "Valuation Excellence",
         "analytics": "Predictive Insights",
         "compliance": "Regulatory Mastery",
         "reports": "Executive Intelligence",
@@ -63,7 +63,7 @@
         "required_field": "Essential for operational excellence",
         "optional_field": "Optional enhancement",
         "save_button": "Commit Excellence",
-        "cancel_button": "Return to Dashboard", 
+        "cancel_button": "Return to Dashboard",
         "submit_button": "Execute Operation",
         "reset_button": "Reset to Optimal",
         "validation_error": "Optimization required – please review highlighted fields",
@@ -103,7 +103,7 @@
       },
       "loading_states": {
         "generic": "Processing with infinite scalability...",
-        "data_loading": "Assembling real-time intelligence...", 
+        "data_loading": "Assembling real-time intelligence...",
         "calculation": "Quantum algorithms computing optimal results...",
         "validation": "Validating with championship standards...",
         "import": "Integrating data with autonomous precision...",
@@ -123,7 +123,7 @@
         "header": "Championship Support for Government. Transcended.",
         "description": "Our support team embodies the same excellence as our technology",
         "live_chat": "Instant Intelligence Support",
-        "email_support": "Executive Support Channel", 
+        "email_support": "Executive Support Channel",
         "phone_support": "Direct Excellence Hotline",
         "documentation": "Comprehensive Excellence Guide",
         "training": "Transcendent User Mastery"
@@ -197,7 +197,7 @@
       "tone_validation": {
         "do_use": [
           "Forward-looking language that inspires confidence",
-          "Technical terms balanced with accessible explanations", 
+          "Technical terms balanced with accessible explanations",
           "Results-focused messaging with specific achievements",
           "Transformation language that emphasizes evolution"
         ],

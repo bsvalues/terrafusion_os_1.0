@@ -1,12 +1,11 @@
-import React, { useRef } from 'react';
-import { jsPDF } from 'jspdf';
+import React, {useRef} from 'react';
+import {jsPDF} from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Button } from "@/components/ui/button";
-import { FileDown, Loader2  } from '@mui/icons-material';
-import { useToast } from "@/hooks/use-toast";
+import {Button} from "@/components/ui/button";
+import {FileDown, Loader2} from '@mui/icons-material';
+import {useToast} from "@/hooks/use-toast";
 
-interface CalculationResult {
-  region: string;
+interface CalculationResult {region: string;
   buildingType: string;
   squareFootage: number;
   baseCost: string;
@@ -16,37 +15,27 @@ interface CalculationResult {
   totalCost: number;
   adjustedCost?: number;
   conditionFactor?: number;
-  materialCosts?: Record<string, number>;
-}
+  materialCosts?: Record<string, number>;}
 
-interface CostBreakdown {
-  category: string;
-  cost: number;
-}
+interface CostBreakdown {category: string;
+  cost: number;}
 
-interface CostReportPDFExportProps {
-  calculationResult: CalculationResult;
+interface CostReportPDFExportProps {calculationResult: CalculationResult;
   costBreakdown: CostBreakdown[];
-  projectName?: string;
-}
+  projectName?: string;}
 
-const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
-  calculationResult,
+const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({calculationResult,
   costBreakdown,
-  projectName = 'Building Cost Report'
-}) => {
-  const { toast } = useToast();
+  projectName = 'Building Cost Report'}) => {const { toast} = useToast();
   const [exporting, setExporting] = React.useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   
-  const formatCurrency = (value: number | string | unknown) => {
-    const numValue = typeof value === 'number' ? value : Number(value) || 0;
+  const formatCurrency = (value: number | string | unknown) => {const numValue = typeof value === 'number' ? value : Number(value) || 0;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(numValue);
+      maximumFractionDigits: 0,}).format(numValue);
   };
 
   // Generate a default filename based on calculation details
@@ -57,16 +46,14 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
     return `${buildingType}-building-cost-${region}-${date}.pdf`;
   };
 
-  const exportToPDF = async () => {
-    if (!reportRef.current) return;
+  const exportToPDF = async () => {if (!reportRef.current) return;
     
     setExporting(true);
     
     try {
       toast({
         title: "Preparing PDF",
-        description: "Creating your cost report, please wait...",
-      });
+        description: "Creating your cost report, please wait...",});
       
       // Create a container for the report
       const reportContainer = document.createElement('div');
@@ -115,23 +102,19 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
       reportContainer.appendChild(footerDiv);
       
       // Convert to canvas
-      const canvas = await html2canvas(reportContainer, {
-        scale: 2,
+      const canvas = await html2canvas(reportContainer, {scale: 2,
         useCORS: true,
         logging: false,
-        backgroundColor: '#ffffff',
-      });
+        backgroundColor: '#ffffff',});
       
       // Remove the temporary container
       document.body.removeChild(reportContainer);
       
       // Create PDF
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
+      const pdf = new jsPDF({orientation: 'portrait',
         unit: 'mm',
-        format: 'a4',
-      });
+        format: 'a4',});
       
       // Calculate dimensions to fit the content within the PDF
       const imgWidth = 210; // A4 width in mm (portrait)
@@ -142,20 +125,14 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
       // Download the PDF
       pdf.save(generateFilename());
       
-      toast({
-        title: "PDF Exported",
-        description: "Your cost report has been exported successfully",
-      });
-    } catch (error) {
-      console.error('Error exporting PDF:', error);
+      toast({title: "PDF Exported",
+        description: "Your cost report has been exported successfully",});
+    } catch (error) {console.error('Error exporting PDF:', error);
       toast({
         variant: "destructive",
         title: "Export Failed",
-        description: "There was a problem creating your PDF report",
-      });
-    } finally {
-      setExporting(false);
-    }
+        description: "There was a problem creating your PDF report",});
+    } finally {setExporting(false);}
   };
 
   return (
@@ -164,189 +141,62 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
         className="flex items-center"
         onClick={exportToPDF}
         disabled={exporting}
-      >
-        {exporting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Exporting...
-        ) : (
-            <FileDown className="mr-2 h-4 w-4" />
-            Export as PDF
-        )}
-      </Button>
-      
-      {/* Hidden report template that will be rendered to PDF */}
-      <div className="hidden">
-        <div ref={reportRef} className="p-8 bg-white">
-          <div className="mb-6"><>
-
-            <h2 className="text-2xl font-bold mb-2">Cost Calculation Results</h2>
-            <p
+      >{exporting ? (<Loader2 className="mr-2 h-4 w-4 animate-spin" />Exporting...
+        ) : (<FileDown className="mr-2 h-4 w-4" />Export as PDF
+        )}</Button>{/* Hidden report template that will be rendered to PDF */}<div className="hidden"><div ref={reportRef} className="p-8 bg-white"><div className="mb-6"><><h2 className="text-2xl font-bold mb-2">Cost Calculation Results</h2><p
+</>className="text-gray-600">
+              {calculationResult.squareFootage || 0} sq ft {calculationResult.buildingType ? calculationResult.buildingType.toLowerCase() : 'unknown'} building in {calculationResult.region ? calculationResult.region.toLowerCase().replace('_', ' ') : 'unknown location'}</p></div><div className="grid grid-cols-2 gap-6 mb-8"><div><><h3 className="text-lg font-semibold mb-2">Total Building Cost</h3><div
+</>className="text-3xl font-bold text-blue-700">
+                {formatCurrency(calculationResult.totalCost || 0)}</div><div className="text-sm text-gray-600 mt-1">{formatCurrency(calculationResult.costPerSqft || 0)} per square foot</div></div><div><><h3 className="text-lg font-semibold mb-2">Cost Factors</h3><div
 </>
 
-className="text-gray-600">
-              {calculationResult.squareFootage || 0} sq ft {calculationResult.buildingType ? calculationResult.buildingType.toLowerCase() : 'unknown'} building in {calculationResult.region ? calculationResult.region.toLowerCase().replace('_', ' ') : 'unknown location'}
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-6 mb-8">
-            <div><>
-
-              <h3 className="text-lg font-semibold mb-2">Total Building Cost</h3>
-              <div
+className="space-y-1"><div className="flex justify-between"><><span>Base Cost:</span><span
 </>
 
-className="text-3xl font-bold text-blue-700">
-                {formatCurrency(calculationResult.totalCost || 0)}
-              </div>
-              <div className="text-sm text-gray-600 mt-1">
-                {formatCurrency(calculationResult.costPerSqft || 0)} per square foot
-              </div>
-            </div>
-            <div><>
-
-              <h3 className="text-lg font-semibold mb-2">Cost Factors</h3>
-              <div
+className="font-medium">{formatCurrency(calculationResult.baseCost ? Number(calculationResult.baseCost) : 0)}/sq ft</span></div><div className="flex justify-between"><><span>Complexity Factor:</span><span
 </>
 
-className="space-y-1">
-                <div className="flex justify-between"><>
-
-                  <span>Base Cost:</span>
-                  <span
+className="font-medium">{calculationResult.complexityFactor ? calculationResult.complexityFactor.toFixed(2) : '1.00'}</span></div>{calculationResult.conditionFactor && (<div className="flex justify-between"><><span>Condition Factor:</span><span
 </>
 
-className="font-medium">{formatCurrency(calculationResult.baseCost ? Number(calculationResult.baseCost) : 0)}/sq ft</span>
-                </div>
-                <div className="flex justify-between"><>
-
-                  <span>Complexity Factor:</span>
-                  <span
+className="font-medium">{calculationResult.conditionFactor ? calculationResult.conditionFactor.toFixed(2) : '1.00'}</span></div>)}<div className="flex justify-between"><><span>Region Factor:</span><span
 </>
 
-className="font-medium">{calculationResult.complexityFactor ? calculationResult.complexityFactor.toFixed(2) : '1.00'}</span>
-                </div>
-                {calculationResult.conditionFactor && (
-                  <div className="flex justify-between"><>
-
-                    <span>Condition Factor:</span>
-                    <span
+className="font-medium">{calculationResult.regionFactor ? Number(calculationResult.regionFactor).toFixed(2) : '1.00'}</span></div></div></div></div><div className="mb-8"><><h3 className="text-xl font-semibold mb-4">Cost Breakdown</h3><table
 </>
 
-className="font-medium">{calculationResult.conditionFactor ? calculationResult.conditionFactor.toFixed(2) : '1.00'}</span>
-                  </div>
-                )}
-                <div className="flex justify-between"><>
-
-                  <span>Region Factor:</span>
-                  <span
+className="w-full border-collapse"><thead><tr className="bg-gray-100"><><th className="border p-2 text-left">Category</th><th
 </>
 
-className="font-medium">{calculationResult.regionFactor ? Number(calculationResult.regionFactor).toFixed(2) : '1.00'}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mb-8"><>
-
-            <h3 className="text-xl font-semibold mb-4">Cost Breakdown</h3>
-            <table
-</>
-
-className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100"><>
-
-                  <th className="border p-2 text-left">Category</th>
-                  <th
-</>
-
-className="border p-2 text-right">Amount</th>
-                  <th className="border p-2 text-right">Percentage</th>
-                </tr>
-              </thead>
-              <tbody>
-                {costBreakdown.map((item /* , index */) => {
-                  if (item.cost <= 0) return null;
+className="border p-2 text-right">Amount</th><th className="border p-2 text-right">Percentage</th></tr></thead><tbody>{costBreakdown.map((item /* , index */) => {
+                  if (item.cost<= 0) return null;
                   const percentage = calculationResult.totalCost ? (item.cost / calculationResult.totalCost) * 100 : 0;
                   
                   return (
-                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : ''}><>
-
-                      <td className="border p-2">{item.category}</td>
-                      <td
+                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : ''}><><td className="border p-2">{item.category}</td><td
 </>
 
-className="border p-2 text-right">{formatCurrency(item.cost)}</td>
-                      <td className="border p-2 text-right">{percentage.toFixed(1)}%</td>
-                    </tr>
-                  );
-                })}
-                <tr className="font-bold bg-gray-200"><>
-
-                  <td className="border p-2">Total Cost</td>
-                  <td
+className="border p-2 text-right">{formatCurrency(item.cost)}</td><td className="border p-2 text-right">{percentage.toFixed(1)}%</td></tr>);
+                })}<tr className="font-bold bg-gray-200"><><td className="border p-2">Total Cost</td><td
 </>
 
-className="border p-2 text-right">{formatCurrency(calculationResult.totalCost || 0)}</td>
-                  <td className="border p-2 text-right">100%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          
-          {calculationResult.materialCosts && (
-            <div className="mb-8"><>
-
-              <h3 className="text-xl font-semibold mb-4">Materials Cost Breakdown</h3>
-              <table
+className="border p-2 text-right">{formatCurrency(calculationResult.totalCost || 0)}</td><td className="border p-2 text-right">100%</td></tr></tbody></table></div>{calculationResult.materialCosts && (<div className="mb-8"><><h3 className="text-xl font-semibold mb-4">Materials Cost Breakdown</h3><table
 </>
 
-className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-gray-100"><>
-
-                    <th className="border p-2 text-left">Material</th>
-                    <th
+className="w-full border-collapse"><thead><tr className="bg-gray-100"><><th className="border p-2 text-left">Material</th><th
 </>
 
-className="border p-2 text-right">Cost</th>
-                    <th className="border p-2 text-right">Percentage</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(calculationResult.materialCosts).map(([key, cost] /* , index */) => {
+className="border p-2 text-right">Cost</th><th className="border p-2 text-right">Percentage</th></tr></thead><tbody>{Object.entries(calculationResult.materialCosts).map(([key, cost] /* , index */) => {
                     const materialCost = Number(cost);
                     const percentage = calculationResult.totalCost ? (materialCost / calculationResult.totalCost) * 100 : 0;
                     const formattedName = key.charAt(0).toUpperCase() + key.slice(1);
                     
-                    return (
-                      <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : ''}><>
-
-                        <td className="border p-2">{formattedName}</td>
-                        <td
+                    return (<tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : ''}><><td className="border p-2">{formattedName}</td><td
 </>
 
-className="border p-2 text-right">{formatCurrency(materialCost)}</td>
-                        <td className="border p-2 text-right">{percentage.toFixed(1)}%</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-          
-          <div className="mt-6 text-xs text-gray-500"><>
-
-            <p>This report was generated by TerraBuild - Benton County Property Assessment Platform.</p>
-            <p
-</>
-
-</>>All calculations are approximate and may require professional validation.</p>
-          </div>
-        </div>
-      </div>
+className="border p-2 text-right">{formatCurrency(materialCost)}</td><td className="border p-2 text-right">{percentage.toFixed(1)}%</td></tr>);
+                  })}</tbody></table></div>)}<div className="mt-6 text-xs text-gray-500"><><p>This report was generated by TerraBuild - Benton County Property Assessment Platform.</p><p
+</></>>All calculations are approximate and may require professional validation.</p></div></div></div>
   );
 };
 

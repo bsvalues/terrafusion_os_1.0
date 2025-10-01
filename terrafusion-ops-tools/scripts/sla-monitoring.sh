@@ -105,7 +105,7 @@ query_prometheus() {
         return 1
     fi
     
-    local prometheus_url="http://localhost:9090/api/v1/query"
+    local prometheus_url="http://localhost:\${{TF_PROMETHEUS_PORT:-9090}}/api/v1/query"
     local response=$(curl -s -G "$prometheus_url" \
         --data-urlencode "query=$query" \
         --data-urlencode "time=$(date +%s)" 2>/dev/null)

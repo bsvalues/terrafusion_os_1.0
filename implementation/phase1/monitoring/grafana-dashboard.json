@@ -1,0 +1,330 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "🚀 TerraFusion Phase 1: IDE Dashboard Deep Integration",
+    "tags": ["terrafusion", "phase1", "ide", "supreme-commander-claude", "rust-engine"],
+    "timezone": "UTC",
+    "panels": [
+      {
+        "id": 1,
+        "title": "🎯 Supreme Commander Claude - Agent Coordination",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "claude:coordination:success_rate * 100",
+            "legendFormat": "Success Rate (%)"
+          },
+          {
+            "expr": "sum(claude_active_agents)",
+            "legendFormat": "Active Agents"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 95},
+                {"color": "green", "value": 99}
+              ]
+            },
+            "unit": "percent"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "🦀 Elite Rust Performance Engine - 7-Crate Architecture",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rust:engine:agent_coordination_latency * 1000",
+            "legendFormat": "Agent Coordination (ms)"
+          },
+          {
+            "expr": "rust_geo_processing_speed",
+            "legendFormat": "Geo Processing Speed"
+          },
+          {
+            "expr": "rust_valuation_accuracy * 100",
+            "legendFormat": "Valuation Accuracy (%)"
+          },
+          {
+            "expr": "rust:engine:golden_ratio_optimization",
+            "legendFormat": "Golden Ratio (φ) Optimization"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Performance Metrics",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "📊 Real-time IDE Dashboard Metrics",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "ide:dashboard:response_time_99p * 1000",
+            "legendFormat": "Dashboard Response Time (ms)"
+          },
+          {
+            "expr": "ide:dashboard:active_connections",
+            "legendFormat": "Active Connections"
+          },
+          {
+            "expr": "rate(ide_dashboard_websocket_messages_total[1m])",
+            "legendFormat": "WebSocket Messages/sec"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Response Time / Connections",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "🎖️ Phase 1 Success Metrics",
+        "type": "singlestat",
+        "targets": [
+          {
+            "expr": "phase1:success:development_efficiency",
+            "legendFormat": "Development Efficiency Improvement"
+          },
+          {
+            "expr": "phase1:success:user_adoption",
+            "legendFormat": "User Adoption Rate"
+          }
+        ],
+        "valueMaps": [
+          {"value": "null", "text": "N/A"}
+        ],
+        "colorBackground": true,
+        "thresholds": "200,300",
+        "colors": ["red", "yellow", "green"],
+        "gridPos": {"h": 4, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "🔄 System Health Overview",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "up{job=~\"terrafusion.*\"}",
+            "legendFormat": "{{job}}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "columns": [
+          {"text": "Service", "value": "job"},
+          {"text": "Status", "value": "Value"},
+          {"text": "Instance", "value": "instance"}
+        ],
+        "gridPos": {"h": 4, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "⚡ Performance Optimization - Golden Ratio Engine",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "golden_ratio_engine_phi_harmony_index",
+            "legendFormat": "φ Harmony Index"
+          },
+          {
+            "expr": "golden_ratio_engine_resource_allocation_efficiency",
+            "legendFormat": "Resource Allocation Efficiency"
+          },
+          {
+            "expr": "golden_ratio_engine_government_balance_score",
+            "legendFormat": "Government Balance Score"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Optimization Score",
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20}
+      },
+      {
+        "id": 7,
+        "title": "🌐 Real-time Data Flow",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(websocket_messages_sent_total[1m])",
+            "legendFormat": "Messages Sent/sec"
+          },
+          {
+            "expr": "rate(websocket_messages_received_total[1m])",
+            "legendFormat": "Messages Received/sec"
+          },
+          {
+            "expr": "websocket_active_connections",
+            "legendFormat": "Active WebSocket Connections"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20}
+      },
+      {
+        "id": 8,
+        "title": "🧠 AI Agent Performance Matrix",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "ai_agent_performance_score",
+            "legendFormat": "{{agent_id}}"
+          }
+        ],
+        "xAxis": {
+          "show": true,
+          "mode": "time"
+        },
+        "yAxis": {
+          "show": true,
+          "label": "Agent ID",
+          "min": 1,
+          "max": 1008
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 28}
+      },
+      {
+        "id": 9,
+        "title": "💾 Database Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pg_stat_database_tup_fetched{datname=\"terrafusion\"}",
+            "legendFormat": "Tuples Fetched"
+          },
+          {
+            "expr": "pg_stat_database_tup_inserted{datname=\"terrafusion\"}",
+            "legendFormat": "Tuples Inserted"
+          },
+          {
+            "expr": "rate(pg_stat_database_xact_commit{datname=\"terrafusion\"}[1m])",
+            "legendFormat": "Transactions/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 36}
+      },
+      {
+        "id": 10,
+        "title": "🔄 Cache Performance (Redis)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "redis_connected_clients",
+            "legendFormat": "Connected Clients"
+          },
+          {
+            "expr": "rate(redis_commands_processed_total[1m])",
+            "legendFormat": "Commands/sec"
+          },
+          {
+            "expr": "redis_memory_used_bytes / 1024 / 1024",
+            "legendFormat": "Memory Used (MB)"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 36}
+      },
+      {
+        "id": 11,
+        "title": "🎯 Phase 1 ROI Tracking",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "phase1_roi_percentage",
+            "legendFormat": "ROI %"
+          },
+          {
+            "expr": "phase1_cost_savings_monthly",
+            "legendFormat": "Monthly Savings ($)"
+          },
+          {
+            "expr": "phase1_efficiency_gain_percentage",
+            "legendFormat": "Efficiency Gain %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 200},
+                {"color": "green", "value": 300}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 44}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "1s",
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "prometheus",
+          "expr": "changes(up[1m]) > 0",
+          "iconColor": "green",
+          "titleFormat": "Deployment",
+          "textFormat": "Service restarted"
+        },
+        {
+          "name": "Supreme Commander Actions",
+          "datasource": "prometheus",
+          "expr": "increase(claude_coordination_events_total[1m]) > 0",
+          "iconColor": "blue",
+          "titleFormat": "Claude Action",
+          "textFormat": "Supreme Commander coordination event"
+        }
+      ]
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "environment",
+          "type": "custom",
+          "options": [
+            {"text": "Production", "value": "production"},
+            {"text": "Development", "value": "development"},
+            {"text": "Staging", "value": "staging"}
+          ],
+          "current": {"text": "Production", "value": "production"}
+        },
+        {
+          "name": "phase",
+          "type": "custom",
+          "options": [
+            {"text": "Phase 1", "value": "phase1"},
+            {"text": "Phase 2", "value": "phase2"},
+            {"text": "Phase 3", "value": "phase3"}
+          ],
+          "current": {"text": "Phase 1", "value": "phase1"}
+        }
+      ]
+    }
+  }
+}

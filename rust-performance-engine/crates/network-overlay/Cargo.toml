@@ -1,0 +1,15 @@
+[package]
+name = "network-overlay"
+version = "1.0.0"
+edition = "2021"
+description = "TerraNet Network Infrastructure - Government secure overlay networking"
+license = "MIT"
+authors = ["TerraFusion Engineering Team"]
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+anyhow = "1.0"
+
+[features]
+default = []

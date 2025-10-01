@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion - Government. Transcended.</title>
+    <style>
+        /* REAL TerraFusion Brand System - From Actual Codebase */
+        :root {
+            /* Primary Brand Colors - ACTUAL TerraFusion */
+            --tf-cosmic-blue: #0891b2;
+            --tf-quantum-teal: #00d2ff;
+            --tf-neural-purple: #667eea;
+            --tf-stellar-white: #ffffff;
+            --tf-deep-space: #0a0f1c;
+            --tf-dark-teal: #1a2f3a;
+            --tf-accent-cyan: #22d3ee;
+            
+            /* Glass Morphism Effects */
+            --tf-glass-bg: rgba(255, 255, 255, 0.05);
+            --tf-glass-border: rgba(0, 210, 255, 0.2);
+            --tf-backdrop-blur: blur(15px);
+            
+            /* Typography */
+            --tf-font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --tf-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            
+            /* Gradients */
+            --tf-gradient-primary: linear-gradient(135deg, var(--tf-quantum-teal), var(--tf-cosmic-blue));
+            --tf-gradient-secondary: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-neural-purple));
+            --tf-gradient-accent: linear-gradient(135deg, var(--tf-quantum-teal), var(--tf-accent-cyan));
+            
+            /* Shadows */
+            --tf-shadow-glow: 0 0 30px rgba(0, 210, 255, 0.3);
+            --tf-shadow-deep: 0 20px 40px rgba(10, 15, 28, 0.4);
+            --tf-shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--tf-font-primary);
+            background: radial-gradient(ellipse at center, var(--tf-deep-space) 0%, #1a2332 35%, #2a3441 100%);
+            color: var(--tf-stellar-white);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(8, 145, 178, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(34, 211, 238, 0.2) 0%, transparent 50%);
+            animation: tf-glow-pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes tf-glow-pulse {
+            0%, 100% { 
+                filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.5));
+                transform: scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 40px rgba(0, 210, 255, 0.8));
+                transform: scale(1.02);
+            }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tf-logo {
+            font-size: 6rem;
+            font-weight: 900;
+            background: var(--tf-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            text-shadow: var(--tf-shadow-glow);
+        }
+
+        .tf-tagline {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--tf-quantum-teal);
+            margin-bottom: 1rem;
+            opacity: 0.95;
+        }
+
+        .tf-slogan {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--tf-accent-cyan);
+            font-style: italic;
+            opacity: 0.9;
+            margin-bottom: 3rem;
+        }
+
+        .tf-motto {
+            font-size: 1.2rem;
+            color: var(--tf-stellar-white);
+            opacity: 0.8;
+            margin-bottom: 3rem;
+        }
+
+        /* TerraFusion Buttons */
+        .tf-btn-primary {
+            background: var(--tf-gradient-primary);
+            color: var(--tf-stellar-white);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin: 0 1rem;
+        }
+
+        .tf-btn-primary:hover {
+            box-shadow: var(--tf-shadow-glow);
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+        }
+
+        .tf-btn-secondary {
+            background: transparent;
+            color: var(--tf-quantum-teal);
+            border: 2px solid var(--tf-quantum-teal);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin: 0 1rem;
+        }
+
+        .tf-btn-secondary:hover {
+            background: var(--tf-quantum-teal);
+            color: var(--tf-deep-space);
+            box-shadow: var(--tf-shadow-glow);
+        }
+
+        /* Brand Showcase */
+        .brand-showcase {
+            padding: 100px 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .tf-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: var(--tf-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+            text-align: center;
+            letter-spacing: -1px;
+        }
+
+        /* Brand Colors Grid */
+        .brand-colors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .color-card {
+            background: var(--tf-glass-bg);
+            backdrop-filter: var(--tf-backdrop-blur);
+            border: 2px solid var(--tf-glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .color-card:hover {
+            border-color: var(--tf-quantum-teal);
+            box-shadow: var(--tf-shadow-glow);
+            transform: translateY(-5px);
+        }
+
+        .color-sample {
+            width: 100px;
+            height: 100px;
+            border-radius: 16px;
+            margin: 0 auto 1rem;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .color-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-hex {
+            font-family: var(--tf-font-mono);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* Component Examples */
+        .component-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .tf-card {
+            background: var(--tf-glass-bg);
+            backdrop-filter: var(--tf-backdrop-blur);
+            border: 2px solid var(--tf-glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tf-card:hover {
+            border-color: var(--tf-quantum-teal);
+            box-shadow: var(--tf-shadow-glow);
+            transform: translateY(-5px);
+        }
+
+        .tf-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--tf-gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tf-card:hover::before {
+            opacity: 1;
+        }
+
+        /* CostForge AI Demo */
+        .costforge-demo {
+            background: var(--tf-glass-bg);
+            backdrop-filter: var(--tf-backdrop-blur);
+            border: 3px solid var(--tf-accent-cyan);
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .costforge-demo::before {
+            content: '379M×';
+            position: absolute;
+            top: -30px;
+            right: 20px;
+            font-size: 8rem;
+            font-weight: 900;
+            opacity: 0.05;
+            color: var(--tf-accent-cyan);
+        }
+
+        .speed-indicator {
+            font-size: 4rem;
+            font-weight: 900;
+            background: var(--tf-gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Brand Messaging */
+        .brand-messaging {
+            text-align: center;
+            padding: 4rem 0;
+            background: var(--tf-glass-bg);
+            border-radius: 24px;
+            margin: 3rem 0;
+        }
+
+        .brand-promise {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: var(--tf-stellar-white);
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .microcopy-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .microcopy-card {
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .microcopy-type {
+            font-size: 0.9rem;
+            color: var(--tf-accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .microcopy-text {
+            font-style: italic;
+            color: var(--tf-stellar-white);
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tf-logo {
+                font-size: 4rem;
+            }
+            
+            .tf-tagline {
+                font-size: 1.5rem;
+            }
+            
+            .tf-slogan {
+                font-size: 1.2rem;
+            }
+            
+            .component-examples {
+                grid-template-columns: 1fr;
+            }
+            
+            .tf-btn-primary,
+            .tf-btn-secondary {
+                display: block;
+                margin: 1rem auto;
+                width: 80%;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* TerraFusion Signature */
+        .tf-signature {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--tf-glass-bg);
+            backdrop-filter: var(--tf-backdrop-blur);
+            border: 1px solid var(--tf-glass-border);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            color: var(--tf-quantum-teal);
+            font-weight: 500;
+            opacity: 0.8;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1 class="tf-logo">TerraFusion</h1>
+            <p class="tf-tagline">Government. Transcended.</p>
+            <p class="tf-slogan">Turn Complexity into Clarity.</p>
+            <p class="tf-motto">We do it right the first time.</p>
+            
+            <div>
+                <a href="#showcase" class="tf-btn-primary">View Brand System</a>
+                <a href="#costforge" class="tf-btn-secondary">See CostForge AI</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Brand Showcase -->
+    <div class="brand-showcase" id="showcase">
+        <div class="container">
+            <h2 class="tf-title">TerraFusion Brand System</h2>
+            <p style="text-align: center; font-size: 1.2rem; opacity: 0.8; margin-bottom: 3rem;">
+                The REAL TerraFusion brand identity - sourced directly from the production codebase
+            </p>
+            
+            <!-- Brand Colors -->
+            <div class="brand-colors">
+                <div class="color-card">
+                    <div class="color-sample" style="background: #0891b2;"></div>
+                    <div class="color-name">Cosmic Blue</div>
+                    <div class="color-hex">#0891b2</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-sample" style="background: #00d2ff;"></div>
+                    <div class="color-name">Quantum Teal</div>
+                    <div class="color-hex">#00d2ff</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-sample" style="background: #667eea;"></div>
+                    <div class="color-name">Neural Purple</div>
+                    <div class="color-hex">#667eea</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-sample" style="background: #22d3ee;"></div>
+                    <div class="color-name">Accent Cyan</div>
+                    <div class="color-hex">#22d3ee</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-sample" style="background: #1a2f3a;"></div>
+                    <div class="color-name">Dark Teal</div>
+                    <div class="color-hex">#1a2f3a</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-sample" style="background: linear-gradient(135deg, #00d2ff, #0891b2);"></div>
+                    <div class="color-name">Primary Gradient</div>
+                    <div class="color-hex">Teal → Blue</div>
+                </div>
+            </div>
+
+            <!-- Component Examples -->
+            <h2 class="tf-title">UI Components</h2>
+            <div class="component-examples">
+                <div class="tf-card">
+                    <h3 style="color: var(--tf-quantum-teal); margin-bottom: 1rem;">TerraFusion Navigation</h3>
+                    <p style="opacity: 0.8; margin-bottom: 1.5rem;">Glass morphism design with backdrop blur effects</p>
+                    <button class="tf-btn-primary" style="margin: 0;">Primary Action</button>
+                    <button class="tf-btn-secondary" style="margin: 0 0 0 1rem;">Secondary</button>
+                </div>
+                
+                <div class="tf-card">
+                    <h3 style="color: var(--tf-quantum-teal); margin-bottom: 1rem;">Property Dashboard</h3>
+                    <div style="background: rgba(0, 210, 255, 0.1); border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--tf-accent-cyan);">94,149</div>
+                        <div style="opacity: 0.8;">Benton County Properties</div>
+                    </div>
+                </div>
+                
+                <div class="tf-card">
+                    <h3 style="color: var(--tf-quantum-teal); margin-bottom: 1rem;">AI Assistant</h3>
+                    <div style="background: var(--tf-glass-bg); border-radius: 8px; padding: 1rem;">
+                        <p style="opacity: 0.9; font-style: italic;">"Preparing transcendence..."</p>
+                        <div style="width: 100%; height: 4px; background: rgba(0, 210, 255, 0.2); border-radius: 2px; margin-top: 1rem; overflow: hidden;">
+                            <div style="width: 60%; height: 100%; background: var(--tf-gradient-primary); border-radius: 2px; animation: loading 2s ease-in-out infinite;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CostForge AI Demo -->
+            <div class="costforge-demo" id="costforge">
+                <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--tf-accent-cyan);">CostForge AI</h2>
+                <div class="speed-indicator">3 SECONDS</div>
+                <p style="font-size: 1.3rem; opacity: 0.9; margin: 1rem 0;">
+                    vs Marshall & Swift's 30 minutes
+                </p>
+                <p style="font-size: 1.1rem; opacity: 0.8;">
+                    Replaces $100K/year service • 600× faster • 75% cheaper
+                </p>
+                <div style="margin-top: 2rem;">
+                    <button class="tf-btn-primary">Try CostForge AI</button>
+                </div>
+            </div>
+
+            <!-- Brand Messaging -->
+            <div class="brand-messaging">
+                <h2 class="tf-title">Brand Voice & Messaging</h2>
+                <p class="brand-promise">
+                    "Every user, every action, every day: simplicity, mastery, and confidence—delivered without compromise."
+                </p>
+                
+                <div class="microcopy-examples">
+                    <div class="microcopy-card">
+                        <div class="microcopy-type">Confirmation</div>
+                        <div class="microcopy-text">"Transcendence complete."</div>
+                    </div>
+                    <div class="microcopy-card">
+                        <div class="microcopy-type">Loading</div>
+                        <div class="microcopy-text">"Advancing county intelligence..."</div>
+                    </div>
+                    <div class="microcopy-card">
+                        <div class="microcopy-type">Error Support</div>
+                        <div class="microcopy-text">"Let's clear the path—together."</div>
+                    </div>
+                    <div class="microcopy-card">
+                        <div class="microcopy-type">Empty State</div>
+                        <div class="microcopy-text">"The future starts here."</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TerraFusion Signature -->
+    <div class="tf-signature">
+        Intelligence That Counties Envy
+    </div>
+
+    <script>
+        // Add ripple effect to buttons
+        document.querySelectorAll('.tf-btn-primary, .tf-btn-secondary').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const ripple = document.createElement('span');
+                ripple.style.position = 'absolute';
+                ripple.style.width = ripple.style.height = '40px';
+                ripple.style.background = 'rgba(255,255,255,0.5)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.transform = 'translate(-50%, -50%)';
+                ripple.style.pointerEvents = 'none';
+                ripple.style.animation = 'ripple 0.6s ease-out';
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                const rect = this.getBoundingClientRect();
+                ripple.style.left = e.clientX - rect.left + 'px';
+                ripple.style.top = e.clientY - rect.top + 'px';
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Loading animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes loading {
+                0% { transform: translateX(-100%); }
+                50% { transform: translateX(0%); }
+                100% { transform: translateX(100%); }
+            }
+            @keyframes ripple {
+                to {
+                    transform: translate(-50%, -50%) scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
+
+

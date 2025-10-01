@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TerraFusion OS Cybersecurity Command - Advanced Security Operations Center for Government Systems" />
+    <meta name="keywords" content="cybersecurity, government, security operations, threat intelligence, quantum security" />
+    <meta name="author" content="TerraFusion OS Development Team" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws: wss:;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>" />
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="http://localhost:3013" />
+    
+    <!-- Title -->
+    <title>TerraFusion Cybersecurity Command - Security Operations Center</title>
+    
+    <!-- Styles for Loading Screen -->
+    <style>
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0a0a0a, #111111);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .loading-logo {
+        font-size: 64px;
+        margin-bottom: 20px;
+        animation: shield-pulse 2s ease-in-out infinite alternate;
+      }
+      
+      @keyframes shield-pulse {
+        0% { 
+          filter: drop-shadow(0 0 20px #0099ff);
+          transform: scale(1);
+        }
+        100% { 
+          filter: drop-shadow(0 0 40px #00ffaa);
+          transform: scale(1.1);
+        }
+      }
+      
+      .loading-title {
+        font-size: 24px;
+        font-weight: bold;
+        background: linear-gradient(45deg, #0099ff, #00ffaa);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      
+      .loading-subtitle {
+        font-size: 16px;
+        color: #00ffee;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(0, 153, 255, 0.3);
+        border-top: 3px solid #0099ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-status {
+        font-size: 14px;
+        color: #666666;
+        text-align: center;
+        max-width: 400px;
+        line-height: 1.4;
+      }
+      
+      .security-badges {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .security-badge {
+        background: rgba(0, 153, 255, 0.1);
+        border: 1px solid rgba(0, 153, 255, 0.3);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+        color: #00ffaa;
+        letter-spacing: 0.5px;
+        animation: badge-glow 3s ease-in-out infinite alternate;
+      }
+      
+      @keyframes badge-glow {
+        0% { 
+          box-shadow: 0 0 5px rgba(0, 153, 255, 0.3);
+          border-color: rgba(0, 153, 255, 0.3);
+        }
+        100% { 
+          box-shadow: 0 0 15px rgba(0, 255, 170, 0.4);
+          border-color: rgba(0, 255, 170, 0.5);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <div class="loading-logo">🛡️</div>
+      <div class="loading-title">TerraFusion Cybersecurity Command</div>
+      <div class="loading-subtitle">Security Operations Center</div>
+      <div class="loading-spinner"></div>
+      <div class="loading-status">
+        Initializing quantum security protocols and AI threat detection systems...
+      </div>
+      <div class="security-badges">
+        <div class="security-badge">🔒 QUANTUM SECURED</div>
+        <div class="security-badge">🛡️ AI PROTECTED</div>
+        <div class="security-badge">⚡ REAL-TIME MONITORING</div>
+        <div class="security-badge">🌐 GLOBAL DEFENSE</div>
+      </div>
+    </div>
+
+    <!-- React Root -->
+    <div id="root"></div>
+    
+    <!-- Loading Script -->
+    <script>
+      // Hide loading screen when React app loads
+      window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.transition = 'opacity 0.5s ease-out';
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+              loadingScreen.remove();
+            }, 500);
+          }
+        }, 2000); // Show loading screen for 2 seconds minimum
+      });
+      
+      // Security: Disable right-click context menu in production
+      if (window.location.hostname !== 'localhost') {
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+      }
+      
+      // Security: Disable F12 developer tools in production
+      if (window.location.hostname !== 'localhost') {
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'F12' || 
+              (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+              (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+              (e.ctrlKey && e.key === 'U')) {
+            e.preventDefault();
+          }
+        });
+      }
+      
+      // Console Security Warning
+      console.log('%c⚠️ SECURITY WARNING ⚠️', 'color: #ff4444; font-size: 20px; font-weight: bold;');
+      console.log('%cThis is a government security system. Unauthorized access is prohibited.', 'color: #ffaa00; font-size: 14px;');
+      console.log('%cAll activities are monitored and logged.', 'color: #ffaa00; font-size: 14px;');
+    </script>
+    
+    <!-- Module Script -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

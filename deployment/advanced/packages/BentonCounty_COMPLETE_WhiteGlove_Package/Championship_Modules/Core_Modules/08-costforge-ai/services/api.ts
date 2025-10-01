@@ -4,7 +4,7 @@
  * Part of Terrafusion Ecosystem Integration
  */
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8002';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:\${{TF_SERVICE_8002_PORT:-8002}}';
 
 // API Response Types
 export interface CostEstimateRequest {
@@ -82,23 +82,20 @@ class CostForgeAPIService {
   /**
    * Generic API request handler with error handling
    */
-  private async request<T>(
-    endpoint: string, 
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     const defaultOptions: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
       ...options,
     };
 
     try {
       const response = await fetch(url, defaultOptions);
-      
+
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }

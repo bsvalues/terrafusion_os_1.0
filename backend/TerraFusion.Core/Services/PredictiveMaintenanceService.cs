@@ -36,6 +36,12 @@ namespace TerraFusion.Core.Services
         {
             _logger.LogInformation("[PREDICTIVE] Generating predictive maintenance report...");
 
+            if (!_predictiveMaintenanceEnabled)
+            {
+                _logger.LogWarning("[PREDICTIVE] Predictive maintenance not enabled, generating basic report");
+                return new PredictiveMaintenanceReport { Alerts = new List<MaintenanceAlert>(), SystemHealthScores = new Dictionary<string, double>(), RecommendedActions = new List<string>() };
+            }
+
             var alerts = await AnalyzeSystemHealth();
             var healthScores = await CalculateSystemHealthScores();
             var recommendations = await GenerateMaintenanceRecommendations(alerts, healthScores);
@@ -110,6 +116,12 @@ namespace TerraFusion.Core.Services
         public async Task<bool> PerformAutomatedMaintenance()
         {
             _logger.LogInformation("[AUTO-MAINT] Performing automated maintenance...");
+
+            if (!_selfOptimizationEnabled)
+            {
+                _logger.LogWarning("[AUTO-MAINT] Self optimization not enabled, skipping automated maintenance");
+                return false;
+            }
 
             var maintenanceTasks = new[]
             {
@@ -240,7 +252,7 @@ namespace TerraFusion.Core.Services
             var metrics = await _performanceService.MeasureCurrentPerformance();
 
             // Check for performance degradation
-            if (metrics.CPUUtilization > 80)
+            if (metrics.GetValueOrDefault("cpu_usage_percent", 0.0) > 80)
             {
                 alerts.Add(new MaintenanceAlert
                 {

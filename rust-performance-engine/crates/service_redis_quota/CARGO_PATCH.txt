@@ -1,0 +1,4 @@
+# Add to crates/golden-service/Cargo.toml
+[dependencies]
+redis = { version = "0.25", features = ["tokio-comp"] }
+once_cell = "1.19"

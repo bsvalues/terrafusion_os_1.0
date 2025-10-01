@@ -1,0 +1,146 @@
+name: Observability CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'prometheus/**'
+      - 'grafana/**'
+      - 'observability/**'
+      - 'scripts/observability-*.js'
+      - '.github/workflows/observability-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'prometheus/**'
+      - 'grafana/**'
+      - 'observability/**'
+      - 'scripts/observability-*.js'
+      - '.github/workflows/observability-ci.yml'
+
+jobs:
+  lint:
+    name: Lint Observability Configurations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install tools
+        run: |
+          pip install yamllint
+          sudo apt-get update
+          sudo apt-get install -y prometheus promtool
+      
+      - name: Run observability linting
+        run: ./scripts/run-observability-ci.sh --lint
+
+  test:
+    name: Smoke Test Observability Components
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Start services
+        run: |
+          # Start application
+          npm run dev &
+          echo "Waiting for app to start..."
+          sleep 15
+          
+          # For a real environment, you would start Prometheus too
+          # docker run -d --name prometheus -p 9090:9090 -v ./prometheus:/etc/prometheus prom/prometheus
+      
+      - name: Run observability tests
+        run: ./scripts/run-observability-ci.sh --test
+      
+      - name: Stop services
+        if: always()
+        run: |
+          # Kill all node processes
+          pkill -f node || true
+          
+          # In a real environment, you would stop Prometheus too
+          # docker stop prometheus
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+      
+      - name: Configure kubectl
+        run: |
+          # In a real environment, you would configure kubectl here
+          # For example, with AWS:
+          # aws eks update-kubeconfig --name terrafusion-cluster --region us-west-2
+          echo "Skipping kubectl configuration in CI environment"
+      
+      - name: Deploy to staging
+        run: |
+          # In a real environment, you would run commands like:
+          # kubectl apply -f prometheus/rules/ -n monitoring
+          # kubectl apply -f prometheus/alerts/ -n monitoring
+          # kubectl apply -f grafana/provisioning/ -n monitoring
+          echo "This is a simulation of deployment to staging"
+          ./scripts/run-observability-ci.sh --verify --deploy --tag
+      
+      - name: Create tag
+        run: |
+          # In a real environment, you would tag the commit here
+          TAG_NAME="observability-staging-deployed-$(date +%Y%m%d%H%M%S)"
+          echo "Creating tag $TAG_NAME"
+          git config --local user.email "ci@terrafusion.com"
+          git config --local user.name "TerraFusion CI"
+          # Temporarily disabled for simulation
+          # git tag $TAG_NAME
+          # git push origin $TAG_NAME
+
+  notify:
+    name: Notify Team
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: always()
+    steps:
+      - name: Send notification
+        run: |
+          # In a real environment, you would notify the team via Slack, email, etc.
+          # For example, with Slack:
+          # curl -X POST -H 'Content-type: application/json' --data '{"text":"Observability deployment status: ${{ job.status }}"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+          echo "This is a simulation of notification to the team"
+          echo "Deployment status: ${{ needs.deploy-staging.result }}"

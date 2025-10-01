@@ -26,7 +26,7 @@ REM Check if ports are available
 echo [2/5] Checking port availability...
 netstat -an | find "5000" >nul 2>&1
 if %errorlevel% equ 0 (
-    echo ⚠️  WARNING: Port 5000 is already in use
+    echo ⚠️  WARNING: Port \${{TF_API_PORT:-5000}} is already in use
     echo This may indicate TerraFusion is already running
     echo.
 )
@@ -83,10 +83,10 @@ if %errorlevel% equ 0 (
     echo ========================================
     echo.
     echo 🌐 Access Points:
-    echo    • TerraFusion IDE: http://localhost:5173
-    echo    • API Health Check: http://localhost:5000/health
-    echo    • Grafana Dashboard: http://localhost:3000 (admin/admin)
-    echo    • API Documentation: http://localhost:5000/swagger
+    echo    • TerraFusion IDE: http://localhost:\${{TF_PORT_5173:-5173}}
+    echo    • API Health Check: http://localhost:\${{TF_PORT_5173:-5173}}/health
+    echo    • Grafana Dashboard: http://localhost:\${{TF_PORT_5173:-5173}} (admin/admin)
+    echo    • API Documentation: http://localhost:\${{TF_PORT_5173:-5173}}/swagger
     echo.
     echo 📊 Service Status:
     docker-compose -f Docker/docker-compose.production.yml ps

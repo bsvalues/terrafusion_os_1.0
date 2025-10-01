@@ -77,7 +77,7 @@ jobs:
         env:
           ASPNETCORE_ENVIRONMENT: Testing
           CONNECTION_STRING: "Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres"
-          REDIS_CONNECTION: "localhost:6379"
+          REDIS_CONNECTION: "localhost:\${{TF_REDIS_PORT:-6379}}"
         run: |
           cd backend
           dotnet restore
@@ -89,15 +89,15 @@ jobs:
         env:
           ASPNETCORE_ENVIRONMENT: Testing
           CONNECTION_STRING: "Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres"
-          REDIS_CONNECTION: "localhost:6379"
-          ASPNETCORE_URLS: "http://localhost:5000"
+          REDIS_CONNECTION: "localhost:\${{TF_REDIS_PORT:-6379}}"
+          ASPNETCORE_URLS: "http://localhost:\${{TF_REDIS_PORT:-6379}}"
         run: |
           cd backend
           nohup dotnet run --project TerraFusion.API --no-build > ../backend.log 2>&1 &
           echo $! > ../backend.pid
           # Wait for API to be ready
           for i in {1..30}; do
-            if curl -f http://localhost:5000/health 2>/dev/null; then
+            if curl -f http://localhost:\${{TF_REDIS_PORT:-6379}}/health 2>/dev/null; then
               echo "✅ Backend API is ready"
               break
             fi
@@ -121,8 +121,8 @@ jobs:
         env:
           NODE_ENV: test
           CI: true
-          BASE_URL: http://localhost:3000
-          API_URL: http://localhost:5000
+          BASE_URL: http://localhost:\${{TF_REDIS_PORT:-6379}}
+          API_URL: http://localhost:\${{TF_REDIS_PORT:-6379}}
         run: |
           # Start frontend dev server
           cd frontend
@@ -131,7 +131,7 @@ jobs:
           
           # Wait for frontend to be ready
           for i in {1..30}; do
-            if curl -f http://localhost:3000 2>/dev/null; then
+            if curl -f http://localhost:\${{TF_REDIS_PORT:-6379}} 2>/dev/null; then
               echo "✅ Frontend is ready"
               break
             fi
@@ -205,14 +205,14 @@ EOF
           fi
           
           # Ensure URLs are accessible
-          curl -f http://localhost:3000 || (echo "❌ Frontend not ready for Lighthouse" && exit 1)
+          curl -f http://localhost:\${{TF_REDIS_PORT:-6379}} || (echo "❌ Frontend not ready for Lighthouse" && exit 1)
           
           # Run Lighthouse CI with AI Swarm enhancement
           if [ -f "lighthouserc.js" ]; then
             npm run lhci
           else
             echo "⚠️ Using basic Lighthouse configuration"
-            npx lhci autorun --config.ci.collect.url="http://localhost:3000" --config.ci.upload.target=filesystem --config.ci.upload.outputDir=./lighthouse-reports
+            npx lhci autorun --config.ci.collect.url="http://localhost:\${{TF_REDIS_PORT:-6379}}" --config.ci.upload.target=filesystem --config.ci.upload.outputDir=./lighthouse-reports
           fi
           
           # Copy LHCI results to expected location

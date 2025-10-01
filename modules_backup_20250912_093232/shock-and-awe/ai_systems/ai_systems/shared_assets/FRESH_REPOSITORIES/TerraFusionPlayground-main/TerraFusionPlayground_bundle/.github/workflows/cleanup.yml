@@ -1,0 +1,171 @@
+name: Cleanup and Maintenance
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sunday
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Clean up old artifacts
+      run: npm run cleanup:artifacts
+      env:
+        NODE_ENV: production
+        ARTIFACT_RETENTION_DAYS: ${{ secrets.ARTIFACT_RETENTION_DAYS }}
+
+    - name: Clean up old logs
+      run: npm run cleanup:logs
+      env:
+        NODE_ENV: production
+        LOG_RETENTION_DAYS: ${{ secrets.LOG_RETENTION_DAYS }}
+
+    - name: Clean up old backups
+      run: npm run cleanup:backups
+      env:
+        NODE_ENV: production
+        BACKUP_RETENTION_DAYS: ${{ secrets.BACKUP_RETENTION_DAYS }}
+
+    - name: Clean up old metrics
+      run: npm run cleanup:metrics
+      env:
+        NODE_ENV: production
+        METRIC_RETENTION_DAYS: ${{ secrets.METRIC_RETENTION_DAYS }}
+
+    - name: Clean up old reports
+      run: npm run cleanup:reports
+      env:
+        NODE_ENV: production
+        REPORT_RETENTION_DAYS: ${{ secrets.REPORT_RETENTION_DAYS }}
+
+    - name: Clean up old cache
+      run: npm run cleanup:cache
+      env:
+        NODE_ENV: production
+        CACHE_RETENTION_DAYS: ${{ secrets.CACHE_RETENTION_DAYS }}
+
+    - name: Clean up old temporary files
+      run: npm run cleanup:temp
+      env:
+        NODE_ENV: production
+        TEMP_RETENTION_DAYS: ${{ secrets.TEMP_RETENTION_DAYS }}
+
+    - name: Clean up old Docker images
+      run: npm run cleanup:docker
+      env:
+        NODE_ENV: production
+        DOCKER_RETENTION_DAYS: ${{ secrets.DOCKER_RETENTION_DAYS }}
+
+    - name: Clean up old GitHub Actions artifacts
+      uses: geekyeggo/delete-artifact@v2
+      with:
+        name: monitoring-report'
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Generate cleanup report
+      run: npm run cleanup:report
+      env:
+        NODE_ENV: production
+
+    - name: Upload cleanup report
+      uses: actions/upload-artifact@v3
+      with:
+        name: cleanup-report
+        path: reports/cleanup
+        retention-days: 30
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  maintenance:
+    name: Maintenance
+    needs: cleanup
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run database maintenance
+      run: npm run maintenance:database
+      env:
+        NODE_ENV: production
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+
+    - name: Run Redis maintenance
+      run: npm run maintenance:redis
+      env:
+        NODE_ENV: production
+        REDIS_HOST: ${{ secrets.REDIS_HOST }}
+        REDIS_PORT: ${{ secrets.REDIS_PORT }}
+        REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+
+    - name: Run file system maintenance
+      run: npm run maintenance:filesystem
+      env:
+        NODE_ENV: production
+        STORAGE_PATH: ${{ secrets.STORAGE_PATH }}
+
+    - name: Run application maintenance
+      run: npm run maintenance:app
+      env:
+        NODE_ENV: production
+        APP_URL: ${{ secrets.APP_URL }}
+
+    - name: Run system maintenance
+      run: npm run maintenance:system
+      env:
+        NODE_ENV: production
+
+    - name: Generate maintenance report
+      run: npm run maintenance:report
+      env:
+        NODE_ENV: production
+
+    - name: Upload maintenance report
+      uses: actions/upload-artifact@v3
+      with:
+        name: maintenance-report
+        path: reports/maintenance
+        retention-days: 30
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

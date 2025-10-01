@@ -1,33 +1,33 @@
 {
-    "county": "snohomish",
-    "valuation_date": "2025-08-12",
-    "sample_valuations": [
-        {
-            "parcel": "SNOHOMISH-000001",
-            "address": "123 Main St",
-            "current_value": 499516,
-            "costforge_value": 230143,
-            "confidence": "94.9%",
-            "time": "3.0 seconds"
-        },
-        {
-            "parcel": "SNOHOMISH-000002",
-            "address": "456 Oak Ave",
-            "current_value": 605768,
-            "costforge_value": 596308,
-            "confidence": "93.9%",
-            "time": "2.8 seconds"
-        },
-        {
-            "parcel": "SNOHOMISH-000003",
-            "address": "789 River Rd",
-            "current_value": 609497,
-            "costforge_value": 445317,
-            "confidence": "95.5%",
-            "time": "3.1 seconds"
-        }
-    ],
-    "average_confidence": "94.2%",
-    "average_time": "3.1 seconds",
-    "vs_manual": "379,000,000× faster"
+  "county": "snohomish",
+  "valuation_date": "2025-08-12",
+  "sample_valuations": [
+    {
+      "parcel": "SNOHOMISH-000001",
+      "address": "123 Main St",
+      "current_value": 499516,
+      "costforge_value": 230143,
+      "confidence": "94.9%",
+      "time": "3.0 seconds"
+    },
+    {
+      "parcel": "SNOHOMISH-000002",
+      "address": "456 Oak Ave",
+      "current_value": 605768,
+      "costforge_value": 596308,
+      "confidence": "93.9%",
+      "time": "2.8 seconds"
+    },
+    {
+      "parcel": "SNOHOMISH-000003",
+      "address": "789 River Rd",
+      "current_value": 609497,
+      "costforge_value": 445317,
+      "confidence": "95.5%",
+      "time": "3.1 seconds"
+    }
+  ],
+  "average_confidence": "94.2%",
+  "average_time": "3.1 seconds",
+  "vs_manual": "379,000,000× faster"
 }

@@ -186,7 +186,7 @@ setup_development_database() {
         
         # Wait for database to be ready
         sleep 10
-        log_success "Development database started on port 5433"
+        log_success "Development database started on port \${{TF_PORT_5433:-5433}}"
     else
         log_info "PostgreSQL container already running"
     fi
@@ -296,7 +296,7 @@ echo "🚀 Starting TerraFusion Ultimate IDE Development Environment"
 # Start backend
 echo "Starting backend API..."
 cd backend/TerraFusion.IDE.Gateway
-dotnet run --urls=http://localhost:5000 &
+dotnet run --urls=http://localhost:${TF_STATIC_PORT:-8080} &
 BACKEND_PID=$!
 
 # Start frontend
@@ -314,9 +314,9 @@ if [ -d "../ai-swarm-supreme-commander" ]; then
 fi
 
 echo "✅ Development environment started!"
-echo "  • Frontend: http://localhost:3000"
-echo "  • Backend API: http://localhost:5000"
-echo "  • AI Swarm: http://localhost:8080"
+echo "  • Frontend: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "  • Backend API: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "  • AI Swarm: http://localhost:${TF_STATIC_PORT:-8080}"
 
 # Cleanup function
 cleanup() {
@@ -451,8 +451,8 @@ main() {
         echo "📖 Next Steps:"
         echo "   1. Log out and back in (for Docker group permissions)"
         echo "   2. Run './scripts/dev-start.sh' to start development"
-        echo "   3. Open http://localhost:3000 for the IDE"
-        echo "   4. Check API at http://localhost:5000"
+        echo "   3. Open http://localhost:${TF_STATIC_PORT:-8080} for the IDE"
+        echo "   4. Check API at http://localhost:${TF_STATIC_PORT:-8080}"
         echo
         log_success "Setup completed successfully!"
     else

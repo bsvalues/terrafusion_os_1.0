@@ -87,7 +87,7 @@ class MLAuditAnalytics:
     def __init__(self):
         self.session_id = f"ml_analytics_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         
         # Model storage paths
         self.models_dir = Path('./models/audit_analytics')

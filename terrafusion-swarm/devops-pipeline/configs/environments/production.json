@@ -1,0 +1,28 @@
+{
+  "name": "production",
+  "url": "https://terrafusion.gov",
+  "database": {
+    "host": "prod-db.terrafusion.gov",
+    "port": \${{TF_POSTGRES_PORT:-5432}},
+    "ssl": true,
+    "backup_enabled": true
+  },
+  "redis": {
+    "host": "prod-cache.terrafusion.gov",
+    "port": \${{TF_POSTGRES_PORT:-5432}},
+    "cluster": true
+  },
+  "auto_deploy": false,
+  "require_approval": true,
+  "government_compliance": true,
+  "health_checks": {
+    "enabled": true,
+    "timeout": 120,
+    "endpoints": [
+      "/health",
+      "/api/health",
+      "/modules/health",
+      "/compliance/health"
+    ]
+  }
+}

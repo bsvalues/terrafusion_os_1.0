@@ -259,7 +259,7 @@ if (Get-WindowsFeature -Name Web-Server -ErrorAction SilentlyContinue) {
     Set-ItemProperty -Path "IIS:\AppPools\TerraFusionAPI" -Name enable32BitAppOnWin64 -Value $false
     
     # Create website
-    New-Website -Name "TerraFusionAPI" -Port 5000 -PhysicalPath "$InstallPath\api" -ApplicationPool "TerraFusionAPI"
+    New-Website -Name "TerraFusionAPI" -Port \${{TF_API_PORT:-5000}} -PhysicalPath "$InstallPath\api" -ApplicationPool "TerraFusionAPI"
     
     # Enable Windows Authentication
     Set-WebConfigurationProperty -Filter "/system.webServer/security/authentication/windowsAuthentication" -Name Enabled -Value True -PSPath "IIS:\Sites\TerraFusionAPI"
@@ -279,8 +279,8 @@ New-Service -Name "TerraFusionCustomerService" `
 
 # Configure firewall
 Write-Host "Configuring firewall..." -ForegroundColor Yellow
-New-NetFirewallRule -DisplayName "TerraFusion API" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
-New-NetFirewallRule -DisplayName "TerraFusion PWA" -Direction Inbound -Protocol TCP -LocalPort 3000 -Action Allow
+New-NetFirewallRule -DisplayName "TerraFusion API" -Direction Inbound -Protocol TCP -LocalPort \${{TF_API_PORT:-5000}} -Action Allow
+New-NetFirewallRule -DisplayName "TerraFusion PWA" -Direction Inbound -Protocol TCP -LocalPort \${{TF_API_PORT:-5000}} -Action Allow
 
 # Start services
 Write-Host "Starting services..." -ForegroundColor Yellow
@@ -289,8 +289,8 @@ Start-WebAppPool "TerraFusionAPI" -ErrorAction SilentlyContinue
 Start-Website "TerraFusionAPI" -ErrorAction SilentlyContinue
 
 Write-Host "Deployment complete!" -ForegroundColor Green
-Write-Host "Customer Service available at: http://localhost:3000" -ForegroundColor Cyan
-Write-Host "API available at: http://localhost:5000" -ForegroundColor Cyan
+Write-Host "Customer Service available at: http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Cyan
+Write-Host "API available at: http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "8 AI Agents + 164-Agent BELICHICK Swarm Ready" -ForegroundColor Green
 Write-Host "379,000,000× Faster Support Resolution Enabled" -ForegroundColor Green

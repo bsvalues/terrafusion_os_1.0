@@ -384,8 +384,8 @@ app.add_middleware(
     allow_origins=[
         "https://bentoncounty.gov",
         "https://assessor.bentoncounty.gov",
-        "http://localhost:3000",
-        "http://localhost:8080"
+        "http://localhost:\${{TF_FRONTEND_PORT:-3000}}",
+        "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
@@ -565,7 +565,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "enhanced_api_service:app",
         host="0.0.0.0",
-        port=8081,  # Different port from original
+        port=\${{TF_METRICS_PORT:-8081}},  # Different port from original
         log_level="info",
         reload=False,
         workers=1  # Single worker for model management
@@ -691,7 +691,7 @@ echo "Timestamp: $(date)"
 echo ""
 
 # Check enhanced API service
-check_service "Enhanced Hybrid API" "http://localhost:8081/health"
+check_service "Enhanced Hybrid API" "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health"
 
 # Check system resources
 echo ""
@@ -744,7 +744,7 @@ start_enhanced_services() {
     fi
     
     # Test enhanced API endpoint
-    if curl -s "http://localhost:8081/health" > /dev/null; then
+    if curl -s "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health" > /dev/null; then
         log_success "✅ Enhanced API endpoint responding"
     else
         log_error "❌ Enhanced API endpoint not responding"
@@ -772,7 +772,7 @@ async def test_enhanced_api():
     async with aiohttp.ClientSession() as session:
         # Test health check
         try:
-            async with session.get("http://localhost:8081/health") as response:
+            async with session.get("http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health") as response:
                 if response.status == 200:
                     health_data = await response.json()
                     test_results.append(("Health Check", "PASSED", health_data.get('status')))
@@ -783,7 +783,7 @@ async def test_enhanced_api():
         
         # Test root endpoint
         try:
-            async with session.get("http://localhost:8081/") as response:
+            async with session.get("http://localhost:\${{TF_FRONTEND_PORT:-3000}}/") as response:
                 if response.status == 200:
                     root_data = await response.json()
                     test_results.append(("Root Endpoint", "PASSED", root_data.get('architecture')))
@@ -872,7 +872,7 @@ case "$1" in
         ;;
     performance)
         echo "📈 Performance metrics:"
-        curl -s http://localhost:8081/stats/enhanced | python3 -m json.tool 2>/dev/null || echo "Service not responding"
+        curl -s http://localhost:\${{TF_FRONTEND_PORT:-3000}}/stats/enhanced | python3 -m json.tool 2>/dev/null || echo "Service not responding"
         ;;
     *)
         echo "Usage: $0 {start|stop|restart|status|logs|health|test|models|gpu|performance}"
@@ -910,7 +910,7 @@ display_enhanced_summary() {
     echo "• Enhanced Hybrid System: ✅ DEPLOYED"
     echo "• Local OpenAI OSS Models: ✅ CONFIGURED"
     echo "• Cloud OpenAI OSS Integration: ✅ READY"
-    echo "• Enhanced API Service: ✅ RUNNING on port 8081"
+    echo "• Enhanced API Service: ✅ RUNNING on port \${{TF_METRICS_PORT:-8081}}"
     echo "• Intelligent Routing: ✅ ACTIVE"
     echo "• Enhanced Monitoring: ✅ CONFIGURED"
     echo "• GPU Support: ✅ ENABLED"
@@ -927,10 +927,10 @@ display_enhanced_summary() {
     echo "• Performance: enhanced-hybrid-manage performance"
     echo ""
     echo -e "${GREEN}🌐 ENHANCED API ENDPOINTS${NC}"
-    echo "• Health Check: http://localhost:8081/health"
-    echo "• Query Processing: http://localhost:8081/query"
-    echo "• Enhanced Stats: http://localhost:8081/stats/enhanced"
-    echo "• Metrics: http://localhost:8081/metrics"
+    echo "• Health Check: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health"
+    echo "• Query Processing: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/query"
+    echo "• Enhanced Stats: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/stats/enhanced"
+    echo "• Metrics: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/metrics"
     echo ""
     echo -e "${GREEN}📁 ENHANCED SYSTEM FILES${NC}"
     echo "• Configuration: $ENHANCED_DIR/config/"

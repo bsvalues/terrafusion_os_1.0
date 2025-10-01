@@ -1,0 +1,197 @@
+# TerraFusion OS - Cert-Manager Installation
+# Government. Transcended.
+# Automated certificate management for government compliance
+
+# Cert-Manager Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+  labels:
+    name: cert-manager
+    government: "true"
+    compliance: "fisma"
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+
+---
+# Cert-Manager Helm Repository
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: jetstack
+  namespace: cert-manager
+spec:
+  interval: 10m
+  url: https://charts.jetstack.io
+
+---
+# Cert-Manager Helm Release
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: cert-manager
+  namespace: cert-manager
+  labels:
+    app: cert-manager
+    government: "true"
+    compliance: "fisma"
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: cert-manager
+      version: "v1.13.3"
+      sourceRef:
+        kind: HelmRepository
+        name: jetstack
+        namespace: cert-manager
+  
+  values:
+    # Government compliance configuration
+    global:
+      priorityClassName: system-cluster-critical
+      podSecurityPolicy:
+        enabled: false
+      leaderElection:
+        namespace: cert-manager
+    
+    # Controller configuration
+    controller:
+      replicaCount: 2
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      
+      # Government security settings
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 65534
+        capabilities:
+          drop:
+          - ALL
+      
+      # Resource management for government standards
+      resources:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      
+      # Node selection for government infrastructure
+      nodeSelector:
+        kubernetes.io/os: linux
+        node-role.kubernetes.io/control-plane: ""
+      
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      
+      # Government monitoring and logging
+      prometheus:
+        enabled: true
+        servicemonitor:
+          enabled: true
+          prometheusInstance: terrafusion-prometheus
+          interval: 60s
+          scrapeTimeout: 30s
+          labels:
+            app: cert-manager
+            government: "true"
+    
+    # Webhook configuration
+    webhook:
+      replicaCount: 2
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 65534
+        capabilities:
+          drop:
+          - ALL
+      
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "50m"
+        limits:
+          memory: "128Mi"
+          cpu: "100m"
+    
+    # CA Injector configuration
+    cainjector:
+      replicaCount: 2
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 65534
+        capabilities:
+          drop:
+          - ALL
+      
+      resources:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "256Mi"
+          cpu: "200m"
+    
+    # Installation configuration
+    installCRDs: true
+    
+    # Service account configuration
+    serviceAccount:
+      create: true
+      annotations:
+        eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT:role/TerraFusion-CertManager-Role"
+    
+    # DNS configuration for government domains
+    extraArgs:
+    - --cluster-resource-namespace=cert-manager
+    - --leader-election-namespace=cert-manager
+    - --max-concurrent-challenges=60
+    - --acme-http01-solver-resource-request-cpu=50m
+    - --acme-http01-solver-resource-request-memory=64Mi
+    - --acme-http01-solver-resource-limits-cpu=100m
+    - --acme-http01-solver-resource-limits-memory=128Mi

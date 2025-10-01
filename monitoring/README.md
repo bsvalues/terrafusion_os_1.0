@@ -1,17 +1,24 @@
 # monitoring - Enterprise Monitoring and Observability Hub
 
 **Status**: Monitoring Excellence ✅  
-**Purpose**: Complete monitoring architecture with observability systems and performance analytics  
-**Integration**: Multi-layer monitoring ecosystem with real-time metrics, alerting, and dashboard systems  
-**Compliance**: Government-grade monitoring systems with audit logging, performance tracking, and compliance frameworks  
+**Purpose**: Complete monitoring architecture with observability systems and
+performance analytics  
+**Integration**: Multi-layer monitoring ecosystem with real-time metrics,
+alerting, and dashboard systems  
+**Compliance**: Government-grade monitoring systems with audit logging,
+performance tracking, and compliance frameworks
 
 ## Overview
 
-The Terrafusion OS monitoring directory provides comprehensive enterprise monitoring and observability capabilities for government AI platforms. This README serves as a practical guide to understanding, implementing, and managing monitoring systems within the Terrafusion OS ecosystem.
+The Terrafusion OS monitoring directory provides comprehensive enterprise
+monitoring and observability capabilities for government AI platforms. This
+README serves as a practical guide to understanding, implementing, and managing
+monitoring systems within the Terrafusion OS ecosystem.
 
 ## Quick Start Guide
 
 ### Monitoring System Setup
+
 ```bash
 # Navigate to monitoring directory
 cd /mnt/c/Users/bsval/terrafusion_os_1.0/monitoring/
@@ -31,6 +38,7 @@ npm run monitoring:start
 ```
 
 ### Essential Monitoring Operations
+
 ```bash
 # Start complete monitoring stack
 ./scripts/start-monitoring-stack.sh
@@ -53,94 +61,122 @@ npm run monitoring:start
 ### Core Monitoring Components
 
 #### **Observability Platforms**
-- **Prometheus Metrics Collection**: Time-series metrics collection with custom aggregation, service discovery integration, and high-performance storage
-- **Grafana Visualization**: Interactive dashboard creation with real-time visualization, custom panels, and multi-source data integration
-- **ELK Stack Analytics**: Elasticsearch distributed search with Logstash processing, Kibana visualization, and log analytics
-- **Jaeger Distributed Tracing**: Distributed tracing systems with span collection, trace analysis, and performance bottleneck identification
+
+- **Prometheus Metrics Collection**: Time-series metrics collection with custom
+  aggregation, service discovery integration, and high-performance storage
+- **Grafana Visualization**: Interactive dashboard creation with real-time
+  visualization, custom panels, and multi-source data integration
+- **ELK Stack Analytics**: Elasticsearch distributed search with Logstash
+  processing, Kibana visualization, and log analytics
+- **Jaeger Distributed Tracing**: Distributed tracing systems with span
+  collection, trace analysis, and performance bottleneck identification
 
 #### **Real-Time Monitoring Systems**
-- **System Performance Monitoring**: Infrastructure monitoring with server performance tracking, resource utilization, and network analysis
-- **Health Tracking Systems**: Service availability monitoring with health check automation, endpoint monitoring, and synthetic testing
-- **Availability Monitoring**: Uptime tracking with performance baseline monitoring, capacity monitoring, and SLA validation
-- **Application Performance Monitoring**: Response time tracking with transaction monitoring, error rate analysis, and database performance
+
+- **System Performance Monitoring**: Infrastructure monitoring with server
+  performance tracking, resource utilization, and network analysis
+- **Health Tracking Systems**: Service availability monitoring with health check
+  automation, endpoint monitoring, and synthetic testing
+- **Availability Monitoring**: Uptime tracking with performance baseline
+  monitoring, capacity monitoring, and SLA validation
+- **Application Performance Monitoring**: Response time tracking with
+  transaction monitoring, error rate analysis, and database performance
 
 #### **Alerting and Notification Systems**
-- **Alert Rule Engine**: Alert rule configuration with threshold management, correlation systems, and priority classification
-- **Notification Delivery**: Multi-channel notifications with email, SMS, Slack integration, and delivery confirmation tracking
-- **Escalation Management**: Escalation workflows with on-call management, rotation automation, and incident integration
-- **Intelligent Alerting**: Machine learning-based alerting with anomaly detection, alert correlation, and false positive reduction
+
+- **Alert Rule Engine**: Alert rule configuration with threshold management,
+  correlation systems, and priority classification
+- **Notification Delivery**: Multi-channel notifications with email, SMS, Slack
+  integration, and delivery confirmation tracking
+- **Escalation Management**: Escalation workflows with on-call management,
+  rotation automation, and incident integration
+- **Intelligent Alerting**: Machine learning-based alerting with anomaly
+  detection, alert correlation, and false positive reduction
 
 #### **Government Compliance Integration**
-- **Monitoring Security**: Access control systems with data protection, audit logging, and government compliance validation
-- **Standards Compliance**: Federal monitoring standards with regulatory validation, compliance reporting, and audit frameworks
-- **Multi-County Coordination**: Yakima (flagship), Cowlitz (customized), Benton (production) monitoring coordination
+
+- **Monitoring Security**: Access control systems with data protection, audit
+  logging, and government compliance validation
+- **Standards Compliance**: Federal monitoring standards with regulatory
+  validation, compliance reporting, and audit frameworks
+- **Multi-County Coordination**: Yakima (flagship), Cowlitz (customized), Benton
+  (production) monitoring coordination
 
 ### Monitoring Implementation Guide
 
 #### **Prometheus Setup and Configuration**
+
 ```typescript
 // Prometheus configuration
 class PrometheusMonitoring {
   private prometheusClient: PrometheusClient;
   private metricsCollector: MetricsCollector;
   private serviceDiscovery: ServiceDiscovery;
-  
+
   async initializePrometheusMonitoring(): Promise<PrometheusConfig> {
     try {
       // Configure Prometheus server
       const prometheusConfig = {
         global: {
           scrape_interval: '15s',
-          evaluation_interval: '15s'
+          evaluation_interval: '15s',
         },
         scrape_configs: await this.configureScrapeTargets(),
         rule_files: await this.configureAlertRules(),
-        alerting: await this.configureAlertmanager()
+        alerting: await this.configureAlertmanager(),
       };
-      
+
       // Initialize metrics collection
       await this.initializeMetricsCollection();
-      
+
       // Enable service discovery
       await this.enableServiceDiscovery();
-      
+
       // Configure retention policies
       await this.configureRetentionPolicies();
-      
+
       return prometheusConfig;
-      
     } catch (error) {
       await this.logMonitoringError(error);
-      throw new MonitoringInitializationError(`Prometheus setup failed: ${error.message}`);
+      throw new MonitoringInitializationError(
+        `Prometheus setup failed: ${error.message}`
+      );
     }
   }
-  
+
   async configureScrapeTargets(): Promise<ScrapeTarget[]> {
     return [
       {
         job_name: 'terrafusion-api',
-        static_configs: [{
-          targets: ['localhost:5000']
-        }]
+        static_configs: [
+          {
+            targets: ['localhost:\${{TF_API_PORT:-5000}}'],
+          },
+        ],
       },
       {
         job_name: 'node-exporter',
-        static_configs: [{
-          targets: ['localhost:9100']
-        }]
+        static_configs: [
+          {
+            targets: ['localhost:\${{TF_API_PORT:-5000}}'],
+          },
+        ],
       },
       {
         job_name: 'ai-swarm-metrics',
-        static_configs: [{
-          targets: ['localhost:8080', 'localhost:8081', 'localhost:8082']
-        }]
-      }
+        static_configs: [
+          {
+            targets: ['localhost:\${{TF_API_PORT:-5000}}', 'localhost:\${{TF_API_PORT:-5000}}', 'localhost:\${{TF_API_PORT:-5000}}'],
+          },
+        ],
+      },
     ];
   }
 }
 ```
 
 #### **Grafana Dashboard Configuration**
+
 ```bash
 # Grafana setup and configuration
 ./scripts/setup-grafana.sh --admin-password=secure --datasource=prometheus
@@ -156,6 +192,7 @@ class PrometheusMonitoring {
 ```
 
 #### **ELK Stack Implementation**
+
 ```powershell
 # PowerShell ELK stack deployment
 # Deploy Elasticsearch cluster
@@ -173,6 +210,7 @@ class PrometheusMonitoring {
 ### Monitoring Compliance Framework
 
 #### **Government Monitoring Standards Compliance**
+
 ```bash
 # Government monitoring compliance validation
 ./scripts/government-monitoring-compliance-check.sh
@@ -185,6 +223,7 @@ class PrometheusMonitoring {
 ```
 
 #### **Monitoring Security Configuration**
+
 ```yaml
 # monitoring-security-config.yml
 monitoring_security_frameworks:
@@ -192,17 +231,17 @@ monitoring_security_frameworks:
     - role_based_monitoring_access
     - monitoring_data_security
     - access_audit_logging
-  
+
   data_protection:
     - sensitive_data_masking
     - data_retention_policies
     - data_encryption_systems
-  
+
   audit_systems:
     - monitoring_activity_logging
     - configuration_change_tracking
     - access_audit_trails
-  
+
   compliance:
     - government_monitoring_standards
     - regulatory_requirement_validation
@@ -214,6 +253,7 @@ monitoring_security_frameworks:
 #### **County-Specific Monitoring Configuration**
 
 **Yakima County (Flagship Monitoring)**
+
 ```yaml
 # yakima-monitoring-config.yml
 yakima_county_monitoring:
@@ -223,7 +263,7 @@ yakima_county_monitoring:
     - premium_observability_systems
     - multi_county_monitoring_leadership
     - flagship_performance_analytics
-  
+
   monitoring_capabilities:
     - advanced_metrics_collection
     - premium_dashboard_systems
@@ -234,10 +274,11 @@ yakima_county_monitoring:
     prometheus_instances: 3
     grafana_dashboards: 45
     alert_rules: 127
-    retention_period: "90 days"
+    retention_period: '90 days'
 ```
 
 **Cowlitz County (Customized Monitoring)**
+
 ```yaml
 # cowlitz-monitoring-config.yml
 cowlitz_county_monitoring:
@@ -247,7 +288,7 @@ cowlitz_county_monitoring:
     - county_specific_customization
     - efficiency_focused_observability
     - customized_alerting_frameworks
-  
+
   monitoring_capabilities:
     - customized_metrics_collection
     - county_specific_dashboard_optimization
@@ -262,6 +303,7 @@ cowlitz_county_monitoring:
 ```
 
 **Benton County (Production Monitoring)**
+
 ```yaml
 # benton-monitoring-config.yml
 benton_county_monitoring:
@@ -272,7 +314,7 @@ benton_county_monitoring:
     - harris_pacs_integration_monitoring
     - enterprise_observability_validation
     - production_performance_optimization
-  
+
   monitoring_capabilities:
     - production_grade_metrics_collection
     - harris_pacs_data_monitoring
@@ -287,6 +329,7 @@ benton_county_monitoring:
 ```
 
 ### Regional Monitoring Coordination
+
 ```typescript
 // Multi-county monitoring coordination
 interface MultiCountyMonitoringCoordination {
@@ -295,13 +338,13 @@ interface MultiCountyMonitoringCoordination {
     regionalMonitoringCoordination: boolean;
     coordinatedAlertingScheduling: boolean;
   };
-  
+
   complianceCoordination: {
     unifiedComplianceStandards: boolean;
     crossCountyAuditTrails: AuditTrail[];
     regionalComplianceMonitoring: ComplianceMonitor[];
   };
-  
+
   performanceOptimization: {
     distributedMonitoringProcessing: boolean;
     loadBalancedMonitoringOperations: boolean;
@@ -313,12 +356,14 @@ interface MultiCountyMonitoringCoordination {
 ## Performance Optimization
 
 ### Monitoring Performance Targets
+
 - **Metrics Collection Latency**: Sub-5 second metrics collection
 - **Alert Processing Time**: Sub-30 second alert processing
 - **Dashboard Render Time**: Sub-2 second dashboard rendering
 - **Monitoring System Availability**: 99.9% monitoring uptime
 
 ### Performance Monitoring Implementation
+
 ```bash
 # Start monitoring performance tracking
 ./scripts/start-monitoring-performance-tracking.sh
@@ -331,6 +376,7 @@ interface MultiCountyMonitoringCoordination {
 ```
 
 ### Monitoring Optimization
+
 ```yaml
 # monitoring-optimization.yml
 monitoring_optimization:
@@ -338,12 +384,12 @@ monitoring_optimization:
     - efficient_metrics_collection
     - compressed_metrics_storage
     - optimized_query_processing
-  
+
   alerting_optimization:
     - intelligent_alert_correlation
     - alert_deduplication_systems
     - optimized_notification_delivery
-  
+
   dashboard_optimization:
     - dashboard_caching_systems
     - optimized_data_visualization
@@ -355,6 +401,7 @@ monitoring_optimization:
 ### Common Monitoring Issues
 
 #### **Prometheus Issues**
+
 ```bash
 # Check Prometheus status
 ./scripts/check-prometheus-status.sh
@@ -370,6 +417,7 @@ monitoring_optimization:
 ```
 
 #### **Grafana Issues**
+
 ```bash
 # Test Grafana connectivity
 ./scripts/test-grafana-connectivity.sh
@@ -385,6 +433,7 @@ monitoring_optimization:
 ```
 
 #### **ELK Stack Issues**
+
 ```bash
 # Check Elasticsearch cluster health
 ./scripts/check-elasticsearch-health.sh
@@ -400,6 +449,7 @@ monitoring_optimization:
 ```
 
 #### **Alerting Issues**
+
 ```bash
 # Validate alert rules
 ./scripts/validate-alert-rules.sh
@@ -417,6 +467,7 @@ monitoring_optimization:
 ## Monitoring Maintenance
 
 ### Regular Maintenance Tasks
+
 ```bash
 # Monitoring system health check
 ./scripts/monitoring-system-health-check.sh
@@ -432,6 +483,7 @@ monitoring_optimization:
 ```
 
 ### Monitoring Data Management
+
 ```bash
 # Monitoring data backup
 ./scripts/backup-monitoring-data.sh --type=incremental
@@ -449,18 +501,25 @@ monitoring_optimization:
 ## Support and Resources
 
 ### Monitoring Resources
-- **Prometheus**: [./prometheus/](./prometheus/) - Prometheus configuration files and alert rules
-- **Grafana**: [./grafana/](./grafana/) - Grafana dashboards and provisioning configurations
-- **ELK Stack**: [./elk/](./elk/) - Elasticsearch, Logstash, and Kibana configurations
-- **Alertmanager**: [./alertmanager/](./alertmanager/) - Alertmanager routing and notification configurations
+
+- **Prometheus**: [./prometheus/](./prometheus/) - Prometheus configuration
+  files and alert rules
+- **Grafana**: [./grafana/](./grafana/) - Grafana dashboards and provisioning
+  configurations
+- **ELK Stack**: [./elk/](./elk/) - Elasticsearch, Logstash, and Kibana
+  configurations
+- **Alertmanager**: [./alertmanager/](./alertmanager/) - Alertmanager routing
+  and notification configurations
 
 ### External Resources
+
 - [Prometheus Documentation](https://prometheus.io/docs/)
 - [Grafana Documentation](https://grafana.com/docs/)
 - [Elastic Stack Documentation](https://www.elastic.co/guide/)
 - [Government Monitoring Standards](https://www.nist.gov/itl/csd/systems-interoperability)
 
 ### Getting Help
+
 ```bash
 # Monitoring system help
 ./scripts/monitoring-help.sh
@@ -480,18 +539,29 @@ monitoring_optimization:
 ## Enterprise Monitoring Summary
 
 ### Monitoring and Observability Hub Capabilities
-- **Observability Platforms**: Prometheus metrics collection with Grafana visualization, ELK stack analytics, and Jaeger distributed tracing
-- **Real-Time Monitoring Systems**: System performance monitoring with health tracking, availability monitoring, and performance analytics
-- **Alerting and Notification Systems**: Alert rule engines with notification delivery, escalation management, and intelligent correlation
-- **Monitoring Automation**: Machine learning monitoring optimization with configuration automation and government compliance validation
+
+- **Observability Platforms**: Prometheus metrics collection with Grafana
+  visualization, ELK stack analytics, and Jaeger distributed tracing
+- **Real-Time Monitoring Systems**: System performance monitoring with health
+  tracking, availability monitoring, and performance analytics
+- **Alerting and Notification Systems**: Alert rule engines with notification
+  delivery, escalation management, and intelligent correlation
+- **Monitoring Automation**: Machine learning monitoring optimization with
+  configuration automation and government compliance validation
 
 ### Government Integration Excellence
-- **Compliance Frameworks**: Government monitoring standards with federal compliance and regulatory validation
-- **Security Architecture**: Monitoring security systems with access control, data protection, and audit frameworks
-- **Multi-County Coordination**: Yakima (flagship), Cowlitz (customized), Benton (production) monitoring coordination
-- **Performance Excellence**: Sub-5 second metrics collection, 94% alert accuracy with government compliance validation
 
-**Ready for Government Deployment**: Complete monitoring ecosystem with enterprise observability and compliance integration.
+- **Compliance Frameworks**: Government monitoring standards with federal
+  compliance and regulatory validation
+- **Security Architecture**: Monitoring security systems with access control,
+  data protection, and audit frameworks
+- **Multi-County Coordination**: Yakima (flagship), Cowlitz (customized), Benton
+  (production) monitoring coordination
+- **Performance Excellence**: Sub-5 second metrics collection, 94% alert
+  accuracy with government compliance validation
+
+**Ready for Government Deployment**: Complete monitoring ecosystem with
+enterprise observability and compliance integration.
 
 **Authority**: Terrafusion Monitoring and Observability Division  
 **Last Updated**: August 27, 2025

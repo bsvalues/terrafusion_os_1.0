@@ -13,24 +13,31 @@ npm run test:comprehensive
 ## Documentation Index
 
 ### 📋 Core Documentation
-- **[Comprehensive Testing Guide](PHASE6_COMPREHENSIVE_TESTING_GUIDE.md)** - Complete testing framework overview and execution guide
-- **[API Testing Documentation](API_TESTING_DOCUMENTATION.md)** - Detailed API endpoint reference for all testing operations
-- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Infrastructure setup and deployment procedures
-- **[Troubleshooting Guide](TROUBLESHOOTING_GUIDE.md)** - Solutions for common testing issues and recovery procedures
+
+- **[Comprehensive Testing Guide](PHASE6_COMPREHENSIVE_TESTING_GUIDE.md)** -
+  Complete testing framework overview and execution guide
+- **[API Testing Documentation](API_TESTING_DOCUMENTATION.md)** - Detailed API
+  endpoint reference for all testing operations
+- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Infrastructure setup and
+  deployment procedures
+- **[Troubleshooting Guide](TROUBLESHOOTING_GUIDE.md)** - Solutions for common
+  testing issues and recovery procedures
 
 ### 🏛️ Government Compliance
-- **[Government Compliance Documentation](GOVERNMENT_COMPLIANCE_DOCUMENTATION.md)** - FISMA/NIST compliance validation and certification
+
+- **[Government Compliance Documentation](GOVERNMENT_COMPLIANCE_DOCUMENTATION.md)** -
+  FISMA/NIST compliance validation and certification
 
 ## Testing Framework Overview
 
 ### Four Technical Focus Areas
 
-| Focus Area | Purpose | Key Metrics |
-|------------|---------|-------------|
-| **🔗 System Integration** | Validate Phase 1-10 system communication | System health, data flow integrity |
-| **⚡ Performance Tuning** | Government-scale workload optimization | Response time < 2s, throughput > 500 RPS |
-| **🔒 Security Hardening** | FISMA/NIST compliance validation | Zero critical vulnerabilities, 97/100 security score |
-| **📈 Scalability Testing** | Multi-jurisdiction deployment readiness | 25K+ concurrent users, 5+ jurisdictions |
+| Focus Area                 | Purpose                                  | Key Metrics                                          |
+| -------------------------- | ---------------------------------------- | ---------------------------------------------------- |
+| **🔗 System Integration**  | Validate Phase 1-10 system communication | System health, data flow integrity                   |
+| **⚡ Performance Tuning**  | Government-scale workload optimization   | Response time < 2s, throughput > 500 RPS             |
+| **🔒 Security Hardening**  | FISMA/NIST compliance validation         | Zero critical vulnerabilities, 97/100 security score |
+| **📈 Scalability Testing** | Multi-jurisdiction deployment readiness  | 25K+ concurrent users, 5+ jurisdictions              |
 
 ### Test Execution Results
 
@@ -42,15 +49,17 @@ npm run test:comprehensive
 ## Quick Reference
 
 ### Environment Variables
+
 ```bash
-TEST_API_URL=http://localhost:5000
-TEST_WS_URL=ws://localhost:5000/hubs/system
+TEST_API_URL=http://localhost:\${{TF_API_PORT:-5000}}
+TEST_WS_URL=ws://localhost:\${{TF_API_PORT:-5000}}/hubs/system
 KUBERNETES_API_URL=https://k8s.terrafusion.gov
 PARALLEL_EXECUTION=true
 GENERATE_REPORTS=true
 ```
 
 ### Test Commands
+
 ```bash
 # Full comprehensive testing
 npm run test:comprehensive
@@ -68,6 +77,7 @@ npm run test:production
 ```
 
 ### Key Files
+
 ```
 tests/
 ├── integration/SystemIntegrationTests.ts
@@ -85,7 +95,7 @@ scripts/
 ✅ **NIST 800-53**: 289/325 controls implemented (89% rate)  
 ✅ **FedRAMP Ready**: Moderate Impact Level authorization  
 ✅ **Zero Critical Vulnerabilities**: Comprehensive security validation  
-✅ **Multi-Jurisdiction Ready**: 25K+ user capacity across 5+ counties  
+✅ **Multi-Jurisdiction Ready**: 25K+ user capacity across 5+ counties
 
 ## Support
 

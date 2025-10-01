@@ -6,9 +6,12 @@
 
 ## 📊 MODULE OVERVIEW
 
-**Terrafusion Customer Service** - Revolutionary AI-powered government support system featuring 8 specialized AI agents with IQs ranging from 100-250, backed by a 164-agent BELICHICK swarm for autonomous resolution.
+**Terrafusion Customer Service** - Revolutionary AI-powered government support
+system featuring 8 specialized AI agents with IQs ranging from 100-250, backed
+by a 164-agent BELICHICK swarm for autonomous resolution.
 
 ### Key Features
+
 - **8 AI Agents**: Each with specialized expertise and IQ levels
 - **164-Agent Swarm**: BELICHICK orchestration for complex issues
 - **379,000,000× Faster**: 3-second average resolution time
@@ -18,7 +21,9 @@
 ## ✅ WHAT WAS COMPLETED (Final 15%)
 
 ### 1. API Controllers ✅
+
 **Location**: `/api/Controllers/CustomerServiceController.cs`
+
 - Complete REST API implementation
 - 8 endpoints for ticket management
 - Real-time chat integration
@@ -27,7 +32,9 @@
 - Cross-county intelligence sharing
 
 ### 2. Database Schema & Migrations ✅
+
 **Location**: `/api/Data/` and `/api/Migrations/`
+
 - `CustomerServiceDbContext.cs` - Entity Framework context
 - `InitialCreate.sql` - Complete SQL Server schema
 - 6 core tables (Tickets, ChatMessages, AgentAssignments, etc.)
@@ -36,7 +43,9 @@
 - Seeded with 8 AI agent configurations
 
 ### 3. PWA Service Worker Configuration ✅
+
 **Location**: `/src/vite.config.ts`
+
 - Complete PWA manifest configuration
 - Service worker with offline capabilities
 - Runtime caching strategies
@@ -44,7 +53,9 @@
 - Push notification support ready
 
 ### 4. MSI Installer Configuration ✅
+
 **Location**: `/installer/Terrafusion.CustomerService.wxs`
+
 - WiX installer configuration (~50MB)
 - WebView2 runtime bootstrapper
 - Windows authentication setup
@@ -53,7 +64,9 @@
 - Automatic service registration
 
 ### 5. Production Deployment Package ✅
+
 **Location**: `/deployment/build-production.sh`
+
 - Complete build automation script
 - Multi-phase deployment process
 - PowerShell deployment script for Windows
@@ -64,6 +77,7 @@
 ## 🏗️ ARCHITECTURE
 
 ### Frontend (React PWA)
+
 ```
 /src/
 ├── terrafusion-customer-service.tsx  # Main component with 8 agents
@@ -74,6 +88,7 @@
 ```
 
 ### Backend (ASP.NET Core)
+
 ```
 /api/
 ├── Controllers/
@@ -86,6 +101,7 @@
 ```
 
 ### Desktop Shell (WebView2)
+
 ```
 /launcher/
 ├── Program.cs                        # WebView2 launcher (496 lines)
@@ -93,6 +109,7 @@
 ```
 
 ### AI Swarm
+
 ```
 /swarm/
 └── belichick-orchestrator.js        # 164-agent orchestration
@@ -100,26 +117,28 @@
 
 ## 🤖 THE 8 AI AGENTS
 
-| Agent | Name | IQ | Specialty | Role |
-|-------|------|-----|-----------|------|
-| 1 | Einstein | 250 | Complex Problem Solving | Ultra-complex issues |
-| 2 | Socrates | 220 | Critical Thinking | Philosophical problems |
-| 3 | Tesla | 200 | Innovation & Engineering | Technical innovation |
-| 4 | Darwin | 180 | Adaptive Solutions | Evolutionary fixes |
-| 5 | Watson | 160 | Data Analysis | Pattern recognition |
-| 6 | Franklin | 140 | Practical Solutions | Common sense fixes |
-| 7 | Edison | 120 | Technical Support | Basic technical help |
-| 8 | Helper | 100 | Basic Assistance | Simple questions |
+| Agent | Name     | IQ  | Specialty                | Role                   |
+| ----- | -------- | --- | ------------------------ | ---------------------- |
+| 1     | Einstein | 250 | Complex Problem Solving  | Ultra-complex issues   |
+| 2     | Socrates | 220 | Critical Thinking        | Philosophical problems |
+| 3     | Tesla    | 200 | Innovation & Engineering | Technical innovation   |
+| 4     | Darwin   | 180 | Adaptive Solutions       | Evolutionary fixes     |
+| 5     | Watson   | 160 | Data Analysis            | Pattern recognition    |
+| 6     | Franklin | 140 | Practical Solutions      | Common sense fixes     |
+| 7     | Edison   | 120 | Technical Support        | Basic technical help   |
+| 8     | Helper   | 100 | Basic Assistance         | Simple questions       |
 
 ## 📈 PERFORMANCE METRICS
 
 ### Speed
+
 - **Average Resolution**: 3.1 seconds
 - **Compared to Industry**: 379,000,000× faster
 - **Tickets/Hour**: 1,161
 - **First Contact Resolution**: 97.3%
 
 ### AI Performance
+
 - **Total Agents**: 172 (8 specialized + 164 swarm)
 - **Orchestrator**: BELICHICK
 - **Field General**: BRADY
@@ -127,6 +146,7 @@
 - **Confidence Average**: 94.4%
 
 ### Customer Satisfaction
+
 - **Rating**: 4.9/5.0
 - **NPS Score**: 92
 - **Would Recommend**: 98%
@@ -134,6 +154,7 @@
 ## 🚀 DEPLOYMENT INSTRUCTIONS
 
 ### Prerequisites
+
 - Windows Server 2019+ or Windows 10/11
 - .NET 6.0 Runtime
 - SQL Server 2019+ (Express OK)
@@ -141,6 +162,7 @@
 - Microsoft Edge WebView2 Runtime
 
 ### Quick Deploy
+
 ```powershell
 # Run as Administrator
 cd Terrafusion-CustomerService
@@ -148,15 +170,17 @@ cd Terrafusion-CustomerService
 ```
 
 ### Manual Installation
+
 1. Install WebView2 Runtime
 2. Run database script: `sqlcmd -i InitialCreate.sql`
-3. Configure IIS for API (port 5000)
+3. Configure IIS for API (port \${{TF_API_PORT:-5000}})
 4. Launch `Terrafusion.Launcher.exe`
-5. Access at http://localhost:3000
+5. Access at http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 
 ## 📋 API ENDPOINTS
 
 ### Core Endpoints
+
 - `GET /api/customerservice/agents` - List all AI agents
 - `POST /api/customerservice/tickets` - Create support ticket
 - `GET /api/customerservice/tickets/{id}` - Get ticket status
@@ -166,6 +190,7 @@ cd Terrafusion-CustomerService
 - `GET /api/customerservice/intelligence` - Cross-county insights
 
 ### Authentication
+
 - Windows Authentication required
 - AD group integration supported
 - PIV/CAC card ready
@@ -173,13 +198,15 @@ cd Terrafusion-CustomerService
 ## 🎯 COUNTY DEPLOYMENT READY
 
 ### Target Counties (Immediate)
-| County | Value | Properties | Status |
-|--------|-------|------------|--------|
-| Cowlitz | $289K/year | 65,000 | Ready |
-| Yakima | $315K/year | 125,000 | Ready |
-| Spokane | $525K/year | 225,000 | Ready |
+
+| County  | Value      | Properties | Status |
+| ------- | ---------- | ---------- | ------ |
+| Cowlitz | $289K/year | 65,000     | Ready  |
+| Yakima  | $315K/year | 125,000    | Ready  |
+| Spokane | $525K/year | 225,000    | Ready  |
 
 ### Value Proposition
+
 - **Speed**: 379,000,000× faster than any competitor
 - **Cost**: 60% less than Tyler Technologies
 - **Implementation**: 30 days vs 12-24 months
@@ -230,10 +257,11 @@ Ready for: Production Deployment
 
 ## 🎖️ MODULE #15 ACHIEVEMENT
 
-The Customer Service module is now the **15th production-ready module** in the Terrafusion Championship suite:
+The Customer Service module is now the **15th production-ready module** in the
+Terrafusion Championship suite:
 
 1. Terra Agent
-2. Terra Flow  
+2. Terra Flow
 3. Web Audit Tracker
 4. Terra Levy
 5. Terra Miner
@@ -260,6 +288,6 @@ The Customer Service module is now the **15th production-ready module** in the T
 
 **Government. Transcended.**  
 **Customer Service: 100% Complete**  
-**8 AI Agents + 164 Swarm = 379,000,000× Faster Support**  
+**8 AI Agents + 164 Swarm = 379,000,000× Faster Support**
 
 🏆 **CHAMPIONSHIP MODULE #15 READY FOR DEPLOYMENT** 🏆

@@ -63,7 +63,7 @@ services:
   grafana:
     image: grafana/grafana-oss:latest
     ports:
-      - "3001:3000"
+      - "3001:${TF_FRONTEND_PORT:-3102}"
     networks:
       - terrafusion_demo
 

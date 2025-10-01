@@ -1,0 +1,122 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: terrafusion-cos-production
+
+namespace: terrafusion-platform
+
+resources:
+  - ../../base
+  - network-policies.yaml
+  - resource-quotas.yaml
+  - priority-classes.yaml
+
+commonLabels:
+  app.kubernetes.io/name: terrafusion-cos
+  app.kubernetes.io/part-of: terrafusion-platform
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/environment: production
+
+commonAnnotations:
+  terrafusion.gov/platform: "cos"
+  terrafusion.gov/version: "1.0.0"
+  terrafusion.gov/architecture: "vendor-substrate"
+  terrafusion.gov/environment: "production"
+  terrafusion.gov/compliance: "fisma-moderate"
+  terrafusion.gov/classification: "government-sensitive"
+
+images:
+  - name: terrafusion/platform-core
+    newTag: "1.0.0"
+  - name: terrafusion/vendor-integration
+    newTag: "1.0.0"
+  - name: terrafusion/security-mesh
+    newTag: "1.0.0"
+  - name: terrafusion/data-plane
+    newTag: "1.0.0"
+  - name: terrafusion/agent-fabric
+    newTag: "1.0.0"
+  - name: terrafusion/observability
+    newTag: "1.0.0"
+  - name: terrafusion/api-gateway
+    newTag: "1.0.0"
+  - name: terrafusion/ui-shell
+    newTag: "1.0.0"
+
+configMapGenerator:
+  - name: platform-config-production
+    files:
+      - config/production.yaml
+    options:
+      labels:
+        config.terrafusion.gov/environment: production
+        security.terrafusion.gov/level: government
+
+secretGenerator:
+  - name: platform-secrets-production
+    type: Opaque
+    files:
+      - secrets/jwt-secret
+      - secrets/jwt-refresh-secret
+      - secrets/database-url
+      - secrets/redis-url
+      - secrets/platform-api-key
+      - secrets/vendor-webhook-secret
+      - secrets/encryption-key
+    options:
+      labels:
+        security.terrafusion.gov/level: restricted
+
+  - name: platform-tls-certs
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=certs/platform.crt
+      - tls.key=certs/platform.key
+
+replicas:
+  - name: platform-core
+    count: 5
+  - name: vendor-integration
+    count: 3
+  - name: security-mesh
+    count: 3
+  - name: data-plane
+    count: 4
+  - name: agent-fabric
+    count: 10
+  - name: observability
+    count: 3
+  - name: api-gateway
+    count: 3
+  - name: ui-shell
+    count: 3
+
+patchesStrategicMerge:
+  - patches/production-resources.yaml
+  - patches/production-security.yaml
+  - patches/production-monitoring.yaml
+  - patches/production-networking.yaml
+  - patches/production-storage.yaml
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: platform-core
+    path: patches/platform-core-production.yaml
+
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: security-mesh
+    path: patches/security-mesh-production.yaml
+
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: agent-fabric
+    path: patches/agent-fabric-production.yaml

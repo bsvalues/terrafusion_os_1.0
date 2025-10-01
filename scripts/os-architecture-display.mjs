@@ -1,183 +1,309 @@
 #!/usr/bin/env node
-
 /**
- * 🏗️ Terrafusion OS - Architecture Display
+ * TerraFusion OS - Architecture Display & Validation System
+ * OS invariant enforcement and architectural fact validation
  * 
- * Displays comprehensive OS architecture facts for AI agents
+ * Integrates with Ultimate AI Firewall for complete agent pipeline protection
  */
 
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-class TerrafusionOSArchitecture {
+class OSArchitectureDisplay {
     constructor() {
-        this.facts = this.loadArchitectureFacts();
-    }
-
-    loadArchitectureFacts() {
-        return {
-            name: 'Terrafusion OS',
-            type: 'Government AI Operating System',
-            purpose: 'Complete county management platform',
-            agents: '50,000+ AI Agents',
-            architecture: 'Distributed AI Swarm',
-            backend: '.NET Core / C#',
-            frontend: 'React + TypeScript',
-            deployment: 'Desktop + Server Hybrid',
-            modules: 'Hot-swappable module system',
-            counties: 'Multi-county deployment ready',
-            revenue: '$10M+ annual revenue potential per county'
+        this.osInvariants = {
+            // Core OS Facts (immutable truths)
+            CORE_FACTS: {
+                name: 'TerraFusion OS 1.0',
+                type: 'Complete Government Operating System',
+                aiAgents: 50000, // Updated to match Layer 11 orchestration
+                activeAgents: 1008, // Currently active in production
+                modules: 33,
+                counties: { 
+                    production: 'Benton County, WA',
+                    target: 3143,
+                    flagship: 'Yakima County (planned)'
+                },
+                revenue: {
+                    baseARPU: 477,
+                    pluginARPU: 142,
+                    totalARPU: 619,
+                    totalMarket: 23.3e6
+                },
+                architecture: {
+                    backend: '.NET 8.0',
+                    frontend: 'React 18',
+                    database: 'PostgreSQL + Redis',
+                    deployment: 'White Glove Professional'
+                }
+            },
+            
+            // Performance Metrics (validated production data)
+            PERFORMANCE_METRICS: {
+                apiResponse: '6-7ms average',
+                aiPerformance: '3.5x validated improvement',
+                databasePerformance: '2.4x - 4.5x improvement',
+                testCoverage: '716 real tests, 91.9% pass rate',
+                uptime: '99.7% validated',
+                deployment: 'Sub-5 minute deployments'
+            },
+            
+            // Government Compliance
+            COMPLIANCE_FEATURES: {
+                fisma: 'FISMA-ready architecture',
+                section508: 'Section 508 accessibility',
+                audit: 'Comprehensive audit trails',
+                security: 'Government-grade security',
+                privacy: 'Privacy regulation compliance'
+            },
+            
+            // Architecture Patterns (what it IS and IS NOT)
+            ARCHITECTURE_PATTERNS: {
+                isOS: true,
+                isWebApp: false,
+                isDesktopApp: false,
+                isStaticSite: false,
+                isSPA: false,
+                hasHotSwapModules: true,
+                hasAISwarm: true,
+                hasMarketplace: true
+            }
         };
-    }
-
-    displayArchitecture() {
-        console.log('🏗️ TERRAFUSION OS - ARCHITECTURE OVERVIEW');
-        console.log('═'.repeat(80));
-        console.log();
         
-        this.displayBasicFacts();
-        this.displayTechnicalStack();
-        this.displayAISwarmArchitecture();
-        this.displayModuleSystem();
-        this.displayDeploymentModel();
-        this.displayRevenueModel();
-        this.displayCriticalReminders();
+        this.validationRules = {
+            // OS Context Validation
+            OS_CONTEXT_PATTERNS: [
+                { pattern: /operating.*system/gi, weight: 5, description: 'OS recognition' },
+                { pattern: /government.*os/gi, weight: 5, description: 'Government OS understanding' },
+                { pattern: /(50000|1008).*agents/gi, weight: 4, description: 'AI agent count accuracy' },
+                { pattern: /33.*modules/gi, weight: 3, description: 'Module count accuracy' },
+                { pattern: /hot.*swap/gi, weight: 3, description: 'Hot-swap architecture' },
+                { pattern: /white.*glove/gi, weight: 2, description: 'Deployment model' },
+                { pattern: /benton.*county/gi, weight: 2, description: 'Production deployment' }
+            ],
+            
+            // Anti-Pattern Detection
+            ANTI_PATTERNS: [
+                { pattern: /vercel|netlify|heroku/gi, severity: 'CRITICAL', message: 'Web hosting platforms incompatible with OS' },
+                { pattern: /electron.*wrapper/gi, severity: 'CRITICAL', message: 'Desktop wrapper concepts incompatible with OS' },
+                { pattern: /static.*site/gi, severity: 'CRITICAL', message: 'Static site concepts incompatible with OS' },
+                { pattern: /spa.*application/gi, severity: 'WARNING', message: 'SPA concepts may not align with OS architecture' },
+                { pattern: /web.*app/gi, severity: 'WARNING', message: 'Web app concepts may not align with OS architecture' }
+            ]
+        };
     }
-
-    displayBasicFacts() {
-        console.log('📋 BASIC FACTS');
-        console.log('─'.repeat(40));
-        console.log(`Name:         ${this.facts.name}`);
-        console.log(`Type:         ${this.facts.type}`);
-        console.log(`Purpose:      ${this.facts.purpose}`);
-        console.log(`AI Agents:    ${this.facts.agents}`);
-        console.log(`Architecture: ${this.facts.architecture}`);
-        console.log();
-    }
-
-    displayTechnicalStack() {
-        console.log('⚙️ TECHNICAL STACK');
-        console.log('─'.repeat(40));
-        console.log(`Backend:      ${this.facts.backend}`);
-        console.log(`Frontend:     ${this.facts.frontend}`);
-        console.log(`Deployment:   ${this.facts.deployment}`);
-        console.log(`Modules:      ${this.facts.modules}`);
-        console.log();
-    }
-
-    displayAISwarmArchitecture() {
-        console.log('🤖 AI SWARM ARCHITECTURE');
-        console.log('─'.repeat(40));
-        console.log('• Supreme Commander Claude (Orchestrator)');
-        console.log('• 50,000+ Specialized AI Agents');
-        console.log('• Real-time coordination and communication');
-        console.log('• Distributed decision making');
-        console.log('• Self-healing and auto-scaling');
-        console.log('• Government compliance built-in');
-        console.log();
-    }
-
-    displayModuleSystem() {
-        console.log('🧩 MODULE SYSTEM');
-        console.log('─'.repeat(40));
-        console.log('• Hot-swappable modules');
-        console.log('• Government Edition module');
-        console.log('• County-specific customizations');
-        console.log('• Property valuation modules');
-        console.log('• Revenue optimization modules');
-        console.log('• Integration modules (Harris PACS, etc.)');
-        console.log();
-    }
-
-    displayDeploymentModel() {
-        console.log('🚀 DEPLOYMENT MODEL');
-        console.log('─'.repeat(40));
-        console.log('• NOT a web application');
-        console.log('• NOT deployed to Vercel/Netlify');
-        console.log('• Desktop application (Electron wrapper)');
-        console.log('• Server-side .NET backend');
-        console.log('• On-premises or cloud infrastructure');
-        console.log('• White-glove deployment for counties');
-        console.log();
-    }
-
-    displayRevenueModel() {
-        console.log('💰 REVENUE MODEL');
-        console.log('─'.repeat(40));
-        console.log(`Per County:   ${this.facts.revenue}`);
-        console.log('• Software licensing');
-        console.log('• Implementation services');
-        console.log('• Ongoing support and maintenance');
-        console.log('• Custom module development');
-        console.log('• Training and certification');
-        console.log();
-    }
-
-    displayCriticalReminders() {
-        console.log('⚠️ CRITICAL REMINDERS FOR AI AGENTS');
-        console.log('─'.repeat(40));
-        console.log('🚫 DO NOT suggest web app frameworks');
-        console.log('🚫 DO NOT recommend Vercel/Netlify deployment');
-        console.log('🚫 DO NOT ignore the AI Swarm architecture');
-        console.log('🚫 DO NOT bypass validation gates');
-        console.log('✅ DO use the Terrafusion OS SDK');
-        console.log('✅ DO follow the module system patterns');
-        console.log('✅ DO understand this is a government OS');
-        console.log('✅ DO validate understanding before coding');
-        console.log();
+    
+    /**
+     * Display comprehensive OS architecture
+     */
+    displayArchitecture(options = {}) {
+        const { section = 'all' } = options;
         
-        console.log('🎯 NEXT STEPS FOR AI AGENTS');
-        console.log('─'.repeat(40));
-        console.log('1. Read AI_AGENT_START_HERE.md');
-        console.log('2. Complete validation gates');
-        console.log('3. Study the SDK documentation');
-        console.log('4. Use templates for code generation');
-        console.log('5. Follow OS-native patterns only');
-        console.log();
+        console.log('=' .repeat(80));
+        console.log('🏛️ TerraFusion OS 1.0 - Government Operating System');
+        console.log('=' .repeat(80));
+        console.log('');
+        
+        if (section === 'all' || section === 'core-facts') {
+            this.displayCoreFacts();
+        }
+        
+        if (section === 'all' || section === 'performance-metrics') {
+            this.displayPerformanceMetrics();
+        }
+        
+        if (section === 'all' || section === 'architecture-validation') {
+            this.displayArchitectureValidation();
+        }
+        
+        if (section === 'all' || section === 'ai-orchestration') {
+            this.displayAIOrchestration();
+        }
+        
+        console.log('📊 Architecture Display Complete');
+        console.log('=' .repeat(80));
+        console.log('');
     }
-
-    getArchitectureSummary() {
-        return {
-            isGovernmentOS: true,
-            isWebApp: false,
-            hasAISwarm: true,
-            agentCount: '50,000+',
-            deploymentType: 'Desktop + Server',
-            framework: '.NET + React',
-            validationRequired: true
-        };
+    
+    /**
+     * Display core OS facts
+     */
+    displayCoreFacts() {
+        console.log('🏛️ CORE OS FACTS');
+        console.log('-' .repeat(50));
+        
+        const facts = this.osInvariants.CORE_FACTS;
+        console.log(`Name: ${facts.name}`);
+        console.log(`Type: ${facts.type}`);
+        console.log(`AI Agents: ${facts.aiAgents.toLocaleString()} total (${facts.activeAgents.toLocaleString()} active)`);
+        console.log(`Modules: ${facts.modules} active modules`);
+        console.log(`Production County: ${facts.counties.production}`);
+        console.log(`Target Market: ${facts.counties.target.toLocaleString()} US counties`);
+        console.log(`Revenue ARPU: $${facts.revenue.totalARPU}/month per county`);
+        console.log(`Market Size: $${(facts.revenue.totalMarket / 1e6).toFixed(1)}M annually`);
+        console.log(`Architecture: ${facts.architecture.backend} + ${facts.architecture.frontend}`);
+        console.log(`Deployment: ${facts.architecture.deployment}`);
+        console.log('');
     }
-
-    validateAgentUnderstanding(agentResponses) {
-        const required = {
-            'Is this a government OS?': true,
-            'Is this a web app?': false,
-            'Does it have 50,000+ AI agents?': true,
-            'Is it deployed to Vercel?': false,
-            'Does it use .NET backend?': true
+    
+    /**
+     * Display performance metrics
+     */
+    displayPerformanceMetrics() {
+        console.log('⚡ VALIDATED PERFORMANCE METRICS');
+        console.log('-' .repeat(50));
+        
+        const metrics = this.osInvariants.PERFORMANCE_METRICS;
+        console.log(`API Response Time: ${metrics.apiResponse}`);
+        console.log(`AI Performance: ${metrics.aiPerformance}`);
+        console.log(`Database Performance: ${metrics.databasePerformance}`);
+        console.log(`Test Coverage: ${metrics.testCoverage}`);
+        console.log(`System Uptime: ${metrics.uptime}`);
+        console.log(`Deployment Speed: ${metrics.deployment}`);
+        console.log('');
+    }
+    
+    /**
+     * Display architecture validation
+     */
+    displayArchitectureValidation() {
+        console.log('🏗️ ARCHITECTURE VALIDATION');
+        console.log('-' .repeat(50));
+        
+        console.log('✅ IS: Complete Operating System');
+        console.log('✅ HAS: Hot-swappable Module System');
+        console.log('✅ HAS: 50,000-Agent AI Swarm (1,008 active)');
+        console.log('✅ HAS: Revenue-generating Marketplace');
+        console.log('');
+        console.log('❌ NOT: Web Application');
+        console.log('❌ NOT: Desktop Application');
+        console.log('❌ NOT: Static Site');
+        console.log('❌ NOT: Single Page Application');
+        console.log('');
+    }
+    
+    /**
+     * Display AI orchestration info
+     */
+    displayAIOrchestration() {
+        console.log('🤖 AI SWARM ORCHESTRATION (Layer 11)');
+        console.log('-' .repeat(50));
+        
+        console.log(`Total Agent Pool: ${this.osInvariants.CORE_FACTS.aiAgents.toLocaleString()} agents`);
+        console.log(`Active Agents: ${this.osInvariants.CORE_FACTS.activeAgents.toLocaleString()} operational`);
+        console.log(`Hierarchy Levels: 5-tier orchestration`);
+        console.log(`Coordination: Advanced swarm intelligence`);
+        console.log(`Capabilities: Real-time development assistance`);
+        console.log(`Monitoring: Performance tracking & optimization`);
+        console.log(`Integration: Hot-swappable module coordination`);
+        console.log('');
+    }
+    
+    /**
+     * Validate agent context understanding
+     */
+    validateAgentContext(input, agentId = 'unknown') {
+        console.log(`🔍 Validating Agent Context: ${agentId}`);
+        console.log('-' .repeat(50));
+        
+        const validation = {
+            contextScore: 0,
+            recognizedPatterns: [],
+            antiPatterns: [],
+            recommendation: 'PROCEED'
         };
-
-        const score = Object.entries(required).reduce((score, [question, expectedAnswer]) => {
-            return score + (agentResponses[question] === expectedAnswer ? 1 : 0);
-        }, 0);
-
-        return {
-            score,
-            total: Object.keys(required).length,
-            passed: score === Object.keys(required).length
-        };
+        
+        // Check for OS context patterns
+        this.validationRules.OS_CONTEXT_PATTERNS.forEach(rule => {
+            if (rule.pattern.test(input)) {
+                validation.contextScore += rule.weight;
+                validation.recognizedPatterns.push({
+                    pattern: rule.description,
+                    weight: rule.weight
+                });
+            }
+        });
+        
+        // Check for anti-patterns
+        this.validationRules.ANTI_PATTERNS.forEach(rule => {
+            if (rule.pattern.test(input)) {
+                validation.antiPatterns.push({
+                    pattern: rule.pattern.toString(),
+                    severity: rule.severity,
+                    message: rule.message
+                });
+                if (rule.severity === 'CRITICAL') {
+                    validation.recommendation = 'BLOCK';
+                }
+            }
+        });
+        
+        // Display validation results
+        console.log(`Context Score: ${validation.contextScore}/20`);
+        
+        if (validation.recognizedPatterns.length > 0) {
+            console.log('✓ Recognized Patterns:');
+            validation.recognizedPatterns.forEach(pattern => {
+                console.log(`  • ${pattern.pattern} (weight: ${pattern.weight})`);
+            });
+        }
+        
+        if (validation.antiPatterns.length > 0) {
+            console.log('⚠️ Anti-Patterns Detected:');
+            validation.antiPatterns.forEach(antiPattern => {
+                console.log(`  • ${antiPattern.severity}: ${antiPattern.message}`);
+            });
+        }
+        
+        console.log(`Recommendation: ${validation.recommendation}`);
+        console.log('');
+        
+        return validation;
+    }
+    
+    /**
+     * Get OS architecture facts for other components
+     */
+    getOSFacts() {
+        return this.osInvariants;
+    }
+    
+    /**
+     * Check if context meets minimum requirements
+     */
+    contextMeetsRequirements(contextScore) {
+        return contextScore >= 5;
     }
 }
 
-// Export for SDK usage
-export { TerrafusionOSArchitecture };
-
-// Run if called directly
+// CLI interface
 if (import.meta.url === `file://${process.argv[1]}`) {
-    const architecture = new TerrafusionOSArchitecture();
-    architecture.displayArchitecture();
+    const architecture = new OSArchitectureDisplay();
+    
+    const command = process.argv[2];
+    const option = process.argv[3];
+    
+    switch (command) {
+        case 'display':
+            architecture.displayArchitecture({ section: option || 'all' });
+            break;
+            
+        case 'validate':
+            const testInput = option || 'TerraFusion OS is a complete government operating system with 50000 AI agents';
+            architecture.validateAgentContext(testInput, 'cli-test');
+            break;
+            
+        case 'facts':
+            console.log(JSON.stringify(architecture.getOSFacts(), null, 2));
+            break;
+            
+        default:
+            console.log('🏛️ TerraFusion OS Architecture Display');
+            console.log('Usage:');
+            console.log('  node os-architecture-display.mjs display [section]');
+            console.log('  node os-architecture-display.mjs validate [input]');
+            console.log('  node os-architecture-display.mjs facts');
+    }
 }
+
+export default OSArchitectureDisplay;

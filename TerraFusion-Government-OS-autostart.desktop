@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=TerraFusion Government OS
+Exec=/workspaces/terrafusion_os_1.0/scripts/launch-terrafusion-os.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=10
+Comment=Start TerraFusion Government OS at login

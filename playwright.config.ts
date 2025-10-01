@@ -1,227 +1,211 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright Configuration for Terrafusion OS
- * Supreme Claude Code Testing Orchestrator
- * Government-grade E2E testing with comprehensive browser matrix
+ * TerraFusion OS - Playwright E2E Configuration
+ * Benton County, WA Integration Testing
  */
-
 export default defineConfig({
   testDir: './tests',
+  
+  // Test execution settings
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 1, // minimal flakes tolerated
-  workers: process.env.CI ? 3 : undefined,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  
+  // Test reporting - Brand Compliance Focus
   reporter: [
-    ['html', { outputFolder: 'test-results/playwright-report' }],
-    ['json', { outputFile: 'test-results/playwright-results.json' }],
-    ['junit', { outputFile: 'test-results/playwright-junit.xml' }]
+    ['html', { 
+      outputFolder: 'test-results/brand-compliance',
+      open: 'never' 
+    }],
+    ['json', { 
+      outputFile: 'test-results/brand-compliance/results.json' 
+    }],
+    ['junit', { 
+      outputFile: 'test-results/brand-compliance/junit.xml' 
+    }],
+    ['list'],
   ],
   
+  // Global test settings - Government Compliance
   use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
-    video: 'retain-on-failure',
-    screenshot: 'only-on-failure',
-    actionTimeout: 10000,
-    navigationTimeout: 30000,
+    // Base URL for TerraFusion OS (MSW enabled)
+    baseURL: 'http://localhost:${process.env.TF_FRONTEND_PORT || '3102'}',
     
-    // Government security headers
+    // Artifact collection
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    
+    // Navigation settings
+    navigationTimeout: 30000,
+    actionTimeout: 15000,
+    
+    // Authentication state
+    storageState: process.env.CI ? undefined : 'apps/tests/e2e/.auth/user.json',
+    
+    // Custom headers for Trust Fabric
     extraHTTPHeaders: {
-      'X-Test-Environment': 'e2e',
-      'X-Government-Compliance': 'FISMA-High',
-      'X-Security-Level': 'maximum'
-    }
+      'X-TerraFusion-County': 'benton',
+      'X-TerraFusion-Environment': process.env.ENV || 'staging',
+    },
   },
 
-  projects: [
-    // Setup project for authentication
-    {
-      name: 'setup',
-      testMatch: /.*\.setup\.ts/,
-      use: { ...devices['Desktop Chrome'] }
-    },
+  // Test timeout
+  timeout: 30 * 1000,
+  expect: {
+    timeout: 10000,
+  },
 
+  // Projects for different browsers and viewports
+  projects: [
     // Desktop browsers
     {
-      name: 'Desktop Chrome',
-      use: { 
-        ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json'
-      },
-      dependencies: ['setup']
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
     },
-    
     {
-      name: 'Desktop Firefox',
-      use: { 
-        ...devices['Desktop Firefox'],
-        storageState: 'tests/e2e/states/admin.json'
-      },
-      dependencies: ['setup']
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
     },
-    
     {
-      name: 'Desktop Safari',
-      use: { 
-        ...devices['Desktop Safari'],
-        storageState: 'tests/e2e/states/admin.json'
-      },
-      dependencies: ['setup']
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
     },
 
-    // Government compliance testing
-    {
-      name: 'Government Compliance - Chrome',
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/assessor.json',
-        permissions: [],
-        ignoreHTTPSErrors: false,
-        bypassCSP: false,
-        extraHTTPHeaders: {
-          'X-Compliance-Mode': 'FISMA-High',
-          'X-Accessibility-Test': 'enabled',
-          'Content-Security-Policy': "default-src 'self'"
-        }
-      },
-      dependencies: ['setup']
-    },
-
-    // Mobile testing for government field workers
+    // Mobile viewports
     {
       name: 'Mobile Chrome',
-      use: { 
-        ...devices['Pixel 5'],
-        storageState: 'tests/e2e/states/viewer.json'
-      },
-      dependencies: ['setup']
+      use: { ...devices['Pixel 5'] },
     },
-    
     {
       name: 'Mobile Safari',
-      use: { 
-        ...devices['iPhone 12'],
-        storageState: 'tests/e2e/states/viewer.json'
-      },
-      dependencies: ['setup']
-    },
-
-    // Tablet testing for government offices
-    {
-      name: 'Tablet',
-      use: { 
-        ...devices['iPad Pro'],
-        storageState: 'tests/e2e/states/assessor.json'
-      },
-      dependencies: ['setup']
-    },
-
-    // Performance testing
-    {
-      name: 'Performance Testing',
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
-        trace: 'on',
-        video: 'on'
-      },
-      dependencies: ['setup'],
-      testMatch: /.*performance.*\.spec\.ts/
+      use: { ...devices['iPhone 12'] },
     },
 
     // Accessibility testing
     {
-      name: 'Accessibility Testing',
+      name: 'accessibility',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
-        reducedMotion: 'reduce',
-        forcedColors: 'active'
+        // Enable accessibility testing
+        contextOptions: {
+          reducedMotion: 'reduce',
+          forcedColors: 'active',
+        },
       },
-      dependencies: ['setup'],
-      testMatch: /.*accessibility.*\.spec\.ts/
     },
 
-    // Role-based testing
+    // County-specific configurations
     {
-      name: 'Admin Role Tests',
-      use: { 
-        ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json'
-      },
-      dependencies: ['setup'],
-      testMatch: /.*admin.*\.spec\.ts/
-    },
-    
-    {
-      name: 'Assessor Role Tests',
-      use: { 
-        ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/assessor.json'
-      },
-      dependencies: ['setup'],
-      testMatch: /.*assessor.*\.spec\.ts/
-    },
-    
-    {
-      name: 'Viewer Role Tests',
-      use: { 
-        ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/viewer.json'
-      },
-      dependencies: ['setup'],
-      testMatch: /.*viewer.*\.spec\.ts/
-    },
-
-    // AI Swarm specific testing
-    {
-      name: 'AI Swarm Testing',
+      name: 'benton-assessor',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: 'apps/tests/e2e/.auth/assessor.json',
         extraHTTPHeaders: {
-          'X-AI-Swarm-Test': 'enabled',
-          'X-Quantum-Performance': 'enabled'
-        }
+          'X-TerraFusion-County': 'benton',
+          'X-TerraFusion-Role': 'assessor',
+        },
       },
-      dependencies: ['setup'],
-      testMatch: /.*ai-swarm.*\.spec\.ts/
-    }
+    },
+    {
+      name: 'benton-treasurer',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'apps/tests/e2e/.auth/treasurer.json',
+        extraHTTPHeaders: {
+          'X-TerraFusion-County': 'benton',
+          'X-TerraFusion-Role': 'treasurer',
+        },
+      },
+    },
+    {
+      name: 'benton-public',
+      use: {
+        ...devices['Desktop Chrome'],
+        extraHTTPHeaders: {
+          'X-TerraFusion-County': 'benton',
+          'X-TerraFusion-Role': 'public',
+        },
+      },
+    },
   ],
 
+  // Web server configuration for local testing
   webServer: [
     {
-      command: 'cd backend/Terrafusion.API && dotnet run --urls=http://127.0.0.1:5000',
-      port: 5000,
+      command: 'npm run start:frontend',
+      port: 3002,
+      timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,
-      timeout: 120000
+      env: {
+        NODE_ENV: 'test',
+        TERRAFUSION_ENV: 'test',
+      },
     },
     {
-      command: 'npm run dev',
-      port: 3000,
+      command: 'npm run start:backend',
+      port: 5000,
+      timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,
-      timeout: 120000
-    }
+      env: {
+        NODE_ENV: 'test',
+        DATABASE_URL: process.env.TEST_DATABASE_URL,
+      },
+    },
+    {
+      command: 'npm run start:consciousness',
+      port: 3004,
+      timeout: 60 * 1000,
+      reuseExistingServer: !process.env.CI,
+    },
   ],
-
-  // Global test timeout
-  timeout: 60000,
-  
-  // Expect timeout for assertions
-  expect: {
-    timeout: 10000,
-    toHaveScreenshot: {
-      mode: 'only-on-failure',
-      animations: 'disabled',
-      caret: 'hide'
-    }
-  },
-
-  // Test result retention
-  outputDir: 'test-results/artifacts/',
-  
-  // Global setup and teardown
-  // globalSetup: require.resolve('./tests/e2e/global-setup.ts'),
-  // globalTeardown: require.resolve('./tests/e2e/global-teardown.ts')
 });
+
+// Test categories for module validation
+export const testCategories = {
+  core: [
+    'trust-fabric',
+    'consciousness',
+    'os-kernel',
+    'marketplace',
+  ],
+  essential: [
+    'parcel-viewer',
+    'valuation',
+    'payment-hub',
+    'public-records',
+    'permitting',
+    'tax-roll',
+  ],
+  extended: [
+    'appeals',
+    'analytics',
+  ],
+  crossModule: [
+    'parcel-valuation-pipeline',
+    'payment-reconciliation',
+    'public-records-workflow',
+    'gis-propagation',
+    'rbac-scenarios',
+  ],
+};
+
+// SLO thresholds for performance testing
+export const performanceThresholds = {
+  ui: {
+    p95: 1200,  // 1.2s
+    p99: 2000,  // 2s
+  },
+  api: {
+    p95: 300,   // 300ms
+    p99: 500,   // 500ms
+  },
+  lighthouse: {
+    performance: 80,
+    accessibility: 95,
+    bestPractices: 95,
+    seo: 90,
+  },
+};

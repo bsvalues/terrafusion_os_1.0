@@ -15,7 +15,7 @@ describe('Terrafusion OS - Basic Pipeline Test', () => {
       name: 'Benton County',
       state: 'Washington',
       countySeat: 'Prosser', // NOT Richland
-      establishedYear: 1905
+      establishedYear: 1905,
     };
 
     expect(countyConfig.name).toBe('Benton County');
@@ -34,7 +34,7 @@ describe('Terrafusion OS - Basic Pipeline Test', () => {
       targetImprovement: '379000000%',
       aiAgents: 1008,
       modules: 32,
-      quantumOptimization: true
+      quantumOptimization: true,
     };
 
     expect(performanceConfig.targetImprovement).toBe('379000000%');
@@ -49,13 +49,7 @@ describe('Terrafusion OS - Basic Pipeline Test', () => {
   });
 
   it('should validate government compliance requirements', () => {
-    const complianceStandards = [
-      'FISMA',
-      'NIST-800-53', 
-      'Section508',
-      'WCAG2.1',
-      'SOC2'
-    ];
+    const complianceStandards = ['FISMA', 'NIST-800-53', 'Section508', 'WCAG2.1', 'SOC2'];
 
     expect(complianceStandards).toContain('FISMA');
     expect(complianceStandards).toContain('Section508');

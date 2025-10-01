@@ -403,15 +403,15 @@ public class PropertyValuationService : IPropertyValuationService
         return mlResult.EstimatedValue * marketMultiplier;
     }
 
-    private async Task<decimal> ApplyComparableAdjustmentsAsync(decimal baseValue, List<ValuationComparable> comparables)
+    private Task<decimal> ApplyComparableAdjustmentsAsync(decimal baseValue, List<ValuationComparable> comparables)
     {
-        if (!comparables.Any()) return baseValue;
+        if (!comparables.Any()) return Task.FromResult(baseValue);
 
         // Weight the base ML value with comparable sales
         var comparableAverage = comparables.Average(c => c.AdjustedSalePrice);
         var weightedValue = (baseValue * 0.6m) + (comparableAverage * 0.4m);
         
-        return weightedValue;
+        return Task.FromResult(weightedValue);
     }
 
     private async Task<string> GenerateValuationInsightsAsync(PropertyValuationRequest request, decimal estimatedValue, List<ValuationComparable> comparables)
@@ -420,7 +420,7 @@ public class PropertyValuationService : IPropertyValuationService
         {
             var prompt = $@"Generate property valuation insights for:
 Property: {request.PropertyType} at {request.Address}
-Estimated Value: ${estimatedValue:N0}
+Estimated Value: {estimatedValue:N0}
 Square Footage: {request.SquareFootage}
 Comparable Sales: {comparables.Count} properties analyzed
 
@@ -761,3 +761,4 @@ public enum AdjustmentRecommendationType
     DecreaseAssessment,
     RequiresManualReview
 }
+

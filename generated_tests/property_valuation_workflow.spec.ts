@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Property Valuation Workflow Integration', () => {
     test('should complete property valuation workflow workflow', async ({ page }) => {
         // AI-optimized test flow
-        await page.goto('http://localhost:3000/properties/value');
+        await page.goto('http://localhost:\${{TF_FRONTEND_PORT:-3000}}/properties/value');
         
         // Step 1: select property
         await page.click('.step1-button');

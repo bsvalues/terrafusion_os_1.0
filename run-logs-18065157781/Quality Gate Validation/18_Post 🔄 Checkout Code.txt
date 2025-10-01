@@ -1,0 +1,10 @@
+﻿2025-09-27T21:26:46.0744120Z Post job cleanup.
+2025-09-27T21:26:46.1667493Z [command]/usr/bin/git version
+2025-09-27T21:26:46.1709489Z git version 2.51.0
+2025-09-27T21:26:46.1751167Z Temporarily overriding HOME='/home/runner/work/_temp/bdbb873c-ffb8-4972-b4c4-c8d2bb0ab9af' before making global git config changes
+2025-09-27T21:26:46.1752069Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-27T21:26:46.1756782Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T21:26:46.1789100Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-27T21:26:46.1820494Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-27T21:26:46.2107316Z fatal: No url found for submodule path 'docs/src-tauri/TerraFusion_Hybrid_Championship' in .gitmodules
+2025-09-27T21:26:46.2137985Z ##[warning]The process '/usr/bin/git' failed with exit code 128

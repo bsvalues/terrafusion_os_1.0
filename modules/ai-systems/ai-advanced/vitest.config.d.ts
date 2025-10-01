@@ -1,0 +1,3 @@
+declare const _default: import("vite", { with: { "resolution-mode": "import" } }).UserConfig & Promise<import("vite", { with: { "resolution-mode": "import" } }).UserConfig> & (import("vitest/config.js", { with: { "resolution-mode": "import" } }).UserConfigFnObject & import("vitest/config.js", { with: { "resolution-mode": "import" } }).UserConfigExport);
+export default _default;
+//# sourceMappingURL=vitest.config.d.ts.map

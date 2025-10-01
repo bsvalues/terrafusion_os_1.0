@@ -154,9 +154,7 @@
       "options": {
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -522,10 +520,7 @@
   "refresh": "30s",
   "schemaVersion": 27,
   "style": "dark",
-  "tags": [
-    "terrafusion",
-    "overview"
-  ],
+  "tags": ["terrafusion", "overview"],
   "templating": {
     "list": []
   },

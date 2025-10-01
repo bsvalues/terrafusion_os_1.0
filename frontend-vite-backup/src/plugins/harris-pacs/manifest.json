@@ -1,0 +1,26 @@
+{
+  "name": "harris-pacs",
+  "version": "1.0.0",
+  "displayName": "Harris PACS Migration",
+  "description": "Harris PACS 9.0 legacy system migration and data import tools for Benton County",
+  "author": "Terrafusion OS Team",
+  "category": "data-migration",
+  "permissions": [
+    "harris.importStatus",
+    "harris.startImport",
+    "harris.validateData",
+    "harris.exportReport"
+  ],
+  "dependencies": [],
+  "entryPoint": "index.tsx",
+  "countySpecific": true,
+  "supportedCounties": ["benton"],
+  "legacySystemIntegration": {
+    "system": "Harris PACS 9.0",
+    "version": "9.0.x",
+    "dataFormats": ["CSV", "XML", "DBF"],
+    "migrationSupport": true
+  },
+  "hash": "sha256:harris-pacs-plugin-v1.0.0-benton-county",
+  "signature": "HMAC-SHA256:placeholder-signature-for-harris-pacs-plugin"
+}

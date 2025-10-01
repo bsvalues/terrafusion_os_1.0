@@ -5,7 +5,7 @@ import {
   ReportTemplate,
   ReportData,
   OutputFormat,
-  UseReportBuilderReturn
+  UseReportBuilderReturn,
 } from '../types/ReportTypes';
 import { reportBuilderService } from '../services/ReportBuilderService';
 
@@ -22,7 +22,7 @@ export const useReportBuilder = (jurisdiction: string): UseReportBuilderReturn =
     createdAt: new Date(),
     updatedAt: new Date(),
     tags: [],
-    version: 1
+    version: 1,
   });
 
   const [availableDataSources, setAvailableDataSources] = useState<DataSource[]>([]);
@@ -39,7 +39,7 @@ export const useReportBuilder = (jurisdiction: string): UseReportBuilderReturn =
         const [dataSources, metrics, templates] = await Promise.all([
           reportBuilderService.getDataSources(jurisdiction),
           reportBuilderService.getAvailableMetrics(jurisdiction),
-          reportBuilderService.getReportTemplates()
+          reportBuilderService.getReportTemplates(),
         ]);
 
         setAvailableDataSources(dataSources);
@@ -59,7 +59,7 @@ export const useReportBuilder = (jurisdiction: string): UseReportBuilderReturn =
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const savedReport = await reportBuilderService.saveReport(reportToSave);
       setReport(savedReport);
     } catch (err) {
@@ -74,7 +74,7 @@ export const useReportBuilder = (jurisdiction: string): UseReportBuilderReturn =
     try {
       setIsLoading(true);
       setError(null);
-      
+
       await reportBuilderService.scheduleReport(reportToSchedule);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to schedule report');
@@ -84,39 +84,45 @@ export const useReportBuilder = (jurisdiction: string): UseReportBuilderReturn =
     }
   }, []);
 
-  const previewReport = useCallback(async (reportToPreview: ReportConfiguration): Promise<ReportData> => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      return await reportBuilderService.previewReport(reportToPreview);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to preview report');
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const previewReport = useCallback(
+    async (reportToPreview: ReportConfiguration): Promise<ReportData> => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  const exportReport = useCallback(async (reportId: string, format: OutputFormat): Promise<string> => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      return await reportBuilderService.exportReport(reportId, format);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to export report');
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+        return await reportBuilderService.previewReport(reportToPreview);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to preview report');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const exportReport = useCallback(
+    async (reportId: string, format: OutputFormat): Promise<string> => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        return await reportBuilderService.exportReport(reportId, format);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to export report');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   const duplicateReport = useCallback(async (reportId: string): Promise<ReportConfiguration> => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       return await reportBuilderService.duplicateReport(reportId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to duplicate report');
@@ -130,7 +136,7 @@ export const useReportBuilder = (jurisdiction: string): UseReportBuilderReturn =
     try {
       setIsLoading(true);
       setError(null);
-      
+
       await reportBuilderService.deleteReport(reportId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete report');
@@ -153,6 +159,6 @@ export const useReportBuilder = (jurisdiction: string): UseReportBuilderReturn =
     previewReport,
     exportReport,
     duplicateReport,
-    deleteReport
+    deleteReport,
   };
 };

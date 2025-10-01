@@ -25,10 +25,10 @@
 ./LAUNCH_DYNASTY.sh status
 
 # System health check
-curl -s http://localhost:8000/health | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health | jq .
 
 # Service availability
-curl -s http://localhost:8080/stats | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/stats | jq .
 
 # Check all ports
 netstat -tuln | grep -E "(8000|8080|8090|11434)"
@@ -106,7 +106,7 @@ ollama list
 ollama pull llama2:7b  # If missing
 
 # 4. Test Ollama directly
-curl http://localhost:11434/api/tags
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/api/tags
 
 # 5. Check Ollama logs
 tail -f logs/ollama.log
@@ -127,7 +127,7 @@ pkill ollama && sleep 2 && ollama serve &
 **Solutions:**
 ```bash
 # 1. Check if dashboard server is running
-curl -I http://localhost:8090/
+curl -I http://localhost:\${{TF_DOCS_PORT:-8000}}/
 
 # 2. Verify file permissions
 ls -la championship_ui.html
@@ -142,7 +142,7 @@ python3 -m http.server 8090 &
 # Clear browser cache and cookies
 
 # 6. Check firewall settings
-# Allow port 8090 in firewall
+# Allow port \${{TF_SERVICE_8090_PORT:-8090}} in firewall
 ```
 
 ### 🔥 **"Slow Response Times"**
@@ -160,7 +160,7 @@ python3 -m http.server 8090 &
 htop  # Look for high CPU/memory usage
 
 # 2. Trigger system evolution
-curl -X POST http://localhost:8083/evolution/trigger
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/trigger
 
 # 3. Clear caches
 # Restart dynasty to clear all caches
@@ -197,7 +197,7 @@ export OLLAMA_MAX_LOADED_MODELS=1
 export TRAINING_BATCH_SIZE=16
 
 # 3. Clear training buffers
-curl -X POST http://localhost:8082/training/clear-cache
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/training/clear-cache
 
 # 4. Restart memory-intensive components
 ./LAUNCH_DYNASTY.sh restart
@@ -390,12 +390,12 @@ python3 DYNASTY_MASTER_ORCHESTRATOR.py --debug
 #### **Problem: Routing decisions seem wrong**
 ```bash
 # Test routing manually
-curl -X POST http://localhost:8080/query \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/query \
   -H "Content-Type: application/json" \
   -d '{"query": "Test sensitive query with John Doe", "user_id": "test"}'
 
 # Check sensitivity detection
-curl -X POST http://localhost:8080/sensitivity \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/sensitivity \
   -H "Content-Type: application/json" \
   -d '{"query": "Who owns 123 Main Street?"}'
 
@@ -408,16 +408,16 @@ grep "routing" logs/orchestrator.log | tail -20
 #### **Problem: Training not improving accuracy**
 ```bash
 # Check training status
-curl http://localhost:8082/training/status
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/training/status
 
 # View training metrics
-curl http://localhost:8082/training/metrics
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/training/metrics
 
 # Check training data quality
 grep "training" logs/orchestrator.log | tail -50
 
 # Clear corrupted training data
-curl -X POST http://localhost:8082/training/reset
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/training/reset
 ```
 
 ### ⚛️ Quantum Optimizer Issues
@@ -425,14 +425,14 @@ curl -X POST http://localhost:8082/training/reset
 #### **Problem: Quantum advantages not showing**
 ```bash
 # Check quantum status
-curl http://localhost:8084/quantum/status
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/quantum/status
 
 # Verify quantum backend
 export QUANTUM_BACKEND=simulator
 python3 -c "import qiskit; print('Qiskit version:', qiskit.__version__)"
 
 # Test quantum circuit
-curl -X POST http://localhost:8084/quantum/test
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/quantum/test
 
 # Disable quantum if problematic
 export ENABLE_QUANTUM=false
@@ -475,8 +475,8 @@ for port in {8100..8110}; do
 done
 
 # Update port configuration
-export DYNASTY_PORT=8100
-export ROUTER_PORT=8101
+export DYNASTY_PORT=\${{TF_PORT_8100:-8100}}
+export ROUTER_PORT=\${{TF_PORT_8100:-8100}}
 ./LAUNCH_DYNASTY.sh start
 ```
 
@@ -600,9 +600,9 @@ cp dynasty.pid dynasty_metrics.json backups/
 ./LAUNCH_DYNASTY.sh start
 
 # Dynasty 2 (custom ports)
-export DYNASTY_PORT=8100
-export ROUTER_PORT=8180  
-export DASHBOARD_PORT=8190
+export DYNASTY_PORT=\${{TF_PORT_8100:-8100}}
+export ROUTER_PORT=\${{TF_PORT_8100:-8100}}  
+export DASHBOARD_PORT=\${{TF_PORT_8100:-8100}}
 ./LAUNCH_DYNASTY.sh start
 ```
 
@@ -743,7 +743,7 @@ WHERE NOT blocked_locks.granted;
 
 #### **Built-in Diagnostics**
 1. **Dashboard Health Check** - Click 🏥 Health Check button
-2. **System Status API** - `curl http://localhost:8000/status`
+2. **System Status API** - `curl http://localhost:\${{TF_DOCS_PORT:-8000}}/status`
 3. **Component Metrics** - Individual service `/metrics` endpoints
 4. **Log Analysis** - `./LAUNCH_DYNASTY.sh logs`
 

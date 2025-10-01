@@ -71,11 +71,11 @@ echo.
 echo ✅ TerraFusion Development Environment is ready!
 echo.
 echo 🌐 Application URLs:
-echo    Frontend:    http://localhost:3000
-echo    Backend API: http://localhost:8080
-echo    AI Agent:    http://localhost:3001
-echo    Database:    localhost:5432
-echo    Redis:       localhost:6379
+echo    Frontend:    http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+echo    Backend API: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+echo    AI Agent:    http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+echo    Database:    localhost:\${{TF_FRONTEND_PORT:-3000}}
+echo    Redis:       localhost:\${{TF_FRONTEND_PORT:-3000}}
 echo.
 echo 📊 Useful commands:
 echo    View logs:       docker-compose logs -f [service_name]
@@ -93,7 +93,7 @@ echo.
 REM Optional: Open browser
 set /p REPLY="Open application in browser? (y/N): "
 if /i "%REPLY%"=="y" (
-    start http://localhost:3000
+    start http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 )
 
 echo 🎉 Setup complete! Happy coding!

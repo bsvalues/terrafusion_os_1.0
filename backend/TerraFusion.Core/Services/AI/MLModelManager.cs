@@ -50,7 +50,7 @@ public class MLModelManager : IMLModelManager
         InitializeBuiltInModels();
     }
 
-    public async Task<ModelTrainingResult> TrainModelAsync(ModelTrainingRequest request)
+    public Task<ModelTrainingResult> TrainModelAsync(ModelTrainingRequest request)
     {
         var trainingId = Guid.NewGuid().ToString();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -76,7 +76,15 @@ public class MLModelManager : IMLModelManager
             // Save the model
             var modelPath = Path.Combine(_modelsBasePath, $"{request.ModelId}.zip");
             Directory.CreateDirectory(_modelsBasePath);
-            _mlContext.Model.Save(model, request.TrainingData.Schema, modelPath);
+            
+            if (request.TrainingData?.Schema != null)
+            {
+                _mlContext.Model.Save(model, request.TrainingData.Schema, modelPath);
+            }
+            else
+            {
+                throw new InvalidOperationException("Training data schema is required for model saving.");
+            }
 
             // Register the model
             var modelInfo = new MLModelInfo
@@ -106,44 +114,44 @@ public class MLModelManager : IMLModelManager
                     Accuracy = metrics.Accuracy
                 });
 
-            return new ModelTrainingResult
+            return Task.FromResult(new ModelTrainingResult
             {
                 Success = true,
                 ModelId = request.ModelId,
                 TrainingTime = stopwatch.Elapsed,
                 Metrics = metrics,
                 ModelPath = modelPath
-            };
+            });
         }
         catch (Exception ex)
         {
             stopwatch.Stop();
             _logger.LogError(ex, "Model training failed for {ModelId}", request.ModelId);
 
-            return new ModelTrainingResult
+            return Task.FromResult(new ModelTrainingResult
             {
                 Success = false,
                 ModelId = request.ModelId,
                 Error = ex.Message,
                 TrainingTime = stopwatch.Elapsed
-            };
+            });
         }
     }
 
-    public async Task<ModelPredictionResult<T>> PredictAsync<T>(string modelId, object inputData)
+    public Task<ModelPredictionResult<T>> PredictAsync<T>(string modelId, object inputData)
     {
         try
         {
             if (!_loadedModels.TryGetValue(modelId, out var model))
             {
-                model = await LoadModelAsync(modelId);
+                model = LoadModelAsync(modelId).Result;
                 if (model == null)
                 {
-                    return new ModelPredictionResult<T>
+                    return Task.FromResult(new ModelPredictionResult<T>
                     {
                         Success = false,
                         Error = $"Model {modelId} not found or failed to load"
-                    };
+                    });
                 }
             }
 
@@ -152,11 +160,11 @@ public class MLModelManager : IMLModelManager
             // Create prediction engine based on model type
             var prediction = modelInfo.Type switch
             {
-                MLModelType.Regression => await PredictRegression<T>(model, inputData),
-                MLModelType.BinaryClassification => await PredictBinaryClassification<T>(model, inputData),
-                MLModelType.MulticlassClassification => await PredictMulticlassClassification<T>(model, inputData),
-                MLModelType.Clustering => await PredictClustering<T>(model, inputData),
-                MLModelType.AnomalyDetection => await PredictAnomalyDetection<T>(model, inputData),
+                MLModelType.Regression => PredictRegression<T>(model, inputData).Result,
+                MLModelType.BinaryClassification => PredictBinaryClassification<T>(model, inputData).Result,
+                MLModelType.MulticlassClassification => PredictMulticlassClassification<T>(model, inputData).Result,
+                MLModelType.Clustering => PredictClustering<T>(model, inputData).Result,
+                MLModelType.AnomalyDetection => PredictAnomalyDetection<T>(model, inputData).Result,
                 _ => throw new NotSupportedException($"Model type {modelInfo.Type} is not supported")
             };
 
@@ -168,33 +176,33 @@ public class MLModelManager : IMLModelManager
                     Success = prediction.Success
                 });
 
-            return prediction;
+            return Task.FromResult(prediction);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Prediction failed for model {ModelId}", modelId);
-            return new ModelPredictionResult<T>
+            return Task.FromResult(new ModelPredictionResult<T>
             {
                 Success = false,
                 Error = ex.Message
-            };
+            });
         }
     }
 
-    public async Task<ModelEvaluationResult> EvaluateModelAsync(string modelId, IDataView testData)
+    public Task<ModelEvaluationResult> EvaluateModelAsync(string modelId, IDataView testData)
     {
         try
         {
             if (!_loadedModels.TryGetValue(modelId, out var model))
             {
-                model = await LoadModelAsync(modelId);
+                model = LoadModelAsync(modelId).Result;
                 if (model == null)
                 {
-                    return new ModelEvaluationResult
+                    return Task.FromResult(new ModelEvaluationResult
                     {
                         Success = false,
                         Error = $"Model {modelId} not found or failed to load"
-                    };
+                    });
                 }
             }
 
@@ -202,27 +210,27 @@ public class MLModelManager : IMLModelManager
             var predictions = model.Transform(testData);
             var metrics = EvaluateModel(modelInfo.Type, predictions);
 
-            return new ModelEvaluationResult
+            return Task.FromResult(new ModelEvaluationResult
             {
                 Success = true,
                 ModelId = modelId,
                 Metrics = metrics,
                 TestDataSize = (int)(testData.GetRowCount() ?? 0)
-            };
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Model evaluation failed for {ModelId}", modelId);
-            return new ModelEvaluationResult
+            return Task.FromResult(new ModelEvaluationResult
             {
                 Success = false,
                 ModelId = modelId,
                 Error = ex.Message
-            };
+            });
         }
     }
 
-    public async Task<bool> DeployModelAsync(string modelId, ModelDeploymentOptions options)
+    public Task<bool> DeployModelAsync(string modelId, ModelDeploymentOptions options)
     {
         try
         {
@@ -230,16 +238,16 @@ public class MLModelManager : IMLModelManager
             if (modelInfo == null)
             {
                 _logger.LogWarning("Model {ModelId} not found for deployment", modelId);
-                return false;
+                return Task.FromResult(false);
             }
 
             // Load model if not already loaded
             if (!_loadedModels.ContainsKey(modelId))
             {
-                var model = await LoadModelAsync(modelId);
+                var model = LoadModelAsync(modelId).Result;
                 if (model == null)
                 {
-                    return false;
+                    return Task.FromResult(false);
                 }
             }
 
@@ -256,16 +264,16 @@ public class MLModelManager : IMLModelManager
                     Version = modelInfo.Version
                 });
 
-            return true;
+            return Task.FromResult(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Model deployment failed for {ModelId}", modelId);
-            return false;
+            return Task.FromResult(false);
         }
     }
 
-    public async Task<bool> RetireModelAsync(string modelId)
+        public Task<bool> RetireModelAsync(string modelId)
     {
         try
         {
@@ -281,31 +289,29 @@ public class MLModelManager : IMLModelManager
                     $"Model {modelId} retired successfully",
                     context: new { ModelId = modelId });
 
-                return true;
+                return Task.FromResult(true);
             }
 
-            return false;
+            return Task.FromResult(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Model retirement failed for {ModelId}", modelId);
-            return false;
+            return Task.FromResult(false);
         }
     }
 
-    public async Task<List<MLModelInfo>> GetAvailableModelsAsync()
+    public Task<List<MLModelInfo>> GetAvailableModelsAsync()
     {
-        await Task.CompletedTask;
-        return _modelInfos.Values.Where(m => m.IsActive).ToList();
+        return Task.FromResult(_modelInfos.Values.Where(m => m.IsActive).ToList());
     }
 
-    public async Task<MLModelInfo?> GetModelInfoAsync(string modelId)
+    public Task<MLModelInfo?> GetModelInfoAsync(string modelId)
     {
-        await Task.CompletedTask;
-        return _modelInfos.GetValueOrDefault(modelId);
+        return Task.FromResult(_modelInfos.GetValueOrDefault(modelId));
     }
 
-    public async Task<ModelPerformanceMetrics> GetModelPerformanceAsync(string modelId)
+    public Task<ModelPerformanceMetrics> GetModelPerformanceAsync(string modelId)
     {
         try
         {
@@ -316,9 +322,9 @@ public class MLModelManager : IMLModelManager
             }
 
             // In a real implementation, this would gather performance metrics from monitoring systems
-            await Task.Delay(10);
+            Task.Delay(10).Wait();
 
-            return new ModelPerformanceMetrics
+            return Task.FromResult(new ModelPerformanceMetrics
             {
                 ModelId = modelId,
                 Accuracy = modelInfo.Accuracy,
@@ -329,7 +335,7 @@ public class MLModelManager : IMLModelManager
                 ThroughputPerSecond = new Random().Next(100, 1000),
                 ErrorRate = new Random().NextDouble() * 0.05,
                 LastEvaluated = DateTime.UtcNow.AddHours(-new Random().Next(1, 24))
-            };
+            });
         }
         catch (Exception ex)
         {
@@ -338,7 +344,7 @@ public class MLModelManager : IMLModelManager
         }
     }
 
-    public async Task<bool> RetrainModelAsync(string modelId, IDataView newData)
+    public Task<bool> RetrainModelAsync(string modelId, IDataView newData)
     {
         try
         {
@@ -346,7 +352,7 @@ public class MLModelManager : IMLModelManager
             if (modelInfo == null)
             {
                 _logger.LogWarning("Model {ModelId} not found for retraining", modelId);
-                return false;
+                return Task.FromResult(false);
             }
 
             // Create retraining request
@@ -359,7 +365,7 @@ public class MLModelManager : IMLModelManager
                 TrainingData = newData
             };
 
-            var result = await TrainModelAsync(retrainingRequest);
+            var result = TrainModelAsync(retrainingRequest).Result;
             
             if (result.Success)
             {
@@ -372,12 +378,12 @@ public class MLModelManager : IMLModelManager
                     });
             }
 
-            return result.Success;
+            return Task.FromResult(result.Success);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Model retraining failed for {ModelId}", modelId);
-            return false;
+            return Task.FromResult(false);
         }
     }
 
@@ -512,25 +518,25 @@ public class MLModelManager : IMLModelManager
         };
     }
 
-    private async Task<ITransformer?> LoadModelAsync(string modelId)
+    private Task<ITransformer?> LoadModelAsync(string modelId)
     {
         try
         {
             var modelInfo = _modelInfos.GetValueOrDefault(modelId);
             if (modelInfo == null || !File.Exists(modelInfo.FilePath))
             {
-                return null;
+                return Task.FromResult<ITransformer?>(null);
             }
 
             var model = _mlContext.Model.Load(modelInfo.FilePath, out var _);
             _loadedModels[modelId] = model;
             
-            return model;
+            return Task.FromResult<ITransformer?>(model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to load model {ModelId}", modelId);
-            return null;
+            return Task.FromResult<ITransformer?>(null);
         }
     }
 

@@ -1,0 +1,25 @@
+[package]
+name = "education-platform"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Terra University Education Platform - Government certification and training with ANSI/ISO-17024 compliance"
+
+[dependencies]
+tokio = { workspace = true, features = ["full"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+rust_decimal = { version = "1.38.0", features = ["serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+thiserror.workspace = true
+
+[features]
+default = []
+adaptive-testing = []
+ai-analytics = []
+iso17024-compliance = []

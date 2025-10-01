@@ -27,14 +27,14 @@ class TerraFusionMonitor:
         """
         self.config = self._load_config(config_file)
         self.services = {
-            'costforge': 'http://localhost:3001/health',
-            'propertyworkbench': 'http://localhost:3002/health', 
-            'terrainsight': 'http://localhost:3003/health',
-            'postgres': 'postgresql://localhost:5432',
-            'redis': 'redis://localhost:6379',
+            'costforge': 'http://localhost:\${{TF_SHELL_PORT:-3001}}/health',
+            'propertyworkbench': 'http://localhost:\${{TF_SHELL_PORT:-3001}}/health', 
+            'terrainsight': 'http://localhost:\${{TF_SHELL_PORT:-3001}}/health',
+            'postgres': 'postgresql://localhost:\${{TF_SHELL_PORT:-3001}}',
+            'redis': 'redis://localhost:\${{TF_SHELL_PORT:-3001}}',
             'nginx': 'http://localhost:80/health',
-            'prometheus': 'http://localhost:9090/-/healthy',
-            'grafana': 'http://localhost:3000/api/health'
+            'prometheus': 'http://localhost:\${{TF_SHELL_PORT:-3001}}/-/healthy',
+            'grafana': 'http://localhost:\${{TF_SHELL_PORT:-3001}}/api/health'
         }
         self.status_file = 'monitoring/logs/terrafusion_status.json'
         self.alert_history_file = 'monitoring/logs/alert_history.json'

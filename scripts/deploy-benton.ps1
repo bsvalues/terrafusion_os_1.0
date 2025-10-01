@@ -64,10 +64,10 @@ Write-Host ""
 Write-Host "🎉 Benton County Demo Deployment Complete!" -ForegroundColor Green
 Write-Host ""
 Write-Host "📊 Access Points:" -ForegroundColor Cyan
-Write-Host "  UI:        http://localhost:3000" -ForegroundColor White
-Write-Host "  API:       http://localhost:8080" -ForegroundColor White
-Write-Host "  Grafana:   http://localhost:3001" -ForegroundColor White
-Write-Host "  Prometheus:http://localhost:9090" -ForegroundColor White
+Write-Host "  UI:        http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor White
+Write-Host "  API:       http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor White
+Write-Host "  Grafana:   http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor White
+Write-Host "  Prometheus:http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor White
 Write-Host ""
 Write-Host "📁 Artifacts saved to: $artifactsDir" -ForegroundColor Yellow
 Write-Host ""

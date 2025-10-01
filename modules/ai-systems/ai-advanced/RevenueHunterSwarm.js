@@ -18,32 +18,32 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                 priority: 'high',
                 targetSources: ['state_registry', 'sos_database', 'business_licenses'],
                 estimatedRoi: 'high',
-                complexity: 'medium'
+                complexity: 'medium',
             },
             str_platform_hunter: {
                 priority: 'high',
                 targetSources: ['airbnb', 'vrbo', 'booking_com'],
                 estimatedRoi: 'very_high',
-                complexity: 'low'
+                complexity: 'low',
             },
             building_permit_hunter: {
                 priority: 'medium',
                 targetSources: ['permit_database', 'contractor_registry'],
                 estimatedRoi: 'medium',
-                complexity: 'high'
+                complexity: 'high',
             },
             property_transfer_hunter: {
                 priority: 'medium',
                 targetSources: ['deed_records', 'mls_data', 'assessor_records'],
                 estimatedRoi: 'medium',
-                complexity: 'medium'
+                complexity: 'medium',
             },
             utility_connection_hunter: {
                 priority: 'low',
                 targetSources: ['utility_companies', 'service_connections'],
                 estimatedRoi: 'low',
-                complexity: 'high'
-            }
+                complexity: 'high',
+            },
         };
     }
     /**
@@ -87,9 +87,10 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                 .map(r => r.reason);
             // Calculate total revenue discovered
             const totalRevenue = successfulResults.reduce((sum, result) => {
-                return sum + result.discoveries.reduce((discoverySum, discovery) => {
-                    return discoverySum + (discovery.estimatedValue || 0);
-                }, 0);
+                return (sum +
+                    result.discoveries.reduce((discoverySum, discovery) => {
+                        return discoverySum + (discovery.estimatedValue || 0);
+                    }, 0));
             }, 0);
             const executionTime = (Date.now() - startTime) / 1000;
             // Generate comprehensive report
@@ -106,7 +107,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                 immediateActions: this.generateActionItems(successfulResults),
                 confidenceScore: this.calculateConfidenceScore(successfulResults),
                 estimatedCollectionRate: 0.85, // Based on historical data
-                projectedAnnualImpact: totalRevenue * 0.85
+                projectedAnnualImpact: totalRevenue * 0.85,
             };
             console.log(`✅ Revenue Hunter Swarm completed!`);
             console.log(`💰 Total Revenue Discovered: $${totalRevenue.toLocaleString()}`);
@@ -161,7 +162,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                 executionTime,
                 discoveries: result.discoveries,
                 confidence: result.confidence,
-                metadata: result.metadata
+                metadata: result.metadata,
             };
         }
         catch (error) {
@@ -174,7 +175,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                 executionTime: (Date.now() - agentStartTime) / 1000,
                 discoveries: [],
                 confidence: 0.0,
-                error: error.message
+                error: error.message,
             };
         }
     }
@@ -188,7 +189,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             'state_secretary_of_state',
             'business_license_database',
             'contractor_registry',
-            'professional_license_board'
+            'professional_license_board',
         ];
         for (const source of businessSources) {
             const sourceBusinesses = await this.simulateBusinessDataRetrieval(source, jurisdiction);
@@ -196,7 +197,8 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                 // Cross-reference with existing tax rolls
                 if (!(await this.businessInTaxSystem(business, jurisdiction))) {
                     const estimatedBppValue = this.estimateBusinessPersonalProperty(business);
-                    if (estimatedBppValue > 10000) { // Only include significant values
+                    if (estimatedBppValue > 10000) {
+                        // Only include significant values
                         const discovery = {
                             type: 'unreported_business_personal_property',
                             businessName: business.name,
@@ -207,7 +209,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                             confidence: business.confidence,
                             source,
                             supportingEvidence: business.evidence || [],
-                            recommendedAction: 'issue_assessment_notice'
+                            recommendedAction: 'issue_assessment_notice',
                         };
                         discoveries.push(discovery);
                     }
@@ -220,8 +222,8 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             metadata: {
                 sourcesChecked: businessSources,
                 businessesAnalyzed: businessSources.length * 15, // 15 per source
-                crossReferenceMethod: 'tax_roll_comparison'
-            }
+                crossReferenceMethod: 'tax_roll_comparison',
+            },
         };
     }
     /**
@@ -240,10 +242,10 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                     const estimatedNightsPerYear = 100; // Conservative estimate
                     const annualRevenue = nightlyRate * estimatedNightsPerYear;
                     // Calculate tax/fee impact
-                    const strTaxRate = 0.10; // 10%
+                    const strTaxRate = 0.1; // 10%
                     const permitFee = 500;
                     const penalty = 1000;
-                    const totalImpact = (annualRevenue * strTaxRate) + permitFee + penalty;
+                    const totalImpact = annualRevenue * strTaxRate + permitFee + penalty;
                     const discovery = {
                         type: 'unlicensed_short_term_rental',
                         platform,
@@ -256,7 +258,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                         estimatedValue: totalImpact,
                         confidence: 0.92,
                         violationType: 'no_permit',
-                        recommendedAction: 'issue_compliance_notice'
+                        recommendedAction: 'issue_compliance_notice',
                     };
                     discoveries.push(discovery);
                 }
@@ -268,8 +270,8 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             metadata: {
                 platformsChecked: platforms,
                 totalListingsAnalyzed: platforms.length * 7, // 7 per platform
-                permitCheckMethod: 'permit_database_cross_reference'
-            }
+                permitCheckMethod: 'permit_database_cross_reference',
+            },
         };
     }
     /**
@@ -300,7 +302,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                     estimatedValue: totalImpact,
                     confidence: activity.confidence || 0.75,
                     detectionMethod: activity.detectionMethod,
-                    recommendedAction: 'site_inspection_required'
+                    recommendedAction: 'site_inspection_required',
                 };
                 discoveries.push(discovery);
             }
@@ -310,8 +312,8 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             confidence: 0.78,
             metadata: {
                 constructionActivitiesDetected: constructionActivities.length,
-                detectionMethods: ['satellite_imagery', 'utility_connections', 'contractor_reports']
-            }
+                detectionMethods: ['satellite_imagery', 'utility_connections', 'contractor_reports'],
+            },
         };
     }
     /**
@@ -325,7 +327,8 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             const currentAssessment = transfer.currentAssessment || 0;
             const salePrice = transfer.salePrice || 0;
             // Check for significant discrepancies
-            if (salePrice > currentAssessment * 1.2) { // 20% threshold
+            if (salePrice > currentAssessment * 1.2) {
+                // 20% threshold
                 const assessmentIncrease = salePrice - currentAssessment;
                 const annualTaxIncrease = assessmentIncrease * 0.01; // 1% tax rate
                 const discovery = {
@@ -338,7 +341,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                     estimatedValue: annualTaxIncrease,
                     saleDate: transfer.saleDate,
                     confidence: 0.95,
-                    recommendedAction: 'assessment_review'
+                    recommendedAction: 'assessment_review',
                 };
                 discoveries.push(discovery);
             }
@@ -348,8 +351,8 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             confidence: 0.89,
             metadata: {
                 transfersAnalyzed: recentTransfers.length,
-                discrepancyThreshold: '20%'
-            }
+                discrepancyThreshold: '20%',
+            },
         };
     }
     /**
@@ -369,7 +372,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
                     estimatedBusinessValue: 25000, // Conservative estimate
                     estimatedValue: 25000 * 0.01, // 1% tax
                     confidence: 0.65,
-                    recommendedAction: 'field_investigation'
+                    recommendedAction: 'field_investigation',
                 };
                 discoveries.push(discovery);
             }
@@ -379,8 +382,9 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             confidence: 0.71,
             metadata: {
                 utilityAccountsAnalyzed: utilityConnections.length,
-                commercialPatternsDetected: utilityConnections.filter(c => c.usagePattern === 'commercial').length
-            }
+                commercialPatternsDetected: utilityConnections.filter(c => c.usagePattern === 'commercial')
+                    .length,
+            },
         };
     }
     // Helper methods for simulation (in production, these would connect to real data sources)
@@ -392,7 +396,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             address: `${i + 1} Main St, ${jurisdiction}`,
             type: i % 2 === 0 ? 'retail' : 'service',
             confidence: 0.85 + (i % 15) * 0.01,
-            evidence: [`${source}_registration`, 'business_license']
+            evidence: [`${source}_registration`, 'business_license'],
         }));
     }
     async businessInTaxSystem(business, jurisdiction) {
@@ -407,7 +411,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             service: 35000,
             manufacturing: 300000,
             medical: 200000,
-            tech: 80000
+            tech: 80000,
         };
         const baseValue = businessTypeValues[business.type] || 50000;
         return baseValue * (0.7 + Math.random() * 0.6);
@@ -418,7 +422,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             address: `${i + 1} ${jurisdiction} Ave`,
             nightlyRate: 120 + i * 10,
             hostName: `Host_${i + 1}`,
-            url: `https://${platform}.com/listing_${i + 1}`
+            url: `https://${platform}.com/listing_${i + 1}`,
         }));
     }
     async checkStrPermit(address, jurisdiction) {
@@ -432,12 +436,13 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             type: i % 2 === 0 ? 'addition' : 'renovation',
             estimatedValue: 40000 + i * 5000,
             confidence: 0.7 + i * 0.02,
-            detectionMethod: 'satellite_imagery'
+            detectionMethod: 'satellite_imagery',
         }));
     }
     async checkBuildingPermits(address, jurisdiction) {
         await new Promise(resolve => setTimeout(resolve, 80));
-        if (Math.random() < 0.4) { // 40% have permits
+        if (Math.random() < 0.4) {
+            // 40% have permits
             return { status: 'active', permitDate: '2024-01-15' };
         }
         return null;
@@ -448,7 +453,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
             address: `${i + 1} Transfer St`,
             currentAssessment: 250000 + i * 10000,
             salePrice: 320000 + i * 15000, // Typically higher than assessment
-            saleDate: '2024-06-15'
+            saleDate: '2024-06-15',
         }));
     }
     async getUtilityConnectionData(jurisdiction) {
@@ -456,7 +461,7 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
         return Array.from({ length: 20 }, (_, i) => ({
             address: `${i + 1} Utility Way`,
             usagePattern: i % 4 === 0 ? 'commercial' : 'residential',
-            zoning: 'residential'
+            zoning: 'residential',
         }));
     }
     categorizeDiscoveries(results) {
@@ -485,11 +490,11 @@ class RevenueHunterSwarm extends events_1.EventEmitter {
     }
     generateActionItems(results) {
         return [
-            "Deploy enforcement swarm on top 50 STR violations",
-            "Generate compliance notices for unregistered businesses",
-            "Schedule property assessment reviews for recent sales",
-            "Initiate building permit compliance checks",
-            "Set up ongoing monitoring for new violations"
+            'Deploy enforcement swarm on top 50 STR violations',
+            'Generate compliance notices for unregistered businesses',
+            'Schedule property assessment reviews for recent sales',
+            'Initiate building permit compliance checks',
+            'Set up ongoing monitoring for new violations',
         ];
     }
     calculateConfidenceScore(results) {

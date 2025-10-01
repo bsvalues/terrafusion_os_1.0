@@ -50,4 +50,4 @@ app.MapGet("/api/modules", () => new[]
     new { id = "gispro", name = "GIS Pro", status = "ready" }
 });
 
-app.Run("http://localhost:5000");
+app.Run("http://localhost:${TF_STATIC_PORT:-8080}");

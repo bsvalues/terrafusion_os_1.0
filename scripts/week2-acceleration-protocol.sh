@@ -924,7 +924,7 @@ echo "════════════════════════�
 # Real-time metrics tracking
 MONDAY_TARGETS="2016_agents:420000_revenue:5_hires:3_federal_calls"
 TUESDAY_TARGETS="2016_agents:450000_revenue:7_hires:3_federal_demos"
-WEDNESDAY_TARGETS="2016_agents:500000_revenue:10_hires:3_contracts"
+WEDNESDAY_TARGETS="2016_agents:${TF_API_PORT:-5046}00_revenue:10_hires:3_contracts"
 THURSDAY_TARGETS="2016_agents:550000_revenue:45M_contracts:100_counties"
 FRIDAY_TARGETS="2016_agents:2100000_total:45M_signed:100_onboarded"
 

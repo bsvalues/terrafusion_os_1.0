@@ -7,50 +7,50 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
-  
+
   // Championship timeouts
   timeout: 30 * 1000,
   expect: {
-    timeout: 5000
+    timeout: 5000,
   },
-  
+
   // Run tests in parallel
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  
+
   // Reporter configuration
   reporter: [
     ['html', { outputFolder: 'test-results/html' }],
     ['json', { outputFile: 'test-results/results.json' }],
     ['junit', { outputFile: 'test-results/junit.xml' }],
-    ['list']
+    ['list'],
   ],
-  
+
   // Global test settings
   use: {
     // Base URL for all tests
-    baseURL: 'http://localhost:3000',
-    
+    baseURL: 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}',
+
     // Collect trace on first retry
     trace: 'on-first-retry',
-    
+
     // Screenshot on failure
     screenshot: 'only-on-failure',
-    
+
     // Video on failure
     video: 'retain-on-failure',
-    
+
     // Championship viewport
     viewport: { width: 1920, height: 1080 },
-    
+
     // Ignore HTTPS errors
     ignoreHTTPSErrors: true,
-    
+
     // Locale
     locale: 'en-US',
-    
+
     // Timezone
     timezoneId: 'America/New_York',
   },

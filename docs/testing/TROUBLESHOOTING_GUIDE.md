@@ -4,17 +4,20 @@
 
 ## Overview
 
-This guide provides solutions for common issues encountered during comprehensive testing execution, organized by test category and severity level.
+This guide provides solutions for common issues encountered during comprehensive
+testing execution, organized by test category and severity level.
 
 ## Quick Reference
 
 ### Emergency Contacts
+
 - **DevOps Team**: devops@terrafusion.gov
-- **Security Team**: security@terrafusion.gov  
+- **Security Team**: security@terrafusion.gov
 - **Database Team**: dba@terrafusion.gov
 - **24/7 Support**: +1-800-TERRA-OS
 
 ### Critical Issue Response
+
 1. **Stop all testing immediately**
 2. **Preserve logs and evidence**
 3. **Contact appropriate team**
@@ -25,14 +28,16 @@ This guide provides solutions for common issues encountered during comprehensive
 ### Connection Failures
 
 #### API Endpoint Unreachable
+
 ```
-Error: ECONNREFUSED 127.0.0.1:5000
+Error: ECONNREFUSED 127.0.0.1:\${{TF_API_PORT:-5000}}
 ```
 
 **Diagnosis Steps**:
+
 ```bash
 # Check if API is running
-curl -f http://localhost:5000/api/health
+curl -f http://localhost:\${{TF_API_PORT:-5000}}/api/health
 
 # Verify Docker containers
 docker-compose -f docker-compose.testing.yml ps
@@ -42,15 +47,18 @@ netstat -tulpn | grep :5000
 ```
 
 **Solutions**:
+
 1. **Restart API service**:
+
    ```bash
    docker-compose -f docker-compose.testing.yml restart terrafusion-api
    ```
 
 2. **Check environment variables**:
+
    ```bash
    echo $TEST_API_URL
-   # Should output: http://localhost:5000
+   # Should output: http://localhost:\${{TF_API_PORT:-5000}}
    ```
 
 3. **Verify network connectivity**:
@@ -60,21 +68,25 @@ netstat -tulpn | grep :5000
    ```
 
 #### WebSocket Connection Issues
+
 ```
 Error: WebSocket connection failed
 ```
 
 **Diagnosis Steps**:
+
 ```bash
 # Test WebSocket endpoint
-wscat -c ws://localhost:5000/hubs/system
+wscat -c ws://localhost:\${{TF_API_PORT:-5000}}/hubs/system
 
 # Check nginx configuration
 docker-compose -f docker-compose.testing.yml logs nginx
 ```
 
 **Solutions**:
+
 1. **Update nginx configuration** for WebSocket support:
+
    ```nginx
    location /hubs/ {
        proxy_pass http://terrafusion_api;
@@ -92,11 +104,13 @@ docker-compose -f docker-compose.testing.yml logs nginx
 ### Database Connection Issues
 
 #### PostgreSQL Connection Refused
+
 ```
-Error: connection to server at "localhost" (127.0.0.1), port 5432 failed
+Error: connection to server at "localhost" (127.0.0.1), port \${{TF_POSTGRES_PORT:-5432}} failed
 ```
 
 **Diagnosis Steps**:
+
 ```bash
 # Check PostgreSQL status
 docker-compose -f docker-compose.testing.yml exec postgres pg_isready
@@ -109,12 +123,15 @@ psql -h localhost -U test_user -d terrafusion_test
 ```
 
 **Solutions**:
+
 1. **Restart PostgreSQL**:
+
    ```bash
    docker-compose -f docker-compose.testing.yml restart postgres
    ```
 
 2. **Reset database with fresh data**:
+
    ```bash
    docker-compose -f docker-compose.testing.yml down -v
    docker-compose -f docker-compose.testing.yml up -d postgres
@@ -132,11 +149,13 @@ psql -h localhost -U test_user -d terrafusion_test
 ### Load Test Failures
 
 #### High Response Times
+
 ```
 Error: Response time P95 > 5000ms (target: < 2000ms)
 ```
 
 **Diagnosis Steps**:
+
 ```bash
 # Check system resources
 top
@@ -146,23 +165,26 @@ iostat -x 1
 # Monitor database performance
 docker-compose -f docker-compose.testing.yml exec postgres \
   psql -U test_user -d terrafusion_test -c "
-    SELECT query, mean_time, calls 
-    FROM pg_stat_statements 
+    SELECT query, mean_time, calls
+    FROM pg_stat_statements
     ORDER BY mean_time DESC LIMIT 10;"
 ```
 
 **Solutions**:
+
 1. **Optimize database queries**:
+
    ```sql
    -- Add missing indexes
-   CREATE INDEX CONCURRENTLY idx_properties_jurisdiction 
+   CREATE INDEX CONCURRENTLY idx_properties_jurisdiction
    ON properties(jurisdiction_id);
-   
+
    -- Update table statistics
    ANALYZE properties;
    ```
 
 2. **Increase system resources**:
+
    ```yaml
    # docker-compose.testing.yml
    services:
@@ -175,21 +197,24 @@ docker-compose -f docker-compose.testing.yml exec postgres \
    ```
 
 3. **Enable Redis caching**:
+
    ```bash
    # Verify Redis is running
    docker-compose -f docker-compose.testing.yml exec redis redis-cli ping
-   
+
    # Check cache hit rate
    docker-compose -f docker-compose.testing.yml exec redis \
      redis-cli info stats | grep keyspace
    ```
 
 #### Memory Leaks
+
 ```
 Error: Memory usage exceeds 16GB limit
 ```
 
 **Diagnosis Steps**:
+
 ```bash
 # Monitor memory usage over time
 while true; do
@@ -203,7 +228,9 @@ docker-compose -f docker-compose.testing.yml exec terrafusion-api \
 ```
 
 **Solutions**:
+
 1. **Enable garbage collection tuning**:
+
    ```bash
    export DOTNET_gcServer=1
    export DOTNET_GCHeapHardLimit=8000000000
@@ -218,17 +245,20 @@ docker-compose -f docker-compose.testing.yml exec terrafusion-api \
 ### Timeout Issues
 
 #### Test Execution Timeouts
+
 ```
 Error: Timeout of 30000ms exceeded
 ```
 
 **Solutions**:
+
 1. **Increase timeout values**:
+
    ```typescript
    // In test configuration
    const config = {
      timeout: 120000, // 2 minutes
-     retries: 3
+     retries: 3,
    };
    ```
 
@@ -251,11 +281,13 @@ Error: Timeout of 30000ms exceeded
 ### Authentication Failures
 
 #### Invalid Credentials
+
 ```
 Error: Authentication failed for security testing
 ```
 
 **Diagnosis Steps**:
+
 ```bash
 # Verify test user exists
 docker-compose -f docker-compose.testing.yml exec postgres \
@@ -263,18 +295,20 @@ docker-compose -f docker-compose.testing.yml exec postgres \
     SELECT username, role FROM users WHERE username = 'security-tester';"
 
 # Check authentication endpoint
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:\${{TF_API_PORT:-5000}}/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"security-tester","password":"SecureTest123!"}'
 ```
 
 **Solutions**:
+
 1. **Create test user**:
+
    ```sql
-   INSERT INTO users (username, password_hash, role, created_at) 
-   VALUES ('security-tester', 
-           '$2b$12$encrypted_password_hash', 
-           'admin', 
+   INSERT INTO users (username, password_hash, role, created_at)
+   VALUES ('security-tester',
+           '$2b$12$encrypted_password_hash',
+           'admin',
            NOW());
    ```
 
@@ -287,16 +321,19 @@ curl -X POST http://localhost:5000/api/auth/login \
 ### Penetration Test Issues
 
 #### False Positives
+
 ```
 Warning: SQL injection detected (false positive)
 ```
 
 **Solutions**:
+
 1. **Verify with manual testing**:
+
    ```bash
    # Test actual SQL injection
-   curl "http://localhost:5000/api/properties/search?q=' OR '1'='1"
-   
+   curl "http://localhost:\${{TF_API_PORT:-5000}}/api/properties/search?q=' OR '1'='1"
+
    # Should return 400 Bad Request with input validation error
    ```
 
@@ -305,7 +342,7 @@ Warning: SQL injection detected (false positive)
    const excludePatterns = [
      '/api/health',
      '/api/metrics',
-     '/api/documentation'
+     '/api/documentation',
    ];
    ```
 
@@ -314,11 +351,13 @@ Warning: SQL injection detected (false positive)
 ### Kubernetes Issues
 
 #### Pod Scaling Failures
+
 ```
 Error: HorizontalPodAutoscaler failed to scale
 ```
 
 **Diagnosis Steps**:
+
 ```bash
 # Check HPA status
 kubectl describe hpa terrafusion-api-hpa -n terrafusion-testing
@@ -331,33 +370,38 @@ kubectl describe deployment terrafusion-api -n terrafusion-testing
 ```
 
 **Solutions**:
+
 1. **Adjust HPA configuration**:
+
    ```yaml
    spec:
      metrics:
-     - type: Resource
-       resource:
-         name: cpu
-         target:
-           type: Utilization
-           averageUtilization: 50  # Reduced from 70
+       - type: Resource
+         resource:
+           name: cpu
+           target:
+             type: Utilization
+             averageUtilization: 50 # Reduced from 70
    ```
 
 2. **Increase resource limits**:
    ```yaml
    resources:
      limits:
-       memory: "8Gi"  # Increased from 4Gi
-       cpu: "4000m"   # Increased from 2000m
+       memory: '8Gi' # Increased from 4Gi
+       cpu: '4000m' # Increased from 2000m
    ```
 
 #### Node Resource Exhaustion
+
 ```
 Error: Insufficient CPU/Memory on nodes
 ```
 
 **Solutions**:
+
 1. **Add more nodes to cluster**:
+
    ```bash
    # For cloud providers
    kubectl scale --replicas=5 deployment/cluster-autoscaler
@@ -367,24 +411,27 @@ Error: Insufficient CPU/Memory on nodes
    ```yaml
    resources:
      requests:
-       memory: "1Gi"  # Reduced from 2Gi
-       cpu: "500m"    # Reduced from 1000m
+       memory: '1Gi' # Reduced from 2Gi
+       cpu: '500m' # Reduced from 1000m
    ```
 
 ### Load Balancer Issues
 
 #### Connection Limits Exceeded
+
 ```
 Error: Too many connections to load balancer
 ```
 
 **Solutions**:
+
 1. **Increase nginx connection limits**:
+
    ```nginx
    events {
        worker_connections 4096;  # Increased from 1024
    }
-   
+
    http {
        upstream terrafusion_api {
            least_conn;
@@ -409,11 +456,13 @@ Error: Too many connections to load balancer
 ### Development Environment
 
 #### Docker Desktop Issues
+
 ```
 Error: Docker daemon not responding
 ```
 
 **Solutions**:
+
 1. **Restart Docker Desktop**
 2. **Increase Docker memory allocation** to 8GB+
 3. **Clear Docker cache**:
@@ -424,12 +473,15 @@ Error: Docker daemon not responding
 ### Staging Environment
 
 #### SSL Certificate Issues
+
 ```
 Error: SSL certificate verification failed
 ```
 
 **Solutions**:
+
 1. **Update certificate**:
+
    ```bash
    # Generate new certificate
    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -446,16 +498,19 @@ Error: SSL certificate verification failed
 ### Production Environment
 
 #### Firewall Restrictions
+
 ```
 Error: Connection blocked by firewall
 ```
 
 **Solutions**:
+
 1. **Update firewall rules**:
+
    ```bash
    # Allow testing traffic
-   sudo ufw allow from 10.0.0.0/8 to any port 5000
-   sudo ufw allow from 172.16.0.0/12 to any port 5000
+   sudo ufw allow from 10.0.0.0/8 to any port \${{TF_POSTGRES_PORT:-5432}}
+   sudo ufw allow from 172.16.0.0/12 to any port \${{TF_POSTGRES_PORT:-5432}}
    ```
 
 2. **Use VPN for testing**:
@@ -469,6 +524,7 @@ Error: Connection blocked by firewall
 ### Log Analysis
 
 #### Finding Relevant Logs
+
 ```bash
 # API logs
 docker-compose -f docker-compose.testing.yml logs -f terrafusion-api
@@ -484,6 +540,7 @@ docker-compose -f docker-compose.testing.yml logs | grep -i error
 ```
 
 #### Log Aggregation
+
 ```bash
 # Export all logs for analysis
 docker-compose -f docker-compose.testing.yml logs --no-color > testing-logs.txt
@@ -495,6 +552,7 @@ cat testing-logs.txt | jq -r 'select(.level == "ERROR") | .message'
 ### Performance Monitoring
 
 #### Real-time Metrics
+
 ```bash
 # System resources
 watch -n 1 'docker stats --no-stream'
@@ -502,8 +560,8 @@ watch -n 1 'docker stats --no-stream'
 # Database connections
 watch -n 5 'docker-compose -f docker-compose.testing.yml exec postgres \
   psql -U test_user -d terrafusion_test -c "
-    SELECT count(*) as active_connections 
-    FROM pg_stat_activity 
+    SELECT count(*) as active_connections
+    FROM pg_stat_activity
     WHERE state = '\''active'\'';"'
 ```
 
@@ -512,6 +570,7 @@ watch -n 5 'docker-compose -f docker-compose.testing.yml exec postgres \
 ### Complete Environment Reset
 
 #### Nuclear Option - Full Reset
+
 ```bash
 #!/bin/bash
 # complete-reset.sh
@@ -543,6 +602,7 @@ echo "Environment reset complete!"
 ### Partial Recovery
 
 #### Service-Specific Recovery
+
 ```bash
 # Reset only API service
 docker-compose -f docker-compose.testing.yml restart terrafusion-api
@@ -562,6 +622,7 @@ docker-compose -f docker-compose.testing.yml exec redis redis-cli FLUSHALL
 ### Pre-Test Validation
 
 #### Environment Health Check
+
 ```bash
 #!/bin/bash
 # pre-test-validation.sh
@@ -575,7 +636,7 @@ if ! docker info > /dev/null 2>&1; then
 fi
 
 # Check services
-if ! curl -f http://localhost:5000/api/health > /dev/null 2>&1; then
+if ! curl -f http://localhost:\${{TF_API_PORT:-5000}}/api/health > /dev/null 2>&1; then
     echo "ERROR: API is not responding"
     exit 1
 fi
@@ -592,6 +653,7 @@ echo "Environment validation passed!"
 ### Resource Monitoring
 
 #### Automated Alerts
+
 ```bash
 # Add to crontab
 */5 * * * * /path/to/check-resources.sh

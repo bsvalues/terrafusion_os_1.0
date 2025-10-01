@@ -187,4 +187,6 @@ app.MapPost("/api/costforge/valuate", (object propertyData) =>
 
 // Use environment variable or default to avoid port conflicts
 var port = Environment.GetEnvironmentVariable("ASPNETCORE_PORT") ?? "5001";
-app.Run($"http://localhost:{port}");
+var useHttps = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production";
+var protocol = useHttps ? "https" : "http";
+app.Run($"{protocol}://localhost:{port}");

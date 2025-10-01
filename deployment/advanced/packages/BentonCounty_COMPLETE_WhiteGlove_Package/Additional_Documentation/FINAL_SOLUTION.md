@@ -2,7 +2,9 @@
 
 ## 🔴 THE FUNDAMENTAL ISSUE
 
-I've been trying to run Championship as a web application when it's actually a **TAURI DESKTOP APPLICATION** with:
+I've been trying to run Championship as a web application when it's actually a
+**TAURI DESKTOP APPLICATION** with:
+
 - Rust backend that manages modules
 - React frontend for UI only
 - IPC communication between them
@@ -27,16 +29,19 @@ DESKTOP APP (Tauri)
 ## 🚀 HOW TO RUN IT
 
 ### Option 1: Simple Command
+
 ```bash
 npm run tauri:dev
 ```
 
 ### Option 2: If Frontend Issues
+
 ```bash
 ./START_CHAMPIONSHIP_DESKTOP.sh
 ```
 
 ### Option 3: Manual Steps
+
 ```bash
 # Terminal 1 - Start frontend
 npm run dev
@@ -48,11 +53,13 @@ npm run tauri:dev
 ## 📦 WHAT'S ALREADY INTEGRATED
 
 **CostForge/TerraFusionBuild is ALREADY in the Rust backend:**
+
 - `src-tauri/src/costforge_integration.rs` ✅
 - `src-tauri/src/costforge_ai_engine.rs` ✅
 - `src-tauri/src/module_system.rs` ✅
 
 The modules are loaded via:
+
 ```rust
 // In module_system.rs
 "costforge" => {
@@ -63,9 +70,11 @@ The modules are loaded via:
 ## 🖥️ WSL CONSIDERATIONS
 
 Since you're in WSL, you need:
+
 1. **X Server running** (WSLg or VcXsrv)
 2. **DISPLAY variable set** (already set to :0)
 3. **Graphics libraries installed**:
+
 ```bash
 sudo apt-get install libwebkit2gtk-4.0-dev \
   build-essential curl wget libssl-dev \
@@ -76,16 +85,19 @@ sudo apt-get install libwebkit2gtk-4.0-dev \
 ## 🎮 HOW MODULES ACTUALLY WORK
 
 1. **Frontend requests module:**
+
 ```typescript
 await invoke('load_module', { name: 'costforge' });
 ```
 
 2. **Rust backend loads it:**
+
 ```rust
 pub async fn load_module(name: String) -> Result<String>
 ```
 
 3. **Frontend displays UI:**
+
 ```typescript
 <CostForgeDisplay />  // Just UI, logic is in Rust
 ```
@@ -109,6 +121,7 @@ pub async fn load_module(name: String) -> Result<String>
 ## 🔥 IF STILL NOT WORKING
 
 The issues might be:
+
 1. **WSL Display Issues** - Install X server
 2. **Missing Dependencies** - Install system libs
 3. **Port Conflicts** - Kill all processes and restart
@@ -118,7 +131,8 @@ The issues might be:
 
 **TerraFusionBuild/CostForge is ALREADY INTEGRATED in the Rust backend!**
 
-We just need to run the app correctly as a Tauri desktop application, not as a web app.
+We just need to run the app correctly as a Tauri desktop application, not as a
+web app.
 
 ---
 

@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "crates/agent-coordination",
+    "crates/geospatial-engine",
+    "crates/valuation-kernel",
+    "crates/security-layer",
+    "crates/performance-monitor",
+    "crates/ffi-bridge",
+]
+resolver = "2"

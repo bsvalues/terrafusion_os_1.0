@@ -86,11 +86,11 @@ switch ($Action) {
         
         # Check each service health
         $services = @(
-            @{Name="API"; Url="http://localhost:5000/api/health"},
-            @{Name="Frontend"; Url="http://localhost:3000"},
-            @{Name="AI Command"; Url="http://localhost:3001/api/ai-command-brain/health"},
-            @{Name="AI Swarm"; Url="http://localhost:3002/api/ai-swarm/health"},
-            @{Name="AI Advanced"; Url="http://localhost:3003/api/ai-advanced/health"}
+            @{Name="API"; Url="http://localhost:\${{TF_API_PORT:-5000}}/api/health"},
+            @{Name="Frontend"; Url="http://localhost:\${{TF_API_PORT:-5000}}"},
+            @{Name="AI Command"; Url="http://localhost:\${{TF_API_PORT:-5000}}/api/ai-command-brain/health"},
+            @{Name="AI Swarm"; Url="http://localhost:\${{TF_API_PORT:-5000}}/api/ai-swarm/health"},
+            @{Name="AI Advanced"; Url="http://localhost:\${{TF_API_PORT:-5000}}/api/ai-advanced/health"}
         )
         
         foreach ($service in $services) {

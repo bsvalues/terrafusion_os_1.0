@@ -1,0 +1,29 @@
+{
+  "name": "terrafusion-marketplace",
+  "version": "2.0.0", 
+  "description": "Government plugin marketplace infrastructure with 70/30 revenue sharing",
+  "main": "marketplace-engine.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^1.4.4",
+    "uuid": "^9.0.0"
+  },
+  "scripts": {
+    "start": "node marketplace-engine.js",
+    "dev": "node marketplace-engine.js",
+    "api": "node marketplace/submission-api.js"
+  },
+  "keywords": [
+    "terrafusion",
+    "marketplace",
+    "government",
+    "plugins",
+    "revenue-sharing"
+  ],
+  "author": "TerraFusion Development Team",
+  "license": "MIT"
+}

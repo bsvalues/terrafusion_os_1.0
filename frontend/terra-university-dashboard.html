@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terra University - Government Employee Education Platform</title>
+    <meta name="description" content="ANSI/ISO-17024 Compliant Professional Certification and Training for Government Employees">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/terra-university-manifest.json">
+    <meta name="theme-color" content="#1e40af">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    
+    <!-- CSS Framework -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%); }
+        .certification-badge {
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .assessment-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .assessment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+        }
+        .progress-ring {
+            background: conic-gradient(#3b82f6 calc(var(--progress) * 1%), #e5e7eb 0%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .competency-meter {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .competency-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+            transition: width 0.8s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Header -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-graduation-cap text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold">Terra University</h1>
+                    <span class="ml-2 text-sm bg-white/20 px-2 py-1 rounded">ANSI/ISO-17024</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="employee-info" class="text-sm">
+                        <span id="employee-name">Sarah Martinez</span>
+                        <span class="opacity-75">| Benton County Washington</span>
+                    </div>
+                    <button id="notification-btn" class="relative">
+                        <i class="fas fa-bell text-lg"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard Overview -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Professional Development Dashboard</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Progress Overview -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Overall Progress</p>
+                            <p class="text-2xl font-bold text-blue-600">87%</p>
+                        </div>
+                        <div class="progress-ring w-12 h-12" style="--progress: 87">
+                            <div class="bg-white rounded-full w-8 h-8"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Active Certifications -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Active Certifications</p>
+                            <p class="text-2xl font-bold text-green-600">5</p>
+                        </div>
+                        <div class="certification-badge">
+                            <i class="fas fa-certificate text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pending Assessments -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Pending Assessments</p>
+                            <p class="text-2xl font-bold text-orange-600">3</p>
+                        </div>
+                        <i class="fas fa-clock text-3xl text-orange-600"></i>
+                    </div>
+                </div>
+                
+                <!-- Training Hours -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Training Hours (YTD)</p>
+                            <p class="text-2xl font-bold text-purple-600">47.5</p>
+                        </div>
+                        <i class="fas fa-clock text-3xl text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="flex space-x-8">
+                <button class="tab-btn py-2 px-1 border-b-2 border-blue-500 text-blue-600 font-medium" data-tab="assessments">
+                    <i class="fas fa-clipboard-check mr-2"></i>Assessments
+                </button>
+                <button class="tab-btn py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="certifications">
+                    <i class="fas fa-certificate mr-2"></i>Certifications
+                </button>
+                <button class="tab-btn py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="learning">
+                    <i class="fas fa-book-open mr-2"></i>Learning Paths
+                </button>
+                <button class="tab-btn py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="analytics">
+                    <i class="fas fa-chart-line mr-2"></i>Analytics
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tab-content">
+            <!-- Assessments Tab -->
+            <div id="assessments-tab" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Available Assessments -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Available Assessments</h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="assessment-card border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="startAssessment('ASSESS-001')">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-medium text-gray-900">Government Ethics Professional</h4>
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">High Security</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Comprehensive ethics assessment covering conflict of interest, transparency, and public trust.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>45 minutes
+                                        <i class="fas fa-question-circle ml-3 mr-1"></i>25 questions
+                                    </div>
+                                    <span class="text-sm text-blue-600 font-medium">Passing: 80%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="assessment-card border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="startAssessment('ASSESS-002')">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-medium text-gray-900">Digital Government Technologies</h4>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Standard</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Assessment of digital transformation, cybersecurity, and technology policy knowledge.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>60 minutes
+                                        <i class="fas fa-question-circle ml-3 mr-1"></i>30 questions
+                                    </div>
+                                    <span class="text-sm text-blue-600 font-medium">Passing: 75%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="assessment-card border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="startAssessment('ASSESS-003')">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-medium text-gray-900">Emergency Management Protocols</h4>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Proctored</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Critical assessment covering emergency response, crisis communication, and disaster recovery.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>90 minutes
+                                        <i class="fas fa-question-circle ml-3 mr-1"></i>40 questions
+                                    </div>
+                                    <span class="text-sm text-blue-600 font-medium">Passing: 85%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Competency Assessment -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Competency Assessment</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Ethics & Integrity</span>
+                                        <span class="text-sm text-gray-600">92%</span>
+                                    </div>
+                                    <div class="competency-meter">
+                                        <div class="competency-fill" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Public Administration</span>
+                                        <span class="text-sm text-gray-600">87%</span>
+                                    </div>
+                                    <div class="competency-meter">
+                                        <div class="competency-fill" style="width: 87%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Legal Compliance</span>
+                                        <span class="text-sm text-gray-600">89%</span>
+                                    </div>
+                                    <div class="competency-meter">
+                                        <div class="competency-fill" style="width: 89%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Technology Management</span>
+                                        <span class="text-sm text-gray-600">74%</span>
+                                    </div>
+                                    <div class="competency-meter">
+                                        <div class="competency-fill" style="width: 74%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Financial Management</span>
+                                        <span class="text-sm text-gray-600">81%</span>
+                                    </div>
+                                    <div class="competency-meter">
+                                        <div class="competency-fill" style="width: 81%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                                <h4 class="text-sm font-medium text-blue-800 mb-2">Recommended Focus Area</h4>
+                                <p class="text-sm text-blue-700">Technology Management competency is below target. Consider the Digital Government Technologies assessment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certifications Tab -->
+            <div id="certifications-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Active Certifications -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg shadow">
+                            <div class="p-6 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Active Certifications</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="border border-green-200 bg-green-50 rounded-lg p-4">
+                                        <div class="flex items-start justify-between">
+                                            <div class="certification-badge bg-green-500 w-16 h-16 text-sm">
+                                                <i class="fas fa-shield-alt"></i>
+                                            </div>
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Active</span>
+                                        </div>
+                                        <h4 class="font-medium text-gray-900 mt-3">Government Ethics Professional</h4>
+                                        <p class="text-sm text-gray-600">ANSI/ISO-17024 Certified</p>
+                                        <div class="mt-2 text-xs text-gray-500">
+                                            <p>Issued: March 15, 2024</p>
+                                            <p>Expires: March 15, 2026</p>
+                                            <p>ID: CERT-GEP-2024-001</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-blue-200 bg-blue-50 rounded-lg p-4">
+                                        <div class="flex items-start justify-between">
+                                            <div class="certification-badge bg-blue-500 w-16 h-16 text-sm">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Active</span>
+                                        </div>
+                                        <h4 class="font-medium text-gray-900 mt-3">Public Administration Specialist</h4>
+                                        <p class="text-sm text-gray-600">ANSI/ISO-17024 Certified</p>
+                                        <div class="mt-2 text-xs text-gray-500">
+                                            <p>Issued: June 8, 2024</p>
+                                            <p>Expires: June 8, 2026</p>
+                                            <p>ID: CERT-PAS-2024-003</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-purple-200 bg-purple-50 rounded-lg p-4">
+                                        <div class="flex items-start justify-between">
+                                            <div class="certification-badge bg-purple-500 w-16 h-16 text-sm">
+                                                <i class="fas fa-balance-scale"></i>
+                                            </div>
+                                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Active</span>
+                                        </div>
+                                        <h4 class="font-medium text-gray-900 mt-3">Legal Compliance Officer</h4>
+                                        <p class="text-sm text-gray-600">ANSI/ISO-17024 Certified</p>
+                                        <div class="mt-2 text-xs text-gray-500">
+                                            <p>Issued: January 12, 2024</p>
+                                            <p>Expires: January 12, 2026</p>
+                                            <p>ID: CERT-LCO-2024-007</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-orange-200 bg-orange-50 rounded-lg p-4">
+                                        <div class="flex items-start justify-between">
+                                            <div class="certification-badge bg-orange-500 w-16 h-16 text-sm">
+                                                <i class="fas fa-dollar-sign"></i>
+                                            </div>
+                                            <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Renewal Due</span>
+                                        </div>
+                                        <h4 class="font-medium text-gray-900 mt-3">Financial Management Professional</h4>
+                                        <p class="text-sm text-gray-600">ANSI/ISO-17024 Certified</p>
+                                        <div class="mt-2 text-xs text-gray-500">
+                                            <p>Issued: October 5, 2022</p>
+                                            <p>Expires: October 5, 2024</p>
+                                            <p>ID: CERT-FMP-2022-023</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Certification Progress -->
+                    <div>
+                        <div class="bg-white rounded-lg shadow">
+                            <div class="p-6 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Next Certification</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="text-center mb-4">
+                                    <div class="certification-badge bg-indigo-500 mx-auto mb-3">
+                                        <i class="fas fa-laptop-code"></i>
+                                    </div>
+                                    <h4 class="font-medium text-gray-900">Digital Government Specialist</h4>
+                                    <p class="text-sm text-gray-600">Technology Management Focus</p>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <div class="flex items-center text-sm">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        <span>Prerequisites Complete</span>
+                                    </div>
+                                    <div class="flex items-center text-sm">
+                                        <i class="fas fa-clock text-orange-500 mr-2"></i>
+                                        <span>Assessment Pending</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-400">
+                                        <i class="fas fa-circle mr-2"></i>
+                                        <span>Practical Demonstration</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-400">
+                                        <i class="fas fa-circle mr-2"></i>
+                                        <span>Certification Review</span>
+                                    </div>
+                                </div>
+                                
+                                <button class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                                    Start Assessment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Paths Tab -->
+            <div id="learning-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recommended Learning Paths -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Recommended Learning Paths</h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-medium text-gray-900">Advanced Digital Government</h4>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">High Priority</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Comprehensive program covering cybersecurity, data governance, and digital service delivery.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>12 hours
+                                        <i class="fas fa-book ml-3 mr-1"></i>6 modules
+                                    </div>
+                                    <button class="text-blue-600 text-sm font-medium hover:text-blue-800">Enroll</button>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-medium text-gray-900">Ethics in Public Service</h4>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Medium Priority</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Advanced ethical decision-making, conflict resolution, and transparency best practices.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>8 hours
+                                        <i class="fas fa-book ml-3 mr-1"></i>4 modules
+                                    </div>
+                                    <button class="text-blue-600 text-sm font-medium hover:text-blue-800">Enroll</button>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-medium text-gray-900">Emergency Response Leadership</h4>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Low Priority</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Crisis management, incident command systems, and community coordination strategies.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>16 hours
+                                        <i class="fas fa-book ml-3 mr-1"></i>8 modules
+                                    </div>
+                                    <button class="text-blue-600 text-sm font-medium hover:text-blue-800">Enroll</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Courses -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Current Courses</h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="border border-blue-200 bg-blue-50 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-2">Government Data Privacy</h4>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-gray-600">Progress</span>
+                                    <span class="text-sm font-medium text-blue-600">78%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 78%"></div>
+                                </div>
+                                <div class="flex justify-between items-center mt-3">
+                                    <span class="text-xs text-gray-500">Due: November 30, 2024</span>
+                                    <button class="text-blue-600 text-sm font-medium hover:text-blue-800">Continue</button>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-green-200 bg-green-50 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-2">Public Financial Management</h4>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-gray-600">Progress</span>
+                                    <span class="text-sm font-medium text-green-600">94%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: 94%"></div>
+                                </div>
+                                <div class="flex justify-between items-center mt-3">
+                                    <span class="text-xs text-gray-500">Due: December 15, 2024</span>
+                                    <button class="text-green-600 text-sm font-medium hover:text-green-800">Finish</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Performance Analytics -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Performance Analytics</h3>
+                        </div>
+                        <div class="p-6">
+                            <canvas id="performanceChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Competency Trends -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Competency Development</h3>
+                        </div>
+                        <div class="p-6">
+                            <canvas id="competencyChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analytics -->
+                <div class="mt-6 bg-white rounded-lg shadow">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Learning Analytics Report</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-600">92.3%</div>
+                                <div class="text-sm text-gray-600">Average Assessment Score</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-green-600">18.5</div>
+                                <div class="text-sm text-gray-600">Hours This Quarter</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-600">5.2</div>
+                                <div class="text-sm text-gray-600">Competency Improvement</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessment Modal -->
+    <div id="assessment-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Assessment Information</h3>
+                    <button onclick="closeAssessmentModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6" id="modal-content">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                
+                // Update active tab button
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('border-blue-500', 'text-blue-600');
+                    b.classList.add('border-transparent', 'text-gray-500');
+                });
+                btn.classList.add('border-blue-500', 'text-blue-600');
+                btn.classList.remove('border-transparent', 'text-gray-500');
+                
+                // Show/hide tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(tabName + '-tab').classList.remove('hidden');
+                
+                // Initialize charts if analytics tab
+                if (tabName === 'analytics') {
+                    initializeCharts();
+                }
+            });
+        });
+
+        // Assessment functionality
+        function startAssessment(assessmentId) {
+            const assessments = {
+                'ASSESS-001': {
+                    title: 'Government Ethics Professional',
+                    description: 'This comprehensive assessment evaluates your understanding of government ethics principles, conflict of interest policies, and public trust responsibilities.',
+                    duration: '45 minutes',
+                    questions: 25,
+                    security: 'High Security - Proctored',
+                    passing: '80%'
+                },
+                'ASSESS-002': {
+                    title: 'Digital Government Technologies',
+                    description: 'Assessment covering digital transformation initiatives, cybersecurity frameworks, and technology policy implementation in government settings.',
+                    duration: '60 minutes',
+                    questions: 30,
+                    security: 'Standard Security',
+                    passing: '75%'
+                },
+                'ASSESS-003': {
+                    title: 'Emergency Management Protocols',
+                    description: 'Critical assessment of emergency response procedures, crisis communication strategies, and disaster recovery protocols.',
+                    duration: '90 minutes',
+                    questions: 40,
+                    security: 'Proctored - Identity Verification Required',
+                    passing: '85%'
+                }
+            };
+
+            const assessment = assessments[assessmentId];
+            if (!assessment) return;
+
+            document.getElementById('modal-title').textContent = assessment.title;
+            document.getElementById('modal-content').innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 class="font-medium text-blue-800 mb-2">Assessment Overview</h4>
+                        <p class="text-blue-700">${assessment.description}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <span class="text-sm font-medium text-gray-700">Duration:</span>
+                            <p class="text-sm text-gray-600">${assessment.duration}</p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-700">Questions:</span>
+                            <p class="text-sm text-gray-600">${assessment.questions}</p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-700">Security Level:</span>
+                            <p class="text-sm text-gray-600">${assessment.security}</p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-700">Passing Score:</span>
+                            <p class="text-sm text-gray-600">${assessment.passing}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <h4 class="font-medium text-yellow-800 mb-2">Important Notes</h4>
+                        <ul class="text-yellow-700 text-sm space-y-1">
+                            <li>• Assessment must be completed in one session</li>
+                            <li>• No external resources permitted</li>
+                            <li>• All responses are automatically saved</li>
+                            <li>• Results available immediately upon completion</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="beginAssessment('${assessmentId}')" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                            Begin Assessment
+                        </button>
+                        <button onclick="closeAssessmentModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('assessment-modal').classList.remove('hidden');
+            document.getElementById('assessment-modal').classList.add('flex');
+        }
+
+        function closeAssessmentModal() {
+            document.getElementById('assessment-modal').classList.add('hidden');
+            document.getElementById('assessment-modal').classList.remove('flex');
+        }
+
+        function beginAssessment(assessmentId) {
+            alert(`Starting assessment ${assessmentId}. In a real implementation, this would redirect to the secure assessment interface.`);
+            closeAssessmentModal();
+        }
+
+        // Charts initialization
+        function initializeCharts() {
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Assessment Scores',
+                        data: [82, 85, 89, 87, 92, 94],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Competency Chart
+            const competencyCtx = document.getElementById('competencyChart').getContext('2d');
+            new Chart(competencyCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Ethics', 'Admin', 'Legal', 'Tech', 'Finance'],
+                    datasets: [{
+                        label: 'Current Level',
+                        data: [92, 87, 89, 74, 81],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/terra-university-sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(registrationError => console.log('SW registration failed'));
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate competency meters
+            setTimeout(() => {
+                document.querySelectorAll('.competency-fill').forEach(fill => {
+                    fill.style.width = '0%';
+                    setTimeout(() => {
+                        fill.style.width = fill.style.width;
+                    }, 100);
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>

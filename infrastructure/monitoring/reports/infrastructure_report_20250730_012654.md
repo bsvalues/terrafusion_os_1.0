@@ -1,7 +1,6 @@
 # Infrastructure Monitoring Report
 
-Generated: 2025-07-30T01:26:54.229506
-Status: stopped
+Generated: 2025-07-30T01:26:54.229506 Status: stopped
 
 ## Active Monitoring Bots
 

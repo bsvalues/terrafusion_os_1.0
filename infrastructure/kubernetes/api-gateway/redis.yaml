@@ -10,7 +10,7 @@ data:
     # Network
     bind 0.0.0.0
     protected-mode yes
-    port 6379
+    port \${{TF_REDIS_PORT:-6379}}
     tcp-backlog 511
     timeout 0
     tcp-keepalive 300
@@ -204,7 +204,7 @@ spec:
               name: redis-password
               key: password
         - name: REDIS_ADDR
-          value: "redis://localhost:6379"
+          value: "redis://localhost:\${{TF_REDIS_PORT:-6379}}"
         resources:
           requests:
             cpu: 10m
@@ -306,10 +306,10 @@ metadata:
   namespace: kong
 data:
   sentinel.conf: |
-    port 26379
+    port \${{TF_REDIS_PORT:-6379}}
     bind 0.0.0.0
     sentinel announce-ip $POD_IP
-    sentinel announce-port 26379
+    sentinel announce-port \${{TF_REDIS_PORT:-6379}}
     sentinel monitor mymaster redis.kong.svc.cluster.local 6379 2
     sentinel auth-pass mymaster ${REDIS_PASSWORD}
     sentinel down-after-milliseconds mymaster 5000

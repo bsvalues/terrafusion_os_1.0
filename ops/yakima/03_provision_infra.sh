@@ -52,7 +52,7 @@ services:
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_started }
-    ports: ["\${YAKIMA_API_PORT}:8080"]
+    ports: ["\${YAKIMA_API_PORT}:${TF_STATIC_PORT:-8080}"]
     networks: [ \${TF_NETWORK} ]
 
   ui:
@@ -65,7 +65,7 @@ services:
       NEXT_PUBLIC_YAKIMA_FLAGSHIP: "true"
     depends_on:
       core: { condition: service_started }
-    ports: ["\${YAKIMA_DEMO_PORT}:3000"]
+    ports: ["\${YAKIMA_DEMO_PORT}:${TF_FRONTEND_PORT:-3102}"]
     networks: [ \${TF_NETWORK} ]
 
   prometheus:
@@ -79,7 +79,7 @@ services:
   grafana:
     image: grafana/grafana-oss:latest
     container_name: yakima-grafana-flagship
-    ports: ["\${YAKIMA_GRAFANA_PORT}:3000"]
+    ports: ["\${YAKIMA_GRAFANA_PORT}:${TF_FRONTEND_PORT:-3102}"]
     networks: [ \${TF_NETWORK} ]
     volumes:
       - yakima_grafana_data:/var/lib/grafana
@@ -105,10 +105,10 @@ global:
 scrape_configs:
   - job_name: 'yakima-core'
     static_configs:
-      - targets: ['core:8080']
+      - targets: ['core:${TF_STATIC_PORT:-8080}']
   - job_name: 'yakima-ui'
     static_configs:
-      - targets: ['ui:3000']
+      - targets: ['ui:${TF_FRONTEND_PORT:-3102}']
 PROM
 
 export COMPOSE_PROJECT_NAME=terrafusion_yakima_flagship

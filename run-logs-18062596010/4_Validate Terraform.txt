@@ -1,0 +1,196 @@
+﻿2025-09-27T17:08:27.9795510Z Current runner version: '2.328.0'
+2025-09-27T17:08:27.9820399Z ##[group]Runner Image Provisioner
+2025-09-27T17:08:27.9821239Z Hosted Compute Agent
+2025-09-27T17:08:27.9821756Z Version: 20250912.392
+2025-09-27T17:08:27.9822397Z Commit: d921fda672a98b64f4f82364647e2f10b2267d0b
+2025-09-27T17:08:27.9823093Z Build Date: 2025-09-12T15:23:14Z
+2025-09-27T17:08:27.9823683Z ##[endgroup]
+2025-09-27T17:08:27.9824157Z ##[group]Operating System
+2025-09-27T17:08:27.9824796Z Ubuntu
+2025-09-27T17:08:27.9825245Z 24.04.3
+2025-09-27T17:08:27.9825928Z LTS
+2025-09-27T17:08:27.9826509Z ##[endgroup]
+2025-09-27T17:08:27.9826966Z ##[group]Runner Image
+2025-09-27T17:08:27.9827491Z Image: ubuntu-24.04
+2025-09-27T17:08:27.9828030Z Version: 20250922.53.1
+2025-09-27T17:08:27.9829386Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250922.53/images/ubuntu/Ubuntu2404-Readme.md
+2025-09-27T17:08:27.9830995Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250922.53
+2025-09-27T17:08:27.9831988Z ##[endgroup]
+2025-09-27T17:08:27.9833090Z ##[group]GITHUB_TOKEN Permissions
+2025-09-27T17:08:27.9835161Z Contents: read
+2025-09-27T17:08:27.9835953Z Metadata: read
+2025-09-27T17:08:27.9836505Z Packages: read
+2025-09-27T17:08:27.9837363Z ##[endgroup]
+2025-09-27T17:08:27.9840159Z Secret source: Actions
+2025-09-27T17:08:27.9841009Z Prepare workflow directory
+2025-09-27T17:08:28.0261073Z Prepare all required actions
+2025-09-27T17:08:28.0301574Z Getting action download info
+2025-09-27T17:08:28.4903046Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+2025-09-27T17:08:28.6529524Z Download action repository 'hashicorp/setup-terraform@v3' (SHA:b9cd54a3c349d3f38e8881555d616ced269862dd)
+2025-09-27T17:08:29.1869863Z Download action repository 'aws-actions/configure-aws-credentials@v4' (SHA:7474bc4690e29a8392af63c5b98e7449536d5c3a)
+2025-09-27T17:08:29.7844484Z Complete job name: Validate Terraform
+2025-09-27T17:08:29.8547351Z ##[group]Run actions/checkout@v4
+2025-09-27T17:08:29.8548112Z with:
+2025-09-27T17:08:29.8548489Z   repository: bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:29.8549163Z   token: ***
+2025-09-27T17:08:29.8549481Z   ssh-strict: true
+2025-09-27T17:08:29.8549812Z   ssh-user: git
+2025-09-27T17:08:29.8550139Z   persist-credentials: true
+2025-09-27T17:08:29.8550502Z   clean: true
+2025-09-27T17:08:29.8550836Z   sparse-checkout-cone-mode: true
+2025-09-27T17:08:29.8551224Z   fetch-depth: 1
+2025-09-27T17:08:29.8551539Z   fetch-tags: false
+2025-09-27T17:08:29.8551886Z   show-progress: true
+2025-09-27T17:08:29.8552230Z   lfs: false
+2025-09-27T17:08:29.8552547Z   submodules: false
+2025-09-27T17:08:29.8552877Z   set-safe-directory: true
+2025-09-27T17:08:29.8553449Z env:
+2025-09-27T17:08:29.8553755Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:29.8554088Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:29.8554454Z   TF_VAR_environment: production
+2025-09-27T17:08:29.8554816Z ##[endgroup]
+2025-09-27T17:08:29.9697188Z Syncing repository: bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:29.9699234Z ##[group]Getting Git version info
+2025-09-27T17:08:29.9699884Z Working directory is '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+2025-09-27T17:08:29.9700872Z [command]/usr/bin/git version
+2025-09-27T17:08:29.9792979Z git version 2.51.0
+2025-09-27T17:08:29.9820172Z ##[endgroup]
+2025-09-27T17:08:29.9834648Z Temporarily overriding HOME='/home/runner/work/_temp/278d4e9f-85ca-49f4-8b95-8dbd862dbe39' before making global git config changes
+2025-09-27T17:08:29.9835933Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-27T17:08:29.9840932Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T17:08:29.9881343Z Deleting the contents of '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+2025-09-27T17:08:29.9885083Z ##[group]Initializing the repository
+2025-09-27T17:08:29.9889640Z [command]/usr/bin/git init /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T17:08:30.0075630Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-09-27T17:08:30.0077421Z hint: is subject to change. To configure the initial branch name to use in all
+2025-09-27T17:08:30.0078639Z hint: of your new repositories, which will suppress this warning, call:
+2025-09-27T17:08:30.0079649Z hint:
+2025-09-27T17:08:30.0080493Z hint: 	git config --global init.defaultBranch <name>
+2025-09-27T17:08:30.0081323Z hint:
+2025-09-27T17:08:30.0082062Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-09-27T17:08:30.0083129Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-09-27T17:08:30.0083689Z hint:
+2025-09-27T17:08:30.0084040Z hint: 	git branch -m <name>
+2025-09-27T17:08:30.0084423Z hint:
+2025-09-27T17:08:30.0084908Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-09-27T17:08:30.0086017Z Initialized empty Git repository in /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0/.git/
+2025-09-27T17:08:30.0094209Z [command]/usr/bin/git remote add origin https://github.com/bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:30.0138010Z ##[endgroup]
+2025-09-27T17:08:30.0138679Z ##[group]Disabling automatic garbage collection
+2025-09-27T17:08:30.0142635Z [command]/usr/bin/git config --local gc.auto 0
+2025-09-27T17:08:30.0172870Z ##[endgroup]
+2025-09-27T17:08:30.0173484Z ##[group]Setting up auth
+2025-09-27T17:08:30.0180478Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-27T17:08:30.0212457Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-27T17:08:30.0602201Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-09-27T17:08:30.0640756Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-09-27T17:08:30.0913674Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-09-27T17:08:30.0952044Z ##[endgroup]
+2025-09-27T17:08:30.0953167Z ##[group]Fetching the repository
+2025-09-27T17:08:30.0961618Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e7d13e9abe73a043c7d18956601c356c78ad1354:refs/remotes/pull/1/merge
+2025-09-27T17:08:34.3381574Z From https://github.com/bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:34.3383223Z  * [new ref]         e7d13e9abe73a043c7d18956601c356c78ad1354 -> pull/1/merge
+2025-09-27T17:08:34.3413584Z ##[endgroup]
+2025-09-27T17:08:34.3414026Z ##[group]Determining the checkout info
+2025-09-27T17:08:34.3416015Z ##[endgroup]
+2025-09-27T17:08:34.3420745Z [command]/usr/bin/git sparse-checkout disable
+2025-09-27T17:08:34.3460731Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-09-27T17:08:34.3488784Z ##[group]Checking out the ref
+2025-09-27T17:08:34.3492962Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1/merge
+2025-09-27T17:08:35.4156612Z Updating files:  61% (11510/18790)
+2025-09-27T17:08:35.4259637Z Updating files:  62% (11650/18790)
+2025-09-27T17:08:35.4386414Z Updating files:  63% (11838/18790)
+2025-09-27T17:08:35.4498266Z Updating files:  64% (12026/18790)
+2025-09-27T17:08:35.4616921Z Updating files:  65% (12214/18790)
+2025-09-27T17:08:35.4699240Z Updating files:  66% (12402/18790)
+2025-09-27T17:08:35.4804856Z Updating files:  67% (12590/18790)
+2025-09-27T17:08:35.4996277Z Updating files:  68% (12778/18790)
+2025-09-27T17:08:35.5124520Z Updating files:  69% (12966/18790)
+2025-09-27T17:08:35.5254962Z Updating files:  70% (13153/18790)
+2025-09-27T17:08:35.5361452Z Updating files:  71% (13341/18790)
+2025-09-27T17:08:35.5492026Z Updating files:  72% (13529/18790)
+2025-09-27T17:08:35.5650463Z Updating files:  73% (13717/18790)
+2025-09-27T17:08:35.5794588Z Updating files:  74% (13905/18790)
+2025-09-27T17:08:35.5892246Z Updating files:  75% (14093/18790)
+2025-09-27T17:08:35.6049786Z Updating files:  76% (14281/18790)
+2025-09-27T17:08:35.6134717Z Updating files:  77% (14469/18790)
+2025-09-27T17:08:35.6216560Z Updating files:  78% (14657/18790)
+2025-09-27T17:08:35.6710081Z Updating files:  79% (14845/18790)
+2025-09-27T17:08:35.6813187Z Updating files:  80% (15032/18790)
+2025-09-27T17:08:35.6891370Z Updating files:  81% (15220/18790)
+2025-09-27T17:08:35.6987508Z Updating files:  82% (15408/18790)
+2025-09-27T17:08:35.7125945Z Updating files:  83% (15596/18790)
+2025-09-27T17:08:35.7288766Z Updating files:  84% (15784/18790)
+2025-09-27T17:08:35.7392937Z Updating files:  85% (15972/18790)
+2025-09-27T17:08:35.7566268Z Updating files:  86% (16160/18790)
+2025-09-27T17:08:35.7742939Z Updating files:  87% (16348/18790)
+2025-09-27T17:08:35.7888874Z Updating files:  88% (16536/18790)
+2025-09-27T17:08:35.8018350Z Updating files:  89% (16724/18790)
+2025-09-27T17:08:35.8165946Z Updating files:  90% (16911/18790)
+2025-09-27T17:08:35.8326670Z Updating files:  91% (17099/18790)
+2025-09-27T17:08:35.8444237Z Updating files:  92% (17287/18790)
+2025-09-27T17:08:35.8608666Z Updating files:  93% (17475/18790)
+2025-09-27T17:08:35.8774522Z Updating files:  94% (17663/18790)
+2025-09-27T17:08:35.8991211Z Updating files:  95% (17851/18790)
+2025-09-27T17:08:35.9105966Z Updating files:  96% (18039/18790)
+2025-09-27T17:08:35.9287648Z Updating files:  97% (18227/18790)
+2025-09-27T17:08:35.9416460Z Updating files:  98% (18415/18790)
+2025-09-27T17:08:35.9549430Z Updating files:  99% (18603/18790)
+2025-09-27T17:08:35.9550057Z Updating files: 100% (18790/18790)
+2025-09-27T17:08:35.9550810Z Updating files: 100% (18790/18790), done.
+2025-09-27T17:08:35.9774539Z Note: switching to 'refs/remotes/pull/1/merge'.
+2025-09-27T17:08:35.9774984Z 
+2025-09-27T17:08:35.9775919Z You are in 'detached HEAD' state. You can look around, make experimental
+2025-09-27T17:08:35.9776995Z changes and commit them, and you can discard any commits you make in this
+2025-09-27T17:08:35.9777784Z state without impacting any branches by switching back to a branch.
+2025-09-27T17:08:35.9778326Z 
+2025-09-27T17:08:35.9778641Z If you want to create a new branch to retain commits you create, you may
+2025-09-27T17:08:35.9779542Z do so (now or later) by using -c with the switch command. Example:
+2025-09-27T17:08:35.9779966Z 
+2025-09-27T17:08:35.9780158Z   git switch -c <new-branch-name>
+2025-09-27T17:08:35.9780504Z 
+2025-09-27T17:08:35.9780686Z Or undo this operation with:
+2025-09-27T17:08:35.9780945Z 
+2025-09-27T17:08:35.9781354Z   git switch -
+2025-09-27T17:08:35.9781573Z 
+2025-09-27T17:08:35.9781974Z Turn off this advice by setting config variable advice.detachedHead to false
+2025-09-27T17:08:35.9782482Z 
+2025-09-27T17:08:35.9783072Z HEAD is now at e7d13e9 Merge 4157581266391becfc401509c4be79567996f403 into 68c8b3a5a3b09a7f227bfbf9fcabbf1f9f497fb8
+2025-09-27T17:08:35.9818958Z ##[endgroup]
+2025-09-27T17:08:35.9866187Z [command]/usr/bin/git log -1 --format=%H
+2025-09-27T17:08:35.9891093Z e7d13e9abe73a043c7d18956601c356c78ad1354
+2025-09-27T17:08:36.0093459Z ##[group]Run hashicorp/setup-terraform@v3
+2025-09-27T17:08:36.0093919Z with:
+2025-09-27T17:08:36.0094232Z   terraform_version: 1.5.0
+2025-09-27T17:08:36.0094551Z   cli_config_credentials_hostname: app.terraform.io
+2025-09-27T17:08:36.0095009Z   terraform_wrapper: true
+2025-09-27T17:08:36.0095278Z env:
+2025-09-27T17:08:36.0095818Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:36.0096050Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:36.0096444Z   TF_VAR_environment: production
+2025-09-27T17:08:36.0096720Z ##[endgroup]
+2025-09-27T17:08:36.3886476Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/72e76cd9-6368-408a-9677-94bf657737e3
+2025-09-27T17:08:36.8845010Z ##[group]Run aws-actions/configure-aws-credentials@v4
+2025-09-27T17:08:36.8845542Z with:
+2025-09-27T17:08:36.8845757Z   aws-region: us-east-1
+2025-09-27T17:08:36.8845989Z   audience: sts.amazonaws.com
+2025-09-27T17:08:36.8846424Z   output-env-credentials: true
+2025-09-27T17:08:36.8846658Z env:
+2025-09-27T17:08:36.8846813Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:36.8847008Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:36.8847248Z   TF_VAR_environment: production
+2025-09-27T17:08:36.8847660Z   TERRAFORM_CLI_PATH: /home/runner/work/_temp/a25c58f6-236a-43b6-9c34-c74407a2dd19
+2025-09-27T17:08:36.8848081Z ##[endgroup]
+2025-09-27T17:08:37.0269087Z ##[error]Credentials could not be loaded, please check your action inputs: Could not load credentials from any providers
+2025-09-27T17:08:37.0394890Z Post job cleanup.
+2025-09-27T17:08:37.1677421Z Post job cleanup.
+2025-09-27T17:08:37.2613348Z [command]/usr/bin/git version
+2025-09-27T17:08:37.2656382Z git version 2.51.0
+2025-09-27T17:08:37.2701258Z Temporarily overriding HOME='/home/runner/work/_temp/dfda5241-de81-4a9c-8d8c-045d7dfd2640' before making global git config changes
+2025-09-27T17:08:37.2702560Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-27T17:08:37.2708318Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T17:08:37.2747143Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-27T17:08:37.2781851Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-27T17:08:37.3040511Z fatal: No url found for submodule path 'docs/src-tauri/TerraFusion_Hybrid_Championship' in .gitmodules
+2025-09-27T17:08:37.3073870Z ##[warning]The process '/usr/bin/git' failed with exit code 128
+2025-09-27T17:08:37.3159827Z Cleaning up orphan processes

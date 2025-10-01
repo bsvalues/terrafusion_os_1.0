@@ -1,0 +1,64 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sunday
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-deps:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Check for outdated packages
+      id: outdated
+      run: |
+        npm outdated || true
+        echo "outdated=$(npm outdated --json | jq -r 'to_entries | map(.key) | join(",")')" >> $GITHUB_OUTPUT
+
+    - name: Update dependencies
+      if: steps.outdated.outputs.outdated != ''
+      run: |
+        npm update
+        npm audit fix
+
+    - name: Create Pull Request
+      if: steps.outdated.outputs.outdated != ''
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore(deps): update dependencies'
+        title: 'chore(deps): update dependencies'
+        body: |
+          Automated dependency updates:
+          
+          Updated packages:
+          ${{ steps.outdated.outputs.outdated }}
+          
+          This PR was automatically created by the dependency update workflow.
+        branch: dependency-updates
+        base: develop
+        labels: |
+          dependencies
+          automated pr
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

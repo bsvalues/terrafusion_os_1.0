@@ -13,8 +13,8 @@ EDGE_DB="${EDGE_DB:-terrafusion_edge}"
 EDGE_USER="${DB_USER:-tfedge}"
 EDGE_PASS="${DB_PASS:-$(generate_password)}"
 K3S_VERSION="${K3S_VERSION:-v1.27.3+k3s1}"
-EDGE_REGISTRY="${EDGE_REGISTRY:-localhost:5000}"
-MQTT_BROKER="${MQTT_BROKER:-tcp://localhost:1883}"
+EDGE_REGISTRY="${EDGE_REGISTRY:-localhost:${TF_STATIC_PORT:-8080}}"
+MQTT_BROKER="${MQTT_BROKER:-tcp://localhost:${TF_STATIC_PORT:-8080}}"
 
 # Initialize database
 init_edge_database() {

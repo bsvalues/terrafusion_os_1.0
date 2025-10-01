@@ -427,7 +427,7 @@ services:
     environment:
       - COUNTY_NAME=$COUNTY_NAME
       - COUNTY_ID=$COUNTY_DIR
-      - API_BASE_URL=http://api-gateway-$COUNTY_DIR:8080
+      - API_BASE_URL=http://api-gateway-$COUNTY_DIR:${TF_STATIC_PORT:-8080}
     networks:
       - ${COUNTY_DIR}_isolated_network
     volumes:

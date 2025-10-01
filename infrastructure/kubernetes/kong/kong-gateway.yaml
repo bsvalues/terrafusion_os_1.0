@@ -1,0 +1,297 @@
+# TerraFusion OS - Kong API Gateway Configuration
+# Government. Transcended.
+# High-performance API gateway for government services
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong-system
+  labels:
+    name: kong-system
+    government: "true"
+    compliance: "fisma"
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+
+---
+# Kong Gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-gateway
+  namespace: kong-system
+  labels:
+    app: kong-gateway
+    component: api-gateway
+    government: "true"
+    compliance: "fisma"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: kong-gateway
+  template:
+    metadata:
+      labels:
+        app: kong-gateway
+        government: "true"
+        compliance: "fisma"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8100"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Government security requirements
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      
+      # Service account for RBAC
+      serviceAccountName: kong-gateway
+      
+      # Node selection for government infrastructure
+      nodeSelector:
+        kubernetes.io/os: linux
+      
+      tolerations:
+      - key: government-workload
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+      
+      containers:
+      - name: kong
+        image: kong:3.4.2-alpine
+        imagePullPolicy: IfNotPresent
+        
+        # Government security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65534
+          capabilities:
+            drop:
+            - ALL
+        
+        # Environment configuration for TerraFusion
+        env:
+        - name: KONG_DATABASE
+          value: "off"
+        - name: KONG_DECLARATIVE_CONFIG
+          value: "/kong/declarative/kong.yml"
+        - name: KONG_PROXY_ACCESS_LOG
+          value: "/dev/stdout"
+        - name: KONG_ADMIN_ACCESS_LOG
+          value: "/dev/stdout"
+        - name: KONG_PROXY_ERROR_LOG
+          value: "/dev/stderr"
+        - name: KONG_ADMIN_ERROR_LOG
+          value: "/dev/stderr"
+        - name: KONG_ADMIN_LISTEN
+          value: "0.0.0.0:8001"
+        - name: KONG_PROXY_LISTEN
+          value: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
+        - name: KONG_STATUS_LISTEN
+          value: "0.0.0.0:8100"
+        - name: KONG_LOG_LEVEL
+          value: "info"
+        - name: KONG_PLUGINS
+          value: "bundled,prometheus,rate-limiting,jwt,cors,request-transformer,response-transformer"
+        - name: KONG_NGINX_WORKER_PROCESSES
+          value: "auto"
+        - name: KONG_NGINX_WORKER_CONNECTIONS
+          value: "4096"
+        - name: KONG_MEM_CACHE_SIZE
+          value: "128m"
+        
+        # Government performance requirements
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        
+        # Health checks for government reliability
+        livenessProbe:
+          httpGet:
+            path: /status
+            port: 8100
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /status/ready
+            port: 8100
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        # Port configuration
+        ports:
+        - containerPort: 8000
+          name: proxy
+          protocol: TCP
+        - containerPort: 8443
+          name: proxy-tls
+          protocol: TCP
+        - containerPort: 8001
+          name: admin
+          protocol: TCP
+        - containerPort: 8100
+          name: metrics
+          protocol: TCP
+        
+        # Volume mounts for configuration
+        volumeMounts:
+        - name: kong-config
+          mountPath: /kong/declarative
+          readOnly: true
+        - name: kong-tmp
+          mountPath: /tmp
+        - name: kong-prefix
+          mountPath: /kong_prefix
+      
+      volumes:
+      - name: kong-config
+        configMap:
+          name: kong-declarative-config
+      - name: kong-tmp
+        emptyDir: {}
+      - name: kong-prefix
+        emptyDir: {}
+
+---
+# Kong Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kong-gateway
+  namespace: kong-system
+  labels:
+    app: kong-gateway
+    government: "true"
+    compliance: "fisma"
+
+---
+# Kong Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-gateway
+  namespace: kong-system
+  labels:
+    app: kong-gateway
+    component: api-gateway
+    government: "true"
+    compliance: "fisma"
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: proxy
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: proxy-tls
+    port: 443
+    targetPort: 8443
+    protocol: TCP
+  selector:
+    app: kong-gateway
+
+---
+# Kong Admin Service (Internal Only)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-admin
+  namespace: kong-system
+  labels:
+    app: kong-gateway
+    component: admin
+    government: "true"
+    compliance: "fisma"
+spec:
+  type: ClusterIP
+  ports:
+  - name: admin
+    port: 8001
+    targetPort: 8001
+    protocol: TCP
+  - name: metrics
+    port: 8100
+    targetPort: 8100
+    protocol: TCP
+  selector:
+    app: kong-gateway
+
+---
+# Network Policy for Government Security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kong-network-policy
+  namespace: kong-system
+  labels:
+    app: kong-gateway
+    government: "true"
+    compliance: "fisma"
+spec:
+  podSelector:
+    matchLabels:
+      app: kong-gateway
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 8000
+    - protocol: TCP
+      port: 8443
+    - protocol: TCP
+      port: 8001
+    - protocol: TCP
+      port: 8100
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    ports:
+    - protocol: TCP
+      port: 5000  # TerraFusion API
+    - protocol: TCP
+      port: 3000  # TerraFusion Frontend
+  - to: []  # DNS
+    ports:
+    - protocol: UDP
+      port: 53

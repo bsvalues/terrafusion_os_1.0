@@ -12,9 +12,9 @@ source "${SCRIPT_DIR}/common-functions.sh"
 TRACE_DB="${TRACE_DB:-terrafusion_traces}"
 TRACE_USER="${DB_USER:-tftraces}"
 TRACE_PASS="${DB_PASS:-$(generate_password)}"
-JAEGER_ENDPOINT="${JAEGER_ENDPOINT:-http://localhost:16686}"
-OTEL_COLLECTOR_ENDPOINT="${OTEL_COLLECTOR_ENDPOINT:-localhost:4317}"
-TEMPO_ENDPOINT="${TEMPO_ENDPOINT:-http://localhost:3200}"
+JAEGER_ENDPOINT="${JAEGER_ENDPOINT:-http://localhost:\${{TF_PORT_4317:-4317}}}"
+OTEL_COLLECTOR_ENDPOINT="${OTEL_COLLECTOR_ENDPOINT:-localhost:\${{TF_PORT_4317:-4317}}}"
+TEMPO_ENDPOINT="${TEMPO_ENDPOINT:-http://localhost:\${{TF_PORT_4317:-4317}}}"
 TRACE_SAMPLING_RATE="${TRACE_SAMPLING_RATE:-0.1}"
 TRACE_RETENTION_DAYS="${TRACE_RETENTION_DAYS:-30}"
 
@@ -166,9 +166,9 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:4317
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
       http:
-        endpoint: 0.0.0.0:4318
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
   
   prometheus:
     config:
@@ -176,7 +176,7 @@ receivers:
         - job_name: 'otel-collector'
           scrape_interval: 10s
           static_configs:
-            - targets: ['localhost:8888']
+            - targets: ['localhost:\${{TF_PORT_4317:-4317}}']
 
 processors:
   batch:
@@ -220,20 +220,20 @@ exporters:
       insecure: true
       
   prometheus:
-    endpoint: "0.0.0.0:8889"
+    endpoint: "0.0.0.0:\${{TF_PORT_4317:-4317}}"
     
   otlphttp/metrics:
     endpoint: http://prometheus:9090/api/v1/write
 
 extensions:
   health_check:
-    endpoint: 0.0.0.0:13133
+    endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
     
   pprof:
-    endpoint: 0.0.0.0:1777
+    endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
     
   zpages:
-    endpoint: 0.0.0.0:55679
+    endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
 
 service:
   extensions: [health_check, pprof, zpages]
@@ -316,7 +316,7 @@ distributor:
     otlp:
       protocols:
         grpc:
-          endpoint: 0.0.0.0:4317
+          endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
 
 ingester:
   trace_idle_period: 10s
@@ -370,11 +370,11 @@ const { OTLPMetricExporter } = require('@opentelemetry/exporter-metrics-otlp-grp
 const { PeriodicExportingMetricReader } = require('@opentelemetry/sdk-metrics');
 
 const traceExporter = new OTLPTraceExporter({
-  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4317',
+  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:\${{TF_PORT_4317:-4317}}',
 });
 
 const metricExporter = new OTLPMetricExporter({
-  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4317',
+  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:\${{TF_PORT_4317:-4317}}',
 });
 
 const sdk = new NodeSDK({
@@ -441,7 +441,7 @@ def init_telemetry(app=None):
     tracer_provider = trace.get_tracer_provider()
     
     otlp_exporter = OTLPSpanExporter(
-        endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317"),
+        endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:\${{TF_PORT_4317:-4317}}"),
         insecure=True,
     )
     
@@ -451,7 +451,7 @@ def init_telemetry(app=None):
     # Setup metrics
     metric_reader = PeriodicExportingMetricReader(
         exporter=OTLPMetricExporter(
-            endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317"),
+            endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:\${{TF_PORT_4317:-4317}}"),
             insecure=True,
         ),
         export_interval_millis=10000,
@@ -508,7 +508,7 @@ public class TelemetryConfig {
                 .put("deployment.environment", env.getProperty("environment", "production"))
                 .build()));
         
-        String endpoint = env.getProperty("otel.exporter.otlp.endpoint", "http://localhost:4317");
+        String endpoint = env.getProperty("otel.exporter.otlp.endpoint", "http://localhost:\${{TF_PORT_4317:-4317}}");
         
         // Configure trace exporter
         OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
@@ -591,7 +591,7 @@ func InitTelemetry(ctx context.Context, serviceName string) (func(), error) {
         return nil, fmt.Errorf("failed to create resource: %w", err)
     }
     
-    endpoint := getEnv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317")
+    endpoint := getEnv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:\${{TF_PORT_4317:-4317}}")
     
     // Setup trace exporter
     conn, err := grpc.DialContext(ctx, endpoint,

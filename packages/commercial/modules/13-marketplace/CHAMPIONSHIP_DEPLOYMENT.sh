@@ -191,7 +191,7 @@ server {
     
     # API routing
     location /api {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:\${{TF_FRONTEND_PORT:-3000}};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -240,7 +240,7 @@ services:
     volumes:
       - ./applications:/app
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     restart: unless-stopped
     networks:
       - terrafusion

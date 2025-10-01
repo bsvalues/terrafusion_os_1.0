@@ -1,0 +1,158 @@
+/* TerraFusion App - Clean Styles */
+/* Fixes formatting and functionality issues */
+
+.terrafusion-app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0b1020 0%, #1a2332 100%);
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+.tf-header {
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tf-header h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tf-header p {
+  font-size: 1.2rem;
+  color: #8b9dc3;
+  margin: 0;
+}
+
+.tf-main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tf-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.tf-status-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tf-status-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 153, 255, 0.2);
+}
+
+.tf-status-card h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #00ffee;
+}
+
+.tf-metric {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.tf-modules-section,
+.tf-benton-county {
+  margin-bottom: 3rem;
+}
+
+.tf-modules-section h2,
+.tf-benton-county h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #00ffee;
+  text-align: center;
+}
+
+.tf-modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.tf-module {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.tf-module:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tf-module h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  color: #00ffaa;
+}
+
+.tf-module p {
+  margin: 0;
+  color: #8b9dc3;
+  font-size: 0.9rem;
+}
+
+.tf-deployment-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.tf-status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.tf-ready {
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tf-header h1 {
+    font-size: 2rem;
+  }
+  
+  .tf-main {
+    padding: 1rem;
+  }
+  
+  .tf-status-grid,
+  .tf-modules-grid {
+    grid-template-columns: 1fr;
+  }
+}

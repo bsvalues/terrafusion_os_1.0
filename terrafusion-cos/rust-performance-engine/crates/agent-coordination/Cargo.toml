@@ -1,0 +1,24 @@
+[package]
+name = "agent-coordination"
+version = "1.0.0"
+edition = "2021"
+authors = ["TerraFusion cOS Team"]
+description = "Supreme Commander Claude AI Agent Coordination Engine"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+uuid = { version = "1", features = ["serde", "v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+dashmap = "5.4"
+parking_lot = "0.12"
+futures = "0.3"
+async-trait = "0.1"
+
+[lib]
+name = "agent_coordination"
+path = "src/lib.rs"

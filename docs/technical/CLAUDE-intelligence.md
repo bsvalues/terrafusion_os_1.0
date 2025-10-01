@@ -1,10 +1,12 @@
 # CLAUDE-intelligence.md
 
-Intelligence, analytics, and insights guidance for Terrafusion OS data-driven decision making and predictive capabilities.
+Intelligence, analytics, and insights guidance for Terrafusion OS data-driven
+decision making and predictive capabilities.
 
 ## Intelligence Architecture
 
 ### Analytics Framework
+
 - **Real-time Analytics**: Live data processing and insights
 - **Predictive Modeling**: Future state prediction and forecasting
 - **Business Intelligence**: Executive dashboards and KPIs
@@ -12,6 +14,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - **Performance Intelligence**: System optimization and efficiency metrics
 
 ### Data Intelligence Pipeline
+
 - **Data Collection**: Multi-source data aggregation
 - **Data Processing**: ETL pipelines and transformations
 - **Analytics Engine**: Real-time computation and analysis
@@ -21,6 +24,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Intelligence Commands
 
 ### Analytics Operations
+
 ```bash
 # County intelligence analysis
 ./scripts/county-intelligence-analysis.sh --county=benton --deep-dive
@@ -33,6 +37,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ```
 
 ### Predictive Analytics
+
 ```bash
 # Revenue forecasting
 ./scripts/revenue-forecast.sh --county=clark --horizon=12months
@@ -45,6 +50,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ```
 
 ### Performance Intelligence
+
 ```bash
 # System performance analytics
 ./scripts/ai-agent-efficiency-analysis.sh --performance-baseline=379M-improvement
@@ -59,6 +65,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Business Intelligence Dashboards
 
 ### Executive Dashboards
+
 ```bash
 # Executive dashboard deployment
 ./scripts/executive-dashboard.sh --kpis=revenue,efficiency,satisfaction --real-time
@@ -71,6 +78,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ```
 
 ### Real-Time Monitoring
+
 - Live system performance metrics
 - County operational dashboards
 - Revenue tracking and analysis
@@ -78,6 +86,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Resource utilization visualization
 
 ### Key Performance Indicators (KPIs)
+
 - Property assessment accuracy
 - Revenue optimization metrics
 - System efficiency indicators
@@ -87,6 +96,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Predictive Analytics Engine
 
 ### Forecasting Capabilities
+
 - Revenue prediction models
 - Property value forecasting
 - Market trend analysis
@@ -94,6 +104,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Performance optimization forecasting
 
 ### Machine Learning Models
+
 - Property valuation algorithms
 - Market analysis models
 - Risk assessment algorithms
@@ -101,6 +112,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Anomaly detection models
 
 ### Predictive Commands
+
 ```bash
 # Economic impact modeling
 ./scripts/economic-impact-modeling.sh --tax-policy-changes --regional-effects
@@ -115,6 +127,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## County Intelligence Operations
 
 ### County-Specific Analytics
+
 - Property market analysis
 - Tax revenue optimization
 - Demographic trend analysis
@@ -122,6 +135,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Service delivery optimization
 
 ### Multi-County Insights
+
 ```bash
 # Multi-county intelligence coordination
 ./scripts/multi-county-intelligence.sh --analysis=comparative --insights=best-practices
@@ -134,6 +148,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ```
 
 ### Intelligence Sharing
+
 - Best practice identification
 - Performance comparison
 - Resource optimization insights
@@ -143,6 +158,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Data Analytics Pipeline
 
 ### Big Data Processing
+
 ```bash
 # Large-scale data operations
 ./scripts/process-county-data.sh --size=100TB --method=distributed --ai-enhanced
@@ -155,6 +171,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ```
 
 ### Real-Time Analytics
+
 - Stream processing capabilities
 - Live data analysis
 - Instant insight generation
@@ -162,6 +179,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Dynamic dashboard updates
 
 ### Batch Analytics
+
 - Historical data analysis
 - Trend identification
 - Pattern recognition
@@ -171,6 +189,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Market Intelligence
 
 ### Property Market Analysis
+
 - Market trend identification
 - Comparative market analysis
 - Price prediction models
@@ -178,6 +197,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Investment opportunity analysis
 
 ### Economic Intelligence
+
 - Regional economic indicators
 - Tax base analysis
 - Revenue opportunity identification
@@ -185,6 +205,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Market condition monitoring
 
 ### Competitive Intelligence
+
 ```bash
 # Regional market comparison
 ./scripts/regional-market-comparison.sh --counties=competitive-set --metrics=comprehensive
@@ -196,6 +217,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Performance Intelligence
 
 ### System Performance Analytics
+
 - Application performance monitoring
 - Resource utilization analysis
 - Efficiency optimization insights
@@ -203,6 +225,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Performance trend analysis
 
 ### AI Performance Intelligence
+
 - Agent efficiency monitoring
 - Swarm coordination analysis
 - Learning curve tracking
@@ -210,6 +233,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Performance prediction modeling
 
 ### Operational Intelligence
+
 ```bash
 # Operational efficiency analysis
 ./scripts/operational-efficiency-analysis.sh --processes=all --optimization-opportunities
@@ -224,6 +248,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Advanced Analytics Features
 
 ### Natural Language Analytics
+
 - Document analysis and insights
 - Sentiment analysis for citizen feedback
 - Text mining for policy analysis
@@ -231,6 +256,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Natural language querying
 
 ### Geospatial Intelligence
+
 - Location-based analytics
 - Spatial pattern recognition
 - Geographic trend analysis
@@ -238,6 +264,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Location intelligence insights
 
 ### Time Series Analysis
+
 - Temporal pattern identification
 - Seasonal trend analysis
 - Cyclical behavior recognition
@@ -247,6 +274,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Intelligence Reporting
 
 ### Automated Report Generation
+
 ```bash
 # Comprehensive reporting
 ./scripts/comprehensive-reporting.sh --audience=executive --frequency=monthly --insights=actionable
@@ -256,6 +284,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ```
 
 ### Report Types
+
 - Executive summaries
 - Operational reports
 - Performance analytics
@@ -263,6 +292,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Predictive analysis reports
 
 ### Visualization and Insights
+
 - Interactive dashboards
 - Data visualization tools
 - Trend charts and graphs
@@ -272,6 +302,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Intelligence Security & Privacy
 
 ### Data Privacy Protection
+
 - Anonymization techniques
 - Differential privacy implementation
 - Secure multi-party computation
@@ -279,6 +310,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Compliance with data protection regulations
 
 ### Intelligence Security
+
 - Secure data transmission
 - Encrypted analytics processing
 - Access control for sensitive insights
@@ -288,6 +320,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Real-Time Intelligence Operations
 
 ### Live Intelligence Feeds
+
 - Real-time data ingestion
 - Continuous analysis processing
 - Live alert generation
@@ -295,6 +328,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Streaming analytics capabilities
 
 ### Event-Driven Intelligence
+
 - Trigger-based analysis
 - Anomaly detection alerts
 - Threshold monitoring
@@ -302,6 +336,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Escalation procedures
 
 ### Intelligence Automation
+
 ```bash
 # Automated intelligence operations
 ./scripts/automated-intelligence.sh --continuous-monitoring --auto-insights --alert-generation
@@ -313,6 +348,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## County Intelligence Coordination
 
 ### Multi-County Intelligence Network
+
 - Shared intelligence infrastructure
 - Cross-county insight sharing
 - Collaborative analytics projects
@@ -320,6 +356,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - State-level intelligence aggregation
 
 ### Intelligence Federation
+
 ```bash
 # Federated intelligence deployment
 ./scripts/federated-intelligence.sh --counties=network --sharing=secure --insights=collaborative
@@ -331,6 +368,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Intelligence Quality Assurance
 
 ### Insight Validation
+
 - Accuracy verification processes
 - Bias detection and mitigation
 - Model validation procedures
@@ -338,6 +376,7 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 - Insight reliability scoring
 
 ### Continuous Improvement
+
 - Model performance monitoring
 - Insight effectiveness tracking
 - User feedback integration
@@ -347,12 +386,14 @@ Intelligence, analytics, and insights guidance for Terrafusion OS data-driven de
 ## Intelligence Troubleshooting
 
 ### Common Intelligence Issues
+
 - **Data Quality Problems**: Incomplete or inaccurate data
 - **Model Performance**: Degraded prediction accuracy
 - **Processing Delays**: Slow analytics processing
 - **Integration Issues**: Data source connectivity problems
 
 ### Intelligence Debugging
+
 ```bash
 # Intelligence system diagnostics
 ./scripts/intelligence-diagnostics.sh --components=all --depth=comprehensive

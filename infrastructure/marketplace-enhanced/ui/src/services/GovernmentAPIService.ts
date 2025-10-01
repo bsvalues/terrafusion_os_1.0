@@ -24,7 +24,15 @@ export interface GovernmentPlugin {
   id: string;
   name: string;
   version: string;
-  category: 'assessment' | 'taxation' | 'gis' | 'compliance' | 'reporting' | 'pilt' | 'costforge' | 'other';
+  category:
+    | 'assessment'
+    | 'taxation'
+    | 'gis'
+    | 'compliance'
+    | 'reporting'
+    | 'pilt'
+    | 'costforge'
+    | 'other';
   governmentTier: 'county' | 'state' | 'federal' | 'multi-jurisdictional';
   description: string;
   publisher: string;
@@ -83,12 +91,16 @@ class GovernmentAPIService {
   private baseUrl: string;
   private authToken: string | null = null;
 
-  constructor(baseUrl: string = 'http://localhost:3000/api') {
+  constructor(baseUrl: string = 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api') {
     this.baseUrl = baseUrl;
   }
 
   // Authentication
-  async authenticate(credentials: { username: string; password: string; county?: string }): Promise<{ token: string; user: any }> {
+  async authenticate(credentials: {
+    username: string;
+    password: string;
+    county?: string;
+  }): Promise<{ token: string; user: any }> {
     try {
       const response = await fetch(`${this.baseUrl}/auth/login`, {
         method: 'POST',
@@ -240,7 +252,10 @@ class GovernmentAPIService {
   }
 
   // Compliance Reporting
-  async generateComplianceReport(county: string, reportType: 'executive' | 'detailed' | 'audit'): Promise<{ reportUrl: string }> {
+  async generateComplianceReport(
+    county: string,
+    reportType: 'executive' | 'detailed' | 'audit'
+  ): Promise<{ reportUrl: string }> {
     try {
       const response = await this.makeRequest(`/reports/compliance`, {
         method: 'POST',
@@ -291,8 +306,8 @@ class GovernmentAPIService {
         contactInfo: {
           email: 'admin@bentoncountywa.gov',
           phone: '(509) 736-3000',
-          administrator: 'John Smith'
-        }
+          administrator: 'John Smith',
+        },
       },
       {
         id: 'franklin-wa',
@@ -306,8 +321,8 @@ class GovernmentAPIService {
         contactInfo: {
           email: 'admin@franklincountywa.org',
           phone: '(509) 545-3500',
-          administrator: 'Jane Doe'
-        }
+          administrator: 'Jane Doe',
+        },
       },
       {
         id: 'walla-walla-wa',
@@ -317,8 +332,8 @@ class GovernmentAPIService {
         federationStatus: 'pending',
         complianceScore: 76,
         securityLevel: 'medium',
-        lastAudit: '2025-05-10'
-      }
+        lastAudit: '2025-05-10',
+      },
     ];
   }
 
@@ -330,7 +345,8 @@ class GovernmentAPIService {
         version: '2.1.3',
         category: 'costforge',
         governmentTier: 'county',
-        description: 'Advanced construction cost estimation and valuation platform for county assessors with AI-powered analytics and federal compliance.',
+        description:
+          'Advanced construction cost estimation and valuation platform for county assessors with AI-powered analytics and federal compliance.',
         publisher: 'Terrafusion Systems',
         licenseType: 'tiered',
         validationStatus: 'validated',
@@ -340,14 +356,14 @@ class GovernmentAPIService {
         pricing: {
           tier1: 299,
           tier2: 599,
-          tier3: 1299
+          tier3: 1299,
         },
         compliance: {
           fisma: true,
           stateDOE: true,
-          countyAudit: true
+          countyAudit: true,
         },
-        auditTrail: []
+        auditTrail: [],
       },
       {
         id: 'pilt-calculator',
@@ -355,7 +371,8 @@ class GovernmentAPIService {
         version: '1.8.2',
         category: 'pilt',
         governmentTier: 'county',
-        description: 'Federal PILT (Payment in Lieu of Taxes) distribution calculator with automated compliance reporting and audit trails.',
+        description:
+          'Federal PILT (Payment in Lieu of Taxes) distribution calculator with automated compliance reporting and audit trails.',
         publisher: 'Terrafusion Systems',
         licenseType: 'usage-based',
         validationStatus: 'validated',
@@ -364,17 +381,17 @@ class GovernmentAPIService {
         supportedPlatforms: ['windows', 'linux', 'macos', 'web'],
         pricing: {
           usageBased: {
-            perTransaction: 0.50,
-            monthlyBase: 199
-          }
+            perTransaction: 0.5,
+            monthlyBase: 199,
+          },
         },
         compliance: {
           fisma: true,
           stateDOE: true,
-          countyAudit: true
+          countyAudit: true,
         },
-        auditTrail: []
-      }
+        auditTrail: [],
+      },
     ];
   }
 
@@ -386,7 +403,7 @@ class GovernmentAPIService {
       integration: 'warning',
       lastValidated: new Date().toISOString(),
       aiConfidence: 0.94,
-      details: 'All security and compliance checks passed. Minor integration warning resolved.'
+      details: 'All security and compliance checks passed. Minor integration warning resolved.',
     };
   }
 
@@ -397,7 +414,7 @@ class GovernmentAPIService {
       monthlyUsage: 1247,
       averageResponseTime: 245,
       uptime: 99.7,
-      errorRate: 0.03
+      errorRate: 0.03,
     };
   }
 
@@ -410,7 +427,7 @@ class GovernmentAPIService {
         user: 'admin@bentoncountywa.gov',
         details: 'CostForge Professional deployed to Benton County',
         county: 'benton-wa',
-        severity: 'info'
+        severity: 'info',
       },
       {
         id: 'audit-002',
@@ -418,8 +435,8 @@ class GovernmentAPIService {
         action: 'Validation Check',
         user: 'system',
         details: 'Automated security validation completed successfully',
-        severity: 'info'
-      }
+        severity: 'info',
+      },
     ];
   }
 }

@@ -1,0 +1,88 @@
+{
+  "id": "gispro",
+  "name": "GIS Pro",
+  "version": "1.0.0",
+  "description": "Advanced Geographic Information System for county spatial analysis",
+  "category": "government-core",
+  "tier": "tier-1",
+  "author": "TerraFusion OS",
+  "license": "MIT",
+  "pricing": {
+    "base": 175,
+    "currency": "USD",
+    "billing": "monthly",
+    "features": [
+      "Advanced mapping interface",
+      "Layer management system",
+      "Spatial analysis tools",
+      "Property parcel visualization",
+      "Zoning and utilities mapping",
+      "Measurement and annotation tools",
+      "Data export capabilities",
+      "Real-time county data integration"
+    ]
+  },
+  "capabilities": [
+    "frontend",
+    "backend",
+    "database", 
+    "api",
+    "gis",
+    "mapping",
+    "visualization"
+  ],
+  "endpoints": {
+    "health": "/modules/gispro/health",
+    "api": "/modules/gispro/api",
+    "ui": "/modules/gispro/ui",
+    "wms": "/modules/gispro/wms",
+    "wfs": "/modules/gispro/wfs"
+  },
+  "ports": {
+    "frontend": 3005,
+    "backend": 5005,
+    "mapserver": 8005
+  },
+  "dependencies": [
+    "property-workbench",
+    "terra-collections",
+    "government-core"
+  ],
+  "permissions": [
+    "gis.read",
+    "gis.write",
+    "mapping.access",
+    "spatial.analysis",
+    "property.read",
+    "utilities.read",
+    "zoning.read"
+  ],
+  "configuration": {
+    "map_engine": "leaflet",
+    "coordinate_systems": ["WGS84", "NAD83", "State Plane"],
+    "data_sources": {
+      "county_parcels": true,
+      "road_network": true,
+      "utilities": true,
+      "zoning": true,
+      "aerial_imagery": true,
+      "topographic": true
+    },
+    "analysis_tools": {
+      "distance_measurement": true,
+      "area_calculation": true,
+      "buffer_analysis": true,
+      "overlay_analysis": true,
+      "routing": true
+    }
+  },
+  "ui": {
+    "icon": "🗺️",
+    "color": "#0099ff",
+    "theme": "terrafusion-government",
+    "layout": "map-centric"
+  },
+  "status": "active",
+  "created": "2025-09-14T03:00:00Z",
+  "updated": "2025-09-14T03:00:00Z"
+}

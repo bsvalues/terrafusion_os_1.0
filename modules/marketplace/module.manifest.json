@@ -1,0 +1,16 @@
+{
+  "Name": "marketplace",
+  "DisplayName": "Marketplace",
+  "Description": "TerraFusion marketplace module for plugin economy and commercial operations",
+  "Version": "1.0.0",
+  "Status": "active",
+  "Tier": "Tier 2",
+  "Category": "marketplace",
+  "Author": "TerraFusion OS",
+  "Dependencies": [],
+  "Capabilities": [
+    "plugin-marketplace",
+    "commercial-transactions",
+    "revenue-sharing"
+  ]
+}

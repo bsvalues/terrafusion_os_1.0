@@ -9,20 +9,20 @@ export class TestHelpers {
   /**
    * Login helper for different user roles
    */
-  static async loginAs(page: Page, role: 'admin' | 'assessor' | 'viewer' = 'admin') {
+  static async loginAs(page: Page, role: 'admin' | 'assessor' | 'viewer' = 'admin'): Promise<void> {
     const credentials = {
       admin: { username: 'admin@terrafusion.gov', password: 'admin-test-pass' },
       assessor: { username: 'assessor@bentoncounty.gov', password: 'assessor-test-pass' },
-      viewer: { username: 'viewer@example.com', password: 'viewer-test-pass' }
+      viewer: { username: 'viewer@example.com', password: 'viewer-test-pass' },
     };
 
     const creds = credentials[role];
-    
+
     await page.goto('/login');
     await page.fill('[data-testid="username"]', creds.username);
     await page.fill('[data-testid="password"]', creds.password);
     await page.click('[data-testid="login-button"]');
-    
+
     // Wait for login to complete
     await page.waitForURL('/dashboard');
     await expect(page.locator('[data-testid="user-info"]')).toBeVisible();
@@ -52,7 +52,7 @@ export class TestHelpers {
       route.fulfill({
         status,
         contentType: 'application/json',
-        body: JSON.stringify(response)
+        body: JSON.stringify(response),
       });
     });
   }
@@ -73,10 +73,10 @@ export class TestHelpers {
     // For now, check basic accessibility requirements
     const headings = await page.locator('h1, h2, h3, h4, h5, h6').count();
     expect(headings).toBeGreaterThan(0);
-    
-    const focusableElements = await page.locator(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    ).count();
+
+    const focusableElements = await page
+      .locator('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+      .count();
     expect(focusableElements).toBeGreaterThan(0);
   }
 
@@ -84,9 +84,9 @@ export class TestHelpers {
    * Take screenshot for debugging
    */
   static async takeDebugScreenshot(page: Page, name: string) {
-    await page.screenshot({ 
+    await page.screenshot({
       path: `test-results/debug-screenshots/${name}.png`,
-      fullPage: true 
+      fullPage: true,
     });
   }
 
@@ -120,7 +120,7 @@ export class TestHelpers {
       square_feet: Math.floor(Math.random() * 2000 + 1000),
       bedrooms: Math.floor(Math.random() * 4 + 1),
       bathrooms: Math.floor(Math.random() * 3 + 1),
-      year_built: Math.floor(Math.random() * 50 + 1970)
+      year_built: Math.floor(Math.random() * 50 + 1970),
     };
   }
 
@@ -132,7 +132,7 @@ export class TestHelpers {
       name: `Test User ${id}`,
       role,
       permissions: role === 'admin' ? ['read', 'write', 'delete', 'export'] : ['read'],
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
   }
 
@@ -146,7 +146,7 @@ export class TestHelpers {
 
   static async seedTestData(page: Page, dataType: 'minimal' | 'full' = 'minimal') {
     await page.request.post('/api/test/seed', {
-      data: { type: dataType }
+      data: { type: dataType },
     });
   }
 
@@ -158,7 +158,7 @@ export class TestHelpers {
     await page.goto(url);
     await page.waitForLoadState('networkidle');
     const endTime = Date.now();
-    
+
     return endTime - startTime;
   }
 
@@ -166,11 +166,11 @@ export class TestHelpers {
     const startTime = Date.now();
     const response = await page.request.get(apiUrl);
     const endTime = Date.now();
-    
+
     return {
       responseTime: endTime - startTime,
       status: response.status(),
-      ok: response.ok()
+      ok: response.ok(),
     };
   }
 
@@ -179,15 +179,15 @@ export class TestHelpers {
    */
   static async verifyAuditTrail(page: Page, action: string, resourceId?: string) {
     await page.goto('/audit/trail');
-    
+
     if (resourceId) {
       await page.fill('[data-testid="audit-filter"]', resourceId);
       await page.click('[data-testid="apply-filter"]');
     }
-    
+
     const auditEntries = page.locator('[data-testid="audit-entry"]');
     const entryTexts = await auditEntries.allTextContents();
-    
+
     const hasAction = entryTexts.some(text => text.toLowerCase().includes(action.toLowerCase()));
     expect(hasAction).toBeTruthy();
   }
@@ -196,7 +196,7 @@ export class TestHelpers {
     // Check for required FISMA security headers
     const response = await page.request.get('/api/health');
     const headers = response.headers();
-    
+
     expect(headers['x-content-type-options']).toBe('nosniff');
     expect(headers['x-frame-options']).toBe('DENY');
     expect(headers['x-xss-protection']).toBe('1; mode=block');
@@ -215,10 +215,10 @@ export class TestHelpers {
     // Verify that data changes in one county are properly synced to others
     const sourceResponse = await page.request.get(`/api/${sourceCounty}/parcels/count`);
     const targetResponse = await page.request.get(`/api/${targetCounty}/parcels/count`);
-    
+
     const sourceData = await sourceResponse.json();
     const targetData = await targetResponse.json();
-    
+
     // Both should have data (exact counts may differ)
     expect(sourceData.count).toBeGreaterThan(0);
     expect(targetData.count).toBeGreaterThan(0);
@@ -248,7 +248,7 @@ class PropertyBuilder {
     address: '123 Test Street',
     owner: 'Test Owner',
     acres: 1.0,
-    assessed_value: 200000
+    assessed_value: 200000,
   };
 
   withParcelNumber(number: string) {
@@ -296,7 +296,7 @@ class UserBuilder {
     username: 'test@example.com',
     name: 'Test User',
     role: 'viewer',
-    permissions: ['read']
+    permissions: ['read'],
   };
 
   withUsername(username: string) {
@@ -306,11 +306,12 @@ class UserBuilder {
 
   withRole(role: 'admin' | 'assessor' | 'viewer') {
     this.data.role = role;
-    this.data.permissions = role === 'admin' 
-      ? ['read', 'write', 'delete', 'export']
-      : role === 'assessor' 
-      ? ['read', 'write', 'approve'] 
-      : ['read'];
+    this.data.permissions =
+      role === 'admin'
+        ? ['read', 'write', 'delete', 'export']
+        : role === 'assessor'
+          ? ['read', 'write', 'approve']
+          : ['read'];
     return this;
   }
 
@@ -332,7 +333,7 @@ class AssessmentBuilder {
     property_id: 1,
     assessed_value: 200000,
     assessment_date: new Date().toISOString(),
-    status: 'pending'
+    status: 'pending',
   };
 
   forProperty(propertyId: number) {

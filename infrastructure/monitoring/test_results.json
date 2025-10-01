@@ -63,43 +63,43 @@
       "test": "Target: blackbox",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.027979",
-      "details": "Instance: http://localhost:3001/health"
+      "details": "Instance: http://localhost:\${{TF_SHELL_PORT:-3001}}/health"
     },
     {
       "test": "Target: blackbox",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.027981",
-      "details": "Instance: http://localhost:3002/health"
+      "details": "Instance: http://localhost:\${{TF_SHELL_PORT:-3001}}/health"
     },
     {
       "test": "Target: blackbox",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.027982",
-      "details": "Instance: http://localhost:3003/health"
+      "details": "Instance: http://localhost:\${{TF_SHELL_PORT:-3001}}/health"
     },
     {
       "test": "Target: cadvisor",
       "status": "UP",
       "timestamp": "2025-08-03T09:32:13.027987",
-      "details": "Instance: cadvisor:8080"
+      "details": "Instance: cadvisor:${TF_STATIC_PORT:-8080}"
     },
     {
       "test": "Target: costforge",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.027989",
-      "details": "Instance: localhost:3001"
+      "details": "Instance: localhost:\${{TF_SHELL_PORT:-3001}}"
     },
     {
       "test": "Target: docker",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.027990",
-      "details": "Instance: localhost:9323"
+      "details": "Instance: localhost:\${{TF_SHELL_PORT:-3001}}"
     },
     {
       "test": "Target: grafana",
       "status": "UP",
       "timestamp": "2025-08-03T09:32:13.027992",
-      "details": "Instance: grafana:3000"
+      "details": "Instance: grafana:${TF_FRONTEND_PORT:-3102}"
     },
     {
       "test": "Target: nginx",
@@ -123,13 +123,13 @@
       "test": "Target: prometheus",
       "status": "UP",
       "timestamp": "2025-08-03T09:32:13.027999",
-      "details": "Instance: localhost:9090"
+      "details": "Instance: localhost:\${{TF_SHELL_PORT:-3001}}"
     },
     {
       "test": "Target: propertyworkbench",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.028000",
-      "details": "Instance: localhost:3002"
+      "details": "Instance: localhost:\${{TF_SHELL_PORT:-3001}}"
     },
     {
       "test": "Target: redis-exporter",
@@ -147,31 +147,31 @@
       "test": "Target: terraagent",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.028005",
-      "details": "Instance: localhost:3004"
+      "details": "Instance: localhost:\${{TF_SHELL_PORT:-3001}}"
     },
     {
       "test": "Target: terraflow",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.028007",
-      "details": "Instance: localhost:3005"
+      "details": "Instance: localhost:\${{TF_SHELL_PORT:-3001}}"
     },
     {
       "test": "Target: terrafusion-health-monitor",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.028008",
-      "details": "Instance: terrafusion-monitor:8080"
+      "details": "Instance: terrafusion-monitor:${TF_STATIC_PORT:-8080}"
     },
     {
       "test": "Target: terrafusionsync",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.028010",
-      "details": "Instance: localhost:3006"
+      "details": "Instance: localhost:\${{TF_SHELL_PORT:-3001}}"
     },
     {
       "test": "Target: terrainsight",
       "status": "DOWN",
       "timestamp": "2025-08-03T09:32:13.028012",
-      "details": "Instance: localhost:3003"
+      "details": "Instance: localhost:\${{TF_SHELL_PORT:-3001}}"
     },
     {
       "test": "Alert Rules",
@@ -223,10 +223,10 @@
     }
   ],
   "access_urls": {
-    "prometheus": "http://localhost:9090",
-    "grafana": "http://localhost:3000",
-    "alertmanager": "http://localhost:9093",
-    "node_exporter": "http://localhost:9100",
-    "cadvisor": "http://localhost:8080"
+    "prometheus": "http://localhost:\${{TF_SHELL_PORT:-3001}}",
+    "grafana": "http://localhost:\${{TF_SHELL_PORT:-3001}}",
+    "alertmanager": "http://localhost:\${{TF_SHELL_PORT:-3001}}",
+    "node_exporter": "http://localhost:\${{TF_SHELL_PORT:-3001}}",
+    "cadvisor": "http://localhost:\${{TF_SHELL_PORT:-3001}}"
   }
 }

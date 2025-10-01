@@ -21,8 +21,8 @@ namespace TerraFusion.Launcher
         private NotifyIcon trayIcon;
         private ContextMenuStrip trayMenu;
         private IConfiguration configuration;
-        private string apiUrl = "http://localhost:5000";
-        private string pwaUrl = "http://localhost:3000";
+        private string apiUrl = "http://localhost:${TF_STATIC_PORT:-8080}";
+        private string pwaUrl = "http://localhost:${TF_STATIC_PORT:-8080}";
         private bool isProduction = false;
 
         public TerraFusionLauncher()

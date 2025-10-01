@@ -5,11 +5,14 @@
 **Document Version:** 1.0  
 **Last Updated:** August 29, 2025  
 **Classification:** Government Operations Manual  
-**Authority:** Terrafusion DevOps Engineering Team  
+**Authority:** Terrafusion DevOps Engineering Team
 
 ## Executive Summary
 
-This comprehensive operations guide provides detailed procedures for maintaining, monitoring, and optimizing Terrafusion OS 1.0 in production environments. The guide emphasizes the critical importance of negative caching performance monitoring and government compliance maintenance.
+This comprehensive operations guide provides detailed procedures for
+maintaining, monitoring, and optimizing Terrafusion OS 1.0 in production
+environments. The guide emphasizes the critical importance of negative caching
+performance monitoring and government compliance maintenance.
 
 ---
 
@@ -60,15 +63,15 @@ This comprehensive operations guide provides detailed procedures for maintaining
 
 ### Key Performance Targets
 
-| Metric | Target | Monitoring Method | Alert Threshold |
-|--------|--------|-------------------|-----------------|
-| API Response Time | <10ms | Prometheus + Grafana | >15ms |
-| Database Query Time | <5ms | PostgreSQL Exporter | >10ms |
-| Cache Hit Ratio | >90% | Redis Metrics | <85% |
-| **Negative Cache Effectiveness** | **>94%** | **Custom Metrics** | **<90%** |
-| Memory Usage | <80% | Node Exporter | >85% |
-| CPU Usage | <70% | Node Exporter | >75% |
-| Error Rate | <1% | Application Metrics | >2% |
+| Metric                           | Target   | Monitoring Method    | Alert Threshold |
+| -------------------------------- | -------- | -------------------- | --------------- |
+| API Response Time                | <10ms    | Prometheus + Grafana | >15ms           |
+| Database Query Time              | <5ms     | PostgreSQL Exporter  | >10ms           |
+| Cache Hit Ratio                  | >90%     | Redis Metrics        | <85%            |
+| **Negative Cache Effectiveness** | **>94%** | **Custom Metrics**   | **<90%**        |
+| Memory Usage                     | <80%     | Node Exporter        | >85%            |
+| CPU Usage                        | <70%     | Node Exporter        | >75%            |
+| Error Rate                       | <1%      | Application Metrics  | >2%             |
 
 ---
 
@@ -76,7 +79,9 @@ This comprehensive operations guide provides detailed procedures for maintaining
 
 ### 🎯 Critical: Negative Caching Performance Management
 
-The negative caching system is the **primary performance optimization** in Terrafusion OS, providing 94%+ reduction in database queries for non-existent property lookups.
+The negative caching system is the **primary performance optimization** in
+Terrafusion OS, providing 94%+ reduction in database queries for non-existent
+property lookups.
 
 #### Architecture Overview
 
@@ -99,6 +104,7 @@ Negative Caching Flow:
 #### Daily Operations Checklist
 
 **Morning Operations (8:00 AM EST)**
+
 ```bash
 # 1. Check negative cache effectiveness
 curl -s https://terrafusion.gov/api/metrics/negative-cache | jq '.effectiveness'
@@ -114,6 +120,7 @@ grep "CACHE_INVALIDATION" /var/log/terrafusion/negative-cache.log
 ```
 
 **Hourly Monitoring**
+
 ```bash
 # Automated script runs every hour
 #!/bin/bash
@@ -128,6 +135,7 @@ fi
 #### Weekly Maintenance
 
 **Every Tuesday at 2:00 AM EST**
+
 ```bash
 # 1. Clean up expired miss sentinels
 redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
@@ -147,6 +155,7 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
 #### Common Issues and Solutions
 
 **Issue 1: Low Negative Cache Effectiveness (<90%)**
+
 ```bash
 # Diagnosis
 1. Check miss sentinel TTL settings
@@ -159,6 +168,7 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
 ```
 
 **Issue 2: Miss Sentinels Not Being Set**
+
 ```bash
 # Check HAProxy Lua script execution
 tail -f /var/log/haproxy/haproxy.log | grep "negative_cache"
@@ -171,6 +181,7 @@ redis-cli EVAL "$(cat set_miss_sentinel.lua)" 1 "test-key" 30 "troubleshoot"
 ```
 
 **Issue 3: High Cache Memory Usage**
+
 ```bash
 # Check Redis memory usage
 redis-cli info memory
@@ -189,6 +200,7 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
 ### Grafana Dashboards
 
 **Primary Dashboard: Terrafusion OS Performance Overview**
+
 - API Response Times (target: <10ms)
 - Database Query Performance (target: <5ms)
 - **Negative Cache Effectiveness (target: >94%)**
@@ -196,6 +208,7 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
 - Government Compliance Metrics
 
 **Secondary Dashboard: Negative Caching Deep Dive**
+
 - Miss Sentinel Creation Rate
 - Cache Hit/Miss Ratios by Endpoint
 - Database Query Prevention Metrics
@@ -205,6 +218,7 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
 ### Alert Configuration
 
 **Critical Alerts (Immediate Response Required)**
+
 ```yaml
 # Negative Cache Effectiveness Alert
 - alert: NegativeCacheEffectivenessLow
@@ -213,20 +227,23 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
   labels:
     severity: critical
   annotations:
-    summary: "Negative cache effectiveness below 90%"
-    description: "Current effectiveness: {{ $value }}%"
+    summary: 'Negative cache effectiveness below 90%'
+    description: 'Current effectiveness: {{ $value }}%'
 
 # API Response Time Alert
 - alert: APIResponseTimeSlow
-  expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.015
+  expr:
+    histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) >
+    0.015
   for: 5m
   labels:
     severity: critical
   annotations:
-    summary: "API response time exceeding 15ms"
+    summary: 'API response time exceeding 15ms'
 ```
 
 **Warning Alerts (Monitor Closely)**
+
 ```yaml
 # Cache Memory Usage Alert
 - alert: RedisMemoryHigh
@@ -235,7 +252,7 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
   labels:
     severity: warning
   annotations:
-    summary: "Redis memory usage above 80%"
+    summary: 'Redis memory usage above 80%'
 
 # Database Connection Pool Alert
 - alert: DatabaseConnectionsHigh
@@ -248,6 +265,7 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
 ### Performance Baseline Maintenance
 
 **Monthly Performance Review**
+
 ```bash
 # Generate comprehensive performance report
 ./scripts/monthly-performance-review.sh --month=$(date +%Y-%m)
@@ -266,6 +284,7 @@ redis-cli EVAL "$(cat cleanup_expired_sentinels.lua)" 0
 ### Daily Compliance Checks
 
 **Security Validation**
+
 ```bash
 # 1. Verify TLS configuration
 openssl s_client -connect terrafusion.gov:443 -tls1_2
@@ -281,6 +300,7 @@ tail -100 /var/log/terrafusion/audit.log | grep -E "LOGIN|PROPERTY_ACCESS|COMPLI
 ```
 
 **FISMA Compliance Monitoring**
+
 ```bash
 # Daily FISMA compliance check
 ./scripts/fisma-daily-check.sh --automated
@@ -295,6 +315,7 @@ grep "COMPLIANCE_VIOLATION" /var/log/terrafusion/compliance.log
 ### Weekly Compliance Reporting
 
 **Every Friday at 5:00 PM EST**
+
 ```bash
 # Generate weekly compliance report
 ./scripts/generate-compliance-report.sh --week --format=pdf
@@ -309,6 +330,7 @@ grep "COMPLIANCE_VIOLATION" /var/log/terrafusion/compliance.log
 ### Audit Trail Management
 
 **Continuous Operations**
+
 ```bash
 # Ensure audit logging is operational
 systemctl status terrafusion-audit-logger
@@ -327,18 +349,21 @@ du -sh /var/log/terrafusion/audit.log*
 ### Incident Classification
 
 **Priority 1: Critical (Response Time: <5 minutes)**
+
 - System completely unavailable
 - Negative cache effectiveness below 80%
 - Security breach detected
 - Government compliance violation
 
 **Priority 2: High (Response Time: <15 minutes)**
+
 - Performance degradation (API >20ms)
 - Partial system unavailability
 - Database connectivity issues
 - Cache system failures
 
 **Priority 3: Medium (Response Time: <1 hour)**
+
 - Minor performance issues
 - Non-critical feature failures
 - Monitoring alerts
@@ -348,6 +373,7 @@ du -sh /var/log/terrafusion/audit.log*
 #### Critical Incident: Negative Cache Failure
 
 **Step 1: Immediate Assessment (0-2 minutes)**
+
 ```bash
 # Check system status
 curl -f https://terrafusion.gov/health || echo "SYSTEM DOWN"
@@ -360,6 +386,7 @@ curl -f https://terrafusion.gov/haproxy-stats || echo "LOAD BALANCER ISSUES"
 ```
 
 **Step 2: Emergency Mitigation (2-5 minutes)**
+
 ```bash
 # If Redis is down, restart Redis cluster
 docker-compose -f docker-compose.production-optimized.yml restart redis-master redis-replica1 redis-replica2
@@ -370,6 +397,7 @@ docker-compose exec haproxy kill -USR2 1  # Graceful reload
 ```
 
 **Step 3: Full Recovery (5-15 minutes)**
+
 ```bash
 # Validate negative cache functionality
 ./scripts/test-negative-cache-functionality.sh --full-test
@@ -384,6 +412,7 @@ watch -n 5 'curl -s https://terrafusion.gov/api/metrics/negative-cache'
 #### Performance Degradation Response
 
 **Automated Response Triggers**
+
 ```bash
 # Auto-scaling trigger for high load
 if [ "$(curl -s http://prometheus:9090/api/v1/query?query=rate(http_requests_total[5m]) | jq -r '.data.result[0].value[1]')" -gt "1000" ]; then
@@ -405,6 +434,7 @@ fi
 **Monthly Maintenance: First Sunday of each month, 2:00-4:00 AM EST**
 
 **Pre-Maintenance Checklist**
+
 ```bash
 # 1. Backup all critical data
 ./scripts/pre-maintenance-backup.sh --full
@@ -420,6 +450,7 @@ fi
 ```
 
 **Maintenance Procedures**
+
 ```bash
 # 1. Update system packages
 ./scripts/update-system-packages.sh --production
@@ -438,6 +469,7 @@ fi
 ```
 
 **Post-Maintenance Validation**
+
 ```bash
 # 1. Validate all services are operational
 ./scripts/validate-all-services.sh --comprehensive
@@ -455,6 +487,7 @@ fi
 ### Database Maintenance
 
 **Weekly Database Operations (Every Wednesday at 1:00 AM EST)**
+
 ```bash
 # 1. Analyze query performance
 SELECT * FROM pg_stat_statements ORDER BY total_time DESC LIMIT 20;
@@ -473,6 +506,7 @@ DELETE FROM audit_logs WHERE created_at < NOW() - INTERVAL '90 days';
 ```
 
 **Cache Maintenance**
+
 ```bash
 # Daily Redis maintenance
 redis-cli BGREWRITEAOF
@@ -491,17 +525,18 @@ redis-cli INFO persistence
 
 ### Recovery Time Objectives (RTO) and Recovery Point Objectives (RPO)
 
-| Component | RTO | RPO | Recovery Method |
-|-----------|-----|-----|-----------------|
-| Load Balancer | 2 minutes | 0 | Hot standby |
-| Application Tier | 5 minutes | 1 minute | Container restart |
-| Database | 10 minutes | 5 minutes | Replica promotion |
-| Cache Layer | 3 minutes | 30 seconds | Cluster failover |
+| Component          | RTO          | RPO            | Recovery Method    |
+| ------------------ | ------------ | -------------- | ------------------ |
+| Load Balancer      | 2 minutes    | 0              | Hot standby        |
+| Application Tier   | 5 minutes    | 1 minute       | Container restart  |
+| Database           | 10 minutes   | 5 minutes      | Replica promotion  |
+| Cache Layer        | 3 minutes    | 30 seconds     | Cluster failover   |
 | **Negative Cache** | **1 minute** | **30 seconds** | **Redis Sentinel** |
 
 ### Disaster Recovery Procedures
 
 **Database Failure Recovery**
+
 ```bash
 # 1. Promote read replica to primary
 ./scripts/promote-replica-to-primary.sh --replica=replica1
@@ -517,6 +552,7 @@ docker-compose restart terrafusion-api
 ```
 
 **Cache System Recovery**
+
 ```bash
 # 1. Redis Sentinel automatic failover (should be automatic)
 redis-cli -h sentinel1 sentinel masters
@@ -538,6 +574,7 @@ redis-cli -h sentinel1 sentinel failover terrafusion-master
 ### Daily Operations Runbook
 
 **8:00 AM EST - Morning Health Check**
+
 ```bash
 #!/bin/bash
 echo "🌅 Terrafusion OS Daily Health Check - $(date)"
@@ -571,6 +608,7 @@ echo "Daily health check completed at $(date)"
 ```
 
 **12:00 PM EST - Midday Performance Check**
+
 ```bash
 #!/bin/bash
 echo "☀️ Terrafusion OS Midday Performance Check - $(date)"
@@ -587,6 +625,7 @@ docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsa
 ```
 
 **6:00 PM EST - End of Day Summary**
+
 ```bash
 #!/bin/bash
 echo "🌆 Terrafusion OS End of Day Summary - $(date)"
@@ -604,6 +643,7 @@ echo "🌆 Terrafusion OS End of Day Summary - $(date)"
 ### Weekly Operations
 
 **Every Friday at 3:00 PM EST - Weekly Review**
+
 ```bash
 #!/bin/bash
 echo "📅 Terrafusion OS Weekly Operations Review"
@@ -629,17 +669,19 @@ echo "📅 Terrafusion OS Weekly Operations Review"
 ## Emergency Contacts and Escalation
 
 ### 24/7 Operations Team
+
 - **Primary On-Call:** Terrafusion DevOps Team (+1-555-TERRA-OPS)
 - **Secondary On-Call:** Senior Infrastructure Engineer (+1-555-INFRA-911)
 - **Government Liaison:** Compliance Officer (+1-555-GOV-COMP)
 
 ### Escalation Matrix
 
-**Level 1 (0-15 minutes):** Operations Team
-**Level 2 (15-30 minutes):** Senior Engineering Team
-**Level 3 (30+ minutes):** Executive Team + Government Stakeholders
+**Level 1 (0-15 minutes):** Operations Team **Level 2 (15-30 minutes):** Senior
+Engineering Team **Level 3 (30+ minutes):** Executive Team + Government
+Stakeholders
 
 ### Communication Channels
+
 - **Slack:** #terrafusion-ops-alerts
 - **Email:** ops-alerts@terrafusion.gov
 - **Government Portal:** https://compliance.terrafusion.gov/alerts
@@ -648,16 +690,23 @@ echo "📅 Terrafusion OS Weekly Operations Review"
 
 ## Conclusion
 
-This operational guide ensures Terrafusion OS 1.0 maintains optimal performance, particularly focusing on the critical negative caching system that provides 94%+ improvement in database query efficiency. Regular monitoring, proactive maintenance, and rapid incident response procedures guarantee government-grade operational excellence.
+This operational guide ensures Terrafusion OS 1.0 maintains optimal performance,
+particularly focusing on the critical negative caching system that provides 94%+
+improvement in database query efficiency. Regular monitoring, proactive
+maintenance, and rapid incident response procedures guarantee government-grade
+operational excellence.
 
 **Key Success Metrics:**
+
 - ✅ Negative Cache Effectiveness: >94%
 - ✅ API Response Time: <10ms
 - ✅ System Availability: 99.9%+
 - ✅ Government Compliance: 100%
 - ✅ Incident Response Time: <5 minutes (critical), <15 minutes (high)
 
-**Remember:** The negative caching system is the cornerstone of Terrafusion OS performance. Its health directly impacts user experience and system efficiency. Monitor it closely and respond immediately to any degradation.
+**Remember:** The negative caching system is the cornerstone of Terrafusion OS
+performance. Its health directly impacts user experience and system efficiency.
+Monitor it closely and respond immediately to any degradation.
 
 ---
 

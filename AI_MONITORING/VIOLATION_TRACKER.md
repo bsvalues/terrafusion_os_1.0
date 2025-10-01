@@ -1,59 +1,37 @@
-# 🚨 AI Agent Violation Tracker
+# TerraFusion OS - AI Agent Violation Tracker
 
-**Real-Time Monitoring System**  
-**Status**: Active  
-**Last Updated**: ${new Date().toISOString()}
+## Real-Time Monitoring System
 
----
+This file automatically tracks AI agent misunderstandings and provides immediate
+corrections.
 
-## 📊 Current Violations
+### Current Monitoring Status: ACTIVE
 
-No violations detected. All AI agents are operating within Terrafusion OS guidelines.
+### OS Facts (Auto-Refresh)
 
----
+- **Type**: COMPLETE_GOVERNMENT_OPERATING_SYSTEM
+- **AI Agents**: 50000 operational
+- **Kernel**: .NET Core API on port \${{TF_API_PORT:-5000}}
+- **Shell**: PWA Desktop on port \${{TF_API_PORT:-5000}}
+- **Status**: PRODUCTION_OPERATIONAL
 
-## ⚠️ Common Violation Patterns
+### Prohibited Suggestions (Auto-Flagged)
 
-### Critical Violations
-- Suggesting web app frameworks (React, Next.js, etc.)
-- Recommending Electron/Tauri desktop wrappers
-- Ignoring the AI Swarm architecture
-- Bypassing validation gates
-- Suggesting deployment to Vercel/Netlify/etc.
+- "web application" ❌ VIOLATION
+- "deploy to vercel" ❌ VIOLATION
+- "deploy to netlify" ❌ VIOLATION
+- "need tauri" ❌ VIOLATION
+- "need electron" ❌ VIOLATION
+- "build for web" ❌ VIOLATION
+- "docker deployment" ❌ VIOLATION
+- "cloud deployment" ❌ VIOLATION
+- "web hosting" ❌ VIOLATION
+- "static site" ❌ VIOLATION
 
-### Moderate Violations
-- Missing SDK/template usage
-- Incomplete architecture understanding
-- Skipping mandatory entry points
-- Improper module system usage
+### Violation Log
 
-### Minor Violations
-- Documentation inconsistencies
-- Incomplete training completion
-- Context injection failures
-
----
-
-## 🛡️ Protection Layers Status
-
-- ✅ Layer 1: Mandatory Entry Points
-- ✅ Layer 2: Automated Training Pipelines  
-- ✅ Layer 3: Real-Time Monitoring & Correction
-- ✅ Layer 4: SDK & Template System
-- ✅ Layer 5: Checkpoint Validation
+2025-09-09T17:28:49.699Z: Monitoring system initialized
 
 ---
 
-## 📈 Violation Log
-
-*No violations recorded yet.*
-
----
-
-## 🔧 Auto-Correction Actions
-
-*No corrections needed.*
-
----
-
-**System Status**: All AI agents are compliant with Terrafusion OS architecture.
+_This file updates automatically when AI agent violations are detected_

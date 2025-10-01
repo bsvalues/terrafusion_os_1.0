@@ -1,3 +1,4 @@
+// NO HARDCODED PORTS! Use environment variables.
 #!/usr/bin/envconst colors = {
   blue: '\x1b[36m',
   green: '\x1b[32m',
@@ -12,7 +13,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Configuration
-const API_BASE = process.env.API_BASE || 'http://localhost:5000';
+const API_BASE = process.env.API_BASE || 'http://localhost:${TF_STATIC_PORT:-8080}';
 const JWT_TOKEN = process.env.JWT_TOKEN || '';
 const OUTPUT_FILE = path.join(__dirname, '..', 'docs', 'REALITY_MATRIX.md');
 

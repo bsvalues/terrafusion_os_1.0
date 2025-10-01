@@ -36,22 +36,22 @@ class PerformanceService {
   private cacheConfig: CacheConfig = {
     ttl: 5 * 60 * 1000, // 5 minutes default
     maxSize: 1000,
-    strategy: 'lru'
+    strategy: 'lru',
   };
-  
+
   private observers: Map<string, IntersectionObserver> = new Map();
   private lazyLoadConfig: LazyLoadConfig = {
     threshold: 0.1,
     rootMargin: '50px',
-    debounceMs: 100
+    debounceMs: 100,
   };
 
   private websocket: WebSocket | null = null;
   private wsConfig: WebSocketConfig = {
-    url: 'ws://localhost:3000/ws',
+    url: 'ws://localhost:\${{TF_FRONTEND_PORT:-3000}}/ws',
     reconnectInterval: 5000,
     maxReconnectAttempts: 5,
-    heartbeatInterval: 30000
+    heartbeatInterval: 30000,
   };
   private reconnectAttempts = 0;
   private heartbeatTimer: NodeJS.Timeout | null = null;
@@ -62,7 +62,7 @@ class PerformanceService {
     averageResponseTime: 0,
     memoryUsage: 0,
     activeConnections: 0,
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
   };
 
   constructor() {
@@ -77,7 +77,7 @@ class PerformanceService {
 
   setCache(key: string, data: any, ttl?: number): void {
     const actualTtl = ttl || this.cacheConfig.ttl;
-    
+
     // Enforce cache size limit
     if (this.cache.size >= this.cacheConfig.maxSize) {
       this.evictCache();
@@ -86,13 +86,13 @@ class PerformanceService {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl: actualTtl
+      ttl: actualTtl,
     });
   }
 
   getCache(key: string): any | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return null;
     }
@@ -146,7 +146,7 @@ class PerformanceService {
       this.debounce(callback, this.lazyLoadConfig.debounceMs),
       {
         threshold: this.lazyLoadConfig.threshold,
-        rootMargin: this.lazyLoadConfig.rootMargin
+        rootMargin: this.lazyLoadConfig.rootMargin,
       }
     );
 
@@ -155,8 +155,8 @@ class PerformanceService {
 
   observeElement(element: Element, callback: (entry: IntersectionObserverEntry) => void): void {
     const observerId = `observer-${Date.now()}-${Math.random()}`;
-    
-    const observer = this.createLazyLoader((entries) => {
+
+    const observer = this.createLazyLoader(entries => {
       entries.forEach(callback);
     });
 
@@ -184,7 +184,7 @@ class PerformanceService {
   private initializeWebSocket(): void {
     try {
       this.websocket = new WebSocket(this.wsConfig.url);
-      
+
       this.websocket.onopen = () => {
         console.log('WebSocket connected');
         this.reconnectAttempts = 0;
@@ -192,7 +192,7 @@ class PerformanceService {
         this.emit('connected', {});
       };
 
-      this.websocket.onmessage = (event) => {
+      this.websocket.onmessage = event => {
         try {
           const message = JSON.parse(event.data);
           this.handleWebSocketMessage(message);
@@ -208,7 +208,7 @@ class PerformanceService {
         this.attemptReconnect();
       };
 
-      this.websocket.onerror = (error) => {
+      this.websocket.onerror = error => {
         console.error('WebSocket error:', error);
         this.emit('error', { error });
       };
@@ -224,26 +224,26 @@ class PerformanceService {
         this.clearCache('validation-*');
         this.emit('validation_update', message.data);
         break;
-      
+
       case 'deployment_status':
         this.clearCache('deployment-*');
         this.emit('deployment_status', message.data);
         break;
-      
+
       case 'compliance_alert':
         this.emit('compliance_alert', message.data);
         break;
-      
+
       case 'audit_event':
         this.clearCache('audit-*');
         this.emit('audit_event', message.data);
         break;
-      
+
       case 'performance_metrics':
         this.performanceMetrics = { ...this.performanceMetrics, ...message.data };
         this.emit('performance_update', this.performanceMetrics);
         break;
-      
+
       default:
         console.warn('Unknown WebSocket message type:', message.type);
     }
@@ -256,7 +256,9 @@ class PerformanceService {
     }
 
     this.reconnectAttempts++;
-    console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.wsConfig.maxReconnectAttempts})`);
+    console.log(
+      `Attempting to reconnect (${this.reconnectAttempts}/${this.wsConfig.maxReconnectAttempts})`
+    );
 
     setTimeout(() => {
       this.initializeWebSocket();
@@ -326,7 +328,7 @@ class PerformanceService {
       ...this.performanceMetrics,
       memoryUsage: this.getMemoryUsage(),
       activeConnections: this.websocket?.readyState === WebSocket.OPEN ? 1 : 0,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
   }
 
@@ -363,7 +365,7 @@ class PerformanceService {
 
   // Prefetching
   async prefetchData(keys: string[], fetcher: (key: string) => Promise<any>): Promise<void> {
-    const promises = keys.map(async (key) => {
+    const promises = keys.map(async key => {
       if (!this.getCache(key)) {
         try {
           const data = await fetcher(key);
@@ -384,11 +386,11 @@ class PerformanceService {
   ): Promise<Array<{ key: string; data: T | null; error?: Error }>> {
     const { maxConcurrency = 5, timeout = 10000 } = options;
     const results: Array<{ key: string; data: T | null; error?: Error }> = [];
-    
+
     // Process requests in batches
     for (let i = 0; i < requests.length; i += maxConcurrency) {
       const batch = requests.slice(i, i + maxConcurrency);
-      
+
       const batchPromises = batch.map(async ({ key, fetcher }) => {
         try {
           // Check cache first
@@ -404,7 +406,7 @@ class PerformanceService {
 
           const data = await Promise.race([fetcher(), timeoutPromise]);
           this.setCache(key, data);
-          
+
           return { key, data };
         } catch (error) {
           return { key, data: null, error: error as Error };
@@ -412,15 +414,15 @@ class PerformanceService {
       });
 
       const batchResults = await Promise.allSettled(batchPromises);
-      
-      batchResults.forEach((result) => {
+
+      batchResults.forEach(result => {
         if (result.status === 'fulfilled') {
           results.push(result.value);
         } else {
-          results.push({ 
-            key: 'unknown', 
-            data: null, 
-            error: new Error(result.reason) 
+          results.push({
+            key: 'unknown',
+            data: null,
+            error: new Error(result.reason),
           });
         }
       });
@@ -433,20 +435,20 @@ class PerformanceService {
   destroy(): void {
     // Clear cache
     this.cache.clear();
-    
+
     // Disconnect observers
     this.observers.forEach(observer => observer.disconnect());
     this.observers.clear();
-    
+
     // Close WebSocket
     if (this.websocket) {
       this.websocket.close();
       this.websocket = null;
     }
-    
+
     // Stop heartbeat
     this.stopHeartbeat();
-    
+
     // Clear event listeners
     this.eventListeners.clear();
   }

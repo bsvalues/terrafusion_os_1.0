@@ -9,7 +9,7 @@ scrape_configs:
   # TerraFusion API metrics
   - job_name: 'terrafusion-api'
     static_configs:
-      - targets: ['host.docker.internal:5000']
+      - targets: ['host.docker.internal:${TF_API_PORT:-5046}']
         labels:
           service: 'api'
           tier: 'backend'
@@ -19,7 +19,7 @@ scrape_configs:
   # AI Orchestrator metrics
   - job_name: 'ai-orchestrator'
     static_configs:
-      - targets: ['host.docker.internal:3001']
+      - targets: ['host.docker.internal:${TF_SHELL_PORT:-3103}']
         labels:
           service: 'ai-orchestrator'
           tier: 'ai'
@@ -28,7 +28,7 @@ scrape_configs:
   # Claude Flow metrics
   - job_name: 'claude-flow'
     static_configs:
-      - targets: ['host.docker.internal:3002']
+      - targets: ['host.docker.internal:${TF_DESKTOP_PORT:-3104}']
         labels:
           service: 'claude-flow'
           tier: 'ai'
@@ -46,7 +46,7 @@ scrape_configs:
   # Health checks endpoint
   - job_name: 'health'
     static_configs:
-      - targets: ['host.docker.internal:5000']
+      - targets: ['host.docker.internal:${TF_API_PORT:-5046}']
         labels:
           service: 'health-checks'
           tier: 'monitoring'
@@ -56,7 +56,7 @@ scrape_configs:
   # Module status endpoint
   - job_name: 'modules'
     static_configs:
-      - targets: ['host.docker.internal:5000']
+      - targets: ['host.docker.internal:${TF_API_PORT:-5046}']
         labels:
           service: 'modules'
           tier: 'system'
@@ -74,7 +74,7 @@ scrape_configs:
   # Prometheus self-monitoring
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['localhost:\${{TF_PROMETHEUS_PORT:-9090}}']
         labels:
           service: 'prometheus'
           tier: 'monitoring'

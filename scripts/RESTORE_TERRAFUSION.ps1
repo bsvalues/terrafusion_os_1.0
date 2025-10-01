@@ -170,7 +170,7 @@ try {
         mcpTools = 87
     } | ConvertTo-Json
     
-    $response = Invoke-RestMethod -Uri "http://localhost:5000/api/swarm/initialize" `
+    $response = Invoke-RestMethod -Uri "http://localhost:\${{TF_API_PORT:-5000}}/api/swarm/initialize" `
         -Method POST -Body $swarmConfig -ContentType "application/json" `
         -TimeoutSec 5 -ErrorAction Stop
     
@@ -241,7 +241,7 @@ foreach ($tier in $modules.Keys) {
                 tier = $tier
             } | ConvertTo-Json
             
-            Invoke-RestMethod -Uri "http://localhost:5000/api/modules/register" `
+            Invoke-RestMethod -Uri "http://localhost:\${{TF_API_PORT:-5000}}/api/modules/register" `
                 -Method POST -Body $moduleConfig -ContentType "application/json" `
                 -TimeoutSec 2 -ErrorAction Stop | Out-Null
         } catch {
@@ -282,7 +282,7 @@ try {
         adapters = @("Harris PACS", "Tyler", "Aumentum", "Vision")
     } | ConvertTo-Json
     
-    Invoke-RestMethod -Uri "http://localhost:5000/api/sync/harris-pacs/connect" `
+    Invoke-RestMethod -Uri "http://localhost:\${{TF_API_PORT:-5000}}/api/sync/harris-pacs/connect" `
         -Method POST -Body $harrisPacsConfig -ContentType "application/json" `
         -TimeoutSec 5 -ErrorAction Stop | Out-Null
     
@@ -300,9 +300,9 @@ Write-Host "=======================================" -ForegroundColor Yellow
 if ($dockerRunning -and (Test-Path "docker-compose.monitoring.yml")) {
     Write-Host "→ Starting monitoring services..." -ForegroundColor Cyan
     docker-compose -f docker-compose.monitoring.yml up -d 2>&1 | Out-Null
-    Write-Host "✓ Prometheus deployed (port 9090)" -ForegroundColor Green
-    Write-Host "✓ Grafana deployed (port 3009)" -ForegroundColor Green
-    Write-Host "✓ Alertmanager deployed (port 9093)" -ForegroundColor Green
+    Write-Host "✓ Prometheus deployed (port \${{TF_PROMETHEUS_PORT:-9090}})" -ForegroundColor Green
+    Write-Host "✓ Grafana deployed (port \${{TF_PROMETHEUS_PORT:-9090}})" -ForegroundColor Green
+    Write-Host "✓ Alertmanager deployed (port \${{TF_PROMETHEUS_PORT:-9090}})" -ForegroundColor Green
 }
 
 # ============================================
@@ -314,13 +314,13 @@ Write-Host "============================" -ForegroundColor Yellow
 Start-Sleep -Seconds 5  # Allow services to stabilize
 
 $services = @(
-    @{Name="Backend API"; URL="http://localhost:5000/health"},
-    @{Name="Frontend PWA"; URL="http://localhost:3000"},
-    @{Name="AI Command Brain"; URL="http://localhost:3001/api/ai-command-brain/health"},
-    @{Name="AI Swarm"; URL="http://localhost:3002/api/ai-swarm/health"},
-    @{Name="AI Advanced"; URL="http://localhost:3003/api/ai-advanced/health"},
-    @{Name="Prometheus"; URL="http://localhost:9090/-/ready"},
-    @{Name="Grafana"; URL="http://localhost:3009/api/health"}
+    @{Name="Backend API"; URL="http://localhost:\${{TF_API_PORT:-5000}}/health"},
+    @{Name="Frontend PWA"; URL="http://localhost:\${{TF_API_PORT:-5000}}"},
+    @{Name="AI Command Brain"; URL="http://localhost:\${{TF_API_PORT:-5000}}/api/ai-command-brain/health"},
+    @{Name="AI Swarm"; URL="http://localhost:\${{TF_API_PORT:-5000}}/api/ai-swarm/health"},
+    @{Name="AI Advanced"; URL="http://localhost:\${{TF_API_PORT:-5000}}/api/ai-advanced/health"},
+    @{Name="Prometheus"; URL="http://localhost:\${{TF_API_PORT:-5000}}/-/ready"},
+    @{Name="Grafana"; URL="http://localhost:\${{TF_API_PORT:-5000}}/api/health"}
 )
 
 $operational = 0
@@ -368,13 +368,13 @@ if ($operational -eq $services.Count) {
 }
 
 Write-Host "`nACCESS POINTS:" -ForegroundColor Cyan
-Write-Host "• Frontend: http://localhost:3000" -ForegroundColor White
-Write-Host "• Backend API: http://localhost:5000" -ForegroundColor White
-Write-Host "• Grafana: http://localhost:3009 (admin/terrafusion2025)" -ForegroundColor White
-Write-Host "• Prometheus: http://localhost:9090" -ForegroundColor White
+Write-Host "• Frontend: http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor White
+Write-Host "• Backend API: http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor White
+Write-Host "• Grafana: http://localhost:\${{TF_API_PORT:-5000}} (admin/terrafusion2025)" -ForegroundColor White
+Write-Host "• Prometheus: http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor White
 
 Write-Host "`nNEXT STEPS:" -ForegroundColor Yellow
-Write-Host "1. Access frontend at http://localhost:3000" -ForegroundColor White
+Write-Host "1. Access frontend at http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor White
 Write-Host "2. Login to Grafana for monitoring" -ForegroundColor White
 Write-Host "3. Verify module functionality" -ForegroundColor White
 Write-Host "4. Configure county-specific settings" -ForegroundColor White

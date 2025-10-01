@@ -1,0 +1,165 @@
+{
+  "timestamp": "2025-06-21T02:25:47.021742",
+  "deployment_stats": {
+    "total_apps": 21,
+    "deployed_apps": 3,
+    "failed_apps": 5,
+    "start_time": 1750497890.3201227,
+    "end_time": 1750497947.0080743
+  },
+  "applications": {
+    "terrafusion_build": {
+      "name": "TerraFusion Build",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "FAILED",
+      "tech_stack": "Node.js + Express + React",
+      "description": "Property Assessment Platform"
+    },
+    "terraflow": {
+      "name": "TerraFlow",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "RUNNING",
+      "tech_stack": "Flask + SQLAlchemy + SQLite",
+      "description": "Workflow Management Engine"
+    },
+    "terrafusion_sync": {
+      "name": "TerraFusionSync",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "RUNNING",
+      "tech_stack": "Flask + SQLAlchemy + Multi-DB",
+      "description": "Data Synchronization Hub"
+    },
+    "terra_agent": {
+      "name": "TerraAgent",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "RUNNING",
+      "tech_stack": "Flask + AI Integration",
+      "description": "AI Management System"
+    },
+    "terrafusion_assessor": {
+      "name": "TerraFusionAssessor",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "FAILED",
+      "tech_stack": "Next.js + React + TypeScript",
+      "description": "Enterprise Assessment Platform"
+    },
+    "terrafusion_dashboard": {
+      "name": "TerraFusionDashboard",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "FAILED",
+      "tech_stack": "React + TypeScript + PostgreSQL",
+      "description": "Executive Command Center"
+    },
+    "terra_miner": {
+      "name": "TerraMiner",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "FAILED",
+      "tech_stack": "Flask + Celery + Redis + PostgreSQL",
+      "description": "Advanced Data Mining & Analytics"
+    },
+    "terrafusion_levy": {
+      "name": "TerraFusionLevy",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "PRODUCTION",
+      "tech_stack": "Flask + PostgreSQL + Advanced Tax Logic",
+      "description": "Tax Levy Management System"
+    },
+    "terrafusion_pro": {
+      "name": "TerraFusionPro",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "READY",
+      "tech_stack": "Next.js + TypeScript + PostgreSQL",
+      "description": "Professional Services Portal"
+    },
+    "terrafusion_permit": {
+      "name": "TerraFusionPermit",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "READY",
+      "tech_stack": "React + Node.js + PostgreSQL",
+      "description": "Permit Management System"
+    },
+    "bcbs_gis_pro": {
+      "name": "BCBSGISPRO",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "READY",
+      "tech_stack": "React + ArcGIS API + Python Backend",
+      "description": "GIS Professional Tools"
+    },
+    "terrafusion_mobile": {
+      "name": "TerraFusionMobile",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "DEVELOPMENT",
+      "tech_stack": "React Native + Node.js + SQLite",
+      "description": "Mobile Field Assessment"
+    },
+    "terrafusion_api": {
+      "name": "TerraFusionAPI",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "DEVELOPMENT",
+      "tech_stack": "Node.js + Express + Redis + PostgreSQL",
+      "description": "Unified API Gateway"
+    },
+    "terrafusion_reports": {
+      "name": "TerraFusionReports",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "DEVELOPMENT",
+      "tech_stack": "Python + FastAPI + PostgreSQL + React",
+      "description": "Advanced Reporting Engine"
+    },
+    "terrafusion_ai": {
+      "name": "TerraFusionAI",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "DEVELOPMENT",
+      "tech_stack": "Python + PyTorch + FastAPI + GPU Support",
+      "description": "Dedicated AI Processing"
+    },
+    "terrafusion_notify": {
+      "name": "TerraFusionNotify",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "DEVELOPMENT",
+      "tech_stack": "Node.js + Redis + WebSocket + React",
+      "description": "Notification & Communication Hub"
+    },
+    "terrafusion_auth": {
+      "name": "TerraFusionAuth",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "PLANNED",
+      "tech_stack": "Node.js + OAuth2 + LDAP + PostgreSQL",
+      "description": "Identity & Access Management"
+    },
+    "terrafusion_audit": {
+      "name": "TerraFusionAudit",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "PLANNED",
+      "tech_stack": "Python + FastAPI + PostgreSQL + Elasticsearch",
+      "description": "Compliance & Audit System"
+    },
+    "terrafusion_backup": {
+      "name": "TerraFusionBackup",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "PLANNED",
+      "tech_stack": "Python + PostgreSQL + S3 + Docker",
+      "description": "Data Protection & Recovery"
+    },
+    "terrafusion_monitor": {
+      "name": "TerraFusionMonitor",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "PLANNED",
+      "tech_stack": "Python + Prometheus + Grafana + AlertManager",
+      "description": "Advanced System Monitoring"
+    },
+    "terrafusion_devops": {
+      "name": "TerraFusionDevOps",
+      "port": \${{TF_API_PORT:-5000}},
+      "status": "PLANNED",
+      "tech_stack": "Python + Docker + Kubernetes + GitLab CI",
+      "description": "Development & Deployment"
+    }
+  },
+  "infrastructure_status": {
+    "postgresql": false,
+    "redis": false,
+    "elasticsearch": false,
+    "nginx": false
+  }
+}

@@ -32,7 +32,7 @@ export class GeniusUXService {
     performanceScore: 0,
     consistencyScore: 0,
     overallScore: 0,
-    recommendations: []
+    recommendations: [],
   };
 
   private constructor() {
@@ -51,9 +51,9 @@ export class GeniusUXService {
    * Initialize DOM observer to enhance new elements automatically
    */
   private initializeObserver(): void {
-    this.observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
+    this.observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             this.enhanceElement(node as HTMLElement);
           }
@@ -63,7 +63,7 @@ export class GeniusUXService {
 
     this.observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
   }
 
@@ -85,8 +85,10 @@ export class GeniusUXService {
    * Scan entire document and enhance all eligible elements
    */
   private scanAndEnhanceAll(): void {
-    const elements = document.querySelectorAll('button, input, select, [role="button"], .card, .notification');
-    elements.forEach((element) => {
+    const elements = document.querySelectorAll(
+      'button, input, select, [role="button"], .card, .notification'
+    );
+    elements.forEach(element => {
       this.enhanceElement(element as HTMLElement);
     });
   }
@@ -261,7 +263,7 @@ export class GeniusUXService {
   private applyEnhancements(enhancement: GeniusEnhancement): void {
     const { element, enhancements } = enhancement;
 
-    enhancements.forEach((enhancementType) => {
+    enhancements.forEach(enhancementType => {
       switch (enhancementType) {
         case 'add-ripple-effect':
           this.addRippleEffect(element);
@@ -300,7 +302,7 @@ export class GeniusUXService {
     element.style.position = 'relative';
     element.style.overflow = 'hidden';
 
-    element.addEventListener('click', (event) => {
+    element.addEventListener('click', event => {
       const rect = element.getBoundingClientRect();
       const size = Math.max(rect.width, rect.height);
       const x = event.clientX - rect.left - size / 2;
@@ -347,7 +349,7 @@ export class GeniusUXService {
    */
   private addHoverAnimation(element: HTMLElement): void {
     element.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
-    
+
     element.addEventListener('mouseenter', () => {
       element.style.transform = 'translateY(-2px)';
       element.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
@@ -379,7 +381,7 @@ export class GeniusUXService {
    */
   private addAccessibleName(element: HTMLElement): void {
     const select = element as HTMLSelectElement;
-    
+
     // Try to find associated label
     const label = document.querySelector(`label[for="${select.id}"]`);
     if (label) {
@@ -391,7 +393,7 @@ export class GeniusUXService {
     // Try to infer from context
     const parent = select.parentElement;
     const context = parent?.textContent?.trim() || '';
-    
+
     // Generate appropriate title based on context
     let title = 'Select an option';
     if (context.toLowerCase().includes('county')) {
@@ -413,7 +415,7 @@ export class GeniusUXService {
    */
   private addHoverElevation(element: HTMLElement): void {
     element.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
-    
+
     element.addEventListener('mouseenter', () => {
       element.style.transform = 'translateY(-4px)';
       element.style.boxShadow = '0 8px 25px rgba(0, 229, 255, 0.15)';
@@ -435,9 +437,9 @@ export class GeniusUXService {
     let accessibleElements = 0;
     let performantElements = 0;
 
-    elements.forEach((element) => {
+    elements.forEach(element => {
       const htmlElement = element as HTMLElement;
-      
+
       // Check if enhanced
       if (this.enhancedElements.has(htmlElement)) {
         enhancedElements++;
@@ -458,9 +460,15 @@ export class GeniusUXService {
     const accessibilityScore = totalElements > 0 ? (accessibleElements / totalElements) * 100 : 100;
     const performanceScore = totalElements > 0 ? (performantElements / totalElements) * 100 : 100;
     const consistencyScore = this.calculateConsistencyScore();
-    const overallScore = (delightScore + accessibilityScore + performanceScore + consistencyScore) / 4;
+    const overallScore =
+      (delightScore + accessibilityScore + performanceScore + consistencyScore) / 4;
 
-    const recommendations = this.generateRecommendations(delightScore, accessibilityScore, performanceScore, consistencyScore);
+    const recommendations = this.generateRecommendations(
+      delightScore,
+      accessibilityScore,
+      performanceScore,
+      consistencyScore
+    );
 
     this.metrics = {
       delightScore,
@@ -468,7 +476,7 @@ export class GeniusUXService {
       performanceScore,
       consistencyScore,
       overallScore,
-      recommendations
+      recommendations,
     };
 
     return this.metrics;
@@ -479,9 +487,13 @@ export class GeniusUXService {
    */
   private isAccessible(element: HTMLElement): boolean {
     const tagName = element.tagName.toLowerCase();
-    
+
     if (tagName === 'select') {
-      return !!(element.getAttribute('title') || element.getAttribute('aria-label') || element.getAttribute('aria-labelledby'));
+      return !!(
+        element.getAttribute('title') ||
+        element.getAttribute('aria-label') ||
+        element.getAttribute('aria-labelledby')
+      );
     }
 
     if (tagName === 'button' || element.getAttribute('role') === 'button') {
@@ -507,8 +519,9 @@ export class GeniusUXService {
     // Check for consistent color usage, typography, spacing
     const buttons = document.querySelectorAll('button');
     const consistentButtons = Array.from(buttons).filter(button => {
-      return button.classList.contains('genius-enhanced') || 
-             button.classList.contains('genius-button');
+      return (
+        button.classList.contains('genius-enhanced') || button.classList.contains('genius-button')
+      );
     });
 
     return buttons.length > 0 ? (consistentButtons.length / buttons.length) * 100 : 100;
@@ -517,7 +530,12 @@ export class GeniusUXService {
   /**
    * Generate improvement recommendations
    */
-  private generateRecommendations(delight: number, accessibility: number, performance: number, consistency: number): string[] {
+  private generateRecommendations(
+    delight: number,
+    accessibility: number,
+    performance: number,
+    consistency: number
+  ): string[] {
     const recommendations: string[] = [];
 
     if (delight < 80) {
@@ -525,15 +543,21 @@ export class GeniusUXService {
     }
 
     if (accessibility < 95) {
-      recommendations.push('♿ Improve accessibility with proper ARIA labels and keyboard navigation');
+      recommendations.push(
+        '♿ Improve accessibility with proper ARIA labels and keyboard navigation'
+      );
     }
 
     if (performance < 85) {
-      recommendations.push('⚡ Optimize performance with smooth transitions and efficient animations');
+      recommendations.push(
+        '⚡ Optimize performance with smooth transitions and efficient animations'
+      );
     }
 
     if (consistency < 90) {
-      recommendations.push('🎯 Improve consistency by using the Terrafusion Genius component library');
+      recommendations.push(
+        '🎯 Improve consistency by using the Terrafusion Genius component library'
+      );
     }
 
     if (recommendations.length === 0) {

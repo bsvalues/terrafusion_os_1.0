@@ -14,7 +14,7 @@ const requiredFiles = [
   'src/components/MLOptimizationDashboard.tsx',
   'src/components/GovernmentAgentsDashboard.tsx',
   'src/core/MLOptimizationEngine.ts',
-  'src/core/GovernmentSpecializedAgents.ts'
+  'src/core/GovernmentSpecializedAgents.ts',
 ];
 
 console.log('\n📁 Checking required files...');
@@ -35,7 +35,7 @@ console.log('\n📦 Checking dependencies...');
 try {
   const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
   const requiredDeps = ['react', 'lucide-react'];
-  
+
   requiredDeps.forEach(dep => {
     if (packageJson.dependencies[dep] || packageJson.devDependencies[dep]) {
       console.log(`✅ ${dep} - Available`);
@@ -63,7 +63,7 @@ console.log('\n📚 Checking node_modules...');
 const nodeModulesPath = path.join(__dirname, 'node_modules');
 if (fs.existsSync(nodeModulesPath)) {
   console.log('✅ node_modules directory exists');
-  
+
   // Check for key packages
   const keyPackages = ['react', 'lucide-react'];
   keyPackages.forEach(pkg => {
@@ -81,11 +81,7 @@ if (fs.existsSync(nodeModulesPath)) {
 
 // Test 5: Check for build artifacts
 console.log('\n🏗️ Checking build artifacts...');
-const buildFiles = [
-  'dist',
-  'build',
-  '.next'
-];
+const buildFiles = ['dist', 'build', '.next'];
 
 buildFiles.forEach(buildDir => {
   const buildPath = path.join(__dirname, buildDir);
@@ -100,8 +96,12 @@ buildFiles.forEach(buildDir => {
 console.log('\n📊 Test Summary');
 console.log('================');
 console.log(`Required Files: ${allFilesExist ? '✅ All Present' : '❌ Some Missing'}`);
-console.log(`Dependencies: ${fs.existsSync(nodeModulesPath) ? '✅ Installed' : '❌ Not Installed'}`);
-console.log(`TypeScript: ${fs.existsSync(path.join(__dirname, 'tsconfig.json')) ? '✅ Configured' : '❌ Not Configured'}`);
+console.log(
+  `Dependencies: ${fs.existsSync(nodeModulesPath) ? '✅ Installed' : '❌ Not Installed'}`
+);
+console.log(
+  `TypeScript: ${fs.existsSync(path.join(__dirname, 'tsconfig.json')) ? '✅ Configured' : '❌ Not Configured'}`
+);
 
 if (allFilesExist && fs.existsSync(nodeModulesPath)) {
   console.log('\n🎉 System appears to be ready for testing!');
@@ -116,4 +116,4 @@ if (allFilesExist && fs.existsSync(nodeModulesPath)) {
   }
 }
 
-console.log('\n🚀 Terrafusion Hybrid Agent System Test Complete!');
+console.log('\n🚀 Terrafusion Hybrid Agent System Test Your path is clear.');

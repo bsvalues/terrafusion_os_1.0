@@ -113,7 +113,7 @@ echo "════════════════════════�
 echo "Monitor progress:     tmux attach -t terrafusion-monitor"
 echo "View sync logs:       tail -f /var/log/terrafusion/harris-sync.log"
 echo "View OS logs:         tail -f /var/log/terrafusion/os-core.log"
-echo "Dashboard:            http://localhost:3000/monitoring"
+echo "Dashboard:            http://localhost:\${{TF_FRONTEND_PORT:-3000}}/monitoring"
 echo "Validation suite:     psql -d terrafusion_production -f scripts/production/validate-harris-sync.sql"
 echo ""
 echo "Emergency stop:       sudo systemctl stop terrafusion-harris-sync"

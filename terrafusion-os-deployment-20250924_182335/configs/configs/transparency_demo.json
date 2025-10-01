@@ -1,0 +1,342 @@
+{
+  "property_id": "P2024-001234",
+  "address": "123 Main Street, Benton County, WA",
+  "assessment_value": 433496.57883,
+  "confidence_score": 0.9144444444444445,
+  "assessment_date": "2025-09-09T12:02:46.917580",
+  "processing_time": 0.79666,
+  "transparency_report": {
+    "complete_steps": [
+      {
+        "step_number": 1,
+        "action": "Data Collection & Validation",
+        "description": "Gathering all available property information from multiple sources",
+        "formula": null,
+        "inputs": {
+          "address": "123 Main Street, Benton County, WA",
+          "parcel_id": "P2024-001234",
+          "square_feet": 2500,
+          "bedrooms": 4,
+          "bathrooms": 2.5,
+          "year_built": 1995,
+          "lot_size": 8500
+        },
+        "calculation": "Validated and normalized property attributes",
+        "result": {
+          "parcel_id": "P2024-001234",
+          "address": "123 Main Street, Benton County, WA",
+          "square_feet": 2500,
+          "bedrooms": 4,
+          "bathrooms": 2.5,
+          "year_built": 1995,
+          "lot_size": 8500,
+          "type": "residential"
+        },
+        "confidence": 0.95,
+        "data_sources": [
+          "County Assessor Database",
+          "MLS Listings",
+          "Public Records",
+          "GIS Database"
+        ],
+        "timestamp": "2025-09-09T12:02:46.121922"
+      },
+      {
+        "step_number": 2,
+        "action": "Finding Comparable Properties",
+        "description": "Identifying similar properties sold within last 6 months and 2-mile radius",
+        "formula": "similarity_score = weighted_average(size_match, age_match, location_match, features_match)",
+        "inputs": {
+          "search_radius": "2 miles",
+          "time_window": "6 months",
+          "min_similarity": 0.85,
+          "property_type": "residential"
+        },
+        "calculation": "Found 5 comparable properties with similarity > 85%",
+        "result": [
+          {
+            "address": "1000 Similar St",
+            "sale_price": 381157,
+            "sale_date": "2025-05-14T12:02:46.825021",
+            "square_feet": 2333,
+            "similarity_score": 0.9776864821818831
+          },
+          {
+            "address": "1100 Similar St",
+            "sale_price": 370034,
+            "sale_date": "2025-04-18T12:02:46.825021",
+            "square_feet": 2532,
+            "similarity_score": 0.9938141138759635
+          },
+          {
+            "address": "1200 Similar St",
+            "sale_price": 420108,
+            "sale_date": "2025-07-04T12:02:46.825021",
+            "square_feet": 2458,
+            "similarity_score": 0.9327333949231408
+          },
+          {
+            "address": "1300 Similar St",
+            "sale_price": 370472,
+            "sale_date": "2025-03-25T12:02:46.825021",
+            "square_feet": 2640,
+            "similarity_score": 0.9442308522795898
+          },
+          {
+            "address": "1400 Similar St",
+            "sale_price": 380734,
+            "sale_date": "2025-06-12T12:02:46.825021",
+            "square_feet": 2652,
+            "similarity_score": 0.955253274279206
+          }
+        ],
+        "confidence": 0.92,
+        "data_sources": [
+          "MLS Recent Sales",
+          "County Recorder",
+          "Real Estate Transactions Database"
+        ],
+        "timestamp": "2025-09-09T12:02:46.825021"
+      },
+      {
+        "step_number": 3,
+        "action": "Calculating Base Value",
+        "description": "Using comparable sales to establish baseline property value",
+        "formula": "base_value = median(comparable_prices_per_sqft) \u00d7 property_square_feet",
+        "inputs": {
+          "comparable_prices": [381157, 370034, 420108, 370472, 380734],
+          "median_price_per_sqft": 146.1429699842022,
+          "property_sqft": 2500
+        },
+        "calculation": "$146.14/sqft \u00d7 2500 sqft = $365,357.42",
+        "result": "365357.42",
+        "confidence": 0.89,
+        "data_sources": [
+          "Comparable Sales Analysis",
+          "Statistical Median Calculation"
+        ],
+        "timestamp": "2025-09-09T12:02:46.916442"
+      },
+      {
+        "step_number": 4,
+        "action": "Applying Market Adjustments",
+        "description": "Adjusting for current real estate market conditions",
+        "formula": "adjusted_value = base_value \u00d7 market_multiplier",
+        "inputs": {
+          "base_value": 365357.42,
+          "market_data": {
+            "appreciation_rate": 0.05,
+            "market_temperature": "hot",
+            "inventory_level": "low",
+            "days_on_market_avg": 15,
+            "list_to_sale_ratio": 1.02
+          },
+          "market_multiplier": 1.05
+        },
+        "calculation": "$365,357.42 \u00d7 1.050 = $383,625.29",
+        "result": "383625.2910",
+        "confidence": 0.87,
+        "data_sources": [
+          "MLS Market Statistics",
+          "Federal Reserve Economic Data",
+          "Local Real Estate Board Reports"
+        ],
+        "timestamp": "2025-09-09T12:02:46.917580"
+      },
+      {
+        "step_number": 5,
+        "action": "Applying Local Property Factors",
+        "description": "Adjusting for property-specific characteristics and location benefits",
+        "formula": "final_value = adjusted_value \u00d7 (1 + sum(local_factor_adjustments))",
+        "inputs": {
+          "adjusted_value": 383625.291,
+          "factors": {
+            "school_district_rating": {
+              "value": 9,
+              "adjustment": 0.05
+            },
+            "proximity_to_amenities": {
+              "value": "high",
+              "adjustment": 0.02
+            },
+            "road_frontage": {
+              "value": "corner_lot",
+              "adjustment": 0.01
+            },
+            "flood_zone": {
+              "value": "no",
+              "adjustment": 0
+            },
+            "view": {
+              "value": "mountain",
+              "adjustment": 0.03
+            },
+            "condition": {
+              "value": "excellent",
+              "adjustment": 0.02
+            }
+          },
+          "total_adjustment": 0.13
+        },
+        "calculation": "$383,625.29 \u00d7 1.130 = $433,496.58",
+        "result": "433496.578830",
+        "confidence": 0.91,
+        "data_sources": [
+          "School District Database",
+          "GIS Proximity Analysis",
+          "Property Condition Assessment",
+          "Flood Zone Maps"
+        ],
+        "timestamp": "2025-09-09T12:02:46.917580"
+      },
+      {
+        "step_number": 6,
+        "action": "Quality Assurance Validation",
+        "description": "Verifying assessment accuracy and data quality",
+        "formula": null,
+        "inputs": {
+          "final_value": 433496.57883,
+          "qa_checks": {
+            "value_within_expected_range": true,
+            "sufficient_comparables": true,
+            "data_completeness": true,
+            "calculation_accuracy": true,
+            "outlier_detection": "passed"
+          }
+        },
+        "calculation": "All quality checks passed",
+        "result": {
+          "qa_status": "APPROVED"
+        },
+        "confidence": 0.95,
+        "data_sources": [
+          "Internal QA System",
+          "Statistical Validation",
+          "Historical Assessment Database"
+        ],
+        "timestamp": "2025-09-09T12:02:46.917580"
+      }
+    ],
+    "calculation_hash": "2bfdc53dd70f2d79d74622079206004ea544c823b93d6cf63b12375011d482c6",
+    "audit_timestamp": "2025-09-09T12:02:46.920291",
+    "version": "1.0.0"
+  },
+  "audit_trail": {
+    "entries": [
+      {
+        "step": 1,
+        "action": "Data Collection & Validation",
+        "timestamp": "2025-09-09T12:02:46.121922",
+        "data_hash": "277ae8e66013cf90eae8653345e6548119352c24859667afb0effa2a78957ce9",
+        "result_hash": "c049a0f72f53015c0a261764c1e39923a7dc7a2c4a0513aa4aad361df74eb254"
+      },
+      {
+        "step": 2,
+        "action": "Finding Comparable Properties",
+        "timestamp": "2025-09-09T12:02:46.825021",
+        "data_hash": "f8bad29b066e9e88b9c658fe7ef98c6c0e845f31048b7cd1cc5784dc2b685c5b",
+        "result_hash": "727373ebf501f4b22ec2c2b3a05651b63505b61cad5440b65666c8f6072ec6a5"
+      },
+      {
+        "step": 3,
+        "action": "Calculating Base Value",
+        "timestamp": "2025-09-09T12:02:46.916442",
+        "data_hash": "fbeadf81df2144b5b2453903f91a11c0b29d3afcb03efd294205dc3bff24762c",
+        "result_hash": "727bc35c0fe296289172dff1376d14ccf16d1af7843b73b5bbd2caf154e73742"
+      },
+      {
+        "step": 4,
+        "action": "Applying Market Adjustments",
+        "timestamp": "2025-09-09T12:02:46.917580",
+        "data_hash": "e86e745a5afbf51a281034a2f19573fb85c83c210e6cd34ba8cd7629eaf3cb2b",
+        "result_hash": "e00766e827879819bd8df6790a620e2c0a95eb52ce9a07beb0ba45a53c4d0a43"
+      },
+      {
+        "step": 5,
+        "action": "Applying Local Property Factors",
+        "timestamp": "2025-09-09T12:02:46.917580",
+        "data_hash": "043fb50935911163206b6fd1d15543c863d0a39c353681025955d80c9acc0298",
+        "result_hash": "c73a8432ad41b83336f845daa8fa3693d9e4b4381e9dd84eb9af274dcecf9f68"
+      },
+      {
+        "step": 6,
+        "action": "Quality Assurance Validation",
+        "timestamp": "2025-09-09T12:02:46.917580",
+        "data_hash": "4a0935428a88b72a0de591fb35288208a718cbba61931462964559c95b551488",
+        "result_hash": "9ea392498b8f22303c24296a7f5fec8bd9023c717b92034dd688bdf457ff6112"
+      }
+    ],
+    "chain_hash": "2bfdc53dd70f2d79d74622079206004ea544c823b93d6cf63b12375011d482c6",
+    "created_at": "2025-09-09T12:02:46.921309"
+  },
+  "comparable_properties": [
+    {
+      "address": "1000 Similar St",
+      "sale_price": 381157,
+      "sale_date": "2025-05-14T12:02:46.825021",
+      "square_feet": 2333,
+      "similarity_score": 0.9776864821818831
+    },
+    {
+      "address": "1100 Similar St",
+      "sale_price": 370034,
+      "sale_date": "2025-04-18T12:02:46.825021",
+      "square_feet": 2532,
+      "similarity_score": 0.9938141138759635
+    },
+    {
+      "address": "1200 Similar St",
+      "sale_price": 420108,
+      "sale_date": "2025-07-04T12:02:46.825021",
+      "square_feet": 2458,
+      "similarity_score": 0.9327333949231408
+    },
+    {
+      "address": "1300 Similar St",
+      "sale_price": 370472,
+      "sale_date": "2025-03-25T12:02:46.825021",
+      "square_feet": 2640,
+      "similarity_score": 0.9442308522795898
+    },
+    {
+      "address": "1400 Similar St",
+      "sale_price": 380734,
+      "sale_date": "2025-06-12T12:02:46.825021",
+      "square_feet": 2652,
+      "similarity_score": 0.955253274279206
+    }
+  ],
+  "market_conditions": {
+    "appreciation_rate": 0.05,
+    "market_temperature": "hot",
+    "inventory_level": "low",
+    "days_on_market_avg": 15,
+    "list_to_sale_ratio": 1.02
+  },
+  "local_factors": {
+    "school_district_rating": {
+      "value": 9,
+      "adjustment": 0.05
+    },
+    "proximity_to_amenities": {
+      "value": "high",
+      "adjustment": 0.02
+    },
+    "road_frontage": {
+      "value": "corner_lot",
+      "adjustment": 0.01
+    },
+    "flood_zone": {
+      "value": "no",
+      "adjustment": 0
+    },
+    "view": {
+      "value": "mountain",
+      "adjustment": 0.03
+    },
+    "condition": {
+      "value": "excellent",
+      "adjustment": 0.02
+    }
+  }
+}

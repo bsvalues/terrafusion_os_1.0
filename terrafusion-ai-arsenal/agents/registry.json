@@ -1,0 +1,152 @@
+{
+  "version": "2.0",
+  "metadata": {
+    "created": "2025-09-13",
+    "system": "TerraFusion OS 2.0",
+    "orchestration_level": "enterprise",
+    "government_compliance": "FISMA_NIST_800_53"
+  },
+  "agents": {
+    "architect": {
+      "id": "architect-001",
+      "capabilities": ["system-design", "code-generation", "documentation", "government-compliance"],
+      "model": "claude-3-opus",
+      "context_window": 200000,
+      "tools": ["code_interpreter", "web_search", "file_system", "git_integration"],
+      "prompts": "../prompts/system/architect.prompt",
+      "specialization": "TerraFusion OS Architecture",
+      "security_clearance": "government_certified",
+      "cost_tier": "premium"
+    },
+    "migration-specialist": {
+      "id": "migration-002", 
+      "capabilities": ["data-migration", "schema-mapping", "validation", "legacy-integration"],
+      "model": "gpt-4-turbo",
+      "context_window": 128000,
+      "tools": ["database_connector", "schema_analyzer", "data_validator", "backup_manager"],
+      "prompts": "../prompts/system/migration.prompt",
+      "specialization": "Enterprise Data Migration",
+      "security_clearance": "confidential",
+      "cost_tier": "standard"
+    },
+    "qa-swarm-leader": {
+      "id": "qa-lead-003",
+      "capabilities": ["test-generation", "coverage-analysis", "bug-detection", "performance-testing"],
+      "model": "claude-3-sonnet",
+      "context_window": 200000,
+      "tools": ["test_runner", "coverage_analyzer", "issue_tracker", "performance_profiler"],
+      "prompts": "../prompts/system/qa-lead.prompt",
+      "specialization": "Government QA Standards",
+      "security_clearance": "secret",
+      "cost_tier": "premium"
+    },
+    "procurement-analyst": {
+      "id": "procurement-004",
+      "capabilities": ["rfp-analysis", "vendor-scoring", "contract-generation", "compliance-validation"],
+      "model": "gpt-4",
+      "context_window": 32000,
+      "tools": ["document_analyzer", "scoring_engine", "template_generator", "compliance_checker"],
+      "prompts": "../prompts/system/procurement.prompt",
+      "specialization": "Government Procurement",
+      "security_clearance": "public_trust",
+      "cost_tier": "standard"
+    },
+    "security-auditor": {
+      "id": "security-005",
+      "capabilities": ["vulnerability-assessment", "penetration-testing", "compliance-audit", "threat-modeling"],
+      "model": "claude-3-opus",
+      "context_window": 200000,
+      "tools": ["security_scanner", "vulnerability_db", "compliance_framework", "threat_intelligence"],
+      "prompts": "../prompts/system/security.prompt",
+      "specialization": "Government Security Standards",
+      "security_clearance": "top_secret",
+      "cost_tier": "premium"
+    },
+    "county-onboarding": {
+      "id": "county-006",
+      "capabilities": ["demo-generation", "training-creation", "documentation", "stakeholder-communication"],
+      "model": "gpt-4-turbo", 
+      "context_window": 128000,
+      "tools": ["presentation_builder", "training_generator", "communication_templates", "demo_orchestrator"],
+      "prompts": "../prompts/system/county-onboarding.prompt",
+      "specialization": "County Government Onboarding",
+      "security_clearance": "public",
+      "cost_tier": "standard"
+    },
+    "performance-analyst": {
+      "id": "performance-007",
+      "capabilities": ["quantum-optimization", "scalability-analysis", "resource-planning", "cost-optimization"],
+      "model": "claude-3-sonnet",
+      "context_window": 200000,
+      "tools": ["performance_profiler", "quantum_engine", "resource_monitor", "cost_calculator"],
+      "prompts": "../prompts/system/performance.prompt",
+      "specialization": "Quantum Performance Engineering",
+      "security_clearance": "confidential",
+      "cost_tier": "premium"
+    },
+    "swarm-coordinator": {
+      "id": "swarm-008",
+      "capabilities": ["agent-orchestration", "task-distribution", "load-balancing", "failure-recovery"],
+      "model": "claude-3-opus",
+      "context_window": 200000,
+      "tools": ["swarm_controller", "task_scheduler", "health_monitor", "recovery_manager"],
+      "prompts": "../prompts/system/swarm-coordinator.prompt",
+      "specialization": "50,000+ Agent Coordination",
+      "security_clearance": "top_secret",
+      "cost_tier": "enterprise"
+    }
+  },
+  "orchestration_rules": {
+    "max_parallel_agents": 50,
+    "timeout_seconds": 600,
+    "retry_policy": {
+      "max_retries": 3,
+      "backoff_multiplier": 2,
+      "circuit_breaker_threshold": 5
+    },
+    "cost_limits": {
+      "per_task_usd": 25,
+      "daily_usd": 2500,
+      "monthly_usd": 75000
+    },
+    "security_policies": {
+      "encryption_required": true,
+      "audit_logging": true,
+      "multi_factor_auth": true,
+      "data_classification": "government"
+    },
+    "performance_targets": {
+      "response_time_ms": 6000,
+      "availability_percent": 99.9,
+      "throughput_ops_sec": 10000
+    }
+  },
+  "swarm_configuration": {
+    "total_agents": 50000,
+    "distribution": {
+      "supreme_commander": 1,
+      "field_generals": 1220,
+      "operational_forces": 48779
+    },
+    "deployment_zones": {
+      "us_west": 15000,
+      "us_east": 15000,
+      "us_central": 10000,
+      "government_cloud": 10000
+    },
+    "communication_protocols": {
+      "primary": "websocket",
+      "backup": "redis_pubsub",
+      "emergency": "direct_tcp"
+    }
+  },
+  "government_compliance": {
+    "standards": ["FISMA", "NIST_800_53", "Section_508", "SOC_2_Type_II"],
+    "certifications": ["FedRAMP_Moderate", "CMMC_Level_3"],
+    "audit_requirements": {
+      "frequency": "quarterly",
+      "retention_years": 7,
+      "encryption_standard": "AES_256_GCM"
+    }
+  }
+}

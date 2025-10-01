@@ -1,0 +1,207 @@
+# TerraFusion OS - Kong Ingress Configuration
+# Government. Transcended.
+# TLS-enabled ingress for government compliance
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: terrafusion-ingress
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os
+    component: ingress
+    government: "true"
+    compliance: "fisma"
+  annotations:
+    kubernetes.io/ingress.class: kong
+    cert-manager.io/cluster-issuer: terrafusion-letsencrypt-prod
+    konghq.com/strip-path: "false"
+    konghq.com/preserve-host: "true"
+    konghq.com/protocols: "https"
+    konghq.com/https-redirect-status-code: "301"
+    # Government security headers
+    konghq.com/plugins: |
+      terrafusion-security-headers,
+      terrafusion-government-compliance
+spec:
+  tls:
+  - hosts:
+    - terrafusion.gov
+    - console.terrafusion.gov
+    - api.terrafusion.gov
+    - benton.terrafusion.gov
+    - yakima.terrafusion.gov
+    secretName: terrafusion-gov-tls-secret
+  
+  rules:
+  # Main TerraFusion Console
+  - host: terrafusion.gov
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: terrafusion-frontend
+            port:
+              number: 3000
+  
+  # Government Console
+  - host: console.terrafusion.gov
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: terrafusion-frontend
+            port:
+              number: 3000
+  
+  # API Gateway
+  - host: api.terrafusion.gov
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: terrafusion-api
+            port:
+              number: 5000
+      - path: /agents
+        pathType: Prefix
+        backend:
+          service:
+            name: ai-agent-coordinator
+            port:
+              number: 8080
+  
+  # Benton County
+  - host: benton.terrafusion.gov
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: terrafusion-frontend
+            port:
+              number: 3000
+  
+  # Yakima County
+  - host: yakima.terrafusion.gov
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: terrafusion-frontend
+            port:
+              number: 3000
+
+---
+# Kong Plugin for Security Headers
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: terrafusion-security-headers
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os
+    government: "true"
+    compliance: "fisma"
+plugin: response-transformer
+config:
+  add:
+    headers:
+    - "X-Frame-Options:DENY"
+    - "X-Content-Type-Options:nosniff"
+    - "X-XSS-Protection:1; mode=block"
+    - "Strict-Transport-Security:max-age=31536000; includeSubDomains"
+    - "Content-Security-Policy:default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' wss: https:; frame-ancestors 'none'"
+    - "Referrer-Policy:strict-origin-when-cross-origin"
+    - "Permissions-Policy:geolocation=(), microphone=(), camera=()"
+    - "X-Government-Compliant:true"
+    - "X-Security-Level:FISMA"
+
+---
+# Kong Plugin for Government Compliance
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: terrafusion-government-compliance
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os
+    government: "true"
+    compliance: "fisma"
+plugin: request-transformer
+config:
+  add:
+    headers:
+    - "X-TerraFusion-Version:1.0.0"
+    - "X-Government-System:TerraFusion OS"
+    - "X-Compliance-Standards:FISMA,Section508,WCAG2.1,SOC2"
+    - "X-Infrastructure-Intelligence:Infinite Scale"
+
+---
+# Rate Limiting for Government APIs
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: terrafusion-rate-limiting
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os
+    government: "true"
+    compliance: "fisma"
+plugin: rate-limiting
+config:
+  minute: 1000
+  hour: 10000
+  day: 50000
+  policy: cluster
+  fault_tolerant: true
+  hide_client_headers: false
+
+---
+# CORS Plugin for Government Frontend
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: terrafusion-cors
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os
+    government: "true"
+    compliance: "fisma"
+plugin: cors
+config:
+  origins:
+  - "https://terrafusion.gov"
+  - "https://console.terrafusion.gov"
+  - "https://benton.terrafusion.gov"
+  - "https://yakima.terrafusion.gov"
+  - "https://*.terrafusion.gov"
+  methods:
+  - GET
+  - POST
+  - PUT
+  - DELETE
+  - PATCH
+  - OPTIONS
+  headers:
+  - Accept
+  - Accept-Version
+  - Content-Length
+  - Content-MD5
+  - Content-Type
+  - Date
+  - X-Auth-Token
+  - X-Government-Agency
+  - X-County-Code
+  - X-TerraFusion-Version
+  credentials: true
+  max_age: 3600

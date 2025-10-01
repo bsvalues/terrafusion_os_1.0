@@ -8,7 +8,10 @@
 
 ## Executive Summary
 
-Through systematic and methodical improvements, we have successfully transformed Terrafusion OS from a development prototype into a production-ready enterprise platform. The system now features comprehensive security, full AI capabilities, and is ready for government deployment.
+Through systematic and methodical improvements, we have successfully transformed
+Terrafusion OS from a development prototype into a production-ready enterprise
+platform. The system now features comprehensive security, full AI capabilities,
+and is ready for government deployment.
 
 ---
 
@@ -38,9 +41,9 @@ Through systematic and methodical improvements, we have successfully transformed
    - Middleware auto-logging
 
 5. **AI Services Implementation** ✅
-   - ai-command-brain (Port 3001)
-   - ai-swarm (Port 3002)
-   - ai-advanced (Port 3003)
+   - ai-command-brain (Port \${{TF_SHELL_PORT:-3001}})
+   - ai-swarm (Port \${{TF_SHELL_PORT:-3001}})
+   - ai-advanced (Port \${{TF_SHELL_PORT:-3001}})
    - 2,016 agents operational
    - 87 MCP tools available
 
@@ -52,27 +55,27 @@ Through systematic and methodical improvements, we have successfully transformed
 
 ```yaml
 Services Running:
-  ✅ Backend API:        http://localhost:5000
-  ✅ Frontend UI:        http://localhost:3000
-  ✅ AI Command Brain:   http://localhost:3001
-  ✅ AI Swarm:          http://localhost:3002
-  ✅ AI Advanced:       http://localhost:3003
+  ✅ Backend API: http://localhost:\${{TF_API_PORT:-5000}}
+  ✅ Frontend UI: http://localhost:\${{TF_API_PORT:-5000}}
+  ✅ AI Command Brain: http://localhost:\${{TF_API_PORT:-5000}}
+  ✅ AI Swarm: http://localhost:\${{TF_API_PORT:-5000}}
+  ✅ AI Advanced: http://localhost:\${{TF_API_PORT:-5000}}
 
 System Metrics:
-  • 32 Modules:         Loaded and operational
-  • 2,016 AI Agents:    Active and healthy
-  • 87 MCP Tools:       Ready for use
-  • Security:           JWT + Audit logging
-  • Database:           SQLite (47 entries)
-  • Performance:        Sub-10ms response times
+  • 32 Modules: Loaded and operational
+  • 2,016 AI Agents: Active and healthy
+  • 87 MCP Tools: Ready for use
+  • Security: JWT + Audit logging
+  • Database: SQLite (47 entries)
+  • Performance: Sub-10ms response times
 
 AI Capabilities:
-  • Command Orchestration:  336 agents
-  • Swarm Processing:       1,008 agents
-  • Advanced Analytics:     672 agents
-  • Revenue Optimization:   Active
-  • Temporal Analysis:      Active
-  • Quantum Performance:    379x speedup
+  • Command Orchestration: 336 agents
+  • Swarm Processing: 1,008 agents
+  • Advanced Analytics: 672 agents
+  • Revenue Optimization: Active
+  • Temporal Analysis: Active
+  • Quantum Performance: 379x speedup
 ```
 
 ---
@@ -82,24 +85,28 @@ AI Capabilities:
 ### Security Triad Complete ✅
 
 **Authentication (WHO):**
+
 - JWT Bearer tokens
 - Secure token generation
 - Token expiration/refresh
 - Session management
 
 **Authorization (WHAT):**
+
 - Role-based access control
 - Resource-level permissions
 - Policy-based security
 - Admin/Assessor/User roles
 
 **Audit (DID):**
+
 - Comprehensive logging
 - Database audit trail
 - API call tracking
 - Security event monitoring
 
 ### Test Credentials
+
 ```
 Admin:    admin / TerraFusion2025!
 Assessor: assessor / Assessor2025!
@@ -112,13 +119,13 @@ Demo:     demo / Demo2025!
 
 ```
 ┌─────────────────────────────────────────────────┐
-│         AI COMMAND BRAIN (Port 3001)            │
+│         AI COMMAND BRAIN (Port \${{TF_SHELL_PORT:-3001}})            │
 │            336 Orchestration Agents             │
 └─────────────────┬──────────────────────────────┘
                   │
                   ▼
 ┌─────────────────────────────────────────────────┐
-│           AI SWARM (Port 3002)                  │
+│           AI SWARM (Port \${{TF_SHELL_PORT:-3001}})                  │
 │            1,008 Processing Agents              │
 │     ┌────────────────────────────────────┐     │
 │     │  • 168 Revenue Hunters            │     │
@@ -132,7 +139,7 @@ Demo:     demo / Demo2025!
                   │
                   ▼
 ┌─────────────────────────────────────────────────┐
-│          AI ADVANCED (Port 3003)                │
+│          AI ADVANCED (Port \${{TF_SHELL_PORT:-3001}})                │
 │           672 Specialized Agents                │
 │     ┌────────────────────────────────────┐     │
 │     │  • Revenue Optimization           │     │
@@ -167,18 +174,21 @@ Monitoring:     █░░░░░░░░░ 10%
 ## 📋 REMAINING TASKS
 
 ### High Priority
+
 - [ ] **Health Check Endpoints** - Comprehensive health monitoring
 - [ ] **Docker Configuration** - Complete containerization
 - [ ] **Rate Limiting** - API throttling
 - [ ] **HTTPS/TLS** - SSL certificates
 
 ### Medium Priority
+
 - [ ] **CI/CD Pipeline** - GitHub Actions setup
 - [ ] **Monitoring Stack** - Prometheus + Grafana
 - [ ] **Load Testing** - Performance benchmarks
 - [ ] **Security Headers** - CSP, HSTS, etc.
 
 ### Lower Priority
+
 - [ ] **Documentation** - API docs, deployment guides
 - [ ] **Unit Tests** - Test coverage
 - [ ] **Integration Tests** - End-to-end testing
@@ -199,6 +209,7 @@ Monitoring:     █░░░░░░░░░ 10%
 ## 🚀 HOW TO USE THE SYSTEM
 
 ### Quick Start
+
 ```bash
 # Start everything
 ./START_TERRAFUSION.ps1
@@ -210,20 +221,22 @@ cd compose/ai-services; npm start
 ```
 
 ### Test Authentication
+
 ```bash
 # Login
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:\${{TF_API_PORT:-5000}}/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"TerraFusion2025!"}'
 
 # Use token
-curl http://localhost:5000/api/auth/validate \
+curl http://localhost:\${{TF_API_PORT:-5000}}/api/auth/validate \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Check AI Status
+
 ```bash
-curl http://localhost:5000/api/swarm/status
+curl http://localhost:\${{TF_API_PORT:-5000}}/api/swarm/status
 ```
 
 ---
@@ -232,15 +245,20 @@ curl http://localhost:5000/api/swarm/status
 
 ### As Your CTO:
 
-**We've made exceptional progress.** The system has evolved from a prototype to a production-ready platform in one systematic session. The security foundation is solid, AI capabilities are operational, and the architecture is enterprise-grade.
+**We've made exceptional progress.** The system has evolved from a prototype to
+a production-ready platform in one systematic session. The security foundation
+is solid, AI capabilities are operational, and the architecture is
+enterprise-grade.
 
 **Next Priority:**
+
 1. **Docker/Kubernetes** - For deployment standardization
 2. **Monitoring Stack** - For production observability
 3. **CI/CD Pipeline** - For automated deployments
 4. **Load Testing** - Validate 379x performance claims
 
-**Time to Production:** With current progress, we're 2-3 weeks from production deployment.
+**Time to Production:** With current progress, we're 2-3 weeks from production
+deployment.
 
 ---
 
@@ -256,11 +274,12 @@ curl http://localhost:5000/api/swarm/status
 - ✅ Frontend responsive
 - ✅ API performant
 
-**The systematic, methodical approach has paid off.** We've built a solid foundation that can scale to serve every county's needs.
+**The systematic, methodical approach has paid off.** We've built a solid
+foundation that can scale to serve every county's needs.
 
 ---
 
 **Quality Over Speed. Done Right The First Time.**
 
-*CTO & Sr. DevOps Engineer*  
-*Terrafusion OS 1.0*
+_CTO & Sr. DevOps Engineer_  
+_Terrafusion OS 1.0_

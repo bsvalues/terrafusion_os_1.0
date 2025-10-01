@@ -65,7 +65,7 @@ namespace TerraFusion.Core.Security
                 {
                     VerificationId = verificationId,
                     IsValid = consensusAchieved,
-                    AgentId = agentId,
+                    AgentId = agentId ?? "",
                     ProvidersUsed = _providers.Count,
                     SuccessfulVerifications = successCount,
                     ConsensusThreshold = requiredConsensus,
@@ -182,7 +182,7 @@ namespace TerraFusion.Core.Security
         /// <summary>
         /// Raise security alert for monitoring systems
         /// </summary>
-        private async Task RaiseSecurityAlertAsync(string alertType, object alertData)
+        private Task RaiseSecurityAlertAsync(string alertType, object alertData)
         {
             var alert = new SecurityAlert
             {
@@ -198,6 +198,8 @@ namespace TerraFusion.Core.Security
 
             // In production, integrate with SIEM/monitoring systems
             // await _alertingService.SendAlertAsync(alert);
+            
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -344,7 +346,7 @@ namespace TerraFusion.Core.Security
         public double ConsensusThreshold { get; set; } = 0.67; // 67% consensus required
         public double HealthThreshold { get; set; } = 0.5; // 50% providers must be healthy
         public bool NodeJsServiceEnabled { get; set; } = true;
-        public string NodeJsServiceUrl { get; set; } = "http://localhost:3000/crypto/verify";
+        public string NodeJsServiceUrl { get; set; } = "http://localhost:3102/crypto/verify";
         public bool OpenSslEnabled { get; set; } = false; // Disabled due to CLI limitations
         public TimeSpan VerificationTimeout { get; set; } = TimeSpan.FromSeconds(30);
     }

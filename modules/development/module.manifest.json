@@ -1,0 +1,16 @@
+{
+  "Name": "development",
+  "DisplayName": "Development",
+  "Description": "TerraFusion development module for system development and testing",
+  "Version": "1.0.0",
+  "Status": "active",
+  "Tier": "Tier 3",
+  "Category": "development",
+  "Author": "TerraFusion OS",
+  "Dependencies": [],
+  "Capabilities": [
+    "development-tools",
+    "system-testing",
+    "module-development"
+  ]
+}

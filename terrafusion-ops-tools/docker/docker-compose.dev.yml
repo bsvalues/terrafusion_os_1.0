@@ -24,7 +24,7 @@ services:
     build:
       context: ../backend
       dockerfile: Dockerfile.dev
-    command: uvicorn main:app --reload --host 0.0.0.0 --port 8080
+    command: uvicorn main:app --reload --host 0.0.0.0 --port \${{TF_ADMIN_PORT:-8080}}
     environment:
       APP_ENV: development
       DATABASE_URL: postgresql://tf_dev:dev_password@db:5432/terrafusion_dev
@@ -37,7 +37,7 @@ services:
       - /app/__pycache__
       - /app/.pytest_cache
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
 
   # AI Engine with hot reload
   ai-engine:
@@ -65,13 +65,13 @@ services:
     command: npm start
     environment:
       NODE_ENV: development
-      REACT_APP_API_URL: http://localhost:8080
-      REACT_APP_AI_URL: http://localhost:8001
+      REACT_APP_API_URL: http://localhost:\${{TF_ADMIN_PORT:-8080}}
+      REACT_APP_AI_URL: http://localhost:\${{TF_ADMIN_PORT:-8080}}
     volumes:
       - ../frontend:/app
       - /app/node_modules
     ports:
-      - "3003:3000"
+      - "3003:${TF_FRONTEND_PORT:-3102}"
 
   # Disable some services in development
   worker:
@@ -95,7 +95,7 @@ services:
     container_name: terrafusion-adminer
     restart: unless-stopped
     ports:
-      - "8088:8080"
+      - "8088:${TF_STATIC_PORT:-8080}"
     environment:
       ADMINER_DEFAULT_SERVER: db
     networks:

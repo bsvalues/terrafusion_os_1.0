@@ -1,0 +1,64 @@
+/* Animation fixes for TerraFusion OS */
+/* This file disables all problematic infinite animations */
+
+/* Disable all infinite animations that cause UI corruption */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Override all infinite animations */
+.pulse,
+.glow,
+.sparkle,
+.intelligence-pulse,
+.transcendence-glow,
+*[class*="pulse"],
+*[class*="glow"],
+*[class*="sparkle"] {
+  animation: none !important;
+  animation-duration: 0s !important;
+  animation-iteration-count: 0 !important;
+}
+
+/* Safe, subtle hover effects only */
+.tf-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Remove problematic CSS variables that might cause loops */
+:root {
+  --animation-duration: 0s;
+  --pulse-duration: 0s;
+  --glow-duration: 0s;
+}
+
+/* Ensure all elements have controlled transitions */
+* {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 0 !important;
+}
+
+/* Safe styling for government elements */
+.tf-government-title {
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  animation: none !important;
+}
+
+.tf-ai-status {
+  color: #10b981;
+  animation: none !important;
+}

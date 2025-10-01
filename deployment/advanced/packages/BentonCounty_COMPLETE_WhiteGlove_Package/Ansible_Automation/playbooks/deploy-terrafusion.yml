@@ -439,21 +439,21 @@
       block:
         - name: Check backend health
           uri:
-            url: "http://localhost:8080/health"
+            url: "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
             status_code: 200
           retries: 5
           delay: 10
           
         - name: Check frontend
           uri:
-            url: "http://localhost:3000"
+            url: "http://localhost:\${{TF_ADMIN_PORT:-8080}}"
             status_code: 200
           retries: 5
           delay: 10
           
         - name: Check AI Swarm status
           uri:
-            url: "http://localhost:8081/swarm/status"
+            url: "http://localhost:\${{TF_ADMIN_PORT:-8080}}/swarm/status"
             status_code: 200
           retries: 5
           delay: 10

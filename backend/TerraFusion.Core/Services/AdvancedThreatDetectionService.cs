@@ -237,7 +237,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<List<ThreatAlert>> GetActiveAlertsAsync()
+        public Task<List<ThreatAlert>> GetActiveAlertsAsync()
         {
             var alerts = new List<ThreatAlert>();
             while (_activeAlerts.TryDequeue(out var alert))
@@ -247,10 +247,10 @@ namespace TerraFusion.Core.Services
                     alerts.Add(alert);
                 }
             }
-            return alerts.OrderByDescending(a => a.Severity).ThenByDescending(a => a.CreatedAt).ToList();
+            return Task.FromResult(alerts.OrderByDescending(a => a.Severity).ThenByDescending(a => a.CreatedAt).ToList());
         }
 
-        public async Task<ThreatComplianceReport> GenerateComplianceReportAsync(DateTime startDate, DateTime endDate)
+        public Task<ThreatComplianceReport> GenerateComplianceReportAsync(DateTime startDate, DateTime endDate)
         {
             var report = new ThreatComplianceReport
             {
@@ -296,10 +296,10 @@ namespace TerraFusion.Core.Services
             _logger.LogInformation("Compliance report generated for period {StartDate} to {EndDate}", 
                 startDate, endDate);
 
-            return report;
+            return Task.FromResult(report);
         }
 
-        public async Task<bool> ApplyDataLossPreventionAsync(string dataType, string content, string userId)
+        public Task<bool> ApplyDataLossPreventionAsync(string dataType, string content, string userId)
         {
             try
             {
@@ -321,22 +321,22 @@ namespace TerraFusion.Core.Services
                             _logger.LogWarning("DLP violation detected: {DataType} found in content for user {UserId}", 
                                 pattern.Key, userId);
                             
-                            await CreateDlpViolationAlert(pattern.Key, userId);
-                            return false; // Block the operation
+                            CreateDlpViolationAlert(pattern.Key, userId).Wait();
+                            return Task.FromResult(false); // Block the operation
                         }
                     }
                 }
 
-                return true; // Allow the operation
+                return Task.FromResult(true); // Allow the operation
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in DLP analysis for user {UserId}", userId);
-                return false; // Fail secure
+                return Task.FromResult(false); // Fail secure
             }
         }
 
-        public async Task<RiskScore> CalculateRiskScoreAsync(string userId, string action, Dictionary<string, object> context)
+        public Task<RiskScore> CalculateRiskScoreAsync(string userId, string action, Dictionary<string, object> context)
         {
             var riskFactors = new List<RiskFactor>();
             double totalScore = 0;
@@ -358,7 +358,7 @@ namespace TerraFusion.Core.Services
             if (context.ContainsKey("ip_address"))
             {
                 var ipAddress = context["ip_address"].ToString();
-                if (await IsHighRiskLocationAsync(ipAddress))
+                if (IsHighRiskLocationAsync(ipAddress ?? "").Result)
                 {
                     riskFactors.Add(new RiskFactor 
                     { 
@@ -384,7 +384,7 @@ namespace TerraFusion.Core.Services
             }
 
             // User behavior risk factors
-            if (await IsAnomalousBehaviorAsync(userId, action))
+            if (IsAnomalousBehaviorAsync(userId, action).Result)
             {
                 riskFactors.Add(new RiskFactor 
                 { 
@@ -405,12 +405,12 @@ namespace TerraFusion.Core.Services
             };
 
             _userRiskScores[userId] = riskScore;
-            return riskScore;
+            return Task.FromResult(riskScore);
         }
 
-        public async Task<List<SecurityRecommendation>> GetSecurityRecommendationsAsync()
+        public Task<List<SecurityRecommendation>> GetSecurityRecommendationsAsync()
         {
-            return new List<SecurityRecommendation>
+            return Task.FromResult(new List<SecurityRecommendation>
             {
                 new SecurityRecommendation
                 {
@@ -446,10 +446,10 @@ namespace TerraFusion.Core.Services
                     EstimatedEffort = TimeSpan.FromDays(30),
                     ImpactScore = 9.2
                 }
-            };
+            });
         }
 
-        public async Task StartContinuousMonitoringAsync()
+        public Task StartContinuousMonitoringAsync()
         {
             _logger.LogInformation("Starting continuous security monitoring");
             
@@ -459,9 +459,11 @@ namespace TerraFusion.Core.Services
             // - User behavior analytics
             // - Threat intelligence feeds
             // - Compliance monitoring
+            
+            return Task.CompletedTask;
         }
 
-        public async Task<bool> ValidateFismaComplianceAsync(string operation, Dictionary<string, object> data)
+        public Task<bool> ValidateFismaComplianceAsync(string operation, Dictionary<string, object> data)
         {
             try
             {
@@ -479,16 +481,16 @@ namespace TerraFusion.Core.Services
                     {
                         _logger.LogWarning("FISMA compliance violation detected for control {Control} in operation {Operation}", 
                             check.Key, operation);
-                        return false;
+                        return Task.FromResult(false);
                     }
                 }
 
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error validating FISMA compliance for operation {Operation}", operation);
-                return false;
+                return Task.FromResult(false);
             }
         }
 
@@ -534,7 +536,7 @@ namespace TerraFusion.Core.Services
                     var responseContent = await response.Content.ReadAsStringAsync();
                     var result = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
                     
-                    if (result.ContainsKey("threat_score"))
+                    if (result?.ContainsKey("threat_score") == true)
                     {
                         return Convert.ToDouble(result["threat_score"]);
                     }
@@ -549,7 +551,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        private async Task<double> AnalyzeBehaviorAsync(SecurityEvent securityEvent)
+        private Task<double> AnalyzeBehaviorAsync(SecurityEvent securityEvent)
         {
             // Simplified behavior analysis
             var behaviorScore = 0.0;
@@ -567,7 +569,7 @@ namespace TerraFusion.Core.Services
                 behaviorScore += 0.4;
             }
 
-            return Math.Min(behaviorScore, 1.0);
+            return Task.FromResult(Math.Min(behaviorScore, 1.0));
         }
 
         private ThreatLevel DetermineThreatLevel(double score)
@@ -634,7 +636,7 @@ namespace TerraFusion.Core.Services
             return actions;
         }
 
-        private async Task CreateThreatAlertAsync(ThreatAssessment assessment, SecurityEvent securityEvent)
+        private Task CreateThreatAlertAsync(ThreatAssessment assessment, SecurityEvent securityEvent)
         {
             var alert = new ThreatAlert
             {
@@ -652,9 +654,11 @@ namespace TerraFusion.Core.Services
             };
 
             _activeAlerts.Enqueue(alert);
+            
+            return Task.CompletedTask;
         }
 
-        private async Task CreateDlpViolationAlert(string dataType, string userId)
+        private Task CreateDlpViolationAlert(string dataType, string userId)
         {
             var alert = new ThreatAlert
             {
@@ -671,21 +675,23 @@ namespace TerraFusion.Core.Services
             };
 
             _activeAlerts.Enqueue(alert);
+            
+            return Task.CompletedTask;
         }
 
-        private async Task<bool> IsHighRiskLocationAsync(string ipAddress)
+        private Task<bool> IsHighRiskLocationAsync(string ipAddress)
         {
             // Simplified geolocation risk check
             var highRiskCountries = new[] { "CN", "RU", "KP", "IR" };
             // In real implementation, would use IP geolocation service
-            return false; // Placeholder
+            return Task.FromResult(false); // Placeholder
         }
 
-        private async Task<bool> IsAnomalousBehaviorAsync(string userId, string action)
+        private Task<bool> IsAnomalousBehaviorAsync(string userId, string action)
         {
             // Simplified anomaly detection
             // In real implementation, would analyze historical user behavior patterns
-            return false; // Placeholder
+            return Task.FromResult(false); // Placeholder
         }
 
         private string GenerateRiskJustification(List<RiskFactor> factors)

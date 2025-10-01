@@ -18,14 +18,14 @@
       {
         "test_name": "Multi-Layer Caching",
         "status": "FAIL",
-        "message": "Cache test failed: Cannot connect to host localhost:5000 ssl:default [The remote computer refused the network connection]",
+        "message": "Cache test failed: Cannot connect to host localhost:${TF_STATIC_PORT:-8080} ssl:default [The remote computer refused the network connection]",
         "metrics": null,
         "duration_ms": 2267.624855041504
       },
       {
         "test_name": "API Response Time",
         "status": "FAIL",
-        "message": "API performance test failed: Cannot connect to host localhost:5000 ssl:default [The remote computer refused the network connection]",
+        "message": "API performance test failed: Cannot connect to host localhost:${TF_STATIC_PORT:-8080} ssl:default [The remote computer refused the network connection]",
         "metrics": null,
         "duration_ms": 2254.349946975708
       },
@@ -126,14 +126,14 @@
       {
         "test_name": "AI Swarm Integration",
         "status": "FAIL",
-        "message": "AI Swarm integration test failed: Cannot connect to host localhost:8001 ssl:default [The remote computer refused the network connection]",
+        "message": "AI Swarm integration test failed: Cannot connect to host localhost:${TF_STATIC_PORT:-8080} ssl:default [The remote computer refused the network connection]",
         "metrics": null,
         "duration_ms": 2267.075777053833
       },
       {
         "test_name": "Claude-Flow Integration",
         "status": "FAIL",
-        "message": "Claude-Flow integration test failed: Cannot connect to host localhost:8002 ssl:default [The remote computer refused the network connection]",
+        "message": "Claude-Flow integration test failed: Cannot connect to host localhost:${TF_STATIC_PORT:-8080} ssl:default [The remote computer refused the network connection]",
         "metrics": null,
         "duration_ms": 2281.343698501587
       },
@@ -156,11 +156,11 @@
     ]
   },
   "recommendations": [
-    "\u274c Fix Performance - Multi-Layer Caching: Cache test failed: Cannot connect to host localhost:5000 ssl:default [The remote computer refused the network connection]",
-    "\u274c Fix Performance - API Response Time: API performance test failed: Cannot connect to host localhost:5000 ssl:default [The remote computer refused the network connection]",
+    "\u274c Fix Performance - Multi-Layer Caching: Cache test failed: Cannot connect to host localhost:${TF_STATIC_PORT:-8080} ssl:default [The remote computer refused the network connection]",
+    "\u274c Fix Performance - API Response Time: API performance test failed: Cannot connect to host localhost:${TF_STATIC_PORT:-8080} ssl:default [The remote computer refused the network connection]",
     "\u274c Fix Documentation - Documentation Framework: Documentation coverage: 0/5 files complete",
-    "\u274c Fix Integration - AI Swarm Integration: AI Swarm integration test failed: Cannot connect to host localhost:8001 ssl:default [The remote computer refused the network connection]",
-    "\u274c Fix Integration - Claude-Flow Integration: Claude-Flow integration test failed: Cannot connect to host localhost:8002 ssl:default [The remote computer refused the network connection]"
+    "\u274c Fix Integration - AI Swarm Integration: AI Swarm integration test failed: Cannot connect to host localhost:${TF_STATIC_PORT:-8080} ssl:default [The remote computer refused the network connection]",
+    "\u274c Fix Integration - Claude-Flow Integration: Claude-Flow integration test failed: Cannot connect to host localhost:${TF_STATIC_PORT:-8080} ssl:default [The remote computer refused the network connection]"
   ],
   "certification_status": {
     "government_ready": false,

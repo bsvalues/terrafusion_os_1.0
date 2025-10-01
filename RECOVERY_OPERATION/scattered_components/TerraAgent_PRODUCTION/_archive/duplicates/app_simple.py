@@ -266,7 +266,7 @@ def create_sample_data():
 def start_metrics_server():
     try:
         start_http_server(8001)
-        logger.info("Prometheus metrics server started on port 8001")
+        logger.info("Prometheus metrics server started on port \${{TF_SERVICE_8001_PORT:-8001}}")
     except Exception as e:
         logger.warning(f"Could not start metrics server: {e}")
 
@@ -447,4 +447,4 @@ if __name__ == '__main__':
         logger.info("TerraAgent initialized successfully")
     
     debug_mode = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
-    app.run(host='0.0.0.0', port=5003, debug=debug_mode) 
+    app.run(host='0.0.0.0', port=\${{TF_API_5003_PORT:-5003}}, debug=debug_mode) 

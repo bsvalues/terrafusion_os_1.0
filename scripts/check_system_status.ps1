@@ -71,24 +71,24 @@ if ($nodeProcess) {
 
 # Try to access frontend
 try {
-    $response = Invoke-WebRequest -Uri "http://localhost:3000" -TimeoutSec 2 -ErrorAction SilentlyContinue
+    $response = Invoke-WebRequest -Uri "http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -TimeoutSec 2 -ErrorAction SilentlyContinue
     if ($response.StatusCode -eq 200) {
-        Write-Host "✅ Frontend is accessible at http://localhost:3000" -ForegroundColor Green
+        Write-Host "✅ Frontend is accessible at http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Green
     }
 } catch {
-    Write-Host "⚠️ Frontend not accessible at http://localhost:3000" -ForegroundColor Yellow
+    Write-Host "⚠️ Frontend not accessible at http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Yellow
 }
 Write-Host ""
 
 # Check backend API
 Write-Host "🔌 Checking backend API..." -ForegroundColor Yellow
 try {
-    $response = Invoke-WebRequest -Uri "http://localhost:5000/health" -TimeoutSec 2 -ErrorAction SilentlyContinue
+    $response = Invoke-WebRequest -Uri "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health" -TimeoutSec 2 -ErrorAction SilentlyContinue
     if ($response.StatusCode -eq 200) {
-        Write-Host "✅ Backend API is accessible at http://localhost:5000" -ForegroundColor Green
+        Write-Host "✅ Backend API is accessible at http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Green
     }
 } catch {
-    Write-Host "⚠️ Backend API not accessible at http://localhost:5000" -ForegroundColor Yellow
+    Write-Host "⚠️ Backend API not accessible at http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Yellow
 }
 Write-Host ""
 
@@ -106,8 +106,8 @@ if ($issues.Count -eq 0) {
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor Cyan
     Write-Host "1. Run 'npm run dev' from root to start full stack" -ForegroundColor White
-    Write-Host "2. Access frontend at http://localhost:3000" -ForegroundColor White
-    Write-Host "3. Access backend API at http://localhost:5000" -ForegroundColor White
+    Write-Host "2. Access frontend at http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor White
+    Write-Host "3. Access backend API at http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor White
 } else {
     Write-Host "⚠️ Issues detected:" -ForegroundColor Yellow
     $issues | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }

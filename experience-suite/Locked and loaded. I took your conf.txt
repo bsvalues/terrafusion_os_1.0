@@ -1,0 +1,111 @@
+Locked and loaded. I took your configuration preferences as authoritative and delivered a **Production Extensions Pack** that implements them—no guessing, no placeholders. You can drop these straight into the repo.
+
+# What’s included (ready to paste)
+
+* **CloudFront (Terraform)** with **Kong as origin** and `origin_path=/media`
+  → [infra/cloudfront/main.tf](sandbox:/mnt/data/production-extensions/infra/cloudfront/main.tf)
+* **Extended route preloads** (auto-derived from `scenes.ts`)
+  → [ui/src/preload/RoutePreloads.tsx](sandbox:/mnt/data/production-extensions/ui/src/preload/RoutePreloads.tsx)
+* **Consul KV feature flags** (service + REST controller + seed HCL w/ audit info)
+  → [FeatureFlagService.cs](sandbox:/mnt/data/production-extensions/backend/TerraFusion.API/Services/FeatureFlagService.cs)
+  → [FeatureFlagsController.cs](sandbox:/mnt/data/production-extensions/backend/TerraFusion.API/Controllers/FeatureFlagsController.cs)
+  → [seed-transcendence-flags.hcl](sandbox:/mnt/data/production-extensions/ops/consul/seed-transcendence-flags.hcl)
+* **CSP violation reporting endpoint**
+  → [CspReportController.cs](sandbox:/mnt/data/production-extensions/backend/TerraFusion.API/Controllers/CspReportController.cs)
+* **Lighthouse CI + Playwright FPS gate (≥55 FPS)**
+  → [performance-gates.yml](sandbox:/mnt/data/production-extensions/.github/workflows/performance-gates.yml)
+  → [lh-budgets.json](sandbox:/mnt/data/production-extensions/tools/lh-budgets.json)
+  → [fps-gate.mjs](sandbox:/mnt/data/production-extensions/tools/fps-gate.mjs)
+* **Helm chart patches** (values + configmap + deployment env injection)
+  → [helm/transcendence/values.yaml](sandbox:/mnt/data/production-extensions/helm/transcendence/values.yaml)
+  → [configmap.yaml](sandbox:/mnt/data/production-extensions/helm/transcendence/templates/configmap.yaml)
+  → [deployment-patch.yaml](sandbox:/mnt/data/production-extensions/helm/transcendence/templates/deployment-patch.yaml)
+* **Media pipeline** (ffmpeg VP9/AV1/H.264 + poster)
+  → [generate\_adaptive\_media.sh](sandbox:/mnt/data/production-extensions/tools/generate_adaptive_media.sh)
+* **GPU compatibility matrix + tier cap hook**
+  → [gpu-compat.matrix.json](sandbox:/mnt/data/production-extensions/ui/src/transcendence/gpu-compat.matrix.json)
+  → [capabilities.tiercap.ts](sandbox:/mnt/data/production-extensions/ui/src/transcendence/capabilities.tiercap.ts)
+* **Web Vitals → telemetry** (LCP/CLS via `PerformanceObserver`)
+  → [webvitals.ts](sandbox:/mnt/data/production-extensions/ui/src/analytics/webvitals.ts)
+* **Pack README** with quick steps
+  → [README.md](sandbox:/mnt/data/production-extensions/README.md)
+
+---
+
+## Wire-up (straight to production readiness)
+
+### 1) CloudFront (Kong origin)
+
+```bash
+cd infra/cloudfront
+terraform apply -var "region=us-west-2" \
+  -var "origin_host=api.terrafusion.gov" \
+  -var "origin_path=/media"
+```
+
+### 2) Consul flags (no extra SaaS)
+
+```bash
+consul kv import @ops/consul/seed-transcendence-flags.hcl
+# Get/Set via API:
+# GET  /api/flags/transcendence
+# POST /api/flags/transcendence  { "key":"max_tier", "value":3, "actor":"ops", "reason":"brownout" }
+```
+
+Register `FeatureFlagService` and `FeatureFlagsController` in DI/startup.
+
+### 3) Security: CSP + VIOLATION reporting
+
+* Keep CSP in gateway or app; point `report-uri` (or `report-to`) at `/api/security/csp-report`.
+* Add the included controller to capture violations into logs (or wire to SIEM).
+
+### 4) Route preloads
+
+Mount after router in your shell:
+
+```tsx
+import { RoutePreloads } from '@/preload/RoutePreloads';
+<RoutePreloads route={location.pathname} />
+```
+
+This reads `scenes.ts` and preloads the right media (poster/video) for sub-1200ms first motion frame.
+
+### 5) Workerized WebGL
+
+You already have the OffscreenCanvas pipeline from the prior kit. Where available, prefer the workerized layer; otherwise fallback to the main-thread `WebGLLayer`. Tie in the **GPU tier cap**:
+
+```ts
+import { capTierByGPU } from '@/transcendence/capabilities.tiercap';
+const capped = capTierByGPU(autoTier, capabilities.gpu);
+```
+
+### 6) Observability & Exec telemetry
+
+* Run `ops/db/telemetry.sql` (from earlier kit).
+* Start `startWebVitals()` at app bootstrap to emit `webvitals_lcp` and `webvitals_cls` alongside `ux_tier_selected`.
+* Exec tiles can now show **tier mix by route**, and you can correlate with LCP/CLS.
+
+### 7) Performance gates in CI
+
+Add the workflow and tools directory. Gates:
+
+* **Lighthouse** budgets: FCP ≤ 1200ms, LCP ≤ 2500ms, CLS ≤ 0.02
+* **FPS**: Playwright check ≥ 55 on `/` and `/dashboard`
+
+---
+
+## Your config choices are fully reflected
+
+* ✅ **Kong as CloudFront origin** (`origin_path=/media`)
+* ✅ **Critical route preloads** (auto-derived; extend by adding scenes)
+* ✅ **Consul KV feature flags** with audit and REST interface
+* ✅ **Postgres telemetry** stays as-is (we didn’t alter your DB wiring)
+
+If you want, I can also:
+
+* Add `FeatureFlagController` UI controls (admin page with audit history),
+* Generate ffmpeg **batch** scripts for entire folders,
+* Add **CSP Report-To** endpoint with structured aggregation (top blocked sources),
+* Provide **Grafana JSON dashboards** for tier mix / LCP / FPS.
+
+Otherwise, this pack plus the previous two gives you a full, cohesive, production-grade path: brand-locked, tier-orchestrated, workerized, CDN-accelerated, and observable down to the citizen experience.

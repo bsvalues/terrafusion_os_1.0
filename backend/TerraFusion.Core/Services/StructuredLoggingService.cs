@@ -269,9 +269,9 @@ namespace TerraFusion.Core.Services
             };
 
             logEntry.Data["exception_type"] = exception.GetType().Name;
-            logEntry.Data["stack_trace"] = exception.StackTrace;
-            logEntry.Data["inner_exception"] = exception.InnerException?.Message;
-            logEntry.Data["context"] = context;
+            logEntry.Data["stack_trace"] = exception.StackTrace ?? "No stack trace available";
+            logEntry.Data["inner_exception"] = exception.InnerException?.Message ?? "No inner exception";
+            logEntry.Data["context"] = context ?? "No context provided";
 
             if (additionalData != null)
             {
@@ -292,7 +292,7 @@ namespace TerraFusion.Core.Services
             _logger.LogError(exception, "Error in context: {Context}", context);
         }
 
-        public async Task<List<LogEntry>> QueryLogsAsync(LogQuery query)
+        public Task<List<LogEntry>> QueryLogsAsync(LogQuery query)
         {
             // For now, query from buffer - in production, this would query Elasticsearch
             List<LogEntry> results;
@@ -335,7 +335,7 @@ namespace TerraFusion.Core.Services
             // Apply pagination
             results = results.Skip(query.Skip).Take(query.Take).ToList();
 
-            return results;
+            return Task.FromResult(results);
         }
 
         public async Task FlushLogsAsync()
@@ -397,7 +397,7 @@ namespace TerraFusion.Core.Services
             }
             catch
             {
-                return new Dictionary<string, object> { ["serialized_value"] = obj.ToString() };
+                return new Dictionary<string, object> { ["serialized_value"] = obj.ToString() ?? "null" };
             }
         }
 

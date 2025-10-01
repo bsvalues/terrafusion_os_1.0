@@ -10,7 +10,7 @@ echo "🔬 Revolutionary physics-based governance optimization"
 echo "=================================================="
 
 # Configuration
-GAUGE_THEORY_PORT=8000
+GAUGE_THEORY_PORT=\${{TF_DOCS_PORT:-8000}}
 GAUGE_THEORY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="$GAUGE_THEORY_DIR/deployment.log"
 PID_FILE="$GAUGE_THEORY_DIR/gauge_theory.pid"

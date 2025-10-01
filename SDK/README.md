@@ -1,16 +1,20 @@
 # Terrafusion OS 1.0 - Production SDK
+
 ## Government AI Platform Developer Kit
 
 **Version**: 1.0.0  
 **Release Date**: August 31, 2025  
 **Target Audience**: Mid to Senior-level Software Engineers  
-**Classification**: Production-Ready Government Platform SDK  
+**Classification**: Production-Ready Government Platform SDK
 
 ---
 
 ## Overview
 
-The Terrafusion OS SDK provides everything needed to develop, extend, and deploy government AI applications on the Terrafusion platform. This SDK includes boilerplate code, environment configurations, deployment scripts, test data, and comprehensive documentation.
+The Terrafusion OS SDK provides everything needed to develop, extend, and deploy
+government AI applications on the Terrafusion platform. This SDK includes
+boilerplate code, environment configurations, deployment scripts, test data, and
+comprehensive documentation.
 
 ### What's Included
 
@@ -75,6 +79,7 @@ terraform >= 1.6.0
 ### 1. Module Development Framework
 
 #### Module Manifest Structure
+
 ```json
 {
   "name": "my-government-module",
@@ -83,17 +88,10 @@ terraform >= 1.6.0
   "description": "Custom government functionality",
   "type": "government-module",
   "tier": "tier2",
-  "capabilities": [
-    "property-management",
-    "tax-processing",
-    "citizen-services"
-  ],
+  "capabilities": ["property-management", "tax-processing", "citizen-services"],
   "dependencies": ["government-edition", "ai-command-brain"],
   "api": {
-    "endpoints": [
-      "/api/my-module/properties",
-      "/api/my-module/taxes"
-    ]
+    "endpoints": ["/api/my-module/properties", "/api/my-module/taxes"]
   },
   "security": {
     "authentication": "required",
@@ -104,6 +102,7 @@ terraform >= 1.6.0
 ```
 
 #### Component Architecture
+
 ```typescript
 // Frontend Component (React 18 + TypeScript)
 interface ModuleComponent {
@@ -124,6 +123,7 @@ public interface IModuleService {
 ### 2. AI Agent Development
 
 #### Agent Template
+
 ```javascript
 class CustomAIAgent extends AIAgentBase {
   constructor(config) {
@@ -131,23 +131,24 @@ class CustomAIAgent extends AIAgentBase {
     this.type = 'CUSTOM_AGENT';
     this.capabilities = ['data-analysis', 'prediction'];
   }
-  
+
   async executeTask(task) {
     // Custom AI logic implementation
     return await this.processWithAI(task);
   }
-  
+
   async reportMetrics() {
     return {
       tasksCompleted: this.metrics.completed,
       efficiency: this.calculateEfficiency(),
-      status: this.status
+      status: this.status,
     };
   }
 }
 ```
 
 #### Swarm Integration
+
 ```javascript
 // Register with Supreme Commander
 SupremeCommanderClaude.registerAgent(customAgent);
@@ -160,6 +161,7 @@ await swarm.addAgent(customAgent);
 ### 3. Database Integration
 
 #### Entity Definition
+
 ```csharp
 public class CustomEntity
 {
@@ -167,7 +169,7 @@ public class CustomEntity
     public string Name { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    
+
     // Audit fields (automatically populated)
     public string CreatedBy { get; set; }
     public string UpdatedBy { get; set; }
@@ -175,20 +177,21 @@ public class CustomEntity
 ```
 
 #### Service Implementation
+
 ```csharp
 public class CustomEntityService : ICustomEntityService
 {
     private readonly ITerraFusionDbContext _context;
     private readonly IMapper _mapper;
-    
+
     public async Task<CustomEntityDto> CreateAsync(CreateCustomEntityDto dto)
     {
         var entity = _mapper.Map<CustomEntity>(dto);
         entity.CreatedAt = DateTime.UtcNow;
-        
+
         _context.CustomEntities.Add(entity);
         await _context.SaveChangesAsync(); // Automatic audit logging
-        
+
         return _mapper.Map<CustomEntityDto>(entity);
     }
 }
@@ -298,35 +301,35 @@ compliance:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ module-name }}
+  name: { { module-name } }
   labels:
-    app.kubernetes.io/name: {{ module-name }}
+    app.kubernetes.io/name: { { module-name } }
     app.kubernetes.io/part-of: terrafusion-os
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: {{ module-name }}
+      app: { { module-name } }
   template:
     spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
       containers:
-      - name: {{ module-name }}
-        image: terrafusion/{{ module-name }}:latest
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "1000m"
-        env:
-        - name: TERRAFUSION_MODULE_NAME
-          value: "{{ module-name }}"
-        - name: TERRAFUSION_AI_ENABLED
-          value: "true"
+        - name: { { module-name } }
+          image: terrafusion/{{ module-name }}:latest
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '1Gi'
+              cpu: '1000m'
+          env:
+            - name: TERRAFUSION_MODULE_NAME
+              value: '{{ module-name }}'
+            - name: TERRAFUSION_AI_ENABLED
+              value: 'true'
 ```
 
 ---
@@ -370,13 +373,17 @@ class PropertyValuationAgent extends AIAgentBase {
   async valuateProperty(property) {
     const marketData = await this.getMarketData(property.location);
     const comparables = await this.findComparables(property);
-    const aiPrediction = await this.runMLModel(property, marketData, comparables);
-    
+    const aiPrediction = await this.runMLModel(
+      property,
+      marketData,
+      comparables
+    );
+
     return {
       estimatedValue: aiPrediction.value,
       confidence: aiPrediction.confidence,
       factors: aiPrediction.contributingFactors,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }
@@ -389,6 +396,7 @@ class PropertyValuationAgent extends AIAgentBase {
 ### 1. Module Development
 
 **Architecture Guidelines**:
+
 - Follow the Terrafusion module manifest specification
 - Implement health checks and metrics endpoints
 - Use the provided authentication and authorization frameworks
@@ -396,6 +404,7 @@ class PropertyValuationAgent extends AIAgentBase {
 - Implement comprehensive audit logging
 
 **Code Standards**:
+
 - Use TypeScript for frontend development
 - Follow C# coding conventions for backend services
 - Implement proper error handling and logging
@@ -405,6 +414,7 @@ class PropertyValuationAgent extends AIAgentBase {
 ### 2. AI Agent Development
 
 **Agent Design Principles**:
+
 - Inherit from AIAgentBase for swarm integration
 - Implement proper task queuing and result reporting
 - Use the provided metrics and monitoring framework
@@ -414,6 +424,7 @@ class PropertyValuationAgent extends AIAgentBase {
 ### 3. Security Requirements
 
 **Security Checklist**:
+
 - [ ] All API endpoints require authentication
 - [ ] Sensitive data is encrypted at rest and in transit
 - [ ] Audit logging is implemented for all operations
@@ -428,6 +439,7 @@ class PropertyValuationAgent extends AIAgentBase {
 ### Common Issues
 
 **Module Loading Failures**:
+
 ```bash
 # Check module manifest validity
 ./SDK/tools/validate-manifest.sh --module="my-module"
@@ -440,6 +452,7 @@ class PropertyValuationAgent extends AIAgentBase {
 ```
 
 **AI Agent Problems**:
+
 ```bash
 # Check agent registration
 ./SDK/tools/check-agent-status.sh --agent="my-agent"
@@ -452,6 +465,7 @@ class PropertyValuationAgent extends AIAgentBase {
 ```
 
 **Database Connection Issues**:
+
 ```bash
 # Test database connectivity
 ./SDK/tools/test-db-connection.sh
@@ -468,13 +482,17 @@ class PropertyValuationAgent extends AIAgentBase {
 ## Support & Resources
 
 ### Documentation
+
 - **[API Reference](docs/api-reference.md)**: Complete API documentation
-- **[Module Development Guide](docs/module-development.md)**: Step-by-step module creation
-- **[AI Agent Guide](docs/ai-agent-development.md)**: AI agent development patterns
+- **[Module Development Guide](docs/module-development.md)**: Step-by-step
+  module creation
+- **[AI Agent Guide](docs/ai-agent-development.md)**: AI agent development
+  patterns
 - **[Deployment Guide](docs/deployment.md)**: Production deployment procedures
 - **[Security Guide](docs/security.md)**: Security best practices and compliance
 
 ### Community
+
 - **GitHub Repository**: https://github.com/terrafusion/terrafusion-os
 - **Developer Portal**: https://developers.terrafusion.gov
 - **Documentation**: https://docs.terrafusion.gov
@@ -485,6 +503,7 @@ class PropertyValuationAgent extends AIAgentBase {
 **SDK Version**: 1.0.0  
 **Compatibility**: Terrafusion OS 1.0+  
 **Last Updated**: August 31, 2025  
-**License**: Proprietary - Government & Commercial Use  
+**License**: Proprietary - Government & Commercial Use
 
-*Developed by the Terrafusion team for building the future of government AI platforms.*
+_Developed by the Terrafusion team for building the future of government AI
+platforms._

@@ -7,8 +7,8 @@ export const authHandlers = [
       user: {
         id: 'u-admin',
         roles: ['EnterpriseAdmin'],
-        permissions: ['read', 'write', 'delete', 'export']
-      }
+        permissions: ['read', 'write', 'delete', 'export'],
+      },
     });
   }),
 
@@ -20,7 +20,7 @@ export const authHandlers = [
     return HttpResponse.json({
       id: 'u-admin',
       roles: ['EnterpriseAdmin'],
-      permissions: ['read', 'write', 'delete', 'export']
+      permissions: ['read', 'write', 'delete', 'export'],
     });
-  })
+  }),
 ];

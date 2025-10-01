@@ -1,24 +1,32 @@
 # Terrafusion Government Marketplace - User Testing Guide
 
 ## Overview
-This guide provides comprehensive instructions for county administrators and staff to test the Terrafusion Government Marketplace system. The platform serves as a unified digital operating system for county operations with AI-powered automation and federated architecture.
+
+This guide provides comprehensive instructions for county administrators and
+staff to test the Terrafusion Government Marketplace system. The platform serves
+as a unified digital operating system for county operations with AI-powered
+automation and federated architecture.
 
 ## System Architecture
+
 - **Frontend**: React/TypeScript with modern Terrafusion 2024 branding
 - **Backend**: Comprehensive service layer with government-grade security
 - **AI Assistant**: Multi-persona intelligent automation system
-- **Government Features**: Compliance tracking, federation management, audit trails
+- **Government Features**: Compliance tracking, federation management, audit
+  trails
 
 ## Pre-Testing Setup
 
 ### System Requirements
+
 - **Browser**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 - **Screen Resolution**: 1280x720 minimum (responsive design supports mobile)
 - **Network**: Stable internet connection for real-time features
 - **Permissions**: JavaScript enabled, local storage access
 
 ### Test Environment Access
-- **URL**: http://localhost:3010 (development)
+
+- **URL**: http://localhost:\${{TF_FRONTEND_3010_PORT:-3010}} (development)
 - **Test Accounts**: Mock authentication system provides role-based access
 - **Sample Data**: Pre-loaded with Benton County and surrounding jurisdictions
 
@@ -27,9 +35,11 @@ This guide provides comprehensive instructions for county administrators and sta
 ### 1. Government Dashboard Testing
 
 #### 1.1 Overview Tab Validation
+
 **Objective**: Verify real-time AI validation status and plugin monitoring
 
 **Steps**:
+
 1. Navigate to Government Dashboard (default landing page)
 2. Verify "Overview" tab is active and displays:
    - Real-time AI validation status for plugins
@@ -38,20 +48,24 @@ This guide provides comprehensive instructions for county administrators and sta
    - AI confidence levels (should show 85-95% range)
 
 **Expected Results**:
+
 - All validation statuses display with color-coded indicators
 - AI confidence scores are visible and accurate
 - Plugin metrics update in real-time
 - Status indicators use Terrafusion brand colors (cyan/blue/teal)
 
 **Test Data**:
+
 - CostForge Professional: 94% AI confidence, all validations passed
 - GIS Analytics Pro: 87% AI confidence, integration warning
 - PILT Calculator: 92% AI confidence, all validations passed
 
 #### 1.2 Federation Tab Testing
+
 **Objective**: Test cross-county federation management and resource sharing
 
 **Steps**:
+
 1. Click "Federation" tab
 2. Verify county network display shows:
    - Benton County (active, 94% compliance)
@@ -61,15 +75,18 @@ This guide provides comprehensive instructions for county administrators and sta
 4. Verify federation status indicators and population data
 
 **Expected Results**:
+
 - County cards display with correct federation status
 - Population numbers format with commas (e.g., "206,873")
 - Compliance scores show as percentages
 - Security levels display with appropriate color coding
 
 #### 1.3 Compliance Tab Validation
+
 **Objective**: Verify government compliance tracking and reporting
 
 **Steps**:
+
 1. Navigate to "Compliance" tab
 2. Check overall compliance score (should show 94%)
 3. Verify compliance categories:
@@ -79,15 +96,18 @@ This guide provides comprehensive instructions for county administrators and sta
 4. Test compliance metric interactions
 
 **Expected Results**:
+
 - Compliance dashboard loads without errors
 - Metrics display with visual indicators
 - Compliance scores are accurate and up-to-date
 - Color coding matches severity levels
 
 #### 1.4 Audit Trail Testing
+
 **Objective**: Test comprehensive audit logging and trail visualization
 
 **Steps**:
+
 1. Click "Audit" tab
 2. Verify audit entries display with:
    - Timestamps (recent entries first)
@@ -97,6 +117,7 @@ This guide provides comprehensive instructions for county administrators and sta
 3. Test audit entry filtering and search
 
 **Expected Results**:
+
 - Audit entries load in chronological order
 - All required audit information is present
 - Filtering works correctly
@@ -105,9 +126,11 @@ This guide provides comprehensive instructions for county administrators and sta
 ### 2. Plugin Marketplace Testing
 
 #### 2.1 Plugin Discovery and Filtering
+
 **Objective**: Test government plugin marketplace functionality
 
 **Steps**:
+
 1. Navigate to "Plugin Marketplace" from main navigation
 2. Verify plugin categories display:
    - Assessment Tools
@@ -121,15 +144,18 @@ This guide provides comprehensive instructions for county administrators and sta
 5. Test validation status filtering
 
 **Expected Results**:
+
 - All plugin categories load correctly
 - Filtering works without page refresh
 - Plugin cards display complete information
 - Government tier badges are visible
 
 #### 2.2 Plugin Details and Deployment
+
 **Objective**: Test plugin information display and deployment workflows
 
 **Steps**:
+
 1. Click on "CostForge Professional" plugin
 2. Verify plugin details modal displays:
    - Complete description and features
@@ -142,15 +168,18 @@ This guide provides comprehensive instructions for county administrators and sta
 4. Verify usage analytics display
 
 **Expected Results**:
+
 - Plugin modal opens smoothly
 - All plugin information is accurate
 - Deployment controls are functional
 - Usage analytics show realistic data
 
 #### 2.3 Government-Specific Features
+
 **Objective**: Validate government compliance and security features
 
 **Steps**:
+
 1. Verify government tier classifications
 2. Test licensing model displays (Free, Tiered, Usage-based, Enterprise)
 3. Check security validation indicators
@@ -158,6 +187,7 @@ This guide provides comprehensive instructions for county administrators and sta
 5. Test audit trail integration
 
 **Expected Results**:
+
 - Government tiers display correctly
 - Licensing information is clear and accurate
 - Security indicators use appropriate colors
@@ -167,9 +197,11 @@ This guide provides comprehensive instructions for county administrators and sta
 ### 3. AI Assistant Testing
 
 #### 3.1 AI Assistant Interface
+
 **Objective**: Test intelligent chat interface and multi-persona functionality
 
 **Steps**:
+
 1. Locate AI Assistant toggle button (bottom-right corner)
 2. Click to expand AI Assistant panel
 3. Verify welcome message displays with user context
@@ -177,15 +209,18 @@ This guide provides comprehensive instructions for county administrators and sta
 5. Verify quick action buttons are functional
 
 **Expected Results**:
+
 - AI Assistant expands smoothly
 - Welcome message is personalized
 - Template selector shows all 7 personas
 - Quick actions are clearly labeled and functional
 
 #### 3.2 Government Copilot Testing
+
 **Objective**: Test primary government operations assistance
 
 **Steps**:
+
 1. Ensure "Government Copilot" is selected
 2. Test sample queries:
    - "How do I deploy a plugin to multiple counties?"
@@ -198,15 +233,18 @@ This guide provides comprehensive instructions for county administrators and sta
    - Actionable recommendations
 
 **Expected Results**:
+
 - Responses are contextually appropriate
 - Confidence scores display (typically 85-95%)
 - Follow-up questions are relevant
 - Response time is under 3 seconds
 
 #### 3.3 Specialized AI Personas
+
 **Objective**: Test specialized AI assistant modes
 
 **Steps**:
+
 1. Test "Plugin Validator" mode:
    - Query: "Validate the security of CostForge Professional"
    - Verify technical validation response
@@ -218,15 +256,18 @@ This guide provides comprehensive instructions for county administrators and sta
    - Verify federation-specific instructions
 
 **Expected Results**:
+
 - Each persona provides specialized responses
 - Technical accuracy is maintained
 - Government context is preserved
 - Responses match persona expertise
 
 #### 3.4 Quick Actions Testing
+
 **Objective**: Validate one-click government task automation
 
 **Steps**:
+
 1. Test each quick action button:
    - 🚀 Deploy Plugin
    - ✅ Check Compliance
@@ -238,6 +279,7 @@ This guide provides comprehensive instructions for county administrators and sta
 3. Test action execution and follow-up
 
 **Expected Results**:
+
 - Quick actions trigger immediately
 - AI responses are task-specific
 - Actions provide clear next steps
@@ -246,25 +288,31 @@ This guide provides comprehensive instructions for county administrators and sta
 ### 4. Cross-Browser and Device Testing
 
 #### 4.1 Browser Compatibility
+
 **Test Browsers**:
+
 - Chrome (latest)
 - Firefox (latest)
 - Safari (latest)
 - Microsoft Edge (latest)
 
 **Verification Points**:
+
 - Terrafusion branding displays correctly
 - All interactive elements function
 - AI Assistant works across browsers
 - Performance is consistent
 
 #### 4.2 Responsive Design Testing
+
 **Test Devices**:
+
 - Desktop (1920x1080, 1366x768)
 - Tablet (768x1024, 1024x768)
 - Mobile (375x667, 414x896)
 
 **Verification Points**:
+
 - Navigation adapts to screen size
 - AI Assistant remains accessible
 - Plugin cards reflow appropriately
@@ -273,19 +321,24 @@ This guide provides comprehensive instructions for county administrators and sta
 ### 5. Performance and Accessibility Testing
 
 #### 5.1 Performance Metrics
+
 **Objectives**:
+
 - Page load time under 3 seconds
 - AI Assistant response time under 3 seconds
 - Smooth animations and transitions
 - No memory leaks during extended use
 
 **Testing Tools**:
+
 - Browser DevTools Performance tab
 - Lighthouse performance audit
 - Network throttling simulation
 
 #### 5.2 Accessibility Compliance
+
 **Verification Points**:
+
 - Keyboard navigation works throughout
 - Screen reader compatibility
 - High contrast mode support
@@ -293,6 +346,7 @@ This guide provides comprehensive instructions for county administrators and sta
 - Alt text for images and icons
 
 **Testing Tools**:
+
 - Browser accessibility inspector
 - WAVE accessibility evaluation
 - Keyboard-only navigation testing
@@ -300,6 +354,7 @@ This guide provides comprehensive instructions for county administrators and sta
 ## Test Data Reference
 
 ### Sample Counties
+
 ```
 Benton County, WA
 - Population: 206,873
@@ -307,7 +362,7 @@ Benton County, WA
 - Compliance Score: 94%
 - Security Level: High
 
-Franklin County, WA  
+Franklin County, WA
 - Population: 95,222
 - Federation Status: Active
 - Compliance Score: 89%
@@ -321,6 +376,7 @@ Walla Walla County, WA
 ```
 
 ### Sample Plugins
+
 ```
 CostForge Professional
 - Category: Assessment
@@ -350,6 +406,7 @@ PILT Calculator
 ## Issue Reporting
 
 ### Bug Report Template
+
 ```
 **Issue Title**: [Brief description]
 **Severity**: Critical/High/Medium/Low
@@ -367,6 +424,7 @@ PILT Calculator
 ```
 
 ### Contact Information
+
 - **Development Team**: Terrafusion Engineering
 - **Issue Tracking**: GitHub Issues or internal tracking system
 - **Emergency Contact**: For critical production issues
@@ -375,6 +433,7 @@ PILT Calculator
 ## Success Criteria
 
 ### Functional Requirements
+
 - ✅ All navigation works without errors
 - ✅ AI Assistant provides contextual responses
 - ✅ Plugin marketplace displays and filters correctly
@@ -382,6 +441,7 @@ PILT Calculator
 - ✅ Real-time updates work properly
 
 ### Performance Requirements
+
 - ✅ Page load times under 3 seconds
 - ✅ AI responses under 3 seconds
 - ✅ Smooth animations and transitions
@@ -389,6 +449,7 @@ PILT Calculator
 - ✅ Memory usage remains stable
 
 ### Accessibility Requirements
+
 - ✅ Keyboard navigation complete
 - ✅ Screen reader compatible
 - ✅ High contrast support
@@ -396,6 +457,7 @@ PILT Calculator
 - ✅ WCAG 2.1 AA compliance
 
 ### Security Requirements
+
 - ✅ Authentication works correctly
 - ✅ Role-based access enforced
 - ✅ Audit trails capture all actions
@@ -406,6 +468,7 @@ PILT Calculator
 
 **Document Version**: 1.0  
 **Last Updated**: July 31, 2025  
-**Next Review**: August 15, 2025  
+**Next Review**: August 15, 2025
 
-This comprehensive testing guide ensures thorough validation of the Terrafusion Government Marketplace before production deployment.
+This comprehensive testing guide ensures thorough validation of the Terrafusion
+Government Marketplace before production deployment.

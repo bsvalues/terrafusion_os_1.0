@@ -25,7 +25,7 @@ servers:
     description: Production server
   - url: https://staging-api.terrafusion.gov/v1
     description: Staging server
-  - url: http://localhost:3000/v1
+  - url: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/v1
     description: Development server
 
 security:

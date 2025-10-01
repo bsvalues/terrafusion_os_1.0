@@ -36,10 +36,10 @@ describe('government-edition Module', () => {
   describe('performance', () => {
     it('should complete operations within 100ms', async () => {
       const startTime = Date.now();
-      
+
       // Perform operation
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       const duration = Date.now() - startTime;
       expect(duration).toBeLessThan(100);
     });

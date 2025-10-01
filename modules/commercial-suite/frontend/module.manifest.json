@@ -1,0 +1,62 @@
+{
+  "moduleId": "commercial-suite",
+  "name": "Commercial Suite",
+  "version": "1.0.0",
+  "description": "Comprehensive business licensing, permits, and commercial operations platform with digital processing",
+  "category": "Business Operations",
+  "author": "TerraFusion AI",
+  "license": "Commercial",
+  "port": \${{TF_FRONTEND_3013_PORT:-3013}},
+  "entry": "/src/App.tsx",
+  "capabilities": [
+    "business-licensing",
+    "permit-management", 
+    "application-processing",
+    "renewal-automation",
+    "inspection-scheduling",
+    "fee-collection",
+    "compliance-tracking",
+    "digital-applications",
+    "business-directory",
+    "revenue-analytics"
+  ],
+  "pricing": {
+    "tier": "premium",
+    "monthlyFee": 79,
+    "setupFee": 199,
+    "description": "Full business licensing and permit management suite"
+  },
+  "permissions": [
+    "business.read",
+    "business.write", 
+    "license.create",
+    "license.modify",
+    "permit.issue",
+    "inspection.schedule",
+    "payment.process",
+    "reports.generate",
+    "admin.business"
+  ],
+  "integrations": [
+    "payment-gateway",
+    "document-management",
+    "notification-service",
+    "gis-mapping",
+    "calendar-system"
+  ],
+  "requirements": {
+    "memory": "512MB",
+    "storage": "3GB",
+    "bandwidth": "moderate"
+  },
+  "features": {
+    "digitalProcessing": true,
+    "onlineApplications": true,
+    "automatedRenewals": true,
+    "complianceTracking": true,
+    "revenueAnalytics": true,
+    "mobileOptimized": true,
+    "apiAccess": true,
+    "auditTrail": true
+  }
+}

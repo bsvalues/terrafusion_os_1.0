@@ -1,14 +1,16 @@
 # .devcontainer Directory Index
 
 ## Directory Overview
+
 **Location**: `/.devcontainer/`  
 **Purpose**: Development container configuration for TerraFusion OS  
 **Classification**: Development Environment Infrastructure  
-**Security Level**: Government Development Standards  
+**Security Level**: Government Development Standards
 
 ## Architecture Summary
 
 ### Primary Components
+
 ```
 .devcontainer/
 ├── devcontainer.json                   # Dev container configuration (95 lines)
@@ -16,6 +18,7 @@
 ```
 
 ### Key Capabilities
+
 - **Universal Development Environment**: Microsoft universal Linux container
 - **Multi-Stack Support**: .NET 8.0, Node.js 18, Docker, Kubernetes integration
 - **Government AI Development**: TerraFusion-specific tooling and extensions
@@ -25,6 +28,7 @@
 ## Development Container Configuration
 
 ### Base Infrastructure
+
 ```json
 {
   "name": "TerraFusion OS 1.0 - Government AI Development Environment",
@@ -34,6 +38,7 @@
 ```
 
 ### Technology Stack Features
+
 ```json
 "features": {
   "ghcr.io/devcontainers/features/dotnet:1": {
@@ -51,6 +56,7 @@
 ## IDE Integration and Extensions
 
 ### VS Code Extensions
+
 ```json
 "extensions": [
   "ms-dotnettools.csharp",              // C# development support
@@ -67,6 +73,7 @@
 ```
 
 ### Development Settings
+
 ```json
 "settings": {
   "dotnet.defaultSolution": "backend/TerraFusion.sln",
@@ -80,6 +87,7 @@
 ## Network Configuration
 
 ### Port Forwarding Architecture
+
 ```json
 "forwardPorts": [
   3000,    // TerraFusion UI (React frontend)
@@ -92,6 +100,7 @@
 ```
 
 ### Port Attributes and Labeling
+
 ```json
 "portsAttributes": {
   "3000": {
@@ -124,6 +133,7 @@
 ## Security and Secrets Management
 
 ### Government-Grade Secrets Configuration
+
 ```json
 "secrets": {
   "TERRAFUSION_JWT_SECRET": {
@@ -142,6 +152,7 @@
 ```
 
 ### Environment Variables
+
 ```json
 "containerEnv": {
   "ASPNETCORE_ENVIRONMENT": "Development",  // .NET development mode
@@ -156,6 +167,7 @@
 ### Setup Script Architecture (`setup.sh`)
 
 #### System Dependencies Installation
+
 ```bash
 # Install additional government development tools
 sudo apt-get update
@@ -163,18 +175,20 @@ sudo apt-get install -y postgresql-client redis-tools jq curl
 ```
 
 #### Development Stack Initialization
+
 ```bash
 # .NET Development Environment
 dotnet --version                          # Verify .NET installation
 dotnet restore backend/TerraFusion.sln   # Restore NuGet packages
 
-# Node.js Development Environment  
+# Node.js Development Environment
 cd frontend
 npm install                               # Install npm dependencies
 cd ..
 ```
 
 #### Environment Configuration
+
 ```bash
 # Development environment configuration
 if [ ! -f .env.development ]; then
@@ -184,6 +198,7 @@ fi
 ```
 
 #### Script Permissions and Git Integration
+
 ```bash
 # Make TerraFusion scripts executable
 chmod +x ops/benton-demo.sh              # Benton County demo
@@ -198,6 +213,7 @@ fi
 ```
 
 #### Development Directory Structure
+
 ```bash
 # Create development working directories
 mkdir -p logs/development                 # Development logs
@@ -208,64 +224,67 @@ mkdir -p artifacts/development            # Build artifacts
 ## Development Workflow Integration
 
 ### Container Lifecycle Management
+
 ```typescript
 interface ContainerLifecycle {
   initialization: {
-    postCreateCommand: 'bash .devcontainer/setup.sh',
-    userSetup: 'codespace',
-    environmentVariables: DevelopmentEnvironment
-  },
-  
+    postCreateCommand: 'bash .devcontainer/setup.sh';
+    userSetup: 'codespace';
+    environmentVariables: DevelopmentEnvironment;
+  };
+
   development: {
-    portForwarding: ServicePorts,
-    extensionIntegration: VSCodeExtensions,
-    secretsManagement: GovernmentSecrets
-  },
-  
+    portForwarding: ServicePorts;
+    extensionIntegration: VSCodeExtensions;
+    secretsManagement: GovernmentSecrets;
+  };
+
   operations: {
-    serviceCommands: DevelopmentCommands,
-    monitoring: PrometheusGrafana,
-    debugging: VSCodeDebugging
-  }
+    serviceCommands: DevelopmentCommands;
+    monitoring: PrometheusGrafana;
+    debugging: VSCodeDebugging;
+  };
 }
 ```
 
 ### Multi-Service Architecture Support
+
 ```typescript
 interface ServiceArchitecture {
   frontend: {
-    port: 3000,
-    framework: 'React 18',
-    buildTool: 'Vite',
-    styling: 'Tailwind CSS'
-  },
-  
+    port: 3000;
+    framework: 'React 18';
+    buildTool: 'Vite';
+    styling: 'Tailwind CSS';
+  };
+
   backend: {
-    httpPort: 5000,
-    httpsPort: 5001,
-    framework: '.NET 8.0',
-    database: 'PostgreSQL',
-    cache: 'Redis'
-  },
-  
+    httpPort: 5000;
+    httpsPort: 5001;
+    framework: '.NET 8.0';
+    database: 'PostgreSQL';
+    cache: 'Redis';
+  };
+
   monitoring: {
-    prometheus: 9090,
-    grafana: 3001,
-    metrics: 'Real-time',
-    alerting: 'Integrated'
-  },
-  
+    prometheus: 9090;
+    grafana: 3001;
+    metrics: 'Real-time';
+    alerting: 'Integrated';
+  };
+
   demo: {
-    port: 8080,
-    environment: 'Benton County',
-    integration: 'Harris PACS'
-  }
+    port: 8080;
+    environment: 'Benton County';
+    integration: 'Harris PACS';
+  };
 }
 ```
 
 ## Government Development Standards
 
 ### Compliance Framework
+
 - **Security Standards**: Government-grade secret management
 - **Development Tools**: Enterprise-approved extensions and tooling
 - **Audit Logging**: Development environment activity tracking
@@ -273,6 +292,7 @@ interface ServiceArchitecture {
 - **Data Protection**: Encrypted development data handling
 
 ### AI Development Integration
+
 ```json
 {
   "aiServices": {
@@ -291,6 +311,7 @@ interface ServiceArchitecture {
 ## Performance and Resource Management
 
 ### Container Resource Optimization
+
 - **Base Image**: Microsoft universal container (optimized)
 - **Feature Integration**: Efficient multi-stack support
 - **Memory Management**: Optimized for government development workloads
@@ -298,20 +319,22 @@ interface ServiceArchitecture {
 - **Storage Management**: Efficient artifact and log management
 
 ### Development Performance Metrics
+
 ```typescript
 interface PerformanceMetrics {
-  containerStartup: '<30 seconds',
-  environmentSetup: '<2 minutes',
-  serviceInitialization: '<1 minute per service',
-  portForwarding: 'Real-time',
-  extensionLoading: '<10 seconds',
-  secretsRetrieval: '<5 seconds'
+  containerStartup: '<30 seconds';
+  environmentSetup: '<2 minutes';
+  serviceInitialization: '<1 minute per service';
+  portForwarding: 'Real-time';
+  extensionLoading: '<10 seconds';
+  secretsRetrieval: '<5 seconds';
 }
 ```
 
 ## Monitoring and Observability
 
 ### Development Environment Monitoring
+
 - **Service Health**: Real-time service status monitoring
 - **Port Availability**: Automated port forwarding with notifications
 - **Resource Usage**: Container resource consumption tracking
@@ -319,18 +342,19 @@ interface PerformanceMetrics {
 - **Security Monitoring**: Development environment security validation
 
 ### Integrated Observability Stack
+
 ```yaml
 monitoring:
   prometheus:
     port: 9090
     metrics: development_environment
     targets: [frontend, backend, demo]
-  
+
   grafana:
     port: 3001
     dashboards: development_metrics
     alerts: performance_thresholds
-  
+
   logging:
     directory: logs/development
     rotation: daily
@@ -340,6 +364,7 @@ monitoring:
 ## Integration Architecture
 
 ### GitHub Codespaces Integration
+
 - **Cloud Development**: GitHub Codespaces compatibility
 - **Remote Development**: VS Code remote container support
 - **Team Collaboration**: Shared development environment configuration
@@ -347,6 +372,7 @@ monitoring:
 - **Security**: Cloud-based government development standards
 
 ### Local Development Container Support
+
 ```bash
 # Local development container startup
 devcontainer up                           # Start development container
@@ -357,6 +383,7 @@ devcontainer rebuild                      # Rebuild container with updates
 ## Troubleshooting and Diagnostics
 
 ### Common Development Environment Issues
+
 ```bash
 # Container startup diagnostics
 docker logs devcontainer                  # View container logs
@@ -364,24 +391,26 @@ docker exec -it devcontainer bash        # Interactive container access
 devcontainer logs                         # Development container logs
 
 # Service connectivity testing
-curl http://localhost:5000/health         # API health check
-curl http://localhost:3000               # Frontend availability
-curl http://localhost:9090/metrics       # Prometheus metrics
+curl http://localhost:\${{TF_API_PORT:-5000}}/health         # API health check
+curl http://localhost:\${{TF_API_PORT:-5000}}               # Frontend availability
+curl http://localhost:\${{TF_API_PORT:-5000}}/metrics       # Prometheus metrics
 ```
 
 ### Environment Validation
+
 ```typescript
 interface EnvironmentValidation {
-  dotnet: 'dotnet --version',              // .NET framework validation
-  nodejs: 'node --version',               // Node.js version check
-  docker: 'docker --version',             // Docker availability
-  kubernetes: 'kubectl version',          // Kubernetes CLI validation
-  powershell: 'pwsh --version',           // PowerShell availability
-  git: 'git --version'                    // Git version control
+  dotnet: 'dotnet --version'; // .NET framework validation
+  nodejs: 'node --version'; // Node.js version check
+  docker: 'docker --version'; // Docker availability
+  kubernetes: 'kubectl version'; // Kubernetes CLI validation
+  powershell: 'pwsh --version'; // PowerShell availability
+  git: 'git --version'; // Git version control
 }
 ```
 
 ### Development Commands Reference
+
 ```bash
 # TerraFusion development commands
 make demo                                 # Run Benton County demo
@@ -397,6 +426,7 @@ dotnet test                              # Run .NET tests
 ## Quick Reference
 
 ### Essential Configuration Elements
+
 - **Base Image**: Microsoft universal Linux container
 - **Technology Stack**: .NET 8.0, Node.js 18, Docker, Kubernetes
 - **Port Forwarding**: 6 service ports (3000, 5000, 5001, 8080, 9090, 3001)
@@ -404,6 +434,7 @@ dotnet test                              # Run .NET tests
 - **Secrets**: 4 government-grade secret configurations
 
 ### Key Development Features
+
 - **Automated Setup**: Complete environment initialization script
 - **Multi-Service Support**: Frontend, backend, monitoring, demo environments
 - **Government Compliance**: FISMA-ready development standards
@@ -411,6 +442,7 @@ dotnet test                              # Run .NET tests
 - **Container Optimization**: Efficient resource management and performance
 
 ### Integration Points
+
 - **GitHub Codespaces**: Cloud development environment
 - **VS Code Remote**: Local development container support
 - **TerraFusion Services**: Complete government AI platform integration
@@ -420,4 +452,4 @@ dotnet test                              # Run .NET tests
 
 **Last Updated**: August 27, 2025  
 **Version**: TerraFusion OS 1.0 Development Container  
-**Authority**: TerraFusion Development Infrastructure Division  
+**Authority**: TerraFusion Development Infrastructure Division

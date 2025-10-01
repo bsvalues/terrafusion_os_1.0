@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error - TerraFusion Market</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .error-container {
+            max-width: 600px;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 900;
+            color: #fc8181;
+            text-shadow: 0 0 30px rgba(252, 129, 129, 0.3);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .error-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #f7fafc;
+        }
+
+        .error-description {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            color: #e2e8f0;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+            color: #1a365d;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(104, 211, 145, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .status-info {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-info h3 {
+            margin-bottom: 1rem;
+            color: #68d391;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .status-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #68d391;
+        }
+
+        .ai-assistance {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(104, 211, 145, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(104, 211, 145, 0.2);
+        }
+
+        .ai-assistance h4 {
+            color: #68d391;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .quantum-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(252, 129, 129, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 5rem;
+            }
+            
+            .error-title {
+                font-size: 2rem;
+            }
+            
+            .error-description {
+                font-size: 1rem;
+            }
+            
+            .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quantum-particles" id="particles"></div>
+    
+    <div class="error-container">
+        <div class="error-code">500</div>
+        <h1 class="error-title">Server Error</h1>
+        <p class="error-description">
+            Our AI systems are experiencing a temporary issue. Our quantum processing units are working to resolve this automatically.
+        </p>
+        
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary">
+                🏠 Go Home
+            </a>
+            <button onclick="window.location.reload()" class="btn btn-secondary">
+                🔄 Try Again
+            </button>
+        </div>
+        
+        <div class="status-info">
+            <h3>🤖 System Status</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">AI Agents</div>
+                    <div class="status-value" id="agent-count">1,008</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Quantum Cores</div>
+                    <div class="status-value" id="quantum-status">Optimizing</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Recovery Time</div>
+                    <div class="status-value" id="recovery-time">< 2 min</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Uptime</div>
+                    <div class="status-value" id="uptime">99.97%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ai-assistance">
+            <h4>🧠 AI Assistance Available</h4>
+            <p>Our AI monitoring systems have detected this issue and are implementing automatic corrections. The system should be fully operational within 2 minutes.</p>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // Auto-refresh functionality
+        function initAutoRefresh() {
+            let countdown = 60; // 60 seconds
+            const recoveryTimeElement = document.getElementById('recovery-time');
+            
+            const interval = setInterval(() => {
+                countdown--;
+                recoveryTimeElement.textContent = `${countdown}s`;
+                
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    window.location.reload();
+                }
+            }, 1000);
+        }
+        
+        // Simulate AI status updates
+        function updateStatus() {
+            const quantumStatus = document.getElementById('quantum-status');
+            const statuses = ['Optimizing', 'Calibrating', 'Restoring', 'Analyzing'];
+            let currentIndex = 0;
+            
+            setInterval(() => {
+                quantumStatus.textContent = statuses[currentIndex];
+                currentIndex = (currentIndex + 1) % statuses.length;
+            }, 2000);
+        }
+        
+        // Initialize everything
+        createParticles();
+        initAutoRefresh();
+        updateStatus();
+        
+        // Log for debugging
+        console.log('🚨 500 Error - Server error occurred');
+        console.log('🕐 Timestamp:', new Date().toISOString());
+        console.log('🌐 URL:', window.location.href);
+        console.log('🔄 Auto-refresh enabled');
+        
+        // Optional: Send analytics event
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'server_error', {
+                'error_code': '500',
+                'page_url': window.location.href,
+                'timestamp': new Date().toISOString()
+            });
+        }
+    </script>
+</body>
+</html>

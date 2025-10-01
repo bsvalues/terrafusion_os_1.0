@@ -58,7 +58,7 @@ spec:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
         - name: ASPNETCORE_URLS
-          value: "http://+:5000"
+          value: "http://+:${TF_API_PORT:-5046}"
         volumeMounts:
         - name: config-volume
           mountPath: /app/appsettings.json
@@ -114,7 +114,7 @@ spec:
         - containerPort: 3000
         env:
         - name: REACT_APP_API_URL
-          value: "http://terrafusion-backend-service:5000"
+          value: "http://terrafusion-backend-service:${TF_API_PORT:-5046}"
         - name: NODE_ENV
           value: "production"
         resources:

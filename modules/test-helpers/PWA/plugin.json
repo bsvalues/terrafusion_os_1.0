@@ -1,0 +1,35 @@
+{
+  "name": "test-helpers",
+  "displayName": "Test Helpers",
+  "description": "Testing utilities and development support tools",
+  "version": "1.0.0",
+  "status": "active",
+  "tier": "Tier 3",
+  "category": "development",
+  "author": "TerraFusion OS",
+  "port": 5144,
+  "pricing": {
+    "basePrice": 49,
+    "subscriptionModel": "monthly",
+    "enterprise": true
+  },
+  "endpoints": {
+    "health": "/health",
+    "api": "/api",
+    "ui": "/ui"
+  },
+  "dependencies": [],
+  "capabilities": [
+    "test-automation",
+    "development-tools",
+    "debugging-utilities",
+    "quality-assurance",
+    "testing-frameworks"
+  ],
+  "configuration": {
+    "autoStart": false,
+    "hotSwappable": true,
+    "governmentCompliant": true,
+    "security": "government-grade"
+  }
+}

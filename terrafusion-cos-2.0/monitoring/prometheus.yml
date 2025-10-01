@@ -1,0 +1,90 @@
+# TerraFusion cOS 2.0 - Prometheus Configuration
+# MIT PhD Systems Design Engineer Standards
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # TerraFusion cOS Kernel
+  - job_name: 'terrafusion-kernel'
+    static_configs:
+      - targets: ['kernel:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # AI Swarm Service
+  - job_name: 'ai-swarm'
+    static_configs:
+      - targets: ['ai-swarm:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+
+  # CostForge AI
+  - job_name: 'costforge'
+    static_configs:
+      - targets: ['costforge:8002']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # TerraFusion Sync
+  - job_name: 'sync-service'
+    static_configs:
+      - targets: ['sync-service:8003']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # TerraFlow
+  - job_name: 'terraflow'
+    static_configs:
+      - targets: ['terraflow:8004']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Security Mesh
+  - job_name: 'security-mesh'
+    static_configs:
+      - targets: ['security-mesh:8005']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # PostgreSQL Database
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+
+  # Redis Cache
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  # Node Exporter (if available)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  # Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:80']
+    metrics_path: '/nginx_status'
+    scrape_interval: 30s

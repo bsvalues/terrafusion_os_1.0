@@ -81,7 +81,7 @@ cat > backend/tests/appsettings.Testing.json << 'EOF'
     "DefaultConnection": "Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres"
   },
   "Redis": {
-    "ConnectionString": "localhost:6379"
+    "ConnectionString": "localhost:\${{TF_REDIS_PORT:-6379}}"
   },
   "Authentication": {
     "JwtSettings": {

@@ -140,7 +140,7 @@ services:
       - COUNTY_STATE=WASHINGTON
       - AI_SWARM_SIZE=1008
     ports:
-      - "5000:5000"
+      - "5000:${TF_API_PORT:-5046}"
       - "5001:5001"
   terrafusion-ide:
     image: terrafusion/ide:2.0.0
@@ -148,7 +148,7 @@ services:
       - COUNTY_NAME=BENTON
       - COUNTY_STATE=WASHINGTON
     ports:
-      - "5173:5173"
+      - "5173:${TF_DEV_VITE_PORT:-3102}"
     depends_on:
       - terrafusion-backend
 EOF
@@ -332,7 +332,7 @@ validate_deployment() {
     local validation_errors=0
     
     # Check service health endpoints
-    local services=("backend:5000" "frontend:5173")
+    local services=("backend:${TF_API_PORT:-5046}" "frontend:${TF_DEV_VITE_PORT:-3102}")
     for service in "${services[@]}"; do
         local port="${service#*:}"
         if curl -f -s "http://localhost:$port/health" &> /dev/null; then
@@ -375,8 +375,8 @@ generate_deployment_report() {
 
 ## Service Endpoints
 
-- **Backend API**: http://localhost:5000
-- **Frontend IDE**: http://localhost:5173
+- **Backend API**: http://localhost:${TF_STATIC_PORT:-8080}
+- **Frontend IDE**: http://localhost:${TF_STATIC_PORT:-8080}
 
 ## Security Configuration
 
@@ -435,8 +435,8 @@ EOF
         log "INFO" "County: $COUNTY_NAME"
         log "INFO" "Environment: $ENVIRONMENT"
         log "INFO" "AI Agents: $AI_SWARM_SIZE"
-        log "INFO" "Frontend: http://localhost:5173"
-        log "INFO" "Backend API: http://localhost:5000"
+        log "INFO" "Frontend: http://localhost:${TF_STATIC_PORT:-8080}"
+        log "INFO" "Backend API: http://localhost:${TF_STATIC_PORT:-8080}"
         log "INFO" "Deployment Report: $DEPLOYMENTS_DIR/$COUNTY_NAME/DEPLOYMENT_REPORT.md"
         log "INFO" "Log File: $LOG_FILE"
     else

@@ -1,0 +1,36 @@
+{
+  "name": "terrafusion-message-coordinator",
+  "version": "1.0.0",
+  "description": "Enterprise message bus coordinator for TerraFusion OS - 50,000+ AI agents",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "health-check": "curl -f http://localhost:${TF_SERVICE_8090_PORT:-8090}/health || exit 1"
+  },
+  "keywords": ["terrafusion", "messaging", "rabbitmq", "kafka", "redis", "government", "ai-agents"],
+  "author": "TerraFusion Government Solutions",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "amqplib": "^0.10.3",
+    "kafkajs": "^2.2.4",
+    "ioredis": "^5.3.2",
+    "ws": "^8.14.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "eslint": "^8.52.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/terrafusion-os"
+  }
+}

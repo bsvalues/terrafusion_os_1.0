@@ -2,11 +2,14 @@
 
 ## Terrafusion OS Enhanced AI Swarm DevOps Orchestration
 
-This guide provides complete integration instructions for the advanced AI Swarm DevOps orchestration system that enhances Terrafusion OS with intelligent infrastructure management capabilities.
+This guide provides complete integration instructions for the advanced AI Swarm
+DevOps orchestration system that enhances Terrafusion OS with intelligent
+infrastructure management capabilities.
 
 ## 🎯 Overview
 
 The AI Swarm DevOps integration provides:
+
 - **1008 specialized AI agents** for DevOps automation
 - **Claude-Flow MCP integration** with 87 specialized tools
 - **Harris PACS validation** with 90 specialized agents
@@ -82,40 +85,42 @@ docker-compose -f docker-compose.dev.yml up -d
 
 ```bash
 # Check orchestrator health
-curl http://localhost:9000/health
+curl http://localhost:\${{TF_PORT_9000:-9000}}/health
 
 # Check Claude-Flow MCP integration
-curl http://localhost:8080/devops/health
+curl http://localhost:\${{TF_PORT_9000:-9000}}/devops/health
 
 # Check Harris PACS coordinator
-curl http://localhost:9093/harris/health
+curl http://localhost:\${{TF_PORT_9000:-9000}}/harris/health
 
 # View AI Swarm metrics
-curl http://localhost:9091/metrics
+curl http://localhost:\${{TF_PORT_9000:-9000}}/metrics
 ```
 
 ## 🤖 AI Agent Distribution
 
 ### Total: 1008 Specialized Agents
 
-| Specialization | Agents | Purpose |
-|---|---|---|
-| **Build Automation** | 180 | Intelligent build orchestration and optimization |
-| **Security Scanning** | 150 | Vulnerability detection and compliance validation |
-| **Performance Testing** | 150 | Load testing and performance optimization |
-| **Deployment Coordination** | 144 | Blue-green deployments and rollback management |
-| **Infrastructure Monitoring** | 126 | Real-time monitoring and alerting |
-| **Test Orchestration** | 120 | Automated testing coordination |
-| **Harris PACS Integration** | 90 | Specialized Harris PACS validation and optimization |
-| **DevOps Coordination** | 48 | Cross-domain coordination and management |
+| Specialization                | Agents | Purpose                                             |
+| ----------------------------- | ------ | --------------------------------------------------- |
+| **Build Automation**          | 180    | Intelligent build orchestration and optimization    |
+| **Security Scanning**         | 150    | Vulnerability detection and compliance validation   |
+| **Performance Testing**       | 150    | Load testing and performance optimization           |
+| **Deployment Coordination**   | 144    | Blue-green deployments and rollback management      |
+| **Infrastructure Monitoring** | 126    | Real-time monitoring and alerting                   |
+| **Test Orchestration**        | 120    | Automated testing coordination                      |
+| **Harris PACS Integration**   | 90     | Specialized Harris PACS validation and optimization |
+| **DevOps Coordination**       | 48     | Cross-domain coordination and management            |
 
 ## 🔧 Component Details
 
 ### AISwarmDevOpsOrchestrator
 
-**Location**: `backend/ai-swarm/devops-orchestrator/AISwarmDevOpsOrchestrator.ts`
+**Location**:
+`backend/ai-swarm/devops-orchestrator/AISwarmDevOpsOrchestrator.ts`
 
 **Features**:
+
 - Coordinates 1008 AI agents across specialized swarms
 - Integrates with Claude-Flow MCP tools
 - Provides intelligent task distribution
@@ -123,6 +128,7 @@ curl http://localhost:9091/metrics
 - Supports quantum-inspired optimization (379x target)
 
 **Key Methods**:
+
 ```typescript
 await aiSwarmDevOpsOrchestrator.initialize();
 const taskId = await aiSwarmDevOpsOrchestrator.executeDevOpsTask(task);
@@ -134,6 +140,7 @@ const status = aiSwarmDevOpsOrchestrator.getStatus();
 **Location**: `.ai/claude-flow/devops/ClaudeFlowMCPDevOpsService.ts`
 
 **Features**:
+
 - 87 specialized MCP tools for DevOps automation
 - Pre-configured automation pipelines
 - Build optimization, security scanning, performance profiling
@@ -141,8 +148,9 @@ const status = aiSwarmDevOpsOrchestrator.getStatus();
 - Harris PACS integration validation tools
 
 **Available Tools**:
+
 - `build-optimizer`: Intelligent build optimization
-- `security-scanner`: Comprehensive vulnerability scanning  
+- `security-scanner`: Comprehensive vulnerability scanning
 - `performance-profiler`: Advanced performance analysis
 - `deployment-coordinator`: Intelligent deployment orchestration
 - `harris-pacs-validator`: Specialized Harris PACS validation
@@ -150,9 +158,11 @@ const status = aiSwarmDevOpsOrchestrator.getStatus();
 
 ### HarrisPACSIntegrationCoordinator
 
-**Location**: `backend/ai-swarm/coordinators/HarrisPACSIntegrationCoordinator.ts`
+**Location**:
+`backend/ai-swarm/coordinators/HarrisPACSIntegrationCoordinator.ts`
 
 **Features**:
+
 - 90 specialized Harris PACS agents
 - Continuous connectivity monitoring
 - Data synchronization validation
@@ -160,6 +170,7 @@ const status = aiSwarmDevOpsOrchestrator.getStatus();
 - Performance optimization for government systems
 
 **Agent Specializations**:
+
 - **Connectivity Specialists**: 15 agents for endpoint health
 - **Data Sync Experts**: 20 agents for data integrity
 - **Performance Analysts**: 15 agents for optimization
@@ -176,7 +187,7 @@ const status = aiSwarmDevOpsOrchestrator.getStatus();
 
 1. **BuildAutomationAgent**
    - Parallel build execution
-   - Dependency optimization  
+   - Dependency optimization
    - Artifact management
    - Performance analysis
 
@@ -202,13 +213,13 @@ const status = aiSwarmDevOpsOrchestrator.getStatus();
 
 ### Grafana Dashboards
 
-Access Grafana at `http://localhost:3002` (admin/terrafusion_dev_2024)
+Access Grafana at `http://localhost:\${{TF_PORT_9000:-9000}}` (admin/terrafusion_dev_2024)
 
 **Available Dashboards**:
 
 1. **AI Swarm DevOps Overview**
    - System health score
-   - Agent distribution by type  
+   - Agent distribution by type
    - Task execution rates
    - Quantum performance multiplier
 
@@ -250,12 +261,14 @@ claude_flow_mcp_tool_execution_time      # Tool performance
 ### Alerting Rules
 
 **Critical Alerts**:
+
 - AI Swarm orchestrator down > 2 minutes
 - Quantum performance below 300x multiplier
 - Harris PACS connectivity < 98%
 - Deployment failures > 0.5% rate
 
 **Warning Alerts**:
+
 - Agent performance < 85% success rate
 - Resource utilization > 90%
 - Security scan failures
@@ -267,7 +280,7 @@ claude_flow_mcp_tool_execution_time      # Tool performance
 
 ```bash
 # Execute build task
-curl -X POST http://localhost:9000/api/tasks \
+curl -X POST http://localhost:\${{TF_PORT_9000:-9000}}/api/tasks \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Terrafusion Build",
@@ -281,11 +294,11 @@ curl -X POST http://localhost:9000/api/tasks \
   }'
 
 # Execute security scan
-curl -X POST http://localhost:9000/api/tasks \
+curl -X POST http://localhost:\${{TF_PORT_9000:-9000}}/api/tasks \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Security Vulnerability Scan",
-    "type": "security", 
+    "type": "security",
     "priority": "critical",
     "environment": "production",
     "parameters": {
@@ -295,7 +308,7 @@ curl -X POST http://localhost:9000/api/tasks \
   }'
 
 # Execute Harris PACS validation
-curl -X POST http://localhost:9000/api/harris-pacs/validate \
+curl -X POST http://localhost:\${{TF_PORT_9000:-9000}}/api/harris-pacs/validate \
   -H "Content-Type: application/json" \
   -d '{
     "environment": "production",
@@ -308,13 +321,13 @@ curl -X POST http://localhost:9000/api/harris-pacs/validate \
 
 ```bash
 # Get orchestrator status
-curl http://localhost:9000/status
+curl http://localhost:\${{TF_PORT_9000:-9000}}/status
 
 # Get specific task result
-curl http://localhost:9000/api/tasks/{taskId}
+curl http://localhost:\${{TF_PORT_9000:-9000}}/api/tasks/{taskId}
 
 # Get Harris PACS validation result
-curl http://localhost:9000/api/harris-pacs/validation/{taskId}
+curl http://localhost:\${{TF_PORT_9000:-9000}}/api/harris-pacs/validation/{taskId}
 ```
 
 ## 🛠️ Development Workflow
@@ -322,6 +335,7 @@ curl http://localhost:9000/api/harris-pacs/validation/{taskId}
 ### Adding New DevOps Agents
 
 1. **Extend Base Agent Class**:
+
 ```typescript
 export class CustomDevOpsAgent extends BaseDevOpsAgent {
   constructor(agentId: string, name: string) {
@@ -331,13 +345,16 @@ export class CustomDevOpsAgent extends BaseDevOpsAgent {
     super(config);
   }
 
-  protected async executeSpecializedTask(payload: DevOpsTaskPayload): Promise<any> {
+  protected async executeSpecializedTask(
+    payload: DevOpsTaskPayload
+  ): Promise<any> {
     // Custom task execution logic
   }
 }
 ```
 
 2. **Register with Orchestrator**:
+
 ```typescript
 const customAgents = DevOpsAgentFactory.createCustomSwarm(distribution);
 // Register agents with orchestrator
@@ -346,6 +363,7 @@ const customAgents = DevOpsAgentFactory.createCustomSwarm(distribution);
 ### Adding MCP Tools
 
 1. **Define Tool Configuration**:
+
 ```typescript
 'custom-tool': {
   description: 'Custom DevOps automation tool',
@@ -356,6 +374,7 @@ const customAgents = DevOpsAgentFactory.createCustomSwarm(distribution);
 ```
 
 2. **Implement Tool Execution**:
+
 ```typescript
 async executeCustomTool(params: any): Promise<any> {
   // Custom MCP tool logic
@@ -365,15 +384,17 @@ async executeCustomTool(params: any): Promise<any> {
 ### Adding Monitoring Metrics
 
 1. **Define Prometheus Metric**:
+
 ```typescript
 const customMetric = new Gauge({
   name: 'custom_devops_metric',
   help: 'Custom DevOps metric description',
-  labelNames: ['label1', 'label2']
+  labelNames: ['label1', 'label2'],
 });
 ```
 
 2. **Collect Metric Data**:
+
 ```typescript
 async collectCustomMetrics(): Promise<void> {
   const value = await getCustomMetricValue();
@@ -385,7 +406,8 @@ async collectCustomMetrics(): Promise<void> {
 
 ### Docker Compose Integration
 
-The AI Swarm components seamlessly integrate with Cascade's enhanced `docker-compose.dev.yml`:
+The AI Swarm components seamlessly integrate with Cascade's enhanced
+`docker-compose.dev.yml`:
 
 ```yaml
 # Extends Cascade's infrastructure
@@ -408,15 +430,17 @@ services:
 ### Security Hardening
 
 Builds upon Cascade's security features:
+
 - Non-root user containers
 - Encrypted credentials rotation
 - FISMA compliance validation
 - Comprehensive audit logging
 - Network isolation and monitoring
 
-### Performance Optimization  
+### Performance Optimization
 
 Leverages Cascade's performance enhancements:
+
 - Multi-stage Docker builds
 - Resource optimization
 - Caching strategies
@@ -424,53 +448,56 @@ Leverages Cascade's performance enhancements:
 
 ## 🎯 Performance Targets
 
-| Metric | Target | Current |
-|---|---|---|
-| **AI Swarm Health** | >95% | Real-time monitoring |
-| **Quantum Performance** | 379x improvement | Variable optimization |
-| **Agent Success Rate** | >95% | Per-agent tracking |
-| **Harris PACS Connectivity** | >98% | Continuous validation |
-| **Build Success Rate** | >98% | Automated optimization |
-| **Security Compliance** | 100% | FISMA/NIST validation |
-| **Deployment Success** | >99% | Blue-green deployments |
-| **Data Sync Accuracy** | >99.5% | Real-time validation |
+| Metric                       | Target           | Current                |
+| ---------------------------- | ---------------- | ---------------------- |
+| **AI Swarm Health**          | >95%             | Real-time monitoring   |
+| **Quantum Performance**      | 379x improvement | Variable optimization  |
+| **Agent Success Rate**       | >95%             | Per-agent tracking     |
+| **Harris PACS Connectivity** | >98%             | Continuous validation  |
+| **Build Success Rate**       | >98%             | Automated optimization |
+| **Security Compliance**      | 100%             | FISMA/NIST validation  |
+| **Deployment Success**       | >99%             | Blue-green deployments |
+| **Data Sync Accuracy**       | >99.5%           | Real-time validation   |
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
 1. **AI Swarm Not Starting**
+
    ```bash
    # Check dependencies
-   curl http://localhost:5000/health
-   
+   curl http://localhost:\${{TF_PORT_9000:-9000}}/health
+
    # Check logs
    docker-compose logs ai-swarm
-   
+
    # Restart services
    docker-compose restart ai-swarm claude-flow
    ```
 
 2. **Metrics Not Appearing**
+
    ```bash
    # Check metrics endpoint
-   curl http://localhost:9091/metrics
-   
+   curl http://localhost:\${{TF_PORT_9000:-9000}}/metrics
+
    # Check Prometheus targets
-   curl http://localhost:9090/api/v1/targets
-   
+   curl http://localhost:\${{TF_PORT_9000:-9000}}/api/v1/targets
+
    # Restart metrics collector
    docker-compose restart ai-swarm-metrics
    ```
 
 3. **Harris PACS Validation Failing**
+
    ```bash
    # Check Harris PACS connectivity
-   curl http://localhost:9093/harris/health
-   
+   curl http://localhost:\${{TF_PORT_9000:-9000}}/harris/health
+
    # Check environment configuration
-   curl http://localhost:9093/harris/config
-   
+   curl http://localhost:\${{TF_PORT_9000:-9000}}/harris/config
+
    # Review validation logs
    docker-compose logs harris-pacs-coordinator
    ```
@@ -494,10 +521,10 @@ Leverages Cascade's performance enhancements:
 ./scripts/ai-swarm/health-check.sh
 
 # Individual component checks
-curl http://localhost:9000/health      # DevOps Orchestrator
-curl http://localhost:8080/devops/health  # Claude-Flow MCP
-curl http://localhost:9093/harris/health  # Harris PACS Coordinator
-curl http://localhost:9091/health      # Metrics Collector
+curl http://localhost:\${{TF_PORT_9000:-9000}}/health      # DevOps Orchestrator
+curl http://localhost:\${{TF_PORT_9000:-9000}}/devops/health  # Claude-Flow MCP
+curl http://localhost:\${{TF_PORT_9000:-9000}}/harris/health  # Harris PACS Coordinator
+curl http://localhost:\${{TF_PORT_9000:-9000}}/health      # Metrics Collector
 ```
 
 ## 🌟 Key Features Delivered
@@ -505,7 +532,7 @@ curl http://localhost:9091/health      # Metrics Collector
 ### ✅ Enhanced Infrastructure
 
 - **1008 AI agents** for comprehensive DevOps automation
-- **Claude-Flow MCP integration** with 87 specialized tools  
+- **Claude-Flow MCP integration** with 87 specialized tools
 - **Harris PACS validation** with 90 specialized agents
 - **Quantum performance optimization** targeting 379x improvement
 - **Advanced monitoring** with Prometheus and Grafana
@@ -537,9 +564,11 @@ curl http://localhost:9091/health      # Metrics Collector
 
 For questions or issues with the AI Swarm DevOps integration:
 
-1. **Health Dashboards**: http://localhost:3002/d/ai-swarm-health
-2. **API Documentation**: http://localhost:9000/api/docs  
-3. **Metrics Explorer**: http://localhost:9090/graph
+1. **Health Dashboards**: http://localhost:\${{TF_PORT_9000:-9000}}/d/ai-swarm-health
+2. **API Documentation**: http://localhost:\${{TF_PORT_9000:-9000}}/api/docs
+3. **Metrics Explorer**: http://localhost:\${{TF_PORT_9000:-9000}}/graph
 4. **Component Logs**: `docker-compose logs [service-name]`
 
-The AI Swarm DevOps integration is now fully operational and ready for intelligent infrastructure management with 1008 specialized agents working in coordination with Claude-Flow MCP tools and Harris PACS validation specialists.
+The AI Swarm DevOps integration is now fully operational and ready for
+intelligent infrastructure management with 1008 specialized agents working in
+coordination with Claude-Flow MCP tools and Harris PACS validation specialists.

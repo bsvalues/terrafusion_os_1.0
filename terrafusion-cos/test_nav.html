@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TerraFusion Navigation Test</title>
+    <style>
+        .nav-btn { 
+            display: block; 
+            margin: 10px; 
+            padding: 10px; 
+            background: #0099ff; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+        }
+        .nav-btn.active { background: #00ffaa; }
+        .content-panel { 
+            display: none; 
+            padding: 20px; 
+            background: #f0f0f0; 
+            margin: 20px; 
+        }
+        .content-panel.active { display: block; }
+    </style>
+</head>
+<body>
+    <h1>TerraFusion Navigation Test</h1>
+    
+    <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
+    <button class="nav-btn" data-panel="ai-swarm">AI Swarm</button>
+    <button class="nav-btn" data-panel="security">Security</button>
+    
+    <div id="dashboard" class="content-panel active">
+        <h2>Dashboard Panel</h2>
+        <p>This is the dashboard content</p>
+    </div>
+    
+    <div id="ai-swarm" class="content-panel">
+        <h2>AI Swarm Panel</h2>
+        <p>This is the AI swarm content</p>
+    </div>
+    
+    <div id="security" class="content-panel">
+        <h2>Security Panel</h2>
+        <p>This is the security content</p>
+    </div>
+
+    <script>
+        console.log('🔧 Testing navigation...');
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const contentPanels = document.querySelectorAll('.content-panel');
+        
+        console.log(`Found ${navButtons.length} buttons and ${contentPanels.length} panels`);
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetPanel = this.getAttribute('data-panel');
+                console.log(`Clicked: ${targetPanel}`);
+                
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                contentPanels.forEach(panel => panel.classList.remove('active'));
+                
+                this.classList.add('active');
+                const target = document.getElementById(targetPanel);
+                if (target) {
+                    target.classList.add('active');
+                    console.log(`✅ Activated: ${targetPanel}`);
+                } else {
+                    console.error(`❌ Not found: ${targetPanel}`);
+                }
+            });
+        });
+        
+        console.log('✅ Navigation test ready');
+    </script>
+</body>
+</html>

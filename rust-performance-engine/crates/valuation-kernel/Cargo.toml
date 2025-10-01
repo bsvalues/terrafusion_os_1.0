@@ -1,0 +1,38 @@
+[package]
+name = "valuation-kernel"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Deterministic property valuation algorithms with government-grade accuracy"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tokio.workspace = true
+uuid.workspace = true
+ordered-float.workspace = true
+rust_decimal.workspace = true
+chrono.workspace = true
+geospatial-engine = { path = "../geospatial-engine" }
+
+# Property testing framework
+proptest.workspace = true
+quickcheck.workspace = true
+
+# Math and statistics
+nalgebra.workspace = true
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[features]
+default = ["standard-algorithms"]
+standard-algorithms = []

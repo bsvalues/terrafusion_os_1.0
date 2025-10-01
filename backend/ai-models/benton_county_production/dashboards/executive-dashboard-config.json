@@ -227,7 +227,7 @@
           {
             "label": "Median Ratio",
             "value": 0.97,
-            "target": 1.00,
+            "target": 1.0,
             "format": "decimal"
           },
           {
@@ -240,7 +240,7 @@
           {
             "label": "PRD",
             "value": 1.02,
-            "target": 1.00,
+            "target": 1.0,
             "format": "decimal"
           }
         ],
@@ -302,7 +302,11 @@
   "personalization": {
     "allow_customization": true,
     "save_layout": true,
-    "theme_options": ["professional-dark", "professional-light", "high-contrast"],
+    "theme_options": [
+      "professional-dark",
+      "professional-light",
+      "high-contrast"
+    ],
     "export_options": ["pdf", "excel", "powerpoint"],
     "sharing": {
       "allow_screenshot": true,

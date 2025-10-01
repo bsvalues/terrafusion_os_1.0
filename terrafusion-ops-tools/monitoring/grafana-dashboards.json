@@ -52,13 +52,13 @@
           "defaults": {
             "thresholds": {
               "steps": [
-                {"color": "red", "value": null},
-                {"color": "green", "value": 1}
+                { "color": "red", "value": null },
+                { "color": "green", "value": 1 }
               ]
             },
             "mappings": [
-              {"type": "value", "value": "1", "text": "UP"},
-              {"type": "value", "value": "0", "text": "DOWN"}
+              { "type": "value", "value": "1", "text": "UP" },
+              { "type": "value", "value": "0", "text": "DOWN" }
             ]
           }
         }

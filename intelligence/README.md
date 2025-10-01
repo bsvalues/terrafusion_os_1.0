@@ -2,16 +2,22 @@
 
 **Status**: Intelligence Excellence ✅  
 **Purpose**: AI intelligence analytics and predictive intelligence systems  
-**Integration**: Multi-county analytics architecture with intelligence processing and predictive modeling  
-**Compliance**: Government-grade intelligence systems with security, analytics, and validation frameworks  
+**Integration**: Multi-county analytics architecture with intelligence
+processing and predictive modeling  
+**Compliance**: Government-grade intelligence systems with security, analytics,
+and validation frameworks
 
 ## Overview
 
-The Terrafusion OS intelligence directory provides comprehensive AI intelligence and analytics capabilities for government AI platforms. This README serves as a practical guide to understanding, implementing, and managing intelligence systems within the Terrafusion OS ecosystem.
+The Terrafusion OS intelligence directory provides comprehensive AI intelligence
+and analytics capabilities for government AI platforms. This README serves as a
+practical guide to understanding, implementing, and managing intelligence
+systems within the Terrafusion OS ecosystem.
 
 ## Quick Start Guide
 
 ### Intelligence System Setup
+
 ```bash
 # Navigate to intelligence directory
 cd /mnt/c/Users/bsval/terrafusion_os_1.0/intelligence/
@@ -31,6 +37,7 @@ npm run intelligence:process
 ```
 
 ### Essential Intelligence Operations
+
 ```bash
 # AI intelligence analytics
 npm run intelligence:analytics:process
@@ -53,32 +60,53 @@ npm run intelligence:validate:results
 ### Core Intelligence Components
 
 #### **AI Intelligence Analytics Framework**
-- **Intelligence Processing Systems**: AI-powered analytics creation with machine learning pattern recognition and scenario analysis
-- **Intelligence Execution**: Automated intelligence execution with parallel processing and continuous validation systems
-- **Intelligence Validation**: Comprehensive result analysis with quality assurance and performance metrics validation
-- **Government Compliance**: NIST intelligence framework compliance with regulatory requirement validation
+
+- **Intelligence Processing Systems**: AI-powered analytics creation with
+  machine learning pattern recognition and scenario analysis
+- **Intelligence Execution**: Automated intelligence execution with parallel
+  processing and continuous validation systems
+- **Intelligence Validation**: Comprehensive result analysis with quality
+  assurance and performance metrics validation
+- **Government Compliance**: NIST intelligence framework compliance with
+  regulatory requirement validation
 
 #### **Predictive Intelligence Systems**
-- **Property Value Prediction**: Automated valuation models with machine learning prediction and ensemble systems
-- **Market Forecasting**: Market trend forecasting with economic indicator analysis and demographic trend integration
-- **Risk Assessment Intelligence**: Risk pattern identification with predictive modeling and opportunity recognition
-- **Performance Optimization**: Predictive model validation with accuracy optimization and compliance monitoring
+
+- **Property Value Prediction**: Automated valuation models with machine
+  learning prediction and ensemble systems
+- **Market Forecasting**: Market trend forecasting with economic indicator
+  analysis and demographic trend integration
+- **Risk Assessment Intelligence**: Risk pattern identification with predictive
+  modeling and opportunity recognition
+- **Performance Optimization**: Predictive model validation with accuracy
+  optimization and compliance monitoring
 
 #### **Multi-County Analytics**
-- **County Analytics Processing**: Yakima (flagship), Cowlitz (customized), Benton (production) intelligence coordination
-- **Cross-County Comparison**: Regional market comparison with property value analysis and demographic comparison
-- **Regional Intelligence**: Cross-county intelligence coordination with regional federation and validation systems
-- **Performance Metrics**: County coordination metrics with intelligence consistency and compliance validation
+
+- **County Analytics Processing**: Yakima (flagship), Cowlitz (customized),
+  Benton (production) intelligence coordination
+- **Cross-County Comparison**: Regional market comparison with property value
+  analysis and demographic comparison
+- **Regional Intelligence**: Cross-county intelligence coordination with
+  regional federation and validation systems
+- **Performance Metrics**: County coordination metrics with intelligence
+  consistency and compliance validation
 
 #### **Property Intelligence Generation**
-- **Property Analysis Intelligence**: Property data processing with characteristics analysis and comparable selection
-- **Valuation Intelligence**: Automated valuation intelligence with market value processing and confidence analysis
-- **Market Intelligence**: Market condition analysis with price trend intelligence and demand supply analysis
-- **Risk Intelligence**: Property risk analysis with investment assessment and market risk intelligence
+
+- **Property Analysis Intelligence**: Property data processing with
+  characteristics analysis and comparable selection
+- **Valuation Intelligence**: Automated valuation intelligence with market value
+  processing and confidence analysis
+- **Market Intelligence**: Market condition analysis with price trend
+  intelligence and demand supply analysis
+- **Risk Intelligence**: Property risk analysis with investment assessment and
+  market risk intelligence
 
 ### Intelligence Implementation Guide
 
 #### **AI Intelligence Analytics Setup**
+
 ```bash
 # Initialize AI intelligence analytics
 python -c "
@@ -91,10 +119,11 @@ processor.initialize_analytics_framework()
 npm run intelligence:analytics:start
 
 # Verify analytics processing
-curl http://localhost:8080/intelligence/analytics/status
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/intelligence/analytics/status
 ```
 
 #### **Predictive Intelligence Implementation**
+
 ```bash
 # Initialize predictive models
 python scripts/initialize-predictive-models.py
@@ -110,6 +139,7 @@ python scripts/validate-predictions.py --model=ensemble
 ```
 
 #### **Multi-County Analytics Deployment**
+
 ```bash
 # Process Yakima County analytics (flagship)
 ./scripts/process-county-intelligence.sh --county=yakima --tier=flagship
@@ -129,6 +159,7 @@ python scripts/validate-predictions.py --model=ensemble
 ### County Intelligence Systems
 
 #### **Yakima County (Flagship Intelligence)**
+
 ```yaml
 # yakima-intelligence-config.yml
 yakima_county_intelligence:
@@ -138,7 +169,7 @@ yakima_county_intelligence:
     - premium_intelligence_frameworks
     - multi_county_leadership
     - flagship_optimization_systems
-  
+
   processing_capabilities:
     - advanced_property_valuation_intelligence
     - market_trend_prediction_systems
@@ -146,12 +177,13 @@ yakima_county_intelligence:
     - regional_intelligence_coordination
 
   performance_targets:
-    - intelligence_processing_time: "Sub-3 minute processing"
-    - analytics_accuracy: "98% accuracy target"
-    - predictive_reliability: "96% prediction accuracy"
+    - intelligence_processing_time: 'Sub-3 minute processing'
+    - analytics_accuracy: '98% accuracy target'
+    - predictive_reliability: '96% prediction accuracy'
 ```
 
 #### **Cowlitz County (Customized Intelligence)**
+
 ```yaml
 # cowlitz-intelligence-config.yml
 cowlitz_county_intelligence:
@@ -161,7 +193,7 @@ cowlitz_county_intelligence:
     - county_specific_customization
     - efficiency_focused_processing
     - customized_intelligence_frameworks
-  
+
   processing_capabilities:
     - property_workflow_analytics
     - customized_valuation_processing
@@ -169,12 +201,13 @@ cowlitz_county_intelligence:
     - county_specific_optimization
 
   performance_targets:
-    - workflow_efficiency: "94% workflow efficiency"
-    - processing_optimization: "92% processing efficiency"
-    - analytics_customization: "Custom intelligence frameworks"
+    - workflow_efficiency: '94% workflow efficiency'
+    - processing_optimization: '92% processing efficiency'
+    - analytics_customization: 'Custom intelligence frameworks'
 ```
 
 #### **Benton County (Production Intelligence)**
+
 ```yaml
 # benton-intelligence-config.yml
 benton_county_intelligence:
@@ -185,7 +218,7 @@ benton_county_intelligence:
     - harris_pacs_intelligence_integration
     - enterprise_validation_frameworks
     - production_optimization_systems
-  
+
   processing_capabilities:
     - harris_pacs_property_analytics
     - production_valuation_systems
@@ -193,12 +226,13 @@ benton_county_intelligence:
     - enterprise_intelligence_validation
 
   performance_targets:
-    - production_reliability: "99.8% uptime"
-    - harris_integration_accuracy: "99.5% integration accuracy"
-    - parcel_processing_speed: "Sub-2 minute per parcel"
+    - production_reliability: '99.8% uptime'
+    - harris_integration_accuracy: '99.5% integration accuracy'
+    - parcel_processing_speed: 'Sub-2 minute per parcel'
 ```
 
 ### Regional Intelligence Coordination
+
 ```typescript
 // Multi-county intelligence coordination
 interface MultiCountyIntelligenceConfig {
@@ -208,14 +242,14 @@ interface MultiCountyIntelligenceConfig {
     bentonCounty: BentonIntelligenceConfig;
     additionalCounties: AdditionalCountiesConfig;
   };
-  
+
   crossCountyAnalytics: {
     comparativeAnalysis: boolean;
     regionalTrendAnalysis: boolean;
     marketComparisonSystems: boolean;
     demographicComparison: boolean;
   };
-  
+
   regionalIntelligence: {
     intelligenceFederation: boolean;
     crossCountyValidation: boolean;
@@ -230,6 +264,7 @@ interface MultiCountyIntelligenceConfig {
 ### Intelligence Security Framework
 
 #### **Intelligence Standards Compliance**
+
 ```bash
 # NIST intelligence framework compliance
 ./scripts/nist-intelligence-compliance-check.sh
@@ -242,6 +277,7 @@ interface MultiCountyIntelligenceConfig {
 ```
 
 #### **Intelligence Security Automation**
+
 ```yaml
 # intelligence-security-config.yml
 intelligence_security:
@@ -249,12 +285,12 @@ intelligence_security:
     - intelligence_security_assessment
     - vulnerability_intelligence_scanning
     - security_intelligence_validation
-  
+
   data_protection:
     - intelligence_data_encryption
     - access_control_intelligence
     - audit_trail_intelligence_logging
-  
+
   compliance_monitoring:
     - real_time_intelligence_compliance
     - automated_intelligence_remediation
@@ -264,6 +300,7 @@ intelligence_security:
 ### Performance Intelligence Compliance
 
 #### **Government Performance Requirements**
+
 ```bash
 # Performance intelligence validation
 ./scripts/performance-intelligence-validation.sh
@@ -276,23 +313,24 @@ intelligence_security:
 ```
 
 #### **Intelligence Performance Standards**
+
 ```yaml
 # performance-intelligence-standards.yml
 performance_standards:
   intelligence_processing_requirements:
-    - processing_time_target: "Sub-5 minute processing"
-    - accuracy_target: "97% intelligence accuracy"
-    - reliability_target: "99% intelligence success rate"
-  
+    - processing_time_target: 'Sub-5 minute processing'
+    - accuracy_target: '97% intelligence accuracy'
+    - reliability_target: '99% intelligence success rate'
+
   predictive_intelligence_standards:
-    - prediction_accuracy: "95% prediction accuracy"
-    - forecasting_reliability: "94% forecast reliability"
-    - model_validation: "Comprehensive model validation"
-  
+    - prediction_accuracy: '95% prediction accuracy'
+    - forecasting_reliability: '94% forecast reliability'
+    - model_validation: 'Comprehensive model validation'
+
   government_compliance_requirements:
-    - nist_framework_compliance: "100% NIST compliance"
-    - security_intelligence_validation: "Maximum security compliance"
-    - audit_trail_completeness: "Complete intelligence audit trails"
+    - nist_framework_compliance: '100% NIST compliance'
+    - security_intelligence_validation: 'Maximum security compliance'
+    - audit_trail_completeness: 'Complete intelligence audit trails'
 ```
 
 ## Property Intelligence Processing
@@ -300,6 +338,7 @@ performance_standards:
 ### Property Analysis Implementation
 
 #### **Property Valuation Intelligence**
+
 ```python
 # Property valuation intelligence processing
 from intelligence.property import PropertyIntelligenceProcessor
@@ -308,7 +347,7 @@ class PropertyValuationIntelligence:
     def __init__(self):
         self.processor = PropertyIntelligenceProcessor()
         self.models = self.load_valuation_models()
-    
+
     def process_property_intelligence(self, property_data):
         """Process comprehensive property intelligence"""
         return {
@@ -317,13 +356,14 @@ class PropertyValuationIntelligence:
             'valuation_prediction': self.predict_property_value(property_data),
             'risk_assessment': self.assess_property_risk(property_data)
         }
-    
+
     def generate_intelligence_report(self, intelligence_results):
         """Generate comprehensive intelligence report"""
         return self.processor.generate_report(intelligence_results)
 ```
 
 #### **Market Intelligence Analysis**
+
 ```bash
 # Market intelligence processing
 ./scripts/process-market-intelligence.sh --county=all --period=12-months
@@ -341,6 +381,7 @@ class PropertyValuationIntelligence:
 ### Cross-County Intelligence Comparison
 
 #### **Regional Market Comparison**
+
 ```typescript
 // Cross-county intelligence comparison
 interface CrossCountyIntelligenceComparison {
@@ -349,13 +390,13 @@ interface CrossCountyIntelligenceComparison {
     pricePerSquareFootComparison: Map<string, number>;
     marketAppreciationRates: Map<string, number>;
   };
-  
+
   marketTrendComparison: {
     salesVolumeComparison: Map<string, number>;
     marketVelocityComparison: Map<string, number>;
     priceTrendAnalysis: Map<string, TrendAnalysis>;
   };
-  
+
   demographicIntelligence: {
     populationTrends: Map<string, PopulationData>;
     economicFactors: Map<string, EconomicData>;
@@ -367,12 +408,14 @@ interface CrossCountyIntelligenceComparison {
 ## Performance Optimization
 
 ### Intelligence Performance Targets
+
 - **Processing Time**: Sub-5 minute intelligence processing execution
 - **Intelligence Accuracy**: 97% intelligence accuracy target
 - **Success Rate**: 99% intelligence success rate target
 - **Performance Variance**: Sub-3% performance variance
 
 ### Performance Monitoring Implementation
+
 ```bash
 # Start intelligence performance monitoring
 ./scripts/start-intelligence-performance-monitoring.sh
@@ -385,6 +428,7 @@ interface CrossCountyIntelligenceComparison {
 ```
 
 ### Intelligence Optimization
+
 ```yaml
 # intelligence-optimization.yml
 intelligence_optimization:
@@ -392,12 +436,12 @@ intelligence_optimization:
     - parallel_processing_optimization
     - memory_usage_optimization
     - cpu_utilization_optimization
-  
+
   accuracy_optimization:
     - model_ensemble_optimization
     - prediction_accuracy_improvement
     - validation_framework_enhancement
-  
+
   performance_optimization:
     - processing_speed_improvement
     - resource_efficiency_optimization
@@ -409,6 +453,7 @@ intelligence_optimization:
 ### Common Intelligence Issues
 
 #### **Intelligence Processing Issues**
+
 ```bash
 # Check intelligence processing status
 ./scripts/check-intelligence-status.sh
@@ -424,6 +469,7 @@ intelligence_optimization:
 ```
 
 #### **Predictive Model Issues**
+
 ```bash
 # Validate predictive models
 python scripts/validate-predictive-models.py
@@ -439,6 +485,7 @@ python scripts/generate-model-report.py
 ```
 
 #### **Multi-County Coordination Issues**
+
 ```bash
 # Check cross-county synchronization
 ./scripts/check-cross-county-sync.sh
@@ -456,6 +503,7 @@ python scripts/generate-model-report.py
 ## Intelligence Maintenance
 
 ### Regular Maintenance Tasks
+
 ```bash
 # Update intelligence models
 ./scripts/update-intelligence-models.sh
@@ -471,6 +519,7 @@ python scripts/generate-model-report.py
 ```
 
 ### Intelligence Data Management
+
 ```bash
 # Intelligence data backup
 ./scripts/backup-intelligence-data.sh --type=full
@@ -488,18 +537,25 @@ python scripts/generate-model-report.py
 ## Support and Resources
 
 ### Intelligence Resources
-- **Analytics Documentation**: [./analytics/](./analytics/) - Intelligence analytics configuration and processing
-- **Predictive Models**: [./models/](./models/) - Machine learning models and prediction systems
-- **County Data**: [./county-data/](./county-data/) - Multi-county intelligence data and processing
-- **Reports**: [./reports/](./reports/) - Intelligence reports and analysis results
+
+- **Analytics Documentation**: [./analytics/](./analytics/) - Intelligence
+  analytics configuration and processing
+- **Predictive Models**: [./models/](./models/) - Machine learning models and
+  prediction systems
+- **County Data**: [./county-data/](./county-data/) - Multi-county intelligence
+  data and processing
+- **Reports**: [./reports/](./reports/) - Intelligence reports and analysis
+  results
 
 ### External Resources
+
 - [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework)
 - [Machine Learning Intelligence Standards](https://www.iso.org/standard/23053.html)
 - [Government Analytics Guidelines](https://www.gsa.gov/technology/government-it-initiatives/data-strategy)
 - [Property Intelligence Best Practices](https://www.appraisalinstitute.org/education/)
 
 ### Getting Help
+
 ```bash
 # Intelligence system help
 ./scripts/intelligence-help.sh
@@ -519,18 +575,29 @@ python scripts/generate-model-report.py
 ## Intelligence Excellence Summary
 
 ### AI Intelligence and Analytics Capabilities
-- **AI Intelligence Analytics**: AI-powered intelligence creation with intelligent scenario generation and analytics optimization
-- **Predictive Intelligence**: Property valuation, market trend, and risk assessment intelligence with forecasting validation
-- **Multi-County Analytics**: Cross-county intelligence coordination with regional analytics and comparative processing
-- **Property Intelligence**: Comprehensive property analysis with valuation intelligence and market intelligence systems
+
+- **AI Intelligence Analytics**: AI-powered intelligence creation with
+  intelligent scenario generation and analytics optimization
+- **Predictive Intelligence**: Property valuation, market trend, and risk
+  assessment intelligence with forecasting validation
+- **Multi-County Analytics**: Cross-county intelligence coordination with
+  regional analytics and comparative processing
+- **Property Intelligence**: Comprehensive property analysis with valuation
+  intelligence and market intelligence systems
 
 ### Government Integration Excellence
-- **Compliance Frameworks**: Government intelligence standards with NIST compliance and regulatory validation
-- **Security Intelligence**: Automated security intelligence with vulnerability assessment and intelligence validation
-- **Multi-County Coordination**: Yakima (flagship), Cowlitz (customized), Benton (production) intelligence coordination
-- **Performance Excellence**: Sub-5 minute processing, 97% accuracy with government compliance validation
 
-**Ready for Government Deployment**: Complete intelligence framework with enterprise analytics processing and compliance integration.
+- **Compliance Frameworks**: Government intelligence standards with NIST
+  compliance and regulatory validation
+- **Security Intelligence**: Automated security intelligence with vulnerability
+  assessment and intelligence validation
+- **Multi-County Coordination**: Yakima (flagship), Cowlitz (customized), Benton
+  (production) intelligence coordination
+- **Performance Excellence**: Sub-5 minute processing, 97% accuracy with
+  government compliance validation
+
+**Ready for Government Deployment**: Complete intelligence framework with
+enterprise analytics processing and compliance integration.
 
 **Authority**: Terrafusion Intelligence Analytics Division  
 **Last Updated**: August 27, 2025

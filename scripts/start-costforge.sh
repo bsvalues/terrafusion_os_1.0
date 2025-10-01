@@ -11,7 +11,7 @@ echo "Starting CostForge AI..."
 echo "Project Root: $PROJECT_ROOT"
 
 # Check if backend is running
-if ! curl -s http://localhost:5000/api/health > /dev/null 2>&1; then
+if ! curl -s http://localhost:${TF_STATIC_PORT:-8080}/api/health > /dev/null 2>&1; then
     echo "Starting TerraFusion backend..."
     cd "$PROJECT_ROOT/backend"
     dotnet run --project TerraFusion.API &
@@ -20,7 +20,7 @@ if ! curl -s http://localhost:5000/api/health > /dev/null 2>&1; then
     # Wait for backend to start
     echo "Waiting for backend to initialize..."
     for i in {1..30}; do
-        if curl -s http://localhost:5000/api/health > /dev/null 2>&1; then
+        if curl -s http://localhost:${TF_STATIC_PORT:-8080}/api/health > /dev/null 2>&1; then
             echo "Backend is ready!"
             break
         fi

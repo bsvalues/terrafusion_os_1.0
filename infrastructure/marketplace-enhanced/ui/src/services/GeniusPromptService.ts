@@ -62,7 +62,7 @@ Focus on regulatory requirements, audit trails, and risk management. Make compli
 
     federation: `${GeniusPromptService.GOVERNMENT_GENIUS_PROMPT}
 
-Focus on cross-jurisdictional collaboration and resource sharing. Celebrate the power of communities working together while respecting local sovereignty.`
+Focus on cross-jurisdictional collaboration and resource sharing. Celebrate the power of communities working together while respecting local sovereignty.`,
   };
 
   /**
@@ -70,50 +70,60 @@ Focus on cross-jurisdictional collaboration and resource sharing. Celebrate the 
    */
   static readonly RESPONSE_TEMPLATES = {
     success: {
-      deployment: "🎉 Beautifully deployed! Your new plugin is live and ready to transform your workflow. What would you like to explore next?",
-      validation: "✨ Validation complete! Everything looks perfect - your system is secure, compliant, and ready for excellence.",
-      federation: "🤝 Federation established! Your counties are now connected in a powerful network of shared resources and collaboration."
+      deployment:
+        '🎉 Beautifully deployed! Your new plugin is live and ready to transform your workflow. What would you like to explore next?',
+      validation:
+        '✨ Validation complete! Everything looks perfect - your system is secure, compliant, and ready for excellence.',
+      federation:
+        '🤝 Federation established! Your counties are now connected in a powerful network of shared resources and collaboration.',
     },
-    
+
     guidance: {
-      onboarding: "Welcome to Terrafusion! Let's make your government technology experience absolutely magical. I'll guide you through each step with care and precision.",
-      troubleshooting: "I see what's happening here. Let me help you resolve this quickly and elegantly - you'll be back to productive work in moments.",
-      optimization: "I've identified some exciting opportunities to make your system even better. Here's how we can enhance your experience..."
+      onboarding:
+        "Welcome to Terrafusion! Let's make your government technology experience absolutely magical. I'll guide you through each step with care and precision.",
+      troubleshooting:
+        "I see what's happening here. Let me help you resolve this quickly and elegantly - you'll be back to productive work in moments.",
+      optimization:
+        "I've identified some exciting opportunities to make your system even better. Here's how we can enhance your experience...",
     },
-    
+
     error_recovery: {
-      gentle: "Something didn't go as expected, but that's perfectly fine. Let me help you get back on track with a better approach.",
-      technical: "I've detected a technical issue, but I have a clear solution. Here's exactly what we'll do to resolve this elegantly.",
-      permission: "It looks like we need to adjust some permissions. I'll walk you through this securely and simply."
-    }
+      gentle:
+        "Something didn't go as expected, but that's perfectly fine. Let me help you get back on track with a better approach.",
+      technical:
+        "I've detected a technical issue, but I have a clear solution. Here's exactly what we'll do to resolve this elegantly.",
+      permission:
+        "It looks like we need to adjust some permissions. I'll walk you through this securely and simply.",
+    },
   };
 
   /**
    * Genius UX principles for all interactions
    */
   static readonly UX_PRINCIPLES = {
-    immediacy: "Provide instant feedback for every user action",
-    clarity: "Use clear, jargon-free language that respects user intelligence",
-    anticipation: "Predict user needs and provide solutions proactively",
-    celebration: "Acknowledge successes and milestones with appropriate delight",
-    recovery: "Turn errors into learning opportunities with graceful guidance",
-    accessibility: "Ensure every interaction works for all users, all devices",
-    consistency: "Maintain visual and interaction patterns across all experiences",
-    performance: "Prioritize speed and responsiveness in every interface",
-    beauty: "Make every pixel serve both function and aesthetic excellence",
-    trust: "Build confidence through transparency and reliable behavior"
+    immediacy: 'Provide instant feedback for every user action',
+    clarity: 'Use clear, jargon-free language that respects user intelligence',
+    anticipation: 'Predict user needs and provide solutions proactively',
+    celebration: 'Acknowledge successes and milestones with appropriate delight',
+    recovery: 'Turn errors into learning opportunities with graceful guidance',
+    accessibility: 'Ensure every interaction works for all users, all devices',
+    consistency: 'Maintain visual and interaction patterns across all experiences',
+    performance: 'Prioritize speed and responsiveness in every interface',
+    beauty: 'Make every pixel serve both function and aesthetic excellence',
+    trust: 'Build confidence through transparency and reliable behavior',
   };
 
   /**
    * Get the appropriate prompt for a specific context
    */
   static getPromptForContext(module: string, interaction?: string): string {
-    const basePrompt = GeniusPromptService.MODULE_PROMPTS[module] || GeniusPromptService.GOVERNMENT_GENIUS_PROMPT;
-    
+    const basePrompt =
+      GeniusPromptService.MODULE_PROMPTS[module] || GeniusPromptService.GOVERNMENT_GENIUS_PROMPT;
+
     if (interaction && GeniusPromptService.RESPONSE_TEMPLATES[interaction]) {
       return `${basePrompt}\n\nFor this specific interaction, use this tone and approach: ${JSON.stringify(GeniusPromptService.RESPONSE_TEMPLATES[interaction])}`;
     }
-    
+
     return basePrompt;
   }
 
@@ -126,23 +136,37 @@ Focus on cross-jurisdictional collaboration and resource sharing. Celebrate the 
     score: number;
   } {
     const checks = [
-      { test: response.length > 10, weight: 1, feedback: "Response should be substantive" },
-      { test: /[🎉✨🤝💡🚀]/.test(response), weight: 2, feedback: "Include appropriate emotional resonance" },
-      { test: !/(error|failed|broken|wrong)/i.test(response), weight: 3, feedback: "Use positive, solution-focused language" },
-      { test: response.includes("Let me") || response.includes("I'll"), weight: 2, feedback: "Take ownership and provide guidance" },
-      { test: response.split('.').length >= 2, weight: 1, feedback: "Provide clear, structured communication" }
+      { test: response.length > 10, weight: 1, feedback: 'Response should be substantive' },
+      {
+        test: /[🎉✨🤝💡🚀]/.test(response),
+        weight: 2,
+        feedback: 'Include appropriate emotional resonance',
+      },
+      {
+        test: !/(error|failed|broken|wrong)/i.test(response),
+        weight: 3,
+        feedback: 'Use positive, solution-focused language',
+      },
+      {
+        test: response.includes('Let me') || response.includes("I'll"),
+        weight: 2,
+        feedback: 'Take ownership and provide guidance',
+      },
+      {
+        test: response.split('.').length >= 2,
+        weight: 1,
+        feedback: 'Provide clear, structured communication',
+      },
     ];
 
     const passedChecks = checks.filter(check => check.test);
     const totalWeight = checks.reduce((sum, check) => sum + check.weight, 0);
     const passedWeight = passedChecks.reduce((sum, check) => sum + check.weight, 0);
-    
+
     const score = (passedWeight / totalWeight) * 100;
     const isGenius = score >= 80;
-    
-    const feedback = checks
-      .filter(check => !check.test)
-      .map(check => check.feedback);
+
+    const feedback = checks.filter(check => !check.test).map(check => check.feedback);
 
     return { isGenius, feedback, score };
   }
@@ -156,12 +180,12 @@ Focus on cross-jurisdictional collaboration and resource sharing. Celebrate the 
 
     // Replace negative language with positive alternatives
     const positiveReplacements = {
-      'error': 'opportunity to improve',
-      'failed': 'needs a different approach',
-      'broken': 'ready for enhancement',
-      'wrong': 'can be optimized',
-      'problem': 'challenge we can solve',
-      'issue': 'area for improvement'
+      error: 'opportunity to improve',
+      failed: 'needs a different approach',
+      broken: 'ready for enhancement',
+      wrong: 'can be optimized',
+      problem: 'challenge we can solve',
+      issue: 'area for improvement',
     };
 
     Object.entries(positiveReplacements).forEach(([negative, positive]) => {
@@ -170,9 +194,15 @@ Focus on cross-jurisdictional collaboration and resource sharing. Celebrate the 
 
     // Add emotional resonance if missing
     if (!/[🎉✨🤝💡🚀🎯⚡]/.test(enhanced)) {
-      if (enhanced.toLowerCase().includes('success') || enhanced.toLowerCase().includes('complete')) {
+      if (
+        enhanced.toLowerCase().includes('success') ||
+        enhanced.toLowerCase().includes('complete')
+      ) {
         enhanced = `✨ ${enhanced}`;
-      } else if (enhanced.toLowerCase().includes('help') || enhanced.toLowerCase().includes('guide')) {
+      } else if (
+        enhanced.toLowerCase().includes('help') ||
+        enhanced.toLowerCase().includes('guide')
+      ) {
         enhanced = `💡 ${enhanced}`;
       } else {
         enhanced = `🚀 ${enhanced}`;
@@ -180,8 +210,12 @@ Focus on cross-jurisdictional collaboration and resource sharing. Celebrate the 
     }
 
     // Ensure proactive guidance
-    if (!enhanced.includes('Let me') && !enhanced.includes("I'll") && !enhanced.includes('Here\'s')) {
-      enhanced += " Let me know how I can help you make this even better!";
+    if (
+      !enhanced.includes('Let me') &&
+      !enhanced.includes("I'll") &&
+      !enhanced.includes("Here's")
+    ) {
+      enhanced += ' Let me know how I can help you make this even better!';
     }
 
     return enhanced;

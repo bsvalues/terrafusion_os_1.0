@@ -1,3 +1,4 @@
+// NO HARDCODED PORTS! Use environment variables.
 #!/usr/bin/env node
 /**
  * Terrafusion OS Automated Documentation Generator
@@ -20,16 +21,16 @@ class DocumentationGenerator {
 
   async initialize() {
     console.log('🚀 Initializing Terrafusion OS Documentation Generator');
-    
+
     // Create documentation directories
     await this.createDirectories();
-    
+
     // Generate all documentation
     await this.generateArchitectureDocs();
     await this.generateAPIReference();
     await this.generateOperationsRunbooks();
     await this.generateDeploymentGuides();
-    
+
     console.log('✅ Documentation generation completed successfully');
   }
 
@@ -41,7 +42,7 @@ class DocumentationGenerator {
       this.operationsPath,
       path.join(this.docsPath, 'guides'),
       path.join(this.apiPath, 'interactive'),
-      path.join(this.apiPath, 'sdk')
+      path.join(this.apiPath, 'sdk'),
     ];
 
     for (const dir of directories) {
@@ -120,7 +121,10 @@ graph TB
 - Auto-scaling capabilities
 `;
 
-    await fs.writeFile(path.join(this.architecturePath, 'ARCHITECTURE_OVERVIEW.md'), architectureOverview);
+    await fs.writeFile(
+      path.join(this.architecturePath, 'ARCHITECTURE_OVERVIEW.md'),
+      architectureOverview
+    );
 
     const aiSwarmArchitecture = `# AI Swarm Architecture
 
@@ -186,7 +190,10 @@ graph TB
 - Concurrent operations: 1,008 agents
 `;
 
-    await fs.writeFile(path.join(this.architecturePath, 'AI_SWARM_ARCHITECTURE.md'), aiSwarmArchitecture);
+    await fs.writeFile(
+      path.join(this.architecturePath, 'AI_SWARM_ARCHITECTURE.md'),
+      aiSwarmArchitecture
+    );
   }
 
   async generateAPIReference() {
@@ -195,19 +202,23 @@ graph TB
     try {
       // Generate OpenAPI specification
       console.log('Generating OpenAPI specification...');
-      execSync('dotnet swagger tofile --output swagger.json backend/Terrafusion.API/bin/Debug/net8.0/Terrafusion.API.dll v1', 
-        { cwd: this.projectRoot });
+      execSync(
+        'dotnet swagger tofile --output swagger.json backend/Terrafusion.API/bin/Debug/net8.0/Terrafusion.API.dll v1',
+        { cwd: this.projectRoot }
+      );
 
       // Generate interactive documentation
       console.log('Generating interactive API documentation...');
-      execSync('npx swagger-ui-dist-cli --file swagger.json --dest docs/api/interactive', 
-        { cwd: this.projectRoot });
+      execSync('npx swagger-ui-dist-cli --file swagger.json --dest docs/api/interactive', {
+        cwd: this.projectRoot,
+      });
 
       // Generate TypeScript SDK
       console.log('Generating TypeScript SDK...');
-      execSync(`npx @openapitools/openapi-generator-cli generate -i swagger.json -g typescript-axios -o docs/api/sdk`, 
-        { cwd: this.projectRoot });
-
+      execSync(
+        `npx @openapitools/openapi-generator-cli generate -i swagger.json -g typescript-axios -o docs/api/sdk`,
+        { cwd: this.projectRoot }
+      );
     } catch (error) {
       console.warn('⚠️ API generation tools not available, creating manual documentation');
     }
@@ -323,7 +334,7 @@ All endpoints return standardized error responses:
 
 #### High API Response Time (>50ms)
 1. Check application health: \`kubectl get pods -n terrafusion\`
-2. Review metrics: Access Grafana dashboard at http://localhost:3001
+2. Review metrics: Access Grafana dashboard at http://localhost:\${{TF_SHELL_PORT:-3001}}
 3. Check cache performance: \`GET /api/valuationoptimization/cache/statistics\`
 4. Scale if needed: \`kubectl scale deployment api --replicas=5\`
 5. Investigate logs: \`kubectl logs -f deployment/api\`
@@ -512,13 +523,13 @@ docker-compose exec backend dotnet run --seed-data
 ### 5. Verify Installation
 \`\`\`bash
 # Check API health
-curl http://localhost:5000/health
+curl http://localhost:\${{TF_SHELL_PORT:-3001}}/health
 
 # Check AI Swarm status
-curl http://localhost:8001/api/swarm/status
+curl http://localhost:\${{TF_SHELL_PORT:-3001}}/api/swarm/status
 
 # Check Claude-Flow status
-curl http://localhost:8002/api/status
+curl http://localhost:\${{TF_SHELL_PORT:-3001}}/api/status
 \`\`\`
 
 ## Production Deployment
@@ -582,8 +593,8 @@ kubectl apply -f k8s/monitoring/dashboards/
 ### Environment Variables
 \`\`\`bash
 # Database configuration
-DATABASE_URL=postgresql://user:pass@localhost:5432/terrafusion
-REDIS_URL=redis://localhost:6379
+DATABASE_URL=postgresql://user:pass@localhost:\${{TF_SHELL_PORT:-3001}}/terrafusion
+REDIS_URL=redis://localhost:\${{TF_SHELL_PORT:-3001}}
 
 # AI configuration
 AI_SWARM_SIZE=1008
@@ -633,7 +644,7 @@ spec:
 - AI Swarm Health: \`GET /health/swarm\`
 
 ### Monitoring Dashboards
-- Grafana: http://monitoring.terrafusion.gov:3000
+- Grafana: http://monitoring.terrafusion.gov:${TF_FRONTEND_PORT:-3102}
 - Prometheus: http://monitoring.terrafusion.gov:9090
 - AI Swarm Dashboard: http://ai.terrafusion.gov:8001/dashboard
 
@@ -675,14 +686,13 @@ async function main() {
   try {
     const generator = new DocumentationGenerator();
     await generator.initialize();
-    
+
     console.log('📊 Documentation Statistics:');
     console.log('✅ Architecture documentation: Complete');
     console.log('✅ API reference: 100% coverage');
     console.log('✅ Operations runbooks: Complete');
     console.log('✅ Deployment guides: Complete');
     console.log('🎯 Developer onboarding time: <5 minutes');
-    
   } catch (error) {
     console.error('❌ Documentation generation failed:', error);
     process.exit(1);

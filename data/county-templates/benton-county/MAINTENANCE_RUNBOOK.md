@@ -32,7 +32,7 @@ echo "================================="
 ./LAUNCH_DYNASTY.sh status
 
 # 2. Quick health verification
-curl -s http://localhost:8000/health | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health | jq .
 
 # 3. Check overnight performance
 echo "📊 Overnight Statistics:"
@@ -63,7 +63,7 @@ htop                              # System resources
 tail -f logs/orchestrator.log   # Live activity
 
 # Performance check
-curl -s http://localhost:8080/stats | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/stats | jq .
 
 # Error scanning
 grep -i "error\|fail\|timeout" logs/*.log | tail -10
@@ -107,11 +107,11 @@ echo "===================================="
 
 # 1. System evolution trigger
 echo "🧬 Triggering system evolution..."
-curl -X POST http://localhost:8083/evolution/trigger
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/trigger
 
 # 2. Training pipeline optimization
 echo "🎓 Optimizing training pipeline..."
-curl -X POST http://localhost:8082/training/optimize
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/training/optimize
 
 # 3. Clean old logs (keep 30 days)
 echo "🧹 Cleaning old logs..."
@@ -143,7 +143,7 @@ import time
 import requests
 start = time.time()
 for i in range(10):
-    requests.post('http://localhost:8080/query', 
+    requests.post('http://localhost:\${{TF_DOCS_PORT:-8000}}/query', 
                  json={'query': f'Test query {i}', 'user_id': 'benchmark'})
 avg_time = (time.time() - start) / 10 * 1000
 print(f'Average response time: {avg_time:.1f}ms')
@@ -202,7 +202,7 @@ echo "==========================================="
 
 # 1. Full system evolution review
 echo "🧬 Full evolution analysis..."
-curl -s http://localhost:8083/evolution/history | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/history | jq .
 
 # 2. Training data cleanup
 echo "🎓 Training data optimization..."
@@ -432,7 +432,7 @@ echo "STEP 5: Emergency Restart"
 echo "STEP 6: Recovery Verification"
 sleep 30
 ./LAUNCH_DYNASTY.sh status
-curl -s http://localhost:8000/health
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 
 echo "================================="
 echo "Emergency recovery procedure complete!"
@@ -566,7 +566,7 @@ response_times = []
 for i in range(20):
     start = time.time()
     try:
-        response = requests.post('http://localhost:8080/query', 
+        response = requests.post('http://localhost:\${{TF_DOCS_PORT:-8000}}/query', 
                                json={'query': f'Test query {i}', 'user_id': 'perf_test'},
                                timeout=5)
         response_times.append((time.time() - start) * 1000)
@@ -589,7 +589,7 @@ echo "Disk I/O: $(iostat -x 1 1 | tail -1 | awk '{print $10}')% util"
 
 # 3. Trigger automatic optimization
 echo "🧬 Triggering Automatic Optimization:"
-curl -X POST http://localhost:8083/evolution/trigger \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/trigger \
   -H "Content-Type: application/json" \
   -d '{"target": "performance", "aggressive": true}'
 
@@ -600,7 +600,7 @@ echo "💾 Database Optimization:"
 
 # 5. Cache optimization
 echo "⚡ Cache Optimization:"
-curl -X POST http://localhost:8080/cache/optimize
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/cache/optimize
 
 # 6. Model optimization
 echo "🧠 Model Optimization:"
@@ -646,7 +646,7 @@ def collect_metrics():
 def measure_query_time():
     try:
         start = time.time()
-        response = requests.post('http://localhost:8080/query',
+        response = requests.post('http://localhost:\${{TF_DOCS_PORT:-8000}}/query',
                                json={'query': 'Performance test', 'user_id': 'monitor'},
                                timeout=10)
         return (time.time() - start) * 1000
@@ -655,7 +655,7 @@ def measure_query_time():
 
 def check_system_health():
     try:
-        response = requests.get('http://localhost:8000/health', timeout=5)
+        response = requests.get('http://localhost:\${{TF_DOCS_PORT:-8000}}/health', timeout=5)
         return response.status_code == 200
     except:
         return False
@@ -869,7 +869,7 @@ tar -czf "backups/daily/logs_$(date +%Y%m%d).tar.gz" -T -
 # 4. System state backup
 echo "⚙️ Backing up system state..."
 ./LAUNCH_DYNASTY.sh status > "backups/daily/system_state_$(date +%Y%m%d).txt"
-curl -s http://localhost:8000/status > "backups/daily/api_status_$(date +%Y%m%d).json"
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/status > "backups/daily/api_status_$(date +%Y%m%d).json"
 
 # 5. Database backup (if using PostgreSQL)
 echo "🗄️ Backing up database..."
@@ -1063,7 +1063,7 @@ class AlertSystem:
     def measure_response_time(self):
         try:
             start = time.time()
-            requests.get('http://localhost:8000/health', timeout=10)
+            requests.get('http://localhost:\${{TF_DOCS_PORT:-8000}}/health', timeout=10)
             return (time.time() - start) * 1000
         except:
             return 999  # Timeout/error
@@ -1190,7 +1190,7 @@ echo "🚀 Starting updated system..."
 echo "✅ Verifying update..."
 sleep 30
 ./LAUNCH_DYNASTY.sh status
-curl -s http://localhost:8000/health
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 
 # 10. Run post-update tests
 echo "🧪 Running post-update tests..."

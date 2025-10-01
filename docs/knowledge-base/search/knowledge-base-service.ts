@@ -1,7 +1,7 @@
 import { KnowledgeBaseItem, SearchFilters, SearchResult, CategoryTree } from './types';
 
 export class KnowledgeBaseService {
-  private baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+  private baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:\${{TF_ADMIN_PORT:-8080}}/api';
 
   /**
    * Search knowledge base items with filters and pagination
@@ -15,7 +15,7 @@ export class KnowledgeBaseService {
     const params = new URLSearchParams({
       q: query,
       page: page.toString(),
-      limit: limit.toString()
+      limit: limit.toString(),
     });
 
     // Add filters to params
@@ -39,7 +39,7 @@ export class KnowledgeBaseService {
     }
 
     const response = await fetch(`${this.baseUrl}/knowledge-base/search?${params}`);
-    
+
     if (!response.ok) {
       throw new Error(`Search failed: ${response.statusText}`);
     }
@@ -52,7 +52,7 @@ export class KnowledgeBaseService {
    */
   async getKnowledgeBaseItem(id: string): Promise<KnowledgeBaseItem> {
     const response = await fetch(`${this.baseUrl}/knowledge-base/items/${id}`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch item: ${response.statusText}`);
     }
@@ -65,7 +65,7 @@ export class KnowledgeBaseService {
    */
   async getCategoryTree(): Promise<CategoryTree[]> {
     const response = await fetch(`${this.baseUrl}/knowledge-base/categories`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch categories: ${response.statusText}`);
     }
@@ -78,7 +78,7 @@ export class KnowledgeBaseService {
    */
   async getPopularItems(limit: number = 10): Promise<KnowledgeBaseItem[]> {
     const response = await fetch(`${this.baseUrl}/knowledge-base/popular?limit=${limit}`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch popular items: ${response.statusText}`);
     }
@@ -91,7 +91,7 @@ export class KnowledgeBaseService {
    */
   async getRecentlyUpdated(limit: number = 10): Promise<KnowledgeBaseItem[]> {
     const response = await fetch(`${this.baseUrl}/knowledge-base/recent?limit=${limit}`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch recent items: ${response.statusText}`);
     }
@@ -103,8 +103,10 @@ export class KnowledgeBaseService {
    * Get related items for a specific item
    */
   async getRelatedItems(itemId: string, limit: number = 5): Promise<KnowledgeBaseItem[]> {
-    const response = await fetch(`${this.baseUrl}/knowledge-base/items/${itemId}/related?limit=${limit}`);
-    
+    const response = await fetch(
+      `${this.baseUrl}/knowledge-base/items/${itemId}/related?limit=${limit}`
+    );
+
     if (!response.ok) {
       throw new Error(`Failed to fetch related items: ${response.statusText}`);
     }
@@ -119,12 +121,12 @@ export class KnowledgeBaseService {
     const response = await fetch(`${this.baseUrl}/knowledge-base/items/${itemId}/feedback`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         helpful,
-        comment
-      })
+        comment,
+      }),
     });
 
     if (!response.ok) {
@@ -137,7 +139,7 @@ export class KnowledgeBaseService {
    */
   async toggleBookmark(itemId: string): Promise<{ bookmarked: boolean }> {
     const response = await fetch(`${this.baseUrl}/knowledge-base/items/${itemId}/bookmark`, {
-      method: 'POST'
+      method: 'POST',
     });
 
     if (!response.ok) {
@@ -152,7 +154,7 @@ export class KnowledgeBaseService {
    */
   async getBookmarkedItems(): Promise<KnowledgeBaseItem[]> {
     const response = await fetch(`${this.baseUrl}/knowledge-base/bookmarks`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch bookmarks: ${response.statusText}`);
     }
@@ -164,8 +166,10 @@ export class KnowledgeBaseService {
    * Get search suggestions based on partial query
    */
   async getSearchSuggestions(partialQuery: string): Promise<string[]> {
-    const response = await fetch(`${this.baseUrl}/knowledge-base/suggestions?q=${encodeURIComponent(partialQuery)}`);
-    
+    const response = await fetch(
+      `${this.baseUrl}/knowledge-base/suggestions?q=${encodeURIComponent(partialQuery)}`
+    );
+
     if (!response.ok) {
       throw new Error(`Failed to fetch suggestions: ${response.statusText}`);
     }
@@ -178,7 +182,7 @@ export class KnowledgeBaseService {
    */
   async getAllTags(): Promise<string[]> {
     const response = await fetch(`${this.baseUrl}/knowledge-base/tags`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch tags: ${response.statusText}`);
     }
@@ -191,7 +195,7 @@ export class KnowledgeBaseService {
    */
   async recordView(itemId: string): Promise<void> {
     await fetch(`${this.baseUrl}/knowledge-base/items/${itemId}/view`, {
-      method: 'POST'
+      method: 'POST',
     });
   }
 
@@ -204,7 +208,7 @@ export class KnowledgeBaseService {
     categoryDistribution: Array<{ category: string; count: number }>;
   }> {
     const params = new URLSearchParams();
-    
+
     if (dateRange?.start) {
       params.append('start', dateRange.start.toISOString());
     }
@@ -213,7 +217,7 @@ export class KnowledgeBaseService {
     }
 
     const response = await fetch(`${this.baseUrl}/knowledge-base/analytics?${params}`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch analytics: ${response.statusText}`);
     }
@@ -232,13 +236,13 @@ export class KnowledgeBaseService {
     const response = await fetch(`${this.baseUrl}/knowledge-base/ai-recommendations`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         userRole,
         currentContext,
-        limit
-      })
+        limit,
+      }),
     });
 
     if (!response.ok) {
@@ -258,7 +262,7 @@ export class KnowledgeBaseService {
   ): Promise<Blob> {
     const params = new URLSearchParams({
       q: query,
-      format
+      format,
     });
 
     // Add filters to params (same as search)
@@ -270,7 +274,7 @@ export class KnowledgeBaseService {
     }
 
     const response = await fetch(`${this.baseUrl}/knowledge-base/export?${params}`);
-    
+
     if (!response.ok) {
       throw new Error(`Export failed: ${response.statusText}`);
     }
@@ -294,9 +298,9 @@ export class KnowledgeBaseService {
     const response = await fetch(`${this.baseUrl}/knowledge-base/advanced-search`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(options)
+      body: JSON.stringify(options),
     });
 
     if (!response.ok) {

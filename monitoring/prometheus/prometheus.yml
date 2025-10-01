@@ -30,7 +30,7 @@ scrape_configs:
   # TerraFusion API Gateway - Primary application metrics
   - job_name: 'terrafusion-api'
     static_configs:
-      - targets: ['localhost:5000', 'localhost:5001']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}', 'localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 15s
     scrape_timeout: 10s
     metrics_path: /metrics
@@ -45,14 +45,14 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 'terrafusion-api:5000'
+        replacement: 'terrafusion-api:${TF_API_PORT:-5046}'
       - target_label: service
         replacement: 'terrafusion-api'
 
   # AI Swarm Controller - 50,000 agent monitoring
   - job_name: 'ai-swarm-controller'
     static_configs:
-      - targets: ['localhost:8080', 'localhost:8081', 'localhost:8082']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}', 'localhost:${TF_STATIC_PORT:-8080}', 'localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 30s
     scrape_timeout: 15s
     metrics_path: /ai-metrics
@@ -69,13 +69,13 @@ scrape_configs:
   - job_name: 'ai-field-generals'
     static_configs:
       - targets: 
-          - 'localhost:8090' # Strategic Operations
-          - 'localhost:8091' # Government Compliance
-          - 'localhost:8092' # Database Operations
-          - 'localhost:8093' # API Management
-          - 'localhost:8094' # Security Operations
-          - 'localhost:8095' # Performance Optimization
-          - 'localhost:8096' # Quality Assurance
+          - 'localhost:${TF_STATIC_PORT:-8080}' # Strategic Operations
+          - 'localhost:${TF_STATIC_PORT:-8080}' # Government Compliance
+          - 'localhost:${TF_STATIC_PORT:-8080}' # Database Operations
+          - 'localhost:${TF_STATIC_PORT:-8080}' # API Management
+          - 'localhost:${TF_STATIC_PORT:-8080}' # Security Operations
+          - 'localhost:${TF_STATIC_PORT:-8080}' # Performance Optimization
+          - 'localhost:${TF_STATIC_PORT:-8080}' # Quality Assurance
     scrape_interval: 45s
     metrics_path: /field-general-metrics
     relabel_configs:
@@ -89,7 +89,7 @@ scrape_configs:
   # PostgreSQL Database - Government data operations
   - job_name: 'postgresql'
     static_configs:
-      - targets: ['localhost:5432']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 30s
     metrics_path: /metrics
     scheme: http
@@ -102,7 +102,7 @@ scrape_configs:
   # Redis Cache - High-performance caching metrics
   - job_name: 'redis'
     static_configs:
-      - targets: ['localhost:6379']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 20s
     metrics_path: /metrics
     relabel_configs:
@@ -114,7 +114,7 @@ scrape_configs:
   # Elasticsearch - Document search and analytics
   - job_name: 'elasticsearch'
     static_configs:
-      - targets: ['localhost:9200', 'localhost:9201', 'localhost:9202']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}', 'localhost:${TF_STATIC_PORT:-8080}', 'localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 60s
     metrics_path: /_prometheus/metrics
     scheme: http
@@ -129,7 +129,7 @@ scrape_configs:
   # System Node Metrics - Infrastructure monitoring
   - job_name: 'node-exporter'
     static_configs:
-      - targets: ['localhost:9100', 'node2:9100', 'node3:9100']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}', 'node2:9100', 'node3:9100']
     scrape_interval: 15s
     relabel_configs:
       - target_label: service
@@ -140,7 +140,7 @@ scrape_configs:
   # Docker Container Metrics - Container orchestration monitoring
   - job_name: 'docker'
     static_configs:
-      - targets: ['localhost:9323']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 30s
     metrics_path: /metrics
     relabel_configs:

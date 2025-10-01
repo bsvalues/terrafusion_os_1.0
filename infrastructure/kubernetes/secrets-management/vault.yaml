@@ -174,7 +174,7 @@ data:
     }
     
     listener "tcp" {
-      address = "127.0.0.1:8100"
+      address = "127.0.0.1:\${{TF_PORT_8100:-8100}}"
       tls_disable = true
     }
     

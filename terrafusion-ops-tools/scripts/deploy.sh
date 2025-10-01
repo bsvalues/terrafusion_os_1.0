@@ -95,7 +95,7 @@ pre_deployment_checks() {
 
 # Health check function
 check_health() {
-    local services=("backend:8080" "ai-engine:8001" "frontend:3003")
+    local services=("backend:${TF_STATIC_PORT:-8080}" "ai-engine:8001" "frontend:3003")
     local all_healthy=true
     
     for service in "${services[@]}"; do

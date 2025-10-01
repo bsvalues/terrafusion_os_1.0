@@ -20,8 +20,53 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+        submodules: 'false'
+
+    # Detect Node lockfile and validate submodules to avoid CI fatal errors
+    - name: Detect Node lockfile
+      id: node_lock
+      run: |
+        set -euo pipefail
+        for f in package-lock.json npm-shrinkwrap.json yarn.lock pnpm-lock.yaml; do
+          if git ls-files -- "$f" | grep -q .; then
+            echo "found=$f" >> $GITHUB_OUTPUT
+            echo "Detected lockfile: $f"
+            exit 0
+          fi
+        done
+        echo "found=" >> $GITHUB_OUTPUT
+        echo "No Node lockfile found; Node cache/install steps will be skipped."
+
+    - name: Validate submodule URLs
+      id: submods
+      run: |
+        set -euo pipefail
+        missing=0
+        if [ -f .gitmodules ]; then
+          while read -r section; do
+            path=$(git config -f .gitmodules --get "${section}.path" || true)
+            url=$(git config -f .gitmodules --get "${section}.url" || true)
+            if [ -n "${path}" ] && [ -z "${url}" ]; then
+              echo "::warning::Submodule '${path}' is missing 'url' in .gitmodules – skipping submodule init."
+              missing=1
+            fi
+          done < <(git config -f .gitmodules --name-only --get-regexp '^submodule\..*\.path' | sed 's/\.path$//')
+        fi
+        echo "missing=$missing" >> $GITHUB_OUTPUT
+
+    - name: Submodule sync/init
+      if: steps.submods.outputs.missing == '0'
+      run: |
+        git submodule sync --recursive
+        git submodule update --init --recursive
+
+    - name: Skip submodule init due to invalid entries
+      if: steps.submods.outputs.missing == '1'
+      run: |
+        echo "Skipping submodule init; invalid .gitmodules entries detected (warnings above)."
 
     - name: 🟢 Setup Node.js
+      if: steps.node_lock.outputs.found != ''
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
@@ -34,7 +79,25 @@ jobs:
 
     - name: 📦 Install Dependencies
       run: |
-        npm ci
+        set -euo pipefail
+        # Install Node deps only when we detected a lockfile
+        if [ "${{ steps.node_lock.outputs.found }}" != "" ]; then
+          case "${{ steps.node_lock.outputs.found }}" in
+            package-lock.json|npm-shrinkwrap.json)
+              npm ci
+              ;;
+            yarn.lock)
+              yarn install --frozen-lockfile
+              ;;
+            pnpm-lock.yaml)
+              pnpm i --frozen-lockfile
+              ;;
+          esac
+        else
+          echo "No Node lockfile detected, skipping Node install."
+        fi
+
+        # .NET restore always
         dotnet restore
 
     - name: 🔍 Code Quality Check
@@ -54,6 +117,25 @@ jobs:
 
     - name: 🤖 AI Model Validation
       run: npm run validate:ai-models
+
+    - name: Job summary
+      if: always()
+      env:
+        NODE_LOCK_FOUND: ${{ steps.node_lock.outputs.found }}
+        SUBMODS_MISSING: ${{ steps.submods.outputs.missing }}
+      run: |
+        set -euo pipefail
+        echo "### Quality Gate summary" >> $GITHUB_STEP_SUMMARY
+        if [ -z "$NODE_LOCK_FOUND" ]; then
+          echo "- Node lockfile: not found — Node install steps skipped" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "- Node lockfile: found ($NODE_LOCK_FOUND)" >> $GITHUB_STEP_SUMMARY
+        fi
+        if [ "$SUBMODS_MISSING" = "1" ]; then
+          echo "- Submodules: invalid entries detected — submodule init skipped (see warnings above)" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "- Submodules: validated OK (no missing URLs)" >> $GITHUB_STEP_SUMMARY
+        fi
 
   backend-tests:
     name: Backend API Tests

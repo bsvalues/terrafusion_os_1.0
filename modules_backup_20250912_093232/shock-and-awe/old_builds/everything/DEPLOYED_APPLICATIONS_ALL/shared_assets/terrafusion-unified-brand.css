@@ -1,0 +1,437 @@
+/**
+ * TerraFusion Unified Brand System v2.0
+ * Master CSS file for consistent branding across all TerraFusion applications
+ * Tech Stack Agnostic - Works with Flask, React, Next.js, and other frameworks
+ */
+
+:root {
+  /* === TERRAFUSION BRAND COLORS === */
+  /* Primary Brand Colors */
+  --tf-cosmic-blue: #0891b2;
+  --tf-quantum-teal: #00d2ff;
+  --tf-neural-purple: #667eea;
+  --tf-stellar-white: #ffffff;
+  --tf-deep-space: #0a0f1c;
+  --tf-dark-teal: #1a2f3a;
+  --tf-accent-cyan: #22d3ee;
+  
+  /* Extended Brand Palette */
+  --tf-primary: #00e5ff;
+  --tf-primary-dark: #00b8d4;
+  --tf-primary-light: #4de0ff;
+  --tf-secondary: #004d7a;
+  --tf-secondary-dark: #002a4a;
+  --tf-secondary-light: #0078ad;
+  
+  /* Semantic Colors */
+  --tf-success: #10b981;
+  --tf-warning: #f59e0b;
+  --tf-error: #ef4444;
+  --tf-info: #3b82f6;
+  
+  /* Neutral Palette */
+  --tf-neutral-50: #f9fafb;
+  --tf-neutral-100: #f3f4f6;
+  --tf-neutral-200: #e5e7eb;
+  --tf-neutral-300: #d1d5db;
+  --tf-neutral-400: #9ca3af;
+  --tf-neutral-500: #6b7280;
+  --tf-neutral-600: #4b5563;
+  --tf-neutral-700: #374151;
+  --tf-neutral-800: #1f2937;
+  --tf-neutral-900: #111827;
+  
+  /* Glass Morphism Effects */
+  --tf-glass-bg: rgba(255, 255, 255, 0.05);
+  --tf-glass-border: rgba(0, 210, 255, 0.2);
+  --tf-backdrop-blur: blur(15px);
+  
+  /* Typography */
+  --tf-font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --tf-font-mono: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  
+  /* Spacing & Layout */
+  --tf-border-radius: 12px;
+  --tf-border-radius-sm: 8px;
+  --tf-border-radius-lg: 20px;
+  --tf-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --tf-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --tf-shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* === UNIVERSAL BRAND OVERRIDES === */
+
+/* Reset and Base */
+.tf-app * {
+  box-sizing: border-box;
+}
+
+.tf-app {
+  font-family: var(--tf-font-primary);
+  color: var(--tf-neutral-800);
+  line-height: 1.6;
+  background-color: var(--tf-neutral-50);
+}
+
+/* TerraFusion Brand Navigation */
+.tf-navbar {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal)) !important;
+  backdrop-filter: var(--tf-backdrop-blur);
+  border-bottom: 2px solid var(--tf-glass-border);
+  box-shadow: 0 4px 20px rgba(0, 210, 255, 0.15);
+}
+
+.tf-navbar .navbar-brand {
+  color: var(--tf-stellar-white) !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.tf-navbar .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  transition: var(--tf-transition);
+}
+
+.tf-navbar .nav-link:hover {
+  color: var(--tf-stellar-white) !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* TerraFusion Brand Cards */
+.tf-card {
+  background: var(--tf-stellar-white);
+  border: 2px solid var(--tf-glass-border);
+  border-radius: var(--tf-border-radius);
+  box-shadow: var(--tf-shadow);
+  transition: var(--tf-transition);
+  overflow: hidden;
+}
+
+.tf-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--tf-shadow-lg);
+  border-color: var(--tf-quantum-teal);
+}
+
+.tf-card-header {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+  color: var(--tf-stellar-white);
+  padding: 1.5rem;
+  font-weight: 600;
+  border-bottom: none;
+}
+
+.tf-card-body {
+  padding: 2rem;
+}
+
+/* TerraFusion Brand Buttons */
+.tf-btn-primary {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal)) !important;
+  border: none !important;
+  color: var(--tf-stellar-white) !important;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: var(--tf-border-radius-sm);
+  transition: var(--tf-transition);
+  box-shadow: 0 4px 15px rgba(8, 145, 178, 0.3);
+}
+
+.tf-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(8, 145, 178, 0.4);
+  background: linear-gradient(135deg, var(--tf-quantum-teal), var(--tf-cosmic-blue)) !important;
+}
+
+.tf-btn-outline-primary {
+  border: 2px solid var(--tf-cosmic-blue) !important;
+  color: var(--tf-cosmic-blue) !important;
+  background: transparent !important;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: var(--tf-border-radius-sm);
+  transition: var(--tf-transition);
+}
+
+.tf-btn-outline-primary:hover {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal)) !important;
+  color: var(--tf-stellar-white) !important;
+  border-color: transparent !important;
+}
+
+/* TerraFusion Brand Forms */
+.tf-form-control {
+  border: 2px solid var(--tf-neutral-200);
+  border-radius: var(--tf-border-radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: var(--tf-transition);
+  background-color: var(--tf-stellar-white);
+}
+
+.tf-form-control:focus {
+  border-color: var(--tf-quantum-teal);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.2);
+  outline: none;
+}
+
+/* TerraFusion Brand Tables */
+.tf-table {
+  background: var(--tf-stellar-white);
+  border-radius: var(--tf-border-radius);
+  overflow: hidden;
+  box-shadow: var(--tf-shadow);
+}
+
+.tf-table thead {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+  color: var(--tf-stellar-white);
+}
+
+.tf-table th {
+  font-weight: 600;
+  padding: 1rem;
+  border: none;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+.tf-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--tf-neutral-200);
+  vertical-align: middle;
+}
+
+.tf-table tbody tr:hover {
+  background-color: rgba(34, 211, 238, 0.05);
+}
+
+/* TerraFusion Brand Status Indicators */
+.tf-status-online {
+  color: var(--tf-success);
+  font-weight: 600;
+}
+
+.tf-status-offline {
+  color: var(--tf-error);
+  font-weight: 600;
+}
+
+.tf-status-warning {
+  color: var(--tf-warning);
+  font-weight: 600;
+}
+
+/* TerraFusion Brand Badge System */
+.tf-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--tf-border-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tf-badge-primary {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+  color: var(--tf-stellar-white);
+}
+
+.tf-badge-success {
+  background-color: var(--tf-success);
+  color: var(--tf-stellar-white);
+}
+
+.tf-badge-warning {
+  background-color: var(--tf-warning);
+  color: var(--tf-neutral-900);
+}
+
+.tf-badge-error {
+  background-color: var(--tf-error);
+  color: var(--tf-stellar-white);
+}
+
+/* TerraFusion Brand Typography */
+.tf-title {
+  color: var(--tf-cosmic-blue);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.tf-subtitle {
+  color: var(--tf-neutral-600);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.tf-text-gradient {
+  background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* TerraFusion Brand Animations */
+@keyframes tf-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes tf-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(34, 211, 238, 0.6);
+  }
+}
+
+.tf-pulse {
+  animation: tf-pulse 2s ease-in-out infinite;
+}
+
+.tf-glow {
+  animation: tf-glow 3s ease-in-out infinite;
+}
+
+/* TerraFusion Brand Layout Utilities */
+.tf-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.tf-section {
+  padding: 4rem 0;
+}
+
+.tf-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.tf-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.tf-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.tf-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* TerraFusion Brand Footer */
+.tf-footer {
+  background: var(--tf-deep-space);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 3rem 0 1rem;
+  border-top: 2px solid var(--tf-glass-border);
+}
+
+.tf-footer a {
+  color: var(--tf-quantum-teal);
+  text-decoration: none;
+  transition: var(--tf-transition);
+}
+
+.tf-footer a:hover {
+  color: var(--tf-stellar-white);
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+/* Dark Theme Overrides */
+.tf-app[data-theme="dark"] {
+  background-color: var(--tf-deep-space);
+  color: var(--tf-stellar-white);
+}
+
+.tf-app[data-theme="dark"] .tf-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--tf-glass-border);
+  color: var(--tf-stellar-white);
+}
+
+.tf-app[data-theme="dark"] .tf-form-control {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--tf-glass-border);
+  color: var(--tf-stellar-white);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tf-container {
+    padding: 0 1rem;
+  }
+  
+  .tf-section {
+    padding: 2rem 0;
+  }
+  
+  .tf-grid-2,
+  .tf-grid-3,
+  .tf-grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .tf-btn-primary,
+  .tf-btn-outline-primary {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Integration Helpers */
+.tf-bootstrap-override .btn-primary {
+  @extend .tf-btn-primary;
+}
+
+.tf-bootstrap-override .card {
+  @extend .tf-card;
+}
+
+.tf-bootstrap-override .navbar {
+  @extend .tf-navbar;
+}
+
+/* Component Library Integration */
+.terrafusion-theme {
+  --primary: var(--tf-cosmic-blue);
+  --secondary: var(--tf-quantum-teal);
+  --success: var(--tf-success);
+  --warning: var(--tf-warning);
+  --danger: var(--tf-error);
+  --info: var(--tf-info);
+  --light: var(--tf-neutral-100);
+  --dark: var(--tf-neutral-900);
+}
+
+/* Print Styles */
+@media print {
+  .tf-navbar,
+  .tf-footer {
+    display: none;
+  }
+  
+  .tf-card {
+    box-shadow: none;
+    border: 1px solid var(--tf-neutral-300);
+  }
+  
+  .tf-btn-primary,
+  .tf-btn-outline-primary {
+    background: none !important;
+    color: var(--tf-neutral-900) !important;
+    border: 1px solid var(--tf-neutral-300) !important;
+  }
+} 

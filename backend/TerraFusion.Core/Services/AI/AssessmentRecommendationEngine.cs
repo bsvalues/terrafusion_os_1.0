@@ -560,8 +560,8 @@ public class AssessmentRecommendationEngine : IAssessmentRecommendationEngine
         try
         {
             var prompt = $@"Generate strategic assessment insights for:
-Current Assessment: ${currentAssessment.AssessedValue:N0}
-AI Valuation: ${aiValuation.EstimatedValue:N0}
+Current Assessment: {currentAssessment.AssessedValue:N0}
+AI Valuation: {aiValuation.EstimatedValue:N0}
 Market Position: {marketPosition.PricePositioning}
 Optimization Potential: {optimization.OptimizationOpportunities.Count} opportunities identified
 
@@ -595,7 +595,7 @@ Provide strategic insights on:
         }
     }
 
-    private async Task<AssessmentActionPlan> GenerateActionPlanAsync(
+    private Task<AssessmentActionPlan> GenerateActionPlanAsync(
         AssessmentRecommendationRequest request,
         PropertyImprovementRecommendations improvements,
         PropertyTaxOptimization taxOptimization)
@@ -632,19 +632,19 @@ Provide strategic insights on:
                 });
             }
 
-            return new AssessmentActionPlan
+            return Task.FromResult(new AssessmentActionPlan
             {
                 ActionItems = actionItems,
                 TotalEstimatedCost = actionItems.Sum(a => a.EstimatedCost),
                 TotalExpectedBenefit = actionItems.Sum(a => a.ExpectedBenefit),
                 RecommendedImplementationOrder = DetermineImplementationOrder(actionItems),
                 EstimatedCompletionTimeframe = CalculateCompletionTimeframe(actionItems)
-            };
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to generate action plan");
-            return new AssessmentActionPlan();
+            return Task.FromResult(new AssessmentActionPlan());
         }
     }
 
@@ -852,7 +852,7 @@ Provide strategic insights on:
         return new MarketTrendsAnalysisResult
         {
             TrendDirection = marketTrends.OverallTrend.ToString(),
-            KeyTrends = marketTrends.TrendIndicators?.Select(t => t.ToString()).ToList() ?? new(),
+            KeyTrends = marketTrends.TrendIndicators?.Select(t => t.ToString() ?? "Unknown").ToList() ?? new(),
             GrowthRate = (decimal)marketTrends.GrowthRate,
             AnalysisDate = marketTrends.AnalysisDate
         };
@@ -1018,3 +1018,4 @@ public class AssessmentComplianceAnalysis { public string PropertyId { get; set;
 public class ComplianceCheck { }
 public class PropertyTaxOptimization { public string PropertyId { get; set; } = string.Empty; public decimal CurrentTaxLiability { get; set; } public List<string> OptimizationOpportunities { get; set; } = new(); public string TaxSavingsCalculation { get; set; } = string.Empty; public List<StrategyRecommendation> StrategyRecommendations { get; set; } = new(); public string ImplementationPlan { get; set; } = string.Empty; public decimal EstimatedAnnualSavings { get; set; } public DateTime OptimizationDate { get; set; } }
 public class InvestmentRecommendations { public string PropertyId { get; set; } = string.Empty; public string InvestmentGoal { get; set; } = string.Empty; public string InvestmentPotential { get; set; } = string.Empty; public List<string> InvestmentStrategies { get; set; } = new(); public string InvestmentProjections { get; set; } = string.Empty; public string InvestmentRisks { get; set; } = string.Empty; public string InvestmentActionPlan { get; set; } = string.Empty; public DateTime RecommendationDate { get; set; } }
+

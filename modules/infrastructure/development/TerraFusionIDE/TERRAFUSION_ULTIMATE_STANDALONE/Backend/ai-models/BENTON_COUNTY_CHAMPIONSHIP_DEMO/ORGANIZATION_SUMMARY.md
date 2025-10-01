@@ -1,11 +1,13 @@
 # Benton County Championship Demo Package - Organization Summary
 
 > **Demo Package Successfully Organized**  
-> *Dedicated Folder Structure with Extensive Documentation*
+> _Dedicated Folder Structure with Extensive Documentation_
 
 ## ✅ Organization Status: COMPLETE
 
-The Benton County Championship Demo Package has been successfully organized into its own dedicated folder with comprehensive documentation and all necessary components.
+The Benton County Championship Demo Package has been successfully organized into
+its own dedicated folder with comprehensive documentation and all necessary
+components.
 
 ### 📁 Folder Structure
 
@@ -36,29 +38,35 @@ BENTON_COUNTY_CHAMPIONSHIP_DEMO/
 ## 🏆 Demo Package Features
 
 ### ✅ Self-Contained Organization
-- **Dedicated Folder**: All demo files contained in `BENTON_COUNTY_CHAMPIONSHIP_DEMO/`
+
+- **Dedicated Folder**: All demo files contained in
+  `BENTON_COUNTY_CHAMPIONSHIP_DEMO/`
 - **No Dependencies**: Demo runs independently from main Terrafusion ecosystem
 - **Portable**: Can be easily copied, moved, or shared as a complete package
 
 ### ✅ Extensive Documentation
+
 - **README.md**: 346 lines of comprehensive documentation
 - **DEMO_PACKAGE_SUMMARY.md**: 391 lines of detailed package overview
 - **ORGANIZATION_SUMMARY.md**: This organization confirmation
 - **Inline Documentation**: Extensive comments in all code files
 
 ### ✅ Real County Data
+
 - **Benton County Properties**: 45,000+ real property records
 - **Benton County Tax Levies**: 12 active tax levy configurations
 - **Authentic Data**: Real addresses, property types, assessment values
 - **Production-Ready**: Data formatted for immediate use
 
 ### ✅ Complete Application Stack
+
 - **Tier 1 Applications**: TerraFusionSync, TerraLevy (Always Active)
 - **Tier 2 Applications**: PropertyWorkbench, TerraFlow, CostForge (Optional)
 - **Tier 3 Applications**: CostForgeAI, TerraAgent (Experimental)
 - **All Applications**: Populated with Benton County data
 
 ### ✅ Production-Ready Infrastructure
+
 - **Express.js Server**: Full-featured demo server with API endpoints
 - **Web Interface**: Interactive HTML interface for demonstrations
 - **Setup Automation**: Node.js script for environment preparation
@@ -67,27 +75,32 @@ BENTON_COUNTY_CHAMPIONSHIP_DEMO/
 ## 🚀 Quick Start Instructions
 
 ### 1. Navigate to Demo Folder
+
 ```bash
 cd BENTON_COUNTY_CHAMPIONSHIP_DEMO
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 3. Setup Demo Environment
+
 ```bash
 node scripts/setup-demo.js
 ```
 
 ### 4. Start Demo Server
+
 ```bash
 npm run demo:start
 ```
 
 ### 5. Access Demo Interface
-Open browser to: `http://localhost:3000`
+
+Open browser to: `http://localhost:\${{TF_FRONTEND_PORT:-3000}}`
 
 ## 📊 Demo Metrics
 
@@ -121,6 +134,7 @@ Open browser to: `http://localhost:3000`
 ## 🎯 Mission Accomplished
 
 The Benton County Championship Demo Package is now:
+
 - **Organized**: In its own dedicated folder
 - **Documented**: With extensive documentation
 - **Complete**: All components included
@@ -128,4 +142,4 @@ The Benton County Championship Demo Package is now:
 - **Portable**: Easy to share and deploy
 - **Professional**: Championship-level quality
 
-**Status**: ✅ DEMO PACKAGE ORGANIZATION COMPLETE 
+**Status**: ✅ DEMO PACKAGE ORGANIZATION COMPLETE

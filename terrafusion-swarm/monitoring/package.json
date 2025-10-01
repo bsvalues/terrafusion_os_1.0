@@ -1,0 +1,27 @@
+{
+  "name": "terrafusion-health-monitor",
+  "version": "2.0.0",
+  "description": "Advanced health monitoring dashboard for TerraFusion OS 2.0 with real-time AI agent tracking",
+  "main": "health-monitor.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.14.2"
+  },
+  "scripts": {
+    "start": "node health-monitor.js",
+    "dev": "node health-monitor.js",
+    "monitor": "node health-monitor.js"
+  },
+  "keywords": [
+    "terrafusion",
+    "health-monitoring",
+    "ai-agents",
+    "government-os",
+    "dashboard",
+    "real-time"
+  ],
+  "author": "TerraFusion OS Development Team",
+  "license": "MIT"
+}

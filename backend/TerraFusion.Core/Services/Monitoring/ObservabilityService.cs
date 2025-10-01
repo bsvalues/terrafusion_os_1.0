@@ -25,7 +25,7 @@ public class ObservabilityService : IObservabilityService
     private readonly IHealthCheckService _healthCheckService;
     private readonly IMetricsCollectionService _metricsService;
     private readonly ILogger<ObservabilityService> _logger;
-    private readonly Timer? _healthMonitorTimer;
+    // Timer for periodic health monitoring (removed to eliminate unused field warning)
     private bool _isMonitoring;
 
     public ObservabilityService(
@@ -244,12 +244,12 @@ public class ObservabilityService : IObservabilityService
         }
     }
 
-    public async Task StartHealthMonitoringAsync()
+    public Task StartHealthMonitoringAsync()
     {
         if (_isMonitoring)
         {
             _logger.LogWarning("Health monitoring is already running");
-            return;
+            return Task.CompletedTask;
         }
 
         _logger.LogInformation("Starting health monitoring");
@@ -274,15 +274,18 @@ public class ObservabilityService : IObservabilityService
         });
 
         _telemetryService.TrackEvent("HealthMonitoringStarted");
+        
+        return Task.CompletedTask;
     }
 
-    public async Task StopHealthMonitoringAsync()
+    public Task StopHealthMonitoringAsync()
     {
         _logger.LogInformation("Stopping health monitoring");
         _isMonitoring = false;
         
         _telemetryService.TrackEvent("HealthMonitoringStopped");
-        await Task.CompletedTask;
+        
+        return Task.CompletedTask;
     }
 
     private async Task PerformHealthCheckAsync()
@@ -341,7 +344,7 @@ public class ObservabilityService : IObservabilityService
         return totalRequests > 0 ? (double)totalErrors / totalRequests * 100 : 0;
     }
 
-    private async Task<double> GetDiskUsageAsync()
+    private Task<double> GetDiskUsageAsync()
     {
         // Simplified disk usage calculation
         try
@@ -349,11 +352,11 @@ public class ObservabilityService : IObservabilityService
             var drives = DriveInfo.GetDrives().Where(d => d.IsReady);
             var totalUsed = drives.Sum(d => d.TotalSize - d.TotalFreeSpace);
             var totalSize = drives.Sum(d => d.TotalSize);
-            return totalSize > 0 ? (double)totalUsed / totalSize * 100 : 0;
+            return Task.FromResult(totalSize > 0 ? (double)totalUsed / totalSize * 100 : 0);
         }
         catch
         {
-            return 0;
+            return Task.FromResult(0.0);
         }
     }
 

@@ -1,7 +1,6 @@
 # Application Monitoring Report
 
-Generated: 2025-07-30T01:26:54.231510
-Status: stopped
+Generated: 2025-07-30T01:26:54.231510 Status: stopped
 
 ## Monitoring Summary
 

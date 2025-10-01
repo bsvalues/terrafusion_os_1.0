@@ -4,10 +4,8 @@ export const graphqlHandlers = [
   graphql.query('GetParcels', () => {
     return HttpResponse.json({
       data: {
-        parcels: [
-          { id: '1', parcelNumber: 'TEST-001', owner: 'Test Owner', acres: 1.5 }
-        ]
-      }
+        parcels: [{ id: '1', parcelNumber: 'TEST-001', owner: 'Test Owner', acres: 1.5 }],
+      },
     });
   }),
 
@@ -18,9 +16,9 @@ export const graphqlHandlers = [
           id: '2',
           parcelNumber: 'TEST-002',
           owner: 'New Owner',
-          acres: 2.0
-        }
-      }
+          acres: 2.0,
+        },
+      },
     });
-  })
+  }),
 ];

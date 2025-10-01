@@ -1,0 +1,202 @@
+/* Official TerraFusion Championship Brand System */
+/* Source: TERRAFUSION_BRAND_SYSTEM_DOCUMENTATION.md */
+
+:root {
+  /* Championship Brand Colors */
+  --tf-primary-blue: #0099ff;
+  --tf-secondary-cyan: #00ffee;
+  --tf-accent-green: #00ffaa;
+  --tf-dark-bg: #0b1020;
+  --tf-darker-bg: #050a15;
+  --tf-space-black: #000510;
+  
+  /* Core System Colors */
+  --background: var(--tf-space-black);
+  --foreground: #ffffff;
+  --card: var(--tf-dark-bg);
+  --card-foreground: #ffffff;
+  --primary: var(--tf-primary-blue);
+  --primary-foreground: var(--tf-dark-bg);
+  --secondary: var(--tf-secondary-cyan);
+  --secondary-foreground: #ffffff;
+  --muted: var(--tf-darker-bg);
+  --muted-foreground: #8b9dc3;
+  --accent: var(--tf-secondary-cyan);
+  --accent-foreground: var(--tf-dark-bg);
+  --border: rgba(0, 255, 238, 0.2);
+  --input: var(--tf-dark-bg);
+  --ring: var(--tf-secondary-cyan);
+  
+  /* TerraFusion Brand Gradients */
+  --tf-gradient-primary: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+  --tf-gradient-cosmic: linear-gradient(135deg, #000510, #0b1020);
+  --tf-gradient-hero: linear-gradient(135deg, #0099ff, #00ffee);
+  --tf-gradient-glow: radial-gradient(circle at center, rgba(0, 255, 238, 0.3), transparent 70%);
+  
+  /* TerraFusion Shadows & Effects */
+  --tf-shadow-cyan: 0 0 40px rgba(0, 255, 238, 0.4);
+  --tf-shadow-glow: 0 0 60px rgba(0, 255, 238, 0.6);
+  --tf-shadow-card: 0 20px 40px rgba(10, 15, 28, 0.8);
+  --tf-shadow-float: 0 25px 50px rgba(0, 229, 255, 0.15);
+  
+  /* Animation Variables */
+  --tf-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --tf-transition-fast: all 0.2s ease;
+}
+
+body {
+  background: var(--tf-gradient-cosmic);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* TerraFusion Brand Components */
+.tf-logo-glow {
+  animation: tf-glow-pulse 2s ease-in-out infinite alternate;
+  filter: drop-shadow(var(--tf-shadow-cyan));
+}
+
+.tf-gradient-text {
+  background: var(--tf-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tf-card {
+  background: linear-gradient(145deg, var(--tf-dark-bg), var(--tf-darker-bg));
+  border: 1px solid var(--border);
+  box-shadow: var(--tf-shadow-card);
+  transition: var(--tf-transition);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.tf-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--primary);
+  box-shadow: var(--tf-shadow-float);
+}
+
+.tf-button-primary {
+  background: var(--tf-gradient-primary);
+  color: var(--primary-foreground);
+  border: none;
+  transition: var(--tf-transition);
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.3);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tf-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(0, 229, 255, 0.5);
+}
+
+/* Animations */
+@keyframes tf-glow-pulse {
+  from {
+    filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.4));
+  }
+  to {
+    filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.8));
+  }
+}
+
+@keyframes tf-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.tf-animate-float {
+  animation: tf-float 6s ease-in-out infinite;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--tf-gradient-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #0099cc, #00cc66);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+  background: var(--tf-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Form Elements */
+input, textarea, select {
+  background: var(--input);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  padding: 10px 16px;
+  border-radius: 8px;
+  transition: var(--tf-transition-fast);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+}
+
+/* Utility Classes */
+.tf-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.tf-section {
+  padding: 80px 0;
+}
+
+.tf-grid {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .tf-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tf-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .tf-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

@@ -1,4 +1,5 @@
 # 🏗️ SECURE DATA SHARING TECHNICAL ARCHITECTURE
+
 ## Detailed Implementation Design
 
 ---
@@ -35,13 +36,13 @@ Implementation:
     - Multi-factor authentication
     - API key rotation (90 days)
     - Session management
-  
+
   Access Control:
     - Role-based permissions
     - Time-based access
     - IP whitelisting
     - Rate limiting
-  
+
   Data Protection:
     - TLS 1.3 minimum
     - AES-256 encryption
@@ -82,20 +83,20 @@ Hub Infrastructure:
   Redundancy: Multi-region failover
   Bandwidth: 10 Gbps minimum
   DDoS Protection: Always-on
-  
+
 County Connections:
   Type: Site-to-site VPN
   Protocol: IPSec/IKEv2
   Encryption: AES-256-GCM
   Authentication: Certificate-based
-  
+
 Firewall Rules:
   Inbound:
     - Only from verified counties
     - HTTPS (443) only
     - Rate limited per county
     - GeoIP restrictions
-  
+
   Outbound:
     - To consented counties only
     - Encrypted traffic only
@@ -121,36 +122,36 @@ class SecureDataPipeline:
             DataEncryption(),
             DataTransport()
         ]
-    
+
     def process(self, request):
         data = request.data
-        
+
         for stage in self.stages:
             data = stage.process(data)
-            
+
             # Audit each stage
             self.audit_log(stage, data)
-            
+
             # Stop if any stage fails
             if stage.failed:
                 self.rollback(stage)
                 return None
-        
+
         return data
 
 class SensitiveDataFilter:
     SENSITIVE_FIELDS = [
-        'owner_name', 'taxpayer_id', 'ssn', 
+        'owner_name', 'taxpayer_id', 'ssn',
         'address', 'phone', 'email', 'account_number',
         'payment_history', 'balance_due'
     ]
-    
+
     def process(self, data):
         # Deep scan for sensitive data
         cleaned = self.remove_sensitive_fields(data)
         cleaned = self.detect_pii_patterns(cleaned)
         cleaned = self.validate_anonymization(cleaned)
-        
+
         return cleaned
 ```
 
@@ -162,21 +163,12 @@ Sharing Hub Storage:
   Retention: 90 days maximum
   Access: Audit-logged
   Backup: None (transient only)
-  
+
   Structure:
-    /shared-data/
-    ├── /agreements/
-    │   └── {agreement-id}/
-    │       ├── metadata.json
-    │       └── consent.json
-    ├── /transfers/
-    │   └── {transfer-id}/
-    │       ├── data.encrypted
-    │       ├── manifest.json
-    │       └── audit.log
-    └── /archives/
-        └── {year-month}/
-            └── summary.json
+    /shared-data/ ├── /agreements/ │   └── {agreement-id}/ │       ├──
+    metadata.json │       └── consent.json ├── /transfers/ │   └──
+    {transfer-id}/ │       ├── data.encrypted │       ├── manifest.json
+    │       └── audit.log └── /archives/ └── {year-month}/ └── summary.json
 
 County-Side Storage:
   Received Data:
@@ -184,7 +176,7 @@ County-Side Storage:
     - Read-only access
     - No mixing with local data
     - Clear provenance marking
-  
+
   Shared Data Log:
     - What was shared
     - When shared
@@ -209,13 +201,13 @@ Endpoints:
   GET    /agreements/{id}               # Get agreement details
   PUT    /agreements/{id}/approve       # Approve agreement
   DELETE /agreements/{id}               # Terminate agreement
-  
+
   # Data Sharing
   POST   /shares                        # Share data
   GET    /shares                        # List shared data
   GET    /shares/{id}                   # Get shared data
   DELETE /shares/{id}                   # Revoke shared data
-  
+
   # Analytics
   GET    /analytics/usage               # Sharing statistics
   GET    /analytics/partners            # Partner metrics
@@ -238,13 +230,13 @@ class DataSharingAPIGateway:
             requests_per_hour=1000,
             requests_per_day=10000
         )
-        
+
         self.auth_validator = AuthValidator(
             require_mtls=True,
             require_oauth=True,
             require_agreement=True
         )
-    
+
     @validate_request
     @rate_limit
     @authenticate
@@ -253,16 +245,16 @@ class DataSharingAPIGateway:
     def share_data(self, request):
         # Validate county identity
         county = self.validate_county(request.certificate)
-        
+
         # Check active agreement
         agreement = self.check_agreement(
-            county.id, 
+            county.id,
             request.target_county
         )
-        
+
         # Validate data is non-sensitive
         self.validate_data_classification(request.data)
-        
+
         # Process sharing request
         return self.process_share(request)
 ```
@@ -281,7 +273,7 @@ services:
   api-gateway:
     image: terrafusion/sharing-gateway:latest
     ports:
-      - "443:443"
+      - '443:443'
     environment:
       - TLS_CERT=/certs/server.crt
       - TLS_KEY=/certs/server.key
@@ -318,7 +310,7 @@ services:
   audit-logger:
     image: terrafusion/audit-logger:latest
     environment:
-      - LOG_RETENTION_DAYS=2555  # 7 years
+      - LOG_RETENTION_DAYS=2555 # 7 years
       - COMPLIANCE_MODE=strict
     volumes:
       - audit-logs:/logs
@@ -372,54 +364,54 @@ spec:
     spec:
       serviceAccountName: sharing-hub
       containers:
-      - name: api-gateway
-        image: terrafusion/sharing-gateway:latest
-        ports:
-        - containerPort: 443
-        env:
-        - name: MTLS_ENABLED
-          value: "true"
-        volumeMounts:
-        - name: certs
-          mountPath: /certs
-          readOnly: true
-        resources:
-          limits:
-            memory: "4Gi"
-            cpu: "2"
-          requests:
-            memory: "2Gi"
-            cpu: "1"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 443
-            scheme: HTTPS
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 443
-            scheme: HTTPS
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: api-gateway
+          image: terrafusion/sharing-gateway:latest
+          ports:
+            - containerPort: 443
+          env:
+            - name: MTLS_ENABLED
+              value: 'true'
+          volumeMounts:
+            - name: certs
+              mountPath: /certs
+              readOnly: true
+          resources:
+            limits:
+              memory: '4Gi'
+              cpu: '2'
+            requests:
+              memory: '2Gi'
+              cpu: '1'
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 5
       volumes:
-      - name: certs
-        secret:
-          secretName: sharing-hub-certs
+        - name: certs
+          secret:
+            secretName: sharing-hub-certs
       nodeSelector:
         workload: sharing-hub
       tolerations:
-      - key: "sharing-hub"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+        - key: 'sharing-hub'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoSchedule'
 ```
 
 ---
@@ -435,19 +427,19 @@ Prometheus Metrics:
   - sharing_requests_duration_seconds
   - sharing_requests_size_bytes
   - sharing_errors_total
-  
+
   # Security Metrics
   - authentication_failures_total
   - authorization_denials_total
   - sensitive_data_blocks_total
   - encryption_operations_total
-  
+
   # Agreement Metrics
   - active_agreements_gauge
   - agreement_approvals_total
   - agreement_terminations_total
   - data_types_shared_total
-  
+
   # Performance Metrics
   - pipeline_stage_duration_seconds
   - queue_depth_gauge
@@ -469,7 +461,7 @@ class AuditLogger:
     def __init__(self):
         self.logger = self.setup_logger()
         self.compliance_logger = self.setup_compliance_logger()
-    
+
     def log_sharing_event(self, event):
         log_entry = {
             'timestamp': datetime.utcnow().isoformat(),
@@ -486,11 +478,11 @@ class AuditLogger:
             'status': event.status,
             'error': event.error if hasattr(event, 'error') else None
         }
-        
+
         # Log to both systems
         self.logger.info(json.dumps(log_entry))
         self.compliance_logger.info(json.dumps(log_entry))
-        
+
         # Alert on anomalies
         if event.status == 'failed':
             self.alert_security_team(log_entry)
@@ -509,7 +501,7 @@ What to Backup:
     - Audit logs
     - Configuration
     - Certificates
-  
+
   Not Backed Up:
     - Transient shared data
     - Cache contents
@@ -535,12 +527,9 @@ Primary Region: US-West-2
 Secondary Region: US-East-1
 
 Failover Process:
-  1. Health check failure detected
-  2. Confirm primary region down
-  3. Update DNS to secondary
-  4. Activate secondary services
-  5. Notify all counties
-  6. Begin recovery investigation
+  1. Health check failure detected 2. Confirm primary region down 3. Update DNS
+  to secondary 4. Activate secondary services 5. Notify all counties 6. Begin
+  recovery investigation
 
 Testing Schedule:
   - Monthly: Read-only failover
@@ -557,30 +546,30 @@ Testing Schedule:
 ```yaml
 Pipeline Stages:
   1. Code Commit:
-     - Security scanning
-     - Dependency check
-     - License compliance
-  
+    - Security scanning
+    - Dependency check
+    - License compliance
+
   2. Build:
-     - Container building
-     - Vulnerability scanning
-     - SBOM generation
-  
+    - Container building
+    - Vulnerability scanning
+    - SBOM generation
+
   3. Test:
-     - Unit tests
-     - Integration tests
-     - Security tests
-     - Performance tests
-  
+    - Unit tests
+    - Integration tests
+    - Security tests
+    - Performance tests
+
   4. Deploy to Staging:
-     - Smoke tests
-     - Security validation
-     - Agreement testing
-  
+    - Smoke tests
+    - Security validation
+    - Agreement testing
+
   5. Deploy to Production:
-     - Blue-green deployment
-     - Health monitoring
-     - Rollback ready
+    - Blue-green deployment
+    - Health monitoring
+    - Rollback ready
 
 Security Gates:
   - No high/critical vulnerabilities
@@ -593,4 +582,4 @@ Security Gates:
 
 **"Secure by Design, Private by Default, Trusted by Counties"** 🔐
 
-*Technical architecture for optional, secure, non-sensitive data sharing*
+_Technical architecture for optional, secure, non-sensitive data sharing_

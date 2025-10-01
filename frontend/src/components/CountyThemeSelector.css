@@ -1,0 +1,168 @@
+/* TerraFusion OS - County Theme Selector Styles */
+/* Government. Transcended. */
+
+.tf-county-selector {
+  background: var(--color-surface-secondary, #1a1f2e);
+  border: 1px solid var(--color-border-primary, #2a3142);
+  border-radius: var(--border-radius-lg, 12px);
+  padding: var(--spacing-md, 16px);
+  margin: var(--spacing-sm, 8px) 0;
+  font-family: var(--font-family-primary, 'Segoe UI', system-ui, sans-serif);
+}
+
+.tf-county-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.tf-county-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  background: var(--color-surface-primary, #0b0f14);
+  border-radius: var(--border-radius-sm, 8px);
+  border: 1px solid var(--color-accent-primary, #07d1d6);
+}
+
+.tf-county-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border-accent, #ffffff20);
+}
+
+.tf-county-name {
+  color: var(--color-text-primary, #e6f1ff);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tf-county-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs, 4px);
+  font-size: 12px;
+  color: var(--color-text-secondary, #9ba3af);
+}
+
+.tf-county-selector-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.tf-county-label {
+  color: var(--color-text-primary, #e6f1ff);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.tf-county-select {
+  background: var(--color-surface-primary, #0b0f14);
+  border: 1px solid var(--color-border-primary, #2a3142);
+  border-radius: var(--border-radius-sm, 8px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  color: var(--color-text-primary, #e6f1ff);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tf-county-select:hover {
+  border-color: var(--color-accent-primary, #07d1d6);
+  box-shadow: 0 0 0 2px var(--color-accent-primary, #07d1d6)20;
+}
+
+.tf-county-select:focus {
+  outline: none;
+  border-color: var(--color-accent-primary, #07d1d6);
+  box-shadow: 0 0 0 3px var(--color-accent-primary, #07d1d6)40;
+}
+
+.tf-county-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tf-loading-indicator {
+  color: var(--color-accent-primary, #07d1d6);
+  font-size: 12px;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+}
+
+.tf-loading-indicator::before {
+  content: '⟳';
+  animation: tf-spin 1s linear infinite;
+}
+
+.tf-county-description {
+  margin-top: var(--spacing-md, 16px);
+  padding-top: var(--spacing-md, 16px);
+  border-top: 1px solid var(--color-border-primary, #2a3142);
+}
+
+.tf-county-description p {
+  color: var(--color-text-secondary, #9ba3af);
+  font-size: 13px;
+  margin: 0 0 var(--spacing-sm, 8px) 0;
+}
+
+.tf-government-compliance {
+  display: flex;
+  gap: var(--spacing-xs, 4px);
+  flex-wrap: wrap;
+}
+
+.tf-compliance-badge {
+  background: var(--color-success-bg, #00b3a420);
+  color: var(--color-success-text, #00d1a4);
+  padding: 2px var(--spacing-xs, 4px);
+  border-radius: var(--border-radius-sm, 8px);
+  font-size: 10px;
+  font-weight: 500;
+  border: 1px solid var(--color-success-border, #00b3a440);
+}
+
+.county-theme-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  background: var(--color-surface-primary, #0b0f14);
+  border: 1px solid var(--color-accent-primary, #07d1d6);
+  border-radius: var(--border-radius-sm, 8px);
+  font-size: 12px;
+  color: var(--color-text-primary, #e6f1ff);
+}
+
+@keyframes tf-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .tf-county-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm, 8px);
+  }
+
+  .tf-county-details {
+    align-items: flex-start;
+  }
+  
+  .county-theme-indicator {
+    top: 10px;
+    right: 10px;
+    font-size: 11px;
+  }
+}

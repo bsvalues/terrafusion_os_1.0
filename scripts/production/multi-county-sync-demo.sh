@@ -71,7 +71,7 @@ echo "cd modules/terra-fusion-sync"
 echo "npm run tauri dev"
 echo ""
 echo "# Or access web dashboard"
-echo "firefox http://localhost:3000/sync-dashboard &"
+echo "firefox http://localhost:\${{TF_FRONTEND_PORT:-3000}}/sync-dashboard &"
 echo ""
 
 echo "🎪 LIVE DEMONSTRATION SCENARIOS:"

@@ -1,15 +1,17 @@
 # 🤖 Terrafusion OS Workspace Companion - Quick Start Guide
 
-## ✅ **COMPANION IS WORKING!** 
+## ✅ **COMPANION IS WORKING!**
 
-The workspace companion is running successfully. Here's how to use it effectively:
+The workspace companion is running successfully. Here's how to use it
+effectively:
 
 ## 🎯 **WORKING COMMANDS**
 
 ### **Basic Commands**
+
 ```bash
 .help              # Show all available commands
-.status            # Show workspace status  
+.status            # Show workspace status
 .health            # Perform system health check
 .ai-swarm          # Show AI swarm status
 .capabilities      # List agent capabilities
@@ -17,9 +19,10 @@ The workspace companion is running successfully. Here's how to use it effectivel
 ```
 
 ### **AI-Powered Tools**
+
 ```bash
 .ai-generate       # Generate code using AI
-.ai-review         # Review code using AI  
+.ai-review         # Review code using AI
 .ai-test           # Generate tests using AI
 .ai-refactor       # Get refactoring suggestions
 .ai-solve          # Solve problems using AI
@@ -28,9 +31,10 @@ The workspace companion is running successfully. Here's how to use it effectivel
 ```
 
 ### **Natural Language Examples**
+
 ```bash
 "How is the system doing?"     # System status check
-"Show me the AI agents"        # AI swarm information  
+"Show me the AI agents"        # AI swarm information
 "What can you do?"             # Capability listing
 "Check system health"          # Health check
 "Generate a React component"   # AI code generation
@@ -39,8 +43,9 @@ The workspace companion is running successfully. Here's how to use it effectivel
 ## 🔧 **CURRENT STATUS**
 
 From your terminal output, the companion shows:
+
 - ✅ **Workspace validation passed**
-- ✅ **System health check passed** 
+- ✅ **System health check passed**
 - ✅ **File change monitoring started**
 - ⚠️ **No AI Swarm agents detected** (Expected - they're in parent directory)
 - 📊 **15 active capabilities**
@@ -57,6 +62,7 @@ From your terminal output, the companion shows:
 The companion should detect it's in the wrong directory. Let me fix this:
 
 ### **Run from Terrafusion OS root:**
+
 ```bash
 cd C:\Users\bsval\terrafusion_os_1.0
 npm run companion

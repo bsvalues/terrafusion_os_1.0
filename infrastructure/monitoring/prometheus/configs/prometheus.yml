@@ -10,32 +10,32 @@ scrape_configs:
       - labels:
           component: infrastructure
         targets:
-          - localhost:9100
+          - localhost:\${{TF_PORT_9100:-9100}}
   - job_name: v1_foundation
     static_configs:
       - labels:
           component: v1_foundation
           version: "1.0"
         targets:
-          - localhost:8080/metrics
+          - localhost:\${{TF_PORT_9100:-9100}}/metrics
   - job_name: v2_project_reflex
     static_configs:
       - labels:
           component: v2_project_reflex
           version: "2.0"
         targets:
-          - localhost:8081/metrics
+          - localhost:\${{TF_PORT_9100:-9100}}/metrics
   - job_name: v3_cosmic_governance
     static_configs:
       - labels:
           component: v3_cosmic_governance
           version: "3.0"
         targets:
-          - localhost:8082/metrics
+          - localhost:\${{TF_PORT_9100:-9100}}/metrics
   - job_name: quantum_metrics
     static_configs:
       - labels:
           component: quantum
           type: quantum_processor
         targets:
-          - localhost:9200
+          - localhost:\${{TF_PORT_9100:-9100}}

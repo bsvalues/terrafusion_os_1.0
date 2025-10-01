@@ -1,0 +1,58 @@
+
+openapi: 3.0.3
+info:
+  title: Golden Ratio Fibonacci Engine API
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: Health & constants
+      responses:
+        "200":
+          description: ok
+  /fib:
+    get:
+      summary: nth Fibonacci
+      parameters:
+        - in: query
+          name: n
+          schema: { type: integer, minimum: 0, maximum: 186 }
+      responses:
+        "200": { description: ok }
+  /opt/golden-section:
+    post:
+      summary: Golden section minimization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                func: { type: string, enum: [quadratic] }
+                params:
+                  type: object
+                  properties:
+                    a: { type: number } 
+                    b: { type: number }
+                    c: { type: number }
+                bounds: { type: array, items: { type: number }, minItems: 2, maxItems: 2 }
+                tol: { type: number }
+      responses:
+        "200": { description: result }
+  /graph/golden-laplacian:
+    post:
+      summary: Golden Laplacian analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                adjacency: { type: array, items: { type: array, items: { type: number } } }
+                filter: { type: string, enum: [golden_lowpass, none] }
+      responses:
+        "200": { description: spectrum & filtered signal (if provided) }

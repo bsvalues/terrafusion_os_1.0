@@ -4,7 +4,15 @@ export interface GovernmentAgentCapability {
   id: string;
   name: string;
   description: string;
-  category: 'compliance' | 'security' | 'audit' | 'data-governance' | 'regulatory' | 'fiscal' | 'geospatial' | 'public-records';
+  category:
+    | 'compliance'
+    | 'security'
+    | 'audit'
+    | 'data-governance'
+    | 'regulatory'
+    | 'fiscal'
+    | 'geospatial'
+    | 'public-records';
   priority: number;
   dependencies: string[];
   governmentStandards: string[];
@@ -14,7 +22,15 @@ export interface GovernmentAgentCapability {
 export interface GovernmentAgent {
   id: string;
   name: string;
-  type: 'compliance-officer' | 'security-analyst' | 'auditor' | 'data-steward' | 'regulatory-expert' | 'fiscal-analyst' | 'geospatial-specialist' | 'records-manager';
+  type:
+    | 'compliance-officer'
+    | 'security-analyst'
+    | 'auditor'
+    | 'data-steward'
+    | 'regulatory-expert'
+    | 'fiscal-analyst'
+    | 'geospatial-specialist'
+    | 'records-manager';
   status: 'active' | 'standby' | 'busy' | 'error';
   capabilities: GovernmentAgentCapability[];
   currentTask?: string;
@@ -27,7 +43,13 @@ export interface GovernmentAgent {
 
 export interface ComplianceTask {
   id: string;
-  type: 'fisma-audit' | 'nist-assessment' | 'gdpr-review' | 'hipaa-compliance' | 'sox-audit' | 'pci-validation';
+  type:
+    | 'fisma-audit'
+    | 'nist-assessment'
+    | 'gdpr-review'
+    | 'hipaa-compliance'
+    | 'sox-audit'
+    | 'pci-validation';
   priority: 'low' | 'medium' | 'high' | 'critical';
   status: 'pending' | 'in-progress' | 'completed' | 'failed';
   assignedAgent: string;
@@ -67,24 +89,25 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 95,
             dependencies: ['security-assessment', 'risk-analysis'],
             governmentStandards: ['FISMA', 'NIST-800-53', 'FIPS-199'],
-            riskLevel: 'critical'
+            riskLevel: 'critical',
           },
           {
             id: 'nist-assessment',
             name: 'NIST Framework Assessment',
-            description: 'National Institute of Standards and Technology cybersecurity framework evaluation',
+            description:
+              'National Institute of Standards and Technology cybersecurity framework evaluation',
             category: 'compliance',
             priority: 90,
             dependencies: ['security-controls', 'risk-management'],
             governmentStandards: ['NIST-CSF', 'NIST-800-53', 'NIST-800-171'],
-            riskLevel: 'high'
-          }
+            riskLevel: 'high',
+          },
         ],
         performance: 94,
         complianceScore: 98,
         lastAudit: new Date(),
         certifications: ['CISSP', 'CISM', 'FISMA-Certified'],
-        jurisdiction: ['Federal', 'State', 'Local']
+        jurisdiction: ['Federal', 'State', 'Local'],
       },
       {
         id: 'security-analyst-001',
@@ -100,7 +123,7 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 98,
             dependencies: ['siem-integration', 'threat-intelligence'],
             governmentStandards: ['NIST-800-53', 'ISO-27001', 'SOC2'],
-            riskLevel: 'critical'
+            riskLevel: 'critical',
           },
           {
             id: 'incident-response',
@@ -110,14 +133,14 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 96,
             dependencies: ['incident-management', 'communication-systems'],
             governmentStandards: ['NIST-800-61', 'ISO-27035', 'SANS'],
-            riskLevel: 'high'
-          }
+            riskLevel: 'high',
+          },
         ],
         performance: 96,
         complianceScore: 95,
         lastAudit: new Date(),
         certifications: ['GCIH', 'GCFE', 'CISSP'],
-        jurisdiction: ['Federal', 'State', 'Local', 'Critical-Infrastructure']
+        jurisdiction: ['Federal', 'State', 'Local', 'Critical-Infrastructure'],
       },
       {
         id: 'auditor-001',
@@ -133,7 +156,7 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 92,
             dependencies: ['audit-framework', 'evidence-collection'],
             governmentStandards: ['GAO', 'OMB', 'GAGAS'],
-            riskLevel: 'high'
+            riskLevel: 'high',
           },
           {
             id: 'compliance-validation',
@@ -143,14 +166,14 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 90,
             dependencies: ['compliance-framework', 'reporting-tools'],
             governmentStandards: ['FISMA', 'NIST', 'ISO', 'SOC2'],
-            riskLevel: 'medium'
-          }
+            riskLevel: 'medium',
+          },
         ],
         performance: 93,
         complianceScore: 97,
         lastAudit: new Date(),
         certifications: ['CISA', 'CIA', 'CGAP'],
-        jurisdiction: ['Federal', 'State', 'Local', 'Tribal']
+        jurisdiction: ['Federal', 'State', 'Local', 'Tribal'],
       },
       {
         id: 'data-steward-001',
@@ -166,7 +189,7 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 88,
             dependencies: ['classification-framework', 'access-controls'],
             governmentStandards: ['FIPS-199', 'NIST-800-60', 'ISO-27001'],
-            riskLevel: 'medium'
+            riskLevel: 'medium',
           },
           {
             id: 'privacy-protection',
@@ -176,14 +199,14 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 85,
             dependencies: ['privacy-framework', 'consent-management'],
             governmentStandards: ['GDPR', 'CCPA', 'HIPAA'],
-            riskLevel: 'high'
-          }
+            riskLevel: 'high',
+          },
         ],
         performance: 89,
         complianceScore: 92,
         lastAudit: new Date(),
         certifications: ['CDPSE', 'CIPP', 'CIPM'],
-        jurisdiction: ['Federal', 'State', 'Local', 'EU']
+        jurisdiction: ['Federal', 'State', 'Local', 'EU'],
       },
       {
         id: 'regulatory-expert-001',
@@ -199,7 +222,7 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 87,
             dependencies: ['regulatory-database', 'change-management'],
             governmentStandards: ['Federal-Regulations', 'State-Laws', 'Local-Ordinances'],
-            riskLevel: 'medium'
+            riskLevel: 'medium',
           },
           {
             id: 'compliance-mapping',
@@ -209,14 +232,14 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 84,
             dependencies: ['compliance-matrix', 'gap-analysis'],
             governmentStandards: ['FISMA', 'NIST', 'ISO', 'SOC2'],
-            riskLevel: 'low'
-          }
+            riskLevel: 'low',
+          },
         ],
         performance: 86,
         complianceScore: 90,
         lastAudit: new Date(),
         certifications: ['CRCM', 'CAMS', 'CIA'],
-        jurisdiction: ['Federal', 'State', 'Local']
+        jurisdiction: ['Federal', 'State', 'Local'],
       },
       {
         id: 'fiscal-analyst-001',
@@ -232,7 +255,7 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 82,
             dependencies: ['financial-systems', 'forecasting-models'],
             governmentStandards: ['GASB', 'FASAB', 'OMB-Circulars'],
-            riskLevel: 'low'
+            riskLevel: 'low',
           },
           {
             id: 'cost-optimization',
@@ -242,14 +265,14 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 80,
             dependencies: ['cost-models', 'efficiency-metrics'],
             governmentStandards: ['OMB-A-123', 'GPRA', 'GPRAMA'],
-            riskLevel: 'low'
-          }
+            riskLevel: 'low',
+          },
         ],
         performance: 81,
         complianceScore: 88,
         lastAudit: new Date(),
         certifications: ['CFE', 'CGFM', 'CPA'],
-        jurisdiction: ['Federal', 'State', 'Local']
+        jurisdiction: ['Federal', 'State', 'Local'],
       },
       {
         id: 'geospatial-specialist-001',
@@ -265,7 +288,7 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 91,
             dependencies: ['gis-systems', 'spatial-databases'],
             governmentStandards: ['FGDC', 'ISO-19100', 'OGC'],
-            riskLevel: 'medium'
+            riskLevel: 'medium',
           },
           {
             id: 'cadastral-management',
@@ -275,14 +298,14 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 89,
             dependencies: ['cadastral-systems', 'land-records'],
             governmentStandards: ['FGDC-Cadastral', 'ISO-19152', 'NSDI'],
-            riskLevel: 'low'
-          }
+            riskLevel: 'low',
+          },
         ],
         performance: 90,
         complianceScore: 94,
         lastAudit: new Date(),
         certifications: ['GISP', 'ASPRS', 'URISA'],
-        jurisdiction: ['Federal', 'State', 'Local', 'Tribal']
+        jurisdiction: ['Federal', 'State', 'Local', 'Tribal'],
       },
       {
         id: 'records-manager-001',
@@ -298,7 +321,7 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 83,
             dependencies: ['records-system', 'retention-schedules'],
             governmentStandards: ['NARA', 'FOIA', 'State-Laws'],
-            riskLevel: 'medium'
+            riskLevel: 'medium',
           },
           {
             id: 'foia-processing',
@@ -308,15 +331,15 @@ export class GovernmentSpecializedAgents extends EventEmitter {
             priority: 86,
             dependencies: ['foia-system', 'document-management'],
             governmentStandards: ['FOIA', 'E-FOIA', 'State-Equivalents'],
-            riskLevel: 'medium'
-          }
+            riskLevel: 'medium',
+          },
         ],
         performance: 85,
         complianceScore: 89,
         lastAudit: new Date(),
         certifications: ['CRM', 'IGP', 'CIP'],
-        jurisdiction: ['Federal', 'State', 'Local']
-      }
+        jurisdiction: ['Federal', 'State', 'Local'],
+      },
     ];
 
     agents.forEach(agent => this.agents.set(agent.id, agent));
@@ -335,13 +358,13 @@ export class GovernmentSpecializedAgents extends EventEmitter {
   }
 
   public getAgentsByJurisdiction(jurisdiction: string): GovernmentAgent[] {
-    return Array.from(this.agents.values()).filter(agent => 
+    return Array.from(this.agents.values()).filter(agent =>
       agent.jurisdiction.includes(jurisdiction)
     );
   }
 
   public getAgentsByCapability(capabilityId: string): GovernmentAgent[] {
-    return Array.from(this.agents.values()).filter(agent => 
+    return Array.from(this.agents.values()).filter(agent =>
       agent.capabilities.some(cap => cap.id === capabilityId)
     );
   }
@@ -351,7 +374,7 @@ export class GovernmentSpecializedAgents extends EventEmitter {
     const fullTask: ComplianceTask = {
       ...task,
       id: taskId,
-      status: 'pending'
+      status: 'pending',
     };
 
     this.complianceTasks.set(taskId, fullTask);
@@ -367,8 +390,8 @@ export class GovernmentSpecializedAgents extends EventEmitter {
   }
 
   private findBestAgentForTask(task: ComplianceTask): GovernmentAgent | null {
-    const availableAgents = Array.from(this.agents.values()).filter(agent => 
-      agent.status === 'active' && agent.currentTask === undefined
+    const availableAgents = Array.from(this.agents.values()).filter(
+      agent => agent.status === 'active' && agent.currentTask === undefined
     );
 
     if (availableAgents.length === 0) return null;
@@ -376,10 +399,10 @@ export class GovernmentSpecializedAgents extends EventEmitter {
     // Score agents based on capabilities and performance
     const scoredAgents = availableAgents.map(agent => {
       let score = agent.performance;
-      
+
       // Bonus for relevant capabilities
-      const relevantCapabilities = agent.capabilities.filter(cap => 
-        cap.category === this.mapTaskTypeToCategory(task.type)
+      const relevantCapabilities = agent.capabilities.filter(
+        cap => cap.category === this.mapTaskTypeToCategory(task.type)
       );
       score += relevantCapabilities.length * 10;
 
@@ -397,14 +420,16 @@ export class GovernmentSpecializedAgents extends EventEmitter {
     return scoredAgents[0].agent;
   }
 
-  private mapTaskTypeToCategory(taskType: ComplianceTask['type']): GovernmentAgentCapability['category'] {
+  private mapTaskTypeToCategory(
+    taskType: ComplianceTask['type']
+  ): GovernmentAgentCapability['category'] {
     const mapping: Record<ComplianceTask['type'], GovernmentAgentCapability['category']> = {
       'fisma-audit': 'compliance',
       'nist-assessment': 'compliance',
       'gdpr-review': 'data-governance',
       'hipaa-compliance': 'compliance',
       'sox-audit': 'audit',
-      'pci-validation': 'security'
+      'pci-validation': 'security',
     };
     return mapping[taskType] || 'compliance';
   }
@@ -487,10 +512,10 @@ export class GovernmentSpecializedAgents extends EventEmitter {
         type: agent.type,
         status: agent.status,
         complianceScore: agent.complianceScore,
-        performance: agent.performance
+        performance: agent.performance,
       })),
       activeTasks: this.getTasksByStatus('in-progress').length,
-      completedTasks: this.getTasksByStatus('completed').length
+      completedTasks: this.getTasksByStatus('completed').length,
     };
 
     return JSON.stringify(report, null, 2);

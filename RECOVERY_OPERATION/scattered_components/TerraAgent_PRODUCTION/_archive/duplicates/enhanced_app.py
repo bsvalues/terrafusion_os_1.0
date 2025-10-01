@@ -548,4 +548,4 @@ if __name__ == "__main__":
     logger.info("🔄 Sync Management Included")
     logger.info("⚖️ Multi-perspective Analysis Available")
     
-    app.run(host='0.0.0.0', port=5003, debug=True) 
+    app.run(host='0.0.0.0', port=\${{TF_API_5003_PORT:-5003}}, debug=True) 

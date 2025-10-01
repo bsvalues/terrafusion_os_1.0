@@ -20,7 +20,14 @@ export interface User {
 
 export interface UserRole {
   id: string;
-  name: 'public' | 'user' | 'assessor' | 'realtor' | 'county_admin' | 'enterprise_admin' | 'system_admin';
+  name:
+    | 'public'
+    | 'user'
+    | 'assessor'
+    | 'realtor'
+    | 'county_admin'
+    | 'enterprise_admin'
+    | 'system_admin';
   displayName: string;
   tier: 'tier1' | 'tier2' | 'tier3' | 'enterprise';
   description: string;
@@ -63,7 +70,7 @@ class AuthenticationService {
   private refreshToken: string | null = null;
   private baseUrl: string;
 
-  constructor(baseUrl: string = 'http://localhost:3000/api') {
+  constructor(baseUrl: string = 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api') {
     this.baseUrl = baseUrl;
     this.loadStoredAuth();
   }
@@ -85,14 +92,14 @@ class AuthenticationService {
       }
 
       const authData: AuthToken = await response.json();
-      
+
       this.currentUser = authData.user;
       this.authToken = authData.token;
       this.refreshToken = authData.refreshToken;
-      
+
       this.storeAuth(authData);
       this.logSecurityEvent('login', 'User logged in successfully');
-      
+
       return authData;
     } catch (error) {
       this.logSecurityEvent('failed_login', `Login failed: ${error}`);
@@ -106,7 +113,7 @@ class AuthenticationService {
         await fetch(`${this.baseUrl}/auth/logout`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${this.authToken}`,
+            Authorization: `Bearer ${this.authToken}`,
           },
         });
       }
@@ -137,13 +144,13 @@ class AuthenticationService {
       }
 
       const authData: AuthToken = await response.json();
-      
+
       this.currentUser = authData.user;
       this.authToken = authData.token;
       this.refreshToken = authData.refreshToken;
-      
+
       this.storeAuth(authData);
-      
+
       return authData;
     } catch (error) {
       this.clearAuth();
@@ -157,9 +164,11 @@ class AuthenticationService {
 
     return this.currentUser.permissions.some(permission => {
       const resourceMatch = permission.resource === resource || permission.resource === '*';
-      const actionMatch = permission.actions.includes(action as any) || permission.actions.includes('*' as any);
-      const scopeMatch = !scope || permission.scope === scope || permission.scope === 'cross_jurisdictional';
-      
+      const actionMatch =
+        permission.actions.includes(action as any) || permission.actions.includes('*' as any);
+      const scopeMatch =
+        !scope || permission.scope === scope || permission.scope === 'cross_jurisdictional';
+
       return resourceMatch && actionMatch && scopeMatch;
     });
   }
@@ -170,23 +179,23 @@ class AuthenticationService {
 
   hasTierAccess(tier: 'tier1' | 'tier2' | 'tier3' | 'enterprise'): boolean {
     if (!this.currentUser) return false;
-    
+
     const tierHierarchy = ['tier1', 'tier2', 'tier3', 'enterprise'];
     const userTierIndex = tierHierarchy.indexOf(this.currentUser.role.tier);
     const requiredTierIndex = tierHierarchy.indexOf(tier);
-    
+
     return userTierIndex >= requiredTierIndex;
   }
 
   canAccessCounty(countyId: string): boolean {
     if (!this.currentUser) return false;
-    
+
     // System admins can access all counties
     if (this.currentUser.role.name === 'system_admin') return true;
-    
+
     // Enterprise admins can access multiple counties
     if (this.currentUser.role.name === 'enterprise_admin') return true;
-    
+
     // Regular users can only access their assigned county
     return this.currentUser.county === countyId;
   }
@@ -198,7 +207,7 @@ class AuthenticationService {
     const response = await fetch(`${this.baseUrl}/auth/mfa/enable`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.authToken}`,
+        Authorization: `Bearer ${this.authToken}`,
       },
     });
 
@@ -215,7 +224,7 @@ class AuthenticationService {
     const response = await fetch(`${this.baseUrl}/auth/mfa/verify`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.authToken}`,
+        Authorization: `Bearer ${this.authToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ code }),
@@ -230,7 +239,7 @@ class AuthenticationService {
     const response = await fetch(`${this.baseUrl}/auth/change-password`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.authToken}`,
+        Authorization: `Bearer ${this.authToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ currentPassword, newPassword }),
@@ -262,7 +271,7 @@ class AuthenticationService {
 
     const response = await fetch(`${this.baseUrl}/auth/profile`, {
       headers: {
-        'Authorization': `Bearer ${this.authToken}`,
+        Authorization: `Bearer ${this.authToken}`,
       },
     });
 
@@ -281,7 +290,7 @@ class AuthenticationService {
     const response = await fetch(`${this.baseUrl}/auth/profile`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${this.authToken}`,
+        Authorization: `Bearer ${this.authToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(updates),
@@ -314,7 +323,7 @@ class AuthenticationService {
 
     const response = await fetch(`${this.baseUrl}/auth/security-events?${queryParams}`, {
       headers: {
-        'Authorization': `Bearer ${this.authToken}`,
+        Authorization: `Bearer ${this.authToken}`,
       },
     });
 
@@ -340,7 +349,7 @@ class AuthenticationService {
         await fetch(`${this.baseUrl}/auth/security-events`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${this.authToken}`,
+            Authorization: `Bearer ${this.authToken}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(securityEvent),
@@ -414,7 +423,7 @@ class AuthenticationService {
     this.currentUser = null;
     this.authToken = null;
     this.refreshToken = null;
-    
+
     try {
       localStorage.removeItem('tf_auth_token');
       localStorage.removeItem('tf_refresh_token');
@@ -438,19 +447,19 @@ class AuthenticationService {
         name: 'county_admin',
         displayName: 'County Administrator',
         tier: 'tier3',
-        description: 'Full administrative access to county systems and data'
+        description: 'Full administrative access to county systems and data',
       },
       county: 'benton-wa',
       permissions: [
         {
           resource: '*',
           actions: ['read', 'write', 'delete', 'deploy', 'audit'],
-          scope: 'county'
-        }
+          scope: 'county',
+        },
       ],
       lastLogin: new Date().toISOString(),
       mfaEnabled: true,
-      securityClearance: 'confidential'
+      securityClearance: 'confidential',
     };
   }
 
@@ -461,15 +470,15 @@ class AuthenticationService {
       token: 'mock-jwt-token-' + Date.now(),
       refreshToken: 'mock-refresh-token-' + Date.now(),
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      user
+      user,
     };
 
     this.currentUser = user;
     this.authToken = authData.token;
     this.refreshToken = authData.refreshToken;
-    
+
     this.storeAuth(authData);
-    
+
     return authData;
   }
 }

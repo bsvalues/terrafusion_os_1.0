@@ -8,10 +8,10 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-benton-demo
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=\${{TF_FRONTEND_PORT:-3000}}
       - DEMO_MODE=championship
     volumes:
       - ./data:/app/data:ro
@@ -27,7 +27,7 @@ services:
       - "terrafusion.component=championship-demo"
       - "terrafusion.county=benton"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/demo/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -104,7 +104,7 @@ services:
       - terrafusion-network
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      - "3001:${TF_FRONTEND_PORT:-3102}"
     labels:
       - "terrafusion.component=dashboard"
 
@@ -121,7 +121,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"  # Traefik dashboard
+      - "8080:${TF_STATIC_PORT:-8080}"  # Traefik dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./certs:/certs:ro

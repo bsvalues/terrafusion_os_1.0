@@ -8,19 +8,16 @@ import TerraFusionWrapper from '../../../src/components/TerraFusionWrapper';
 import OriginalApp from './App';
 import '../../../src/terrafusion-unified.css';
 
-const BrandedApp: React.FC = () => {
+const BrandedApp: React.FC = () =>{
   // Detect if running standalone or in OS
   const isStandalone = !window.__TERRAFUSION_OS__;
-  
-  return (
-    <TerraFusionWrapper
+
+  return (<TerraFusionWrapper
       appName="Dashboard"
       appIcon="🏛️"
       appVersion="1.0.0"
       standalone={isStandalone}
-    >
-      <OriginalApp />
-    </TerraFusionWrapper>
+    ><OriginalApp /></TerraFusionWrapper>
   );
 };
 

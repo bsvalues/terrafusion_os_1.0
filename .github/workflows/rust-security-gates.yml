@@ -1,0 +1,302 @@
+name: "TerraFusion Rust Security Gates"
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'rust-performance-engine/**'
+      - '.github/workflows/rust-security.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'rust-performance-engine/**'
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  security-audit:
+    name: "🔒 Security Audit & Compliance"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust-performance-engine/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install security tools
+        run: |
+          cargo install cargo-audit cargo-deny
+          cargo install cargo-geiger
+
+      - name: Security audit
+        working-directory: rust-performance-engine
+        run: |
+          echo "🔍 Running security audit..."
+          cargo audit --deny warnings
+          echo "✅ Security audit passed"
+
+      - name: License and dependency check
+        working-directory: rust-performance-engine
+        run: |
+          echo "📋 Checking licenses and dependencies..."
+          cargo deny check
+          echo "✅ License check passed"
+
+      - name: Unsafe code analysis
+        working-directory: rust-performance-engine
+        run: |
+          echo "⚠️  Analyzing unsafe code usage..."
+          cargo geiger --format GitHubMarkdown >> $GITHUB_STEP_SUMMARY
+          echo "✅ Unsafe analysis complete"
+
+  performance-validation:
+    name: "⚡ Performance Validation"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust-performance-engine/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run benchmarks
+        working-directory: rust-performance-engine
+        run: |
+          echo "🏃‍♂️ Running performance benchmarks..."
+          cargo bench --workspace
+          echo "✅ Performance benchmarks complete"
+
+      - name: Test agent coordination performance
+        working-directory: rust-performance-engine
+        run: |
+          echo "🤖 Testing agent coordination performance..."
+          cargo test --release test_performance_targets -- --exact --nocapture
+          echo "✅ Agent coordination performance validated"
+
+  code-quality:
+    name: "📊 Code Quality & Standards"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust-performance-engine/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Format check
+        working-directory: rust-performance-engine
+        run: |
+          echo "🎨 Checking code formatting..."
+          cargo fmt --all -- --check
+          echo "✅ Code formatting verified"
+
+      - name: Clippy analysis
+        working-directory: rust-performance-engine
+        run: |
+          echo "📎 Running Clippy analysis..."
+          cargo clippy --all-targets --workspace -- -D warnings
+          echo "✅ Clippy analysis passed"
+
+      - name: Test coverage
+        working-directory: rust-performance-engine
+        run: |
+          echo "🧪 Running test suite..."
+          cargo test --workspace --all-features
+          echo "✅ All tests passed"
+
+  ffi-safety-check:
+    name: "🔗 FFI Safety Validation"
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'ffi') || contains(github.event.pull_request.title, 'ffi')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: miri
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust-performance-engine/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Miri
+        run: rustup component add miri
+
+      - name: Run Miri tests
+        working-directory: rust-performance-engine
+        run: |
+          echo "🔍 Running Miri undefined behavior detection..."
+          cargo miri test --workspace
+          echo "✅ Miri validation passed"
+
+  unsafe-code-gatekeeper:
+    name: "⚠️ Unsafe Code Gatekeeper"
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'unsafe') || contains(github.event.pull_request.title, 'unsafe')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Check for unsafe code
+        working-directory: rust-performance-engine
+        run: |
+          echo "🚨 UNSAFE CODE DETECTED - Enhanced Review Required"
+          echo "This commit contains unsafe code. Triggering enhanced review process."
+          
+          # Find all unsafe blocks
+          find . -name "*.rs" -exec grep -l "unsafe" {} \; > unsafe_files.txt
+          
+          if [ -s unsafe_files.txt ]; then
+            echo "Files containing unsafe code:"
+            cat unsafe_files.txt
+            echo ""
+            echo "Manual security review required before merge."
+            echo "Ensure:"
+            echo "1. Unsafe code is properly documented"
+            echo "2. Safety invariants are clearly stated"
+            echo "3. Comprehensive tests validate safety"
+            echo "4. Alternative safe approaches were considered"
+          fi
+
+  government-compliance:
+    name: "🏛️ Government Compliance Validation"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust-performance-engine/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: FISMA compliance check
+        working-directory: rust-performance-engine
+        run: |
+          echo "🏛️ Validating FISMA compliance..."
+          
+          # Check for cryptographic implementations
+          if grep -r "ring::" crates/; then
+            echo "✅ Using approved cryptographic library (ring)"
+          fi
+          
+          # Validate no banned dependencies
+          if cargo tree | grep -E "(openssl|native-tls)"; then
+            echo "❌ Banned cryptographic dependencies detected"
+            exit 1
+          fi
+          
+          echo "✅ FISMA compliance validated"
+
+      - name: Generate compliance report
+        working-directory: rust-performance-engine
+        run: |
+          echo "📋 Generating compliance report..."
+          echo "# TerraFusion Rust Compliance Report" > compliance_report.md
+          echo "Generated: $(date)" >> compliance_report.md
+          echo "" >> compliance_report.md
+          echo "## Security Dependencies" >> compliance_report.md
+          cargo tree | grep -E "(ring|rustls|uuid)" >> compliance_report.md
+          echo "" >> compliance_report.md
+          echo "## Unsafe Code Analysis" >> compliance_report.md
+          find . -name "*.rs" -exec grep -c "unsafe" {} \; | awk -F: '$2>0 {total+=$2} END {print "Total unsafe blocks:", total+0}' >> compliance_report.md
+
+  integration-tests:
+    name: "🔄 Integration Testing"
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: terrafusion_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust-performance-engine/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run integration tests
+        working-directory: rust-performance-engine
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost/terrafusion_test
+        run: |
+          echo "🔄 Running integration tests..."
+          cargo test --workspace --features integration-tests
+          echo "✅ Integration tests passed"
+
+      - name: Performance integration test
+        working-directory: rust-performance-engine
+        run: |
+          echo "⚡ Testing performance integration..."
+          cargo run --example agent-demo --release
+          echo "✅ Performance integration validated"

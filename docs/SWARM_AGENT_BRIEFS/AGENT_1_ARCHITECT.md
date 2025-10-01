@@ -1,5 +1,6 @@
 # 🏗️ AGENT 1: SYSTEM ARCHITECT MISSION BRIEF
-*Codename: Tom Brady - The Field General*
+
+_Codename: Tom Brady - The Field General_
 
 ## YOUR MISSION: Build THE Foundation
 
@@ -14,7 +15,7 @@ git init
 
 # Step 2: Copy ONLY these championship components
 cp -r ../TerraFusion_Tauri_Master_Workspace/shared/rust-services ./core
-cp -r ../TerraFusion_Tauri_Master_Workspace/apps/06-terra-fusion-sync ./sync  
+cp -r ../TerraFusion_Tauri_Master_Workspace/apps/06-terra-fusion-sync ./sync
 cp -r ../TerraFusion_Tauri_Master_Workspace/apps/08-costforge-ai ./costforge
 
 # Step 3: Create the ONE Tauri shell
@@ -67,7 +68,7 @@ impl ModuleManager {
         self.sync.register_module(id).await?;
         Ok(())
     }
-    
+
     pub async fn unload_module(&mut self, id: &str) -> Result<()> {
         // Remove module WITHOUT affecting others
         if let Some(module) = self.modules.remove(id) {
@@ -82,18 +83,21 @@ impl ModuleManager {
 ### DAILY CHECKLIST:
 
 #### Day 1-2:
+
 - [ ] Repository created
 - [ ] Championship components copied
 - [ ] Basic Tauri shell running
 - [ ] Update `.ai/ACTIVE_TASK.md`
 
 #### Day 3-4:
+
 - [ ] Module loader implemented
 - [ ] Core integrated
 - [ ] Sync connected
 - [ ] First module loading
 
 #### Day 5-7:
+
 - [ ] All module lifecycle working
 - [ ] Hot-swap tested
 - [ ] No coupling verified
@@ -115,11 +119,8 @@ impl ModuleManager {
 
 ### SUCCESS CRITERIA:
 
-✅ ONE Tauri shell running
-✅ Module loader working
-✅ Can load/unload modules
-✅ Core + Sync integrated
-✅ Zero coupling between modules
+✅ ONE Tauri shell running ✅ Module loader working ✅ Can load/unload modules
+✅ Core + Sync integrated ✅ Zero coupling between modules
 
 ### IF BLOCKED:
 
@@ -130,6 +131,7 @@ impl ModuleManager {
 
 ---
 
-**REMEMBER**: You're building THE foundation. Every other agent depends on you. No pressure, but this is Tom Brady in the 4th quarter. Execute with precision.
+**REMEMBER**: You're building THE foundation. Every other agent depends on you.
+No pressure, but this is Tom Brady in the 4th quarter. Execute with precision.
 
 **Do Your Job.**

@@ -32,7 +32,7 @@ COUNTY_ESTABLISHED=1905
 # ========================================
 # PostgreSQL Database
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=\${{TF_POSTGRES_PORT:-5432}}
 DB_NAME=terrafusion_dev
 DB_USER=postgres
 DB_PASSWORD=postgres
@@ -46,7 +46,7 @@ CONNECTION_STRING=Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=$
 # ========================================
 # Redis Cache
 REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 REDIS_PASSWORD=redis_dev_password
 REDIS_DB=0
 
@@ -58,7 +58,7 @@ REDIS_CONNECTION_STRING=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/$
 # API CONFIGURATION
 # ========================================
 # Backend API
-API_BASE_URL=http://localhost:5000
+API_BASE_URL=http://localhost:${TF_STATIC_PORT:-8080}
 API_VERSION=v1
 API_TIMEOUT=30000
 
@@ -115,7 +115,7 @@ SCREEN_READER_SUPPORT=true
 # ========================================
 # Email Configuration (Development)
 SMTP_HOST=localhost
-SMTP_PORT=1025
+SMTP_PORT=\${{TF_POSTGRES_PORT:-5432}}
 SMTP_USER=
 SMTP_PASSWORD=
 SMTP_FROM_EMAIL=noreply@bentoncounty.wa.gov
@@ -123,7 +123,7 @@ SMTP_FROM_NAME=Benton County Government
 
 # File Storage (MinIO for development)
 STORAGE_PROVIDER=minio
-MINIO_ENDPOINT=http://localhost:9000
+MINIO_ENDPOINT=http://localhost:${TF_STATIC_PORT:-8080}
 MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin123
 MINIO_BUCKET_NAME=terrafusion-dev
@@ -132,7 +132,7 @@ MINIO_BUCKET_NAME=terrafusion-dev
 # SEARCH & ANALYTICS
 # ========================================
 # Elasticsearch
-ELASTICSEARCH_URL=http://localhost:9200
+ELASTICSEARCH_URL=http://localhost:${TF_STATIC_PORT:-8080}
 ELASTICSEARCH_USERNAME=
 ELASTICSEARCH_PASSWORD=
 ELASTICSEARCH_INDEX_PREFIX=terrafusion-dev
@@ -157,7 +157,7 @@ LOG_RETENTION_DAYS=30
 # Hot Reload & Development
 CHOKIDAR_USEPOLLING=true
 WDS_SOCKET_HOST=localhost
-WDS_SOCKET_PORT=3000
+WDS_SOCKET_PORT=\${{TF_POSTGRES_PORT:-5432}}
 BROWSER=none
 GENERATE_SOURCEMAP=true
 

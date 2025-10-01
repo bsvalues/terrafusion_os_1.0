@@ -1,15 +1,17 @@
 # 🏆 BENTON COUNTY PRODUCTION RUNBOOK
+
 ## Terrafusion OS 1.0 - Immediate Execution Guide
 
 **Date**: January 10, 2025  
 **Status**: 🟢 READY FOR EXECUTION  
-**Confidence Level**: 97%  
+**Confidence Level**: 97%
 
 ---
 
 ## 🚀 IMMEDIATE EXECUTION COMMANDS
 
 ### **Step 1: Prepare Environment**
+
 ```bash
 # Navigate to project root
 cd /path/to/terrafusion_os_1.0
@@ -22,6 +24,7 @@ nano .env.prod
 ```
 
 ### **Step 2: Deploy to Production**
+
 ```bash
 # Make deployment script executable
 chmod +x scripts/deploy-benton-production.sh
@@ -31,14 +34,15 @@ chmod +x scripts/deploy-benton-production.sh
 ```
 
 ### **Step 3: Verify Deployment**
+
 ```bash
 # Check service status
 docker-compose -f compose.prod.yaml --env-file .env.prod ps
 
 # Health checks
-curl -f http://localhost:5000/health
-curl -f http://localhost:3000/health
-curl -f http://localhost:3001/health
+curl -f http://localhost:\${{TF_API_PORT:-5000}}/health
+curl -f http://localhost:\${{TF_API_PORT:-5000}}/health
+curl -f http://localhost:\${{TF_API_PORT:-5000}}/health
 
 # View logs
 docker-compose -f compose.prod.yaml --env-file .env.prod logs
@@ -49,6 +53,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod logs
 ## 🎯 YOUR DEVELOPMENT ENVIRONMENT
 
 ### **One-Command Development Setup**
+
 ```bash
 # Make development script executable
 chmod +x scripts/dev-up.sh
@@ -58,6 +63,7 @@ chmod +x scripts/dev-up.sh
 ```
 
 ### **Development Commands**
+
 ```bash
 # Run tests
 npm test
@@ -65,8 +71,8 @@ npm run e2e
 dotnet test
 
 # Hot reload (already active)
-# Frontend: http://localhost:3000
-# Backend: http://localhost:5000
+# Frontend: http://localhost:\${{TF_API_PORT:-5000}}
+# Backend: http://localhost:\${{TF_API_PORT:-5000}}
 
 # Stop development environment
 docker-compose -f compose.dev.yaml down
@@ -77,8 +83,9 @@ docker-compose -f compose.dev.yaml down
 ## 📋 CRITICAL CONFIGURATION CHECKLIST
 
 ### **Environment Variables (.env.prod)**
+
 - [ ] `DATABASE_PASSWORD` - Secure PostgreSQL password
-- [ ] `REDIS_PASSWORD` - Secure Redis password  
+- [ ] `REDIS_PASSWORD` - Secure Redis password
 - [ ] `JWT_SECRET` - 64-character random string
 - [ ] `HARRIS_PACS_CONNECTION` - Benton County PACS connection
 - [ ] `HARRIS_PACS_API_ENDPOINT` - PACS API endpoint
@@ -89,12 +96,14 @@ docker-compose -f compose.dev.yaml down
 - [ ] `ENCRYPTION_KEY` - 32-character encryption key
 
 ### **Network Configuration**
+
 - [ ] DNS entries configured for `*.benton.terrafusion.local`
 - [ ] SSL certificates installed for public domains
 - [ ] Firewall rules configured (ports 80, 443, 5000, 3000, 3001, 3009, 9090)
 - [ ] Internal network routing configured
 
 ### **Security Hardening**
+
 - [ ] JWT secret rotated and secure
 - [ ] Database encryption enabled
 - [ ] SSL/TLS certificates valid
@@ -108,6 +117,7 @@ docker-compose -f compose.dev.yaml down
 ### **Common Issues**
 
 #### **Services Won't Start**
+
 ```bash
 # Check Docker status
 docker info
@@ -120,6 +130,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod logs [service-name]
 ```
 
 #### **Database Connection Issues**
+
 ```bash
 # Check PostgreSQL status
 docker-compose -f compose.prod.yaml --env-file .env.prod exec postgres pg_isready -U terrafusion_db
@@ -129,6 +140,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod exec postgres psql -U t
 ```
 
 #### **AI Swarm Issues**
+
 ```bash
 # Check AI Swarm logs
 docker-compose -f compose.prod.yaml --env-file .env.prod logs ai-swarm
@@ -138,10 +150,11 @@ docker-compose -f compose.prod.yaml --env-file .env.prod restart ai-swarm
 ```
 
 #### **Frontend/Backend Issues**
+
 ```bash
 # Check service health
-curl -v http://localhost:5000/health
-curl -v http://localhost:3000/health
+curl -v http://localhost:\${{TF_API_PORT:-5000}}/health
+curl -v http://localhost:\${{TF_API_PORT:-5000}}/health
 
 # Restart services
 docker-compose -f compose.prod.yaml --env-file .env.prod restart frontend backend
@@ -152,15 +165,18 @@ docker-compose -f compose.prod.yaml --env-file .env.prod restart frontend backen
 ## 📊 MONITORING & ALERTS
 
 ### **Grafana Dashboard**
-- **URL**: http://localhost:3009
+
+- **URL**: http://localhost:\${{TF_API_PORT:-5000}}
 - **Username**: admin
 - **Password**: terrafusion2025
 
 ### **Prometheus Metrics**
-- **URL**: http://localhost:9090
-- **Metrics Endpoint**: http://localhost:5000/metrics
+
+- **URL**: http://localhost:\${{TF_API_PORT:-5000}}
+- **Metrics Endpoint**: http://localhost:\${{TF_API_PORT:-5000}}/metrics
 
 ### **Key Metrics to Monitor**
+
 - API response time (target: <150ms P95)
 - Error rate (target: <0.1%)
 - Database connection pool usage
@@ -172,6 +188,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod restart frontend backen
 ## 🛡️ SECURITY CHECKLIST
 
 ### **Pre-Deployment**
+
 - [ ] All secrets rotated from defaults
 - [ ] SSL certificates installed and valid
 - [ ] Firewall rules configured
@@ -179,6 +196,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod restart frontend backen
 - [ ] Audit logging enabled
 
 ### **Post-Deployment**
+
 - [ ] Security scan completed
 - [ ] Vulnerability assessment passed
 - [ ] Access controls tested
@@ -190,6 +208,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod restart frontend backen
 ## 🔄 ROLLBACK PROCEDURE
 
 ### **Emergency Rollback**
+
 ```bash
 # Stop current deployment
 docker-compose -f compose.prod.yaml --env-file .env.prod down
@@ -202,6 +221,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod up -d
 ```
 
 ### **Data Rollback**
+
 ```bash
 # Restore database from backup
 docker-compose -f compose.prod.yaml --env-file .env.prod exec postgres pg_restore -U terrafusion_db -d terrafusion_benton_production /backups/pre-deployment-$(date +%Y%m%d)/database.sql
@@ -212,11 +232,13 @@ docker-compose -f compose.prod.yaml --env-file .env.prod exec postgres pg_restor
 ## 📞 SUPPORT CONTACTS
 
 ### **Emergency Contacts**
+
 - **Primary On-Call**: [INSERT PHONE/EMAIL]
 - **Secondary On-Call**: [INSERT PHONE/EMAIL]
 - **System Administrator**: [INSERT PHONE/EMAIL]
 
 ### **Escalation Path**
+
 1. **P1 (Critical)**: System down, data loss, security breach
 2. **P2 (High)**: Performance degradation, sync issues
 3. **P3 (Medium)**: Feature requests, minor bugs
@@ -226,6 +248,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod exec postgres pg_restor
 ## 🎯 SUCCESS CRITERIA
 
 ### **Technical Metrics**
+
 - ✅ API availability ≥ 99.9%
 - ✅ P95 latency ≤ 150ms
 - ✅ Sync lag ≤ 10 minutes
@@ -233,6 +256,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod exec postgres pg_restor
 - ✅ All health checks passing
 
 ### **Business Metrics**
+
 - ✅ Benton County assessors can access system
 - ✅ Real-time data sync with Harris PACS
 - ✅ Government compliance maintained
@@ -244,18 +268,21 @@ docker-compose -f compose.prod.yaml --env-file .env.prod exec postgres pg_restor
 ## 🚀 NEXT STEPS AFTER DEPLOYMENT
 
 ### **Week 1**
+
 1. **UAT Testing** - 10-20 real users
 2. **Performance Monitoring** - Validate SLOs
 3. **Security Validation** - Penetration testing
 4. **Backup Verification** - Test restore procedures
 
 ### **Week 2**
+
 1. **Pilot Program** - One office/department
 2. **User Training** - Documentation and training materials
 3. **Monitoring Tuning** - Adjust alert thresholds
 4. **Documentation** - Create runbooks and procedures
 
 ### **Week 3**
+
 1. **Go-Live Preparation** - Final validation
 2. **Communication** - Stakeholder notifications
 3. **Support Readiness** - Help desk procedures
@@ -263,4 +290,5 @@ docker-compose -f compose.prod.yaml --env-file .env.prod exec postgres pg_restor
 
 ---
 
-**🎯 This runbook provides everything needed for immediate Benton County production deployment. Execute with excellence!**
+**🎯 This runbook provides everything needed for immediate Benton County
+production deployment. Execute with excellence!**

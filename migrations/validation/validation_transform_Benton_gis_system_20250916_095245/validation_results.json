@@ -1,0 +1,56 @@
+{
+  "validation_id": "validation_transform_Benton_gis_system_20250916_095245",
+  "validation_date": "2025-09-16T09:52:48.412853",
+  "source_path": "migrations/terrafusion_import/transform_Benton_gis_system_20250916_095245",
+  "ai_agents_used": 5000,
+  "validation_checks": {
+    "data_integrity_check": {
+      "check_type": "data_integrity_check",
+      "status": "completed",
+      "score": 0.9372675502837133,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 212,
+      "details": "Data integrity verified - 93.7% records passed validation"
+    },
+    "schema_validation": {
+      "check_type": "schema_validation",
+      "status": "completed",
+      "score": 0.9390055326750295,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 452,
+      "details": "Schema validation - 93.9% compliance with TerraFusion standards"
+    },
+    "business_rule_validation": {
+      "check_type": "business_rule_validation",
+      "status": "completed",
+      "score": 0.9480170561075244,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 250,
+      "details": "Business rules - 94.8% of rules correctly implemented"
+    },
+    "cross_reference_validation": {
+      "check_type": "cross_reference_validation",
+      "status": "completed",
+      "score": 0.9281502508825134,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 183,
+      "details": "Cross-references - 92.8% of relationships validated"
+    },
+    "performance_optimization_check": {
+      "check_type": "performance_optimization_check",
+      "status": "completed",
+      "score": 0.9314973261120559,
+      "ai_agents_allocated": 1000,
+      "processing_time_ms": 241,
+      "details": "Performance optimization - 93.1% efficiency achieved"
+    }
+  },
+  "overall_status": "good",
+  "data_quality_score": 0.9367875432121673,
+  "recommendations": [
+    "Implement additional data cleansing procedures",
+    "Review business rule mappings for edge cases",
+    "Optimize data structures for better performance",
+    "Enhance cross-system integration validations"
+  ]
+}

@@ -212,7 +212,7 @@ jobs:
       - name: Database Integration Tests
         env:
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=terrafusion_test;Username=test_user;Password=test_password"
-          ConnectionStrings__Redis: "localhost:6379"
+          ConnectionStrings__Redis: "localhost:\${{TF_REDIS_PORT:-6379}}"
         run: |
           cd backend
           echo "🗄️ Running Database Integration Tests"
@@ -377,7 +377,7 @@ jobs:
           nohup dotnet run --project TerraFusion.API --configuration Release > api.log 2>&1 &
           
           # Wait for API to be ready
-          timeout 60 bash -c 'until curl -f http://localhost:5000/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f http://localhost:\${{TF_REDIS_PORT:-6379}}/health; do sleep 2; done'
 
       - name: API Performance Tests
         run: |
@@ -385,7 +385,7 @@ jobs:
           
           # Test API response times
           echo "Testing API response times..."
-          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' http://localhost:5000/health)
+          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' http://localhost:\${{TF_REDIS_PORT:-6379}}/health)
           RESPONSE_TIME_MS=$(echo "$RESPONSE_TIME * 1000" | bc)
           
           echo "API Response Time: ${RESPONSE_TIME_MS}ms"
@@ -408,12 +408,12 @@ jobs:
           
           # Simulate property lookups that should trigger negative caching
           for i in {1..100}; do
-            curl -s http://localhost:5000/api/properties/non-existent-property-$i > /dev/null
+            curl -s http://localhost:\${{TF_REDIS_PORT:-6379}}/api/properties/non-existent-property-$i > /dev/null
           done
           
           # Test cache hit ratio after negative caching
           for i in {1..100}; do
-            curl -s http://localhost:5000/api/properties/non-existent-property-$i > /dev/null
+            curl -s http://localhost:\${{TF_REDIS_PORT:-6379}}/api/properties/non-existent-property-$i > /dev/null
           done
           
           # Validate negative cache metrics (this would connect to Redis to check stats)
@@ -437,10 +437,10 @@ jobs:
           echo "📊 Running Load Tests"
           
           # Basic load test
-          ab -n 1000 -c 10 -g results.tsv http://localhost:5000/health
+          ab -n 1000 -c 10 -g results.tsv http://localhost:\${{TF_REDIS_PORT:-6379}}/health
           
           # Property lookup load test
-          ab -n 500 -c 5 http://localhost:5000/api/properties/test-property
+          ab -n 500 -c 5 http://localhost:\${{TF_REDIS_PORT:-6379}}/api/properties/test-property
           
           # Analyze results
           echo "✅ Load testing completed"

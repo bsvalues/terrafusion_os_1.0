@@ -324,10 +324,10 @@ public class HealthCheckService : IHealthCheckService
         var data = new Dictionary<string, object>();
         var services = new Dictionary<string, string>
         {
-            ["government_api"] = _configuration["ExternalServices:GovernmentAPI"],
-            ["county_records"] = _configuration["ExternalServices:CountyRecords"],
-            ["tax_services"] = _configuration["ExternalServices:TaxServices"],
-            ["gis_services"] = _configuration["ExternalServices:GISServices"]
+            ["government_api"] = _configuration["ExternalServices:GovernmentAPI"] ?? "https://localhost:5001",
+            ["county_records"] = _configuration["ExternalServices:CountyRecords"] ?? "https://localhost:5001",
+            ["tax_services"] = _configuration["ExternalServices:TaxServices"] ?? "https://localhost:5001",
+            ["gis_services"] = _configuration["ExternalServices:GISServices"] ?? "https://localhost:5001"
         };
 
         var healthResults = new Dictionary<string, bool>();
@@ -447,20 +447,20 @@ public class HealthCheckService : IHealthCheckService
             await using var connCmd = new NpgsqlCommand(
                 "SELECT count(*) FROM pg_stat_activity WHERE state = 'active'", connection);
             var activeConnections = await connCmd.ExecuteScalarAsync();
-            data["active_connections"] = activeConnections;
+            data["active_connections"] = activeConnections ?? 0;
 
             // Check slow queries (if any)
             await using var slowCmd = new NpgsqlCommand(
                 "SELECT count(*) FROM pg_stat_activity WHERE state = 'active' AND query_start < now() - interval '30 seconds'", 
                 connection);
             var slowQueries = await slowCmd.ExecuteScalarAsync();
-            data["slow_queries"] = slowQueries;
+            data["slow_queries"] = slowQueries ?? 0;
 
             // Check database size
             await using var sizeCmd = new NpgsqlCommand(
                 "SELECT pg_size_pretty(pg_database_size(current_database()))", connection);
             var dbSize = await sizeCmd.ExecuteScalarAsync();
-            data["database_size"] = dbSize;
+            data["database_size"] = dbSize ?? "Unknown";
         }
         catch (Exception ex)
         {

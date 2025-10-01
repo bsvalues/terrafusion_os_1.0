@@ -16,7 +16,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'AI-powered government assistant for automated workflows',
     executable: 'terra-agent',
     port: 3001,
-    category: 'core'
+    category: 'core',
   },
   {
     id: '02',
@@ -24,7 +24,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Workflow automation and process management',
     executable: 'terra-flow',
     port: 3002,
-    category: 'core'
+    category: 'core',
   },
   {
     id: '03',
@@ -32,7 +32,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Compliance tracking and audit management',
     executable: 'web-audit-tracker',
     port: 3003,
-    category: 'assessment'
+    category: 'assessment',
   },
   {
     id: '04',
@@ -40,7 +40,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Tax levy calculation and management system',
     executable: 'terra-levy',
     port: 3004,
-    category: 'assessment'
+    category: 'assessment',
   },
   {
     id: '05',
@@ -48,7 +48,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Data mining and analytics engine',
     executable: 'terra-miner',
     port: 3005,
-    category: 'analytics'
+    category: 'analytics',
   },
   {
     id: '06',
@@ -56,7 +56,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Data synchronization across systems',
     executable: 'terra-fusion-sync',
     port: 3006,
-    category: 'core'
+    category: 'core',
   },
   {
     id: '07',
@@ -64,7 +64,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Geographic Information System for property mapping',
     executable: 'gispro',
     port: 3007,
-    category: 'analytics'
+    category: 'analytics',
   },
   {
     id: '08',
@@ -72,7 +72,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'AI-driven cost estimation and forecasting',
     executable: 'costforge-ai',
     port: 3008,
-    category: 'analytics'
+    category: 'analytics',
   },
   {
     id: '09',
@@ -80,7 +80,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Property assessment and management workbench',
     executable: 'property-workbench',
     port: 3009,
-    category: 'assessment'
+    category: 'assessment',
   },
   {
     id: '10',
@@ -88,7 +88,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Business intelligence and analytics dashboard',
     executable: 'terra-insight',
     port: 3010,
-    category: 'analytics'
+    category: 'analytics',
   },
   {
     id: '11',
@@ -96,7 +96,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Executive dashboard for system overview',
     executable: 'terra-fusion-dashboard',
     port: 3011,
-    category: 'management'
+    category: 'management',
   },
   {
     id: '12',
@@ -104,7 +104,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Property assessment and valuation tools',
     executable: 'terra-fusion-assessor',
     port: 3012,
-    category: 'assessment'
+    category: 'assessment',
   },
   {
     id: '13',
@@ -112,7 +112,7 @@ export const appConfigurations: AppConfig[] = [
     description: 'Terrafusion Control Center and App Marketplace',
     executable: 'terrafusion-marketplace',
     port: 1420,
-    category: 'management'
+    category: 'management',
   },
   {
     id: '14',
@@ -120,8 +120,8 @@ export const appConfigurations: AppConfig[] = [
     description: 'Revenue collection and management system',
     executable: 'terra-collections',
     port: 3014,
-    category: 'management'
-  }
+    category: 'management',
+  },
 ];
 
 // Helper functions
@@ -136,7 +136,7 @@ export const getAppsByCategory = (category: AppConfig['category']): AppConfig[] 
 export const getAppExecutablePath = (appId: string): string => {
   const app = getAppConfig(appId);
   if (!app) return '';
-  
+
   // Return relative path to the app's executable
   return `../apps/${appId}-${app.executable.replace(/-/g, '_')}/src-tauri/target/debug/${app.executable}`;
 };
@@ -144,6 +144,6 @@ export const getAppExecutablePath = (appId: string): string => {
 export const getAppUrl = (appId: string): string => {
   const app = getAppConfig(appId);
   if (!app?.port) return '';
-  
+
   return `http://localhost:${app.port}`;
 };

@@ -7,12 +7,14 @@
 ## 📋 PRE-DEPLOYMENT CHECKLIST
 
 ### Domain & DNS
+
 - [ ] Domain `terrafusionmarket.io` configured
 - [ ] DNS A records pointing to server IP
 - [ ] SSL certificate ready (Let's Encrypt or commercial)
 - [ ] CDN configured (CloudFlare/AWS CloudFront)
 
 ### Server Requirements
+
 - [ ] Ubuntu 20.04 LTS or newer
 - [ ] Minimum 4GB RAM
 - [ ] 20GB available disk space
@@ -50,8 +52,8 @@ cd championship-deployment
 # Create environment file
 cat > .env << EOF
 NODE_ENV=production
-DATABASE_URL=postgresql://terrafusion:PASSWORD@localhost:5432/terrafusion
-REDIS_URL=redis://localhost:6379
+DATABASE_URL=postgresql://terrafusion:PASSWORD@localhost:\${{TF_POSTGRES_PORT:-5432}}/terrafusion
+REDIS_URL=redis://localhost:\${{TF_POSTGRES_PORT:-5432}}
 JWT_SECRET=$(openssl rand -base64 32)
 API_KEY=$(openssl rand -hex 32)
 DOMAIN=terrafusionmarket.io
@@ -234,6 +236,7 @@ echo "0 2 * * * /root/backup-terrafusion.sh" | crontab -
 ### Common Issues & Solutions
 
 #### 1. Port Already in Use
+
 ```bash
 # Find process using port
 sudo lsof -i :80
@@ -242,6 +245,7 @@ sudo kill -9 PID
 ```
 
 #### 2. Docker Container Won't Start
+
 ```bash
 # Check logs
 docker logs container_name
@@ -250,6 +254,7 @@ docker restart container_name
 ```
 
 #### 3. SSL Certificate Issues
+
 ```bash
 # Renew certificate
 sudo certbot renew --force-renewal
@@ -258,6 +263,7 @@ sudo systemctl restart nginx
 ```
 
 #### 4. Database Connection Failed
+
 ```bash
 # Check PostgreSQL status
 docker exec -it terrafusion-db psql -U terrafusion -c "\l"
@@ -270,6 +276,7 @@ docker restart terrafusion-db
 ## 🎯 PERFORMANCE OPTIMIZATION
 
 ### Enable Caching
+
 ```bash
 # Redis caching is already configured
 # Verify Redis is running
@@ -278,6 +285,7 @@ docker exec -it terrafusion-cache redis-cli ping
 ```
 
 ### CDN Configuration
+
 ```bash
 # CloudFlare setup
 # 1. Add site to CloudFlare
@@ -287,6 +295,7 @@ docker exec -it terrafusion-cache redis-cli ping
 ```
 
 ### Load Testing
+
 ```bash
 # Install Apache Bench
 sudo apt-get install apache2-utils
@@ -300,24 +309,28 @@ ab -n 1000 -c 10 https://terrafusionmarket.io/
 ## ✅ GO-LIVE CHECKLIST
 
 ### Pre-Launch (T-24 hours)
+
 - [ ] Final backup of existing system
 - [ ] Team notification sent
 - [ ] Monitoring alerts configured
 - [ ] Support team on standby
 
 ### Launch (T-0)
+
 - [ ] Deploy to production
 - [ ] Verify all services running
 - [ ] Test all 14 applications
 - [ ] Monitor for 30 minutes
 
 ### Post-Launch (T+2 hours)
+
 - [ ] Check error rates
 - [ ] Review performance metrics
 - [ ] Gather initial user feedback
 - [ ] Document any issues
 
 ### Day 1 Review
+
 - [ ] Analyze usage statistics
 - [ ] Address any reported issues
 - [ ] Optimize based on metrics
@@ -337,6 +350,7 @@ ab -n 1000 -c 10 https://terrafusionmarket.io/
 ## 🏆 SUCCESS METRICS
 
 Track these KPIs after launch:
+
 - Uptime: Target 99.9%
 - Response Time: <200ms average
 - Error Rate: <0.1%

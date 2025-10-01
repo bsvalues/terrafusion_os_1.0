@@ -15,11 +15,7 @@
       "Assessor",
       "Auditor"
     ],
-    "gauge_groups": [
-      "SU(Departments)",
-      "SO(Citizens)",
-      "U(Policy)"
-    ]
+    "gauge_groups": ["SU(Departments)", "SO(Citizens)", "U(Policy)"]
   },
   "gauge_potential": {
     "connections": 5,
@@ -32,8 +28,8 @@
     "procurement_vev": 500000
   },
   "action_functional": {
-    "total_action": 1.2500000000000002e+16,
-    "citizen_energy": 1.2500000000000002e+16,
+    "total_action": 1.2500000000000002e16,
+    "citizen_energy": 1.2500000000000002e16,
     "constraint_penalty": 0.45000000000000007
   },
   "quantum_effects": {

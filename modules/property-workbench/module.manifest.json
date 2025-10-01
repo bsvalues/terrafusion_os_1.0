@@ -1,0 +1,159 @@
+{
+  "id": "property-workbench",
+  "name": "Property Workbench",
+  "version": "1.0.0",
+  "description": "Advanced county property management and assessment tools",
+  "category": "government-core",
+  "tier": "tier-1",
+  "author": "TerraFusion OS",
+  "license": "MIT",
+  "homepage": "https://terrafusion.ai/modules/property-workbench",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/terrafusion-os"
+  },
+  "keywords": [
+    "property",
+    "assessment",
+    "county",
+    "government",
+    "real-estate",
+    "tax",
+    "gis",
+    "workbench"
+  ],
+  "pricing": {
+    "base": 89,
+    "currency": "USD",
+    "billing": "monthly",
+    "features": [
+      "Property search and management",
+      "Assessment workflows",
+      "GIS integration",
+      "Reporting and analytics",
+      "Owner database",
+      "Tax roll management",
+      "Appeal processing",
+      "Batch operations"
+    ]
+  },
+  "capabilities": [
+    "frontend",
+    "backend",
+    "database", 
+    "api",
+    "realtime",
+    "mobile"
+  ],
+  "endpoints": {
+    "health": "/modules/property-workbench/health",
+    "api": "/modules/property-workbench/api",
+    "ui": "/modules/property-workbench/ui",
+    "admin": "/modules/property-workbench/admin"
+  },
+  "ports": {
+    "frontend": 3002,
+    "backend": 5002,
+    "websocket": 8002
+  },
+  "dependencies": [
+    "gispro",
+    "terra-collections",
+    "government-core"
+  ],
+  "permissions": [
+    "property.read",
+    "property.write",
+    "property.delete",
+    "assessment.read",
+    "assessment.write",
+    "gis.read",
+    "reports.generate",
+    "database.query"
+  ],
+  "configuration": {
+    "database": {
+      "provider": "postgresql",
+      "tables": [
+        "properties",
+        "assessments",
+        "owners",
+        "transactions",
+        "appeals",
+        "tax_rolls"
+      ]
+    },
+    "integration": {
+      "harris_pacs": true,
+      "county_gis": true,
+      "state_records": true,
+      "federal_apis": false
+    },
+    "features": {
+      "batch_processing": true,
+      "automated_workflows": true,
+      "ai_suggestions": true,
+      "audit_logging": true
+    }
+  },
+  "ui": {
+    "icon": "🏘️",
+    "color": "#0099ff",
+    "theme": "terrafusion-government",
+    "navigation": [
+      {
+        "label": "Dashboard",
+        "path": "/",
+        "icon": "home"
+      },
+      {
+        "label": "Search",
+        "path": "/search",
+        "icon": "search"
+      },
+      {
+        "label": "Assessment",
+        "path": "/assessment",
+        "icon": "calculator"
+      },
+      {
+        "label": "GIS",
+        "path": "/gis",
+        "icon": "map"
+      },
+      {
+        "label": "Reports",
+        "path": "/reports",
+        "icon": "file-text"
+      }
+    ]
+  },
+  "deployment": {
+    "type": "hot-swappable",
+    "environment": "government",
+    "scaling": "county-level",
+    "backup": "required",
+    "monitoring": "enabled"
+  },
+  "compliance": {
+    "fisma": true,
+    "hipaa": false,
+    "gdpr": true,
+    "accessibility": "wcag-aa",
+    "audit_trail": true
+  },
+  "status": "active",
+  "health": {
+    "endpoint": "/health",
+    "interval": 30,
+    "timeout": 5000
+  },
+  "metrics": {
+    "performance": true,
+    "usage": true,
+    "errors": true,
+    "business": true
+  },
+  "created": "2025-09-14T03:00:00Z",
+  "updated": "2025-09-14T03:00:00Z"
+}

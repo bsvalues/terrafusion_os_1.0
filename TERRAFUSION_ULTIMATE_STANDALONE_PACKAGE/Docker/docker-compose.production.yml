@@ -1,0 +1,141 @@
+services:
+  # TerraFusion OS Backend API
+  terrafusion-api:
+    image: terrafusion/api:1.0-production
+    container_name: terrafusion-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTPS_PORT=443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=terrafusion_prod;Username=terrafusion;Password=${POSTGRES_PASSWORD}
+      - ConnectionStrings__Redis=redis:6379
+      - County__Name=${COUNTY_NAME:-Benton County}
+      - County__State=${COUNTY_STATE:-WA}
+      - HarrisPacs__ConnectionString=${HARRIS_PACS_CONNECTION}
+      - HarrisPacs__ApiEndpoint=${HARRIS_PACS_API_ENDPOINT}
+      - HarrisPacs__ApiKey=${HARRIS_PACS_API_KEY}
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Microsoft.AspNetCore=Warning
+    ports:
+      - "5000:80"
+      - "5001:443"
+    volumes:
+      - ./certs:/https:ro
+      - ./logs:/app/logs
+      - ./data:/app/data
+    networks:
+      - terrafusion-network
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=terrafusion_prod
+      - POSTGRES_USER=terrafusion
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data/backups:/backups
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrafusion -d terrafusion_prod"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # TerraFusion Frontend (React + Vite)
+  terrafusion-frontend:
+    image: terrafusion/frontend:1.0-production
+    container_name: terrafusion-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+      - "3001:443"
+    volumes:
+      - ./certs:/etc/ssl/certs:ro
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - terrafusion-network
+    depends_on:
+      - terrafusion-api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AI Swarm Orchestrator
+  ai-swarm-orchestrator:
+    image: terrafusion/ai-swarm:1.0-production
+    container_name: terrafusion-ai-swarm
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=production
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - API_BASE_URL=http://terrafusion-api:80
+      - AGENT_COUNT=${AI_AGENT_COUNT:-50000}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./logs/ai-swarm:/app/logs
+    networks:
+      - terrafusion-network
+    depends_on:
+      - redis
+      - terrafusion-api
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
+        reservations:
+          cpus: '2.0'
+          memory: 4G
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  terrafusion-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

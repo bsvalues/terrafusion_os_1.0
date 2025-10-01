@@ -2,11 +2,14 @@
 
 ## Quick Start
 
-The `.husky` directory contains Git hooks configuration for TerraFusion OS, ensuring code quality, security, and government compliance for our 1,008 AI agents and 33 active modules.
+The `.husky` directory contains Git hooks configuration for TerraFusion OS,
+ensuring code quality, security, and government compliance for our 1,008 AI
+agents and 33 active modules.
 
 ## Installation and Setup
 
 ### Initial Setup
+
 ```bash
 # Install Husky
 npm install --save-dev husky
@@ -19,6 +22,7 @@ npx husky add .husky/pre-commit "npm test"
 ```
 
 ### Enable Husky in Project
+
 ```json
 {
   "scripts": {
@@ -30,18 +34,21 @@ npx husky add .husky/pre-commit "npm test"
 ## Available Hooks
 
 ### Pre-commit Hooks
+
 - **Code Quality**: Linting, formatting, type checking
 - **Security Scan**: Secret detection, vulnerability scanning
 - **AI Agent Validation**: Swarm integrity, agent communication
 - **Government Compliance**: FISMA validation, audit logging
 
 ### Pre-push Hooks
+
 - **Integration Tests**: Full test suite execution
 - **Performance Validation**: API response time, database performance
 - **Security Deep Scan**: Comprehensive security analysis
 - **Module Compatibility**: 33-module integration testing
 
 ### Commit Message Hooks
+
 - **Conventional Commits**: Standardized commit format
 - **Government Standards**: Audit trail requirements
 - **Documentation**: Automated changelog generation
@@ -49,6 +56,7 @@ npx husky add .husky/pre-commit "npm test"
 ## Configuration Examples
 
 ### Basic Pre-commit Hook
+
 ```bash
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
@@ -57,6 +65,7 @@ npm run lint && npm run test
 ```
 
 ### Government Compliance Hook
+
 ```bash
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
@@ -73,6 +82,7 @@ npm run ai:swarm-health
 ```
 
 ### Performance Validation Hook
+
 ```bash
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
@@ -90,6 +100,7 @@ npm run perf:modules
 ## Essential Commands
 
 ### Hook Management
+
 ```bash
 # Add new hook
 npx husky add .husky/pre-commit "command"
@@ -105,6 +116,7 @@ npm run husky:validate
 ```
 
 ### Testing Hooks
+
 ```bash
 # Test specific hook
 .husky/pre-commit
@@ -119,6 +131,7 @@ HUSKY_DEBUG=1 git commit -m "test"
 ## Common Workflows
 
 ### Development Workflow
+
 1. **Code Changes**: Make your changes
 2. **Stage Files**: `git add .`
 3. **Commit**: `git commit -m "feat: add new feature"`
@@ -130,6 +143,7 @@ HUSKY_DEBUG=1 git commit -m "test"
    - Performance validation ensures SLAs
 
 ### County Deployment Workflow
+
 ```bash
 # County-specific validation
 git commit -m "feat(benton): add Harris PACS integration"
@@ -140,6 +154,7 @@ git commit -m "feat(benton): add Harris PACS integration"
 ```
 
 ### AI Agent Development Workflow
+
 ```bash
 # AI agent changes
 git commit -m "feat(ai): enhance swarm coordination"
@@ -154,6 +169,7 @@ git commit -m "feat(ai): enhance swarm coordination"
 ### Common Issues
 
 #### Hook Not Executing
+
 ```bash
 # Check hook permissions
 chmod +x .husky/pre-commit
@@ -166,6 +182,7 @@ npm run prepare
 ```
 
 #### Performance Issues
+
 ```bash
 # Profile hook execution
 time .husky/pre-commit
@@ -175,6 +192,7 @@ npm install --save-dev concurrently
 ```
 
 #### Security Scan Failures
+
 ```bash
 # Check for secrets
 npm run secrets:scan
@@ -189,6 +207,7 @@ npm run security:update-patterns
 ### Government Compliance Issues
 
 #### FISMA Validation Failure
+
 ```bash
 # Debug FISMA compliance
 npm run fisma:debug
@@ -201,6 +220,7 @@ npm run fisma:report
 ```
 
 #### AI Agent Validation Failure
+
 ```bash
 # Check agent health
 npm run ai:health-check
@@ -215,6 +235,7 @@ npm run quantum:validate
 ## Configuration Files
 
 ### Package.json Scripts
+
 ```json
 {
   "scripts": {
@@ -228,6 +249,7 @@ npm run quantum:validate
 ```
 
 ### Lint-staged Configuration
+
 ```json
 {
   "lint-staged": {
@@ -239,6 +261,7 @@ npm run quantum:validate
 ```
 
 ### Security Configuration
+
 ```json
 {
   "security": {
@@ -252,21 +275,25 @@ npm run quantum:validate
 ## Integration with TerraFusion Components
 
 ### Backend Integration
+
 - **.NET Services**: Code formatting, static analysis
 - **Entity Framework**: Migration validation
 - **Security Services**: Vulnerability scanning
 
 ### Frontend Integration
+
 - **React Components**: Component testing, accessibility
 - **TypeScript**: Type checking, compilation validation
 - **Bundle Analysis**: Performance budget enforcement
 
 ### AI Services Integration
+
 - **Agent Swarm**: Coordination validation, health checks
 - **Command Brain**: Connectivity testing, response validation
 - **Quantum Layer**: Optimization verification, coherence checking
 
 ### County Systems Integration
+
 - **Harris PACS**: Connectivity validation, data integrity
 - **Tyler Integration**: System compatibility, data synchronization
 - **Legacy Systems**: Migration validation, compatibility testing
@@ -274,12 +301,14 @@ npm run quantum:validate
 ## Performance Targets
 
 ### Hook Execution Times
+
 - **Pre-commit**: < 30 seconds
 - **Pre-push**: < 2 minutes
 - **Security Scan**: < 45 seconds
 - **AI Validation**: < 1 minute
 
 ### Quality Gates
+
 - **Code Coverage**: > 80%
 - **Security Scan**: 0 critical vulnerabilities
 - **Performance**: API < 6ms, Database < 50ms
@@ -288,11 +317,13 @@ npm run quantum:validate
 ## Support and Resources
 
 ### Documentation
+
 - `index.md`: Comprehensive technical documentation
 - `claude.md`: Development patterns and integration guide
 - Security policies in `/security` directory
 
 ### Getting Help
+
 ```bash
 # Check hook status
 npm run hooks:status
@@ -305,6 +336,7 @@ npm run docs:hooks
 ```
 
 ### Emergency Procedures
+
 ```bash
 # Bypass hooks (emergency only)
 git commit --no-verify -m "emergency: critical fix"
@@ -314,4 +346,5 @@ npm run prepare
 npm run hooks:validate
 ```
 
-This README provides quick access to essential Git hooks functionality while maintaining TerraFusion's government-grade security and quality standards.
+This README provides quick access to essential Git hooks functionality while
+maintaining TerraFusion's government-grade security and quality standards.

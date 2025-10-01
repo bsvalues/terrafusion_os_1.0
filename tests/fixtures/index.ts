@@ -2,34 +2,34 @@
 
 export const fixtures = {
   users: {
-    admin: { 
-      id: "u-admin", 
-      roles: ["EnterpriseAdmin"], 
-      permissions: ["read","write","delete","export"],
-      name: "System Administrator",
-      email: "admin@terrafusion.gov"
+    admin: {
+      id: 'u-admin',
+      roles: ['EnterpriseAdmin'],
+      permissions: ['read', 'write', 'delete', 'export'],
+      name: 'System Administrator',
+      email: 'admin@terrafusion.gov',
     },
-    assessor: { 
-      id: "u-assessor", 
-      roles: ["Assessor"], 
-      permissions: ["read","write","approve"],
-      name: "County Assessor",
-      email: "assessor@bentoncounty.gov"
+    assessor: {
+      id: 'u-assessor',
+      roles: ['Assessor'],
+      permissions: ['read', 'write', 'approve'],
+      name: 'County Assessor',
+      email: 'assessor@bentoncounty.gov',
     },
-    viewer: { 
-      id: "u-viewer", 
-      roles: ["User"], 
-      permissions: ["read"],
-      name: "Public Viewer",
-      email: "viewer@example.com"
+    viewer: {
+      id: 'u-viewer',
+      roles: ['User'],
+      permissions: ['read'],
+      name: 'Public Viewer',
+      email: 'viewer@example.com',
     },
-    guest: { 
-      id: "u-guest", 
-      roles: ["Public"], 
+    guest: {
+      id: 'u-guest',
+      roles: ['Public'],
       permissions: [],
-      name: "Guest User",
-      email: null
-    }
+      name: 'Guest User',
+      email: null,
+    },
   },
 
   counties: {
@@ -42,29 +42,29 @@ export const fixtures = {
       assessor: 'John Smith',
       taxRate: 0.012,
       deploymentStatus: 'ACTIVE',
-      aiAgents: 252
+      aiAgents: 252,
     },
     yakima: {
       id: 'yakima',
-      name: 'Yakima County', 
+      name: 'Yakima County',
       state: 'WA',
       population: 250000,
       properties: 95000,
       assessor: 'Jane Doe',
       taxRate: 0.011,
       deploymentStatus: 'ACTIVE',
-      aiAgents: 252
+      aiAgents: 252,
     },
     clark: {
       id: 'clark',
       name: 'Clark County',
-      state: 'WA', 
+      state: 'WA',
       population: 503000,
       properties: 205000,
       assessor: 'Mike Johnson',
       taxRate: 0.013,
       deploymentStatus: 'DEPLOYING',
-      aiAgents: 252
+      aiAgents: 252,
     },
     default: {
       id: 'default',
@@ -75,8 +75,8 @@ export const fixtures = {
       assessor: 'Default Assessor',
       taxRate: 0.01,
       deploymentStatus: 'PENDING',
-      aiAgents: 0
-    }
+      aiAgents: 0,
+    },
   },
 
   properties: {
@@ -97,8 +97,8 @@ export const fixtures = {
       schoolDistrict: 'Yakima School District',
       lastSale: {
         date: '2022-03-15',
-        price: 795000
-      }
+        price: 795000,
+      },
     },
     commercial: {
       id: 'prop-456',
@@ -115,9 +115,9 @@ export const fixtures = {
       parking: 85,
       lastSale: {
         date: '2021-08-20',
-        price: 2200000
-      }
-    }
+        price: 2200000,
+      },
+    },
   },
 
   propertyComparables: [
@@ -130,11 +130,11 @@ export const fixtures = {
       adjustments: {
         condition: 5000,
         location: -3000,
-        size: 0
-      }
+        size: 0,
+      },
     },
     {
-      id: 'comp-2', 
+      id: 'comp-2',
       address: '119 Victory Lane',
       soldDate: '2024-10-22',
       soldPrice: 835000,
@@ -142,21 +142,21 @@ export const fixtures = {
       adjustments: {
         condition: 0,
         location: 8000,
-        size: -5000
-      }
+        size: -5000,
+      },
     },
     {
       id: 'comp-3',
-      address: '131 Trophy Street', 
+      address: '131 Trophy Street',
       soldDate: '2024-12-01',
       soldPrice: 862000,
       similarity: 93.8,
       adjustments: {
         condition: -2000,
         location: 1000,
-        size: 3000
-      }
-    }
+        size: 3000,
+      },
+    },
   ],
 
   aiSwarmMetrics: {
@@ -167,15 +167,15 @@ export const fixtures = {
       workers: { count: 500, status: 'ACTIVE', task: 'processing' },
       sentinels: { count: 150, status: 'ACTIVE', task: 'security' },
       coordinators: { count: 100, status: 'ACTIVE', task: 'orchestration' },
-      testers: { count: 58, status: 'ACTIVE', task: 'validation' }
+      testers: { count: 58, status: 'ACTIVE', task: 'validation' },
     },
     performance: {
       throughput: 15847,
       responseTime: 0.023,
       successRate: 99.87,
-      accuracy: 98.7
+      accuracy: 98.7,
     },
-    health: 'OPTIMAL'
+    health: 'OPTIMAL',
   },
 
   quantumMetrics: {
@@ -188,8 +188,8 @@ export const fixtures = {
       cpu: 23,
       memory: 1.2,
       networkLatency: 0.8,
-      diskIOPS: 45000
-    }
+      diskIOPS: 45000,
+    },
   },
 
   complianceStandards: {
@@ -197,8 +197,27 @@ export const fixtures = {
       level: 'High',
       status: 'COMPLIANT',
       score: 99.8,
-      controls: ['AC', 'AU', 'AT', 'CM', 'CP', 'IA', 'IR', 'MA', 'MP', 'PE', 'PL', 'PS', 'RA', 'CA', 'SC', 'SI', 'SA', 'SR'],
-      lastAudit: '2025-01-15'
+      controls: [
+        'AC',
+        'AU',
+        'AT',
+        'CM',
+        'CP',
+        'IA',
+        'IR',
+        'MA',
+        'MP',
+        'PE',
+        'PL',
+        'PS',
+        'RA',
+        'CA',
+        'SC',
+        'SI',
+        'SA',
+        'SR',
+      ],
+      lastAudit: '2025-01-15',
     },
     'NIST-800-53': {
       revision: 5,
@@ -206,62 +225,68 @@ export const fixtures = {
       status: 'COMPLIANT',
       score: 99.6,
       controls: 325,
-      lastAssessment: '2025-01-10'
+      lastAssessment: '2025-01-10',
     },
     Section508: {
       version: '2018',
       status: 'COMPLIANT',
       score: 94.8,
       criteria: ['perceivable', 'operable', 'understandable', 'robust'],
-      lastTest: '2025-01-18'
+      lastTest: '2025-01-18',
     },
     'WCAG2.1': {
       level: 'AA',
       status: 'MOSTLY_COMPLIANT',
       score: 92.1,
       successCriteria: 50,
-      violations: 3
+      violations: 3,
     },
     SOC2: {
       type: 'TypeII',
-      status: 'COMPLIANT', 
+      status: 'COMPLIANT',
       score: 99.7,
-      principles: ['Security', 'Availability', 'Processing Integrity', 'Confidentiality', 'Privacy'],
-      auditPeriod: '2024-12-01 to 2025-01-01'
-    }
+      principles: [
+        'Security',
+        'Availability',
+        'Processing Integrity',
+        'Confidentiality',
+        'Privacy',
+      ],
+      auditPeriod: '2024-12-01 to 2025-01-01',
+    },
   },
 
   scenarios: {
     happyPath: {
-      seed: "valid-complete",
-      featureFlags: ["betaValuationFlow", "quantumPerformance", "aiSwarmV2"],
-      user: "admin",
-      data: "full-dataset"
+      seed: 'valid-complete',
+      featureFlags: ['betaValuationFlow', 'quantumPerformance', 'aiSwarmV2'],
+      user: 'admin',
+      data: 'full-dataset',
     },
     edgeCases: {
-      seed: "boundary-inputs",
+      seed: 'boundary-inputs',
       nullables: true,
       largeDataSets: true,
-      user: "assessor",
-      data: "edge-cases"
+      user: 'assessor',
+      data: 'edge-cases',
     },
     errorStates: {
-      seed: "server-500",
-      network: "offline",
-      user: "viewer", 
-      data: "minimal"
-    }
+      seed: 'server-500',
+      network: 'offline',
+      user: 'viewer',
+      data: 'minimal',
+    },
   },
 
   mockResponses: {
-    success: { status: 200, data: { ok: true, message: "Success" } },
-    created: { status: 201, data: { id: "new-resource-id", created: true } },
-    unauthorized: { status: 401, error: "Unauthorized", message: "Authentication required" },
-    forbidden: { status: 403, error: "Forbidden", message: "Insufficient permissions" },
-    notFound: { status: 404, error: "Not Found", message: "Resource not found" },
-    conflict: { status: 409, error: "Conflict", message: "Resource already exists" },
-    validationError: { status: 422, error: "Validation Error", details: ["Invalid input"] },
-    serverError: { status: 500, error: "Internal Server Error", message: "Something went wrong" }
+    success: { status: 200, data: { ok: true, message: 'Success' } },
+    created: { status: 201, data: { id: 'new-resource-id', created: true } },
+    unauthorized: { status: 401, error: 'Unauthorized', message: 'Authentication required' },
+    forbidden: { status: 403, error: 'Forbidden', message: 'Insufficient permissions' },
+    notFound: { status: 404, error: 'Not Found', message: 'Resource not found' },
+    conflict: { status: 409, error: 'Conflict', message: 'Resource already exists' },
+    validationError: { status: 422, error: 'Validation Error', details: ['Invalid input'] },
+    serverError: { status: 500, error: 'Internal Server Error', message: 'Something went wrong' },
   },
 
   featureFlags: {
@@ -272,10 +297,10 @@ export const fixtures = {
     complianceMonitoring: true,
     realTimeAnalytics: true,
     advancedVisualizations: false,
-    experimentalFeatures: false
-  }
+    experimentalFeatures: false,
+  },
 } as const;
 
-export type FixtureUser = typeof fixtures.users[keyof typeof fixtures.users];
-export type FixtureCounty = typeof fixtures.counties[keyof typeof fixtures.counties];  
-export type FixtureProperty = typeof fixtures.properties[keyof typeof fixtures.properties];
+export type FixtureUser = (typeof fixtures.users)[keyof typeof fixtures.users];
+export type FixtureCounty = (typeof fixtures.counties)[keyof typeof fixtures.counties];
+export type FixtureProperty = (typeof fixtures.properties)[keyof typeof fixtures.properties];

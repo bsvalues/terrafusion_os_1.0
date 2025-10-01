@@ -5,7 +5,7 @@ echo ==========================================
 echo.
 
 echo Setting environment variables...
-set DATABASE_URL=postgresql://postgres:terrafusion2024@localhost:5432/terrafusion_dev
+set DATABASE_URL=postgresql://postgres:terrafusion2024@localhost:\${{TF_POSTGRES_PORT:-5432}}/terrafusion_dev
 set FLASK_ENV=production
 set FLASK_APP=app.py
 set SESSION_SECRET=terrafusion-enterprise-secret-key
@@ -17,7 +17,7 @@ echo FLASK_APP=%FLASK_APP%
 echo.
 
 echo Starting TerraAgent Production Server...
-echo Server will be available at: http://localhost:5003
+echo Server will be available at: http://localhost:\${{TF_POSTGRES_PORT:-5432}}
 echo.
 
 py app.py

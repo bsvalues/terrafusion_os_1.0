@@ -88,7 +88,7 @@ timeout /t 3 >nul
 start /min node demo-api-server.js
 timeout /t 10 >nul
 
-curl -s http://localhost:8080/health >nul 2>&1
+curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/health >nul 2>&1
 if %errorlevel% equ 0 (
     echo ✅ API server is responding
     taskkill /f /im node.exe >nul 2>&1
@@ -113,7 +113,7 @@ timeout /t 45 >nul
 REM Health checks
 echo 🔍 Step 7: Verifying all services...
 echo    Checking demo frontend...
-curl -s http://localhost:3000 >nul 2>&1
+curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}} >nul 2>&1
 if %errorlevel% equ 0 (
     echo    ✅ Demo frontend is responding
 ) else (
@@ -121,7 +121,7 @@ if %errorlevel% equ 0 (
 )
 
 echo    Checking demo API...
-curl -s http://localhost:8080/health >nul 2>&1
+curl -s http://localhost:\${{TF_ADMIN_PORT:-8080}}/health >nul 2>&1
 if %errorlevel% equ 0 (
     echo    ✅ Demo API is responding
 ) else (
@@ -150,7 +150,7 @@ echo      → Real Benton County properties (89,247 parcels)
 echo      → AI-powered property assessments (3 seconds vs 30 minutes)
 echo      → Live demonstration of all government modules
 echo.
-echo  🔧 Demo API Endpoints: http://localhost:8080
+echo  🔧 Demo API Endpoints: http://localhost:\${{TF_ADMIN_PORT:-8080}}
 echo      → /api/demo/stats - Live demo statistics
 echo      → /api/properties - Property database (89,247 records)
 echo      → /api/ai-agents - AI swarm status (1,008 agents)
@@ -255,8 +255,8 @@ echo 🚀 Demo deployment complete! Ready for terrafusionmarket.io production!
 echo.
 echo Key URLs to bookmark:
 echo • Main Demo: http://localhost
-echo • API Health: http://localhost:8080/health  
-echo • Demo Stats: http://localhost:8080/api/demo/stats
-echo • Real-time: http://localhost:8080/api/demo/realtime
+echo • API Health: http://localhost:\${{TF_ADMIN_PORT:-8080}}/health  
+echo • Demo Stats: http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/demo/stats
+echo • Real-time: http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/demo/realtime
 echo.
 pause

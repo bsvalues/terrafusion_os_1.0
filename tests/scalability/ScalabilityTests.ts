@@ -1,3 +1,4 @@
+// NO HARDCODED PORTS! Use environment variables.
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import axios from 'axios';
 import { WebSocket } from 'ws';
@@ -50,14 +51,49 @@ class ScalabilityTester {
   }
 
   async runMultiJurisdictionLoadTest(): Promise<ScalabilityMetrics> {
-    console.log('Starting multi-jurisdiction load test...');
-    
+    // Starting multi-jurisdiction load test for scalability validation
+
     const jurisdictions: JurisdictionConfig[] = [
-      { id: 'benton', name: 'Benton County', population: 95000, properties: 45000, expectedLoad: 500, region: 'west' },
-      { id: 'clark', name: 'Clark County', population: 500000, properties: 200000, expectedLoad: 2000, region: 'west' },
-      { id: 'king', name: 'King County', population: 2200000, properties: 900000, expectedLoad: 5000, region: 'west' },
-      { id: 'miami', name: 'Miami-Dade County', population: 2700000, properties: 1100000, expectedLoad: 6000, region: 'east' },
-      { id: 'cook', name: 'Cook County', population: 5200000, properties: 2000000, expectedLoad: 10000, region: 'central' }
+      {
+        id: 'benton',
+        name: 'Benton County',
+        population: 95000,
+        properties: 45000,
+        expectedLoad: 500,
+        region: 'west',
+      },
+      {
+        id: 'clark',
+        name: 'Clark County',
+        population: 500000,
+        properties: 200000,
+        expectedLoad: 2000,
+        region: 'west',
+      },
+      {
+        id: 'king',
+        name: 'King County',
+        population: 2200000,
+        properties: 900000,
+        expectedLoad: 5000,
+        region: 'west',
+      },
+      {
+        id: 'miami',
+        name: 'Miami-Dade County',
+        population: 2700000,
+        properties: 1100000,
+        expectedLoad: 6000,
+        region: 'east',
+      },
+      {
+        id: 'cook',
+        name: 'Cook County',
+        population: 5200000,
+        properties: 2000000,
+        expectedLoad: 10000,
+        region: 'central',
+      },
     ];
 
     const scenario: LoadTestScenario = {
@@ -71,8 +107,8 @@ class ScalabilityTester {
         '/api/analytics/dashboard',
         '/api/reports/executive',
         '/api/ai/predictions',
-        '/api/harris-pacs/sync'
-      ]
+        '/api/harris-pacs/sync',
+      ],
     };
 
     return await this.executeLoadTestScenario(scenario);
@@ -91,7 +127,7 @@ class ScalabilityTester {
       jurisdictionCount: scenario.jurisdictions.length,
       dataVolumeGB: 0,
       kubernetesPodsActive: 0,
-      databaseConnections: 0
+      databaseConnections: 0,
     };
 
     // Initialize jurisdiction-specific data
@@ -105,11 +141,15 @@ class ScalabilityTester {
     // Distribute load across jurisdictions
     let totalUsersStarted = 0;
     for (const jurisdiction of scenario.jurisdictions) {
-      const jurisdictionUsers = Math.floor((jurisdiction.expectedLoad / scenario.jurisdictions.reduce((sum, j) => sum + j.expectedLoad, 0)) * scenario.maxUsers);
-      
+      const jurisdictionUsers = Math.floor(
+        (jurisdiction.expectedLoad /
+          scenario.jurisdictions.reduce((sum, j) => sum + j.expectedLoad, 0)) *
+          scenario.maxUsers
+      );
+
       for (let i = 0; i < jurisdictionUsers; i++) {
         const delay = (i / jurisdictionUsers) * scenario.rampUpTime;
-        
+
         const userPromise = new Promise(resolve => {
           setTimeout(async () => {
             try {
@@ -121,7 +161,7 @@ class ScalabilityTester {
             }
           }, delay);
         });
-        
+
         userPromises.push(userPromise);
         totalUsersStarted++;
       }
@@ -134,7 +174,7 @@ class ScalabilityTester {
 
     // Stop monitoring and collect final metrics
     const finalMetrics = await this.collectFinalMetrics();
-    
+
     return { ...metrics, ...finalMetrics };
   }
 
@@ -145,54 +185,56 @@ class ScalabilityTester {
       name: jurisdiction.name,
       population: jurisdiction.population,
       propertyCount: jurisdiction.properties,
-      region: jurisdiction.region
+      region: jurisdiction.region,
     });
 
     // Pre-load sample data for testing
     await axios.post(`${this.baseUrl}/api/admin/jurisdiction/${jurisdiction.id}/seed-data`, {
       propertyCount: Math.min(jurisdiction.properties, 10000), // Limit for testing
       generateAnalytics: true,
-      enableAIProcessing: true
+      enableAIProcessing: true,
     });
   }
 
-  private async simulateJurisdictionUser(jurisdiction: JurisdictionConfig, scenario: LoadTestScenario): Promise<void> {
+  private async simulateJurisdictionUser(
+    jurisdiction: JurisdictionConfig,
+    scenario: LoadTestScenario
+  ): Promise<void> {
     const sessionDuration = Math.random() * scenario.duration + 30000; // 30s to scenario duration
     const sessionStart = Date.now();
-    
+
     // Authenticate as jurisdiction user
     const authResponse = await axios.post(`${this.baseUrl}/api/auth/jurisdiction-login`, {
       jurisdictionId: jurisdiction.id,
       userType: 'government-employee',
-      role: Math.random() > 0.7 ? 'admin' : 'user'
+      role: Math.random() > 0.7 ? 'admin' : 'user',
     });
-    
+
     const token = authResponse.data.token;
-    
+
     while (Date.now() - sessionStart < sessionDuration) {
       // Random endpoint selection weighted by jurisdiction usage patterns
       const endpoint = this.selectWeightedEndpoint(scenario.endpoints, jurisdiction);
-      
+
       try {
         const response = await axios.get(`${this.baseUrl}${endpoint}`, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
-            'X-Jurisdiction-ID': jurisdiction.id
+            'X-Jurisdiction-ID': jurisdiction.id,
           },
           params: {
             jurisdiction: jurisdiction.id,
-            limit: Math.floor(Math.random() * 100) + 10
+            limit: Math.floor(Math.random() * 100) + 10,
           },
-          timeout: 30000
+          timeout: 30000,
         });
-        
+
         if (response.status !== 200) {
           throw new Error(`HTTP ${response.status}`);
         }
-        
+
         // Simulate user interaction time
         await new Promise(resolve => setTimeout(resolve, Math.random() * 3000 + 1000));
-        
       } catch (error) {
         console.error(`Request error for ${jurisdiction.name}:`, error.message);
         throw error;
@@ -207,19 +249,19 @@ class ScalabilityTester {
       '/api/analytics/dashboard': 0.25,
       '/api/reports/executive': jurisdiction.population > 1000000 ? 0.2 : 0.15,
       '/api/ai/predictions': 0.1,
-      '/api/harris-pacs/sync': 0.05
+      '/api/harris-pacs/sync': 0.05,
     };
-    
+
     const random = Math.random();
     let cumulative = 0;
-    
+
     for (const endpoint of endpoints) {
       cumulative += weights[endpoint] || 0.1;
       if (random <= cumulative) {
         return endpoint;
       }
     }
-    
+
     return endpoints[0];
   }
 
@@ -243,7 +285,7 @@ class ScalabilityTester {
     const systemResponse = await axios.get(`${this.baseUrl}/api/admin/system/metrics`);
     const kubernetesResponse = await this.getKubernetesMetrics();
     const databaseResponse = await axios.get(`${this.baseUrl}/api/admin/database/metrics`);
-    
+
     return {
       maxConcurrentUsers: systemResponse.data.activeUsers || 0,
       responseTimeP95: systemResponse.data.responseTimeP95 || 0,
@@ -254,22 +296,26 @@ class ScalabilityTester {
       jurisdictionCount: systemResponse.data.activeJurisdictions || 0,
       dataVolumeGB: (systemResponse.data.dataVolumeBytes || 0) / (1024 * 1024 * 1024),
       kubernetesPodsActive: kubernetesResponse.activePods || 0,
-      databaseConnections: databaseResponse.data.activeConnections || 0
+      databaseConnections: databaseResponse.data.activeConnections || 0,
     };
   }
 
-  private async getKubernetesMetrics(): Promise<{ activePods: number; cpuUsage: number; memoryUsage: number }> {
+  private async getKubernetesMetrics(): Promise<{
+    activePods: number;
+    cpuUsage: number;
+    memoryUsage: number;
+  }> {
     if (!this.kubernetesApi) {
       return { activePods: 0, cpuUsage: 0, memoryUsage: 0 };
     }
 
     try {
       const response = await axios.get(`${this.kubernetesApi}/api/v1/namespaces/terrafusion/pods`, {
-        headers: { Authorization: `Bearer ${process.env.KUBERNETES_TOKEN}` }
+        headers: { Authorization: `Bearer ${process.env.KUBERNETES_TOKEN}` },
       });
-      
+
       const activePods = response.data.items.filter(pod => pod.status.phase === 'Running').length;
-      
+
       return { activePods, cpuUsage: 0, memoryUsage: 0 };
     } catch (error) {
       console.error('Kubernetes metrics error:', error);
@@ -285,39 +331,43 @@ class ScalabilityTester {
     // Calculate P95 response time
     const responseTimes = this.testResults.map(m => m.responseTimeP95).sort((a, b) => a - b);
     const p95Index = Math.floor(responseTimes.length * 0.95);
-    
+
     // Calculate average throughput
-    const avgThroughput = this.testResults.reduce((sum, m) => sum + m.throughputRPS, 0) / this.testResults.length;
-    
+    const avgThroughput =
+      this.testResults.reduce((sum, m) => sum + m.throughputRPS, 0) / this.testResults.length;
+
     // Calculate peak memory usage
     const peakMemory = Math.max(...this.testResults.map(m => m.memoryUsageGB));
-    
+
     // Calculate average error rate
-    const avgErrorRate = this.testResults.reduce((sum, m) => sum + m.errorRate, 0) / this.testResults.length;
+    const avgErrorRate =
+      this.testResults.reduce((sum, m) => sum + m.errorRate, 0) / this.testResults.length;
 
     return {
       responseTimeP95: responseTimes[p95Index] || 0,
       throughputRPS: avgThroughput,
       memoryUsageGB: peakMemory,
-      errorRate: avgErrorRate
+      errorRate: avgErrorRate,
     };
   }
 
   async testDatabaseSharding(): Promise<void> {
     console.log('Testing database sharding capabilities...');
-    
+
     // Test sharding configuration
     await axios.post(`${this.baseUrl}/api/admin/database/configure-sharding`, {
       strategy: 'jurisdiction-based',
       shardCount: 5,
-      replicationFactor: 3
+      replicationFactor: 3,
     });
 
     // Test data distribution across shards
     const jurisdictions = ['benton', 'clark', 'king', 'miami', 'cook'];
-    
+
     for (const jurisdiction of jurisdictions) {
-      const response = await axios.get(`${this.baseUrl}/api/admin/database/shard-info/${jurisdiction}`);
+      const response = await axios.get(
+        `${this.baseUrl}/api/admin/database/shard-info/${jurisdiction}`
+      );
       expect(response.data.shardId).toBeTruthy();
       expect(response.data.replicaCount).toBeGreaterThanOrEqual(3);
     }
@@ -325,45 +375,47 @@ class ScalabilityTester {
 
   async testKubernetesAutoScaling(): Promise<void> {
     console.log('Testing Kubernetes auto-scaling...');
-    
+
     if (!this.kubernetesApi) {
       console.log('Kubernetes API not configured, skipping auto-scaling test');
       return;
     }
 
     // Trigger high load to test auto-scaling
-    const highLoadPromises = Array(5000).fill(null).map(async () => {
-      try {
-        await axios.get(`${this.baseUrl}/api/properties/search?q=test&limit=100`);
-      } catch (error) {
-        // Expected under high load
-      }
-    });
+    const highLoadPromises = Array(5000)
+      .fill(null)
+      .map(async () => {
+        try {
+          await axios.get(`${this.baseUrl}/api/properties/search?q=test&limit=100`);
+        } catch (error) {
+          // Expected under high load
+        }
+      });
 
     // Monitor pod scaling
     const initialPods = await this.getKubernetesMetrics();
-    
+
     // Wait for load to trigger scaling
     await Promise.all(highLoadPromises);
     await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 1 minute
-    
+
     const scaledPods = await this.getKubernetesMetrics();
-    
+
     expect(scaledPods.activePods).toBeGreaterThan(initialPods.activePods);
   }
 
   async testCDNPerformance(): Promise<void> {
     console.log('Testing CDN and geographic distribution...');
-    
+
     const regions = ['us-west-1', 'us-east-1', 'us-central-1'];
     const cdnEndpoints = regions.map(region => `https://cdn-${region}.terrafusion.gov`);
-    
+
     for (const endpoint of cdnEndpoints) {
       try {
         const start = Date.now();
         const response = await axios.get(`${endpoint}/api/health`, { timeout: 10000 });
         const responseTime = Date.now() - start;
-        
+
         expect(response.status).toBe(200);
         expect(responseTime).toBeLessThan(2000); // < 2 seconds from any region
       } catch (error) {
@@ -378,7 +430,7 @@ class ScalabilityTester {
     }
 
     const finalMetrics = this.testResults[this.testResults.length - 1];
-    
+
     return `
 # Scalability Testing Report
 
@@ -430,28 +482,30 @@ ${this.generateDeploymentRecommendations(finalMetrics)}
 
   private generateDeploymentRecommendations(metrics: ScalabilityMetrics): string {
     const recommendations: string[] = [];
-    
+
     if (metrics.maxConcurrentUsers < 10000) {
       recommendations.push('- Increase server capacity to handle 10K+ concurrent users');
     }
-    
+
     if (metrics.responseTimeP95 > 2000) {
       recommendations.push('- Optimize database queries and implement additional caching');
     }
-    
+
     if (metrics.errorRate > 0.5) {
       recommendations.push('- Implement circuit breaker pattern and improve error handling');
     }
-    
+
     if (metrics.memoryUsageGB > 12) {
       recommendations.push('- Optimize memory usage and implement garbage collection tuning');
     }
-    
+
     if (metrics.kubernetesPodsActive < 10) {
       recommendations.push('- Configure horizontal pod autoscaling for better load distribution');
     }
-    
-    return recommendations.length > 0 ? recommendations.join('\n') : '- System is ready for production deployment at government scale';
+
+    return recommendations.length > 0
+      ? recommendations.join('\n')
+      : '- System is ready for production deployment at government scale';
   }
 
   async cleanup(): Promise<void> {
@@ -468,10 +522,10 @@ ${this.generateDeploymentRecommendations(finalMetrics)}
 // Test Suite
 describe('Scalability Tests', () => {
   let tester: ScalabilityTester;
-  
+
   beforeAll(() => {
     tester = new ScalabilityTester(
-      process.env.TEST_API_URL || 'http://localhost:5000',
+      process.env.TEST_API_URL || 'http://localhost:${TF_STATIC_PORT:-8080}',
       process.env.KUBERNETES_API_URL || ''
     );
   });
@@ -482,7 +536,7 @@ describe('Scalability Tests', () => {
 
   test('Multi-Jurisdiction Load Test - 25K Users', async () => {
     const metrics = await tester.runMultiJurisdictionLoadTest();
-    
+
     expect(metrics.maxConcurrentUsers).toBeGreaterThanOrEqual(10000);
     expect(metrics.responseTimeP95).toBeLessThan(3000); // < 3 seconds
     expect(metrics.throughputRPS).toBeGreaterThan(500); // > 500 RPS
@@ -504,7 +558,7 @@ describe('Scalability Tests', () => {
 
   test('Government Scale Requirements', async () => {
     const metrics = await tester.runMultiJurisdictionLoadTest();
-    
+
     // Government-specific requirements
     expect(metrics.maxConcurrentUsers).toBeGreaterThanOrEqual(25000); // 25K+ users
     expect(metrics.jurisdictionCount).toBeGreaterThanOrEqual(5); // Multi-jurisdiction

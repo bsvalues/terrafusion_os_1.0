@@ -94,7 +94,7 @@ services:
       dockerfile: Dockerfile
       target: production
       args:
-        - VITE_API_URL=${API_URL:-http://localhost:5000}
+        - VITE_API_URL=${API_URL:-http://localhost:${TF_STATIC_PORT:-8080}}
         - VITE_ENVIRONMENT=production
     image: terrafusion/frontend:1.0-production
     container_name: terrafusion-frontend

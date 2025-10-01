@@ -17,7 +17,14 @@ import * as path from 'path';
 import axios from 'axios';
 
 export interface AIRequest {
-  type: 'code-generation' | 'code-review' | 'test-generation' | 'refactoring' | 'problem-solving' | 'architecture' | 'compliance';
+  type:
+    | 'code-generation'
+    | 'code-review'
+    | 'test-generation'
+    | 'refactoring'
+    | 'problem-solving'
+    | 'architecture'
+    | 'compliance';
   prompt: string;
   context?: any;
   workspace?: string;
@@ -99,7 +106,8 @@ export class TerrafusionAIService {
 
     // Try local model as fallback
     try {
-      this.localModelEndpoint = process.env['LOCAL_AI_ENDPOINT'] || this.loadFromConfig('local.endpoint');
+      this.localModelEndpoint =
+        process.env['LOCAL_AI_ENDPOINT'] || this.loadFromConfig('local.endpoint');
       if (this.localModelEndpoint) {
         await this.testLocalModel();
         console.log('✅ Local AI model integration initialized');
@@ -173,8 +181,8 @@ export class TerrafusionAIService {
               tokens: 0,
               processingTime: Date.now() - startTime,
               quantumOptimized: false,
-              complianceValidated: true
-            }
+              complianceValidated: true,
+            },
           };
         }
       }
@@ -200,13 +208,12 @@ export class TerrafusionAIService {
           tokens: this.estimateTokens(request, optimizedResponse),
           processingTime: Date.now() - startTime,
           quantumOptimized: optimizedResponse !== aiResponse,
-          complianceValidated: finalCompliance.compliant
-        }
+          complianceValidated: finalCompliance.compliant,
+        },
       };
 
       // Update context cache
       this.updateContextCache(request, response);
-
     } catch (error) {
       response = {
         success: false,
@@ -217,8 +224,8 @@ export class TerrafusionAIService {
           tokens: 0,
           processingTime: Date.now() - startTime,
           quantumOptimized: false,
-          complianceValidated: false
-        }
+          complianceValidated: false,
+        },
       };
     }
 
@@ -230,7 +237,7 @@ export class TerrafusionAIService {
       resource: request.workspace || 'unknown',
       compliance: response.metadata?.complianceValidated || false,
       riskLevel: this.calculateRiskLevel(request),
-      quantumOptimized: response.metadata?.quantumOptimized || false
+      quantumOptimized: response.metadata?.quantumOptimized || false,
     });
 
     return response;
@@ -275,11 +282,11 @@ export class TerrafusionAIService {
       model: 'gpt-4-turbo-preview',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: userPrompt },
       ],
       temperature: this.getTemperatureForRequest(request),
       max_tokens: this.getMaxTokensForRequest(request),
-      functions: this.getFunctionsForRequest(request)
+      functions: this.getFunctionsForRequest(request),
     });
 
     return this.parseOpenAIResponse(completion, request);
@@ -295,7 +302,7 @@ export class TerrafusionAIService {
       prompt: this.buildUserPrompt(request),
       system: this.buildSystemPrompt(request),
       temperature: this.getTemperatureForRequest(request),
-      max_tokens: this.getMaxTokensForRequest(request)
+      max_tokens: this.getMaxTokensForRequest(request),
     };
 
     const response = await axios.post(`${this.localModelEndpoint}/generate`, payload);
@@ -325,25 +332,46 @@ Your responses must be:
 
     switch (request.type) {
       case 'code-generation':
-        return basePrompt + `Generate high-quality, production-ready code that integrates seamlessly with the Terrafusion OS architecture. Ensure all code follows government security standards and performance best practices.`;
+        return (
+          basePrompt +
+          `Generate high-quality, production-ready code that integrates seamlessly with the Terrafusion OS architecture. Ensure all code follows government security standards and performance best practices.`
+        );
 
       case 'code-review':
-        return basePrompt + `Perform comprehensive code review focusing on security, performance, compliance, and Terrafusion OS integration. Provide actionable recommendations with specific code examples.`;
+        return (
+          basePrompt +
+          `Perform comprehensive code review focusing on security, performance, compliance, and Terrafusion OS integration. Provide actionable recommendations with specific code examples.`
+        );
 
       case 'test-generation':
-        return basePrompt + `Generate comprehensive test suites that cover edge cases, security scenarios, and integration with Terrafusion OS components. Include performance benchmarks and compliance validation.`;
+        return (
+          basePrompt +
+          `Generate comprehensive test suites that cover edge cases, security scenarios, and integration with Terrafusion OS components. Include performance benchmarks and compliance validation.`
+        );
 
       case 'refactoring':
-        return basePrompt + `Suggest intelligent refactoring that improves performance, maintainability, and compliance while preserving Terrafusion OS integration patterns.`;
+        return (
+          basePrompt +
+          `Suggest intelligent refactoring that improves performance, maintainability, and compliance while preserving Terrafusion OS integration patterns.`
+        );
 
       case 'problem-solving':
-        return basePrompt + `Analyze complex problems within the Terrafusion OS context, providing root-cause analysis, multiple solution approaches, and implementation guidance.`;
+        return (
+          basePrompt +
+          `Analyze complex problems within the Terrafusion OS context, providing root-cause analysis, multiple solution approaches, and implementation guidance.`
+        );
 
       case 'architecture':
-        return basePrompt + `Design scalable, secure, and compliant architectures that integrate with Terrafusion OS modules, AI agents, and marketplace components.`;
+        return (
+          basePrompt +
+          `Design scalable, secure, and compliant architectures that integrate with Terrafusion OS modules, AI agents, and marketplace components.`
+        );
 
       case 'compliance':
-        return basePrompt + `Validate code and designs against government compliance standards, providing detailed violation reports and remediation strategies.`;
+        return (
+          basePrompt +
+          `Validate code and designs against government compliance standards, providing detailed violation reports and remediation strategies.`
+        );
 
       default:
         return basePrompt;
@@ -375,8 +403,6 @@ Your responses must be:
     return prompt;
   }
 
-
-
   // ... [Implementation continues with quantum engine, compliance validator, security auditor classes]
 
   /**
@@ -388,7 +414,10 @@ Your responses must be:
     switch (request.type) {
       case 'code-generation':
         return `// AI Generated Code - Terrafusion OS Integration
-export class ${request.prompt.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')} {
+export class ${request.prompt
+          .split(' ')
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+          .join('')} {
   constructor() {
     // Terrafusion OS compliant implementation
   }
@@ -402,9 +431,17 @@ export class ${request.prompt.split(' ').map(w => w.charAt(0).toUpperCase() + w.
       case 'code-review':
         return {
           quality: 92,
-          suggestions: ['Add input validation', 'Implement error handling', 'Add compliance logging'],
+          suggestions: [
+            'Add input validation',
+            'Implement error handling',
+            'Add compliance logging',
+          ],
           issues: ['Missing security headers', 'No audit trail'],
-          improvements: ['Use TypeScript strict mode', 'Add performance monitoring', 'Implement compliance checks']
+          improvements: [
+            'Use TypeScript strict mode',
+            'Add performance monitoring',
+            'Implement compliance checks',
+          ],
         };
 
       default:
@@ -413,7 +450,9 @@ export class ${request.prompt.split(' ').map(w => w.charAt(0).toUpperCase() + w.
   }
 
   // Helper methods
-  private determineProvider(_request: AIRequest): 'openai' | 'local' | 'quantum' | 'compliance' | 'error' {
+  private determineProvider(
+    _request: AIRequest
+  ): 'openai' | 'local' | 'quantum' | 'compliance' | 'error' {
     if (this.openai) return 'openai';
     if (this.localModelEndpoint) return 'local';
     return 'quantum';
@@ -438,24 +477,37 @@ export class ${request.prompt.split(' ').map(w => w.charAt(0).toUpperCase() + w.
 
   private getTemperatureForRequest(request: AIRequest): number {
     switch (request.priority) {
-      case 'low': return 0.7;
-      case 'medium': return 0.5;
-      case 'high': return 0.3;
-      case 'critical': return 0.1;
-      default: return 0.5;
+      case 'low':
+        return 0.7;
+      case 'medium':
+        return 0.5;
+      case 'high':
+        return 0.3;
+      case 'critical':
+        return 0.1;
+      default:
+        return 0.5;
     }
   }
 
   private getMaxTokensForRequest(request: AIRequest): number {
     switch (request.type) {
-      case 'code-generation': return 2000;
-      case 'code-review': return 1500;
-      case 'test-generation': return 2500;
-      case 'refactoring': return 1800;
-      case 'problem-solving': return 2200;
-      case 'architecture': return 3000;
-      case 'compliance': return 2000;
-      default: return 1500;
+      case 'code-generation':
+        return 2000;
+      case 'code-review':
+        return 1500;
+      case 'test-generation':
+        return 2500;
+      case 'refactoring':
+        return 1800;
+      case 'problem-solving':
+        return 2200;
+      case 'architecture':
+        return 3000;
+      case 'compliance':
+        return 2000;
+      default:
+        return 1500;
     }
   }
 
@@ -506,17 +558,21 @@ export class ${request.prompt.split(' ').map(w => w.charAt(0).toUpperCase() + w.
    */
   public getSecurityMetrics(): any {
     const totalRequests = this.auditTrail.length;
-    const complianceRate = totalRequests > 0 ? (this.auditTrail.filter(entry => entry.compliance).length / totalRequests) * 100 : 100;
+    const complianceRate =
+      totalRequests > 0
+        ? (this.auditTrail.filter(entry => entry.compliance).length / totalRequests) * 100
+        : 100;
     const highRiskRequests = this.auditTrail.filter(entry => entry.riskLevel === 'high').length;
 
     return {
-      securityScore: complianceRate > 95 ? 'excellent' : complianceRate > 85 ? 'good' : 'needs-improvement',
+      securityScore:
+        complianceRate > 95 ? 'excellent' : complianceRate > 85 ? 'good' : 'needs-improvement',
       totalRequests,
       complianceRate: Math.round(complianceRate),
       highRiskRequests,
       encryptionStatus: 'AES-256 enabled',
       accessControl: 'RBAC implemented',
-      auditLogging: 'Comprehensive logging active'
+      auditLogging: 'Comprehensive logging active',
     };
   }
 
@@ -549,7 +605,7 @@ export class QuantumPerformanceEngine {
       'quantum-inspired-annealing',
       'quantum-walk-optimization',
       'quantum-fourier-transform',
-      'quantum-approximation-algorithm'
+      'quantum-approximation-algorithm',
     ];
 
     const result: QuantumOptimizationResult = {
@@ -557,7 +613,7 @@ export class QuantumPerformanceEngine {
       performanceGain: 949, // 949x improvement as per Terrafusion specs
       quantumAlgorithms: algorithms,
       complexityReduction: 85,
-      executionTimeImprovement: 94.9
+      executionTimeImprovement: 94.9,
     };
 
     this.optimizationHistory.push(result);
@@ -576,8 +632,13 @@ export class QuantumPerformanceEngine {
     return {
       totalOptimizations: this.optimizationHistory.length,
       averagePerformanceGain: 949,
-      algorithmsUsed: ['quantum-annealing', 'quantum-walk', 'quantum-fourier', 'quantum-approximation'],
-      successRate: 99.7
+      algorithmsUsed: [
+        'quantum-annealing',
+        'quantum-walk',
+        'quantum-fourier',
+        'quantum-approximation',
+      ],
+      successRate: 99.7,
     };
   }
 }
@@ -588,7 +649,10 @@ export class QuantumPerformanceEngine {
 export class GovernmentComplianceValidator {
   private standards = ['FISMA', 'NIST-800-53', 'Section-508', 'HIPAA', 'FedRAMP'];
 
-  async validate(content: any, standards: string[] = this.standards): Promise<ComplianceValidationResult> {
+  async validate(
+    content: any,
+    standards: string[] = this.standards
+  ): Promise<ComplianceValidationResult> {
     const violations: string[] = [];
     const recommendations: string[] = [];
 
@@ -618,7 +682,7 @@ export class GovernmentComplianceValidator {
       recommendations,
       riskLevel: riskLevel as 'low' | 'medium' | 'high' | 'critical',
       standards,
-      auditTrail: [`Validation completed at ${new Date().toISOString()}`]
+      auditTrail: [`Validation completed at ${new Date().toISOString()}`],
     };
   }
 
@@ -639,7 +703,7 @@ export class GovernmentComplianceValidator {
       recommendations: ['Regular compliance audits recommended'],
       riskLevel: 'low',
       standards: this.standards,
-      auditTrail: ['System compliant with all standards']
+      auditTrail: ['System compliant with all standards'],
     };
   }
 }
@@ -658,7 +722,7 @@ export class EnterpriseSecurityAuditor {
       resource: request.workspace || 'unknown',
       compliance: true, // Assume compliant until validated
       riskLevel: request.priority === 'critical' ? 'high' : 'low',
-      quantumOptimized: false
+      quantumOptimized: false,
     });
   }
 
@@ -668,14 +732,16 @@ export class EnterpriseSecurityAuditor {
 
   getSecurityMetrics(): any {
     const totalRequests = this.auditLog.length;
-    const complianceRate = this.auditLog.filter(entry => entry.compliance).length / totalRequests * 100;
+    const complianceRate =
+      (this.auditLog.filter(entry => entry.compliance).length / totalRequests) * 100;
     const highRiskRequests = this.auditLog.filter(entry => entry.riskLevel === 'high').length;
 
     return {
       totalRequests,
       complianceRate,
       highRiskRequests,
-      securityScore: complianceRate > 95 ? 'excellent' : complianceRate > 85 ? 'good' : 'needs-improvement'
+      securityScore:
+        complianceRate > 95 ? 'excellent' : complianceRate > 85 ? 'good' : 'needs-improvement',
     };
   }
 }

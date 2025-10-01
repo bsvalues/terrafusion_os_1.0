@@ -75,10 +75,10 @@ check_prerequisites() {
     fi
     
     # Check ports
-    if lsof -i:3000 &> /dev/null; then
-        echo -e "${YELLOW}  ⚠ Port 3000 is in use${NC}"
+    if lsof -i:${TF_FRONTEND_PORT:-3102} &> /dev/null; then
+        echo -e "${YELLOW}  ⚠ Port \${{TF_FRONTEND_PORT:-3000}} is in use${NC}"
     else
-        echo -e "${GREEN}  ✓ Port 3000 available${NC}"
+        echo -e "${GREEN}  ✓ Port \${{TF_FRONTEND_PORT:-3000}} available${NC}"
     fi
     
     if [ $missing -eq 1 ]; then
@@ -125,8 +125,8 @@ launch_local() {
         echo -e "${GREEN}${BOLD}✅ TerraFusion Commercial is running!${NC}"
         echo ""
         echo -e "${CYAN}Access Points:${NC}"
-        echo -e "  🌐 Main Platform:  http://localhost:3000"
-        echo -e "  🛒 Marketplace:    http://localhost:3000/marketplace"
+        echo -e "  🌐 Main Platform:  http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
+        echo -e "  🛒 Marketplace:    http://localhost:\${{TF_FRONTEND_PORT:-3000}}/marketplace"
         echo ""
         echo -e "${YELLOW}Press Ctrl+C to stop${NC}"
         

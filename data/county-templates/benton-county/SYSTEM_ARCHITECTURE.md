@@ -164,7 +164,7 @@ User Query Input
       ▼                                 ▼
 ┌─────────────────┐                ┌─────────────────┐
 │ Hybrid Router   │                │  Live Terminal  │
-│   (Port 8080)   │                │    Updates      │
+│   (Port \${{TF_ADMIN_PORT:-8080}})   │                │    Updates      │
 └─────────────────┘                └─────────────────┘
       │
       ▼
@@ -179,7 +179,7 @@ User Query Input
 ┌─────────────────┐              ┌─────────────────┐
 │ Anonymization   │              │  Local Ollama   │
 │ Pipeline        │              │   Processing    │
-└─────────────────┘              │   (Port 11434)  │
+└─────────────────┘              │   (Port \${{TF_ADMIN_PORT:-8080}})  │
       │                          └─────────────────┘
       │ GREEN (Safe)                      │
       ▼                                  │
@@ -298,7 +298,7 @@ Performance Monitoring
 
 ### Microservices Design
 
-#### 🏆 **Master Orchestrator Service** (Port 8000)
+#### 🏆 **Master Orchestrator Service** (Port \${{TF_ADMIN_PORT:-8080}})
 **Responsibilities:**
 - Service discovery and health monitoring
 - Load balancing and request routing
@@ -308,7 +308,7 @@ Performance Monitoring
 
 **Technology:** Python 3.11 + AsyncIO + aiohttp
 
-#### 🧠 **Hybrid Router Service** (Port 8080)
+#### 🧠 **Hybrid Router Service** (Port \${{TF_ADMIN_PORT:-8080}})
 **Responsibilities:**
 - Query sensitivity analysis
 - Intelligent routing decisions
@@ -318,7 +318,7 @@ Performance Monitoring
 
 **Technology:** Python 3.11 + FastAPI + Machine Learning
 
-#### 🤖 **Autonomous Orchestrator** (Port 8081)
+#### 🤖 **Autonomous Orchestrator** (Port \${{TF_ADMIN_PORT:-8080}})
 **Responsibilities:**
 - Data ingestion automation
 - System health monitoring
@@ -328,7 +328,7 @@ Performance Monitoring
 
 **Technology:** Python 3.11 + AsyncIO + Celery
 
-#### 🎓 **Training Pipeline Service** (Port 8082)
+#### 🎓 **Training Pipeline Service** (Port \${{TF_ADMIN_PORT:-8080}})
 **Responsibilities:**
 - Continuous model training
 - Learning from query patterns
@@ -338,7 +338,7 @@ Performance Monitoring
 
 **Technology:** Python 3.11 + PyTorch + Transformers
 
-#### 🧬 **Evolution Engine** (Port 8083)
+#### 🧬 **Evolution Engine** (Port \${{TF_ADMIN_PORT:-8080}})
 **Responsibilities:**
 - Code mutation and testing
 - Architecture optimization
@@ -348,7 +348,7 @@ Performance Monitoring
 
 **Technology:** Python 3.11 + Genetic Algorithms + AST manipulation
 
-#### ⚛️ **Quantum Optimizer** (Port 8084)
+#### ⚛️ **Quantum Optimizer** (Port \${{TF_ADMIN_PORT:-8080}})
 **Responsibilities:**
 - Quantum circuit simulation
 - Optimization algorithm execution
@@ -358,7 +358,7 @@ Performance Monitoring
 
 **Technology:** Python 3.11 + Qiskit + Cirq
 
-#### 🧠 **Neural Consciousness** (Port 8085) [Optional]
+#### 🧠 **Neural Consciousness** (Port \${{TF_ADMIN_PORT:-8080}}) [Optional]
 **Responsibilities:**
 - Self-awareness development
 - Goal formation and pursuit

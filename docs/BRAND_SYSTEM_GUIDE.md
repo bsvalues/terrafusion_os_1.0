@@ -1,14 +1,18 @@
 # Terrafusion Brand System Implementation Guide
 
 ## Overview
-Complete implementation of the Terrafusion visual identity system with comprehensive brand assets, CSS variables, and component architecture.
+
+Complete implementation of the Terrafusion visual identity system with
+comprehensive brand assets, CSS variables, and component architecture.
 
 ## Brand Assets Created
 
 ### 1. Terrafusion Logo Component
+
 **File**: `frontend/src/components/brand/TerraFusionLogo.tsx`
 
 **Variants Available**:
+
 - **Monogram**: Simple "TF" text with gradient effects
 - **Embossed**: 3D metallic logo with depth and shine animation
 - **Seal**: Official certification badge with concentric rings
@@ -16,6 +20,7 @@ Complete implementation of the Terrafusion visual identity system with comprehen
 - **Browser**: macOS window chrome with TF branding
 
 **Usage**:
+
 ```typescript
 import TerraFusionLogo from './components/brand/TerraFusionLogo';
 
@@ -25,9 +30,11 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### 2. Brand CSS System
+
 **File**: `frontend/src/assets/terrafusion-brand.css`
 
 **Core Features**:
+
 - CSS custom properties for all brand colors
 - Glass morphism effects with backdrop-blur
 - Holographic animations and glow effects
@@ -37,24 +44,39 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Color Palette
 
 ### Primary Colors
+
 ```css
 :root {
-  --tf-transcend-cyan: #00e5ff;      /* Primary brand color */
-  --tf-trust-blue: #1976d2;         /* Secondary blue */
-  --tf-success-green: #4caf50;      /* Success states */
-  --tf-deep-space: #0a0f1c;         /* Dark background */
-  --tf-space-white: #f8fafc;        /* Light text */
+  --tf-transcend-cyan: #00e5ff; /* Primary brand color */
+  --tf-trust-blue: #1976d2; /* Secondary blue */
+  --tf-success-green: #4caf50; /* Success states */
+  --tf-deep-space: #0a0f1c; /* Dark background */
+  --tf-space-white: #f8fafc; /* Light text */
 }
 ```
 
 ### Gradient Definitions
+
 ```css
---tf-gradient-primary: linear-gradient(135deg, var(--tf-trust-blue), var(--tf-transcend-cyan));
---tf-gradient-cosmic: linear-gradient(135deg, var(--tf-deep-space), var(--tf-trust-blue));
---tf-gradient-hero: linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-success-green));
+--tf-gradient-primary: linear-gradient(
+  135deg,
+  var(--tf-trust-blue),
+  var(--tf-transcend-cyan)
+);
+--tf-gradient-cosmic: linear-gradient(
+  135deg,
+  var(--tf-deep-space),
+  var(--tf-trust-blue)
+);
+--tf-gradient-hero: linear-gradient(
+  135deg,
+  var(--tf-transcend-cyan),
+  var(--tf-success-green)
+);
 ```
 
 ### Shadow Effects
+
 ```css
 --tf-shadow-cyan: 0 0 20px rgba(0, 229, 255, 0.3);
 --tf-shadow-glow: 0 0 30px rgba(0, 229, 255, 0.5);
@@ -64,6 +86,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Glass Morphism System
 
 ### Core Glass Classes
+
 ```css
 .tf-glass-light {
   background: rgba(248, 250, 252, 0.1);
@@ -86,6 +109,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### Interactive Effects
+
 ```css
 .tf-hover-glow:hover {
   box-shadow: var(--tf-shadow-glow);
@@ -101,6 +125,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Logo Variants Implementation
 
 ### 1. Monogram Logo
+
 ```css
 .tf-logo-monogram {
   background: var(--tf-gradient-primary);
@@ -113,11 +138,12 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### 2. Embossed Logo
+
 ```css
 .tf-logo-embossed {
   background: var(--tf-gradient-primary);
   border-radius: 12px;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 4px rgba(255, 255, 255, 0.2),
     inset 0 -2px 4px rgba(0, 0, 0, 0.2),
     var(--tf-shadow-cyan);
@@ -125,6 +151,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### 3. Seal Badge
+
 ```css
 .tf-seal-badge {
   background: var(--tf-gradient-cosmic);
@@ -144,6 +171,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### 4. Square Badge
+
 ```css
 .tf-square-badge {
   background: var(--tf-gradient-hero);
@@ -154,6 +182,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### 5. Browser Mockup
+
 ```css
 .tf-browser-mockup {
   background: var(--tf-gradient-cosmic);
@@ -173,21 +202,38 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
   border-radius: 50%;
 }
 
-.tf-browser-dot.close { background: #ff5f57; }
-.tf-browser-dot.minimize { background: #ffbd2e; }
-.tf-browser-dot.maximize { background: #28ca42; }
+.tf-browser-dot.close {
+  background: #ff5f57;
+}
+.tf-browser-dot.minimize {
+  background: #ffbd2e;
+}
+.tf-browser-dot.maximize {
+  background: #28ca42;
+}
 ```
 
 ## Animation System
 
 ### Holographic Effects
+
 ```css
 @keyframes tf-holographic {
-  0% { filter: hue-rotate(0deg); }
-  25% { filter: hue-rotate(90deg); }
-  50% { filter: hue-rotate(180deg); }
-  75% { filter: hue-rotate(270deg); }
-  100% { filter: hue-rotate(360deg); }
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    filter: hue-rotate(90deg);
+  }
+  50% {
+    filter: hue-rotate(180deg);
+  }
+  75% {
+    filter: hue-rotate(270deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
 }
 
 .tf-holographic {
@@ -196,10 +242,16 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### Glow Pulse
+
 ```css
 @keyframes tf-glow-pulse {
-  0%, 100% { box-shadow: var(--tf-shadow-cyan); }
-  50% { box-shadow: var(--tf-shadow-glow); }
+  0%,
+  100% {
+    box-shadow: var(--tf-shadow-cyan);
+  }
+  50% {
+    box-shadow: var(--tf-shadow-glow);
+  }
 }
 
 .tf-glow-pulse {
@@ -208,17 +260,18 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### Token Glow
+
 ```css
 @keyframes tf-token-glow {
-  0% { 
+  0% {
     box-shadow: 0 0 5px var(--tf-transcend-cyan);
     transform: scale(1);
   }
-  50% { 
+  50% {
     box-shadow: 0 0 20px var(--tf-transcend-cyan);
     transform: scale(1.05);
   }
-  100% { 
+  100% {
     box-shadow: 0 0 5px var(--tf-transcend-cyan);
     transform: scale(1);
   }
@@ -232,6 +285,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Typography System
 
 ### Heading Classes
+
 ```css
 .tf-heading-display {
   font-size: 2.5rem;
@@ -264,6 +318,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### Gradient Text
+
 ```css
 .tf-gradient-text {
   background: var(--tf-gradient-primary);
@@ -276,6 +331,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Button System
 
 ### Primary Button
+
 ```css
 .tf-btn-primary {
   background: var(--tf-gradient-primary);
@@ -295,6 +351,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### Secondary Button
+
 ```css
 .tf-btn-secondary {
   background: transparent;
@@ -316,6 +373,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Meme Template System
 
 ### Base Template
+
 ```css
 .tf-meme-template {
   width: 1080px;
@@ -337,6 +395,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Web3 Integration Classes
 
 ### NFT Card
+
 ```css
 .tf-nft-card {
   background: var(--tf-glass-heavy);
@@ -348,6 +407,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### Token Badge
+
 ```css
 .tf-token-badge {
   background: var(--tf-gradient-hero);
@@ -362,6 +422,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Accessibility Features
 
 ### High Contrast Mode
+
 ```css
 @media (prefers-contrast: high) {
   :root {
@@ -374,6 +435,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ```
 
 ### Reduced Motion
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   .tf-holographic,
@@ -387,6 +449,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 ## Implementation Status
 
 ### ✅ Completed
+
 - Complete CSS brand system with variables
 - TerraFusionLogo React component with all variants
 - Glass morphism effects throughout interface
@@ -395,6 +458,7 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 - Accessibility considerations
 
 ### 🎯 Usage Examples
+
 - AI Swarm Command Center uses tf-glass-heavy
 - Marketplace cards use tf-glass-card with tf-hover-glow
 - Navigation uses tf-gradient-primary backgrounds
@@ -402,6 +466,6 @@ import TerraFusionLogo from './components/brand/TerraFusionLogo';
 
 ---
 
-**Brand System Status**: Fully implemented and active
-**Components**: Ready for production use
-**Next**: Apply branding consistently across all Terrafusion modules
+**Brand System Status**: Fully implemented and active **Components**: Ready for
+production use **Next**: Apply branding consistently across all Terrafusion
+modules

@@ -16,25 +16,27 @@ const setupSteps = [
           console.log(`✅ Created directory: ${dir}`);
         }
       });
-    }
+    },
   },
   {
     name: 'Validate data files',
     action: () => {
       const dataFiles = [
         'data/benton-county-properties.json',
-        'data/benton-county-tax-levies.json'
+        'data/benton-county-tax-levies.json',
       ];
-      
+
       dataFiles.forEach(file => {
         if (fs.existsSync(file)) {
           const data = JSON.parse(fs.readFileSync(file, 'utf8'));
-          console.log(`✅ Validated ${file}: ${data.metadata ? data.metadata.total_properties || 'N/A' : 'Valid JSON'}`);
+          console.log(
+            `✅ Validated ${file}: ${data.metadata ? data.metadata.total_properties || 'N/A' : 'Valid JSON'}`
+          );
         } else {
           throw new Error(`❌ Data file not found: ${file}`);
         }
       });
-    }
+    },
   },
   {
     name: 'Create demo configuration',
@@ -43,14 +45,14 @@ const setupSteps = [
         demo_name: 'Benton County Championship Demo',
         version: '3.0.0',
         environment: 'demo',
-        data_source: 'Benton County Assessor\'s Office',
+        data_source: "Benton County Assessor's Office",
         setup_date: new Date().toISOString(),
         features: {
           property_assessment: true,
           tax_calculation: true,
           workflow_automation: true,
           ai_analysis: true,
-          marketplace: true
+          marketplace: true,
         },
         applications: [
           'TerraFusionSync',
@@ -59,13 +61,13 @@ const setupSteps = [
           'TerraFlow',
           'CostForge',
           'CostForgeAI',
-          'TerraAgent'
-        ]
+          'TerraAgent',
+        ],
       };
-      
+
       fs.writeFileSync('demo-config.json', JSON.stringify(config, null, 2));
       console.log('✅ Created demo configuration');
-    }
+    },
   },
   {
     name: 'Create demo user accounts',
@@ -75,31 +77,31 @@ const setupSteps = [
           username: 'demo-admin',
           role: 'admin',
           permissions: ['full_access'],
-          description: 'Demo administrator with full system access'
+          description: 'Demo administrator with full system access',
         },
         {
           username: 'demo-assessor',
           role: 'assessor',
           permissions: ['property_assessment', 'property_search', 'reports'],
-          description: 'Demo assessor for property assessment workflows'
+          description: 'Demo assessor for property assessment workflows',
         },
         {
           username: 'demo-tax',
           role: 'tax_administrator',
           permissions: ['tax_calculation', 'levy_management', 'reports'],
-          description: 'Demo tax administrator for tax calculation workflows'
+          description: 'Demo tax administrator for tax calculation workflows',
         },
         {
           username: 'demo-viewer',
           role: 'viewer',
           permissions: ['read_only'],
-          description: 'Demo viewer with read-only access'
-        }
+          description: 'Demo viewer with read-only access',
+        },
       ];
-      
+
       fs.writeFileSync('demo-users.json', JSON.stringify(users, null, 2));
       console.log('✅ Created demo user accounts');
-    }
+    },
   },
   {
     name: 'Create demo scenarios',
@@ -111,7 +113,7 @@ const setupSteps = [
           duration: '15 minutes',
           audience: 'County Assessors, Property Managers',
           description: 'Complete property assessment workflow from search to reporting',
-          steps: 6
+          steps: 6,
         },
         {
           id: 'tax-calculation',
@@ -119,7 +121,7 @@ const setupSteps = [
           duration: '10 minutes',
           audience: 'Tax Administrators, Finance Officers',
           description: 'Tax levy calculation and distribution process',
-          steps: 6
+          steps: 6,
         },
         {
           id: 'workflow-automation',
@@ -127,7 +129,7 @@ const setupSteps = [
           duration: '8 minutes',
           audience: 'Operations Managers, Process Owners',
           description: 'Automated workflow design and execution',
-          steps: 6
+          steps: 6,
         },
         {
           id: 'ai-analysis',
@@ -135,13 +137,13 @@ const setupSteps = [
           duration: '12 minutes',
           audience: 'Technology Officers, Innovation Teams',
           description: 'AI-powered property and market analysis',
-          steps: 6
-        }
+          steps: 6,
+        },
       ];
-      
+
       fs.writeFileSync('demo-scenarios.json', JSON.stringify(scenarios, null, 2));
       console.log('✅ Created demo scenarios');
-    }
+    },
   },
   {
     name: 'Create demo metrics',
@@ -151,25 +153,25 @@ const setupSteps = [
           response_time: '150ms',
           uptime: '99.99%',
           data_accuracy: '100%',
-          user_satisfaction: '95%'
+          user_satisfaction: '95%',
         },
         business_impact: {
           efficiency_gains: '50%',
           cost_reduction: '30%',
           time_savings: '60%',
-          accuracy_improvement: '95%'
+          accuracy_improvement: '95%',
         },
         technical_metrics: {
           api_availability: '99.9%',
           data_processing: '10,000+ records/minute',
           concurrent_users: '100+',
-          data_storage: '1TB+'
-        }
+          data_storage: '1TB+',
+        },
       };
-      
+
       fs.writeFileSync('demo-metrics.json', JSON.stringify(metrics, null, 2));
       console.log('✅ Created demo metrics');
-    }
+    },
   },
   {
     name: 'Create demo documentation',
@@ -180,12 +182,12 @@ const setupSteps = [
         marketplace: 'MARKETPLACE.md',
         api_docs: 'public/api-docs.html',
         user_guide: 'docs/user-guide.md',
-        technical_guide: 'docs/technical-guide.md'
+        technical_guide: 'docs/technical-guide.md',
       };
-      
+
       fs.writeFileSync('demo-documentation.json', JSON.stringify(docs, null, 2));
       console.log('✅ Created demo documentation index');
-    }
+    },
   },
   {
     name: 'Validate package.json',
@@ -196,7 +198,7 @@ const setupSteps = [
       } else {
         throw new Error('❌ Package.json not found');
       }
-    }
+    },
   },
   {
     name: 'Create demo startup script',
@@ -230,11 +232,11 @@ fi
 echo "🚀 Starting demo server..."
 npm run demo:start
 `;
-      
+
       fs.writeFileSync('start-demo.sh', startupScript);
       fs.chmodSync('start-demo.sh', '755');
       console.log('✅ Created demo startup script');
-    }
+    },
   },
   {
     name: 'Create demo health check',
@@ -246,35 +248,35 @@ npm run demo:start
           {
             name: 'Data Files',
             status: 'passed',
-            details: 'All Benton County data files validated'
+            details: 'All Benton County data files validated',
           },
           {
             name: 'Configuration',
             status: 'passed',
-            details: 'Demo configuration created successfully'
+            details: 'Demo configuration created successfully',
           },
           {
             name: 'User Accounts',
             status: 'passed',
-            details: 'Demo user accounts configured'
+            details: 'Demo user accounts configured',
           },
           {
             name: 'Scenarios',
             status: 'passed',
-            details: 'Demo scenarios ready'
+            details: 'Demo scenarios ready',
           },
           {
             name: 'Documentation',
             status: 'passed',
-            details: 'Demo documentation available'
-          }
-        ]
+            details: 'Demo documentation available',
+          },
+        ],
       };
-      
+
       fs.writeFileSync('demo-health.json', JSON.stringify(healthCheck, null, 2));
       console.log('✅ Created demo health check');
-    }
-  }
+    },
+  },
 ];
 
 console.log('\n🚀 Starting demo setup...\n');
@@ -284,17 +286,16 @@ try {
     console.log(`${index + 1}. ${step.name}...`);
     step.action();
   });
-  
+
   console.log('\n🎉 Demo setup completed successfully!');
   console.log('\n📋 Next steps:');
   console.log('1. Run: npm install');
   console.log('2. Run: npm run demo:start');
-  console.log('3. Open: http://localhost:3000');
+  console.log('3. Open: http://localhost:\${{TF_FRONTEND_PORT:-3000}}');
   console.log('4. Explore the demo scenarios and APIs');
-  
+
   console.log('\n🏆 Benton County Championship Demo is ready!');
-  
 } catch (error) {
   console.error('\n❌ Demo setup failed:', error.message);
   process.exit(1);
-} 
+}

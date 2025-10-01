@@ -1,7 +1,7 @@
 /**
  * Terrafusion OS 1.0 - Collaboration Service
  * Government-Grade Multi-User Collaboration Platform
- * 
+ *
  * Core service for managing enterprise collaboration functionality
  * with SignalR real-time integration and government compliance.
  */
@@ -22,7 +22,7 @@ import {
   TaskStatus,
   SessionType,
   NotificationType,
-  NotificationPriority
+  NotificationPriority,
 } from '../types/CollaborationTypes';
 
 export class CollaborationService {
@@ -43,19 +43,19 @@ export class CollaborationService {
    */
   async initialize(user: CollaborationUser): Promise<void> {
     this.currentUser = user;
-    
+
     try {
       this.connection = new HubConnectionBuilder()
         .withUrl(`${this.apiBaseUrl}${this.hubUrl}`, {
           headers: {
-            'Authorization': `Bearer ${this.getAuthToken()}`,
-            'User-Id': user.id
-          }
+            Authorization: `Bearer ${this.getAuthToken()}`,
+            'User-Id': user.id,
+          },
         })
         .withAutomaticReconnect({
           nextRetryDelayInMilliseconds: (retryContext) => {
             return Math.min(1000 * Math.pow(2, retryContext.previousRetryCount), 30000);
-          }
+          },
         })
         .configureLogging(LogLevel.Information)
         .build();
@@ -67,7 +67,7 @@ export class CollaborationService {
 
       // Join user's teams and projects
       await this.joinUserContext(user);
-      
+
       console.log('CollaborationService: Connected to SignalR hub');
     } catch (error) {
       console.error('CollaborationService: Failed to connect:', error);
@@ -136,7 +136,7 @@ export class CollaborationService {
     try {
       // Join user's personal channel
       await this.connection.invoke('JoinUserChannel', user.id);
-      
+
       // Join team channels
       const teams = await this.getUserTeams(user.id);
       for (const team of teams) {
@@ -174,21 +174,21 @@ export class CollaborationService {
   private emit(event: string, data: any): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
-      listeners.forEach(callback => callback(data));
+      listeners.forEach((callback) => callback(data));
     }
   }
 
   // User Management
   async getUsers(): Promise<CollaborationUser[]> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/users`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
 
   async getUser(userId: string): Promise<CollaborationUser> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/users/${userId}`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
@@ -197,7 +197,7 @@ export class CollaborationService {
     await fetch(`${this.apiBaseUrl}/collaboration/users/${userId}/status`, {
       method: 'PUT',
       headers: this.getHeaders(),
-      body: JSON.stringify({ isOnline })
+      body: JSON.stringify({ isOnline }),
     });
 
     if (this.connection && this.isConnected) {
@@ -208,14 +208,14 @@ export class CollaborationService {
   // Team Management
   async getTeams(): Promise<Team[]> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/teams`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
 
   async getUserTeams(userId: string): Promise<Team[]> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/users/${userId}/teams`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
@@ -224,7 +224,7 @@ export class CollaborationService {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/teams`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify(team)
+      body: JSON.stringify(team),
     });
     return response.json();
   }
@@ -233,7 +233,7 @@ export class CollaborationService {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/teams/${teamId}`, {
       method: 'PUT',
       headers: this.getHeaders(),
-      body: JSON.stringify(updates)
+      body: JSON.stringify(updates),
     });
     return response.json();
   }
@@ -242,7 +242,7 @@ export class CollaborationService {
     await fetch(`${this.apiBaseUrl}/collaboration/teams/${teamId}/members`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify({ userId, role })
+      body: JSON.stringify({ userId, role }),
     });
 
     if (this.connection && this.isConnected) {
@@ -253,7 +253,7 @@ export class CollaborationService {
   async removeTeamMember(teamId: string, userId: string): Promise<void> {
     await fetch(`${this.apiBaseUrl}/collaboration/teams/${teamId}/members/${userId}`, {
       method: 'DELETE',
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
 
     if (this.connection && this.isConnected) {
@@ -264,21 +264,21 @@ export class CollaborationService {
   // Project Management
   async getProjects(): Promise<Project[]> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/projects`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
 
   async getUserProjects(userId: string): Promise<Project[]> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/users/${userId}/projects`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
 
   async getProject(projectId: string): Promise<Project> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
@@ -287,16 +287,16 @@ export class CollaborationService {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/projects`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify(project)
+      body: JSON.stringify(project),
     });
-    
+
     const newProject = await response.json();
-    
+
     if (this.connection && this.isConnected) {
       await this.connection.invoke('JoinProjectChannel', newProject.id);
       await this.connection.invoke('NotifyProjectCreated', newProject);
     }
-    
+
     return newProject;
   }
 
@@ -304,15 +304,15 @@ export class CollaborationService {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}`, {
       method: 'PUT',
       headers: this.getHeaders(),
-      body: JSON.stringify(updates)
+      body: JSON.stringify(updates),
     });
-    
+
     const updatedProject = await response.json();
-    
+
     if (this.connection && this.isConnected) {
       await this.connection.invoke('NotifyProjectUpdated', updatedProject);
     }
-    
+
     return updatedProject;
   }
 
@@ -320,7 +320,7 @@ export class CollaborationService {
     await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}/status`, {
       method: 'PUT',
       headers: this.getHeaders(),
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status }),
     });
 
     if (this.connection && this.isConnected) {
@@ -331,7 +331,7 @@ export class CollaborationService {
   // Task Management
   async getTasks(projectId: string): Promise<Task[]> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}/tasks`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
@@ -340,14 +340,14 @@ export class CollaborationService {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}/tasks`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify(task)
+      body: JSON.stringify(task),
     });
-    
+
     const newTask = await response.json();
-    
+
     if (this.connection && this.isConnected) {
       await this.connection.invoke('NotifyTaskCreated', newTask);
-      
+
       if (newTask.assignee) {
         await this.sendNotification({
           type: NotificationType.TASK_ASSIGNED,
@@ -355,11 +355,11 @@ export class CollaborationService {
           title: 'New Task Assigned',
           message: `You have been assigned to task: ${newTask.title}`,
           priority: NotificationPriority.MEDIUM,
-          data: { taskId: newTask.id, projectId }
+          data: { taskId: newTask.id, projectId },
         });
       }
     }
-    
+
     return newTask;
   }
 
@@ -367,15 +367,15 @@ export class CollaborationService {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/tasks/${taskId}`, {
       method: 'PUT',
       headers: this.getHeaders(),
-      body: JSON.stringify(updates)
+      body: JSON.stringify(updates),
     });
-    
+
     const updatedTask = await response.json();
-    
+
     if (this.connection && this.isConnected) {
       await this.connection.invoke('NotifyTaskUpdated', updatedTask);
     }
-    
+
     return updatedTask;
   }
 
@@ -383,12 +383,12 @@ export class CollaborationService {
     await fetch(`${this.apiBaseUrl}/collaboration/tasks/${taskId}/status`, {
       method: 'PUT',
       headers: this.getHeaders(),
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status }),
     });
 
     if (this.connection && this.isConnected) {
       await this.connection.invoke('NotifyTaskStatusChanged', taskId, status);
-      
+
       if (status === TaskStatus.DONE) {
         const task = await this.getTask(taskId);
         await this.sendNotification({
@@ -397,7 +397,7 @@ export class CollaborationService {
           title: 'Task Completed',
           message: `Task "${task.title}" has been completed`,
           priority: NotificationPriority.MEDIUM,
-          data: { taskId, projectId: task.projectId }
+          data: { taskId, projectId: task.projectId },
         });
       }
     }
@@ -407,7 +407,7 @@ export class CollaborationService {
     await fetch(`${this.apiBaseUrl}/collaboration/tasks/${taskId}/assign`, {
       method: 'PUT',
       headers: this.getHeaders(),
-      body: JSON.stringify({ assigneeId })
+      body: JSON.stringify({ assigneeId }),
     });
 
     if (this.connection && this.isConnected) {
@@ -417,48 +417,60 @@ export class CollaborationService {
 
   async getTask(taskId: string): Promise<Task> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/tasks/${taskId}`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
 
   // Document Management
   async getDocuments(projectId: string): Promise<ProjectDocument[]> {
-    const response = await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}/documents`, {
-      headers: this.getHeaders()
-    });
+    const response = await fetch(
+      `${this.apiBaseUrl}/collaboration/projects/${projectId}/documents`,
+      {
+        headers: this.getHeaders(),
+      }
+    );
     return response.json();
   }
 
-  async createDocument(projectId: string, document: Partial<ProjectDocument>): Promise<ProjectDocument> {
-    const response = await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}/documents`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(document)
-    });
-    
+  async createDocument(
+    projectId: string,
+    document: Partial<ProjectDocument>
+  ): Promise<ProjectDocument> {
+    const response = await fetch(
+      `${this.apiBaseUrl}/collaboration/projects/${projectId}/documents`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(document),
+      }
+    );
+
     const newDocument = await response.json();
-    
+
     if (this.connection && this.isConnected) {
       await this.connection.invoke('NotifyDocumentCreated', newDocument);
     }
-    
+
     return newDocument;
   }
 
-  async updateDocument(documentId: string, updates: Partial<ProjectDocument>): Promise<ProjectDocument> {
+  async updateDocument(
+    documentId: string,
+    updates: Partial<ProjectDocument>
+  ): Promise<ProjectDocument> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/documents/${documentId}`, {
       method: 'PUT',
       headers: this.getHeaders(),
-      body: JSON.stringify(updates)
+      body: JSON.stringify(updates),
     });
-    
+
     const updatedDocument = await response.json();
-    
+
     if (this.connection && this.isConnected) {
       await this.connection.invoke('NotifyDocumentUpdated', updatedDocument);
     }
-    
+
     return updatedDocument;
   }
 
@@ -466,7 +478,7 @@ export class CollaborationService {
     await fetch(`${this.apiBaseUrl}/collaboration/documents/${documentId}/share`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify({ userIds })
+      body: JSON.stringify({ userIds }),
     });
 
     if (this.connection && this.isConnected) {
@@ -476,19 +488,22 @@ export class CollaborationService {
 
   // Real-time Collaboration Sessions
   async startSession(projectId: string, type: SessionType): Promise<CollaborationSession> {
-    const response = await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}/sessions`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({ type })
-    });
-    
+    const response = await fetch(
+      `${this.apiBaseUrl}/collaboration/projects/${projectId}/sessions`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ type }),
+      }
+    );
+
     const session = await response.json();
-    
+
     if (this.connection && this.isConnected) {
       await this.connection.invoke('JoinSession', session.id);
       await this.connection.invoke('NotifySessionStarted', session);
     }
-    
+
     return session;
   }
 
@@ -515,7 +530,7 @@ export class CollaborationService {
     await fetch(`${this.apiBaseUrl}/collaboration/notifications`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify(notification)
+      body: JSON.stringify(notification),
     });
 
     if (this.connection && this.isConnected) {
@@ -525,7 +540,7 @@ export class CollaborationService {
 
   async getNotifications(userId: string): Promise<CollaborationNotification[]> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/users/${userId}/notifications`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
@@ -533,7 +548,7 @@ export class CollaborationService {
   async markNotificationRead(notificationId: string): Promise<void> {
     await fetch(`${this.apiBaseUrl}/collaboration/notifications/${notificationId}/read`, {
       method: 'PUT',
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
@@ -542,23 +557,26 @@ export class CollaborationService {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/metrics`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify({ startDate, endDate })
+      body: JSON.stringify({ startDate, endDate }),
     });
     return response.json();
   }
 
   async getProjectMetrics(projectId: string): Promise<any> {
     const response = await fetch(`${this.apiBaseUrl}/collaboration/projects/${projectId}/metrics`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
     return response.json();
   }
 
   // Audit Trail
   async getAuditTrail(entityId: string, entityType: string): Promise<AuditEvent[]> {
-    const response = await fetch(`${this.apiBaseUrl}/collaboration/audit/${entityType}/${entityId}`, {
-      headers: this.getHeaders()
-    });
+    const response = await fetch(
+      `${this.apiBaseUrl}/collaboration/audit/${entityType}/${entityId}`,
+      {
+        headers: this.getHeaders(),
+      }
+    );
     return response.json();
   }
 
@@ -566,7 +584,7 @@ export class CollaborationService {
   private getHeaders(): HeadersInit {
     return {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.getAuthToken()}`
+      Authorization: `Bearer ${this.getAuthToken()}`,
     };
   }
 
@@ -588,7 +606,7 @@ export class CollaborationService {
   async healthCheck(): Promise<{ status: string; connection: string; timestamp: Date }> {
     const connectionState = this.getConnectionState();
     const timestamp = new Date();
-    
+
     try {
       if (this.connection && this.isConnected) {
         await this.connection.invoke('Ping');
@@ -597,7 +615,7 @@ export class CollaborationService {
     } catch (error) {
       console.error('CollaborationService health check failed:', error);
     }
-    
+
     return { status: 'unhealthy', connection: connectionState, timestamp };
   }
 }

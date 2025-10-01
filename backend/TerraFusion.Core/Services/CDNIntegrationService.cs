@@ -183,7 +183,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<string> GetOptimizedUrlAsync(string assetPath, CDNOptimizationOptions? options = null)
+        public Task<string> GetOptimizedUrlAsync(string assetPath, CDNOptimizationOptions? options = null)
         {
             try
             {
@@ -191,7 +191,7 @@ namespace TerraFusion.Core.Services
                 
                 if (options == null)
                 {
-                    return baseUrl;
+                    return Task.FromResult(baseUrl);
                 }
 
                 var queryParams = new List<string>();
@@ -224,12 +224,12 @@ namespace TerraFusion.Core.Services
                     : baseUrl;
 
                 _logger.LogDebug("Generated optimized URL: {Url}", optimizedUrl);
-                return optimizedUrl;
+                return Task.FromResult(optimizedUrl);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error generating optimized URL for asset: {AssetPath}", assetPath);
-                return assetPath; // Fallback to original path
+                return Task.FromResult(assetPath); // Fallback to original path
             }
         }
 
@@ -277,9 +277,9 @@ namespace TerraFusion.Core.Services
                 var stats = JsonSerializer.Deserialize<CDNStatistics>(content);
 
                 _logger.LogDebug("Retrieved CDN statistics: {HitRatio}% hit ratio, {Bandwidth} bytes bandwidth", 
-                    stats.HitRatio * 100, stats.BandwidthUsed);
+                    (stats?.HitRatio ?? 0) * 100, stats?.BandwidthUsed ?? 0);
 
-                return stats;
+                return stats ?? new CDNStatistics();
             }
             catch (Exception ex)
             {
@@ -322,8 +322,8 @@ namespace TerraFusion.Core.Services
                 var content = await response.Content.ReadAsStringAsync();
                 var locations = JsonSerializer.Deserialize<List<CDNEdgeLocation>>(content);
 
-                _logger.LogDebug("Retrieved {Count} CDN edge locations", locations.Count);
-                return locations;
+                _logger.LogDebug("Retrieved {Count} CDN edge locations", locations?.Count ?? 0);
+                return locations ?? new List<CDNEdgeLocation>();
             }
             catch (Exception ex)
             {
@@ -346,9 +346,9 @@ namespace TerraFusion.Core.Services
                 var metrics = JsonSerializer.Deserialize<CDNPerformanceMetrics>(content);
 
                 _logger.LogDebug("Retrieved performance metrics for path: {Path}, Avg response time: {ResponseTime}ms", 
-                    path, metrics.AverageResponseTime);
+                    path, metrics?.AverageResponseTime ?? 0);
 
-                return metrics;
+                return metrics ?? new CDNPerformanceMetrics { Path = path };
             }
             catch (Exception ex)
             {
@@ -391,7 +391,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<string> GenerateSignedUrlAsync(string path, TimeSpan expiration, string[]? allowedIPs = null)
+        public Task<string> GenerateSignedUrlAsync(string path, TimeSpan expiration, string[]? allowedIPs = null)
         {
             try
             {
@@ -421,7 +421,7 @@ namespace TerraFusion.Core.Services
                 var signedUrl = $"{baseUrl}?{string.Join("&", queryParams)}";
                 
                 _logger.LogDebug("Generated signed URL for path: {Path}, expires: {Expiration}", path, expiration);
-                return signedUrl;
+                return Task.FromResult(signedUrl);
             }
             catch (Exception ex)
             {

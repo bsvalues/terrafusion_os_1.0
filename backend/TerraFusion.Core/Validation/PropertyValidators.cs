@@ -87,7 +87,7 @@ public class PropertyCreateRequestValidator : AbstractValidator<PropertyCreateRe
         return Regex.IsMatch(address, @"^[A-Za-z0-9\s,\.\-'#]+$");
     }
 
-    private bool BeValidPropertyType(string propertyType)
+    private bool BeValidPropertyType(string? propertyType)
     {
         var validTypes = new[] { "Residential", "Commercial", "Agricultural", "Industrial" };
         return validTypes.Contains(propertyType, StringComparer.OrdinalIgnoreCase);
@@ -183,7 +183,7 @@ public class PropertyUpdateRequestValidator : AbstractValidator<PropertyUpdateRe
         return Regex.IsMatch(address, @"^[A-Za-z0-9\s,\.\-'#]+$");
     }
 
-    private bool BeValidPropertyType(string propertyType)
+    private bool BeValidPropertyType(string? propertyType)
     {
         var validTypes = new[] { "Residential", "Commercial", "Agricultural", "Industrial" };
         return validTypes.Contains(propertyType, StringComparer.OrdinalIgnoreCase);
@@ -302,13 +302,13 @@ public class PropertySearchRequestValidator : AbstractValidator<PropertySearchRe
         return Regex.IsMatch(text, @"^[A-Za-z0-9\s,\.\-'#\*\?]+$");
     }
 
-    private bool BeValidPropertyType(string propertyType)
+    private bool BeValidPropertyType(string? propertyType)
     {
         var validTypes = new[] { "Residential", "Commercial", "Agricultural", "Industrial" };
         return validTypes.Contains(propertyType, StringComparer.OrdinalIgnoreCase);
     }
 
-    private bool BeValidSortField(string sortField)
+    private bool BeValidSortField(string? sortField)
     {
         var validFields = new[] { "ParcelId", "Address", "AssessedValue", "YearBuilt", "PropertyType" };
         return validFields.Contains(sortField, StringComparer.OrdinalIgnoreCase);

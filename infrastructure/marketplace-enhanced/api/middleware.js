@@ -6,7 +6,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
 function requireAuth(req, res, next) {
   const auth = req.headers.authorization;
-  if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'Missing or invalid token' });
+  if (!auth || !auth.startsWith('Bearer '))
+    return res.status(401).json({ error: 'Missing or invalid token' });
   try {
     req.user = jwt.verify(auth.slice(7), JWT_SECRET);
     next();

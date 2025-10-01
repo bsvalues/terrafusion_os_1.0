@@ -1,0 +1,32 @@
+{
+  "security_scanning": {
+    "enabled": true,
+    "tools": [
+      {
+        "name": "npm-audit",
+        "enabled": true,
+        "fail_on": "high"
+      },
+      {
+        "name": "snyk",
+        "enabled": true,
+        "fail_on": "critical"
+      },
+      {
+        "name": "docker-security",
+        "enabled": true,
+        "base_image_check": true
+      }
+    ],
+    "government_standards": {
+      "FISMA": {
+        "enabled": true,
+        "level": "moderate"
+      },
+      "NIST_800_53": {
+        "enabled": true,
+        "controls": ["AC", "AU", "CM", "IA", "IR", "RA", "SC"]
+      }
+    }
+  }
+}

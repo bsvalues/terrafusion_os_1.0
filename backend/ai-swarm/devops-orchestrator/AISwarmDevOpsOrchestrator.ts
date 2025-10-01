@@ -1,3 +1,4 @@
+// NO HARDCODED PORTS! Use environment variables.
 /**
  * AI Swarm DevOps Orchestrator
  * Advanced DevOps automation using 1008-agent swarm for intelligent infrastructure management
@@ -10,7 +11,15 @@ import { aiAgentManager, AIAgent, AgentSwarm, TaskAssignment } from '../../.ai/c
 export interface DevOpsTask {
   id: string;
   name: string;
-  type: 'build' | 'test' | 'security' | 'performance' | 'deploy' | 'monitor' | 'validate' | 'optimize';
+  type:
+    | 'build'
+    | 'test'
+    | 'security'
+    | 'performance'
+    | 'deploy'
+    | 'monitor'
+    | 'validate'
+    | 'optimize';
   priority: 'low' | 'medium' | 'high' | 'critical';
   environment: 'development' | 'staging' | 'production';
   requirements: {
@@ -75,19 +84,19 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
 
   // DevOps Agent Specializations (1008 total agents)
   private readonly DEVOPS_AGENT_DISTRIBUTION = {
-    buildAutomation: 180,      // 17.9% - Build orchestration and optimization
-    securityScanning: 150,     // 14.9% - Security analysis and vulnerability detection
-    performanceTesting: 150,   // 14.9% - Performance validation and optimization
-    deploymentAgents: 144,     // 14.3% - Deployment automation and coordination
-    monitoringAgents: 126,     // 12.5% - Infrastructure monitoring and alerting
-    testOrchestration: 120,    // 11.9% - Test coordination and validation
-    harrisIntegration: 90,     // 8.9% - Harris PACS integration validation
-    devOpsCoordinators: 48,    // 4.8% - Cross-domain DevOps coordination
+    buildAutomation: 180, // 17.9% - Build orchestration and optimization
+    securityScanning: 150, // 14.9% - Security analysis and vulnerability detection
+    performanceTesting: 150, // 14.9% - Performance validation and optimization
+    deploymentAgents: 144, // 14.3% - Deployment automation and coordination
+    monitoringAgents: 126, // 12.5% - Infrastructure monitoring and alerting
+    testOrchestration: 120, // 11.9% - Test coordination and validation
+    harrisIntegration: 90, // 8.9% - Harris PACS integration validation
+    devOpsCoordinators: 48, // 4.8% - Cross-domain DevOps coordination
   };
 
   constructor(claudeFlowConfig?: ClaudeFlowMCPIntegration) {
     super();
-    
+
     this.claudeFlowIntegration = claudeFlowConfig || {
       enabled: true,
       toolsAvailable: 87,
@@ -97,13 +106,13 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         'performance-profiler',
         'deployment-coordinator',
         'monitoring-intelligence',
-        'harris-pacs-validator'
+        'harris-pacs-validator',
       ],
       endpoints: {
-        orchestration: 'http://claude-flow:8080/devops',
-        monitoring: 'http://claude-flow:8080/monitoring',
-        reporting: 'http://claude-flow:8080/reports'
-      }
+        orchestration: 'http://claude-flow:${TF_STATIC_PORT:-8080}/devops',
+        monitoring: 'http://claude-flow:${TF_STATIC_PORT:-8080}/monitoring',
+        reporting: 'http://claude-flow:${TF_STATIC_PORT:-8080}/reports',
+      },
     };
   }
 
@@ -115,30 +124,32 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
 
     console.log('🤖 AI Swarm DevOps Orchestrator initializing...');
     console.log(`   Total DevOps Agents: 1008`);
-    console.log(`   Claude-Flow MCP Integration: ${this.claudeFlowIntegration.enabled ? 'ENABLED' : 'DISABLED'}`);
-    
+    console.log(
+      `   Claude-Flow MCP Integration: ${this.claudeFlowIntegration.enabled ? 'ENABLED' : 'DISABLED'}`
+    );
+
     // Ensure AI Agent Manager is initialized
     await aiAgentManager.initialize();
-    
+
     // Create specialized DevOps swarms
     await this.createDevOpsSwarms();
-    
+
     // Initialize Claude-Flow MCP integration
     if (this.claudeFlowIntegration.enabled) {
       await this.initializeClaudeFlowIntegration();
     }
-    
+
     // Start DevOps automation loops
     this.startDevOpsAutomation();
-    
+
     // Initialize performance monitoring
     this.startPerformanceMonitoring();
-    
+
     this.isInitialized = true;
     console.log('✅ AI Swarm DevOps Orchestrator ready');
     console.log(`   Specialized swarms: ${this.devOpsSwarms.size}`);
     console.log(`   Claude-Flow tools: ${this.claudeFlowIntegration.toolsAvailable}`);
-    
+
     this.emit('devops-orchestrator-initialized');
   }
 
@@ -158,15 +169,15 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
           performanceAgents: 10,
           deploymentAgents: 3,
           monitoringAgents: 1,
-          coordinators: 1
+          coordinators: 1,
         },
         capabilities: [
           'parallel_build_execution',
           'dependency_optimization',
           'build_caching',
           'artifact_management',
-          'build_performance_analysis'
-        ]
+          'build_performance_analysis',
+        ],
       },
       {
         name: 'Security Scanning Swarm',
@@ -179,15 +190,15 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
           performanceAgents: 5,
           deploymentAgents: 10,
           monitoringAgents: 15,
-          coordinators: 2
+          coordinators: 2,
         },
         capabilities: [
           'vulnerability_scanning',
           'compliance_validation',
           'security_policy_enforcement',
           'threat_detection',
-          'penetration_testing'
-        ]
+          'penetration_testing',
+        ],
       },
       {
         name: 'Performance Testing Swarm',
@@ -200,15 +211,15 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
           performanceAgents: 100,
           deploymentAgents: 5,
           monitoringAgents: 25,
-          coordinators: 2
+          coordinators: 2,
         },
         capabilities: [
           'load_testing',
           'stress_testing',
           'performance_profiling',
           'bottleneck_identification',
-          'optimization_recommendations'
-        ]
+          'optimization_recommendations',
+        ],
       },
       {
         name: 'Deployment Coordination Swarm',
@@ -221,15 +232,15 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
           performanceAgents: 15,
           deploymentAgents: 100,
           monitoringAgents: 20,
-          coordinators: 3
+          coordinators: 3,
         },
         capabilities: [
           'blue_green_deployment',
           'canary_releases',
           'rollback_management',
           'environment_provisioning',
-          'configuration_management'
-        ]
+          'configuration_management',
+        ],
       },
       {
         name: 'Harris PACS Integration Swarm',
@@ -242,16 +253,16 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
           performanceAgents: 15,
           deploymentAgents: 10,
           monitoringAgents: 15,
-          coordinators: 1
+          coordinators: 1,
         },
         capabilities: [
           'harris_pacs_connectivity_testing',
           'data_synchronization_validation',
           'performance_optimization',
           'compliance_verification',
-          'integration_monitoring'
-        ]
-      }
+          'integration_monitoring',
+        ],
+      },
     ];
 
     for (const config of swarmConfigurations) {
@@ -291,8 +302,8 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         totalTasks: 0,
         completedTasks: 0,
         failedTasks: 0,
-        averageExecutionTime: 0
-      }
+        averageExecutionTime: 0,
+      },
     };
 
     return swarm;
@@ -304,7 +315,7 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
   private async initializeClaudeFlowIntegration(): Promise<void> {
     try {
       console.log('🔗 Initializing Claude-Flow MCP integration...');
-      
+
       // Test connectivity to Claude-Flow endpoints
       const endpoints = Object.values(this.claudeFlowIntegration.endpoints);
       for (const endpoint of endpoints) {
@@ -312,12 +323,14 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         console.log(`   Testing endpoint: ${endpoint}`);
         // In real implementation, would make HTTP requests
       }
-      
-      console.log(`✅ Claude-Flow MCP integration ready (${this.claudeFlowIntegration.toolsAvailable} tools)`);
-      
+
+      console.log(
+        `✅ Claude-Flow MCP integration ready (${this.claudeFlowIntegration.toolsAvailable} tools)`
+      );
+
       this.emit('claude-flow-integrated', {
         toolsCount: this.claudeFlowIntegration.toolsAvailable,
-        endpoints: this.claudeFlowIntegration.endpoints
+        endpoints: this.claudeFlowIntegration.endpoints,
       });
     } catch (error) {
       console.error('❌ Claude-Flow MCP integration failed:', error);
@@ -330,23 +343,23 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
    */
   async executeDevOpsTask(task: DevOpsTask): Promise<string> {
     console.log(`🚀 Executing DevOps task: ${task.name} (${task.type})`);
-    
+
     task.status = 'in_progress';
     task.metrics = {
       startTime: new Date(),
       agentsUsed: 0,
-      successRate: 0
+      successRate: 0,
     };
 
     // Find the most suitable swarm for this task
     const suitableSwarm = this.findSuitableSwarm(task);
-    
+
     if (!suitableSwarm) {
       throw new Error(`No suitable swarm found for task type: ${task.type}`);
     }
 
     console.log(`   Assigned to swarm: ${suitableSwarm.name}`);
-    
+
     // Create task assignment for the swarm
     const assignment: TaskAssignment = {
       taskId: task.id,
@@ -359,22 +372,22 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         ...task.payload,
         devOpsTask: true,
         environment: task.environment,
-        claudeFlowEnabled: this.claudeFlowIntegration.enabled
-      }
+        claudeFlowEnabled: this.claudeFlowIntegration.enabled,
+      },
     };
 
     // Execute the task through AI Agent Manager
     await aiAgentManager.assignTask(assignment);
-    
+
     this.activeTasks.set(task.id, task);
-    
+
     // If Claude-Flow is enabled, enhance with MCP tools
     if (this.claudeFlowIntegration.enabled) {
       await this.enhanceTaskWithClaudeFlow(task, suitableSwarm);
     }
 
     this.emit('devops-task-started', { task, swarm: suitableSwarm });
-    
+
     return task.id;
   }
 
@@ -383,30 +396,31 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
    */
   private findSuitableSwarm(task: DevOpsTask): AgentSwarm | undefined {
     const swarmPriorities = {
-      'build': ['build_automation', 'deployment_coordination'],
-      'test': ['performance_testing', 'security_scanning'],
-      'security': ['security_scanning', 'build_automation'],
-      'performance': ['performance_testing', 'deployment_coordination'],
-      'deploy': ['deployment_coordination', 'build_automation'],
-      'monitor': ['performance_testing', 'harris_pacs_integration'],
-      'validate': ['harris_pacs_integration', 'security_scanning'],
-      'optimize': ['performance_testing', 'build_automation']
+      build: ['build_automation', 'deployment_coordination'],
+      test: ['performance_testing', 'security_scanning'],
+      security: ['security_scanning', 'build_automation'],
+      performance: ['performance_testing', 'deployment_coordination'],
+      deploy: ['deployment_coordination', 'build_automation'],
+      monitor: ['performance_testing', 'harris_pacs_integration'],
+      validate: ['harris_pacs_integration', 'security_scanning'],
+      optimize: ['performance_testing', 'build_automation'],
     };
 
     const preferredSpecializations = swarmPriorities[task.type] || [];
-    
+
     for (const specialization of preferredSpecializations) {
       for (const swarm of this.devOpsSwarms.values()) {
-        if (swarm.purpose.toLowerCase().includes(specialization.replace('_', ' ')) && 
-            swarm.status === 'ready') {
+        if (
+          swarm.purpose.toLowerCase().includes(specialization.replace('_', ' ')) &&
+          swarm.status === 'ready'
+        ) {
           return swarm;
         }
       }
     }
 
     // Fallback to any available swarm
-    return Array.from(this.devOpsSwarms.values())
-      .find(swarm => swarm.status === 'ready');
+    return Array.from(this.devOpsSwarms.values()).find(swarm => swarm.status === 'ready');
   }
 
   /**
@@ -414,17 +428,17 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
    */
   private async enhanceTaskWithClaudeFlow(task: DevOpsTask, swarm: AgentSwarm): Promise<void> {
     console.log(`🔗 Enhancing task ${task.name} with Claude-Flow MCP tools`);
-    
+
     const mcpEnhancements = {
-      'build': ['build-optimizer', 'dependency-analyzer'],
-      'security': ['security-scanner', 'vulnerability-detector'],
-      'performance': ['performance-profiler', 'bottleneck-analyzer'],
-      'deploy': ['deployment-coordinator', 'environment-provisioner'],
-      'validate': ['harris-pacs-validator', 'integration-tester']
+      build: ['build-optimizer', 'dependency-analyzer'],
+      security: ['security-scanner', 'vulnerability-detector'],
+      performance: ['performance-profiler', 'bottleneck-analyzer'],
+      deploy: ['deployment-coordinator', 'environment-provisioner'],
+      validate: ['harris-pacs-validator', 'integration-tester'],
     };
 
     const relevantTools = mcpEnhancements[task.type] || [];
-    
+
     for (const tool of relevantTools) {
       if (this.claudeFlowIntegration.specialTools.includes(tool)) {
         console.log(`   Activating MCP tool: ${tool}`);
@@ -484,13 +498,13 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         minimumAgents: 10,
         estimatedDuration: 60000,
         dependencies: [],
-        resources: { cpu: 50, memory: 30, network: true }
+        resources: { cpu: 50, memory: 30, network: true },
       },
       payload: {
         automated: true,
-        healthCheck: true
+        healthCheck: true,
       },
-      status: 'pending'
+      status: 'pending',
     };
 
     await this.executeDevOpsTask(buildTask);
@@ -511,13 +525,13 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         minimumAgents: 20,
         estimatedDuration: 180000,
         dependencies: [],
-        resources: { cpu: 70, memory: 50, network: true }
+        resources: { cpu: 70, memory: 50, network: true },
       },
       payload: {
         automated: true,
-        scanType: 'comprehensive'
+        scanType: 'comprehensive',
       },
-      status: 'pending'
+      status: 'pending',
     };
 
     await this.executeDevOpsTask(securityTask);
@@ -538,14 +552,14 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         minimumAgents: 15,
         estimatedDuration: 300000,
         dependencies: [],
-        resources: { cpu: 80, memory: 60, network: true }
+        resources: { cpu: 80, memory: 60, network: true },
       },
       payload: {
         automated: true,
         validationType: 'comprehensive',
-        targetPerformance: '379x_improvement'
+        targetPerformance: '379x_improvement',
       },
-      status: 'pending'
+      status: 'pending',
     };
 
     await this.executeDevOpsTask(performanceTask);
@@ -561,7 +575,7 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
       activeTasks: this.activeTasks.size,
       queuedTasks: this.taskQueue.length,
       systemHealth: this.calculateSystemHealth(),
-      swarmPerformance: {}
+      swarmPerformance: {},
     };
 
     for (const [id, swarm] of this.devOpsSwarms) {
@@ -569,12 +583,12 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         name: swarm.name,
         status: swarm.status,
         agentCount: swarm.agents.length + 1, // +1 for coordinator
-        performance: swarm.performance
+        performance: swarm.performance,
       };
     }
 
     this.performanceMetrics.set(Date.now().toString(), metrics);
-    
+
     // Keep only last 100 metrics entries
     if (this.performanceMetrics.size > 100) {
       const oldestKey = this.performanceMetrics.keys().next().value;
@@ -588,7 +602,8 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
   private optimizeSwarmPerformance(): void {
     for (const swarm of this.devOpsSwarms.values()) {
       // Check if swarm needs scaling
-      if (swarm.performance.averageExecutionTime > 300000) { // 5 minutes
+      if (swarm.performance.averageExecutionTime > 300000) {
+        // 5 minutes
         console.log(`🔧 Optimizing performance for ${swarm.name}`);
         // In real implementation, would redistribute agents or scale resources
       }
@@ -617,9 +632,15 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
    */
   private getTotalAgents(config: DevOpsSwarmConfiguration): number {
     const allocation = config.agentAllocation;
-    return allocation.buildAgents + allocation.testAgents + allocation.securityAgents +
-           allocation.performanceAgents + allocation.deploymentAgents + 
-           allocation.monitoringAgents + allocation.coordinators;
+    return (
+      allocation.buildAgents +
+      allocation.testAgents +
+      allocation.securityAgents +
+      allocation.performanceAgents +
+      allocation.deploymentAgents +
+      allocation.monitoringAgents +
+      allocation.coordinators
+    );
   }
 
   /**
@@ -637,15 +658,15 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
         minimumAgents: 30,
         estimatedDuration: 240000, // 4 minutes
         dependencies: [],
-        resources: { cpu: 60, memory: 40, network: true }
+        resources: { cpu: 60, memory: 40, network: true },
       },
       payload: {
         validationType: 'harris_pacs',
         testConnectivity: true,
         validateDataSync: true,
-        checkCompliance: true
+        checkCompliance: true,
       },
-      status: 'pending'
+      status: 'pending',
     };
 
     return await this.executeDevOpsTask(harrisTask);
@@ -663,7 +684,7 @@ export class AISwarmDevOpsOrchestrator extends EventEmitter {
       systemHealth: this.calculateSystemHealth(),
       claudeFlowIntegration: this.claudeFlowIntegration,
       agentDistribution: this.DEVOPS_AGENT_DISTRIBUTION,
-      recentMetrics: Array.from(this.performanceMetrics.values()).slice(-5)
+      recentMetrics: Array.from(this.performanceMetrics.values()).slice(-5),
     };
   }
 }

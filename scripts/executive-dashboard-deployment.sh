@@ -14,10 +14,10 @@ echo "Date: $(date '+%Y-%m-%d %H:%M:%S')"
 echo ""
 
 # Dashboard Configuration
-DASHBOARD_PORT=3001
-METRICS_PORT=9091
-API_PORT=5000
-QUANTUM_METRICS_PORT=8088
+DASHBOARD_PORT=\${{TF_SHELL_PORT:-3001}}
+METRICS_PORT=\${{TF_SHELL_PORT:-3001}}
+API_PORT=\${{TF_SHELL_PORT:-3001}}
+QUANTUM_METRICS_PORT=\${{TF_SHELL_PORT:-3001}}
 
 echo "🔧 DASHBOARD CONFIGURATION:"
 echo "   📊 Dashboard URL:      http://localhost:$DASHBOARD_PORT"
@@ -73,10 +73,10 @@ cat > /tmp/dashboard-config.json << 'EOF'
     }
   },
   "dataSource": {
-    "api": "http://localhost:5000",
-    "metrics": "http://localhost:9091",
-    "quantum": "http://localhost:8088",
-    "websocket": "ws://localhost:5000/hub/os-core"
+    "api": "http://localhost:${TF_STATIC_PORT:-8080}",
+    "metrics": "http://localhost:${TF_STATIC_PORT:-8080}",
+    "quantum": "http://localhost:${TF_STATIC_PORT:-8080}",
+    "websocket": "ws://localhost:${TF_STATIC_PORT:-8080}/hub/os-core"
   },
   "panels": {
     "aiAgentStatus": {
@@ -129,7 +129,7 @@ EXPOSE 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3001/health || exit 1
+  CMD curl -f http://localhost:${TF_STATIC_PORT:-8080}/health || exit 1
 
 # Start dashboard
 CMD ["npm", "run", "start:executive"]
@@ -413,7 +413,7 @@ cat > /tmp/dashboard/package.json << 'EOF'
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:executive": "REACT_APP_TITLE='TerraFusion Executive Dashboard' PORT=3001 react-scripts start",
+    "start:executive": "REACT_APP_TITLE='TerraFusion Executive Dashboard' PORT=\${{TF_SHELL_PORT:-3001}} react-scripts start",
     "build": "react-scripts build",
     "build:executive": "REACT_APP_TITLE='TerraFusion Executive Dashboard' react-scripts build",
     "test": "react-scripts test",
@@ -536,7 +536,7 @@ docker build -f /tmp/Dockerfile.executive -t terrafusion-executive-dashboard /tm
 docker run -d \
   --name terrafusion-executive-dashboard \
   --network terrafusion-network \
-  -p $DASHBOARD_PORT:3001 \
+  -p $DASHBOARD_PORT:${TF_SHELL_PORT:-3103} \
   -v /tmp/dashboard-config.json:/app/config.json:ro \
   --restart unless-stopped \
   terrafusion-executive-dashboard
@@ -562,7 +562,7 @@ cat > /tmp/dashboard-api.js << 'EOF'
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const port = 3002;
+const port=\${{TF_CONSCIOUSNESS_PORT:-3002}};
 
 app.use(cors());
 app.use(express.json());
@@ -616,8 +616,8 @@ npm init -y
 npm install express cors --silent
 node dashboard-api.js &
 
-echo "   📊 Dashboard API: http://localhost:3002/api/executive/dashboard"
-echo "   🔗 Health endpoint: http://localhost:3002/health"
+echo "   📊 Dashboard API: http://localhost:${TF_STATIC_PORT:-8080}/api/executive/dashboard"
+echo "   🔗 Health endpoint: http://localhost:${TF_STATIC_PORT:-8080}/health"
 echo ""
 
 # Executive Access Instructions
@@ -691,4 +691,4 @@ echo "════════════════════════�
 
 # Log deployment success
 echo "$(date): Executive Dashboard deployed successfully at http://localhost:$DASHBOARD_PORT" >> /tmp/terrafusion_deployment.log
-echo "$(date): Dashboard API active at http://localhost:3002, health check passed" >> /tmp/terrafusion_deployment.log
+echo "$(date): Dashboard API active at http://localhost:${TF_STATIC_PORT:-8080}, health check passed" >> /tmp/terrafusion_deployment.log

@@ -1,0 +1,34 @@
+{
+  "id": "terra-insight",
+  "name": "Terra Insight",
+  "version": "1.0.0",
+  "type": "module",
+  "entry": "./index.js",
+  "description": "TerraFusion terra-insight module for government operations",
+  "category": "government",
+  "price": "$2300/year",
+  "author": "TerraFusion OS",
+  "marketplace": {
+    "featured": true,
+    "revenue_sharing": "70_30",
+    "compatibility": ["all_counties"],
+    "requirements": ["terrafusion_os_1.0"],
+    "rating": 4.7,
+    "downloads": 804
+  },
+  "endpoints": {
+    "health": "/modules/terra-insight/health",
+    "api": "/modules/terra-insight/api",
+    "ui": "/modules/terra-insight/ui"
+  },
+  "permissions": [
+    "government_data_access",
+    "county_system_integration",
+    "revenue_tracking"
+  ],
+  "hot_swap": {
+    "enabled": true,
+    "restart_required": false,
+    "dependencies": []
+  }
+}

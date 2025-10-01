@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion IDE - Government Development Environment</title>
+    <meta name="theme-color" content="#0b1020">
+    <meta name="description" content="TerraFusion IDE - Government Development Environment for TerraFusion OS modules">
+    <style>
+        /* TerraFusion Brand CSS Variables */
+        :root {
+            --tf-primary: #0099ff;
+            --tf-accent: #00ffaa;
+            --tf-transcend: #00ffee;
+            --tf-dark: #0b1020;
+            --tf-light: #ffffff;
+            --tf-spacing-xs: 4px;
+            --tf-spacing-sm: 8px;
+            --tf-spacing-md: 16px;
+            --tf-spacing-lg: 24px;
+            --tf-border-radius: 8px;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tf-dark);
+            color: var(--tf-light);
+        }
+        
+        #root {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+</body>
+</html>

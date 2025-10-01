@@ -2,7 +2,9 @@
 
 ## Overview
 
-Terrafusion is a comprehensive property valuation and analysis ecosystem built with a microservices architecture. The system consists of 9+ specialized applications working together through a unified backend API.
+Terrafusion is a comprehensive property valuation and analysis ecosystem built
+with a microservices architecture. The system consists of 9+ specialized
+applications working together through a unified backend API.
 
 ## Architecture Diagram
 
@@ -15,7 +17,7 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
              ▼                                    ▼
 ┌────────────────────────┐           ┌────────────────────────┐
 │   Frontend Apps        │           │    Backend API         │
-├────────────────────────┤           │    (Port 8080)         │
+├────────────────────────┤           │    (Port \${{TF_ADMIN_PORT:-8080}})         │
 │ • CostForge (3001)     │           ├────────────────────────┤
 │ • PropertyWorkbench    │           │ • Authentication       │
 │   (3002)               │◄──────────┤ • Property Data        │
@@ -37,7 +39,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
 
 ### Frontend Applications
 
-#### 1. CostForge (Port 3001)
+#### 1. CostForge (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: Enterprise construction cost management
 - **Tech Stack**: React 18.3.1, TypeScript 5.6.3, Vite 4.5.0
 - **Key Features**:
@@ -46,7 +49,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
   - Cost breakdown visualization
   - PDF report generation
 
-#### 2. PropertyWorkbench (Port 3002)
+#### 2. PropertyWorkbench (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: Property assessment and valuation tools
 - **Tech Stack**: React, Python backend integration
 - **Key Features**:
@@ -54,7 +58,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
   - County data synchronization
   - Property comparison tools
 
-#### 3. TerraInsight (Port 3003)
+#### 3. TerraInsight (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: Advanced analytics and insights
 - **Tech Stack**: React, D3.js visualizations
 - **Key Features**:
@@ -62,7 +67,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
   - Investment recommendations
   - Risk assessment
 
-#### 4. TerraFlow (Port 3005)
+#### 4. TerraFlow (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: Workflow automation and process management
 - **Tech Stack**: React, Node.js
 - **Key Features**:
@@ -70,7 +76,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
   - Task management
   - Integration pipelines
 
-#### 5. TerraAgent (Port 3006)
+#### 5. TerraAgent (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: AI agent orchestration platform
 - **Tech Stack**: React, AI/ML integration
 - **Key Features**:
@@ -78,7 +85,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
   - Task delegation
   - Intelligence gathering
 
-#### 6. TerraFusionSync (Port 3007)
+#### 6. TerraFusionSync (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: Data synchronization across the ecosystem
 - **Tech Stack**: React, WebSocket
 - **Key Features**:
@@ -86,7 +94,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
   - Conflict resolution
   - Data versioning
 
-#### 7. TerraLevy (Port 5006)
+#### 7. TerraLevy (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: Tax and assessment management
 - **Tech Stack**: React, Specialized tax APIs
 - **Key Features**:
@@ -94,7 +103,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
   - Assessment tracking
   - Compliance reporting
 
-#### 8. WebAuditTracker (Port 5007)
+#### 8. WebAuditTracker (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: Web audit and compliance tracking
 - **Tech Stack**: React, Monitoring tools
 - **Key Features**:
@@ -102,7 +112,8 @@ Terrafusion is a comprehensive property valuation and analysis ecosystem built w
   - Compliance checking
   - Report generation
 
-#### 9. TerraMiner (Port 5010)
+#### 9. TerraMiner (Port \${{TF_ADMIN_PORT:-8080}})
+
 - **Purpose**: Data mining and analytics
 - **Tech Stack**: React, Python analytics
 - **Key Features**:
@@ -151,6 +162,7 @@ The backend is built with Rust/Axum framework and provides:
 ### Docker Containerization
 
 Each component runs in its own Docker container:
+
 - Isolated environments
 - Resource management
 - Easy scaling
@@ -213,6 +225,7 @@ Each component runs in its own Docker container:
 ## Development Workflow
 
 1. **Local Development**
+
    ```bash
    npm run dev  # Start individual app
    docker-compose up  # Full stack
@@ -232,7 +245,7 @@ Each component runs in its own Docker container:
 
 All frontend applications communicate with the backend through RESTful APIs:
 
-- Base URL: `http://localhost:8080`
+- Base URL: `http://localhost:\${{TF_ADMIN_PORT:-8080}}`
 - Authentication: Bearer token in headers
 - Format: JSON
 - Versioning: `/api/v1/`
@@ -256,5 +269,5 @@ All frontend applications communicate with the backend through RESTful APIs:
 
 ---
 
-*Last Updated: August 2025*  
-*Version: 2.0*
+_Last Updated: August 2025_  
+_Version: 2.0_

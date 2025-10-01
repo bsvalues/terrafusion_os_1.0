@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- TerraFusion Smart Transportation Metadata -->
+    <title>TerraFusion Smart Transportation & Traffic Management</title>
+    <meta name="description" content="Intelligent Transportation Systems for Government Operations - Real-time traffic monitoring, signal optimization, transit coordination, and parking management for Benton County, Washington" />
+    <meta name="keywords" content="transportation, traffic management, intelligent transport, transit, parking, benton county, government services, terrafusion" />
+    <meta name="author" content="TerraFusion OS - Smart Transportation Division" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="TerraFusion Smart Transportation & Traffic Management" />
+    <meta property="og:description" content="Intelligent Transportation Systems for Government Operations" />
+    <meta property="og:url" content="http://localhost:5210" />
+    <meta property="og:site_name" content="TerraFusion OS" />
+    
+    <!-- Government/Emergency Contact Information -->
+    <meta name="emergency.contact" content="Benton County Transportation: (509) 735-3300" />
+    <meta name="government.agency" content="Benton County Transportation Authority" />
+    <meta name="service.coverage" content="Benton County, Washington - 1,703.4 sq mi" />
+    
+    <!-- Transportation-specific Meta Tags -->
+    <meta name="transport.corridors" content="Interstate 82, State Route 240, Columbia Drive, Keene Road, Richland Y" />
+    <meta name="transit.operator" content="Ben Franklin Transit" />
+    <meta name="traffic.signals" content="142 Smart Traffic Signals" />
+    <meta name="parking.spaces" content="8,430 Managed Parking Spaces" />
+    
+    <!-- PWA Configuration -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Smart Transportation" />
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#1e40af" />
+    <meta name="msapplication-TileColor" content="#1e40af" />
+    <meta name="msapplication-navbutton-color" content="#1e40af" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <style>
+      /* Transportation Loading Screen */
+      #transportation-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+      
+      .transport-loader {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      
+      .transport-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        animation: transport-pulse 2s infinite;
+      }
+      
+      @keyframes transport-pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+      }
+      
+      .loading-text {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      
+      .loading-subtitle {
+        font-size: 1rem;
+        opacity: 0.8;
+        margin-bottom: 2rem;
+      }
+      
+      .transport-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-info {
+        position: absolute;
+        bottom: 2rem;
+        text-align: center;
+        font-size: 0.875rem;
+        opacity: 0.7;
+      }
+      
+      .loading-info div {
+        margin-bottom: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Transportation Loading Screen -->
+    <div id="transportation-loading">
+      <div class="transport-loader">
+        <div class="transport-icon">🚦</div>
+        <div>
+          <div class="loading-text">TerraFusion Smart Transportation</div>
+          <div class="loading-subtitle">Initializing Intelligent Transport Systems</div>
+        </div>
+      </div>
+      
+      <div class="transport-spinner"></div>
+      
+      <div class="loading-info">
+        <div><strong>Benton County Transportation Authority</strong></div>
+        <div>Director: Michael Torres • (509) 735-3300</div>
+        <div>transportation@co.benton.wa.us</div>
+        <div style="margin-top: 1rem;">Coverage: 1,703.4 sq mi • 142 Smart Signals • 28 Transit Routes</div>
+      </div>
+    </div>
+    
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <script>
+      // Hide loading screen when app is ready
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const loadingScreen = document.getElementById('transportation-loading');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            setTimeout(function() {
+              loadingScreen.style.display = 'none';
+            }, 500);
+          }
+        }, 2000); // Show loading for 2 seconds minimum
+      });
+    </script>
+  </body>
+</html>

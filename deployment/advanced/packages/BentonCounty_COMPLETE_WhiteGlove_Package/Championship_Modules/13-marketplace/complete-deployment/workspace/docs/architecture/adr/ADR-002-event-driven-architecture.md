@@ -63,18 +63,18 @@ interface TerraFusionEvent {
 // Example event types
 enum EventTypes {
   // Tenant events
-  TENANT_CREATED = "tenant.created",
-  TENANT_UPDATED = "tenant.updated",
-  TENANT_SUSPENDED = "tenant.suspended",
+  TENANT_CREATED = 'tenant.created',
+  TENANT_UPDATED = 'tenant.updated',
+  TENANT_SUSPENDED = 'tenant.suspended',
 
   // Workflow events
-  WORKFLOW_STARTED = "workflow.started",
-  WORKFLOW_COMPLETED = "workflow.completed",
-  WORKFLOW_FAILED = "workflow.failed",
+  WORKFLOW_STARTED = 'workflow.started',
+  WORKFLOW_COMPLETED = 'workflow.completed',
+  WORKFLOW_FAILED = 'workflow.failed',
 
   // Quantum events
-  QUANTUM_JOB_SUBMITTED = "quantum.job.submitted",
-  QUANTUM_JOB_COMPLETED = "quantum.job.completed",
+  QUANTUM_JOB_SUBMITTED = 'quantum.job.submitted',
+  QUANTUM_JOB_COMPLETED = 'quantum.job.completed',
 }
 ```
 
@@ -91,33 +91,33 @@ export class EventBus {
 
     // Publish to RabbitMQ
     await this.channel.publish(
-      "terrafusion.events",
+      'terrafusion.events',
       event.type,
       Buffer.from(JSON.stringify(event)),
       {
         persistent: true,
         headers: {
-          "x-tenant-id": event.tenantId,
-          "x-correlation-id": event.correlationId,
+          'x-tenant-id': event.tenantId,
+          'x-correlation-id': event.correlationId,
         },
-      },
+      }
     );
   }
 
   async subscribe(
     eventType: string,
-    handler: (event: TerraFusionEvent) => Promise<void>,
+    handler: (event: TerraFusionEvent) => Promise<void>
   ): Promise<void> {
     await this.channel.assertQueue(`${this.serviceName}.${eventType}`);
     await this.channel.bindQueue(
       `${this.serviceName}.${eventType}`,
-      "terrafusion.events",
-      eventType,
+      'terrafusion.events',
+      eventType
     );
 
     await this.channel.consume(
       `${this.serviceName}.${eventType}`,
-      async (msg) => {
+      async msg => {
         const event = JSON.parse(msg.content.toString());
         try {
           await handler(event);
@@ -125,7 +125,7 @@ export class EventBus {
         } catch (error) {
           await this.handleError(error, event, msg);
         }
-      },
+      }
     );
   }
 }
@@ -153,7 +153,7 @@ export class TenantProvisioningSaga {
         completedSteps.push(i);
 
         await this.eventBus.publish({
-          type: "saga.step.completed",
+          type: 'saga.step.completed',
           payload: { sagaId, step: i },
         });
       }

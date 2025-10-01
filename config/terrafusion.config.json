@@ -6,9 +6,9 @@
     "modules": "PluginArchitecture"
   },
   "endpoints": {
-    "core": "ws://localhost:7000/terrafusion/core",
-    "modules": "ws://localhost:7001/terrafusion/modules",
-    "marketplace": "ws://localhost:7002/terrafusion/marketplace"
+    "core": "ws://localhost:\${{TF_PORT_7000:-7000}}/terrafusion/core",
+    "modules": "ws://localhost:\${{TF_PORT_7000:-7000}}/terrafusion/modules",
+    "marketplace": "ws://localhost:\${{TF_PORT_7000:-7000}}/terrafusion/marketplace"
   },
   "communication": {
     "primary": "websocket",

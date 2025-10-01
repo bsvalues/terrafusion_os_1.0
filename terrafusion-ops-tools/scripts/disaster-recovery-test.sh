@@ -298,7 +298,7 @@ test_application_failover() {
     log "Testing application failover..."
     
     # Check current application health
-    if ! curl -sf http://localhost:8080/health &>/dev/null; then
+    if ! curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &>/dev/null; then
         log_error "Application is not healthy before failover test"
         return 1
     fi
@@ -310,7 +310,7 @@ test_application_failover() {
         sleep 10
         
         # Try to access application (should fail)
-        if curl -sf http://localhost:8080/health &>/dev/null; then
+        if curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &>/dev/null; then
             log_error "Application still responding after simulated failure"
             return 1
         fi
@@ -326,7 +326,7 @@ test_application_failover() {
         local wait_time=0
         
         while [ $wait_time -lt $max_wait ]; do
-            if curl -sf http://localhost:8080/health &>/dev/null; then
+            if curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &>/dev/null; then
                 log_success "Failover completed successfully in ${wait_time}s"
                 return 0
             fi
@@ -394,9 +394,9 @@ test_recovery_time_objective() {
             fi
             
             # Check if all services are healthy
-            if curl -sf http://localhost:8080/health &>/dev/null && \
-               curl -sf http://localhost:8001/health &>/dev/null && \
-               curl -sf http://localhost:3003/health &>/dev/null; then
+            if curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &>/dev/null && \
+               curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &>/dev/null && \
+               curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/health &>/dev/null; then
                 log_success "RTO met: Full recovery in ${elapsed}s (target: ${RECOVERY_TIME_OBJECTIVE}s)"
                 return 0
             fi
@@ -414,13 +414,13 @@ test_monitoring_during_dr() {
     log "Testing monitoring and alerting during DR..."
     
     # Check if monitoring stack is running
-    if ! curl -sf http://localhost:9090/api/v1/query?query=up &>/dev/null; then
+    if ! curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/v1/query?query=up &>/dev/null; then
         log_error "Prometheus is not accessible"
         return 1
     fi
     
     # Check critical alerts
-    local alerts=$(curl -sf http://localhost:9090/api/v1/alerts | jq -r '.data.alerts[] | select(.state=="firing") | .labels.alertname' 2>/dev/null | wc -l)
+    local alerts=$(curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/v1/alerts | jq -r '.data.alerts[] | select(.state=="firing") | .labels.alertname' 2>/dev/null | wc -l)
     
     if [ "$alerts" -gt 0 ]; then
         log_warning "Found $alerts active alerts during DR test"
@@ -429,7 +429,7 @@ test_monitoring_during_dr() {
     fi
     
     # Test alert manager
-    if curl -sf http://localhost:9093/api/v1/status &>/dev/null; then
+    if curl -sf http://localhost:\${{TF_ADMIN_PORT:-8080}}/api/v1/status &>/dev/null; then
         log_success "AlertManager is operational"
     else
         log_error "AlertManager is not accessible"

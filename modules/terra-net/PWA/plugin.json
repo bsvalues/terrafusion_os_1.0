@@ -1,0 +1,35 @@
+{
+  "name": "terra-net",
+  "displayName": "Terra Net",
+  "description": "Network infrastructure and cybersecurity management system",
+  "version": "1.0.0",
+  "status": "active",
+  "tier": "Tier 1",
+  "category": "networking",
+  "author": "TerraFusion OS",
+  "port": 5141,
+  "pricing": {
+    "basePrice": 279,
+    "subscriptionModel": "monthly",
+    "enterprise": true
+  },
+  "endpoints": {
+    "health": "/health",
+    "api": "/api",
+    "ui": "/ui"
+  },
+  "dependencies": [],
+  "capabilities": [
+    "network-management",
+    "cybersecurity",
+    "infrastructure-monitoring",
+    "threat-detection",
+    "secure-communications"
+  ],
+  "configuration": {
+    "autoStart": true,
+    "hotSwappable": true,
+    "governmentCompliant": true,
+    "security": "government-grade"
+  }
+}

@@ -49,9 +49,9 @@ export type SpeciesType = 'carbon' | 'silicon' | 'quantum' | 'hybrid';
 export type SpeciesIdentifier = SpeciesType;
 export enum MessagePriority {
   LOW = 'low',
-  NORMAL = 'normal', 
+  NORMAL = 'normal',
   HIGH = 'high',
-  URGENT = 'urgent'
+  URGENT = 'urgent',
 }
 
 export interface UniversalMessage {

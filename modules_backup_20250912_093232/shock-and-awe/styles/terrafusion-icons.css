@@ -1,0 +1,286 @@
+/* TerraFusion Custom Icon System */
+/* Based on Official Brand Kit - No Generic Emojis */
+
+:root {
+  /* Official TerraFusion Colors from Brand Kit */
+  --tf-trust-blue: #0099ff;
+  --tf-transcend-cyan: #00ffee; 
+  --tf-success-green: #00ffaa;
+  --tf-deep-space: #0b1020;
+  --tf-midnight: #1a1f3a;
+}
+
+/* TerraFusion Logo Orb - Primary Brand Element */
+.tf-logo-orb {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--tf-trust-blue) 0%, var(--tf-transcend-cyan) 50%, var(--tf-success-green) 100%);
+  position: relative;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 238, 0.5),
+    inset 0 0 10px rgba(255, 255, 255, 0.2);
+  animation: tf-pulse 3s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tf-logo-orb::after {
+  content: 'TF';
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Feature Icon Variants for Large Display */
+.feature-icon-tf {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--tf-trust-blue) 0%, var(--tf-transcend-cyan) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 
+    0 8px 24px rgba(0, 255, 238, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.feature-icon-tf::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.feature-icon-tf:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 
+    0 16px 40px rgba(0, 255, 238, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Custom TerraFusion Visual Elements */
+.tf-costforge-icon::after { content: 'CF'; color: white; font-size: 16px; font-weight: 700; }
+.tf-gis-icon::after { content: 'GIS'; color: white; font-size: 14px; font-weight: 700; }
+.tf-levy-icon::after { content: 'TL'; color: white; font-size: 16px; font-weight: 700; }
+.tf-swarm-icon::after { content: 'AI'; color: white; font-size: 16px; font-weight: 700; }
+.tf-miner-icon::after { content: 'TM'; color: white; font-size: 16px; font-weight: 700; }
+.tf-hybrid-icon::after { content: 'HL'; color: white; font-size: 16px; font-weight: 700; }
+
+/* Specific Gradients for Each Module */
+.tf-costforge-icon {
+  background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+}
+
+.tf-gis-icon {
+  background: linear-gradient(135deg, #4caf50 0%, #1b5e20 100%);
+}
+
+.tf-levy-icon {
+  background: linear-gradient(135deg, #3f51b5 0%, #1a237e 100%);
+}
+
+.tf-swarm-icon {
+  background: linear-gradient(135deg, var(--tf-transcend-cyan) 0%, var(--tf-trust-blue) 100%);
+}
+
+.tf-miner-icon {
+  background: linear-gradient(135deg, #795548 0%, #3e2723 100%);
+}
+
+.tf-hybrid-icon {
+  background: linear-gradient(135deg, var(--tf-success-green) 0%, #2e7d32 100%);
+}
+
+/* Government Specific Icons */
+.tf-icon-government::before { content: "🏛️"; }
+.tf-icon-property::before { content: "🏠"; }
+.tf-icon-assessment::before { content: "📋"; }
+.tf-icon-tax::before { content: "💵"; }
+.tf-icon-compliance::before { content: "✅"; }
+.tf-icon-audit::before { content: "📊"; }
+
+/* Action Icons */
+.tf-icon-calculate::before { content: "🧮"; }
+.tf-icon-analyze::before { content: "📈"; }
+.tf-icon-optimize::before { content: "⚙️"; }
+.tf-icon-process::before { content: "⚡"; }
+.tf-icon-secure::before { content: "🔒"; }
+.tf-icon-report::before { content: "📄"; }
+
+/* Status Icons */
+.tf-icon-success::before { content: "✅"; color: var(--tf-success-green); }
+.tf-icon-warning::before { content: "⚠️"; color: #ffd93d; }
+.tf-icon-error::before { content: "❌"; color: #ff6b6b; }
+.tf-icon-info::before { content: "ℹ️"; color: var(--tf-transcend-cyan); }
+
+/* Animated Icons */
+.tf-icon-loading::before { 
+    content: "⏳"; 
+    animation: tf-spin 1s linear infinite;
+}
+
+.tf-icon-processing::before { 
+    content: "⚡"; 
+    animation: tf-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tf-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes tf-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* Gradient Icons */
+.tf-icon-gradient {
+    background: var(--tf-gradient-clarity);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Icon Sizes */
+.tf-icon-xs { font-size: 0.75rem; }
+.tf-icon-sm { font-size: 0.875rem; }
+.tf-icon-md { font-size: 1rem; }
+.tf-icon-lg { font-size: 1.25rem; }
+.tf-icon-xl { font-size: 1.5rem; }
+.tf-icon-2xl { font-size: 2rem; }
+.tf-icon-3xl { font-size: 3rem; }
+
+/* Icon Colors */
+.tf-icon-primary { color: var(--tf-trust-blue); }
+.tf-icon-transcend { color: var(--tf-transcend-cyan); }
+.tf-icon-success { color: var(--tf-success-green); }
+.tf-icon-white { color: white; }
+
+/* Icon Effects */
+.tf-icon-glow {
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+.tf-icon-hover:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+/* TerraFusion Logo Component */
+.tf-logo-orb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--tf-gradient-clarity);
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    position: relative;
+    margin-right: 0.75rem;
+}
+
+.tf-logo-orb::before {
+    content: 'TF';
+}
+
+.tf-logo-orb::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    background: var(--tf-gradient-clarity);
+    opacity: 0.3;
+    z-index: -1;
+    filter: blur(8px);
+}
+
+/* Legacy Icon Mapping - Replace old icon- classes with TerraFusion icons */
+.icon-rocket { @extend .tf-icon-rocket; }
+.icon-brain { @extend .tf-icon-brain; }
+.icon-quantum { @extend .tf-icon-quantum; }
+.icon-shield { @extend .tf-icon-shield; }
+.icon-analytics { @extend .tf-icon-analytics; }
+.icon-integration { @extend .tf-icon-integration; }
+.icon-mobile { @extend .tf-icon-mobile; }
+.icon-location { @extend .tf-icon-location; }
+.icon-lightning { @extend .tf-icon-lightning; }
+.icon-search { @extend .tf-icon-search; }
+.icon-check { @extend .tf-icon-check; }
+.icon-phone { @extend .tf-icon-phone; }
+.icon-email { @extend .tf-icon-email; }
+.icon-linkedin { @extend .tf-icon-linkedin; }
+.icon-twitter { @extend .tf-icon-twitter; }
+.icon-github { @extend .tf-icon-github; }
+.icon-mining { @extend .tf-icon-mining; }
+
+/* Alternative approach for browsers that don't support @extend */
+.icon-rocket::before, .tf-icon-rocket::before { content: "🚀"; }
+.icon-brain::before, .tf-icon-brain::before { content: "🧠"; }
+.icon-quantum::before, .tf-icon-quantum::before { content: "⚛️"; }
+.icon-shield::before, .tf-icon-shield::before { content: "🛡️"; }
+.icon-analytics::before, .tf-icon-analytics::before { content: "📊"; }
+.icon-integration::before, .tf-icon-integration::before { content: "🔗"; }
+.icon-mobile::before, .tf-icon-mobile::before { content: "📱"; }
+.icon-location::before, .tf-icon-location::before { content: "📍"; }
+.icon-lightning::before, .tf-icon-lightning::before { content: "⚡"; }
+.icon-search::before, .tf-icon-search::before { content: "🔍"; }
+.icon-check::before, .tf-icon-check::before { content: "✅"; }
+.icon-phone::before, .tf-icon-phone::before { content: "📞"; }
+.icon-email::before, .tf-icon-email::before { content: "📧"; }
+.icon-linkedin::before, .tf-icon-linkedin::before { content: "💼"; }
+.icon-twitter::before, .tf-icon-twitter::before { content: "🐦"; }
+.icon-github::before, .tf-icon-github::before { content: "👨‍💻"; }
+.icon-mining::before, .tf-icon-mining::before { content: "⛏️"; }
+
+/* Make all icons use TerraFusion styling */
+[class^="icon-"], [class*=" icon-"] {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    width: 1em;
+    height: 1em;
+    text-align: center;
+}
+
+/* Logo replacement */
+.logo, .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo::before, .footer-logo::before {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--tf-gradient-clarity);
+    position: relative;
+}
+
+.logo::after, .footer-logo::after {
+    content: 'TF';
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    pointer-events: none;
+}

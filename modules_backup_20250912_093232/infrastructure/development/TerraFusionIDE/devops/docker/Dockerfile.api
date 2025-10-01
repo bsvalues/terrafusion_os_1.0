@@ -1,0 +1,66 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
+WORKDIR /app
+EXPOSE 5000
+
+# Install necessary packages for production
+RUN apk add --no-cache \
+    icu-libs \
+    libgcc \
+    libstdc++ \
+    && addgroup -g 1001 -S appuser \
+    && adduser -u 1001 -S appuser -G appuser
+
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+WORKDIR /src
+
+# Copy project files
+COPY ["backend/TerraFusion.API/TerraFusion.API.csproj", "backend/TerraFusion.API/"]
+COPY ["backend/TerraFusion.Core/TerraFusion.Core.csproj", "backend/TerraFusion.Core/"]
+COPY ["backend/TerraFusion.Data/TerraFusion.Data.csproj", "backend/TerraFusion.Data/"]
+COPY ["backend/TerraFusion.AI/TerraFusion.AI.csproj", "backend/TerraFusion.AI/"]
+COPY ["backend/TerraFusion.Marketplace/TerraFusion.Marketplace.csproj", "backend/TerraFusion.Marketplace/"]
+
+# Restore dependencies
+RUN dotnet restore "backend/TerraFusion.API/TerraFusion.API.csproj"
+
+# Copy source code
+COPY . .
+
+# Build the application
+WORKDIR "/src/backend/TerraFusion.API"
+RUN dotnet build "TerraFusion.API.csproj" -c Release -o /app/build
+
+# Publish the application
+FROM build AS publish
+RUN dotnet publish "TerraFusion.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Production stage
+FROM base AS final
+WORKDIR /app
+
+# Copy published application
+COPY --from=publish /app/publish .
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/config /app/data
+
+# Set ownership
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:5000/health/live || exit 1
+
+# Default command
+ENTRYPOINT ["dotnet", "TerraFusion.API.dll"]
+
+

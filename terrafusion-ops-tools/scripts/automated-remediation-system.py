@@ -79,7 +79,7 @@ class AutomatedRemediationSystem:
     def __init__(self):
         self.session_id = f"remediation_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         
         # Initialize external clients
         self.docker_client = docker.from_env()
@@ -710,7 +710,7 @@ class AutomatedRemediationSystem:
             try:
                 # Send cache clear signal to application
                 async with aiohttp.ClientSession() as session:
-                    async with session.post('http://localhost:8000/api/admin/clear-cache') as response:
+                    async with session.post('http://localhost:\${{TF_DOCS_PORT:-8000}}/api/admin/clear-cache') as response:
                         if response.status == 200:
                             self.logger.info("Application cache cleared successfully")
                         else:
@@ -772,7 +772,7 @@ class AutomatedRemediationSystem:
             # Signal application to reset its connection pools
             try:
                 async with aiohttp.ClientSession() as session:
-                    async with session.post('http://localhost:8000/api/admin/reset-db-pool') as response:
+                    async with session.post('http://localhost:\${{TF_DOCS_PORT:-8000}}/api/admin/reset-db-pool') as response:
                         if response.status == 200:
                             self.logger.info("Application database pool reset successfully")
             except:

@@ -1,0 +1,30 @@
+{
+  "dashboard": {
+    "name": "TerraFusion DevOps Dashboard",
+    "version": "2.0.0",
+    "panels": [
+      {
+        "name": "Pipeline Success Rate",
+        "type": "gauge",
+        "target": 95,
+        "critical": 85
+      },
+      {
+        "name": "Deployment Frequency",
+        "type": "counter",
+        "period": "daily"
+      },
+      {
+        "name": "Mean Time to Recovery",
+        "type": "histogram",
+        "target": 30
+      },
+      {
+        "name": "Security Compliance Score",
+        "type": "gauge",
+        "target": 98,
+        "critical": 90
+      }
+    ]
+  }
+}

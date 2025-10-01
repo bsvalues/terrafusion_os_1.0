@@ -152,14 +152,14 @@ function Start-Demo {
 function Show-Service-Status {
     Write-Host "🌐 Service URLs:" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "Frontend:          http://localhost:3000" -ForegroundColor Green
-    Write-Host "Backend API:       http://localhost:5000" -ForegroundColor Green
-    Write-Host "Health Check:      http://localhost:5000/health" -ForegroundColor Green
-    Write-Host "API Test:          http://localhost:5000/api/test" -ForegroundColor Green
-    Write-Host "Grafana:           http://localhost:3001 (admin/terrafusion_dev_2024)" -ForegroundColor Blue
-    Write-Host "Prometheus:        http://localhost:9090" -ForegroundColor Blue
-    Write-Host "Database:          localhost:5432" -ForegroundColor Gray
-    Write-Host "Redis:             localhost:6379" -ForegroundColor Gray
+    Write-Host "Frontend:          http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Green
+    Write-Host "Backend API:       http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Green
+    Write-Host "Health Check:      http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health" -ForegroundColor Green
+    Write-Host "API Test:          http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/test" -ForegroundColor Green
+    Write-Host "Grafana:           http://localhost:\${{TF_FRONTEND_PORT:-3000}} (admin/terrafusion_dev_2024)" -ForegroundColor Blue
+    Write-Host "Prometheus:        http://localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Blue
+    Write-Host "Database:          localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Gray
+    Write-Host "Redis:             localhost:\${{TF_FRONTEND_PORT:-3000}}" -ForegroundColor Gray
     Write-Host ""
     
     Write-Host "📊 Container Status:" -ForegroundColor Cyan

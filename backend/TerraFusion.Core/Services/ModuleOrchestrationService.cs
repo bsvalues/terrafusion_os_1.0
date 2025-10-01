@@ -458,8 +458,11 @@ namespace TerraFusion.Core.Services
                     return false;
                 }
 
-                // Update instance count
-                _moduleInstanceCounts[moduleId] = targetInstances;
+                // Update instance count - this could be async in a real distributed system
+                await AsyncTask.Run(() => 
+                {
+                    _moduleInstanceCounts[moduleId] = targetInstances;
+                });
 
                 // Log the scaling operation
                 _communicationLogs.Enqueue(new ModuleCommunicationLog
@@ -489,16 +492,19 @@ namespace TerraFusion.Core.Services
         /// </summary>
         public async Task<ModulePerformanceMetrics> GetModuleMetrics(string moduleId)
         {
-            if (_moduleMetrics.TryGetValue(moduleId, out var metrics))
+            return await AsyncTask.Run(() =>
             {
-                return metrics;
-            }
+                if (_moduleMetrics.TryGetValue(moduleId, out var metrics))
+                {
+                    return metrics;
+                }
 
-            return new ModulePerformanceMetrics
-            {
-                ModuleId = moduleId,
-                LastMetricsUpdate = DateTime.MinValue
-            };
+                return new ModulePerformanceMetrics
+                {
+                    ModuleId = moduleId,
+                    LastMetricsUpdate = DateTime.MinValue
+                };
+            });
         }
 
         /// <summary>
@@ -506,10 +512,12 @@ namespace TerraFusion.Core.Services
         /// </summary>
         public async Task<bool> UpdateModuleDependencies(string moduleId, List<string> dependencies)
         {
-            _logger.LogInformation("🔄 Updating dependencies for module {ModuleId}", moduleId);
-
-            try
+            return await AsyncTask.Run(async () =>
             {
+                _logger.LogInformation("🔄 Updating dependencies for module {ModuleId}", moduleId);
+
+                try
+                {
                 if (!_registeredModules.TryGetValue(moduleId, out var module))
                 {
                     return false;
@@ -537,35 +545,37 @@ namespace TerraFusion.Core.Services
                 
                 return true;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Error updating dependencies for module: {ModuleId}", moduleId);
-                return false;
-            }
-        }
-
-        /// <summary>
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "❌ Error updating dependencies for module: {ModuleId}", moduleId);
+                    return false;
+                }
+            });
+        }        /// <summary>
         /// Get module communication logs
         /// </summary>
         public async Task<List<ModuleCommunicationLog>> GetModuleCommunicationLogs(int count = 100)
         {
-            var logs = new List<ModuleCommunicationLog>();
-            var tempQueue = new Queue<ModuleCommunicationLog>();
-            
-            // Extract logs from concurrent queue
-            while (_communicationLogs.TryDequeue(out var log) && logs.Count < count)
+            return await AsyncTask.Run(() =>
             {
-                logs.Add(log);
-                tempQueue.Enqueue(log);
-            }
-            
-            // Restore logs to queue (keep them for other consumers)
-            while (tempQueue.Count > 0)
-            {
-                _communicationLogs.Enqueue(tempQueue.Dequeue());
-            }
-            
-            return logs.OrderByDescending(l => l.Timestamp).ToList();
+                var logs = new List<ModuleCommunicationLog>();
+                var tempQueue = new Queue<ModuleCommunicationLog>();
+                
+                // Extract logs from concurrent queue
+                while (_communicationLogs.TryDequeue(out var log) && logs.Count < count)
+                {
+                    logs.Add(log);
+                    tempQueue.Enqueue(log);
+                }
+                
+                // Restore logs to queue (keep them for other consumers)
+                while (tempQueue.Count > 0)
+                {
+                    _communicationLogs.Enqueue(tempQueue.Dequeue());
+                }
+                
+                return logs.OrderByDescending(l => l.Timestamp).ToList();
+            });
         }
 
         // Private implementation methods
@@ -709,11 +719,14 @@ namespace TerraFusion.Core.Services
 
         private async AsyncTask InitializeModuleCommunication()
         {
-            // Setup message passing infrastructure
-            // Initialize service discovery
-            // Setup health check endpoints
-            
-            _logger.LogInformation("🔗 Inter-module communication channels established");
+            await AsyncTask.Run(() =>
+            {
+                // Setup message passing infrastructure
+                // Initialize service discovery
+                // Setup health check endpoints
+                
+                _logger.LogInformation("🔗 Inter-module communication channels established");
+            });
         }
 
         private void StartOrchestrationServices()
@@ -735,35 +748,43 @@ namespace TerraFusion.Core.Services
 
         private async System.Threading.Tasks.Task<(bool IsValid, List<string> Issues)> ValidateModuleRegistration(ModuleRegistration registration)
         {
-            var issues = new List<string>();
-            
-            if (string.IsNullOrEmpty(registration.ModuleId))
-                issues.Add("ModuleId is required");
-            if (string.IsNullOrEmpty(registration.Name))
-                issues.Add("Name is required");
-            if (registration.ComponentCount <= 0)
-                issues.Add("ComponentCount must be positive");
-            
-            return (issues.Count == 0, issues);
+            return await System.Threading.Tasks.Task.Run(() =>
+            {
+                var issues = new List<string>();
+                
+                if (string.IsNullOrEmpty(registration.ModuleId))
+                    issues.Add("ModuleId is required");
+                if (string.IsNullOrEmpty(registration.Name))
+                    issues.Add("Name is required");
+                if (registration.ComponentCount <= 0)
+                    issues.Add("ComponentCount must be positive");
+                
+                return (issues.Count == 0, issues);
+            });
         }
 
         private async System.Threading.Tasks.Task<List<string>> GetDependentModules(string moduleId)
         {
-            return _registeredModules.Values
-                .Where(m => m.Dependencies.Contains(moduleId))
-                .Select(m => m.ModuleId)
-                .ToList();
+            return await System.Threading.Tasks.Task.Run(() =>
+            {
+                return _registeredModules.Values
+                    .Where(m => m.Dependencies.Contains(moduleId))
+                    .Select(m => m.ModuleId)
+                    .ToList();
+            });
         }
 
         private async AsyncTask PerformModuleHealthCheck(string moduleId)
         {
-            if (!_moduleHealth.TryGetValue(moduleId, out var health))
-                return;
-            
-            // Simulate health check logic
-            var issues = new List<string>();
-            var healthChecks = new List<string>();
-            var healthMetrics = new Dictionary<string, object>();
+            await AsyncTask.Run(() =>
+            {
+                if (!_moduleHealth.TryGetValue(moduleId, out var health))
+                    return;
+                
+                // Simulate health check logic
+                var issues = new List<string>();
+                var healthChecks = new List<string>();
+                var healthMetrics = new Dictionary<string, object>();
             
             // Check if module is responding
             healthChecks.Add("connectivity");
@@ -794,10 +815,11 @@ namespace TerraFusion.Core.Services
             health.Issues = issues;
             health.LastHealthCheck = DateTime.UtcNow;
             
-            if (issues.Count == 0 && health.Health != HealthLevel.Healthy)
-            {
-                health.Health = HealthLevel.Healthy;
-            }
+                if (issues.Count == 0 && health.Health != HealthLevel.Healthy)
+                {
+                    health.Health = HealthLevel.Healthy;
+                }
+            });
         }
 
         private async AsyncTask PerformPeriodicHealthChecks()
@@ -817,27 +839,30 @@ namespace TerraFusion.Core.Services
 
         private async AsyncTask UpdatePerformanceMetrics()
         {
-            foreach (var moduleId in _registeredModules.Keys)
+            await AsyncTask.Run(() =>
             {
-                try
+                foreach (var moduleId in _registeredModules.Keys)
                 {
-                    if (_moduleMetrics.TryGetValue(moduleId, out var metrics))
+                    try
                     {
-                        // Simulate performance metrics updates
-                        metrics.CpuUsage = Random.Shared.NextDouble() * 80; // 0-80% CPU
-                        metrics.MemoryUsage = Random.Shared.NextInt64(512L * 1024 * 1024, 4L * 1024 * 1024 * 1024); // 512MB-4GB
-                        metrics.AverageResponseTime = Random.Shared.NextDouble() * 200 + 10; // 10-210ms
-                        metrics.ErrorRate = Random.Shared.NextDouble() * 0.05; // 0-5% error rate
-                        metrics.ThroughputPerSecond = Random.Shared.Next(10, 1000);
-                        metrics.ActiveRequests = Random.Shared.Next(0, 50);
-                        metrics.LastMetricsUpdate = DateTime.UtcNow;
+                        if (_moduleMetrics.TryGetValue(moduleId, out var metrics))
+                        {
+                            // Simulate performance metrics updates
+                            metrics.CpuUsage = Random.Shared.NextDouble() * 80; // 0-80% CPU
+                            metrics.MemoryUsage = Random.Shared.NextInt64(512L * 1024 * 1024, 4L * 1024 * 1024 * 1024); // 512MB-4GB
+                            metrics.AverageResponseTime = Random.Shared.NextDouble() * 200 + 10; // 10-210ms
+                            metrics.ErrorRate = Random.Shared.NextDouble() * 0.05; // 0-5% error rate
+                            metrics.ThroughputPerSecond = Random.Shared.Next(10, 1000);
+                            metrics.ActiveRequests = Random.Shared.Next(0, 50);
+                            metrics.LastMetricsUpdate = DateTime.UtcNow;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error updating metrics for module {ModuleId}", moduleId);
                     }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error updating metrics for module {ModuleId}", moduleId);
-                }
-            }
+            });
         }
 
         private async AsyncTask OptimizeEcosystem()
@@ -876,18 +901,21 @@ namespace TerraFusion.Core.Services
 
         private async AsyncTask AttemptModuleRecovery(string moduleId)
         {
-            _logger.LogInformation("🔧 Attempting recovery for module {ModuleId}", moduleId);
-            
-            // Simulate recovery actions
-            if (_moduleHealth.TryGetValue(moduleId, out var health))
+            await AsyncTask.Run(() =>
             {
-                // Reset error state
-                health.Issues.Clear();
-                health.Health = HealthLevel.Warning;
-                health.LastHealthCheck = DateTime.UtcNow;
+                _logger.LogInformation("🔧 Attempting recovery for module {ModuleId}", moduleId);
                 
-                _logger.LogInformation("✅ Recovery attempted for module {ModuleId}", moduleId);
-            }
+                // Simulate recovery actions
+                if (_moduleHealth.TryGetValue(moduleId, out var health))
+                {
+                    // Reset error state
+                    health.Issues.Clear();
+                    health.Health = HealthLevel.Warning;
+                    health.LastHealthCheck = DateTime.UtcNow;
+                    
+                    _logger.LogInformation("✅ Recovery attempted for module {ModuleId}", moduleId);
+                }
+            });
         }
 
         private async AsyncTask PerformAutoScaling()

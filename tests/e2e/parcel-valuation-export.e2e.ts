@@ -2,7 +2,11 @@ import { test, expect } from '@playwright/test';
 
 test.use({ storageState: 'tests/e2e/states/viewer.json' });
 
-test('Parcel Search → Valuation → Export PDF (resilient, perf & a11y checks)', async ({ page, context, browserName }) => {
+test('Parcel Search → Valuation → Export PDF (resilient, perf & a11y checks)', async ({
+  page,
+  context,
+  browserName,
+}) => {
   // Optional chaos: simulate latency on valuation endpoint via query param
   await context.route('**/api/valuations/**', async route => {
     const url = new URL(route.request().url());
@@ -10,7 +14,7 @@ test('Parcel Search → Valuation → Export PDF (resilient, perf & a11y checks)
     await route.continue({ url: url.toString() });
   });
 
-  await page.goto('http://localhost:3000');
+  await page.goto('http://localhost:\${{TF_FRONTEND_PORT:-3000}}');
 
   // Search parcel
   await page.getByRole('textbox', { name: /parcel search/i }).fill('P-10001');
@@ -25,9 +29,9 @@ test('Parcel Search → Valuation → Export PDF (resilient, perf & a11y checks)
   await expect(page.getByText(/valuation submitted/i)).toBeVisible();
 
   // Export PDF
-  const [ download ] = await Promise.all([
+  const [download] = await Promise.all([
     page.waitForEvent('download'),
-    page.getByRole('button', { name: /export pdf/i }).click()
+    page.getByRole('button', { name: /export pdf/i }).click(),
   ]);
   expect((await download.suggestedFilename())?.toLowerCase()).toContain('valuation');
 
@@ -44,15 +48,20 @@ test('Parcel Search → Valuation → Export PDF (resilient, perf & a11y checks)
   await expect(page.getByRole('main')).toBeVisible();
 
   // Visual snapshot only if stable UI on this route
-  await expect(page).toHaveScreenshot(`parcel-valuation-${browserName}.png`, { maxDiffPixelRatio: 0.01 });
+  await expect(page).toHaveScreenshot(`parcel-valuation-${browserName}.png`, {
+    maxDiffPixelRatio: 0.01,
+  });
 
   // Emit coarse perf artefact for CI gate
   const lcpProxy = perf.fcp; // using FCP as proxy if LCP unavailable
   await page.context().storageState({ path: 'tests/e2e/tmp/state.json' }); // harmless side-effect to ensure fs perms
-  await page.evaluate(({ lcpProxy }) => {
-    // @ts-ignore
-    window.__perf__ = { lcp: lcpProxy };
-  }, { lcpProxy });
+  await page.evaluate(
+    ({ lcpProxy }) => {
+      // @ts-ignore
+      window.__perf__ = { lcp: lcpProxy };
+    },
+    { lcpProxy }
+  );
 
   const fs = await import('node:fs');
   const path = await import('node:path');
@@ -61,6 +70,11 @@ test('Parcel Search → Valuation → Export PDF (resilient, perf & a11y checks)
   fs.writeFileSync(path.join(dir, 'perf.json'), JSON.stringify({ lcp: lcpProxy }, null, 2));
 
   // emit perf budget values for CI
-  const dirPath = require('node:fs').existsSync('artifacts') ? 'artifacts' : (require('node:fs').mkdirSync('artifacts'), 'artifacts');
-  require('node:fs').writeFileSync(`${dirPath}/perf.json`, JSON.stringify({ lcp: perf.fcp }, null, 2));
+  const dirPath = require('node:fs').existsSync('artifacts')
+    ? 'artifacts'
+    : (require('node:fs').mkdirSync('artifacts'), 'artifacts');
+  require('node:fs').writeFileSync(
+    `${dirPath}/perf.json`,
+    JSON.stringify({ lcp: perf.fcp }, null, 2)
+  );
 });

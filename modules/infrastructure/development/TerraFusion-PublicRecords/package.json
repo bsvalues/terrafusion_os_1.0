@@ -5,7 +5,7 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3500",
+    "dev": "vite --port ${TF_PORT_3500:-3500}",
     "build": "tsc && vite build",
     "build:prod": "vite build",
     "preview": "vite preview",

@@ -25,7 +25,7 @@ class TerraFusionOSBridge {
       reconnectAttempts: 0,
       lastError: null,
       loadedModules: [],
-      moduleStatuses: {} // name -> 'loading' | 'loaded' | 'denied' | 'error'
+      moduleStatuses: {}, // name -> 'loading' | 'loaded' | 'denied' | 'error'
     };
 
     this._heartbeatTimer = null;
@@ -78,21 +78,22 @@ class TerraFusionOSBridge {
     if (!this.state.authenticated) {
       throw new Error('Not authenticated');
     }
-    
+
     // Set up promise resolver for async response
     const key = `${moduleName}:${method}`;
     this._pendingInvokes = this._pendingInvokes || new Map();
-    
+
     return new Promise((resolve, reject) => {
       this._pendingInvokes.set(key, { resolve, reject });
-      
+
       // Send request through SignalR hub
-      this.send('PluginInvoke', { ModuleName: moduleName, Method: method, Payload: payload })
-        .catch(err => {
+      this.send('PluginInvoke', { ModuleName: moduleName, Method: method, Payload: payload }).catch(
+        (err) => {
           this._pendingInvokes.delete(key);
           reject(err);
-        });
-      
+        }
+      );
+
       // Timeout after 10 seconds
       setTimeout(() => {
         if (this._pendingInvokes.has(key)) {
@@ -109,7 +110,7 @@ class TerraFusionOSBridge {
       return;
     }
     // Route plugin events through SignalR hub
-    this.send('PluginEmit', { ModuleName: moduleName, Event: event, Data: data }).catch(err => {
+    this.send('PluginEmit', { ModuleName: moduleName, Event: event, Data: data }).catch((err) => {
       console.warn('Plugin emit failed:', err);
     });
   }
@@ -129,7 +130,9 @@ class TerraFusionOSBridge {
 
   _emitState() {
     for (const l of this._listeners) {
-      try { l(this.getState()); } catch (_) {
+      try {
+        l(this.getState());
+      } catch (_) {
         // Ignore listener errors
       }
     }
@@ -141,17 +144,22 @@ class TerraFusionOSBridge {
 
   // Public helper to create an HMAC-signed auth envelope matching backend expectations
   async createAuthEnvelope(countyId, legacySystem) {
-    const secret = process.env.TF_OS_SHARED_SECRET || process.env.TF_VAULT_KEY || 'dev-shared-secret';
+    const secret =
+      process.env.TF_OS_SHARED_SECRET || process.env.TF_VAULT_KEY || 'dev-shared-secret';
     const payload = {
       CountyId: countyId,
       LegacySystem: legacySystem,
       Nonce: crypto.randomBytes(12).toString('hex'),
-      Ts: Date.now()
+      Ts: Date.now(),
     };
     const canonical = JSON.stringify(payload);
     const hmac = crypto.createHmac('sha256', Buffer.from(secret, 'utf8'));
     hmac.update(Buffer.from(canonical, 'utf8'));
-    const signature = hmac.digest('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+    const signature = hmac
+      .digest('base64')
+      .replace(/=+$/, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
     return { Payload: payload, Signature: signature, Alg: 'HS256' };
   }
 
@@ -170,14 +178,14 @@ class TerraFusionOSBridge {
     this.state.connection = new HubConnectionBuilder()
       .withUrl(endpoint, {
         transport: HttpTransportType.WebSockets,
-        skipNegotiation: true
+        skipNegotiation: true,
       })
       .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: ctx => {
+        nextRetryDelayInMilliseconds: (ctx) => {
           const attempt = ctx.previousRetryCount + 1;
           const delay = Math.min(30000, 1000 * Math.pow(2, attempt));
           return delay;
-        }
+        },
       })
       .configureLogging(LogLevel.Information)
       .build();
@@ -198,7 +206,7 @@ class TerraFusionOSBridge {
     const conn = this.state.connection;
     if (!conn) return;
 
-    conn.onreconnecting(err => {
+    conn.onreconnecting((err) => {
       this.state.status = 'connecting';
       this.state.lastError = err ? String(err) : null;
       this._emitState();
@@ -215,7 +223,7 @@ class TerraFusionOSBridge {
       this._emitState();
     });
 
-    conn.onclose(err => {
+    conn.onclose((err) => {
       this.state.status = 'disconnected';
       this.state.authenticated = false;
       this.state.lastError = err ? String(err) : null;
@@ -223,7 +231,7 @@ class TerraFusionOSBridge {
     });
 
     // Example server-to-client handlers (to be implemented server-side)
-    conn.on('AuthenticationSuccess', payload => {
+    conn.on('AuthenticationSuccess', (payload) => {
       this.state.authenticated = true;
       this.state.sessionId = payload?.sessionId ?? null;
       this.state.status = 'authenticated';
@@ -234,23 +242,25 @@ class TerraFusionOSBridge {
       this._startHeartbeat();
       this._flushQueue();
       // Auto-load enabled modules per Benton config (falls back to requiredModules)
-      this.loadAllEnabledModules().catch(() => {/* handled by state.lastError */});
+      this.loadAllEnabledModules().catch(() => {
+        /* handled by state.lastError */
+      });
     });
 
-    conn.on('AuthenticationFailed', reason => {
+    conn.on('AuthenticationFailed', (reason) => {
       this.state.authenticated = false;
       this.state.status = 'error';
       this.state.lastError = `Auth failed: ${reason}`;
       this._emitState();
     });
 
-    conn.on('AuditLog', entry => {
+    conn.on('AuditLog', (entry) => {
       // Placeholder: route to app-level logger or file sink
       // console.log('[OS Audit]', entry);
     });
 
     // Module orchestration events
-    conn.on('ModuleLoaded', payload => {
+    conn.on('ModuleLoaded', (payload) => {
       // Optionally bubble to UI or logs
       this.state.lastError = null;
       const name = payload?.module;
@@ -262,7 +272,7 @@ class TerraFusionOSBridge {
       }
       this._emitState();
     });
-    conn.on('ModuleLoadFailed', payload => {
+    conn.on('ModuleLoadFailed', (payload) => {
       const name = payload?.module;
       const reason = payload?.reason ?? 'unknown';
       this.state.lastError = `Module load failed${name ? ` [${name}]` : ''}: ${reason}`;
@@ -274,7 +284,7 @@ class TerraFusionOSBridge {
     });
 
     // Plugin invoke result handling
-    conn.on('PluginInvokeResult', payload => {
+    conn.on('PluginInvokeResult', (payload) => {
       // Store result for retrieval by pending invoke promises
       const key = `${payload.module}:${payload.method}`;
       this._pendingInvokes = this._pendingInvokes || new Map();
@@ -285,7 +295,7 @@ class TerraFusionOSBridge {
       }
     });
 
-    conn.on('PluginInvokeFailed', payload => {
+    conn.on('PluginInvokeFailed', (payload) => {
       const key = `${payload.module}:unknown`;
       this._pendingInvokes = this._pendingInvokes || new Map();
       const resolver = this._pendingInvokes.get(key);
@@ -301,24 +311,29 @@ class TerraFusionOSBridge {
     const legacySystem = 'PACS_9.0';
 
     // Generate HMAC-signed auth envelope in main process
-    const secret = process.env.TF_OS_SHARED_SECRET || process.env.TF_VAULT_KEY || 'dev-shared-secret';
+    const secret =
+      process.env.TF_OS_SHARED_SECRET || process.env.TF_VAULT_KEY || 'dev-shared-secret';
     const payload = {
       CountyId: countyId,
       LegacySystem: legacySystem,
       Nonce: crypto.randomBytes(12).toString('hex'),
-      Ts: Date.now()
+      Ts: Date.now(),
     };
     const canonical = JSON.stringify(payload);
     const hmac = crypto.createHmac('sha256', Buffer.from(secret, 'utf8'));
     hmac.update(Buffer.from(canonical, 'utf8'));
-    const signature = hmac.digest('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+    const signature = hmac
+      .digest('base64')
+      .replace(/=+$/, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
     const envelope = { Payload: payload, Signature: signature, Alg: 'HS256' };
 
     try {
       await this.state.connection.invoke('AuthenticateOS', {
         CountyId: countyId,
         LegacySystem: legacySystem,
-        Credentials: envelope
+        Credentials: envelope,
       });
     } catch (err) {
       this.state.lastError = String(err);
@@ -338,7 +353,7 @@ class TerraFusionOSBridge {
       try {
         await this.state.connection.invoke('Heartbeat', {
           sessionId: this.state.sessionId,
-          ts: Date.now()
+          ts: Date.now(),
         });
       } catch (err) {
         // Allow reconnect policy to handle

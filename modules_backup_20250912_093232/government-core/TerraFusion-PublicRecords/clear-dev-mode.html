@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clear Dev Mode</title>
+  <script>
+    // Clear all TerraFusion localStorage
+    localStorage.removeItem('tfpr_user');
+    localStorage.removeItem('tfpr_session');
+    localStorage.removeItem('tfpr_dev_disabled');
+    localStorage.removeItem('tfpr_applications');
+    console.log('✅ Dev mode cleared - reload the app');
+    document.write('<h1>✅ Dev mode cleared</h1>');
+    document.write('<p>Now <a href="http://localhost:3500">reload the app</a> to activate dev mode</p>');
+  </script>
+</head>
+<body>
+</body>
+</html>

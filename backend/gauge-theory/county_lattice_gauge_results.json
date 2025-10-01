@@ -1329,12 +1329,7 @@
     }
   },
   "wilson_loop_measurement": {
-    "path": [
-      "benton",
-      "franklin",
-      "walla_walla",
-      "benton"
-    ],
+    "path": ["benton", "franklin", "walla_walla", "benton"],
     "value": 0.016429912579383605
   },
   "lattice_report": {
@@ -1350,88 +1345,43 @@
       "sites": {
         "benton": {
           "name": "Benton County",
-          "coordinates": [
-            0,
-            0,
-            0
-          ],
+          "coordinates": [0, 0, 0],
           "current_state": "Harris",
           "target_state": "Terrafusion",
           "coupling_strength": 0.1,
-          "neighbors": [
-            "franklin",
-            "walla_walla",
-            "columbia",
-            "garfield"
-          ]
+          "neighbors": ["franklin", "walla_walla", "columbia", "garfield"]
         },
         "franklin": {
           "name": "Franklin County",
-          "coordinates": [
-            1,
-            0,
-            0
-          ],
+          "coordinates": [1, 0, 0],
           "current_state": "Tyler",
           "target_state": "Terrafusion",
           "coupling_strength": 0.15,
-          "neighbors": [
-            "benton",
-            "walla_walla",
-            "columbia",
-            "garfield"
-          ]
+          "neighbors": ["benton", "walla_walla", "columbia", "garfield"]
         },
         "walla_walla": {
           "name": "Walla Walla County",
-          "coordinates": [
-            0,
-            1,
-            0
-          ],
+          "coordinates": [0, 1, 0],
           "current_state": "Aumentum",
           "target_state": "Terrafusion",
           "coupling_strength": 0.12,
-          "neighbors": [
-            "benton",
-            "franklin",
-            "columbia",
-            "garfield"
-          ]
+          "neighbors": ["benton", "franklin", "columbia", "garfield"]
         },
         "columbia": {
           "name": "Columbia County",
-          "coordinates": [
-            1,
-            1,
-            0
-          ],
+          "coordinates": [1, 1, 0],
           "current_state": "Legacy",
           "target_state": "Terrafusion",
           "coupling_strength": 0.2,
-          "neighbors": [
-            "benton",
-            "franklin",
-            "walla_walla",
-            "garfield"
-          ]
+          "neighbors": ["benton", "franklin", "walla_walla", "garfield"]
         },
         "garfield": {
           "name": "Garfield County",
-          "coordinates": [
-            0.5,
-            0.5,
-            1
-          ],
+          "coordinates": [0.5, 0.5, 1],
           "current_state": "Harris",
           "target_state": "Terrafusion",
           "coupling_strength": 0.08,
-          "neighbors": [
-            "benton",
-            "franklin",
-            "walla_walla",
-            "columbia"
-          ]
+          "neighbors": ["benton", "franklin", "walla_walla", "columbia"]
         }
       },
       "links": [
@@ -1489,28 +1439,15 @@
       "plaquettes": [
         {
           "type": "southeast_wa",
-          "counties": [
-            "benton",
-            "franklin",
-            "walla_walla",
-            "columbia"
-          ]
+          "counties": ["benton", "franklin", "walla_walla", "columbia"]
         },
         {
           "type": "central_wa",
-          "counties": [
-            "garfield",
-            "benton",
-            "franklin"
-          ]
+          "counties": ["garfield", "benton", "franklin"]
         },
         {
           "type": "border_region",
-          "counties": [
-            "walla_walla",
-            "columbia",
-            "garfield"
-          ]
+          "counties": ["walla_walla", "columbia", "garfield"]
         }
       ]
     },
@@ -1582,28 +1519,15 @@
       },
       "plaquette_0": {
         "flux": 0.8132409696413229,
-        "counties": [
-          "benton",
-          "franklin",
-          "walla_walla",
-          "columbia"
-        ]
+        "counties": ["benton", "franklin", "walla_walla", "columbia"]
       },
       "plaquette_1": {
         "flux": 0.5225518813130814,
-        "counties": [
-          "garfield",
-          "benton",
-          "franklin"
-        ]
+        "counties": ["garfield", "benton", "franklin"]
       },
       "plaquette_2": {
         "flux": 0.3159279460768387,
-        "counties": [
-          "walla_walla",
-          "columbia",
-          "garfield"
-        ]
+        "counties": ["walla_walla", "columbia", "garfield"]
       }
     },
     "simulation_parameters": {

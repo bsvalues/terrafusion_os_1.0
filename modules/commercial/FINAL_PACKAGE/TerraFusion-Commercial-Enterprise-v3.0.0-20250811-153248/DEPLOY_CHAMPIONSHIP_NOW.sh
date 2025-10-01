@@ -129,7 +129,7 @@ deploy_test_environment() {
     echo -e "${YELLOW}▶ Starting test services...${NC}"
     
     # Start test server
-    echo -e "${CYAN}  Starting test server on port 3000...${NC}"
+    echo -e "${CYAN}  Starting test server on port \${{TF_FRONTEND_PORT:-3000}}...${NC}"
     cd "${ENTERPRISE_DIR}"
     
     # Create simple test server if needed
@@ -156,14 +156,14 @@ deploy_test_environment() {
     echo -e "${YELLOW}▶ Testing endpoints...${NC}"
     
     # Test main application
-    if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200\|301\|302"; then
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:\${{TF_FRONTEND_PORT:-3000}} | grep -q "200\|301\|302"; then
         echo -e "${GREEN}  ✓ Main application: OK${NC}"
     else
         echo -e "${YELLOW}  ⚠ Main application: Not responding${NC}"
     fi
     
     # Test marketplace
-    if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/marketplace | grep -q "200\|301\|302"; then
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:\${{TF_FRONTEND_PORT:-3000}}/marketplace | grep -q "200\|301\|302"; then
         echo -e "${GREEN}  ✓ Marketplace launcher: OK${NC}"
     else
         echo -e "${YELLOW}  ⚠ Marketplace launcher: Not responding${NC}"
@@ -308,11 +308,11 @@ show_victory_report() {
     
     echo -e "${YELLOW}${BOLD}ACCESS POINTS:${NC}"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${GREEN}🌐 Main Platform:     http://localhost:3000${NC}"
-    echo -e "${GREEN}🛒 Marketplace:       http://localhost:3000/marketplace${NC}"
-    echo -e "${GREEN}🔌 API Endpoint:      http://localhost:3002${NC}"
-    echo -e "${GREEN}🏆 CostForge AI:      http://localhost:5000${NC}"
-    echo -e "${GREEN}📊 Monitoring:        http://localhost:3001${NC}"
+    echo -e "${GREEN}🌐 Main Platform:     http://localhost:\${{TF_FRONTEND_PORT:-3000}}${NC}"
+    echo -e "${GREEN}🛒 Marketplace:       http://localhost:\${{TF_FRONTEND_PORT:-3000}}/marketplace${NC}"
+    echo -e "${GREEN}🔌 API Endpoint:      http://localhost:\${{TF_FRONTEND_PORT:-3000}}${NC}"
+    echo -e "${GREEN}🏆 CostForge AI:      http://localhost:\${{TF_FRONTEND_PORT:-3000}}${NC}"
+    echo -e "${GREEN}📊 Monitoring:        http://localhost:\${{TF_FRONTEND_PORT:-3000}}${NC}"
     echo ""
     
     echo -e "${MAGENTA}${BOLD}REVENUE PROJECTION:${NC}"

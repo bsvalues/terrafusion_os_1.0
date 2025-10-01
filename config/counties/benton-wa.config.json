@@ -1,0 +1,297 @@
+{
+  "county": {
+    "name": "Benton County",
+    "state": "WA",
+    "fips_code": "53005",
+    "population": 206873,
+    "parcels": 78432,
+    "area_sq_miles": 1760,
+    "established": 1905,
+    "county_seat": "Prosser",
+    "timezone": "America/Los_Angeles"
+  },
+  
+  "government": {
+    "structure": "Commissioner",
+    "commissioners": 3,
+    "departments": [
+      "Assessor",
+      "Treasurer",
+      "Auditor",
+      "Sheriff",
+      "Prosecutor",
+      "Public Works",
+      "Planning",
+      "Human Services",
+      "Information Services"
+    ],
+    "website": "https://www.co.benton.wa.us",
+    "fiscal_year": "January-December"
+  },
+  
+  "integration": {
+    "legacy_systems": [
+      {
+        "name": "Harris PACS",
+        "type": "Property Assessment",
+        "version": "2019.3",
+        "integration_method": "API",
+        "data_sync": "real-time"
+      },
+      {
+        "name": "Eden Financial",
+        "type": "Financial Management",
+        "version": "7.2",
+        "integration_method": "batch",
+        "data_sync": "daily"
+      },
+      {
+        "name": "Accela",
+        "type": "Permitting",
+        "version": "9.0",
+        "integration_method": "webhook",
+        "data_sync": "real-time"
+      }
+    ],
+    
+    "data_sources": {
+      "assessor": {
+        "database": "PostgreSQL",
+        "schema": "assessor",
+        "tables": 47,
+        "records": 2847329,
+        "postgis_enabled": true
+      },
+      "treasurer": {
+        "database": "PostgreSQL",
+        "schema": "treasurer",
+        "tables": 23,
+        "records": 1293847
+      },
+      "gis": {
+        "database": "PostGIS",
+        "schema": "gis",
+        "layers": 127,
+        "features": 3928472
+      }
+    }
+  },
+  
+  "deployment": {
+    "environment": "production",
+    "infrastructure": "on-premises",
+    "servers": {
+      "application": 4,
+      "database": 2,
+      "file_storage": 2,
+      "backup": 2
+    },
+    "network": {
+      "vlan": "GOV-SECURE",
+      "subnet": "10.50.0.0/16",
+      "firewall": "Palo Alto",
+      "load_balancer": "F5"
+    },
+    "compliance": {
+      "frameworks": ["NIST 800-53", "CJIS", "PCI-DSS"],
+      "audit_frequency": "annual",
+      "last_audit": "2024-11-15",
+      "certification_expiry": "2025-11-14"
+    }
+  },
+  
+  "modules": {
+    "core": [
+      "tf.core.trust-fabric",
+      "tf.core.consciousness",
+      "tf.core.os-kernel",
+      "tf.marketplace.store"
+    ],
+    "enabled": [
+      "tf.gis.parcel-viewer",
+      "tf.assessor.valuation",
+      "tf.treasurer.payment",
+      "tf.records.public",
+      "tf.permitting.workflow",
+      "tf.tax.roll",
+      "tf.analytics.dashboard"
+    ],
+    "customizations": {
+      "tf.assessor.valuation": {
+        "agricultural_exemptions": true,
+        "senior_exemptions": true,
+        "levy_rate": 1.23847,
+        "assessment_cycle": "annual"
+      },
+      "tf.treasurer.payment": {
+        "payment_methods": ["credit_card", "ach", "check", "cash"],
+        "payment_processor": "Tyler Payments",
+        "convenience_fee": 2.5,
+        "ach_discount": 0
+      },
+      "tf.permitting.workflow": {
+        "permit_types": 47,
+        "inspection_types": 23,
+        "average_processing_days": 14,
+        "online_submission": true
+      }
+    }
+  },
+  
+  "data_migration": {
+    "strategy": "phased",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Assessor Data",
+        "status": "complete",
+        "completion_date": "2024-10-15",
+        "records_migrated": 2847329
+      },
+      {
+        "phase": 2,
+        "name": "GIS Layers",
+        "status": "complete",
+        "completion_date": "2024-11-01",
+        "layers_migrated": 127
+      },
+      {
+        "phase": 3,
+        "name": "Treasury Records",
+        "status": "in_progress",
+        "target_date": "2025-01-15",
+        "progress_percentage": 67
+      },
+      {
+        "phase": 4,
+        "name": "Historical Archives",
+        "status": "planned",
+        "target_date": "2025-03-01",
+        "estimated_records": 5000000
+      }
+    ]
+  },
+  
+  "training": {
+    "sessions_completed": 12,
+    "users_trained": 234,
+    "departments_trained": 7,
+    "training_materials": "https://training.terrafusion.local/benton",
+    "next_session": "2025-01-20",
+    "certification_required": true
+  },
+  
+  "support": {
+    "tier": "platinum",
+    "sla": {
+      "response_time_critical": "15 minutes",
+      "response_time_high": "1 hour",
+      "response_time_medium": "4 hours",
+      "response_time_low": "24 hours",
+      "uptime_guarantee": 99.95
+    },
+    "contacts": {
+      "primary": {
+        "name": "John Smith",
+        "role": "IT Director",
+        "email": "john.smith@co.benton.wa.us",
+        "phone": "+1-509-736-3000"
+      },
+      "secondary": {
+        "name": "Jane Doe",
+        "role": "GIS Manager",
+        "email": "jane.doe@co.benton.wa.us",
+        "phone": "+1-509-736-3001"
+      }
+    }
+  },
+  
+  "financial": {
+    "contract_value": 477000,
+    "billing_frequency": "monthly",
+    "payment_terms": "net-30",
+    "contract_start": "2024-07-01",
+    "contract_end": "2027-06-30",
+    "auto_renewal": true,
+    "modules_cost": {
+      "base_platform": 39750,
+      "plugin_marketplace": 11833,
+      "total_monthly": 51583
+    }
+  },
+  
+  "performance_targets": {
+    "page_load_time_p95": 1200,
+    "api_response_time_p95": 300,
+    "concurrent_users": 500,
+    "transactions_per_second": 100,
+    "data_processing_rate": "10000 records/minute",
+    "backup_window": "2 hours",
+    "recovery_time_objective": "4 hours",
+    "recovery_point_objective": "15 minutes"
+  },
+  
+  "marketplace_plugins": {
+    "installed": [
+      {
+        "id": "tf.plugin.property-analytics",
+        "name": "Advanced Property Analytics",
+        "version": "2.3.1",
+        "monthly_cost": 89,
+        "status": "active"
+      },
+      {
+        "id": "tf.plugin.compliance-automation",
+        "name": "Compliance Automation Suite",
+        "version": "1.7.3",
+        "monthly_cost": 38,
+        "status": "active"
+      },
+      {
+        "id": "tf.plugin.legacy-bridge",
+        "name": "Harris PACS Integration Bridge",
+        "version": "3.1.0",
+        "monthly_cost": 15,
+        "status": "active"
+      }
+    ],
+    "available_budget": 200,
+    "renewal_date": "2025-01-01"
+  },
+  
+  "security": {
+    "authentication": {
+      "method": "SAML",
+      "provider": "Okta",
+      "mfa_required": true,
+      "session_timeout": 30
+    },
+    "encryption": {
+      "at_rest": "AES-256",
+      "in_transit": "TLS 1.3",
+      "key_management": "HSM"
+    },
+    "audit_logging": {
+      "enabled": true,
+      "retention_days": 2555,
+      "export_format": "SIEM"
+    }
+  },
+  
+  "monitoring": {
+    "tools": ["Datadog", "Splunk", "Grafana"],
+    "metrics_retention": "90 days",
+    "alerting": {
+      "channels": ["email", "sms", "slack"],
+      "escalation_policy": "on-call rotation"
+    },
+    "dashboards": [
+      "System Health",
+      "User Activity",
+      "Transaction Volume",
+      "Performance Metrics",
+      "Security Events"
+    ]
+  }
+}
+

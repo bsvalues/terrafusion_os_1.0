@@ -32,7 +32,7 @@ echo "================================="
 ./LAUNCH_DYNASTY.sh status
 
 # 2. Quick health verification
-curl -s http://localhost:8000/health | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health | jq .
 
 # 3. Check overnight performance
 echo "📊 Overnight Statistics:"
@@ -63,7 +63,7 @@ htop                              # System resources
 tail -f logs/orchestrator.log   # Live activity
 
 # Performance check
-curl -s http://localhost:8080/stats | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/stats | jq .
 
 # Error scanning
 grep -i "error\|fail\|timeout" logs/*.log | tail -10
@@ -107,11 +107,11 @@ echo "===================================="
 
 # 1. System evolution trigger
 echo "🧬 Triggering system evolution..."
-curl -X POST http://localhost:8083/evolution/trigger
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/trigger
 
 # 2. Training pipeline optimization
 echo "🎓 Optimizing training pipeline..."
-curl -X POST http://localhost:8082/training/optimize
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/training/optimize
 
 # 3. Clean old logs (keep 30 days)
 echo "🧹 Cleaning old logs..."
@@ -143,7 +143,7 @@ import time
 import requests
 start = time.time()
 for i in range(10):
-    requests.post('http://localhost:8080/query', 
+    requests.post('http://localhost:\${{TF_DOCS_PORT:-8000}}/query',
                  json={'query': f'Test query {i}', 'user_id': 'benchmark'})
 avg_time = (time.time() - start) / 10 * 1000
 print(f'Average response time: {avg_time:.1f}ms')
@@ -173,7 +173,7 @@ print('============================')
 # Query volume analysis
 with open('dynasty_metrics.json') as f:
     metrics = json.load(f)
-    
+
 print(f'Total Queries: {metrics.get(\"total_queries\", 0):,}')
 print(f'Average Response Time: {metrics.get(\"avg_response_time\", 0):.1f}ms')
 print(f'Uptime: {metrics.get(\"uptime\", 0)/3600:.1f} hours')
@@ -202,7 +202,7 @@ echo "==========================================="
 
 # 1. Full system evolution review
 echo "🧬 Full evolution analysis..."
-curl -s http://localhost:8083/evolution/history | jq .
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/history | jq .
 
 # 2. Training data cleanup
 echo "🎓 Training data optimization..."
@@ -251,7 +251,7 @@ echo "⚡ Performance deep analysis..."
 python3 -c "
 print('Performance Analysis:')
 print('- Query response time trends')
-print('- Resource utilization patterns')  
+print('- Resource utilization patterns')
 print('- Bottleneck identification')
 print('- Optimization recommendations')
 "
@@ -432,7 +432,7 @@ echo "STEP 5: Emergency Restart"
 echo "STEP 6: Recovery Verification"
 sleep 30
 ./LAUNCH_DYNASTY.sh status
-curl -s http://localhost:8000/health
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 
 echo "================================="
 echo "Emergency recovery procedure complete!"
@@ -566,7 +566,7 @@ response_times = []
 for i in range(20):
     start = time.time()
     try:
-        response = requests.post('http://localhost:8080/query', 
+        response = requests.post('http://localhost:\${{TF_DOCS_PORT:-8000}}/query',
                                json={'query': f'Test query {i}', 'user_id': 'perf_test'},
                                timeout=5)
         response_times.append((time.time() - start) * 1000)
@@ -589,7 +589,7 @@ echo "Disk I/O: $(iostat -x 1 1 | tail -1 | awk '{print $10}')% util"
 
 # 3. Trigger automatic optimization
 echo "🧬 Triggering Automatic Optimization:"
-curl -X POST http://localhost:8083/evolution/trigger \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/trigger \
   -H "Content-Type: application/json" \
   -d '{"target": "performance", "aggressive": true}'
 
@@ -600,7 +600,7 @@ echo "💾 Database Optimization:"
 
 # 5. Cache optimization
 echo "⚡ Cache Optimization:"
-curl -X POST http://localhost:8080/cache/optimize
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/cache/optimize
 
 # 6. Model optimization
 echo "🧠 Model Optimization:"
@@ -639,14 +639,14 @@ def collect_metrics():
         'query_response_time': measure_query_time(),
         'system_health': check_system_health()
     }
-    
+
     with open('performance_metrics.jsonl', 'a') as f:
         f.write(json.dumps(metrics) + '\n')
 
 def measure_query_time():
     try:
         start = time.time()
-        response = requests.post('http://localhost:8080/query',
+        response = requests.post('http://localhost:\${{TF_DOCS_PORT:-8000}}/query',
                                json={'query': 'Performance test', 'user_id': 'monitor'},
                                timeout=10)
         return (time.time() - start) * 1000
@@ -655,7 +655,7 @@ def measure_query_time():
 
 def check_system_health():
     try:
-        response = requests.get('http://localhost:8000/health', timeout=5)
+        response = requests.get('http://localhost:\${{TF_DOCS_PORT:-8000}}/health', timeout=5)
         return response.status_code == 200
     except:
         return False
@@ -686,7 +686,7 @@ def analyze_performance_trends():
     # Last 24 hours analysis
     now = datetime.now()
     recent_metrics = [
-        m for m in metrics 
+        m for m in metrics
         if datetime.fromisoformat(m['timestamp']) > now - timedelta(hours=24)
     ]
 
@@ -869,7 +869,7 @@ tar -czf "backups/daily/logs_$(date +%Y%m%d).tar.gz" -T -
 # 4. System state backup
 echo "⚙️ Backing up system state..."
 ./LAUNCH_DYNASTY.sh status > "backups/daily/system_state_$(date +%Y%m%d).txt"
-curl -s http://localhost:8000/status > "backups/daily/api_status_$(date +%Y%m%d).json"
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/status > "backups/daily/api_status_$(date +%Y%m%d).json"
 
 # 5. Database backup (if using PostgreSQL)
 echo "🗄️ Backing up database..."
@@ -965,10 +965,10 @@ case $choice in
         echo "Available backups:"
         ls -la backups/daily/*.tar.gz | tail -10
         read -p "Enter backup date (YYYYMMDD): " backup_date
-        
+
         config_backup="backups/daily/config_${backup_date}.tar.gz"
         data_backup="backups/daily/data_${backup_date}.tar.gz"
-        
+
         if [ -f "$config_backup" ] && [ -f "$data_backup" ]; then
             ./LAUNCH_DYNASTY.sh stop
             tar -xzf "$config_backup"
@@ -1005,14 +1005,14 @@ monitoring:
     health_check: 30  # seconds
     performance_check: 60  # seconds
     resource_check: 300  # seconds
-  
+
   thresholds:
     response_time_ms: 200
     cpu_percent: 80
     memory_percent: 85
     disk_percent: 90
     error_rate: 0.05
-  
+
   alerts:
     email: admin@bentoncounty.gov
     webhook: https://hooks.slack.com/services/...
@@ -1034,44 +1034,44 @@ class AlertSystem:
     def __init__(self, config_file='monitoring_config.yaml'):
         # Load configuration
         pass
-    
+
     def check_system_health(self):
         alerts = []
-        
+
         # Check response time
         response_time = self.measure_response_time()
         if response_time > 200:
             alerts.append(f"High response time: {response_time:.1f}ms")
-        
+
         # Check CPU usage
         cpu_percent = psutil.cpu_percent(interval=1)
         if cpu_percent > 80:
             alerts.append(f"High CPU usage: {cpu_percent:.1f}%")
-        
+
         # Check memory usage
         memory_percent = psutil.virtual_memory().percent
         if memory_percent > 85:
             alerts.append(f"High memory usage: {memory_percent:.1f}%")
-        
+
         # Check disk usage
         disk_percent = psutil.disk_usage('/').percent
         if disk_percent > 90:
             alerts.append(f"High disk usage: {disk_percent:.1f}%")
-        
+
         return alerts
-    
+
     def measure_response_time(self):
         try:
             start = time.time()
-            requests.get('http://localhost:8000/health', timeout=10)
+            requests.get('http://localhost:\${{TF_DOCS_PORT:-8000}}/health', timeout=10)
             return (time.time() - start) * 1000
         except:
             return 999  # Timeout/error
-    
+
     def send_alert(self, message):
         print(f"ALERT: {message}")
         # Implement email/webhook/SMS sending
-    
+
     def run_monitoring(self):
         while True:
             alerts = self.check_system_health()
@@ -1108,11 +1108,11 @@ cat > monitoring_dashboard.html << 'EOF'
 </head>
 <body>
     <h1>🏆 Dynasty Monitoring Dashboard</h1>
-    
+
     <div id="response-time-chart"></div>
     <div id="resource-usage-chart"></div>
     <div id="error-rate-chart"></div>
-    
+
     <script>
         // Real-time monitoring charts
         function updateCharts() {
@@ -1122,7 +1122,7 @@ cat > monitoring_dashboard.html << 'EOF'
                     // Update charts with real data
                 });
         }
-        
+
         setInterval(updateCharts, 5000);  // Update every 5 seconds
     </script>
 </body>
@@ -1190,7 +1190,7 @@ echo "🚀 Starting updated system..."
 echo "✅ Verifying update..."
 sleep 30
 ./LAUNCH_DYNASTY.sh status
-curl -s http://localhost:8000/health
+curl -s http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 
 # 10. Run post-update tests
 echo "🧪 Running post-update tests..."
@@ -1224,20 +1224,20 @@ latest_backup=$(ls -t backups/emergency/pre_update_*.tar.gz | head -1)
 
 if [ -n "$latest_backup" ]; then
     echo "Rolling back to: $latest_backup"
-    
+
     # 3. Extract backup
     echo "📦 Extracting backup..."
     tar -xzf "$latest_backup"
-    
+
     # 4. Restart system
     echo "🚀 Restarting system..."
     ./LAUNCH_DYNASTY.sh start
-    
+
     # 5. Verify rollback
     echo "✅ Verifying rollback..."
     sleep 30
     ./LAUNCH_DYNASTY.sh status
-    
+
     echo "Rollback completed successfully!"
 else
     echo "❌ No backup found for rollback!"
@@ -1293,6 +1293,7 @@ EMERGENCY (As needed):
 ## 🏆 MAINTENANCE SUCCESS METRICS
 
 ### Key Performance Indicators
+
 - **System Uptime**: 99.9%+
 - **Average Response Time**: <100ms
 - **Error Rate**: <0.1%
@@ -1301,6 +1302,7 @@ EMERGENCY (As needed):
 - **Cost Optimization**: Continuous reduction
 
 ### Maintenance Effectiveness
+
 - **Planned Downtime**: <1 hour/month
 - **Unplanned Downtime**: <5 minutes/month
 - **Recovery Time**: <30 seconds
@@ -1311,4 +1313,5 @@ EMERGENCY (As needed):
 
 > **"Championship systems require championship maintenance!"** 🏆
 
-**The Dynasty Maintenance Runbook - Your Guide to Operational Excellence** ⚡🔧🏆
+**The Dynasty Maintenance Runbook - Your Guide to Operational Excellence**
+⚡🔧🏆

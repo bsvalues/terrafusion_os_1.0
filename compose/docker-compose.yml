@@ -8,10 +8,10 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-backend
     ports:
-      - "5000:5000"
+      - "5000:${TF_API_PORT:-5046}"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:${TF_API_PORT:-5046}
     volumes:
       - ./database:/app/database
       - ./logs:/app/logs
@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: terrafusion-frontend
     ports:
-      - "3000:3000"
+      - "3000:${TF_FRONTEND_PORT:-3102}"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
@@ -53,10 +53,10 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-ai-command-brain
     ports:
-      - "3001:3001"
+      - "3001:${TF_SHELL_PORT:-3103}"
     environment:
       - NODE_ENV=production
-      - PORT=3001
+      - PORT=\${{TF_SHELL_PORT:-3001}}
     restart: unless-stopped
     networks:
       - terrafusion-network
@@ -67,10 +67,10 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-ai-swarm
     ports:
-      - "3002:3002"
+      - "3002:${TF_DESKTOP_PORT:-3104}"
     environment:
       - NODE_ENV=production
-      - PORT=3002
+      - PORT=\${{TF_SHELL_PORT:-3001}}
     restart: unless-stopped
     networks:
       - terrafusion-network
@@ -84,7 +84,7 @@ services:
       - "3003:3003"
     environment:
       - NODE_ENV=production
-      - PORT=3003
+      - PORT=\${{TF_SHELL_PORT:-3001}}
     restart: unless-stopped
     networks:
       - terrafusion-network
@@ -98,7 +98,7 @@ services:
       - "3004:3004"
     environment:
       - NODE_ENV=production
-      - PORT=3004
+      - PORT=\${{TF_SHELL_PORT:-3001}}
     restart: unless-stopped
     networks:
       - terrafusion-network
@@ -161,7 +161,7 @@ services:
     image: grafana/grafana:latest
     container_name: terrafusion-grafana
     ports:
-      - "3001:3000"
+      - "3001:${TF_FRONTEND_PORT:-3102}"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=terrafusion2025
@@ -208,7 +208,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: terrafusion-cadvisor
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro

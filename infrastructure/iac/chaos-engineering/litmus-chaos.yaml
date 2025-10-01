@@ -75,7 +75,7 @@ spec:
       - name: healthcheck
         type: httpProbe
         httpProbe/inputs:
-          url: http://terrafusion-backend:8080/health
+          url: http://terrafusion-backend:${TF_STATIC_PORT:-8080}/health
           insecureSkipTLS: false
           method:
             get:
@@ -104,7 +104,7 @@ spec:
       - name: backend-availability
         type: httpProbe
         httpProbe/inputs:
-          url: http://terrafusion-backend:8080/api/status
+          url: http://terrafusion-backend:${TF_STATIC_PORT:-8080}/api/status
           insecureSkipTLS: false
           method:
             get:
@@ -172,7 +172,7 @@ spec:
       - name: postgres-health
         type: httpProbe
         httpProbe/inputs:
-          url: http://terrafusion-backend:8080/api/db/health
+          url: http://terrafusion-backend:${TF_STATIC_PORT:-8080}/api/db/health
           insecureSkipTLS: false
           method:
             get:

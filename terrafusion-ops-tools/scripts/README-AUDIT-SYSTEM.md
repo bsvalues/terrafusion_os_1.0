@@ -2,13 +2,18 @@
 
 ## Overview
 
-The Terrafusion Comprehensive Audit System is a multi-agent framework designed to validate that all 50 operational tools and core platform features are fully implemented, tested, and compliant with specifications. The system provides detailed analysis of feature implementation, documentation coverage, testing validation, and quality assessment.
+The Terrafusion Comprehensive Audit System is a multi-agent framework designed
+to validate that all 50 operational tools and core platform features are fully
+implemented, tested, and compliant with specifications. The system provides
+detailed analysis of feature implementation, documentation coverage, testing
+validation, and quality assessment.
 
 ## Architecture
 
 ### Core Components
 
-1. **Feature Implementation Audit Agent** (`feature-implementation-audit-agent.py`)
+1. **Feature Implementation Audit Agent**
+   (`feature-implementation-audit-agent.py`)
    - Validates implementation of all Terrafusion features
    - Checks API endpoints, UI components, and backend services
    - Assesses code quality, documentation, and test coverage
@@ -41,16 +46,19 @@ The audit system uses PostgreSQL with the following core tables:
 The system audits 50+ operational tools across these categories:
 
 ### Authentication & User Management
+
 - User Authentication System (OAuth2/JWT/MFA)
 - User Profile Management
 - Role-based Access Control
 
 ### Project Management
+
 - Project Creation & Management
 - Collaboration & Team Management
 - Version Control Integration
 
 ### AI/ML Tools (20+ tools)
+
 - AI-Powered Cost Estimation
 - Automated Data Classification
 - Predictive Analytics Engine
@@ -61,6 +69,7 @@ The system audits 50+ operational tools across these categories:
 - AutoML Capabilities
 
 ### Data Processing Tools (15+ tools)
+
 - GIS Data Processing Pipeline
 - Real-time Data Streaming
 - Data Transformation Engine
@@ -69,18 +78,21 @@ The system audits 50+ operational tools across these categories:
 - ETL Pipeline Management
 
 ### Reporting & Visualization (8+ tools)
+
 - Interactive Dashboard System
 - Automated Report Generation
 - Custom Visualization Builder
 - Export and Sharing Tools
 
 ### Integration & API Tools (6+ tools)
+
 - REST API Gateway
 - GraphQL Interface
 - Webhook Management
 - Third-party Integrations
 
 ### Security & Compliance
+
 - Security Monitoring System
 - Audit Trail Management
 - GDPR Compliance Tools
@@ -91,11 +103,13 @@ The system audits 50+ operational tools across these categories:
 ### Running Individual Agents
 
 #### Feature Implementation Audit
+
 ```bash
 python3 feature-implementation-audit-agent.py [session_id]
 ```
 
 #### Data Workflow Audit
+
 ```bash
 python3 data-workflow-audit-agent.py [session_id]
 ```
@@ -122,8 +136,8 @@ Create a configuration file (YAML format):
 
 ```yaml
 # audit-config.yml
-api_base_url: "http://localhost:8000"
-ui_base_url: "http://localhost:3000"
+api_base_url: 'http://localhost:\${{TF_DOCS_PORT:-8000}}'
+ui_base_url: 'http://localhost:\${{TF_DOCS_PORT:-8000}}'
 test_timeout_seconds: 30
 
 quality_thresholds:
@@ -149,7 +163,8 @@ feature_categories:
 
 ### Implementation Status Classifications
 
-- **FULLY_IMPLEMENTED**: Feature is complete and functional (95%+ components found)
+- **FULLY_IMPLEMENTED**: Feature is complete and functional (95%+ components
+  found)
 - **PARTIALLY_IMPLEMENTED**: Feature is partially complete (50-94% components)
 - **NOT_IMPLEMENTED**: Feature is missing or incomplete (<50% components)
 - **DEPRECATED**: Feature has been deprecated
@@ -176,17 +191,20 @@ feature_categories:
 The system generates multiple report formats:
 
 ### Markdown Report
+
 - Executive summary with key metrics
 - Detailed feature analysis
 - Critical findings and recommendations
 - Next steps and action items
 
 ### JSON Report
+
 - Structured data for programmatic access
 - Metrics and statistics
 - Integration with dashboards and monitoring
 
 ### Database Reports
+
 - Real-time query access to all audit data
 - Historical trending and analysis
 - Custom reporting and analytics
@@ -214,7 +232,7 @@ Add to your CI/CD pipeline:
   run: |
     cd terrafusion-ops-tools/scripts
     ./run-comprehensive-audit.sh --session-id "ci_${GITHUB_RUN_NUMBER}"
-    
+
 - name: Check Audit Results
   run: |
     # Parse audit results and fail if quality gates not met
@@ -237,22 +255,25 @@ curl -X POST "http://monitoring-system/metrics" \
 ### Common Issues
 
 1. **Database Connection Errors**
+
    ```bash
    # Check PostgreSQL connection
    psql -h localhost -U postgres -d terrafusion -c "SELECT 1;"
    ```
 
 2. **Agent Execution Failures**
+
    ```bash
    # Check logs for specific errors
    tail -f /var/log/terrafusion/comprehensive-audit.log
    ```
 
 3. **Missing Dependencies**
+
    ```bash
    # Install Python dependencies
    pip install -r requirements.txt
-   
+
    # Install system dependencies
    sudo apt-get install ripgrep postgresql-client
    ```
@@ -305,8 +326,10 @@ FeatureDefinition(
 
 ## License
 
-This audit system is part of the Terrafusion platform and subject to the same licensing terms.
+This audit system is part of the Terrafusion platform and subject to the same
+licensing terms.
 
 ---
 
-For support and questions, contact the Terrafusion development team or create an issue in the project repository.
+For support and questions, contact the Terrafusion development team or create an
+issue in the project repository.

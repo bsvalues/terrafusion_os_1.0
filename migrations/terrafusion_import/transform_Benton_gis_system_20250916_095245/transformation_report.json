@@ -1,0 +1,10 @@
+{
+  "transform_id": "transform_Benton_gis_system_20250916_095245",
+  "source_path": "migrations/data_extracts/Benton_gis_system_20250916_095245",
+  "target_path": "migrations/terrafusion_import/transform_Benton_gis_system_20250916_095245",
+  "transformation_date": "2025-09-16T09:52:47.952835",
+  "system_type": "gis_system",
+  "files_transformed": 4,
+  "transformation_status": "completed",
+  "terrafusion_format_version": "1.0.0"
+}

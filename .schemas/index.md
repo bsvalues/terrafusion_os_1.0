@@ -2,25 +2,39 @@
 
 ## Executive Summary
 
-The `.schemas` directory serves as the central schema definition and validation hub for TerraFusion OS 1.0, providing comprehensive data structure definitions, API contracts, configuration schemas, and validation rules that ensure data integrity across our 1,008 AI agents, 33 active modules, and government-grade infrastructure. This system enforces consistent data formats, API specifications, and configuration standards throughout the entire platform.
+The `.schemas` directory serves as the central schema definition and validation
+hub for TerraFusion OS 1.0, providing comprehensive data structure definitions,
+API contracts, configuration schemas, and validation rules that ensure data
+integrity across our 1,008 AI agents, 33 active modules, and government-grade
+infrastructure. This system enforces consistent data formats, API
+specifications, and configuration standards throughout the entire platform.
 
 ## Directory Purpose and Architecture
 
 ### Core Function
+
 The `.schemas` directory implements schema-driven development through:
-- **API Schema Definitions**: OpenAPI/JSON Schema specifications for all endpoints
-- **Database Schema Management**: Entity relationship definitions and constraints
-- **Configuration Schema Validation**: Environment and module configuration schemas
-- **AI Agent Protocol Schemas**: Communication and coordination protocol definitions
+
+- **API Schema Definitions**: OpenAPI/JSON Schema specifications for all
+  endpoints
+- **Database Schema Management**: Entity relationship definitions and
+  constraints
+- **Configuration Schema Validation**: Environment and module configuration
+  schemas
+- **AI Agent Protocol Schemas**: Communication and coordination protocol
+  definitions
 - **Government Data Standards**: FISMA-compliant data structure specifications
 - **Module Interface Schemas**: Contract definitions for the 33 active modules
 
 ### Strategic Integration
+
 Within TerraFusion's architecture, `.schemas` serves as:
+
 - **Data Governance Foundation**: Centralized data structure authority
 - **API Contract Management**: Versioned API specification hub
 - **Validation Engine Core**: Schema-based data validation infrastructure
-- **Integration Compatibility Layer**: Standard interfaces for system interoperability
+- **Integration Compatibility Layer**: Standard interfaces for system
+  interoperability
 - **Government Compliance Enforcement**: Schema-based regulatory compliance
 - **Development Standards Hub**: Type-safe development contract definitions
 
@@ -29,6 +43,7 @@ Within TerraFusion's architecture, `.schemas` serves as:
 ### Schema Organization Structure
 
 #### Core Schema Categories
+
 ```typescript
 interface SchemaOrganization {
   api: {
@@ -57,6 +72,7 @@ interface SchemaOrganization {
 ```
 
 #### Schema Versioning Framework
+
 ```json
 {
   "schema_versioning": {
@@ -71,6 +87,7 @@ interface SchemaOrganization {
 ### Government Data Standards Integration
 
 #### FISMA-Compliant Data Schemas
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -101,12 +118,18 @@ interface SchemaOrganization {
       "$ref": "#/definitions/AuditTrailSchema"
     }
   },
-  "required": ["propertyId", "assessedValue", "taxYear", "confidentialityLevel"],
+  "required": [
+    "propertyId",
+    "assessedValue",
+    "taxYear",
+    "confidentialityLevel"
+  ],
   "additionalProperties": false
 }
 ```
 
 #### Government User Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -138,7 +161,13 @@ interface SchemaOrganization {
       "$ref": "#/definitions/GovernmentRoleSchema"
     }
   },
-  "required": ["userId", "governmentId", "securityClearance", "accessLevel", "county"]
+  "required": [
+    "userId",
+    "governmentId",
+    "securityClearance",
+    "accessLevel",
+    "county"
+  ]
 }
 ```
 
@@ -147,6 +176,7 @@ interface SchemaOrganization {
 ### OpenAPI Specification Structure
 
 #### Main API Schema
+
 ```yaml
 # api/terrafusion-api.openapi.yaml
 openapi: 3.0.3
@@ -216,7 +246,7 @@ components:
   schemas:
     Property:
       $ref: './schemas/property.schema.json'
-    
+
     SwarmStatusResponse:
       type: object
       properties:
@@ -249,7 +279,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: Government authentication token
-    
+
     JWTAuth:
       type: apiKey
       in: header
@@ -260,6 +290,7 @@ components:
 ### Database Schema Definitions
 
 #### Entity Relationship Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -305,7 +336,7 @@ components:
       },
       "required": ["Id", "ParcelNumber", "Address", "AssessedValue", "County"]
     },
-    
+
     "AIAgent": {
       "type": "object",
       "properties": {
@@ -340,6 +371,7 @@ components:
 ## AI Agent Protocol Schemas
 
 ### Swarm Communication Protocol
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -382,9 +414,16 @@ components:
           "pattern": "^[A-Fa-f0-9]{64}$"
         }
       },
-      "required": ["messageId", "fromAgent", "toAgent", "messageType", "payload", "timestamp"]
+      "required": [
+        "messageId",
+        "fromAgent",
+        "toAgent",
+        "messageType",
+        "payload",
+        "timestamp"
+      ]
     },
-    
+
     "AgentStatus": {
       "type": "object",
       "properties": {
@@ -423,6 +462,7 @@ components:
 ```
 
 ### Command Brain Protocol Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -438,7 +478,12 @@ components:
         },
         "commandType": {
           "type": "string",
-          "enum": ["DEPLOY_AGENTS", "COORDINATE_SWARM", "OPTIMIZE_PERFORMANCE", "EMERGENCY_PROTOCOL"]
+          "enum": [
+            "DEPLOY_AGENTS",
+            "COORDINATE_SWARM",
+            "OPTIMIZE_PERFORMANCE",
+            "EMERGENCY_PROTOCOL"
+          ]
         },
         "targetAgents": {
           "type": "array",
@@ -471,6 +516,7 @@ components:
 ## Configuration Schema Management
 
 ### Environment Configuration Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -549,6 +595,7 @@ components:
 ```
 
 ### Module Configuration Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -612,6 +659,7 @@ components:
 ## County-Specific Schema Extensions
 
 ### Harris PACS Integration Schema
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -667,6 +715,7 @@ components:
 ## Schema Validation Framework
 
 ### Validation Engine Architecture
+
 ```typescript
 interface SchemaValidationEngine {
   validators: {
@@ -675,13 +724,13 @@ interface SchemaValidationEngine {
     yup: YupValidator;
     custom: CustomValidator[];
   };
-  
+
   validationLevels: {
     strict: boolean;
     warn: boolean;
     deprecated: boolean;
   };
-  
+
   errorHandling: {
     collectAll: boolean;
     failFast: boolean;
@@ -691,6 +740,7 @@ interface SchemaValidationEngine {
 ```
 
 ### Real-time Validation Implementation
+
 ```javascript
 // Real-time schema validation
 class TerraFusionSchemaValidator {
@@ -699,35 +749,38 @@ class TerraFusionSchemaValidator {
     this.schemas = new Map();
     this.loadSchemas();
   }
-  
+
   async validateData(data, schemaName) {
     const schema = this.schemas.get(schemaName);
     if (!schema) {
       throw new Error(`Schema not found: ${schemaName}`);
     }
-    
+
     const validate = this.ajv.compile(schema);
     const valid = validate(data);
-    
+
     if (!valid) {
       return {
         valid: false,
         errors: validate.errors,
-        governmentCompliant: false
+        governmentCompliant: false,
       };
     }
-    
+
     // Additional government compliance checks
-    const complianceCheck = await this.validateGovernmentCompliance(data, schemaName);
-    
+    const complianceCheck = await this.validateGovernmentCompliance(
+      data,
+      schemaName
+    );
+
     return {
       valid: true,
       errors: [],
       governmentCompliant: complianceCheck.compliant,
-      auditTrail: complianceCheck.auditData
+      auditTrail: complianceCheck.auditData,
     };
   }
-  
+
   async validateGovernmentCompliance(data, schemaName) {
     // FISMA compliance validation
     // PII detection
@@ -738,8 +791,8 @@ class TerraFusionSchemaValidator {
       auditData: {
         timestamp: new Date(),
         schema: schemaName,
-        validator: 'TerraFusionSchemaValidator'
-      }
+        validator: 'TerraFusionSchemaValidator',
+      },
     };
   }
 }
@@ -748,6 +801,7 @@ class TerraFusionSchemaValidator {
 ## Schema Evolution and Migration
 
 ### Version Management Strategy
+
 ```json
 {
   "schema_evolution": {
@@ -761,6 +815,7 @@ class TerraFusionSchemaValidator {
 ```
 
 ### Migration Scripts Framework
+
 ```typescript
 interface SchemaMigration {
   version: string;
@@ -775,12 +830,14 @@ interface SchemaMigration {
 ## Performance and Monitoring
 
 ### Schema Performance Metrics
+
 - **Validation Speed**: < 10ms per validation
 - **Memory Usage**: < 100MB for all schemas
 - **Cache Hit Rate**: > 95% for frequently used schemas
 - **Error Rate**: < 0.1% validation failures
 
 ### Monitoring Integration
+
 ```yaml
 monitoring:
   metrics:
@@ -788,7 +845,7 @@ monitoring:
     - validation_success_rate
     - schema_cache_hit_rate
     - government_compliance_rate
-  
+
   alerts:
     - validation_failure_spike
     - performance_degradation
@@ -796,4 +853,7 @@ monitoring:
     - schema_version_mismatch
 ```
 
-This comprehensive schema management system ensures data integrity, API consistency, and government compliance across all components of TerraFusion OS while supporting the complex requirements of AI agent coordination and multi-county deployment scenarios.
+This comprehensive schema management system ensures data integrity, API
+consistency, and government compliance across all components of TerraFusion OS
+while supporting the complex requirements of AI agent coordination and
+multi-county deployment scenarios.

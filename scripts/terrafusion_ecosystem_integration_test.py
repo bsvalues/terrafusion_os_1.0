@@ -12,9 +12,9 @@ from datetime import datetime
 class TerraFusionEcosystemTester:
     def __init__(self):
         self.services = {
-            'gauge_theory_swarm': 'http://localhost:8001',
-            'claude_flow_integration': 'http://localhost:8002',
-            'gauge_theory_api': 'http://localhost:5001'
+            'gauge_theory_swarm': 'http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}',
+            'claude_flow_integration': 'http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}',
+            'gauge_theory_api': 'http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}'
         }
         self.test_results = {}
 
@@ -100,7 +100,7 @@ class TerraFusionEcosystemTester:
 
         try:
             # Test Gauge Theory Swarm Status
-            response = requests.get('http://localhost:8001/api/swarm/status', timeout=5)
+            response = requests.get('http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/api/swarm/status', timeout=5)
             if response.status_code == 200:
                 data = response.json()
                 total_agents = data.get('totalAgents', 0)
@@ -114,7 +114,7 @@ class TerraFusionEcosystemTester:
                     score += 25
 
             # Test Claude Flow Integration
-            response = requests.get('http://localhost:8002/api/claude/status', timeout=5)
+            response = requests.get('http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/api/claude/status', timeout=5)
             if response.status_code == 200:
                 data = response.json()
                 commander_status = data.get('commanderStatus', {})
@@ -152,7 +152,7 @@ class TerraFusionEcosystemTester:
             }
 
             response = requests.post(
-                'http://localhost:8001/api/swarm/optimize',
+                'http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/api/swarm/optimize',
                 json=optimization_payload,
                 timeout=15
             )
@@ -198,7 +198,7 @@ class TerraFusionEcosystemTester:
             }
 
             response = requests.post(
-                'http://localhost:8002/api/claude/execute',
+                'http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/api/claude/execute',
                 json=workflow_payload,
                 timeout=15
             )
@@ -239,7 +239,7 @@ class TerraFusionEcosystemTester:
 
         try:
             # Test available workflows (represents module integration)
-            response = requests.get('http://localhost:8002/api/claude/workflows', timeout=5)
+            response = requests.get('http://localhost:\${{TF_SERVICE_8001_PORT:-8001}}/api/claude/workflows', timeout=5)
             if response.status_code == 200:
                 data = response.json()
                 workflow_count = data.get('count', 0)

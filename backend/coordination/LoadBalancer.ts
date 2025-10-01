@@ -61,13 +61,13 @@ export class LoadBalancer {
     // Calculate weights based on performance and health
     const weightedAgents = agents.map(agent => ({
       agent,
-      weight: this.calculateAgentWeight(agent)
+      weight: this.calculateAgentWeight(agent),
     }));
 
     // Select based on weighted random selection
     const totalWeight = weightedAgents.reduce((sum, item) => sum + item.weight, 0);
     const random = Math.random() * totalWeight;
-    
+
     let cumulative = 0;
     for (const item of weightedAgents) {
       cumulative += item.weight;
@@ -83,36 +83,36 @@ export class LoadBalancer {
     // Quantum-enhanced selection based on coherence and consciousness
     const quantumScores = agents.map(agent => ({
       agent,
-      score: this.calculateQuantumScore(agent, options)
+      score: this.calculateQuantumScore(agent, options),
     }));
 
-    return quantumScores.reduce((best, current) => 
-      current.score > best.score ? current : best
-    ).agent;
+    return quantumScores.reduce((best, current) => (current.score > best.score ? current : best))
+      .agent;
   }
 
   private calculateAgentWeight(agent: any): number {
-    const loadFactor = 1 - (agent.currentLoad / agent.maxLoad);
+    const loadFactor = 1 - agent.currentLoad / agent.maxLoad;
     const healthFactor = agent.healthScore / 100;
     const performanceFactor = agent.performance?.successRate || 0.5;
-    
+
     return loadFactor * 0.4 + healthFactor * 0.3 + performanceFactor * 0.3;
   }
 
   private calculateQuantumScore(agent: any, options: LoadBalancingOptions): number {
     let score = this.calculateAgentWeight(agent);
-    
+
     // Boost score for quantum coherence
     if (options.quantumCoherence && agent.performance?.quantumCoherence) {
-      score *= (1 + agent.performance.quantumCoherence);
+      score *= 1 + agent.performance.quantumCoherence;
     }
-    
+
     // Boost score for consciousness level alignment
     if (options.consciousnessLevel && agent.consciousness?.level) {
-      const consciousnessAlignment = 1 - Math.abs(agent.consciousness.level - options.consciousnessLevel) / 10;
-      score *= (1 + consciousnessAlignment);
+      const consciousnessAlignment =
+        1 - Math.abs(agent.consciousness.level - options.consciousnessLevel) / 10;
+      score *= 1 + consciousnessAlignment;
     }
-    
+
     return score;
   }
 }

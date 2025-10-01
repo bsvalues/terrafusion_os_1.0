@@ -124,7 +124,7 @@ class AutoRecoverySystem:
         default_config = {
             "services": {
                 "backend": {
-                    "url": "http://localhost:8080",
+                    "url": "http://localhost:\${{TF_ADMIN_PORT:-8080}}",
                     "health_endpoint": "/health",
                     "start_command": "cd backend && start /B cargo run --release --bin minimal_backend",
                     "restart_command": None,
@@ -132,7 +132,7 @@ class AutoRecoverySystem:
                     "cooldown_period": 300
                 },
                 "ai_engine": {
-                    "url": "http://localhost:8001",
+                    "url": "http://localhost:\${{TF_ADMIN_PORT:-8080}}",
                     "health_endpoint": "/health",
                     "start_command": "cd ai && start /B python simple_ai_service.py",
                     "restart_command": None,
@@ -140,7 +140,7 @@ class AutoRecoverySystem:
                     "cooldown_period": 300
                 },
                 "rag_service": {
-                    "url": "http://localhost:5003",
+                    "url": "http://localhost:\${{TF_ADMIN_PORT:-8080}}",
                     "health_endpoint": "/health",
                     "start_command": "cd ai && start /B python simple_rag_service.py",
                     "restart_command": None,
@@ -148,7 +148,7 @@ class AutoRecoverySystem:
                     "cooldown_period": 300
                 },
                 "frontend": {
-                    "url": "http://localhost:3002",
+                    "url": "http://localhost:\${{TF_ADMIN_PORT:-8080}}",
                     "health_endpoint": "/",
                     "start_command": "cd frontend && start /B npm run dev",
                     "restart_command": None,

@@ -18,7 +18,7 @@ try {
 # Check if main TerraFusion stack is running
 Write-Host "🔍 Checking TerraFusion main stack..." -ForegroundColor Yellow
 try {
-    $backendHealth = Invoke-RestMethod -Uri "http://localhost:5000/api/health" -Method GET -ErrorAction Stop
+    $backendHealth = Invoke-RestMethod -Uri "http://localhost:\${{TF_API_PORT:-5000}}/api/health" -Method GET -ErrorAction Stop
     Write-Host "✅ Main TerraFusion stack is running" -ForegroundColor Green
 } catch {
     Write-Host "⚠️  Main TerraFusion stack is not running. Starting it first..." -ForegroundColor Yellow
@@ -59,12 +59,12 @@ Start-Sleep -Seconds 15
 Write-Host "🔍 Checking monitoring service status..." -ForegroundColor Yellow
 
 $services = @(
-    @{Name="Prometheus"; Port=9090; URL="http://localhost:9090"},
-    @{Name="Alertmanager"; Port=9093; URL="http://localhost:9093"},
-    @{Name="Grafana"; Port=3000; URL="http://localhost:3000"},
-    @{Name="Node Exporter"; Port=9100; URL="http://localhost:9100/metrics"},
-    @{Name="Nginx Exporter"; Port=9113; URL="http://localhost:9113/metrics"},
-    @{Name="cAdvisor"; Port=8080; URL="http://localhost:8080/metrics"}
+    @{Name="Prometheus"; Port=9090; URL="http://localhost:\${{TF_API_PORT:-5000}}"},
+    @{Name="Alertmanager"; Port=9093; URL="http://localhost:\${{TF_API_PORT:-5000}}"},
+    @{Name="Grafana"; Port=3000; URL="http://localhost:\${{TF_API_PORT:-5000}}"},
+    @{Name="Node Exporter"; Port=9100; URL="http://localhost:\${{TF_API_PORT:-5000}}/metrics"},
+    @{Name="Nginx Exporter"; Port=9113; URL="http://localhost:\${{TF_API_PORT:-5000}}/metrics"},
+    @{Name="cAdvisor"; Port=8080; URL="http://localhost:\${{TF_API_PORT:-5000}}/metrics"}
 )
 
 $allHealthy = $true
@@ -83,12 +83,12 @@ foreach ($service in $services) {
 Write-Host ""
 Write-Host "🌐 MONITORING STACK ACCESS INFORMATION" -ForegroundColor Cyan
 Write-Host "=====================================" -ForegroundColor Cyan
-Write-Host "• Prometheus:     http://localhost:9090" -ForegroundColor White
-Write-Host "• Alertmanager:   http://localhost:9093" -ForegroundColor White
-Write-Host "• Grafana:        http://localhost:3000" -ForegroundColor White
-Write-Host "• Node Exporter:  http://localhost:9100/metrics" -ForegroundColor White
-Write-Host "• Nginx Exporter: http://localhost:9113/metrics" -ForegroundColor White
-Write-Host "• cAdvisor:       http://localhost:8080/metrics" -ForegroundColor White
+Write-Host "• Prometheus:     http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor White
+Write-Host "• Alertmanager:   http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor White
+Write-Host "• Grafana:        http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor White
+Write-Host "• Node Exporter:  http://localhost:\${{TF_API_PORT:-5000}}/metrics" -ForegroundColor White
+Write-Host "• Nginx Exporter: http://localhost:\${{TF_API_PORT:-5000}}/metrics" -ForegroundColor White
+Write-Host "• cAdvisor:       http://localhost:\${{TF_API_PORT:-5000}}/metrics" -ForegroundColor White
 
 Write-Host ""
 Write-Host "🔑 GRAFANA LOGIN CREDENTIALS" -ForegroundColor Cyan
@@ -107,7 +107,7 @@ if ($allHealthy) {
 
 Write-Host ""
 Write-Host "📋 NEXT STEPS:" -ForegroundColor Cyan
-Write-Host "1. Open Grafana at http://localhost:3000" -ForegroundColor White
+Write-Host "1. Open Grafana at http://localhost:\${{TF_API_PORT:-5000}}" -ForegroundColor White
 Write-Host "2. Login with admin/terrafusion2025" -ForegroundColor White
 Write-Host "3. The TerraFusion dashboard should be automatically provisioned" -ForegroundColor White
 Write-Host "4. Configure additional alerts and dashboards as needed" -ForegroundColor White

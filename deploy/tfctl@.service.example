@@ -1,0 +1,16 @@
+[Unit]
+Description=TerraFusion cOS Launcher (socket-activated)
+After=network.target
+Requires=tfctl.socket
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/opt/terrafusion
+Environment=TF_API_PORT=0
+Environment=SYSTEMD_SOCKET=1
+ExecStart=/usr/bin/python3 tfctl.py launch --open
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

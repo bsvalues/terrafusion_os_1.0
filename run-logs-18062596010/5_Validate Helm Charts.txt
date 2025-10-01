@@ -1,0 +1,229 @@
+﻿2025-09-27T17:08:27.8518365Z Current runner version: '2.328.0'
+2025-09-27T17:08:27.8541102Z ##[group]Runner Image Provisioner
+2025-09-27T17:08:27.8541930Z Hosted Compute Agent
+2025-09-27T17:08:27.8542496Z Version: 20250912.392
+2025-09-27T17:08:27.8543085Z Commit: d921fda672a98b64f4f82364647e2f10b2267d0b
+2025-09-27T17:08:27.8543763Z Build Date: 2025-09-12T15:23:14Z
+2025-09-27T17:08:27.8544363Z ##[endgroup]
+2025-09-27T17:08:27.8544874Z ##[group]Operating System
+2025-09-27T17:08:27.8545461Z Ubuntu
+2025-09-27T17:08:27.8546205Z 24.04.3
+2025-09-27T17:08:27.8546678Z LTS
+2025-09-27T17:08:27.8547076Z ##[endgroup]
+2025-09-27T17:08:27.8547640Z ##[group]Runner Image
+2025-09-27T17:08:27.8548209Z Image: ubuntu-24.04
+2025-09-27T17:08:27.8548655Z Version: 20250922.53.1
+2025-09-27T17:08:27.8549727Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250922.53/images/ubuntu/Ubuntu2404-Readme.md
+2025-09-27T17:08:27.8551203Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250922.53
+2025-09-27T17:08:27.8552215Z ##[endgroup]
+2025-09-27T17:08:27.8553260Z ##[group]GITHUB_TOKEN Permissions
+2025-09-27T17:08:27.8555074Z Contents: read
+2025-09-27T17:08:27.8555594Z Metadata: read
+2025-09-27T17:08:27.8556286Z Packages: read
+2025-09-27T17:08:27.8556869Z ##[endgroup]
+2025-09-27T17:08:27.8559150Z Secret source: Actions
+2025-09-27T17:08:27.8560018Z Prepare workflow directory
+2025-09-27T17:08:27.8967289Z Prepare all required actions
+2025-09-27T17:08:27.9023261Z Getting action download info
+2025-09-27T17:08:28.3544966Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+2025-09-27T17:08:28.5429910Z Download action repository 'azure/setup-helm@v3' (SHA:5119fcb9089d432beecbf79bb2c7915207344b78)
+2025-09-27T17:08:29.2381291Z Download action repository 'azure/setup-kubectl@v3' (SHA:901a10e89ea615cf61f57ac05cecdf23e7de06d8)
+2025-09-27T17:08:29.8680829Z Complete job name: Validate Helm Charts
+2025-09-27T17:08:29.9481370Z ##[group]Run actions/checkout@v4
+2025-09-27T17:08:29.9482699Z with:
+2025-09-27T17:08:29.9483547Z   repository: bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:29.9484890Z   token: ***
+2025-09-27T17:08:29.9485658Z   ssh-strict: true
+2025-09-27T17:08:29.9486645Z   ssh-user: git
+2025-09-27T17:08:29.9487464Z   persist-credentials: true
+2025-09-27T17:08:29.9488398Z   clean: true
+2025-09-27T17:08:29.9489212Z   sparse-checkout-cone-mode: true
+2025-09-27T17:08:29.9490220Z   fetch-depth: 1
+2025-09-27T17:08:29.9491017Z   fetch-tags: false
+2025-09-27T17:08:29.9491827Z   show-progress: true
+2025-09-27T17:08:29.9492651Z   lfs: false
+2025-09-27T17:08:29.9493393Z   submodules: false
+2025-09-27T17:08:29.9494214Z   set-safe-directory: true
+2025-09-27T17:08:29.9495346Z env:
+2025-09-27T17:08:29.9496187Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:29.9496988Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:29.9497902Z   TF_VAR_environment: production
+2025-09-27T17:08:29.9498833Z ##[endgroup]
+2025-09-27T17:08:30.0570544Z Syncing repository: bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:30.0573533Z ##[group]Getting Git version info
+2025-09-27T17:08:30.0575135Z Working directory is '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+2025-09-27T17:08:30.0577824Z [command]/usr/bin/git version
+2025-09-27T17:08:30.0660860Z git version 2.51.0
+2025-09-27T17:08:30.0686565Z ##[endgroup]
+2025-09-27T17:08:30.0700823Z Temporarily overriding HOME='/home/runner/work/_temp/6aaef478-81d2-474f-9fe6-3df7d29f7c5b' before making global git config changes
+2025-09-27T17:08:30.0704472Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-27T17:08:30.0707916Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T17:08:30.0740462Z Deleting the contents of '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+2025-09-27T17:08:30.0743748Z ##[group]Initializing the repository
+2025-09-27T17:08:30.0748132Z [command]/usr/bin/git init /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T17:08:30.0857960Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-09-27T17:08:30.0861733Z hint: is subject to change. To configure the initial branch name to use in all
+2025-09-27T17:08:30.0864539Z hint: of your new repositories, which will suppress this warning, call:
+2025-09-27T17:08:30.0866194Z hint:
+2025-09-27T17:08:30.0867324Z hint: 	git config --global init.defaultBranch <name>
+2025-09-27T17:08:30.0869195Z hint:
+2025-09-27T17:08:30.0870760Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-09-27T17:08:30.0872986Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-09-27T17:08:30.0874475Z hint:
+2025-09-27T17:08:30.0875215Z hint: 	git branch -m <name>
+2025-09-27T17:08:30.0876330Z hint:
+2025-09-27T17:08:30.0877518Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-09-27T17:08:30.0879746Z Initialized empty Git repository in /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0/.git/
+2025-09-27T17:08:30.0883163Z [command]/usr/bin/git remote add origin https://github.com/bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:30.0915467Z ##[endgroup]
+2025-09-27T17:08:30.0917698Z ##[group]Disabling automatic garbage collection
+2025-09-27T17:08:30.0919731Z [command]/usr/bin/git config --local gc.auto 0
+2025-09-27T17:08:30.0946181Z ##[endgroup]
+2025-09-27T17:08:30.0947574Z ##[group]Setting up auth
+2025-09-27T17:08:30.0951567Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-27T17:08:30.0981112Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-27T17:08:30.1300579Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-09-27T17:08:30.1337906Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-09-27T17:08:30.1557383Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-09-27T17:08:30.1590942Z ##[endgroup]
+2025-09-27T17:08:30.1593384Z ##[group]Fetching the repository
+2025-09-27T17:08:30.1603074Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e7d13e9abe73a043c7d18956601c356c78ad1354:refs/remotes/pull/1/merge
+2025-09-27T17:08:34.9682478Z From https://github.com/bsvalues/terrafusion_os_1.0
+2025-09-27T17:08:34.9683376Z  * [new ref]         e7d13e9abe73a043c7d18956601c356c78ad1354 -> pull/1/merge
+2025-09-27T17:08:34.9718068Z ##[endgroup]
+2025-09-27T17:08:34.9718923Z ##[group]Determining the checkout info
+2025-09-27T17:08:34.9720677Z ##[endgroup]
+2025-09-27T17:08:34.9726947Z [command]/usr/bin/git sparse-checkout disable
+2025-09-27T17:08:34.9770751Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-09-27T17:08:34.9802520Z ##[group]Checking out the ref
+2025-09-27T17:08:34.9803754Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1/merge
+2025-09-27T17:08:36.0395028Z Updating files:  61% (11511/18790)
+2025-09-27T17:08:36.0497386Z Updating files:  62% (11650/18790)
+2025-09-27T17:08:36.0622048Z Updating files:  63% (11838/18790)
+2025-09-27T17:08:36.0732706Z Updating files:  64% (12026/18790)
+2025-09-27T17:08:36.0850914Z Updating files:  65% (12214/18790)
+2025-09-27T17:08:36.0933064Z Updating files:  66% (12402/18790)
+2025-09-27T17:08:36.1055320Z Updating files:  67% (12590/18790)
+2025-09-27T17:08:36.1246706Z Updating files:  68% (12778/18790)
+2025-09-27T17:08:36.1375074Z Updating files:  69% (12966/18790)
+2025-09-27T17:08:36.1504562Z Updating files:  70% (13153/18790)
+2025-09-27T17:08:36.1611808Z Updating files:  71% (13341/18790)
+2025-09-27T17:08:36.1742614Z Updating files:  72% (13529/18790)
+2025-09-27T17:08:36.1900413Z Updating files:  73% (13717/18790)
+2025-09-27T17:08:36.2044601Z Updating files:  74% (13905/18790)
+2025-09-27T17:08:36.2142266Z Updating files:  75% (14093/18790)
+2025-09-27T17:08:36.2297238Z Updating files:  76% (14281/18790)
+2025-09-27T17:08:36.2382655Z Updating files:  77% (14469/18790)
+2025-09-27T17:08:36.2461960Z Updating files:  78% (14657/18790)
+2025-09-27T17:08:36.2949026Z Updating files:  79% (14845/18790)
+2025-09-27T17:08:36.3050164Z Updating files:  80% (15032/18790)
+2025-09-27T17:08:36.3126542Z Updating files:  81% (15220/18790)
+2025-09-27T17:08:36.3222029Z Updating files:  82% (15408/18790)
+2025-09-27T17:08:36.3362626Z Updating files:  83% (15596/18790)
+2025-09-27T17:08:36.3527808Z Updating files:  84% (15784/18790)
+2025-09-27T17:08:36.3630673Z Updating files:  85% (15972/18790)
+2025-09-27T17:08:36.3898343Z Updating files:  86% (16160/18790)
+2025-09-27T17:08:36.4075115Z Updating files:  87% (16348/18790)
+2025-09-27T17:08:36.4219089Z Updating files:  88% (16536/18790)
+2025-09-27T17:08:36.4401332Z Updating files:  89% (16724/18790)
+2025-09-27T17:08:36.4664387Z Updating files:  90% (16911/18790)
+2025-09-27T17:08:36.4901904Z Updating files:  91% (17099/18790)
+2025-09-27T17:08:36.5017577Z Updating files:  92% (17287/18790)
+2025-09-27T17:08:36.5154564Z Updating files:  93% (17475/18790)
+2025-09-27T17:08:36.5314833Z Updating files:  94% (17663/18790)
+2025-09-27T17:08:36.5530202Z Updating files:  95% (17851/18790)
+2025-09-27T17:08:36.5642768Z Updating files:  96% (18039/18790)
+2025-09-27T17:08:36.5821590Z Updating files:  97% (18227/18790)
+2025-09-27T17:08:36.5951201Z Updating files:  98% (18415/18790)
+2025-09-27T17:08:36.6080110Z Updating files:  99% (18603/18790)
+2025-09-27T17:08:36.6080644Z Updating files: 100% (18790/18790)
+2025-09-27T17:08:36.6081184Z Updating files: 100% (18790/18790), done.
+2025-09-27T17:08:36.6300229Z Note: switching to 'refs/remotes/pull/1/merge'.
+2025-09-27T17:08:36.6300756Z 
+2025-09-27T17:08:36.6301570Z You are in 'detached HEAD' state. You can look around, make experimental
+2025-09-27T17:08:36.6302419Z changes and commit them, and you can discard any commits you make in this
+2025-09-27T17:08:36.6303298Z state without impacting any branches by switching back to a branch.
+2025-09-27T17:08:36.6303807Z 
+2025-09-27T17:08:36.6304137Z If you want to create a new branch to retain commits you create, you may
+2025-09-27T17:08:36.6304894Z do so (now or later) by using -c with the switch command. Example:
+2025-09-27T17:08:36.6305340Z 
+2025-09-27T17:08:36.6305546Z   git switch -c <new-branch-name>
+2025-09-27T17:08:36.6306063Z 
+2025-09-27T17:08:36.6306238Z Or undo this operation with:
+2025-09-27T17:08:36.6306527Z 
+2025-09-27T17:08:36.6306718Z   git switch -
+2025-09-27T17:08:36.6306930Z 
+2025-09-27T17:08:36.6307288Z Turn off this advice by setting config variable advice.detachedHead to false
+2025-09-27T17:08:36.6307634Z 
+2025-09-27T17:08:36.6308057Z HEAD is now at e7d13e9 Merge 4157581266391becfc401509c4be79567996f403 into 68c8b3a5a3b09a7f227bfbf9fcabbf1f9f497fb8
+2025-09-27T17:08:36.6342660Z ##[endgroup]
+2025-09-27T17:08:36.6382576Z [command]/usr/bin/git log -1 --format=%H
+2025-09-27T17:08:36.6404353Z e7d13e9abe73a043c7d18956601c356c78ad1354
+2025-09-27T17:08:36.6582160Z ##[group]Run azure/setup-helm@v3
+2025-09-27T17:08:36.6582419Z with:
+2025-09-27T17:08:36.6582579Z   version: v3.12.0
+2025-09-27T17:08:36.6582754Z env:
+2025-09-27T17:08:36.6582903Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:36.6583086Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:36.6583294Z   TF_VAR_environment: production
+2025-09-27T17:08:36.6583508Z ##[endgroup]
+2025-09-27T17:08:36.7088895Z ##[group]Downloading v3.12.0
+2025-09-27T17:08:36.9928939Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/2cca88d5-8f4a-4a92-9bf2-e26ac77ba0e6
+2025-09-27T17:08:37.3957859Z ##[endgroup]
+2025-09-27T17:08:37.3960982Z Helm tool version 'v3.12.0' has been cached at /opt/hostedtoolcache/helm/3.12.0/x64/linux-amd64/helm
+2025-09-27T17:08:37.4083559Z ##[group]Run azure/setup-kubectl@v3
+2025-09-27T17:08:37.4083812Z with:
+2025-09-27T17:08:37.4083968Z   version: latest
+2025-09-27T17:08:37.4084135Z env:
+2025-09-27T17:08:37.4084458Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:37.4084648Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:37.4084863Z   TF_VAR_environment: production
+2025-09-27T17:08:37.4085067Z ##[endgroup]
+2025-09-27T17:08:38.2312698Z ##[group]Run helm repo add bitnami https://charts.bitnami.com/bitnami
+2025-09-27T17:08:38.2313242Z [36;1mhelm repo add bitnami https://charts.bitnami.com/bitnami[0m
+2025-09-27T17:08:38.2313769Z [36;1mhelm repo add prometheus-community https://prometheus-community.github.io/helm-charts[0m
+2025-09-27T17:08:38.2314276Z [36;1mhelm repo add grafana https://grafana.github.io/helm-charts[0m
+2025-09-27T17:08:38.2314592Z [36;1mhelm repo update[0m
+2025-09-27T17:08:38.2350117Z shell: /usr/bin/bash -e {0}
+2025-09-27T17:08:38.2350356Z env:
+2025-09-27T17:08:38.2350519Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:38.2350719Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:38.2350936Z   TF_VAR_environment: production
+2025-09-27T17:08:38.2351157Z ##[endgroup]
+2025-09-27T17:08:41.0944415Z "bitnami" has been added to your repositories
+2025-09-27T17:08:41.6316215Z "prometheus-community" has been added to your repositories
+2025-09-27T17:08:42.0664541Z "grafana" has been added to your repositories
+2025-09-27T17:08:42.1012215Z Hang tight while we grab the latest from your chart repositories...
+2025-09-27T17:08:42.6094479Z ...Successfully got an update from the "grafana" chart repository
+2025-09-27T17:08:42.7168830Z ...Successfully got an update from the "prometheus-community" chart repository
+2025-09-27T17:08:45.0565424Z ...Successfully got an update from the "bitnami" chart repository
+2025-09-27T17:08:45.0566374Z Update Complete. ⎈Happy Helming!⎈
+2025-09-27T17:08:45.0730799Z ##[group]Run helm lint charts/terrafusion-backend
+2025-09-27T17:08:45.0731163Z [36;1mhelm lint charts/terrafusion-backend[0m
+2025-09-27T17:08:45.0731448Z [36;1mhelm lint charts/terrafusion-frontend[0m
+2025-09-27T17:08:45.0731718Z [36;1mhelm lint charts/terrafusion-ai-swarm[0m
+2025-09-27T17:08:45.0731974Z [36;1mhelm lint charts/terrafusion[0m
+2025-09-27T17:08:45.0764663Z shell: /usr/bin/bash -e {0}
+2025-09-27T17:08:45.0764873Z env:
+2025-09-27T17:08:45.0765034Z   TF_VERSION: 1.5.0
+2025-09-27T17:08:45.0765221Z   TF_VAR_region: us-east-1
+2025-09-27T17:08:45.0765431Z   TF_VAR_environment: production
+2025-09-27T17:08:45.0765649Z ##[endgroup]
+2025-09-27T17:08:45.1193484Z Error: 1 chart(s) linted, 1 chart(s) failed
+2025-09-27T17:08:45.1194217Z ==> Linting charts/terrafusion-backend
+2025-09-27T17:08:45.1194859Z [INFO] Chart.yaml: icon is recommended
+2025-09-27T17:08:45.1197241Z [ERROR] templates/: template: terrafusion-backend/templates/NOTES.txt:30:14: executing "terrafusion-backend/templates/NOTES.txt" at <.Values.monitoring.enabled>: nil pointer evaluating interface {}.enabled
+2025-09-27T17:08:45.1200605Z [WARNING] /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0/infrastructure/helm/charts/terrafusion-backend: chart directory is missing these dependencies: postgresql,redis
+2025-09-27T17:08:45.1201791Z 
+2025-09-27T17:08:45.1224779Z ##[error]Process completed with exit code 1.
+2025-09-27T17:08:45.1302404Z Post job cleanup.
+2025-09-27T17:08:45.2252120Z [command]/usr/bin/git version
+2025-09-27T17:08:45.2296461Z git version 2.51.0
+2025-09-27T17:08:45.2338941Z Temporarily overriding HOME='/home/runner/work/_temp/2fbbef58-53f5-433d-a54f-788daaeb4ccc' before making global git config changes
+2025-09-27T17:08:45.2340118Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-27T17:08:45.2344230Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T17:08:45.2379006Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-27T17:08:45.2411262Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-27T17:08:45.2649456Z fatal: No url found for submodule path 'docs/src-tauri/TerraFusion_Hybrid_Championship' in .gitmodules
+2025-09-27T17:08:45.2690648Z ##[warning]The process '/usr/bin/git' failed with exit code 128
+2025-09-27T17:08:45.2773928Z Cleaning up orphan processes

@@ -1,26 +1,30 @@
 # 🏆 Terrafusion API Reference
+
 ## Benton County Championship Demo - Complete API Documentation
 
 ---
 
 ## 📋 API Overview
 
-**Base URL**: `http://localhost:3000`  
+**Base URL**: `http://localhost:\${{TF_FRONTEND_PORT:-3000}}`  
 **Version**: 3.0.0  
 **Authentication**: None (Demo Environment)  
 **Response Format**: JSON  
-**Rate Limiting**: 1000 requests/minute  
+**Rate Limiting**: 1000 requests/minute
 
 ---
 
 ## 🎯 Demo Endpoints
 
 ### GET /api/demo/overview
-**Description**: Comprehensive system overview with key metrics and application status  
+
+**Description**: Comprehensive system overview with key metrics and application
+status  
 **Authentication**: None  
-**Response Time**: ~4ms  
+**Response Time**: ~4ms
 
 **Response Example**:
+
 ```json
 {
   "demo_name": "Benton County Championship Demo",
@@ -40,12 +44,15 @@
 ```
 
 ### GET /api/demo/properties
+
 **Description**: Real Benton County property data with comprehensive details  
-**Parameters**: 
+**Parameters**:
+
 - `limit` (optional): Number of properties to return (default: 10)
 - `offset` (optional): Pagination offset (default: 0)
 
 **Response Example**:
+
 ```json
 {
   "metadata": {
@@ -78,9 +85,11 @@
 ```
 
 ### GET /api/demo/scenarios
-**Description**: Available demonstration scenarios for different audiences  
+
+**Description**: Available demonstration scenarios for different audiences
 
 **Response Example**:
+
 ```json
 {
   "scenarios": [
@@ -96,9 +105,12 @@
 ```
 
 ### GET /api/demo/marketplace
-**Description**: Terrafusion application marketplace with all available applications  
+
+**Description**: Terrafusion application marketplace with all available
+applications
 
 **Response Example**:
+
 ```json
 {
   "marketplace": {
@@ -119,9 +131,11 @@
 ```
 
 ### GET /api/demo/metrics
-**Description**: Performance and business impact metrics  
+
+**Description**: Performance and business impact metrics
 
 **Response Example**:
+
 ```json
 {
   "performance": {
@@ -138,9 +152,11 @@
 ```
 
 ### GET /api/demo/health
-**Description**: System health status with detailed diagnostics  
+
+**Description**: System health status with detailed diagnostics
 
 **Response Example**:
+
 ```json
 {
   "status": "healthy",
@@ -159,9 +175,11 @@
 ## 📊 Monitoring Endpoints
 
 ### GET /api/monitoring/metrics
-**Description**: Comprehensive system metrics for monitoring and analytics  
+
+**Description**: Comprehensive system metrics for monitoring and analytics
 
 **Response Example**:
+
 ```json
 {
   "requests": 1245,
@@ -188,9 +206,11 @@
 ```
 
 ### GET /api/monitoring/performance
-**Description**: Performance metrics formatted for dashboard display  
+
+**Description**: Performance metrics formatted for dashboard display
 
 **Response Example**:
+
 ```json
 {
   "response_time": {
@@ -213,9 +233,11 @@
 ```
 
 ### GET /api/monitoring/alerts
-**Description**: Active system alerts and notifications  
+
+**Description**: Active system alerts and notifications
 
 **Response Example**:
+
 ```json
 {
   "active_alerts": [
@@ -236,9 +258,11 @@
 ## 💾 Backup & Recovery Endpoints
 
 ### GET /api/backup/list
-**Description**: List available backups with metadata  
+
+**Description**: List available backups with metadata
 
 **Response Example**:
+
 ```json
 {
   "backups": [
@@ -254,9 +278,11 @@
 ```
 
 ### POST /api/backup/create
-**Description**: Create on-demand backup  
+
+**Description**: Create on-demand backup
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -267,11 +293,14 @@
 ```
 
 ### POST /api/backup/restore/:backupName
+
 **Description**: Restore from specific backup  
-**Parameters**: 
+**Parameters**:
+
 - `backupName`: Name of backup to restore from
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -290,16 +319,17 @@
 
 ## 🔧 Error Codes
 
-| Code | Status | Description |
-|------|--------|-------------|
-| 200 | OK | Request successful |
-| 400 | Bad Request | Invalid request parameters |
-| 404 | Not Found | Resource not found |
-| 429 | Too Many Requests | Rate limit exceeded |
-| 500 | Internal Server Error | Server error occurred |
-| 503 | Service Unavailable | Service temporarily unavailable |
+| Code | Status                | Description                     |
+| ---- | --------------------- | ------------------------------- |
+| 200  | OK                    | Request successful              |
+| 400  | Bad Request           | Invalid request parameters      |
+| 404  | Not Found             | Resource not found              |
+| 429  | Too Many Requests     | Rate limit exceeded             |
+| 500  | Internal Server Error | Server error occurred           |
+| 503  | Service Unavailable   | Service temporarily unavailable |
 
 **Error Response Format**:
+
 ```json
 {
   "error": {
@@ -315,17 +345,20 @@
 ## 📈 Performance Characteristics
 
 ### Response Times
+
 - Demo endpoints: 3-5ms average
 - Monitoring endpoints: 5-10ms average
 - Backup operations: 1-5 seconds
 - Health checks: <2ms
 
 ### Rate Limits
+
 - General API: 1000 requests/minute
 - Monitoring endpoints: 600 requests/minute
 - Backup operations: 10 requests/minute
 
 ### Data Freshness
+
 - Property data: Updated daily
 - Metrics: Real-time (30-second intervals)
 - Health status: Real-time
@@ -336,17 +369,20 @@
 ## 🛡️ Security Considerations
 
 ### Data Protection
+
 - All responses use HTTPS in production
 - Sensitive data is filtered from responses
 - No authentication required for demo environment
 - Production requires API key authentication
 
 ### CORS Policy
+
 - Allows all origins in demo mode
 - Production restricts to approved domains
 - Preflight requests supported for complex requests
 
 ### Input Validation
+
 - All parameters validated server-side
 - SQL injection protection enabled
 - XSS protection headers included
@@ -357,45 +393,51 @@
 ## 📊 Usage Examples
 
 ### JavaScript/Fetch
+
 ```javascript
 // Get system overview
-const overview = await fetch('/api/demo/overview')
-  .then(response => response.json());
+const overview = await fetch('/api/demo/overview').then(response =>
+  response.json()
+);
 
 // Get properties with pagination
-const properties = await fetch('/api/demo/properties?limit=5&offset=10')
-  .then(response => response.json());
+const properties = await fetch('/api/demo/properties?limit=5&offset=10').then(
+  response => response.json()
+);
 
 // Monitor performance
-const performance = await fetch('/api/monitoring/performance')
-  .then(response => response.json());
+const performance = await fetch('/api/monitoring/performance').then(response =>
+  response.json()
+);
 ```
 
 ### cURL Examples
+
 ```bash
 # System health check
-curl -X GET http://localhost:3000/api/demo/health
+curl -X GET http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/health
 
 # Get property data
-curl -X GET "http://localhost:3000/api/demo/properties?limit=3"
+curl -X GET "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/properties?limit=3"
 
 # Create backup
-curl -X POST http://localhost:3000/api/backup/create
+curl -X POST http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/backup/create
 
 # Get performance metrics
-curl -X GET http://localhost:3000/api/monitoring/performance
+curl -X GET http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/performance
 ```
 
 ### Python/Requests
+
 ```python
 import requests
 
 # Get overview data
-response = requests.get('http://localhost:3000/api/demo/overview')
+response = requests.get('http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/demo/overview')
 overview = response.json()
 
 # Monitor system performance
-performance = requests.get('http://localhost:3000/api/monitoring/performance').json()
+performance = requests.get('http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/monitoring/performance').json()
 print(f"Response time: {performance['response_time']['average']}ms")
 ```
 
@@ -404,11 +446,13 @@ print(f"Response time: {performance['response_time']['average']}ms")
 ## 🔄 Webhook Support
 
 ### Available Webhooks
+
 - System alerts: `POST /webhooks/alerts`
 - Backup completion: `POST /webhooks/backup-complete`
 - Performance thresholds: `POST /webhooks/performance`
 
 ### Webhook Payload Example
+
 ```json
 {
   "event": "backup_completed",
@@ -433,5 +477,5 @@ print(f"Response time: {performance['response_time']['average']}ms")
 
 ---
 
-*Built with championship precision for government excellence*  
-*Terrafusion API v3.0.0 - Where Performance Meets Innovation*
+_Built with championship precision for government excellence_  
+_Terrafusion API v3.0.0 - Where Performance Meets Innovation_

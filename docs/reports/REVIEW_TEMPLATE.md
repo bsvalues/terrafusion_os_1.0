@@ -3,35 +3,41 @@
 **Date**: YYYY-MM-DD  
 **DRI**: @owner  
 **Scope**: files/subfolders reviewed  
-**Status**: 🔴 Not Started | 🟡 In Progress | ✅ Complete  
+**Status**: 🔴 Not Started | 🟡 In Progress | ✅ Complete
 
 ## Findings
 
 ### Build Issues
-- [ ] Issue: 
-- [ ] Issue: 
 
-### Lint/Type Issues  
+- [ ] Issue:
+- [ ] Issue:
+
+### Lint/Type Issues
+
 - [ ] Issue:
 - [ ] Issue:
 
 ### Dead Dependencies
+
 - [ ] Package:
 - [ ] Package:
 
 ### Security
+
 - [ ] Auth required on all endpoints (except /health, /swagger)
 - [ ] No AllowAnonymous decorators without justification
 - [ ] No hardcoded secrets or credentials
 - [ ] Audit logging present for sensitive operations
 
 ### Documentation
+
 - [ ] README present and accurate
 - [ ] API documentation complete
 - [ ] Usage examples provided
 - [ ] Architecture decisions recorded
 
 ### Code Quality
+
 - [ ] No duplicate types/interfaces
 - [ ] Proper error handling
 - [ ] Logging without PII
@@ -40,16 +46,20 @@
 ## Actions Taken
 
 ### Fixed
-- 
+
+-
 
 ### Removed
-- 
+
+-
 
 ### Added
-- 
+
+-
 
 ### Deferred (with reason)
-- 
+
+-
 
 ## Exit Criteria Checklist
 

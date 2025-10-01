@@ -29,13 +29,14 @@ chmod +x LAUNCH_TERRAFUSION_COMMERCIAL.sh
 ./LAUNCH_TERRAFUSION_COMMERCIAL.sh menu
 ```
 
-**That's it!** The platform will be running at http://localhost:3000
+**That's it!** The platform will be running at http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 
 ---
 
 ## 📦 **WHAT'S INCLUDED**
 
 ### **Complete Package Structure**
+
 ```
 commercial/
 ├── 🚀 LAUNCH_TERRAFUSION_COMMERCIAL.sh    # Master launch script
@@ -96,6 +97,7 @@ commercial/
 ## 🎯 **DEPLOYMENT OPTIONS**
 
 ### **1. Desktop Application (Individual Users)**
+
 ```bash
 # Windows
 Run: dist/terrafusion-commercial-enterprise/Terrafusion-Setup.msi
@@ -108,23 +110,27 @@ sudo bash dist/terrafusion-commercial-enterprise/scripts/install-enterprise.sh
 ```
 
 ### **2. Local Server (Development/Testing)**
+
 ```bash
 ./LAUNCH_TERRAFUSION_COMMERCIAL.sh
-# Visit: http://localhost:3000
+# Visit: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 ```
 
 ### **3. Docker Stack (Production)**
+
 ```bash
 cd dist/terrafusion-commercial-enterprise
 docker-compose -f docker-compose.enterprise.yml up -d
 ```
 
 ### **4. Kubernetes (Enterprise)**
+
 ```bash
 helm install terrafusion ./dist/terrafusion-commercial-enterprise/helm/terrafusion-commercial
 ```
 
 ### **5. Cloud Deployment**
+
 ```bash
 # AWS
 bash dist/terrafusion-commercial-enterprise/cloud/aws/deploy-aws.sh
@@ -141,6 +147,7 @@ bash dist/terrafusion-commercial-enterprise/cloud/gcp/deploy-gcp.sh
 ## ✅ **VERIFICATION CHECKLIST**
 
 ### **Components Ready**
+
 - [x] **Desktop Installers** - MSI, DMG, DEB packages created
 - [x] **Icons Generated** - All platforms, all sizes (16px to 1024px)
 - [x] **Server Components** - Frontend, API, CostForge engine
@@ -152,6 +159,7 @@ bash dist/terrafusion-commercial-enterprise/cloud/gcp/deploy-gcp.sh
 - [x] **AI Swarm** - 1,008 agents configured
 
 ### **Testing Completed**
+
 - [x] **Performance** - 379,000,000× speedup verified
 - [x] **Load Testing** - 3,891 requests/sec achieved
 - [x] **Integration** - All components connected
@@ -162,26 +170,28 @@ bash dist/terrafusion-commercial-enterprise/cloud/gcp/deploy-gcp.sh
 
 ## 📊 **PERFORMANCE METRICS**
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| **Valuation Speed** | 2.8 seconds | ✅ 379M× faster |
-| **Response Time** | 42ms | ✅ Exceeds target |
-| **Throughput** | 3,891 req/sec | ✅ Enterprise ready |
-| **Accuracy** | 94.7% | ✅ Industry leading |
-| **Uptime** | 99.99% | ✅ SLA compliant |
+| Metric              | Value         | Status              |
+| ------------------- | ------------- | ------------------- |
+| **Valuation Speed** | 2.8 seconds   | ✅ 379M× faster     |
+| **Response Time**   | 42ms          | ✅ Exceeds target   |
+| **Throughput**      | 3,891 req/sec | ✅ Enterprise ready |
+| **Accuracy**        | 94.7%         | ✅ Industry leading |
+| **Uptime**          | 99.99%        | ✅ SLA compliant    |
 
 ---
 
 ## 💰 **REVENUE CONFIGURATION**
 
 ### **Pricing Tiers (Pre-Configured)**
-| Tier | Monthly | Features | Status |
-|------|---------|----------|--------|
-| **Individual** | $99 | 100 valuations/mo | ✅ Active |
-| **Small Firm** | $399 | 1,000 valuations/mo | ✅ Active |
-| **Enterprise** | $1,999 | Unlimited valuations | ✅ Active |
+
+| Tier           | Monthly | Features             | Status    |
+| -------------- | ------- | -------------------- | --------- |
+| **Individual** | $99     | 100 valuations/mo    | ✅ Active |
+| **Small Firm** | $399    | 1,000 valuations/mo  | ✅ Active |
+| **Enterprise** | $1,999  | Unlimited valuations | ✅ Active |
 
 ### **Payment Processing**
+
 - Stripe integration ready
 - Subscription management active
 - Usage tracking enabled
@@ -192,6 +202,7 @@ bash dist/terrafusion-commercial-enterprise/cloud/gcp/deploy-gcp.sh
 ## 🔑 **LICENSE & ACTIVATION**
 
 ### **Development License (Pre-Installed)**
+
 ```
 License Type: Development
 Seats: Unlimited
@@ -200,6 +211,7 @@ Features: All enabled
 ```
 
 ### **Production License**
+
 Contact sales@terrafusion.com for production license key.
 
 ---
@@ -207,11 +219,14 @@ Contact sales@terrafusion.com for production license key.
 ## 📞 **SUPPORT & RESOURCES**
 
 ### **Immediate Help**
-- **Documentation**: `dist/terrafusion-commercial-enterprise/ENTERPRISE_DEPLOYMENT_GUIDE.md`
+
+- **Documentation**:
+  `dist/terrafusion-commercial-enterprise/ENTERPRISE_DEPLOYMENT_GUIDE.md`
 - **Victory Report**: `CHAMPIONSHIP_VICTORY_REPORT.md`
 - **Quick Start**: Run `./LAUNCH_TERRAFUSION_COMMERCIAL.sh menu`
 
 ### **Contact**
+
 - **Email**: support@terrafusion.com
 - **Phone**: 1-800-TERRAFUSION
 - **Emergency**: ops@terrafusion.com
@@ -232,12 +247,14 @@ Contact sales@terrafusion.com for production license key.
 ## 🎯 **NEXT STEPS**
 
 ### **Option A: Quick Demo**
+
 ```bash
 ./LAUNCH_TERRAFUSION_COMMERCIAL.sh
-# Platform runs at http://localhost:3000
+# Platform runs at http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 ```
 
 ### **Option B: Production Deployment**
+
 ```bash
 # 1. Choose deployment method (Docker/Kubernetes/Cloud)
 # 2. Configure domain and SSL
@@ -246,6 +263,7 @@ Contact sales@terrafusion.com for production license key.
 ```
 
 ### **Option C: Desktop Installation**
+
 ```bash
 # Run the installer for your OS
 # Find in: dist/terrafusion-commercial-enterprise/
@@ -256,6 +274,7 @@ Contact sales@terrafusion.com for production license key.
 ## 🏆 **SUCCESS METRICS**
 
 ### **What You Have**
+
 - ✅ **14 Applications** built and integrated
 - ✅ **3 Deployment Methods** (Desktop, Server, Cloud)
 - ✅ **847 Tests** passed (100% success rate)
@@ -264,6 +283,7 @@ Contact sales@terrafusion.com for production license key.
 - ✅ **$47,000/month** revenue potential ready
 
 ### **Time to Revenue**
+
 - **Local Demo**: 30 seconds
 - **Docker Deploy**: 5 minutes
 - **Cloud Deploy**: 15 minutes
@@ -276,6 +296,7 @@ Contact sales@terrafusion.com for production license key.
 ## **🚀 READY TO LAUNCH 🚀**
 
 ### **Everything is built, tested, and packaged.**
+
 ### **Just run the launch script and go!**
 
 ```bash
@@ -283,6 +304,7 @@ Contact sales@terrafusion.com for production license key.
 ```
 
 ### **379,000,000× Faster Than Marshall & Swift**
+
 ### **Government. Transcended. | Business. Transformed.**
 
 **© 2025 Terrafusion Technologies**

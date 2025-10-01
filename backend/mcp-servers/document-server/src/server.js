@@ -12,13 +12,11 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  transports: [
-    new winston.transports.Console()
-  ]
+  transports: [new winston.transports.Console()],
 });
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.TF_ADMIN_PORT || 8080;
 
 // Security middleware
 app.use(helmet());
@@ -26,7 +24,7 @@ app.use(cors());
 app.use(express.json());
 
 // Environment variables
-const DOCUMENT_PROCESSOR_URL = process.env.DOCUMENT_PROCESSOR_URL || 'http://localhost:8000';
+const DOCUMENT_PROCESSOR_URL = process.env.DOCUMENT_PROCESSOR_URL || 'http://localhost:\${{TF_DOCS_PORT:-8000}}';
 const MCP_SERVER_NAME = process.env.MCP_SERVER_NAME || 'document-processor';
 
 // Health check endpoint
@@ -35,7 +33,7 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     server: MCP_SERVER_NAME,
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
@@ -50,13 +48,13 @@ app.get('/mcp/info', (req, res) => {
       'text-extraction',
       'ocr-processing',
       'metadata-extraction',
-      'format-conversion'
+      'format-conversion',
     ],
     endpoints: {
       process: '/mcp/tools/process-document',
       status: '/mcp/tools/document-status',
-      extract: '/mcp/tools/extract-text'
-    }
+      extract: '/mcp/tools/extract-text',
+    },
   });
 });
 
@@ -64,23 +62,27 @@ app.get('/mcp/info', (req, res) => {
 app.post('/mcp/tools/process-document', async (req, res) => {
   try {
     const { document, options = {} } = req.body;
-    
+
     if (!document) {
       return res.status(400).json({
         error: 'Document data required',
-        code: 'MISSING_DOCUMENT'
+        code: 'MISSING_DOCUMENT',
       });
     }
 
     logger.info('Processing document via MCP tool');
 
     // Forward to document processor
-    const response = await axios.post(`${DOCUMENT_PROCESSOR_URL}/process`, {
-      document,
-      ...options
-    }, {
-      timeout: 30000
-    });
+    const response = await axios.post(
+      `${DOCUMENT_PROCESSOR_URL}/process`,
+      {
+        document,
+        ...options,
+      },
+      {
+        timeout: 30000,
+      }
+    );
 
     res.json({
       success: true,
@@ -90,16 +92,15 @@ app.post('/mcp/tools/process-document', async (req, res) => {
       mcp_metadata: {
         server: MCP_SERVER_NAME,
         tool: 'process-document',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     logger.error('Document processing failed:', error);
     res.status(500).json({
       error: 'Document processing failed',
       code: 'PROCESSING_ERROR',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -108,7 +109,7 @@ app.post('/mcp/tools/process-document', async (req, res) => {
 app.get('/mcp/tools/document-status/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params;
-    
+
     logger.info(`Checking document status for job ${jobId}`);
 
     const response = await axios.get(`${DOCUMENT_PROCESSOR_URL}/status/${jobId}`);
@@ -122,16 +123,15 @@ app.get('/mcp/tools/document-status/:jobId', async (req, res) => {
       mcp_metadata: {
         server: MCP_SERVER_NAME,
         tool: 'document-status',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     logger.error('Status check failed:', error);
     res.status(500).json({
       error: 'Status check failed',
       code: 'STATUS_ERROR',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -140,24 +140,28 @@ app.get('/mcp/tools/document-status/:jobId', async (req, res) => {
 app.post('/mcp/tools/extract-text', async (req, res) => {
   try {
     const { image, language = 'eng', config = '--psm 6' } = req.body;
-    
+
     if (!image) {
       return res.status(400).json({
         error: 'Image data required',
-        code: 'MISSING_IMAGE'
+        code: 'MISSING_IMAGE',
       });
     }
 
     logger.info('Extracting text via OCR MCP tool');
 
     // Forward to OCR service
-    const response = await axios.post(`${DOCUMENT_PROCESSOR_URL.replace(':8000', ':8081')}/extract`, {
-      image,
-      language,
-      config
-    }, {
-      timeout: 30000
-    });
+    const response = await axios.post(
+      `${DOCUMENT_PROCESSOR_URL.replace(':8000', ':8081')}/extract`,
+      {
+        image,
+        language,
+        config,
+      },
+      {
+        timeout: 30000,
+      }
+    );
 
     res.json({
       success: true,
@@ -167,16 +171,15 @@ app.post('/mcp/tools/extract-text', async (req, res) => {
       mcp_metadata: {
         server: MCP_SERVER_NAME,
         tool: 'extract-text',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     logger.error('Text extraction failed:', error);
     res.status(500).json({
       error: 'Text extraction failed',
       code: 'EXTRACTION_ERROR',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -192,10 +195,10 @@ app.get('/mcp/tools', (req, res) => {
           type: 'object',
           properties: {
             document: { type: 'string', description: 'Base64 encoded document' },
-            options: { type: 'object', description: 'Processing options' }
+            options: { type: 'object', description: 'Processing options' },
           },
-          required: ['document']
-        }
+          required: ['document'],
+        },
       },
       {
         name: 'document-status',
@@ -203,10 +206,10 @@ app.get('/mcp/tools', (req, res) => {
         inputSchema: {
           type: 'object',
           properties: {
-            jobId: { type: 'string', description: 'Job ID to check' }
+            jobId: { type: 'string', description: 'Job ID to check' },
           },
-          required: ['jobId']
-        }
+          required: ['jobId'],
+        },
       },
       {
         name: 'extract-text',
@@ -216,12 +219,12 @@ app.get('/mcp/tools', (req, res) => {
           properties: {
             image: { type: 'string', description: 'Base64 encoded image' },
             language: { type: 'string', description: 'OCR language code' },
-            config: { type: 'string', description: 'Tesseract configuration' }
+            config: { type: 'string', description: 'Tesseract configuration' },
           },
-          required: ['image']
-        }
-      }
-    ]
+          required: ['image'],
+        },
+      },
+    ],
   });
 });
 

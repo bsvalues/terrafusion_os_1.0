@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3600",
+    "dev": "vite --port ${TF_PORT_3600:-3600}",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest"

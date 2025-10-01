@@ -1,0 +1,39 @@
+{
+  "deployment": {
+    "id": "benton-county-1758305667029",
+    "type": "white-glove-production",
+    "timestamp": "2025-09-19T18:14:27.501Z",
+    "assessor": "Benton County Assessor",
+    "name": "Benton County, Washington",
+    "parcels": 89247,
+    "harrisVersion": "v12.4.7",
+    "gisProjection": "EPSG:2927",
+    "taxYear": 2025,
+    "deploymentType": "white-glove-production",
+    "aiAgents": 50000,
+    "protectionLayers": 11
+  },
+  "services": {
+    "harrisIntegration": {
+      "enabled": true,
+      "version": "v12.4.7",
+      "parcels": 89247,
+      "gisProjection": "EPSG:2927"
+    },
+    "aiOrchestration": {
+      "enabled": true,
+      "agents": 50000,
+      "protectionLayers": 11
+    },
+    "assessorDashboard": {
+      "enabled": true,
+      "customBranding": true,
+      "revenueOptimization": true
+    }
+  },
+  "database": {
+    "name": "benton_county_production",
+    "parcels": 89247,
+    "assessmentYear": 2025
+  }
+}

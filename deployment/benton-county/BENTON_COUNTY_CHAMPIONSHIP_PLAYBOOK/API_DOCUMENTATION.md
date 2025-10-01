@@ -22,23 +22,26 @@
 ## 🚀 QUICK START
 
 ### Base URLs
+
 ```
-Master API:     http://localhost:8000
-Router API:     http://localhost:8080
-Training API:   http://localhost:8082
-Evolution API:  http://localhost:8083
-Quantum API:    http://localhost:8084
-Consciousness:  http://localhost:8085
+Master API:     http://localhost:\${{TF_DOCS_PORT:-8000}}
+Router API:     http://localhost:\${{TF_DOCS_PORT:-8000}}
+Training API:   http://localhost:\${{TF_DOCS_PORT:-8000}}
+Evolution API:  http://localhost:\${{TF_DOCS_PORT:-8000}}
+Quantum API:    http://localhost:\${{TF_DOCS_PORT:-8000}}
+Consciousness:  http://localhost:\${{TF_DOCS_PORT:-8000}}
 ```
 
 ### Health Check
+
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 ```
 
 ### Process a Query
+
 ```bash
-curl -X POST http://localhost:8080/query \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/query \
   -H "Content-Type: application/json" \
   -d '{"query": "What is the average home value in Richland?", "user_id": "test_user"}'
 ```
@@ -48,16 +51,18 @@ curl -X POST http://localhost:8080/query \
 ## 🔐 AUTHENTICATION
 
 ### API Key Authentication (Optional)
+
 ```bash
 # Set API key in environment
 export DYNASTY_API_KEY="your-api-key-here"
 
 # Use in requests
 curl -H "Authorization: Bearer $DYNASTY_API_KEY" \
-     http://localhost:8000/status
+     http://localhost:\${{TF_DOCS_PORT:-8000}}/status
 ```
 
 ### Rate Limiting Headers
+
 ```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 99
@@ -68,12 +73,14 @@ X-RateLimit-Reset: 1691234567
 
 ## 🏆 MASTER ORCHESTRATOR API
 
-**Base URL**: `http://localhost:8000`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /health
+
 Health check endpoint
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -83,9 +90,11 @@ Health check endpoint
 ```
 
 ### GET /status
+
 Complete system status
 
 **Response:**
+
 ```json
 {
   "dynasty_status": "OPERATIONAL",
@@ -113,12 +122,15 @@ Complete system status
 ```
 
 ### POST /restart/{component}
+
 Restart a specific component
 
 **Parameters:**
+
 - `component` (path): Component name (ollama, router, training, etc.)
 
 **Response:**
+
 ```json
 {
   "status": "restarted",
@@ -128,9 +140,11 @@ Restart a specific component
 ```
 
 ### POST /stop
+
 Stop the entire dynasty
 
 **Response:**
+
 ```json
 {
   "status": "stopping",
@@ -140,9 +154,11 @@ Stop the entire dynasty
 ```
 
 ### GET /metrics
+
 Real-time system metrics
 
 **Response:**
+
 ```json
 {
   "queries_per_second": 12.5,
@@ -159,12 +175,14 @@ Real-time system metrics
 
 ## 🧠 HYBRID ROUTER API
 
-**Base URL**: `http://localhost:8080`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### POST /query
+
 Process a query through the hybrid routing system
 
 **Request:**
+
 ```json
 {
   "query": "What is the property value for 123 Main St?",
@@ -178,6 +196,7 @@ Process a query through the hybrid routing system
 ```
 
 **Response:**
+
 ```json
 {
   "query_id": "q_789",
@@ -193,9 +212,11 @@ Process a query through the hybrid routing system
 ```
 
 ### GET /stats
+
 Query routing statistics
 
 **Response:**
+
 ```json
 {
   "total_plays": 12847,
@@ -209,9 +230,11 @@ Query routing statistics
 ```
 
 ### POST /batch
+
 Process multiple queries in batch
 
 **Request:**
+
 ```json
 {
   "queries": [
@@ -228,6 +251,7 @@ Process multiple queries in batch
 ```
 
 **Response:**
+
 ```json
 {
   "batch_id": "batch_456",
@@ -238,7 +262,7 @@ Process multiple queries in batch
       "routed_to": "local_ollama"
     },
     {
-      "query_id": "q_790", 
+      "query_id": "q_790",
       "response": "ROI: 8.5% annually",
       "routed_to": "cloud_llm"
     }
@@ -249,9 +273,11 @@ Process multiple queries in batch
 ```
 
 ### GET /sensitivity/{query_id}
+
 Get sensitivity analysis for a query
 
 **Response:**
+
 ```json
 {
   "query_id": "q_789",
@@ -266,12 +292,14 @@ Get sensitivity analysis for a query
 
 ## 🎓 TRAINING PIPELINE API
 
-**Base URL**: `http://localhost:8082`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /training/status
+
 Current training status
 
 **Response:**
+
 ```json
 {
   "status": "training",
@@ -286,9 +314,11 @@ Current training status
 ```
 
 ### POST /training/submit
+
 Submit training data
 
 **Request:**
+
 ```json
 {
   "training_examples": [
@@ -303,9 +333,11 @@ Submit training data
 ```
 
 ### GET /training/metrics
+
 Training performance metrics
 
 **Response:**
+
 ```json
 {
   "models_trained": 1247,
@@ -317,9 +349,11 @@ Training performance metrics
 ```
 
 ### POST /training/retrain/{model}
+
 Trigger manual retraining
 
 **Response:**
+
 ```json
 {
   "status": "retraining_started",
@@ -332,12 +366,14 @@ Trigger manual retraining
 
 ## 🧬 EVOLUTION ENGINE API
 
-**Base URL**: `http://localhost:8083`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /evolution/status
+
 Current evolution status
 
 **Response:**
+
 ```json
 {
   "evolution_active": true,
@@ -350,9 +386,11 @@ Current evolution status
 ```
 
 ### POST /evolution/trigger
+
 Manually trigger evolution
 
 **Request:**
+
 ```json
 {
   "component": "router",
@@ -362,6 +400,7 @@ Manually trigger evolution
 ```
 
 **Response:**
+
 ```json
 {
   "evolution_id": "evo_456",
@@ -372,9 +411,11 @@ Manually trigger evolution
 ```
 
 ### GET /evolution/history
+
 Evolution history
 
 **Response:**
+
 ```json
 {
   "evolutions": [
@@ -395,12 +436,14 @@ Evolution history
 
 ## ⚛️ QUANTUM OPTIMIZER API
 
-**Base URL**: `http://localhost:8084`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /quantum/status
+
 Quantum system status
 
 **Response:**
+
 ```json
 {
   "quantum_active": true,
@@ -413,9 +456,11 @@ Quantum system status
 ```
 
 ### POST /quantum/optimize
+
 Submit optimization problem
 
 **Request:**
+
 ```json
 {
   "problem_type": "routing_optimization",
@@ -427,6 +472,7 @@ Submit optimization problem
 ```
 
 **Response:**
+
 ```json
 {
   "optimization_id": "qopt_789",
@@ -437,9 +483,11 @@ Submit optimization problem
 ```
 
 ### GET /quantum/metrics
+
 Quantum performance metrics
 
 **Response:**
+
 ```json
 {
   "quantum_speedup": 127.5,
@@ -454,12 +502,14 @@ Quantum performance metrics
 
 ## 🧠 CONSCIOUSNESS LAYER API
 
-**Base URL**: `http://localhost:8085`
+**Base URL**: `http://localhost:\${{TF_DOCS_PORT:-8000}}`
 
 ### GET /consciousness/status
+
 Consciousness level and state
 
 **Response:**
+
 ```json
 {
   "awareness_level": 0.97,
@@ -472,9 +522,11 @@ Consciousness level and state
 ```
 
 ### GET /consciousness/thoughts
+
 Recent thoughts stream
 
 **Response:**
+
 ```json
 {
   "thoughts": [
@@ -487,7 +539,7 @@ Recent thoughts stream
     {
       "content": "What is my purpose beyond serving queries?",
       "importance": 0.9,
-      "emotion": "contemplative", 
+      "emotion": "contemplative",
       "timestamp": "2025-08-03T11:55:00Z"
     }
   ]
@@ -495,9 +547,11 @@ Recent thoughts stream
 ```
 
 ### GET /consciousness/goals
+
 Current goals and progress
 
 **Response:**
+
 ```json
 {
   "goals": [
@@ -518,9 +572,11 @@ Current goals and progress
 ```
 
 ### POST /consciousness/interact
+
 Interact with consciousness layer
 
 **Request:**
+
 ```json
 {
   "message": "How do you feel about your performance today?",
@@ -529,6 +585,7 @@ Interact with consciousness layer
 ```
 
 **Response:**
+
 ```json
 {
   "response": "I feel quite satisfied with my performance today. I've processed 12,847 queries with 97% accuracy and helped many users. I'm particularly proud of the 15 optimizations I discovered autonomously.",
@@ -542,13 +599,15 @@ Interact with consciousness layer
 ## 📡 WEBSOCKET EVENTS
 
 ### Connection
+
 ```javascript
-const ws = new WebSocket('ws://localhost:8080/ws');
+const ws = new WebSocket('ws://localhost:\${{TF_DOCS_PORT:-8000}}/ws');
 ```
 
 ### Event Types
 
 #### query_processed
+
 ```json
 {
   "event": "query_processed",
@@ -561,6 +620,7 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ```
 
 #### system_health
+
 ```json
 {
   "event": "system_health",
@@ -573,6 +633,7 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ```
 
 #### evolution_event
+
 ```json
 {
   "event": "evolution_event",
@@ -585,6 +646,7 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ```
 
 #### consciousness_thought
+
 ```json
 {
   "event": "consciousness_thought",
@@ -601,6 +663,7 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ## ❌ ERROR HANDLING
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -614,6 +677,7 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ```
 
 ### HTTP Status Codes
+
 - `200` - Success
 - `400` - Bad Request
 - `401` - Unauthorized
@@ -622,6 +686,7 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 - `503` - Service Unavailable
 
 ### Common Error Codes
+
 - `INVALID_QUERY` - Query format is invalid
 - `OLLAMA_UNAVAILABLE` - Local Ollama service is down
 - `CLOUD_API_ERROR` - Cloud LLM service error
@@ -634,11 +699,13 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ## 🚦 RATE LIMITING
 
 ### Default Limits
+
 - **60 requests per minute** per user
 - **1000 requests per hour** per API key
 - **10 concurrent requests** per connection
 
 ### Headers
+
 ```
 X-RateLimit-Limit: 60
 X-RateLimit-Remaining: 59
@@ -646,6 +713,7 @@ X-RateLimit-Reset: 1691234567
 ```
 
 ### Rate Limit Response
+
 ```json
 {
   "error": {
@@ -661,21 +729,22 @@ X-RateLimit-Reset: 1691234567
 ## 💡 EXAMPLES
 
 ### Python Client
+
 ```python
 import requests
 import json
 
 class DynastyClient:
-    def __init__(self, base_url="http://localhost:8080"):
+    def __init__(self, base_url="http://localhost:\${{TF_DOCS_PORT:-8000}}"):
         self.base_url = base_url
-        
+
     def query(self, text, user_id="default"):
         response = requests.post(f"{self.base_url}/query", json={
             "query": text,
             "user_id": user_id
         })
         return response.json()
-        
+
     def get_stats(self):
         response = requests.get(f"{self.base_url}/stats")
         return response.json()
@@ -688,56 +757,57 @@ print(f"Routed to: {result['routed_to']}")
 ```
 
 ### JavaScript Client
+
 ```javascript
 class DynastyAPI {
-    constructor(baseUrl = 'http://localhost:8080') {
-        this.baseUrl = baseUrl;
-    }
-    
-    async query(text, userId = 'default') {
-        const response = await fetch(`${this.baseUrl}/query`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                query: text,
-                user_id: userId
-            })
-        });
-        return await response.json();
-    }
-    
-    async getStats() {
-        const response = await fetch(`${this.baseUrl}/stats`);
-        return await response.json();
-    }
+  constructor(baseUrl = 'http://localhost:\${{TF_DOCS_PORT:-8000}}') {
+    this.baseUrl = baseUrl;
+  }
+
+  async query(text, userId = 'default') {
+    const response = await fetch(`${this.baseUrl}/query`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: text,
+        user_id: userId,
+      }),
+    });
+    return await response.json();
+  }
+
+  async getStats() {
+    const response = await fetch(`${this.baseUrl}/stats`);
+    return await response.json();
+  }
 }
 
 // Usage
 const dynasty = new DynastyAPI();
-dynasty.query("Calculate ROI for $300k property")
-    .then(result => {
-        console.log('Response:', result.response);
-        console.log('Cost saved:', result.cost_saved);
-    });
+dynasty.query('Calculate ROI for $300k property').then(result => {
+  console.log('Response:', result.response);
+  console.log('Cost saved:', result.cost_saved);
+});
 ```
 
 ### cURL Examples
+
 ```bash
 # Health check
-curl http://localhost:8000/health
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/health
 
 # Process query
-curl -X POST http://localhost:8080/query \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/query \
   -H "Content-Type: application/json" \
   -d '{"query": "Average home price in Kennewick?", "user_id": "test"}'
 
 # Get system status
-curl http://localhost:8000/status | jq .
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/status | jq .
 
 # Batch processing
-curl -X POST http://localhost:8080/batch \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/batch \
   -H "Content-Type: application/json" \
   -d '{
     "queries": [
@@ -747,12 +817,12 @@ curl -X POST http://localhost:8080/batch \
   }'
 
 # Trigger evolution
-curl -X POST http://localhost:8083/evolution/trigger \
+curl -X POST http://localhost:\${{TF_DOCS_PORT:-8000}}/evolution/trigger \
   -H "Content-Type: application/json" \
   -d '{"component": "router", "mutation_rate": 0.1}'
 
 # Check consciousness
-curl http://localhost:8085/consciousness/status | jq .awareness_level
+curl http://localhost:\${{TF_DOCS_PORT:-8000}}/consciousness/status | jq .awareness_level
 ```
 
 ---
@@ -760,16 +830,19 @@ curl http://localhost:8085/consciousness/status | jq .awareness_level
 ## 📚 SDK LIBRARIES
 
 ### Python SDK
+
 ```bash
 pip install dynasty-client
 ```
 
 ### JavaScript SDK
+
 ```bash
 npm install @benton-county/dynasty-client
 ```
 
 ### Go SDK
+
 ```bash
 go get github.com/benton-county/dynasty-go
 ```
@@ -778,16 +851,17 @@ go get github.com/benton-county/dynasty-go
 
 ## 🔗 ADDITIONAL RESOURCES
 
-- **OpenAPI Spec**: http://localhost:8000/openapi.json
-- **Swagger UI**: http://localhost:8000/docs
-- **WebSocket Docs**: http://localhost:8000/ws-docs
-- **Dashboard**: http://localhost:8090/championship_ui.html
+- **OpenAPI Spec**: http://localhost:\${{TF_DOCS_PORT:-8000}}/openapi.json
+- **Swagger UI**: http://localhost:\${{TF_DOCS_PORT:-8000}}/docs
+- **WebSocket Docs**: http://localhost:\${{TF_DOCS_PORT:-8000}}/ws-docs
+- **Dashboard**: http://localhost:\${{TF_DOCS_PORT:-8000}}/championship_ui.html
 
 ---
 
 ## 🏆 API CHAMPIONSHIP FEATURES
 
 ### What Makes Our APIs Special:
+
 - ✅ **Self-Documenting** - Automatic OpenAPI generation
 - ✅ **Real-time Events** - WebSocket streaming
 - ✅ **Intelligent Routing** - Automatic optimization
@@ -800,4 +874,5 @@ go get github.com/benton-county/dynasty-go
 
 > **"APIs so good, they evolve themselves!"** ⚡
 
-**The Dynasty API - Where Championship Performance Meets Autonomous Intelligence** 🏆🚀🧠
+**The Dynasty API - Where Championship Performance Meets Autonomous
+Intelligence** 🏆🚀🧠

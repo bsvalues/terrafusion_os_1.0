@@ -27,7 +27,7 @@ export interface QuantumOptimizationReport {
 
 export interface QuantumAlgorithm {
   name: string;
-  type: "VQE" | "QAOA" | "Grover" | "Shor" | "HHL" | "Custom";
+  type: 'VQE' | 'QAOA' | 'Grover' | 'Shor' | 'HHL' | 'Custom';
   qubits: number;
   gates: number;
   depth: number;
@@ -43,7 +43,7 @@ export interface QuantumAlgorithm {
 }
 
 export interface ErrorCorrectionConfig {
-  code_type: "surface" | "stabilizer" | "concatenated" | "topological";
+  code_type: 'surface' | 'stabilizer' | 'concatenated' | 'topological';
   code_distance: number;
   logical_qubits: number;
   error_threshold: number;
@@ -53,7 +53,7 @@ export interface HybridOptimizationConfig {
   quantum_workload_ratio: number;
   classical_workload_ratio: number;
   interface_latency_target: number;
-  optimization_strategy: "performance" | "resource" | "hybrid";
+  optimization_strategy: 'performance' | 'resource' | 'hybrid';
 }
 
 export interface PerformanceBenchmark {
@@ -152,7 +152,7 @@ export interface Complex {
 export interface SyndromeData {
   stabilizer_outcomes: number[];
   error_location: number;
-  error_type: "X" | "Y" | "Z";
+  error_type: 'X' | 'Y' | 'Z';
   correction_applied: boolean;
   success_probability: number;
 }

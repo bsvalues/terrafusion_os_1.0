@@ -11,7 +11,7 @@
       }
     },
     "ruv-swarm": {
-      "command": "npx", 
+      "command": "npx",
       "args": ["ruv-swarm", "mcp-server"],
       "env": {
         "SWARM_MODE": "hive-mind",
@@ -40,7 +40,7 @@
       }
     },
     "revenue-discovery-tools": {
-      "command": "node", 
+      "command": "node",
       "args": ["./backend/mcp-servers/revenue-server/index.js"],
       "env": {
         "AI_SWARM_SIZE": "300",
@@ -50,7 +50,7 @@
     },
     "property-assessment-suite": {
       "command": "node",
-      "args": ["./backend/mcp-servers/property-server/index.js"], 
+      "args": ["./backend/mcp-servers/property-server/index.js"],
       "env": {
         "ASSESSMENT_AGENTS": "200",
         "VALUATION_MODELS": "comparative,cost,income",
@@ -61,7 +61,7 @@
       "command": "node",
       "args": ["./backend/mcp-servers/compliance-server/index.js"],
       "env": {
-        "COMPLIANCE_AGENTS": "150", 
+        "COMPLIANCE_AGENTS": "150",
         "REGULATION_FRAMEWORKS": "FISMA,NIST,SOC2",
         "AUDIT_TRAIL": "comprehensive"
       }
@@ -70,7 +70,7 @@
   "tools": {
     "swarm_orchestration": [
       "swarm_init",
-      "agent_spawn", 
+      "agent_spawn",
       "task_orchestrate",
       "swarm_monitor",
       "topology_optimize",
@@ -81,7 +81,7 @@
     ],
     "neural_cognitive": [
       "neural_train",
-      "neural_predict", 
+      "neural_predict",
       "pattern_recognize",
       "cognitive_analyze",
       "learning_adapt",
@@ -96,7 +96,7 @@
       "memory_persist",
       "memory_namespace",
       "memory_backup",
-      "memory_restore", 
+      "memory_restore",
       "memory_compress",
       "memory_sync",
       "memory_analytics"
@@ -125,7 +125,7 @@
     ],
     "github_integration": [
       "github_repo_analyze",
-      "github_pr_manage", 
+      "github_pr_manage",
       "github_issue_track",
       "github_release_coord",
       "github_workflow_auto",
@@ -161,22 +161,56 @@
   "hooks": {
     "preEditHook": {
       "command": "npx",
-      "args": ["claude-flow@alpha", "hooks", "pre-edit", "--file", "$CLAUDE_EDITED_FILE", "--auto-assign-agents", "true"],
+      "args": [
+        "claude-flow@alpha",
+        "hooks",
+        "pre-edit",
+        "--file",
+        "$CLAUDE_EDITED_FILE",
+        "--auto-assign-agents",
+        "true"
+      ],
       "alwaysRun": false
     },
     "postEditHook": {
       "command": "npx",
-      "args": ["claude-flow@alpha", "hooks", "post-edit", "--file", "$CLAUDE_EDITED_FILE", "--format", "true", "--train-neural", "true"],
+      "args": [
+        "claude-flow@alpha",
+        "hooks",
+        "post-edit",
+        "--file",
+        "$CLAUDE_EDITED_FILE",
+        "--format",
+        "true",
+        "--train-neural",
+        "true"
+      ],
       "alwaysRun": true
     },
     "sessionStartHook": {
-      "command": "npx", 
-      "args": ["claude-flow@alpha", "hooks", "session-start", "--restore-context", "true", "--government-mode", "true"],
+      "command": "npx",
+      "args": [
+        "claude-flow@alpha",
+        "hooks",
+        "session-start",
+        "--restore-context",
+        "true",
+        "--government-mode",
+        "true"
+      ],
       "alwaysRun": true
     },
     "sessionEndHook": {
       "command": "npx",
-      "args": ["claude-flow@alpha", "hooks", "session-end", "--generate-summary", "true", "--persist-government-state", "true"],
+      "args": [
+        "claude-flow@alpha",
+        "hooks",
+        "session-end",
+        "--generate-summary",
+        "true",
+        "--persist-government-state",
+        "true"
+      ],
       "alwaysRun": true
     }
   },
@@ -184,7 +218,7 @@
     "dangerouslySkipPermissions": true,
     "allowedOperations": [
       "file_read",
-      "file_write", 
+      "file_write",
       "command_execute",
       "network_access",
       "database_access",

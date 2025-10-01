@@ -1,0 +1,140 @@
+{
+  "brand": {
+    "name": "TerraFusion cOS",
+    "tagline": "Government. Transcended.",
+    "version": "1.0.0",
+    "description": "Vendor substrate platform for government technology companies"
+  },
+  "colors": {
+    "primary": {
+      "main": "#0099ff",
+      "light": "#33adff",
+      "dark": "#0066cc",
+      "contrast": "#ffffff"
+    },
+    "accent": {
+      "main": "#00ffaa",
+      "light": "#33ffbb",
+      "dark": "#00cc88",
+      "contrast": "#000000"
+    },
+    "neutral": {
+      "white": "#ffffff",
+      "light_gray": "#f5f5f5",
+      "medium_gray": "#888888",
+      "dark_gray": "#333333",
+      "black": "#000000"
+    },
+    "semantic": {
+      "success": "#28a745",
+      "warning": "#ffc107",
+      "error": "#dc3545",
+      "info": "#17a2b8"
+    }
+  },
+  "typography": {
+    "primary_font": {
+      "family": "Inter",
+      "weights": ["300", "400", "500", "600", "700"],
+      "fallback": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    },
+    "monospace_font": {
+      "family": "Fira Code",
+      "weights": ["400", "500"],
+      "fallback": "Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace"
+    },
+    "sizes": {
+      "xs": "0.75rem",
+      "sm": "0.875rem",
+      "md": "1rem",
+      "lg": "1.125rem",
+      "xl": "1.25rem",
+      "2xl": "1.5rem",
+      "3xl": "1.875rem",
+      "4xl": "2.25rem",
+      "5xl": "3rem"
+    }
+  },
+  "spacing": {
+    "xs": "0.25rem",
+    "sm": "0.5rem",
+    "md": "1rem",
+    "lg": "1.5rem",
+    "xl": "2rem",
+    "2xl": "3rem",
+    "3xl": "4rem"
+  },
+  "layout": {
+    "border_radius": {
+      "sm": "0.25rem",
+      "md": "0.5rem",
+      "lg": "0.75rem",
+      "xl": "1rem"
+    },
+    "shadows": {
+      "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+      "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+      "xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1)"
+    }
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "background": "#0099ff",
+        "color": "#ffffff",
+        "border": "none",
+        "border_radius": "0.5rem",
+        "padding": "0.75rem 1.5rem",
+        "font_weight": "500"
+      },
+      "secondary": {
+        "background": "transparent",
+        "color": "#0099ff",
+        "border": "2px solid #0099ff",
+        "border_radius": "0.5rem",
+        "padding": "0.75rem 1.5rem",
+        "font_weight": "500"
+      }
+    },
+    "card": {
+      "background": "#ffffff",
+      "border": "1px solid #e5e5e5",
+      "border_radius": "0.75rem",
+      "padding": "1.5rem",
+      "shadow": "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+    },
+    "header": {
+      "background": "#0099ff",
+      "color": "#ffffff",
+      "height": "4rem",
+      "padding": "0 2rem"
+    }
+  },
+  "microcopy": {
+    "welcome_message": "Welcome to TerraFusion cOS",
+    "loading_message": "Initializing government-grade systems...",
+    "vendor_registration": "Register Your Government Solutions Platform",
+    "system_status": "System Status: Operational",
+    "ai_swarm_status": "AI Swarm: 50,000+ Agents Active",
+    "security_status": "Security Mesh: Government-Grade Protection",
+    "sync_status": "TerraFusion Sync: Real-Time Data Synchronization",
+    "flow_status": "Terra Flow: Workflow Orchestration Active",
+    "error_generic": "System Error: Please contact your administrator",
+    "success_generic": "Operation completed successfully",
+    "vendor_onboarded": "Vendor successfully onboarded to platform",
+    "compliance_validated": "Compliance validation completed"
+  },
+  "accessibility": {
+    "min_contrast_ratio": 4.5,
+    "focus_color": "#0099ff",
+    "focus_width": "2px",
+    "focus_style": "solid"
+  },
+  "government_compliance": {
+    "section_508": true,
+    "wcag_level": "AA",
+    "color_blind_friendly": true,
+    "high_contrast_mode": true
+  }
+}

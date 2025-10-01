@@ -31,14 +31,14 @@
             "unit": "percent",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 98},
-                {"color": "green", "value": 99.5}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 98 },
+                { "color": "green", "value": 99.5 }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 }
       },
       {
         "id": 2,
@@ -55,14 +55,14 @@
             "unit": "percent",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 95},
-                {"color": "green", "value": 98}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 95 },
+                { "color": "green", "value": 98 }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 0 }
       },
       {
         "id": 3,
@@ -79,14 +79,14 @@
             "unit": "ms",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 35},
-                {"color": "red", "value": 50}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 35 },
+                { "color": "red", "value": 50 }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 }
       },
       {
         "id": 4,
@@ -103,14 +103,14 @@
             "unit": "short",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 800},
-                {"color": "green", "value": 1000}
+                { "color": "red", "value": 0 },
+                { "color": "yellow", "value": 800 },
+                { "color": "green", "value": 1000 }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 }
       },
       {
         "id": 5,
@@ -139,7 +139,7 @@
             "min": 0
           }
         ],
-        "gridPos": {"h": 9, "w": 12, "x": 0, "y": 8}
+        "gridPos": { "h": 9, "w": 12, "x": 0, "y": 8 }
       },
       {
         "id": 6,
@@ -164,7 +164,7 @@
             "logBase": 1
           }
         },
-        "gridPos": {"h": 9, "w": 12, "x": 12, "y": 8}
+        "gridPos": { "h": 9, "w": 12, "x": 12, "y": 8 }
       },
       {
         "id": 7,
@@ -180,21 +180,36 @@
         "fieldConfig": {
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "status"},
+              "matcher": { "id": "byName", "options": "status" },
               "properties": [
                 {
                   "id": "mappings",
                   "value": [
-                    {"options": {"0": {"text": "Healthy", "color": "green"}}, "type": "value"},
-                    {"options": {"1": {"text": "Warning", "color": "yellow"}}, "type": "value"},
-                    {"options": {"2": {"text": "Critical", "color": "red"}}, "type": "value"}
+                    {
+                      "options": {
+                        "0": { "text": "Healthy", "color": "green" }
+                      },
+                      "type": "value"
+                    },
+                    {
+                      "options": {
+                        "1": { "text": "Warning", "color": "yellow" }
+                      },
+                      "type": "value"
+                    },
+                    {
+                      "options": {
+                        "2": { "text": "Critical", "color": "red" }
+                      },
+                      "type": "value"
+                    }
                   ]
                 }
               ]
             }
           ]
         },
-        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 17}
+        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 17 }
       },
       {
         "id": 8,
@@ -223,7 +238,7 @@
             "min": 0
           }
         ],
-        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 17}
+        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 17 }
       },
       {
         "id": 9,
@@ -240,14 +255,14 @@
             "unit": "short",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 1},
-                {"color": "red", "value": 5}
+                { "color": "green", "value": 0 },
+                { "color": "yellow", "value": 1 },
+                { "color": "red", "value": 5 }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 17}
+        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 17 }
       },
       {
         "id": 10,
@@ -276,7 +291,7 @@
             "min": 0
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 25}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 25 }
       },
       {
         "id": 11,
@@ -292,15 +307,15 @@
         "fieldConfig": {
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "age_days"},
+              "matcher": { "id": "byName", "options": "age_days" },
               "properties": [
                 {
                   "id": "thresholds",
                   "value": {
                     "steps": [
-                      {"color": "green", "value": 0},
-                      {"color": "yellow", "value": 76},
-                      {"color": "red", "value": 90}
+                      { "color": "green", "value": 0 },
+                      { "color": "yellow", "value": 76 },
+                      { "color": "red", "value": 90 }
                     ]
                   }
                 }
@@ -308,7 +323,7 @@
             }
           ]
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 25}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 25 }
       },
       {
         "id": 12,
@@ -331,7 +346,7 @@
             "logBase": 1
           }
         },
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 33}
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 33 }
       },
       {
         "id": 13,
@@ -351,7 +366,7 @@
           "prettifyLogMessage": true,
           "enableLogDetails": true
         },
-        "gridPos": {"h": 10, "w": 24, "x": 0, "y": 41}
+        "gridPos": { "h": 10, "w": 24, "x": 0, "y": 41 }
       }
     ],
     "annotations": {

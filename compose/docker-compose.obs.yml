@@ -22,12 +22,12 @@ services:
     image: grafana/grafana:latest
     container_name: terrafusion-grafana
     ports:
-      - "3009:3000"
+      - "3009:${TF_FRONTEND_PORT:-3102}"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=terrafusion
       - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
-      - GF_SERVER_ROOT_URL=http://localhost:3009
+      - GF_SERVER_ROOT_URL=http://localhost:\${{TF_FRONTEND_3009_PORT:-3009}}
     volumes:
       - grafana-data:/var/lib/grafana
       - ./obs/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro

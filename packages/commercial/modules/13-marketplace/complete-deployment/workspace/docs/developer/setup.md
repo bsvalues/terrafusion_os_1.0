@@ -1,6 +1,7 @@
 # Terrafusion Development Environment Setup
 
-This guide will help you set up a complete development environment for Terrafusion Platform.
+This guide will help you set up a complete development environment for
+Terrafusion Platform.
 
 ## Table of Contents
 
@@ -159,21 +160,21 @@ Key environment variables:
 ```env
 # Application
 NODE_ENV=development
-PORT=3000
-API_URL=http://localhost:3000
+PORT=\${{TF_FRONTEND_PORT:-3000}}
+API_URL=http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 
 # Database
-DATABASE_URL=postgresql://postgres:password@localhost:5432/terrafusion_dev
-REDIS_URL=redis://localhost:6379
+DATABASE_URL=postgresql://postgres:password@localhost:\${{TF_FRONTEND_PORT:-3000}}/terrafusion_dev
+REDIS_URL=redis://localhost:\${{TF_FRONTEND_PORT:-3000}}
 
 # Authentication
 JWT_SECRET=your-secret-key-here
 SESSION_SECRET=another-secret-key
 
 # Services
-QUANTUM_SERVICE_URL=http://localhost:8080
-AI_SERVICE_URL=http://localhost:8081
-EDGE_SERVICE_URL=http://localhost:8082
+QUANTUM_SERVICE_URL=http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+AI_SERVICE_URL=http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+EDGE_SERVICE_URL=http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 
 # External APIs (optional)
 OPENAI_API_KEY=your-key-here
@@ -227,13 +228,16 @@ psql -U terrafusion -d terrafusion_dev
 
 ### AI Agent and Swarm Protocols
 
-Before configuring or deploying any AI agents or agent swarms, review the canonical protocols and deployment instructions in `/ai-agent-instructions/`. This folder contains:
+Before configuring or deploying any AI agents or agent swarms, review the
+canonical protocols and deployment instructions in `/ai-agent-instructions/`.
+This folder contains:
+
 - Master agent governance and escalation protocols
 - Subagent swarm build and deployment strategies
 - Deployment scripts and historical manifests
 
-Always follow the latest instructions in `/ai-agent-instructions/` to ensure operational excellence and compliance.
-
+Always follow the latest instructions in `/ai-agent-instructions/` to ensure
+operational excellence and compliance.
 
 ### 1. Start Infrastructure Services
 
@@ -286,8 +290,8 @@ npm run dev
 npm run dev
 
 # Or start individually:
-npm run dev:frontend  # Frontend on http://localhost:3000
-npm run dev:api      # API on http://localhost:4000
+npm run dev:frontend  # Frontend on http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+npm run dev:api      # API on http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 npm run dev:workers  # Background workers
 ```
 
@@ -300,11 +304,11 @@ npm run dev:workers  # Background workers
 npm run dev
 
 # Access at:
-# - Frontend: http://localhost:3000
-# - API: http://localhost:4000
-# - API Docs: http://localhost:4000/docs
-# - Grafana: http://localhost:3001
-# - RabbitMQ: http://localhost:15672
+# - Frontend: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+# - API: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+# - API Docs: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/docs
+# - Grafana: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+# - RabbitMQ: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 ```
 
 ### Testing
@@ -371,7 +375,7 @@ npm run db:rollback
 
 #### Swagger UI
 
-Access API documentation at: http://localhost:4000/docs
+Access API documentation at: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/docs
 
 #### Postman Collection
 
@@ -381,12 +385,12 @@ Import the collection from: `docs/api/postman/Terrafusion-API-Collection.json`
 
 #### Prometheus
 
-- URL: http://localhost:9090
-- Metrics endpoint: http://localhost:4000/metrics
+- URL: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
+- Metrics endpoint: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/metrics
 
 #### Grafana
 
-- URL: http://localhost:3001
+- URL: http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 - Default login: admin/admin
 - Pre-configured dashboards available
 

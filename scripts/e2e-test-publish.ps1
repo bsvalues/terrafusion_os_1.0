@@ -3,7 +3,7 @@
 $ErrorActionPreference = 'Stop'
 
 # --- Configuration ---
-$ApiBaseUrl = "http://localhost:5000" # Adjust if your API runs on a different port
+$ApiBaseUrl = "http://localhost:\${{TF_API_PORT:-5000}}" # Adjust if your API runs on a different port
 $PluginSourceDir = "..\test-plugin"
 $PluginDistDir = "..\dist"
 $KeysDir = "..\keys"

@@ -27,7 +27,7 @@ export class AIAgentTrainingExample {
       this.startExampleTraining();
     });
 
-    this.trainingSystem.on('training-completed', (data) => {
+    this.trainingSystem.on('training-completed', data => {
       // Training completed successfully
       this.handleTrainingCompletion(data);
     });
@@ -46,16 +46,14 @@ export class AIAgentTrainingExample {
           size: 50000,
           quality: 0.9,
           domain: 'real_estate',
-          preprocessing: true
-        }
+          preprocessing: true,
+        },
       ],
       quantumEnhancement: true,
       adaptiveLearning: true,
       multiAgentCoordination: false,
-      performanceTargets: [
-        { metric: 'accuracy', target: 0.95, current: 0, improvement: 0 }
-      ],
-      securityLevel: 'government'
+      performanceTargets: [{ metric: 'accuracy', target: 0.95, current: 0, improvement: 0 }],
+      securityLevel: 'government',
     };
 
     try {

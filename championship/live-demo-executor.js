@@ -29,19 +29,18 @@ class ChampionshipLiveDemo {
     try {
       // Phase 1: AI Swarm Pre-Flight
       await this.aiSwarmPreFlight();
-      
+
       // Phase 2: Yakima County Championship Demo
       await this.executeYakimaDemo();
-      
+
       // Phase 3: Multi-County Rapid Demo
       await this.executeMultiCountyDemo();
-      
+
       // Phase 4: Quantum Performance Validation
       await this.validateQuantumPerformance();
-      
+
       // Phase 5: Championship Victory Report
       await this.generateVictoryReport();
-      
     } catch (error) {
       console.error(`❌ Championship demo error:`, error);
       await this.executeEmergencyProtocol(error);
@@ -52,32 +51,32 @@ class ChampionshipLiveDemo {
     console.log(`
 ⏱️  PHASE 1: AI SWARM PRE-FLIGHT CHAMPIONSHIP CHECKS
 ═══════════════════════════════════════════════════════════════════`);
-    
+
     // Deploy reconnaissance swarm
     console.log('🔍 Deploying reconnaissance swarm (200 scout agents)...');
     await this.delay(1000);
     console.log('✅ Reconnaissance complete - All systems optimal');
-    
+
     // Activate worker swarm
     console.log('⚡ Activating worker swarm (500 execution agents)...');
     await this.delay(800);
     console.log('✅ Worker swarm ready - Processing capacity: UNLIMITED');
-    
+
     // Deploy sentinel monitoring
     console.log('🛡️ Deploying sentinel monitoring (150 security agents)...');
     await this.delay(600);
     console.log('✅ Sentinel network active - Security: MAXIMUM');
-    
+
     // Initialize coordinators
     console.log('🎯 Initializing coordinators (100 orchestration agents)...');
     await this.delay(500);
     console.log('✅ Coordination matrix online - Efficiency: OPTIMAL');
-    
+
     // Activate testing swarm
     console.log('🧪 Activating testing swarm (58 validation agents)...');
     await this.delay(400);
     console.log('✅ Testing swarm ready - Quality: CHAMPIONSHIP');
-    
+
     console.log(`
 🏆 AI SWARM PRE-FLIGHT COMPLETE
 ───────────────────────────────────────────────────────────────────
@@ -94,44 +93,44 @@ Ready for live demonstration: YES
 ⏱️  PHASE 2: YAKIMA COUNTY CHAMPIONSHIP DEMONSTRATION
 ═══════════════════════════════════════════════════════════════════`);
 
-    const browser = await chromium.launch({ 
+    const browser = await chromium.launch({
       headless: false,
-      args: ['--start-maximized', '--disable-web-security']
+      args: ['--start-maximized', '--disable-web-security'],
     });
-    
+
     const context = await browser.newContext({
       viewport: null,
       recordVideo: {
         dir: './championship/recordings/yakima-live/',
-        size: { width: 1920, height: 1080 }
+        size: { width: 1920, height: 1080 },
       },
       extraHTTPHeaders: {
         'X-Championship-Demo': 'YAKIMA-COUNTY',
         'X-AI-Swarm-Size': '1008',
-        'X-Confidence-Level': '97.7%'
-      }
+        'X-Confidence-Level': '97.7%',
+      },
     });
-    
+
     const page = await context.newPage();
-    
+
     try {
       console.log('🚀 Navigating to Yakima County Terrafusion portal...');
-      
+
       // Simulate navigation to local or demo server
-      const demoUrl = 'http://localhost:3000' || 'https://demo.terrafusion.com/yakima';
+      const demoUrl = 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}' || 'https://demo.terrafusion.com/yakima';
       await page.goto(demoUrl, { waitUntil: 'networkidle', timeout: 30000 });
-      
+
       console.log('✅ Yakima portal loaded - Initializing AI-enhanced demo...');
-      
+
       // Championship Property Valuation Demo
       await this.executePropertyValuationDemo(page);
-      
+
       // AI Swarm Coordination Demo
       await this.executeAISwarmDemo(page);
-      
+
       // Quantum Performance Demo
       await this.executeQuantumDemo(page);
-      
+
       console.log(`
 🏆 YAKIMA COUNTY DEMO COMPLETE
 ───────────────────────────────────────────────────────────────────
@@ -141,7 +140,6 @@ Ready for live demonstration: YES
 ✅ Government Compliance: All standards validated
 ✅ User Experience: Championship grade achieved
       `);
-      
     } catch (error) {
       console.error('❌ Yakima demo error:', error.message);
       await this.executeFailsafe(page, 'yakima-demo');
@@ -152,42 +150,48 @@ Ready for live demonstration: YES
 
   async executePropertyValuationDemo(page) {
     console.log('💰 EXECUTING CHAMPIONSHIP PROPERTY VALUATION DEMO');
-    
+
     // AI-enhanced property search
     await page.evaluate(() => {
       console.log('🤖 AI Swarm analyzing property database...');
       console.log('⚡ Quantum processors activated for valuation...');
       console.log('🎯 Machine learning models optimizing accuracy...');
     });
-    
+
     // Simulate property input and valuation
     try {
-      await page.fill('input[placeholder*="address"], input[name*="address"], #property-address', '123 Championship Way, Yakima, WA 98901');
+      await page.fill(
+        'input[placeholder*="address"], input[name*="address"], #property-address',
+        '123 Championship Way, Yakima, WA 98901'
+      );
       console.log('✅ Property address entered: 123 Championship Way, Yakima, WA');
-      
+
       // Championship 3-second valuation
       const startTime = Date.now();
       console.log('⏱️ Initiating championship 3-second valuation...');
-      
+
       // Simulate clicking calculate button
-      await page.click('button:has-text("Calculate"), button:has-text("Value"), [data-testid*="calculate"], .calculate-btn').catch(() => {
-        console.log('🔧 Self-healing: Using alternative calculation trigger...');
-      });
-      
+      await page
+        .click(
+          'button:has-text("Calculate"), button:has-text("Value"), [data-testid*="calculate"], .calculate-btn'
+        )
+        .catch(() => {
+          console.log('🔧 Self-healing: Using alternative calculation trigger...');
+        });
+
       // Wait for results with championship timing
       await this.delay(1200); // Simulate 1.2 second processing
       const duration = Date.now() - startTime;
-      
+
       console.log(`🚀 VALUATION COMPLETE: ${duration}ms`);
       console.log('💰 Estimated Value: $847,500 (AI-enhanced accuracy: 98.7%)');
       console.log('📊 Market Analysis: Yakima residential, 3BR/2BA, 2,100 sq ft');
       console.log('⚡ Performance: CHAMPIONSHIP STANDARD EXCEEDED');
-      
+
       // Validate championship performance
       if (duration < 3000) {
         console.log('🏆 CHAMPIONSHIP PERFORMANCE: SUB-3 SECOND TARGET MET');
       }
-      
     } catch (error) {
       console.log('🔧 AI Self-healing: Adapting demonstration flow...');
       console.log('✅ Failsafe valuation completed via AI coordination');
@@ -196,27 +200,27 @@ Ready for live demonstration: YES
 
   async executeAISwarmDemo(page) {
     console.log('🤖 EXECUTING AI SWARM COORDINATION DEMONSTRATION');
-    
+
     console.log('📊 AI Swarm Real-time Status:');
     console.log('  🔍 Scouts: Monitoring 47 active property listings');
     console.log('  ⚡ Workers: Processing 12 concurrent valuations');
     console.log('  🛡️ Sentinels: Securing 100% of data transactions');
     console.log('  🎯 Coordinators: Optimizing workflow efficiency');
     console.log('  🧪 Testers: Validating 15 quality checkpoints');
-    
+
     // Simulate AI swarm coordination
     await page.evaluate(() => {
       window.AI_SWARM_DEMO = {
         agents: 1008,
         active: true,
         performance: '97.7%',
-        mode: 'championship'
+        mode: 'championship',
       };
       console.log('🤖 AI Swarm coordination active in browser context');
     });
-    
+
     await this.delay(1500);
-    
+
     console.log('🏆 AI SWARM COORDINATION: FLAWLESS EXECUTION');
     console.log('📈 Efficiency Gain: 379,000,000% improvement over traditional systems');
     console.log('⚡ Response Time: Sub-100ms for all agent communications');
@@ -225,25 +229,25 @@ Ready for live demonstration: YES
 
   async executeQuantumDemo(page) {
     console.log('⚡ EXECUTING QUANTUM PERFORMANCE DEMONSTRATION');
-    
+
     // Simulate quantum performance metrics
     const quantumMetrics = {
       classicalTime: '250.316ms',
       quantumTime: '0.274ms',
       improvement: '914x faster',
       accuracy: '99.97%',
-      efficiency: 'MAXIMUM'
+      efficiency: 'MAXIMUM',
     };
-    
+
     console.log('🔬 Quantum Performance Analysis:');
     console.log(`  📊 Classical Processing: ${quantumMetrics.classicalTime}`);
     console.log(`  ⚡ Quantum Processing: ${quantumMetrics.quantumTime}`);
     console.log(`  🚀 Performance Improvement: ${quantumMetrics.improvement}`);
     console.log(`  🎯 Accuracy Enhancement: ${quantumMetrics.accuracy}`);
     console.log(`  ✨ System Efficiency: ${quantumMetrics.efficiency}`);
-    
+
     await this.delay(1000);
-    
+
     console.log('🏆 QUANTUM PERFORMANCE: TRANSCENDENCE ACHIEVED');
   }
 
@@ -253,17 +257,17 @@ Ready for live demonstration: YES
 ═══════════════════════════════════════════════════════════════════`);
 
     const counties = ['Cowlitz', 'Spokane', 'Benton', 'Clark'];
-    
+
     for (const county of counties) {
       console.log(`🚀 ${county} County - Rapid deployment demonstration:`);
       console.log(`  ⚡ Template deployment: 0.3 seconds`);
-      console.log(`  🤖 AI agent allocation: ${Math.floor(1008/counties.length)} agents`);
+      console.log(`  🤖 AI agent allocation: ${Math.floor(1008 / counties.length)} agents`);
       console.log(`  📊 System integration: 99.9% complete`);
       console.log(`  ✅ ${county} County: CHAMPIONSHIP READY`);
-      
+
       await this.delay(800);
     }
-    
+
     console.log(`
 🏆 MULTI-COUNTY DEPLOYMENT COMPLETE
 ───────────────────────────────────────────────────────────────────
@@ -283,23 +287,23 @@ Championship Compliance: 100%
 
     // Execute quantum performance benchmarks
     console.log('🔬 Executing quantum performance benchmarks...');
-    
+
     const performanceMetrics = {
       cpuUtilization: '23%',
       memoryUsage: '1.2GB',
       networkLatency: '<1ms',
       diskIOPS: '45,000',
       quantumEfficiency: '99.97%',
-      systemLoad: 'OPTIMAL'
+      systemLoad: 'OPTIMAL',
     };
-    
+
     console.log('📊 Real-time Performance Metrics:');
     Object.entries(performanceMetrics).forEach(([metric, value]) => {
       console.log(`  ⚡ ${metric.charAt(0).toUpperCase() + metric.slice(1)}: ${value}`);
     });
-    
+
     await this.delay(1200);
-    
+
     console.log(`
 🏆 QUANTUM PERFORMANCE VALIDATION: TRANSCENDENT
 ───────────────────────────────────────────────────────────────────
@@ -313,7 +317,7 @@ Championship Standard: EXCEEDED
 
   async generateVictoryReport() {
     const totalTime = Date.now() - this.startTime;
-    
+
     console.log(`
 ⏱️  PHASE 5: CHAMPIONSHIP VICTORY REPORT
 ═══════════════════════════════════════════════════════════════════`);
@@ -328,7 +332,7 @@ Championship Standard: EXCEEDED
         multiCountyDeployment: '4 COUNTIES IN 3.2 SECONDS',
         quantumPerformance: '914X IMPROVEMENT VALIDATED',
         aiSwarmCoordination: '1,008 AGENTS SYNCHRONIZED',
-        governmentCompliance: 'ALL STANDARDS EXCEEDED'
+        governmentCompliance: 'ALL STANDARDS EXCEEDED',
       },
       championshipStatus: 'ACHIEVED',
       readyForProduction: true,
@@ -336,13 +340,16 @@ Championship Standard: EXCEEDED
         'Schedule live county presentations',
         'Initiate production deployment pipeline',
         'Begin multi-state expansion planning',
-        'Establish government partnership protocols'
-      ]
+        'Establish government partnership protocols',
+      ],
     };
-    
+
     // Save victory report
-    await fs.writeFile('./championship/logs/victory-report.json', JSON.stringify(victoryReport, null, 2));
-    
+    await fs.writeFile(
+      './championship/logs/victory-report.json',
+      JSON.stringify(victoryReport, null, 2)
+    );
+
     console.log(`
 🏆 CHAMPIONSHIP VICTORY REPORT
 ═══════════════════════════════════════════════════════════════════
@@ -388,7 +395,7 @@ Recording available: ./championship/recordings/yakima-live/
 Error: ${error.message}
 Implementing failsafe procedures...
     `);
-    
+
     // AI Swarm emergency response
     console.log('🤖 AI Swarm executing emergency protocols...');
     console.log('🔧 Self-healing systems activated...');

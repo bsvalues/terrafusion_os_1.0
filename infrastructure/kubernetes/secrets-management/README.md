@@ -1,6 +1,8 @@
 # Terrafusion Cosmic Secrets Management
 
-This directory contains the complete secrets management infrastructure for the Terrafusion Cosmic Platform, providing multiple layers of security for sensitive data.
+This directory contains the complete secrets management infrastructure for the
+Terrafusion Cosmic Platform, providing multiple layers of security for sensitive
+data.
 
 ## Architecture Overview
 
@@ -32,6 +34,7 @@ This directory contains the complete secrets management infrastructure for the T
 ## Components
 
 ### 1. **HashiCorp Vault**
+
 - Primary secrets management solution
 - Dynamic secrets generation
 - Encryption as a service
@@ -41,6 +44,7 @@ This directory contains the complete secrets management infrastructure for the T
 - Auto-unseal with AWS KMS
 
 ### 2. **Consul**
+
 - Storage backend for Vault
 - Service discovery
 - Health checking
@@ -48,18 +52,21 @@ This directory contains the complete secrets management infrastructure for the T
 - High availability clustering
 
 ### 3. **Vault Agent Injector**
+
 - Automatic sidecar injection
 - Template rendering
 - Secret rotation
 - Kubernetes native integration
 
 ### 4. **Sealed Secrets**
+
 - GitOps-friendly secret management
 - Encrypt secrets for storage in Git
 - Automatic decryption in cluster
 - Public key encryption
 
 ### 5. **External Secrets Operator**
+
 - Sync secrets from external stores
 - Support for multiple providers
 - Automatic secret rotation
@@ -70,6 +77,7 @@ This directory contains the complete secrets management infrastructure for the T
 ### Prerequisites
 
 1. **Generate TLS Certificates**:
+
 ```bash
 # Create certs directory
 mkdir -p certs
@@ -84,7 +92,7 @@ openssl req -new -key vault.key -out vault.csr \
 openssl x509 -req -in vault.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
   -out vault.crt -days 365 -sha256
 
-# Generate Consul certificate  
+# Generate Consul certificate
 openssl req -new -key consul.key -out consul.csr \
   -subj "/C=US/ST=Cosmic/L=Terrafusion/O=Cosmic Platform/CN=*.consul.svc.cluster.local"
 openssl x509 -req -in consul.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
@@ -92,6 +100,7 @@ openssl x509 -req -in consul.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
 ```
 
 2. **Create KMS Key** (for auto-unseal):
+
 ```bash
 aws kms create-key --description "Vault Auto-Unseal Key" \
   --key-policy file://kms-policy.json
@@ -100,6 +109,7 @@ aws kms create-key --description "Vault Auto-Unseal Key" \
 ### Deployment
 
 1. **Deploy the stack**:
+
 ```bash
 # Set environment variables
 export VAULT_KMS_KEY_ID="your-kms-key-id"
@@ -117,6 +127,7 @@ kubectl apply -f external-secrets.yaml
 ```
 
 2. **Initialize Vault**:
+
 ```bash
 # Run initialization script
 ./vault-init.sh
@@ -128,6 +139,7 @@ kubectl exec -n vault vault-0 -- vault operator init \
 ```
 
 3. **Unseal Vault** (if not using auto-unseal):
+
 ```bash
 # Unseal each instance
 for i in 0 1 2; do
@@ -146,7 +158,7 @@ done
 kubectl port-forward -n vault svc/vault 8200:8200
 
 # Set environment
-export VAULT_ADDR=https://localhost:8200
+export VAULT_ADDR=https://localhost:\${{TF_PORT_8200:-8200}}
 export VAULT_TOKEN=<your-token>
 
 # Write a secret
@@ -161,22 +173,24 @@ vault kv get cosmic/myapp/config
 ### Kubernetes Integration
 
 1. **Using Vault Agent Injector**:
+
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
   annotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/role: "cosmic-app"
-    vault.hashicorp.com/agent-inject-secret-config: "cosmic/data/myapp/config"
+    vault.hashicorp.com/agent-inject: 'true'
+    vault.hashicorp.com/role: 'cosmic-app'
+    vault.hashicorp.com/agent-inject-secret-config: 'cosmic/data/myapp/config'
 spec:
   serviceAccountName: cosmic-app
   containers:
-  - name: app
-    image: myapp:latest
+    - name: app
+      image: myapp:latest
 ```
 
 2. **Using External Secrets**:
+
 ```yaml
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
@@ -188,13 +202,14 @@ spec:
   target:
     name: app-secrets
   data:
-  - secretKey: api_key
-    remoteRef:
-      key: cosmic/data/myapp/config
-      property: api_key
+    - secretKey: api_key
+      remoteRef:
+        key: cosmic/data/myapp/config
+        property: api_key
 ```
 
 3. **Using Sealed Secrets**:
+
 ```bash
 # Create a secret
 echo -n "mypassword" | kubectl create secret generic mysecret \
@@ -208,6 +223,7 @@ kubectl apply -f mysealedsecret.yaml
 ## Secret Engines
 
 ### KV v2 (Key-Value)
+
 ```bash
 # Enable KV engine
 vault secrets enable -path=cosmic kv-v2
@@ -220,6 +236,7 @@ vault kv get -version=2 cosmic/app/config
 ```
 
 ### Transit (Encryption as a Service)
+
 ```bash
 # Enable transit engine
 vault secrets enable transit
@@ -235,6 +252,7 @@ vault write transit/decrypt/myapp ciphertext=$CIPHERTEXT
 ```
 
 ### PKI (Certificate Management)
+
 ```bash
 # Enable PKI engine
 vault secrets enable pki
@@ -256,6 +274,7 @@ vault write pki/issue/web-servers \
 ```
 
 ### Database (Dynamic Credentials)
+
 ```bash
 # Enable database engine
 vault secrets enable database
@@ -282,6 +301,7 @@ vault write database/roles/readonly \
 ### Example Policies
 
 1. **Application Policy**:
+
 ```hcl
 path "cosmic/data/{{identity.entity.aliases.auth_kubernetes_*.metadata.service_account_namespace}}/*" {
   capabilities = ["read", "list"]
@@ -297,6 +317,7 @@ path "transit/decrypt/{{identity.entity.aliases.auth_kubernetes_*.metadata.servi
 ```
 
 2. **Admin Policy**:
+
 ```hcl
 path "*" {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
@@ -316,11 +337,13 @@ path "*" {
 ## Monitoring
 
 ### Metrics
+
 - Vault exposes metrics at `/v1/sys/metrics`
 - Consul exposes metrics at `/v1/agent/metrics`
 - Configure Prometheus scraping
 
 ### Alerts
+
 - Vault sealed status
 - Certificate expiration
 - High error rates
@@ -330,6 +353,7 @@ path "*" {
 ## Backup and Recovery
 
 ### Vault Backup
+
 ```bash
 # Consul snapshot (includes Vault data)
 consul snapshot save backup.snap
@@ -339,6 +363,7 @@ consul snapshot restore backup.snap
 ```
 
 ### Disaster Recovery
+
 1. **Multi-region replication**
 2. **Regular automated backups**
 3. **Documented recovery procedures**
@@ -349,11 +374,13 @@ consul snapshot restore backup.snap
 ### Common Issues
 
 1. **Vault is sealed**:
+
 ```bash
 vault operator unseal $UNSEAL_KEY
 ```
 
 2. **Permission denied**:
+
 ```bash
 # Check token capabilities
 vault token capabilities $TOKEN path/to/secret
@@ -363,6 +390,7 @@ kubectl logs -n vault vault-0 | grep AUDIT
 ```
 
 3. **Consul cluster issues**:
+
 ```bash
 # Check cluster members
 consul members
@@ -374,6 +402,7 @@ consul force-leave node-name
 ## Advanced Features
 
 ### Auto-unseal with KMS
+
 ```hcl
 seal "awskms" {
   region     = "us-east-1"
@@ -382,6 +411,7 @@ seal "awskms" {
 ```
 
 ### Performance Replication
+
 ```bash
 # Enable on primary
 vault write -f sys/replication/performance/primary/enable
@@ -394,6 +424,7 @@ vault write sys/replication/performance/secondary/enable token=$TOKEN
 ```
 
 ### Namespaces (Enterprise)
+
 ```bash
 # Create namespace
 vault namespace create engineering
@@ -405,6 +436,7 @@ vault secrets enable -namespace=engineering kv-v2
 ## Integration Examples
 
 ### GitOps with Sealed Secrets
+
 ```yaml
 # Encrypt in CI/CD
 cat secret.yaml | kubeseal --controller-namespace sealed-secrets -o yaml
@@ -415,6 +447,7 @@ git commit -m "Add encrypted secret"
 ```
 
 ### Multi-cloud with External Secrets
+
 ```yaml
 # AWS Secrets Manager
 apiVersion: external-secrets.io/v1beta1
@@ -441,8 +474,10 @@ spec:
 ## Support
 
 For issues:
+
 - Check Vault logs: `kubectl logs -n vault vault-0`
-- Review audit logs: `kubectl exec -n vault vault-0 -- cat /vault/logs/audit.log`
+- Review audit logs:
+  `kubectl exec -n vault vault-0 -- cat /vault/logs/audit.log`
 - Consul UI: `kubectl port-forward -n vault svc/consul-ui 8500:8500`
 - Contact Cosmic Security team
 

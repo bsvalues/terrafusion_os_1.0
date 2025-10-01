@@ -154,7 +154,7 @@ namespace TerraFusion.Core.Services
                 PredictionAccuracy = 0.97 + (_random.NextDouble() * 0.02)
             };
 
-            _logger.LogInformation($"[ML-REVENUE] ✅ Revenue prediction: ${result.ExpectedRevenue:N2} with {result.ConfidenceLevel:F1}% confidence");
+            _logger.LogInformation($"[ML-REVENUE] ✅ Revenue prediction: {result.ExpectedRevenue:N2} with {result.ConfidenceLevel:F1}% confidence");
             return result;
         }
 
@@ -197,7 +197,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<MLRevenueOptimizationResult> OptimizeRevenueStrategies(RevenueOptimizationRequest request)
+        public Task<MLRevenueOptimizationResult> OptimizeRevenueStrategies(RevenueOptimizationRequest request)
         {
             _logger.LogInformation("[ML-OPTIMIZATION] Optimizing revenue strategies with advanced ML...");
 
@@ -214,7 +214,7 @@ namespace TerraFusion.Core.Services
             };
 
             _logger.LogInformation($"[ML-OPTIMIZATION] ✅ Optimization completed with {result.ExpectedRevenueIncrease:F1}% expected increase");
-            return result;
+            return Task.FromResult(result);
         }
 
         public async Task<bool> ValidateMLAccuracy()
@@ -529,3 +529,4 @@ namespace TerraFusion.Core.Services
     }
 
 }
+

@@ -1,0 +1,47 @@
+apiVersion: v2
+name: terrafusion-os
+description: TerraFusion OS 1.0 - Complete Government AI Operating System with AI Swarm Supreme Commander
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+home: https://terrafusion.gov
+sources:
+  - https://github.com/terrafusion/terrafusion-os
+maintainers:
+  - name: TerraFusion AI Engineering Team
+    email: engineering@terrafusion.gov
+  - name: Government AI Operations Team
+    email: operations@terrafusion.gov
+keywords:
+  - government
+  - ai-swarm
+  - quantum-optimization
+  - multi-county
+  - fisma-compliance
+  - supreme-commander
+annotations:
+  category: Government AI Platform
+  licenses: Government License
+  terrafusion.gov/ai-agents: "50000"
+  terrafusion.gov/quantum-optimization: "enabled"
+  terrafusion.gov/consciousness-layer: "enabled"
+  terrafusion.gov/compliance: "FISMA,Section508"
+  terrafusion.gov/performance-target: "6ms-api,99.7%-efficiency"
+dependencies:
+  - name: postgresql
+    version: "12.10.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "17.13.2"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+  - name: prometheus
+    version: "25.3.1"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    alias: kube-prometheus-stack
+    condition: monitoring.prometheus.enabled
+  - name: grafana
+    version: "6.58.7"
+    repository: "https://grafana.github.io/helm-charts"
+    condition: monitoring.grafana.enabled

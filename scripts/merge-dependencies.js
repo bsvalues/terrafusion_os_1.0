@@ -5,7 +5,9 @@ import path from 'path';
 
 // Read package.json files
 const costforgePkg = JSON.parse(fs.readFileSync('modules/costforge-ai/package.json', 'utf8'));
-const terrabuildPkg = JSON.parse(fs.readFileSync('modules/_import/TerraBuild/package.json', 'utf8'));
+const terrabuildPkg = JSON.parse(
+  fs.readFileSync('modules/_import/TerraBuild/package.json', 'utf8')
+);
 
 // Merge dependencies
 const mergedDeps = { ...costforgePkg.dependencies, ...terrabuildPkg.dependencies };
@@ -19,10 +21,10 @@ const newPackage = {
   scripts: {
     ...costforgePkg.scripts,
     // Add TerraBuild server scripts
-    "server": "tsx server/index.ts",
-    "server:dev": "tsx server/index.ts",
-    "db:push": "drizzle-kit push"
-  }
+    server: 'tsx server/index.ts',
+    'server:dev': 'tsx server/index.ts',
+    'db:push': 'drizzle-kit push',
+  },
 };
 
 // Write merged package.json

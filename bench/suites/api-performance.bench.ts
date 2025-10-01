@@ -1,3 +1,4 @@
+// NO HARDCODED PORTS! Use environment variables.
 /**
  * Terrafusion OS - API Performance Benchmark Suite
  * Measures real API performance against production SLOs
@@ -15,51 +16,63 @@ const propertyLatency = new Trend('property_latency');
 
 export const options = {
   stages: [
-    { duration: '30s', target: 10 },   // Warm-up
-    { duration: '1m', target: 50 },    // Ramp to normal load
-    { duration: '3m', target: 100 },   // Stay at normal load
-    { duration: '1m', target: 500 },   // Spike to peak load
-    { duration: '2m', target: 500 },   // Stay at peak
-    { duration: '1m', target: 0 },     // Ramp down
+    { duration: '30s', target: 10 }, // Warm-up
+    { duration: '1m', target: 50 }, // Ramp to normal load
+    { duration: '3m', target: 100 }, // Stay at normal load
+    { duration: '1m', target: 500 }, // Spike to peak load
+    { duration: '2m', target: 500 }, // Stay at peak
+    { duration: '1m', target: 0 }, // Ramp down
   ],
   thresholds: {
-    'http_req_duration': ['p(95)<200', 'p(99)<500'],  // SLO targets
-    'api_latency': ['p(50)<50', 'p(95)<200', 'p(99)<500'],
-    'auth_latency': ['p(95)<2000'],  // Auth should be <2s
-    'property_latency': ['p(95)<3000'], // Property valuation <3s
-    'api_errors': ['rate<0.01'],  // Error rate <1%
+    http_req_duration: ['p(95)<200', 'p(99)<500'], // SLO targets
+    api_latency: ['p(50)<50', 'p(95)<200', 'p(99)<500'],
+    auth_latency: ['p(95)<2000'], // Auth should be <2s
+    property_latency: ['p(95)<3000'], // Property valuation <3s
+    api_errors: ['rate<0.01'], // Error rate <1%
   },
 };
 
-const BASE_URL = __ENV.API_URL || 'http://localhost:5000';
+const BASE_URL = __ENV.API_URL || 'http://localhost:${TF_STATIC_PORT:-8080}';
 
 // Test data - Benton County properties
 const testPropertyIds = [
-  '089247001', '089247002', '089247003', '089247004', '089247005',
-  '089247006', '089247007', '089247008', '089247009', '089247010',
+  '089247001',
+  '089247002',
+  '089247003',
+  '089247004',
+  '089247005',
+  '089247006',
+  '089247007',
+  '089247008',
+  '089247009',
+  '089247010',
 ];
 
-export default function() {
+export default function () {
   // Benchmark: Authentication endpoint
   const authStart = Date.now();
-  const authRes = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({
-    username: 'benchmark@bentoncounty.gov',
-    password: 'BenchmarkTest123!',
-    mfa_code: '123456'  // Testing MFA performance
-  }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
-  
+  const authRes = http.post(
+    `${BASE_URL}/api/auth/login`,
+    JSON.stringify({
+      username: 'benchmark@bentoncounty.gov',
+      password: 'BenchmarkTest123!',
+      mfa_code: '123456', // Testing MFA performance
+    }),
+    {
+      headers: { 'Content-Type': 'application/json' },
+    }
+  );
+
   authLatency.add(Date.now() - authStart);
-  
+
   check(authRes, {
-    'auth status is 200': (r) => r.status === 200,
-    'auth has token': (r) => r.json('token') !== undefined,
-    'auth latency < 2s': (r) => Date.now() - authStart < 2000,
+    'auth status is 200': r => r.status === 200,
+    'auth has token': r => r.json('token') !== undefined,
+    'auth latency < 2s': r => Date.now() - authStart < 2000,
   }) || apiErrors.add(1);
 
   const token = authRes.json('token');
-  const authHeader = { 'Authorization': `Bearer ${token}` };
+  const authHeader = { Authorization: `Bearer ${token}` };
 
   // Benchmark: Property lookup endpoint
   const propertyId = testPropertyIds[Math.floor(Math.random() * testPropertyIds.length)];
@@ -67,52 +80,54 @@ export default function() {
   const propRes = http.get(`${BASE_URL}/api/properties/${propertyId}`, {
     headers: authHeader,
   });
-  
+
   propertyLatency.add(Date.now() - propStart);
   apiLatency.add(Date.now() - propStart);
-  
+
   check(propRes, {
-    'property status is 200': (r) => r.status === 200,
-    'property has data': (r) => r.json('parcelNumber') !== undefined,
-    'property latency < 1s': (r) => Date.now() - propStart < 1000,
+    'property status is 200': r => r.status === 200,
+    'property has data': r => r.json('parcelNumber') !== undefined,
+    'property latency < 1s': r => Date.now() - propStart < 1000,
   }) || apiErrors.add(1);
 
   // Benchmark: Property valuation endpoint (AI-powered)
   const valuationStart = Date.now();
-  const valuationRes = http.post(`${BASE_URL}/api/properties/${propertyId}/valuation`, 
+  const valuationRes = http.post(
+    `${BASE_URL}/api/properties/${propertyId}/valuation`,
     JSON.stringify({ method: 'ai_enhanced' }),
     { headers: { ...authHeader, 'Content-Type': 'application/json' } }
   );
-  
+
   apiLatency.add(Date.now() - valuationStart);
-  
+
   check(valuationRes, {
-    'valuation status is 200': (r) => r.status === 200,
-    'valuation has estimate': (r) => r.json('estimatedValue') > 0,
-    'valuation latency < 3s': (r) => Date.now() - valuationStart < 3000,
+    'valuation status is 200': r => r.status === 200,
+    'valuation has estimate': r => r.json('estimatedValue') > 0,
+    'valuation latency < 3s': r => Date.now() - valuationStart < 3000,
   }) || apiErrors.add(1);
 
   // Benchmark: Bulk operations
   const bulkStart = Date.now();
-  const bulkRes = http.post(`${BASE_URL}/api/properties/bulk/search`,
+  const bulkRes = http.post(
+    `${BASE_URL}/api/properties/bulk/search`,
     JSON.stringify({
       county: 'Benton',
       limit: 100,
       filters: {
         minValue: 100000,
         maxValue: 500000,
-        propertyType: 'residential'
-      }
+        propertyType: 'residential',
+      },
     }),
     { headers: { ...authHeader, 'Content-Type': 'application/json' } }
   );
-  
+
   apiLatency.add(Date.now() - bulkStart);
-  
+
   check(bulkRes, {
-    'bulk status is 200': (r) => r.status === 200,
-    'bulk returns results': (r) => r.json('properties') && r.json('properties').length > 0,
-    'bulk latency < 5s': (r) => Date.now() - bulkStart < 5000,
+    'bulk status is 200': r => r.status === 200,
+    'bulk returns results': r => r.json('properties') && r.json('properties').length > 0,
+    'bulk latency < 5s': r => Date.now() - bulkStart < 5000,
   }) || apiErrors.add(1);
 
   // Benchmark: Harris PACS sync endpoint
@@ -120,13 +135,13 @@ export default function() {
   const syncRes = http.get(`${BASE_URL}/api/sync/harris-pacs/status`, {
     headers: authHeader,
   });
-  
+
   apiLatency.add(Date.now() - syncStart);
-  
+
   check(syncRes, {
-    'sync status is 200': (r) => r.status === 200,
-    'sync is active': (r) => r.json('status') === 'active',
-    'sync latency < 500ms': (r) => Date.now() - syncStart < 500,
+    'sync status is 200': r => r.status === 200,
+    'sync is active': r => r.json('status') === 'active',
+    'sync latency < 500ms': r => Date.now() - syncStart < 500,
   }) || apiErrors.add(1);
 }
 

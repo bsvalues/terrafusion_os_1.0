@@ -108,8 +108,8 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/terrafusion_test
-          REDIS_URL: redis://localhost:6379/0
+          DATABASE_URL: postgresql://test_user:test_password@localhost:\${{TF_POSTGRES_PORT:-5432}}/terrafusion_test
+          REDIS_URL: redis://localhost:\${{TF_POSTGRES_PORT:-5432}}/0
           SECRET_KEY: test-secret-key
         run: |
           cd backend

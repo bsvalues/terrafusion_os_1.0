@@ -1,0 +1,154 @@
+/* Index.css - Global styles reset and base configuration */
+
+/* CSS Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+#root {
+  isolation: isolate;
+  height: 100%;
+}
+
+/* Base Variables */
+:root {
+  --tf-primary: #0099ff;
+  --tf-accent: #00ffaa;
+  --tf-transcend: #00ffee;
+  --tf-bg-primary: #001122;
+  --tf-bg-secondary: #002244;
+  --tf-bg-tertiary: #003366;
+  --tf-text-primary: #ffffff;
+  --tf-text-secondary: rgba(255, 255, 255, 0.8);
+  --tf-text-muted: rgba(255, 255, 255, 0.6);
+  --tf-border: rgba(0, 153, 255, 0.2);
+  --tf-border-hover: rgba(0, 153, 255, 0.4);
+  --tf-shadow: rgba(0, 153, 255, 0.2);
+  --tf-backdrop: rgba(255, 255, 255, 0.05);
+  --tf-backdrop-hover: rgba(255, 255, 255, 0.08);
+}
+
+/* Base Typography */
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background: linear-gradient(135deg, var(--tf-bg-primary) 0%, var(--tf-bg-secondary) 50%, var(--tf-bg-tertiary) 100%);
+  color: var(--tf-text-primary);
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus Management */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--tf-primary);
+  outline-offset: 2px;
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+  :root {
+    --tf-primary: #00ccff;
+    --tf-accent: #00ff99;
+    --tf-transcend: #00ffff;
+    --tf-border: rgba(0, 204, 255, 0.4);
+    --tf-border-hover: rgba(0, 204, 255, 0.6);
+  }
+}
+
+/* Print Styles */
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  body {
+    background: white !important;
+  }
+  
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

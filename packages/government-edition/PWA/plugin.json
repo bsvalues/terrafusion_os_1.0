@@ -9,12 +9,12 @@
   "entry": "dist/index.html",
   "type": "pwa",
   "permissions": [
-      "os.invoke",
-      "os.emit",
-      "property.valuation.read",
-      "parcel.search",
-      "gis.map.view",
-      "read:properties"
+    "os.invoke",
+    "os.emit",
+    "property.valuation.read",
+    "parcel.search",
+    "gis.map.view",
+    "read:properties"
   ],
   "capabilities": {
     "offline": true,

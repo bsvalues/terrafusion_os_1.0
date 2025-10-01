@@ -1,0 +1,18 @@
+{
+  "name": "TerraFusionPermit",
+  "version": "1.0.0",
+  "description": "Permit management system built with TypeScript, Vite, and modern web technologies for Terrafusion OS",
+  "tier": "Tier 1 (Core Government)",
+  "category": "permitting",
+  "author": "Terrafusion OS Team",
+  "itemCount": 20,
+  "migratedAt": "2025-08-31T00:00:00.000000Z",
+  "status": "active",
+  "languages": ["typescript", "javascript"],
+  "dependencies": ["vite", "tailwindcss", "drizzle"],
+  "entryPoints": {
+    "web": "index.html",
+    "typescript": "vite.config.ts"
+  },
+  "features": ["permit-management", "web-interface", "database-integration"]
+}

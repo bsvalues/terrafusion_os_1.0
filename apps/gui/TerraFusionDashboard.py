@@ -99,12 +99,12 @@ class TerraFusionDashboard:
         # Service status grid
         self.service_status = {}
         services = [
-            ("Frontend", "http://localhost:3000"),
-            ("Backend API", "http://localhost:5000"),
-            ("AI Swarm", "http://localhost:3001"),
-            ("Database", "localhost:5432"),
-            ("Redis Cache", "localhost:6379"),
-            ("Monitoring", "http://localhost:3009")
+            ("Frontend", "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"),
+            ("Backend API", "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"),
+            ("AI Swarm", "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"),
+            ("Database", "localhost:\${{TF_FRONTEND_PORT:-3000}}"),
+            ("Redis Cache", "localhost:\${{TF_FRONTEND_PORT:-3000}}"),
+            ("Monitoring", "http://localhost:\${{TF_FRONTEND_PORT:-3000}}")
         ]
         
         for i, (service, endpoint) in enumerate(services):
@@ -280,7 +280,7 @@ class TerraFusionDashboard:
     def open_monitor(self):
         try:
             import webbrowser
-            webbrowser.open('http://localhost:3009')
+            webbrowser.open('http://localhost:\${{TF_FRONTEND_PORT:-3000}}')
         except Exception as e:
             messagebox.showerror("Error", f"Failed to open monitor: {str(e)}")
     
@@ -332,12 +332,12 @@ class TerraFusionDashboard:
     def check_service_health(self):
         def health_check():
             services = {
-                "Frontend": "http://localhost:3000/health",
-                "Backend API": "http://localhost:5000/health",
-                "AI Swarm": "http://localhost:3001/health",
-                "Database": "localhost:5432",
-                "Redis Cache": "localhost:6379",
-                "Monitoring": "http://localhost:3009"
+                "Frontend": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health",
+                "Backend API": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health",
+                "AI Swarm": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health",
+                "Database": "localhost:\${{TF_FRONTEND_PORT:-3000}}",
+                "Redis Cache": "localhost:\${{TF_FRONTEND_PORT:-3000}}",
+                "Monitoring": "http://localhost:\${{TF_FRONTEND_PORT:-3000}}"
             }
             
             for service, endpoint in services.items():
@@ -365,7 +365,7 @@ class TerraFusionDashboard:
         def update_swarm():
             try:
                 import requests
-                response = requests.get("http://localhost:3001/status", timeout=5)
+                response = requests.get("http://localhost:\${{TF_FRONTEND_PORT:-3000}}/status", timeout=5)
                 if response.status_code == 200:
                     data = response.json()
                     active_agents = data.get('active_agents', 0)
@@ -386,7 +386,7 @@ class TerraFusionDashboard:
         def get_metrics():
             try:
                 import requests
-                response = requests.get("http://localhost:5000/metrics", timeout=5)
+                response = requests.get("http://localhost:\${{TF_FRONTEND_PORT:-3000}}/metrics", timeout=5)
                 if response.status_code == 200:
                     metrics = response.json()
                     

@@ -9,7 +9,7 @@ scrape_configs:
   # TerraFusion API Metrics
   - job_name: 'terrafusion-api'
     static_configs:
-      - targets: ['localhost:5000']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     metrics_path: /metrics
     scrape_interval: 5s
     scrape_timeout: 5s
@@ -17,39 +17,39 @@ scrape_configs:
   # AI Swarm Metrics  
   - job_name: 'ai-swarm'
     static_configs:
-      - targets: ['localhost:5001']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     metrics_path: /api/ai/metrics
     scrape_interval: 10s
     
   # Database Metrics
   - job_name: 'postgres-exporter'
     static_configs:
-      - targets: ['localhost:9187']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 15s
     
   # Redis Metrics
   - job_name: 'redis-exporter'
     static_configs:
-      - targets: ['localhost:9121']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 15s
     
   # Node Exporter (System Metrics)
   - job_name: 'node-exporter'
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     scrape_interval: 15s
     
   # HAProxy Metrics
   - job_name: 'haproxy'
     static_configs:
-      - targets: ['localhost:8404']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     metrics_path: /stats?stats;csv
     scrape_interval: 30s
     
   # Government Compliance Metrics
   - job_name: 'compliance-monitor'
     static_configs:
-      - targets: ['localhost:5002']
+      - targets: ['localhost:${TF_STATIC_PORT:-8080}']
     metrics_path: /compliance/metrics
     scrape_interval: 60s
 

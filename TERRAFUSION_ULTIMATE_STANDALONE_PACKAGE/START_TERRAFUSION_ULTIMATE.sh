@@ -13,19 +13,26 @@ echo
 
 # Check if Docker is running
 echo "[1/5] Checking Docker status..."
-if ! docker version >/dev/null 2>&1; then
-    echo "❌ ERROR: Docker is not running!"
-    echo "Please start Docker Desktop and try again."
+if ! docker ps >/dev/null 2>&1; then
+    echo "❌ ERROR: Docker daemon is not accessible!"
+    echo
+    echo "🔧 Troubleshooting steps:"
+    echo "   1. Start Docker Desktop on Windows"
+    echo "   2. Ensure 'Use the WSL 2 based engine' is enabled in Docker Desktop settings"
+    echo "   3. Wait for Docker Desktop to fully initialize (green status)"
+    echo "   4. In WSL2, run: docker ps (should work without errors)"
+    echo
+    echo "⚡ Quick test: Run 'docker ps' to verify Docker is accessible"
     echo
     read -p "Press Enter to exit..."
     exit 1
 fi
-echo "✅ Docker is running"
+echo "✅ Docker daemon is accessible"
 
 # Check if ports are available
 echo "[2/5] Checking port availability..."
-if netstat -an 2>/dev/null | grep -q ":5000 "; then
-    echo "⚠️  WARNING: Port 5000 is already in use"
+if netstat -an 2>/dev/null | grep -q ":${TF_API_PORT:-5046} "; then
+    echo "⚠️  WARNING: Port \${{TF_API_PORT:-5000}} is already in use"
     echo "This may indicate TerraFusion is already running"
     echo
 fi
@@ -53,7 +60,7 @@ POSTGRES_USER=terrafusion_admin
 POSTGRES_DB=terrafusion
 
 # AI Configuration
-AI_SWARM_SIZE=1008
+AI_SWARM_SIZE=${AI_AGENT_COUNT:-50000}
 QUANTUM_OPTIMIZATION=enabled
 HARRIS_PACS_VERSION=12.4.7
 
@@ -73,7 +80,7 @@ fi
 echo "[5/5] Starting TerraFusion Ultimate..."
 echo
 echo "🚀 Launching production services..."
-docker-compose -f Docker/docker-compose.production.yml up -d
+docker-compose --env-file .env.production -f Docker/docker-compose.production.yml up -d
 
 if [ $? -eq 0 ]; then
     echo
@@ -82,19 +89,19 @@ if [ $? -eq 0 ]; then
     echo "========================================"
     echo
     echo "🌐 Access Points:"
-    echo "   • TerraFusion IDE: http://localhost:5173"
-    echo "   • API Health Check: http://localhost:5000/health"
-    echo "   • Grafana Dashboard: http://localhost:3000 (admin/admin)"
-    echo "   • API Documentation: http://localhost:5000/swagger"
+    echo "   • TerraFusion IDE: http://localhost:\${{TF_PORT_5173:-5173}}"
+    echo "   • API Health Check: http://localhost:\${{TF_PORT_5173:-5173}}/health"
+    echo "   • Grafana Dashboard: http://localhost:\${{TF_PORT_5173:-5173}} (admin/admin)"
+    echo "   • API Documentation: http://localhost:\${{TF_PORT_5173:-5173}}/swagger"
     echo
     echo "📊 Service Status:"
-    docker-compose -f Docker/docker-compose.production.yml ps
+    docker-compose --env-file .env.production -f Docker/docker-compose.production.yml ps
     echo
     echo "🔍 Monitor logs:"
-    echo "   docker-compose -f Docker/docker-compose.production.yml logs -f"
+    echo "   docker-compose --env-file .env.production -f Docker/docker-compose.production.yml logs -f"
     echo
     echo "🛑 Stop services:"
-    echo "   docker-compose -f Docker/docker-compose.production.yml down"
+    echo "   docker-compose --env-file .env.production -f Docker/docker-compose.production.yml down"
     echo
     echo "🎯 Next Steps:"
     echo "   1. Validate Benton County deployment (89,247 parcels)"
@@ -115,7 +122,7 @@ else
     echo "   4. Check Docker logs for specific errors"
     echo
     echo "📋 View detailed logs:"
-    echo "   docker-compose -f Docker/docker-compose.production.yml logs"
+    echo "   docker-compose --env-file .env.production -f Docker/docker-compose.production.yml logs"
     echo
 fi
 

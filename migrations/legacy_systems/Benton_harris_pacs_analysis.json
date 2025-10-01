@@ -1,0 +1,37 @@
+{
+  "county": "Benton",
+  "system_type": "harris_pacs",
+  "analysis_date": "2025-09-19T00:39:35.859444",
+  "components": {
+    "property_database": {
+      "type": "Oracle/SQL Server",
+      "estimated_records": 89247,
+      "complexity": "high",
+      "migration_priority": 1
+    },
+    "assessment_engine": {
+      "type": "CAMA (Computer Assisted Mass Appraisal)",
+      "complexity": "high",
+      "migration_priority": 1
+    },
+    "gis_integration": {
+      "type": "ESRI ArcGIS",
+      "complexity": "medium",
+      "migration_priority": 2
+    }
+  },
+  "data_sources": {
+    "parcels": 89247,
+    "assessments": 267741,
+    "ownership_records": 89247,
+    "tax_history": 445123,
+    "appeals": 1247
+  },
+  "integration_points": {
+    "treasurer_system": "tax_collection",
+    "recorder_system": "deed_records",
+    "planning_system": "zoning_permits",
+    "gis_system": "spatial_data"
+  },
+  "migration_complexity": "high"
+}

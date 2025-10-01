@@ -132,11 +132,11 @@ check "Database pods healthy" "kubectl get pods -n terrafusion -l app=terrafusio
 
 # Health endpoint checks (if accessible)
 if kubectl get pods -n terrafusion -l app=terrafusion-backend | grep -q Running; then
-    check "Backend health endpoint" "kubectl exec -n terrafusion deployment/terrafusion-backend -- curl -f http://localhost:8080/health"
+    check "Backend health endpoint" "kubectl exec -n terrafusion deployment/terrafusion-backend -- curl -f http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
 fi
 
 if kubectl get pods -n terrafusion -l app=terrafusion-costforge | grep -q Running; then
-    check "CostForge health endpoint" "kubectl exec -n terrafusion deployment/terrafusion-costforge -- curl -f http://localhost:3001/health"
+    check "CostForge health endpoint" "kubectl exec -n terrafusion deployment/terrafusion-costforge -- curl -f http://localhost:\${{TF_ADMIN_PORT:-8080}}/health"
 fi
 
 echo

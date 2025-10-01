@@ -128,7 +128,7 @@ cat > "/Library/LaunchDaemons/$SERVICE_NAME.plist" << EOF
         <key>ASPNETCORE_ENVIRONMENT</key>
         <string>Production</string>
         <key>ASPNETCORE_URLS</key>
-        <string>http://localhost:5000</string>
+        <string>http://localhost:${TF_STATIC_PORT:-8080}</string>
     </dict>
     <key>StandardOutPath</key>
     <string>$DATA_DIR/logs/terrafusion-out.log</string>
@@ -222,8 +222,8 @@ echo ""
 echo "Service Status:"
 launchctl list | grep "$SERVICE_NAME" || echo "Service not found in launchctl list"
 echo ""
-echo "Access the application at: http://localhost:3000"
-echo "Backend API at: http://localhost:5000"
+echo "Access the application at: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "Backend API at: http://localhost:${TF_STATIC_PORT:-8080}"
 echo ""
 echo "To start/stop the service:"
 echo "  sudo launchctl start $SERVICE_NAME"

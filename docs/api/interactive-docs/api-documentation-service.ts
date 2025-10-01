@@ -28,18 +28,24 @@ export interface APIParameter {
 export interface APIRequestBody {
   description: string;
   required: boolean;
-  content: Record<string, {
-    schema: any;
-    examples?: Record<string, APIExample>;
-  }>;
+  content: Record<
+    string,
+    {
+      schema: any;
+      examples?: Record<string, APIExample>;
+    }
+  >;
 }
 
 export interface APIResponse {
   description: string;
-  content?: Record<string, {
-    schema: any;
-    examples?: Record<string, APIExample>;
-  }>;
+  content?: Record<
+    string,
+    {
+      schema: any;
+      examples?: Record<string, APIExample>;
+    }
+  >;
 }
 
 export interface APIExample {
@@ -104,7 +110,7 @@ export class APIDocumentationService {
     statusCode: number;
   }> {
     const startTime = Date.now();
-    
+
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -139,7 +145,7 @@ export class APIDocumentationService {
         response: responseData,
         error: response.ok ? undefined : responseData.error || 'Request failed',
         executionTime,
-        statusCode: response.status
+        statusCode: response.status,
       };
     } catch (error) {
       const executionTime = Date.now() - startTime;
@@ -147,7 +153,7 @@ export class APIDocumentationService {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         executionTime,
-        statusCode: 0
+        statusCode: 0,
       };
     }
   }
@@ -160,7 +166,8 @@ export class APIDocumentationService {
       {
         id: 'property-management-basics',
         title: 'Property Management API Basics',
-        description: 'Learn how to retrieve, create, and update property records using the Terrafusion API',
+        description:
+          'Learn how to retrieve, create, and update property records using the Terrafusion API',
         difficulty: 'Beginner',
         estimatedTime: '15 minutes',
         prerequisites: ['Basic HTTP knowledge', 'API key access'],
@@ -182,7 +189,7 @@ const headers = {
 const response = await fetch('/api/auth/verify', { headers });
 console.log('Auth status:', response.status);`,
             expectedResponse: { authenticated: true, user: 'demo@terrafusion.gov' },
-            notes: 'Replace YOUR_JWT_TOKEN with your actual JWT token from the login process'
+            notes: 'Replace YOUR_JWT_TOKEN with your actual JWT token from the login process',
           },
           {
             id: 'step-2',
@@ -201,9 +208,9 @@ console.log('First property:', properties[0]);`,
               id: 'PROP-2024-001',
               parcelNumber: '123-456-789',
               address: '123 Main Street',
-              assessedValue: 285000
+              assessedValue: 285000,
             },
-            notes: 'This returns the first 10 properties. Adjust pageSize as needed.'
+            notes: 'This returns the first 10 properties. Adjust pageSize as needed.',
           },
           {
             id: 'step-3',
@@ -225,10 +232,10 @@ console.log('Assessed value:', property.assessedValue);`,
               state: 'WA',
               assessedValue: 285000,
               marketValue: 325000,
-              propertyType: 'Residential'
-            }
-          }
-        ]
+              propertyType: 'Residential',
+            },
+          },
+        ],
       },
       {
         id: 'ai-agent-monitoring',
@@ -259,9 +266,9 @@ agents.forEach(agent => {
                 name: 'Revenue Hunter Alpha',
                 type: 'RevenueHunter',
                 status: 'Active',
-                performance: { successRate: 97.8, tasksCompleted: 1247 }
-              }
-            ]
+                performance: { successRate: 97.8, tasksCompleted: 1247 },
+              },
+            ],
           },
           {
             id: 'step-2',
@@ -281,10 +288,10 @@ console.log('Average response time:', performance.averageResponseTime + 'ms');`,
               successRate: 97.8,
               averageResponseTime: 245,
               tasksPerHour: 156,
-              errorRate: 2.2
-            }
-          }
-        ]
+              errorRate: 2.2,
+            },
+          },
+        ],
       },
       {
         id: 'compliance-reporting',
@@ -323,10 +330,10 @@ console.log('Compliance Score:', report.score + '%');`,
               framework: 'FISMA',
               status: 'Compliant',
               score: 94.5,
-              violations: []
-            }
-          }
-        ]
+              violations: [],
+            },
+          },
+        ],
       },
       {
         id: 'harris-pacs-integration',
@@ -354,8 +361,8 @@ console.log('Response Time:', status.responseTime + 'ms');`,
               isOnline: true,
               version: '12.5.3',
               responseTime: 145,
-              activeConnections: 8
-            }
+              activeConnections: 8,
+            },
           },
           {
             id: 'step-2',
@@ -377,11 +384,11 @@ const statusResponse = await fetch(\`/api/harrispacsintegration/jurisdictions/\$
 const syncStatus = await statusResponse.json();
 console.log('Sync status:', syncStatus.status);`,
             expectedResponse: {
-              message: 'Data synchronization initiated for jurisdiction benton-county'
-            }
-          }
-        ]
-      }
+              message: 'Data synchronization initiated for jurisdiction benton-county',
+            },
+          },
+        ],
+      },
     ];
   }
 
@@ -411,7 +418,7 @@ console.log('Sync status:', syncStatus.status);`,
       return {
         success: false,
         error: 'Tutorial not found',
-        executionTime: 0
+        executionTime: 0,
       };
     }
 
@@ -420,35 +427,36 @@ console.log('Sync status:', syncStatus.status);`,
       return {
         success: false,
         error: 'Tutorial step not found',
-        executionTime: 0
+        executionTime: 0,
       };
     }
 
     // Execute the step's code with user inputs
     const startTime = Date.now();
-    
+
     try {
       // This would execute the actual API calls based on the step
       // For now, return mock success response
       const executionTime = Date.now() - startTime;
-      
+
       const currentStepIndex = tutorial.steps.findIndex(s => s.id === stepId);
-      const nextStep = currentStepIndex < tutorial.steps.length - 1 
-        ? tutorial.steps[currentStepIndex + 1].id 
-        : undefined;
+      const nextStep =
+        currentStepIndex < tutorial.steps.length - 1
+          ? tutorial.steps[currentStepIndex + 1].id
+          : undefined;
 
       return {
         success: true,
         result: step.expectedResponse,
         executionTime,
-        nextStep
+        nextStep,
       };
     } catch (error) {
       const executionTime = Date.now() - startTime;
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Execution failed',
-        executionTime
+        executionTime,
       };
     }
   }
@@ -490,8 +498,12 @@ const response = await fetch('${this.baseUrl}${endpoint.path}', {
   headers: {
     'Authorization': 'Bearer YOUR_JWT_TOKEN',
     'Content-Type': 'application/json'
-  }${hasBody && example ? `,
-  body: JSON.stringify(${JSON.stringify(example.value, null, 2)})` : ''}
+  }${
+    hasBody && example
+      ? `,
+  body: JSON.stringify(${JSON.stringify(example.value, null, 2)})`
+      : ''
+  }
 });
 
 const data = await response.json();
@@ -514,16 +526,20 @@ headers = {
     'Content-Type': 'application/json'
 }
 
-${hasBody && example ? `data = ${JSON.stringify(example.value, null, 2)}
+${
+  hasBody && example
+    ? `data = ${JSON.stringify(example.value, null, 2)}
 
 response = requests.${endpoint.method.toLowerCase()}(
     '${this.baseUrl}${endpoint.path}',
     headers=headers,
     json=data
-)` : `response = requests.${endpoint.method.toLowerCase()}(
+)`
+    : `response = requests.${endpoint.method.toLowerCase()}(
     '${this.baseUrl}${endpoint.path}',
     headers=headers
-)`}
+)`
+}
 
 if response.status_code == 200:
     result = response.json()
@@ -540,8 +556,12 @@ else:
 curl -X ${endpoint.method} \\
   '${this.baseUrl}${endpoint.path}' \\
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \\
-  -H 'Content-Type: application/json'${hasBody && example ? ` \\
-  -d '${JSON.stringify(example.value)}'` : ''}`;
+  -H 'Content-Type: application/json'${
+    hasBody && example
+      ? ` \\
+  -d '${JSON.stringify(example.value)}'`
+      : ''
+  }`;
   }
 
   private generateCSharpExample(endpoint: APIEndpoint): string {
@@ -555,15 +575,24 @@ using System.Text;
 var client = new HttpClient();
 client.DefaultRequestHeaders.Add("Authorization", "Bearer YOUR_JWT_TOKEN");
 
-${hasBody && example ? `var requestData = ${JSON.stringify(example.value, null, 2)};
+${
+  hasBody && example
+    ? `var requestData = ${JSON.stringify(example.value, null, 2)};
 var json = JsonSerializer.Serialize(requestData);
 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-var response = await client.${endpoint.method === 'POST' ? 'PostAsync' : 
-  endpoint.method === 'PUT' ? 'PutAsync' : 'PatchAsync'}(
+var response = await client.${
+        endpoint.method === 'POST'
+          ? 'PostAsync'
+          : endpoint.method === 'PUT'
+            ? 'PutAsync'
+            : 'PatchAsync'
+      }(
     "${this.baseUrl}${endpoint.path}", 
     content
-);` : `var response = await client.GetAsync("${this.baseUrl}${endpoint.path}");`}
+);`
+    : `var response = await client.GetAsync("${this.baseUrl}${endpoint.path}");`
+}
 
 if (response.IsSuccessStatusCode)
 {
@@ -587,12 +616,15 @@ $headers = @{
     'Content-Type' = 'application/json'
 }
 
-${hasBody && example ? `$body = @'
+${
+  hasBody && example
+    ? `$body = @'
 ${JSON.stringify(example.value, null, 2)}
 '@
 
-$response = Invoke-RestMethod -Uri '${this.baseUrl}${endpoint.path}' -Method ${endpoint.method} -Headers $headers -Body $body` : 
-`$response = Invoke-RestMethod -Uri '${this.baseUrl}${endpoint.path}' -Method ${endpoint.method} -Headers $headers`}
+$response = Invoke-RestMethod -Uri '${this.baseUrl}${endpoint.path}' -Method ${endpoint.method} -Headers $headers -Body $body`
+    : `$response = Invoke-RestMethod -Uri '${this.baseUrl}${endpoint.path}' -Method ${endpoint.method} -Headers $headers`
+}
 
 Write-Output "Response: $($response | ConvertTo-Json -Depth 10)"`;
   }

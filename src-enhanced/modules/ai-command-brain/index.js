@@ -12,7 +12,7 @@ const AICommandBrain = {
   category: 'AI & Intelligence',
   port: 3600,
   status: 'active',
-  
+
   // Module Configuration
   config: {
     aiModels: 147,
@@ -21,13 +21,13 @@ const AICommandBrain = {
     realTimeMonitoring: true,
     predictiveAnalytics: true,
     securityMonitoring: true,
-    complianceTracking: true
+    complianceTracking: true,
   },
 
   // Core AI Capabilities
   capabilities: [
     'Real-time AI Model Monitoring',
-    'Neural Network Architecture Management', 
+    'Neural Network Architecture Management',
     'Predictive Analytics Engine',
     'Automated Compliance Validation',
     'Intelligent Document Processing',
@@ -35,7 +35,7 @@ const AICommandBrain = {
     'Revenue Optimization AI',
     'Anomaly Detection & Response',
     'Government Operations Automation',
-    'Multi-Model AI Orchestration'
+    'Multi-Model AI Orchestration',
   ],
 
   // Production AI Models
@@ -45,43 +45,79 @@ const AICommandBrain = {
       type: 'Transformer GPT-4',
       accuracy: 98.7,
       status: 'active',
-      capabilities: ['Translation', 'Classification', 'Sentiment', 'Entity Recognition', 'Intent Detection']
+      capabilities: [
+        'Translation',
+        'Classification',
+        'Sentiment',
+        'Entity Recognition',
+        'Intent Detection',
+      ],
     },
     {
-      name: 'Document Vision Pro', 
+      name: 'Document Vision Pro',
       type: 'CNN ResNet-152',
       accuracy: 99.3,
       status: 'active',
-      capabilities: ['OCR', 'Object Detection', 'Document Classification', 'Signature Verification', 'Form Extraction']
+      capabilities: [
+        'OCR',
+        'Object Detection',
+        'Document Classification',
+        'Signature Verification',
+        'Form Extraction',
+      ],
     },
     {
       name: 'Predictive Analytics Engine',
       type: 'LSTM + Attention',
       accuracy: 94.2,
       status: 'training',
-      capabilities: ['Time Series', 'Trend Analysis', 'Anomaly Detection', 'Forecasting', 'Pattern Recognition']
+      capabilities: [
+        'Time Series',
+        'Trend Analysis',
+        'Anomaly Detection',
+        'Forecasting',
+        'Pattern Recognition',
+      ],
     },
     {
       name: 'Fraud Detection System',
-      type: 'Autoencoder + XGBoost', 
+      type: 'Autoencoder + XGBoost',
       accuracy: 96.8,
       status: 'active',
-      capabilities: ['Anomaly Detection', 'Risk Scoring', 'Pattern Matching', 'Behavioral Analysis', 'Network Analysis']
+      capabilities: [
+        'Anomaly Detection',
+        'Risk Scoring',
+        'Pattern Matching',
+        'Behavioral Analysis',
+        'Network Analysis',
+      ],
     },
     {
       name: 'Compliance Guardian',
       type: 'Rule-Based + ML Hybrid',
       accuracy: 99.7,
       status: 'active',
-      capabilities: ['Policy Checking', 'Regulation Mapping', 'Audit Trail', 'Risk Assessment', 'Violation Detection']
+      capabilities: [
+        'Policy Checking',
+        'Regulation Mapping',
+        'Audit Trail',
+        'Risk Assessment',
+        'Violation Detection',
+      ],
     },
     {
       name: 'Revenue Optimization AI',
       type: 'Reinforcement Learning',
       accuracy: 95.4,
       status: 'active',
-      capabilities: ['Fee Optimization', 'Collection Prediction', 'Revenue Forecasting', 'Pricing Strategy', 'Tax Analysis']
-    }
+      capabilities: [
+        'Fee Optimization',
+        'Collection Prediction',
+        'Revenue Forecasting',
+        'Pricing Strategy',
+        'Tax Analysis',
+      ],
+    },
   ],
 
   // Neural Network Architecture
@@ -91,29 +127,29 @@ const AICommandBrain = {
       neurons: 1048576,
       connections: 134217728,
       performance: 98.7,
-      status: 'online'
+      status: 'online',
     },
     {
       name: 'Language Understanding Network',
       neurons: 524288,
       connections: 67108864,
       performance: 97.3,
-      status: 'online'
+      status: 'online',
     },
     {
       name: 'Computer Vision Network',
       neurons: 2097152,
       connections: 268435456,
       performance: 96.8,
-      status: 'training'
+      status: 'training',
     },
     {
       name: 'Predictive Analytics Network',
       neurons: 262144,
       connections: 33554432,
       performance: 94.2,
-      status: 'online'
-    }
+      status: 'online',
+    },
   ],
 
   // Automation Rules Engine
@@ -123,29 +159,29 @@ const AICommandBrain = {
       trigger: 'Document Upload',
       executionCount: 847293,
       successRate: 99.2,
-      status: 'active'
+      status: 'active',
     },
     {
       name: 'Smart Fee Collection',
       trigger: 'Payment Due -3 days',
       executionCount: 23847,
       successRate: 87.3,
-      status: 'active'
+      status: 'active',
     },
     {
       name: 'Automated Compliance Validation',
       trigger: 'Request Submission',
       executionCount: 192837,
       successRate: 96.8,
-      status: 'active'
+      status: 'active',
     },
     {
       name: 'Anomaly Auto-Response',
       trigger: 'Unusual Pattern Detected',
       executionCount: 8923,
       successRate: 94.7,
-      status: 'active'
-    }
+      status: 'active',
+    },
   ],
 
   // System Metrics (Live)
@@ -161,7 +197,7 @@ const AICommandBrain = {
     incidentsDetected: 12,
     threatsBlocked: 342,
     complianceScore: 99.7,
-    uptime: 99.999
+    uptime: 99.999,
   },
 
   // Integration Points
@@ -172,29 +208,29 @@ const AICommandBrain = {
     marketplace: true,
     publicRecordsPortal: true,
     landRecording: true,
-    allModules: true
+    allModules: true,
   },
 
   // Launch Configuration
   launch: {
-    url: 'http://localhost:3600',
+    url: 'http://localhost:\${{TF_PORT_3600:-3600}}',
     path: './app',
     command: 'npm run dev',
     autoStart: true,
-    priority: 'critical'
+    priority: 'critical',
   },
 
   // API Endpoints
   api: {
-    baseUrl: 'http://localhost:3600/api',
+    baseUrl: 'http://localhost:\${{TF_PORT_3600:-3600}}/api',
     endpoints: {
       models: '/models',
       neural: '/neural-networks',
       automation: '/automation-rules',
       predictions: '/predictions',
       metrics: '/metrics',
-      monitoring: '/monitoring'
-    }
+      monitoring: '/monitoring',
+    },
   },
 
   // Security & Compliance
@@ -203,7 +239,7 @@ const AICommandBrain = {
     authentication: 'OAuth 2.0 + MFA',
     auditLogging: true,
     complianceFrameworks: ['SOC 2', 'FedRAMP', 'FISMA'],
-    dataClassification: 'Government Sensitive'
+    dataClassification: 'Government Sensitive',
   },
 
   // Performance Specifications
@@ -212,7 +248,7 @@ const AICommandBrain = {
     responseTime: '<3ms',
     availability: '99.999%',
     scalability: 'Horizontal',
-    dataRetention: '7 years'
+    dataRetention: '7 years',
   },
 
   // Government-Specific Features
@@ -224,11 +260,11 @@ const AICommandBrain = {
     performanceMetrics: true,
     auditTrails: true,
     emergencyResponse: true,
-    multiJurisdictionSupport: true
+    multiJurisdictionSupport: true,
   },
 
   // Module Lifecycle
-  initialize: function() {
+  initialize: function () {
     console.log(`Initializing ${this.name} v${this.version}`);
     console.log(`AI Models: ${this.config.aiModels} active`);
     console.log(`Neural Networks: ${this.config.neuralNetworks} online`);
@@ -236,22 +272,22 @@ const AICommandBrain = {
     return true;
   },
 
-  start: function() {
+  start: function () {
     console.log(`Starting AI Command Brain on port ${this.port}`);
     // Integration with Terrafusion OS launcher
     return {
       status: 'started',
       url: this.launch.url,
-      pid: process.pid
+      pid: process.pid,
     };
   },
 
-  stop: function() {
+  stop: function () {
     console.log('Stopping AI Command Brain...');
     return { status: 'stopped' };
   },
 
-  getStatus: function() {
+  getStatus: function () {
     return {
       id: this.id,
       name: this.name,
@@ -259,9 +295,9 @@ const AICommandBrain = {
       status: this.status,
       metrics: this.metrics,
       uptime: this.metrics.uptime,
-      url: this.launch.url
+      url: this.launch.url,
     };
-  }
+  },
 };
 
 // Export for Terrafusion OS Module System

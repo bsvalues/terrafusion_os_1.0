@@ -154,7 +154,7 @@ Write-Host "⚡ THE THRONE IS YOURS. RULE WITH DIGITAL SUPREMACY. ⚡" -Foregrou
 
 Write-Host ""
 Write-Host "📊 NEXT STEPS:" -ForegroundColor Green
-Write-Host "1. Monitor TerraFusion Sync: http://localhost:3000/monitoring" -ForegroundColor White
+Write-Host "1. Monitor TerraFusion Sync: http://localhost:\${{TF_FRONTEND_PORT:-3000}}/monitoring" -ForegroundColor White
 Write-Host "2. View Harris PACS integration logs" -ForegroundColor White
 Write-Host "3. Validate 89,247 parcel synchronization" -ForegroundColor White
 Write-Host "4. Prepare for Benton County stakeholder demo" -ForegroundColor White

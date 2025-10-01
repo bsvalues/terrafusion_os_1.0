@@ -13,7 +13,7 @@ export default defineConfig({
     port: 3010,
     open: true,
     proxy: {
-      '/marketplace': 'http://localhost:8000', // Adjust backend port as needed
+      '/marketplace': 'http://localhost:\${{TF_DOCS_PORT:-8000}}', // Adjust backend port as needed
     },
   },
 });

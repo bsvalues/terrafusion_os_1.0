@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../Downloads/TerraFusion_IDE_Export"
+		},
+		{
+			"path": "../../../Downloads/TerraFusionPlayground_Bundle"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "TerraFusionPlayground"
+	}
+}

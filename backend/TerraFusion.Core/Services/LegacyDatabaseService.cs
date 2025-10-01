@@ -80,7 +80,7 @@ public class LegacyDatabaseService
     /// Import property data from legacy database
     /// </summary>
     public async Task<LegacyImportResult> ImportPropertyData(string countyName, 
-        LegacyImportOptions options = null)
+        LegacyImportOptions? options = null)
     {
         options ??= new LegacyImportOptions();
         
@@ -99,7 +99,7 @@ public class LegacyDatabaseService
             CountyName = countyName,
             AdapterType = adapterType,
             StartTime = DateTime.UtcNow,
-            Error = null
+            Error = null!
         };
 
         try
@@ -175,7 +175,7 @@ public class LegacyDatabaseService
     /// <summary>
     /// Validate imported data against TerraFusion standards
     /// </summary>
-    public async Task<ValidationResult> ValidateImportedData(LegacyImportResult importResult)
+    public Task<ValidationResult> ValidateImportedData(LegacyImportResult importResult)
     {
         var validation = new ValidationResult
         {
@@ -215,7 +215,7 @@ public class LegacyDatabaseService
             importResult.CountyName, validation.IsValid, 
             validation.Errors.Count, validation.Warnings.Count);
 
-        return validation;
+        return Task.FromResult(validation);
     }
 }
 
@@ -247,7 +247,7 @@ public class HarrisPacsAdapter : ILegacyDatabaseAdapter
         _configuration = configuration;
     }
 
-    public async Task<int> DetectCompatibility(string connectionString)
+    public Task<int> DetectCompatibility(string connectionString)
     {
         // Harris PACS detection logic (checking for specific tables/schemas)
         try
@@ -261,21 +261,23 @@ public class HarrisPacsAdapter : ILegacyDatabaseAdapter
             };
 
             // Return confidence percentage (0-100)
-            return 95; // High confidence for Harris PACS structures
+            return Task.FromResult(95); // High confidence for Harris PACS structures
         }
         catch
         {
-            return 0;
+            return Task.FromResult(0);
         }
     }
 
-    public async Task InitializeAsync(LegacyDatabaseConfiguration config)
+    public Task InitializeAsync(LegacyDatabaseConfiguration config)
     {
         _connectionString = config.ConnectionString;
         _logger.LogInformation("Harris PACS adapter initialized for {County}", config.CountyName);
+        
+        return Task.CompletedTask;
     }
 
-    public async Task<List<PropertyRecord>> ImportPropertiesAsync(LegacyImportOptions options)
+    public Task<List<PropertyRecord>> ImportPropertiesAsync(LegacyImportOptions options)
     {
         // Harris PACS specific property import logic
         var properties = new List<PropertyRecord>();
@@ -300,25 +302,25 @@ public class HarrisPacsAdapter : ILegacyDatabaseAdapter
             }
         }
 
-        return properties;
+        return Task.FromResult(properties);
     }
 
-    public async Task<List<AssessmentRecord>> ImportAssessmentsAsync(LegacyImportOptions options)
+    public Task<List<AssessmentRecord>> ImportAssessmentsAsync(LegacyImportOptions options)
     {
         // Harris PACS assessment import logic
-        return new List<AssessmentRecord>();
+        return Task.FromResult(new List<AssessmentRecord>());
     }
 
-    public async Task<List<OwnerRecord>> ImportOwnersAsync(LegacyImportOptions options)
+    public Task<List<OwnerRecord>> ImportOwnersAsync(LegacyImportOptions options)
     {
         // Harris PACS owner import logic  
-        return new List<OwnerRecord>();
+        return Task.FromResult(new List<OwnerRecord>());
     }
 
-    public async Task<List<SaleRecord>> ImportSalesAsync(LegacyImportOptions options)
+    public Task<List<SaleRecord>> ImportSalesAsync(LegacyImportOptions options)
     {
         // Harris PACS sales import logic
-        return new List<SaleRecord>();
+        return Task.FromResult(new List<SaleRecord>());
     }
 }
 
@@ -336,34 +338,35 @@ public class GenericSqlAdapter : ILegacyDatabaseAdapter
         _configuration = configuration;
     }
 
-    public async Task<int> DetectCompatibility(string connectionString)
+    public Task<int> DetectCompatibility(string connectionString)
     {
-        return 25; // Low confidence, fallback option
+        return Task.FromResult(25); // Low confidence, fallback option
     }
 
-    public async Task InitializeAsync(LegacyDatabaseConfiguration config)
+    public Task InitializeAsync(LegacyDatabaseConfiguration config)
     {
         _logger.LogInformation("Generic SQL adapter initialized for {County}", config.CountyName);
+        return Task.CompletedTask;
     }
 
-    public async Task<List<PropertyRecord>> ImportPropertiesAsync(LegacyImportOptions options)
+    public Task<List<PropertyRecord>> ImportPropertiesAsync(LegacyImportOptions options)
     {
-        return new List<PropertyRecord>();
+        return Task.FromResult(new List<PropertyRecord>());
     }
 
-    public async Task<List<AssessmentRecord>> ImportAssessmentsAsync(LegacyImportOptions options)
+    public Task<List<AssessmentRecord>> ImportAssessmentsAsync(LegacyImportOptions options)
     {
-        return new List<AssessmentRecord>();
+        return Task.FromResult(new List<AssessmentRecord>());
     }
 
-    public async Task<List<OwnerRecord>> ImportOwnersAsync(LegacyImportOptions options)
+    public Task<List<OwnerRecord>> ImportOwnersAsync(LegacyImportOptions options)
     {
-        return new List<OwnerRecord>();
+        return Task.FromResult(new List<OwnerRecord>());
     }
 
-    public async Task<List<SaleRecord>> ImportSalesAsync(LegacyImportOptions options)
+    public Task<List<SaleRecord>> ImportSalesAsync(LegacyImportOptions options)
     {
-        return new List<SaleRecord>();
+        return Task.FromResult(new List<SaleRecord>());
     }
 }
 

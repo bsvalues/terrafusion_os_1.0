@@ -1,10 +1,12 @@
 # Terrafusion Installation & Setup Guide
 
-Complete guide for installing and configuring Terrafusion in production environments.
+Complete guide for installing and configuring Terrafusion in production
+environments.
 
 ## 🎯 Installation Overview
 
 Terrafusion supports multiple deployment scenarios:
+
 - **Single Server**: All-in-one deployment for small teams
 - **Multi-Server**: Distributed deployment for scalability
 - **Container**: Docker/Kubernetes deployment
@@ -13,25 +15,28 @@ Terrafusion supports multiple deployment scenarios:
 ## 📋 System Requirements
 
 ### Minimum Requirements
-| Component | Requirement |
-|-----------|-------------|
-| **OS** | Ubuntu 20.04+, RHEL 8+, Windows Server 2019+ |
-| **CPU** | 4 cores, 2.4 GHz |
-| **Memory** | 16 GB RAM |
-| **Storage** | 100 GB SSD |
-| **Network** | 1 Gbps connection |
+
+| Component   | Requirement                                  |
+| ----------- | -------------------------------------------- |
+| **OS**      | Ubuntu 20.04+, RHEL 8+, Windows Server 2019+ |
+| **CPU**     | 4 cores, 2.4 GHz                             |
+| **Memory**  | 16 GB RAM                                    |
+| **Storage** | 100 GB SSD                                   |
+| **Network** | 1 Gbps connection                            |
 
 ### Recommended Requirements
-| Component | Requirement |
-|-----------|-------------|
-| **OS** | Ubuntu 22.04 LTS |
-| **CPU** | 8 cores, 3.0 GHz+ |
-| **Memory** | 32 GB RAM |
-| **Storage** | 500 GB NVMe SSD |
-| **Network** | 10 Gbps connection |
-| **GPU** | NVIDIA RTX 4090 (for ML inference) |
+
+| Component   | Requirement                        |
+| ----------- | ---------------------------------- |
+| **OS**      | Ubuntu 22.04 LTS                   |
+| **CPU**     | 8 cores, 3.0 GHz+                  |
+| **Memory**  | 32 GB RAM                          |
+| **Storage** | 500 GB NVMe SSD                    |
+| **Network** | 10 Gbps connection                 |
+| **GPU**     | NVIDIA RTX 4090 (for ML inference) |
 
 ### Software Dependencies
+
 - **Docker** 24.0+
 - **Docker Compose** 2.0+
 - **PostgreSQL** 15+
@@ -45,6 +50,7 @@ Terrafusion supports multiple deployment scenarios:
 ## 🚀 Quick Installation (Docker)
 
 ### 1. Download and Extract
+
 ```bash
 # Download Terrafusion release
 wget https://releases.terrafusion.ai/v3.0.5/terrafusion-v3.0.5.tar.gz
@@ -53,6 +59,7 @@ cd terrafusion-v3.0.5
 ```
 
 ### 2. Configure Environment
+
 ```bash
 # Copy and edit configuration
 cp .env.example .env.production
@@ -62,16 +69,17 @@ nano .env.production
 ```
 
 **Required Configuration:**
+
 ```bash
 # Database Configuration
 POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
+POSTGRES_PORT=\${{TF_POSTGRES_PORT:-5432}}
 POSTGRES_DB=terrafusion
 POSTGRES_USER=terrafusion
 POSTGRES_PASSWORD=your_secure_password
 
 # Redis Configuration
-REDIS_URL=redis://localhost:6379
+REDIS_URL=redis://localhost:\${{TF_REDIS_PORT:-6379}}
 
 # API Configuration
 API_SECRET_KEY=your_256_bit_secret_key
@@ -90,6 +98,7 @@ SMTP_PASSWORD=your_app_password
 ```
 
 ### 3. Deploy Services
+
 ```bash
 # Start infrastructure services
 docker-compose up -d postgres redis nginx
@@ -112,6 +121,7 @@ curl http://localhost/health
 ### 1. System Preparation
 
 #### Ubuntu/Debian
+
 ```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
@@ -130,6 +140,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 #### RHEL/CentOS
+
 ```bash
 # Update system
 sudo dnf update -y
@@ -149,6 +160,7 @@ sudo usermod -aG docker $USER
 ### 2. Database Setup
 
 #### PostgreSQL Installation
+
 ```bash
 # Install PostgreSQL
 sudo apt install -y postgresql postgresql-contrib
@@ -168,6 +180,7 @@ sudo systemctl start postgresql
 ```
 
 #### Database Initialization
+
 ```bash
 # Download and apply schema
 wget https://releases.terrafusion.ai/schema/v3.0.5/schema.sql
@@ -179,6 +192,7 @@ psql -h localhost -U terrafusion -d terrafusion -f initial-data.sql
 ```
 
 ### 3. Redis Installation
+
 ```bash
 # Install Redis
 sudo apt install -y redis-server
@@ -201,6 +215,7 @@ sudo systemctl start redis-server
 ### 4. Application Installation
 
 #### Install Node.js and Rust
+
 ```bash
 # Install Node.js
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -213,6 +228,7 @@ rustup target add x86_64-unknown-linux-gnu
 ```
 
 #### Build Application
+
 ```bash
 # Clone or extract Terrafusion
 git clone https://github.com/terrafusion/terrafusion-master-workspace.git
@@ -234,6 +250,7 @@ npm run tauri build
 ### 5. Web Server Configuration
 
 #### Nginx Setup
+
 ```bash
 # Install Nginx
 sudo apt install -y nginx
@@ -243,11 +260,12 @@ sudo nano /etc/nginx/sites-available/terrafusion
 ```
 
 **Nginx Configuration:**
+
 ```nginx
 server {
     listen 80;
     server_name your-domain.com;
-    
+
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
 }
@@ -255,35 +273,35 @@ server {
 server {
     listen 443 ssl http2;
     server_name your-domain.com;
-    
+
     # SSL Configuration
     ssl_certificate /etc/ssl/certs/terrafusion.crt;
     ssl_certificate_key /etc/ssl/private/terrafusion.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
     ssl_prefer_server_ciphers off;
-    
+
     # Security Headers
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    
+
     # Static files
     location / {
         root /var/www/terrafusion/dist;
         try_files $uri $uri/ /index.html;
-        
+
         # Cache static assets
         location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
         }
     }
-    
+
     # API proxy
     location /api/ {
-        proxy_pass http://localhost:8080/;
+        proxy_pass http://localhost:\${{TF_REDIS_PORT:-6379}}/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -292,16 +310,16 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
-        
+
         # Timeouts
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
     }
-    
+
     # WebSocket proxy
     location /ws/ {
-        proxy_pass http://localhost:8081/;
+        proxy_pass http://localhost:\${{TF_REDIS_PORT:-6379}}/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -325,6 +343,7 @@ sudo systemctl reload nginx
 ## 🔐 SSL/TLS Configuration
 
 ### Let's Encrypt (Free SSL)
+
 ```bash
 # Install Certbot
 sudo apt install -y certbot python3-certbot-nginx
@@ -338,6 +357,7 @@ sudo crontab -e
 ```
 
 ### Self-Signed Certificate (Development)
+
 ```bash
 # Generate self-signed certificate
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -353,6 +373,7 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 ### Systemd Services
 
 #### Terrafusion API Service
+
 ```bash
 sudo nano /etc/systemd/system/terrafusion-api.service
 ```
@@ -368,7 +389,7 @@ User=terrafusion
 Group=terrafusion
 WorkingDirectory=/opt/terrafusion
 Environment=NODE_ENV=production
-Environment=PORT=8080
+Environment=PORT=\${{TF_POSTGRES_PORT:-5432}}
 EnvironmentFile=/opt/terrafusion/.env.production
 ExecStart=/opt/terrafusion/target/release/terrafusion-api
 Restart=always
@@ -386,6 +407,7 @@ WantedBy=multi-user.target
 ```
 
 #### Terrafusion Worker Service
+
 ```bash
 sudo nano /etc/systemd/system/terrafusion-worker.service
 ```
@@ -426,22 +448,23 @@ sudo systemctl status terrafusion-worker
 ## 🎛️ Environment Configuration
 
 ### Production Environment Variables
+
 ```bash
 # /opt/terrafusion/.env.production
 
 # Application
 NODE_ENV=production
-PORT=8080
+PORT=\${{TF_POSTGRES_PORT:-5432}}
 WORKERS=4
 LOG_LEVEL=info
 
 # Database
-DATABASE_URL=postgresql://terrafusion:password@localhost:5432/terrafusion
+DATABASE_URL=postgresql://terrafusion:password@localhost:\${{TF_REDIS_PORT:-6379}}/terrafusion
 DATABASE_POOL_SIZE=20
 DATABASE_TIMEOUT=30000
 
 # Redis
-REDIS_URL=redis://localhost:6379
+REDIS_URL=redis://localhost:\${{TF_REDIS_PORT:-6379}}
 REDIS_POOL_SIZE=10
 
 # Security
@@ -467,7 +490,7 @@ FROM_EMAIL=noreply@your-domain.com
 # Monitoring
 SENTRY_DSN=your_sentry_dsn
 METRICS_ENABLED=true
-METRICS_PORT=9090
+METRICS_PORT=\${{TF_POSTGRES_PORT:-5432}}
 
 # Features
 ML_INFERENCE_ENABLED=true
@@ -480,6 +503,7 @@ BATCH_PROCESSING=true
 ## 🧪 Installation Verification
 
 ### Health Check Script
+
 ```bash
 #!/bin/bash
 # health-check.sh
@@ -501,7 +525,7 @@ psql -h localhost -U terrafusion -d terrafusion -c "SELECT 1;" &>/dev/null && ec
 redis-cli ping &>/dev/null && echo "✓ Redis connection OK" || echo "✗ Redis connection failed"
 
 # Check API endpoint
-curl -s http://localhost:8080/health | grep -q "healthy" && echo "✓ API health check OK" || echo "✗ API health check failed"
+curl -s http://localhost:\${{TF_REDIS_PORT:-6379}}/health | grep -q "healthy" && echo "✓ API health check OK" || echo "✗ API health check failed"
 
 # Check web interface
 curl -s -o /dev/null -w "%{http_code}" http://localhost | grep -q "200" && echo "✓ Web interface OK" || echo "✗ Web interface failed"
@@ -511,6 +535,7 @@ echo "Health check complete"
 ```
 
 ### Performance Test
+
 ```bash
 #!/bin/bash
 # performance-test.sh
@@ -519,7 +544,7 @@ echo "Running performance tests..."
 
 # API response time
 echo "Testing API response time..."
-curl -w "Response time: %{time_total}s\n" -s -o /dev/null http://localhost:8080/api/v1/properties/search?limit=10
+curl -w "Response time: %{time_total}s\n" -s -o /dev/null http://localhost:\${{TF_REDIS_PORT:-6379}}/api/v1/properties/search?limit=10
 
 # Database query performance
 echo "Testing database performance..."
@@ -543,6 +568,7 @@ uptime
 ## 🔧 Post-Installation Tasks
 
 ### 1. Create Admin User
+
 ```bash
 # Using Terrafusion CLI
 ./terrafusion-cli user create \
@@ -566,6 +592,7 @@ EOF
 ```
 
 ### 2. Configure Backup
+
 ```bash
 #!/bin/bash
 # /opt/terrafusion/scripts/backup.sh
@@ -584,6 +611,7 @@ find /backup -name "terrafusion-*" -mtime +30 -delete
 ```
 
 ### 3. Setup Monitoring
+
 ```bash
 # Install monitoring agent
 wget https://github.com/prometheus/node_exporter/releases/download/v1.6.0/node_exporter-1.6.0.linux-amd64.tar.gz
@@ -618,21 +646,26 @@ sudo systemctl start node_exporter
 
 After successful installation:
 
-1. **[Configuration Guide](./configuration.md)** - Detailed configuration options
+1. **[Configuration Guide](./configuration.md)** - Detailed configuration
+   options
 2. **[Monitoring Setup](./monitoring.md)** - Set up comprehensive monitoring
 3. **[Backup & Recovery](./backup-recovery.md)** - Configure backup procedures
-4. **[Performance Tuning](./performance-tuning.md)** - Optimize for your workload
-5. **[Security Hardening](../security/best-practices.md)** - Secure your installation
+4. **[Performance Tuning](./performance-tuning.md)** - Optimize for your
+   workload
+5. **[Security Hardening](../security/best-practices.md)** - Secure your
+   installation
 
 ## 🆘 Troubleshooting
 
-Common installation issues and solutions are documented in the [Troubleshooting Guide](./troubleshooting.md).
+Common installation issues and solutions are documented in the
+[Troubleshooting Guide](./troubleshooting.md).
 
 For additional support:
+
 - **Email**: support@terrafusion.ai
 - **Documentation**: https://docs.terrafusion.ai
 - **Community**: https://community.terrafusion.ai
 
 ---
 
-*Installation guide last updated: August 3, 2025*
+_Installation guide last updated: August 3, 2025_

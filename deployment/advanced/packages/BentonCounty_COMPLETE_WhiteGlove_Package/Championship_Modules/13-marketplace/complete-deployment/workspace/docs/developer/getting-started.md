@@ -1,10 +1,12 @@
 # Developer Getting Started Guide
 
-Welcome to Terrafusion development! This guide will get you up and running with the Terrafusion platform in minutes.
+Welcome to Terrafusion development! This guide will get you up and running with
+the Terrafusion platform in minutes.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - **Node.js** 18+ and npm/yarn
 - **Rust** 1.70+ (for Tauri desktop development)
 - **Docker** & Docker Compose (for local services)
@@ -12,12 +14,14 @@ Welcome to Terrafusion development! This guide will get you up and running with 
 - **VS Code** (recommended) with Terrafusion extensions
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/terrafusion/terrafusion-master-workspace.git
 cd terrafusion-master-workspace
 ```
 
 ### 2. Environment Setup
+
 ```bash
 # Copy environment template
 cp .env.example .env.local
@@ -31,6 +35,7 @@ rustup target add x86_64-unknown-linux-gnu
 ```
 
 ### 3. Start Development Environment
+
 ```bash
 # Start infrastructure services
 docker-compose up -d postgres redis
@@ -43,6 +48,7 @@ npm run tauri dev
 ```
 
 ### 4. Verify Installation
+
 ```bash
 # Run health checks
 npm run health-check
@@ -51,7 +57,7 @@ npm run health-check
 npm test
 
 # Open development dashboard
-open http://localhost:3000
+open http://localhost:\${{TF_FRONTEND_PORT:-3000}}
 ```
 
 ## 🏗️ Project Structure
@@ -81,6 +87,7 @@ TerraFusion_Master_Workspace/
 ## 🛠️ Development Workflow
 
 ### 1. Feature Development
+
 ```bash
 # Create feature branch
 git checkout -b feature/new-valuation-model
@@ -96,6 +103,7 @@ npm run build:test
 ```
 
 ### 2. Code Quality
+
 ```bash
 # Run linting
 npm run lint
@@ -111,6 +119,7 @@ npm run format
 ```
 
 ### 3. Testing
+
 ```bash
 # Run all tests
 npm test
@@ -127,6 +136,7 @@ npm run test:coverage
 ## 📊 Core Development Concepts
 
 ### 1. Property Intelligence Architecture
+
 ```typescript
 // Property data structure
 interface Property {
@@ -147,20 +157,22 @@ class ValuationService {
 ```
 
 ### 2. Real-time Data Flow
+
 ```typescript
 // WebSocket connection for real-time updates
 const socket = new TerraFusionSocket();
 
-socket.subscribe('property-updates', (data) => {
+socket.subscribe('property-updates', data => {
   updatePropertyValuation(data);
 });
 
-socket.subscribe('market-alerts', (alert) => {
+socket.subscribe('market-alerts', alert => {
   showMarketAlert(alert);
 });
 ```
 
 ### 3. Plugin Architecture
+
 ```typescript
 // Plugin interface
 interface TerraFusionPlugin {
@@ -178,12 +190,15 @@ PluginManager.register(new Office365Plugin());
 ## 🔧 Development Tools
 
 ### VS Code Extensions
+
 Install the Terrafusion development pack:
+
 ```bash
 code --install-extension terrafusion.terrafusion-dev-pack
 ```
 
 Includes:
+
 - Terrafusion IntelliSense
 - Property data debugger
 - API testing tools
@@ -191,6 +206,7 @@ Includes:
 - Theme and icons
 
 ### CLI Tools
+
 ```bash
 # Install Terrafusion CLI
 npm install -g @terrafusion/cli
@@ -209,7 +225,9 @@ tf deploy staging
 ```
 
 ### Development Dashboard
-Access the development dashboard at `http://localhost:3000/dev`:
+
+Access the development dashboard at `http://localhost:\${{TF_FRONTEND_PORT:-3000}}/dev`:
+
 - 📊 Real-time metrics
 - 🔍 API explorer
 - 🧪 Test runner
@@ -219,12 +237,13 @@ Access the development dashboard at `http://localhost:3000/dev`:
 ## 🌐 API Development
 
 ### 1. Making API Calls
+
 ```typescript
 import { TerraFusionClient } from '@terrafusion/sdk';
 
 const client = new TerraFusionClient({
   apiKey: process.env.TERRAFUSION_API_KEY,
-  environment: 'development'
+  environment: 'development',
 });
 
 // Get property data
@@ -233,11 +252,12 @@ const property = await client.properties.get('prop_123');
 // Create valuation
 const valuation = await client.valuations.create({
   propertyId: 'prop_123',
-  type: 'comprehensive'
+  type: 'comprehensive',
 });
 ```
 
 ### 2. Error Handling
+
 ```typescript
 import { TerraFusionError, isRateLimitError } from '@terrafusion/sdk';
 
@@ -255,16 +275,17 @@ try {
 ```
 
 ### 3. Caching Strategies
+
 ```typescript
 import { CacheManager } from '@terrafusion/cache';
 
 const cache = new CacheManager({
   redis: process.env.REDIS_URL,
   ttl: {
-    properties: 3600,    // 1 hour
-    valuations: 1800,    // 30 minutes
-    market: 300          // 5 minutes
-  }
+    properties: 3600, // 1 hour
+    valuations: 1800, // 30 minutes
+    market: 300, // 5 minutes
+  },
 });
 
 // Cached API call
@@ -276,6 +297,7 @@ const property = await cache.get(`property:${id}`, async () => {
 ## 🧪 Testing Guidelines
 
 ### 1. Unit Tests
+
 ```typescript
 // tests/services/valuation.test.ts
 import { ValuationService } from '../src/services';
@@ -284,9 +306,9 @@ describe('ValuationService', () => {
   it('should calculate property value accurately', async () => {
     const service = new ValuationService();
     const property = createMockProperty();
-    
+
     const valuation = await service.calculateValue(property);
-    
+
     expect(valuation.estimate).toBeGreaterThan(0);
     expect(valuation.confidence).toBeBetween(0.7, 1.0);
   });
@@ -294,6 +316,7 @@ describe('ValuationService', () => {
 ```
 
 ### 2. Integration Tests
+
 ```typescript
 // tests/integration/api.test.ts
 describe('Properties API Integration', () => {
@@ -301,7 +324,7 @@ describe('Properties API Integration', () => {
     const response = await request(app)
       .get('/api/v1/properties/test_property_id')
       .expect(200);
-    
+
     expect(response.body.data.property).toBeDefined();
     expect(response.body.data.property.id).toBe('test_property_id');
   });
@@ -309,27 +332,31 @@ describe('Properties API Integration', () => {
 ```
 
 ### 3. E2E Tests
+
 ```typescript
 // tests/e2e/property-search.test.ts
 import { test, expect } from '@playwright/test';
 
 test('property search workflow', async ({ page }) => {
   await page.goto('/');
-  
+
   // Enter search criteria
   await page.fill('[data-testid=location-input]', 'Seattle, WA');
   await page.selectOption('[data-testid=property-type]', 'residential');
   await page.click('[data-testid=search-button]');
-  
+
   // Verify results
   await expect(page.locator('[data-testid=search-results]')).toBeVisible();
-  await expect(page.locator('[data-testid=property-card]')).toHaveCount.greaterThan(0);
+  await expect(
+    page.locator('[data-testid=property-card]')
+  ).toHaveCount.greaterThan(0);
 });
 ```
 
 ## 🔍 Debugging
 
 ### 1. Development Server Debugging
+
 ```typescript
 // Enable debug mode
 process.env.DEBUG = 'terrafusion:*';
@@ -342,6 +369,7 @@ log('Processing valuation for property %s', propertyId);
 ```
 
 ### 2. API Request Debugging
+
 ```bash
 # Enable request logging
 export TERRAFUSION_DEBUG_API=true
@@ -354,21 +382,23 @@ npm run dev:debug
 ```
 
 ### 3. Database Debugging
+
 ```sql
 -- Enable query logging in PostgreSQL
 SET log_statement = 'all';
 SET log_duration = on;
 
 -- Monitor slow queries
-SELECT query, mean_time, calls 
-FROM pg_stat_statements 
-ORDER BY mean_time DESC 
+SELECT query, mean_time, calls
+FROM pg_stat_statements
+ORDER BY mean_time DESC
 LIMIT 10;
 ```
 
 ## 📈 Performance Optimization
 
 ### 1. Code Splitting
+
 ```typescript
 // Lazy load components
 const PropertyDetails = lazy(() => import('./PropertyDetails'));
@@ -377,17 +407,18 @@ const MarketAnalysis = lazy(() => import('./MarketAnalysis'));
 // Route-based splitting
 const router = createBrowserRouter([
   {
-    path: "/properties",
-    lazy: () => import("./routes/properties"),
+    path: '/properties',
+    lazy: () => import('./routes/properties'),
   },
   {
-    path: "/analytics",
-    lazy: () => import("./routes/analytics"),
+    path: '/analytics',
+    lazy: () => import('./routes/analytics'),
   },
 ]);
 ```
 
 ### 2. Caching
+
 ```typescript
 // React Query for API caching
 const { data: property } = useQuery({
@@ -397,10 +428,10 @@ const { data: property } = useQuery({
 });
 
 // Service Worker caching
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   if (event.request.url.includes('/api/properties/')) {
     event.respondWith(
-      caches.match(event.request).then((response) => {
+      caches.match(event.request).then(response => {
         return response || fetch(event.request);
       })
     );
@@ -409,6 +440,7 @@ self.addEventListener('fetch', (event) => {
 ```
 
 ### 3. Bundle Optimization
+
 ```javascript
 // vite.config.ts
 export default defineConfig({
@@ -418,17 +450,18 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           charts: ['chart.js', 'd3'],
-          maps: ['mapbox-gl', 'turf']
-        }
-      }
-    }
-  }
+          maps: ['mapbox-gl', 'turf'],
+        },
+      },
+    },
+  },
 });
 ```
 
 ## 🚀 Deployment
 
 ### Development Deployment
+
 ```bash
 # Build for development
 npm run build:dev
@@ -441,6 +474,7 @@ npm run test:smoke
 ```
 
 ### Production Deployment
+
 ```bash
 # Build optimized production bundle
 npm run build:prod
@@ -472,6 +506,7 @@ npm run deploy:prod
 ---
 
 **Next Steps:**
+
 1. Complete the [Environment Setup](./environment-setup.md)
 2. Follow the [First Application Tutorial](./tutorials/first-app.md)
 3. Explore the [Component Library](./components.md)

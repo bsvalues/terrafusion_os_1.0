@@ -51,7 +51,7 @@ TERRAFUSION_ENV=production
 TERRAFUSION_COUNTY=benton
 TERRAFUSION_LEGACY=PACS_9.0
 ASPNETCORE_ENVIRONMENT=Production
-ASPNETCORE_URLS=http://localhost:5000
+ASPNETCORE_URLS=http://localhost:${TF_STATIC_PORT:-8080}
 
 # Database
 ConnectionStrings__DefaultConnection=Host=localhost;Database=terrafusion_benton;Username=terrafusion_db;Password=CHANGE_ME
@@ -64,7 +64,7 @@ LOGGING__LOGLEVEL__DEFAULT=Information
 LOGGING__LOGLEVEL__MICROSOFT=Warning
 
 # Security
-CORS__ALLOWEDORIGINS=http://localhost:3000,https://terrafusion.bentoncounty.gov
+CORS__ALLOWEDORIGINS=http://localhost:${TF_STATIC_PORT:-8080},https://terrafusion.bentoncounty.gov
 JWT__SECRETKEY=CHANGE_ME_JWT_SECRET_KEY
 JWT__ISSUER=TerraFusion-Benton
 JWT__AUDIENCE=TerraFusion-Users
@@ -146,7 +146,7 @@ SyslogIdentifier=terrafusion-frontend
 # Environment
 EnvironmentFile=$INSTALL_DIR/config/terrafusion.env
 Environment=NODE_ENV=production
-Environment=PORT=3000
+Environment=PORT=\${{TF_FRONTEND_PORT:-3000}}
 
 # Security
 NoNewPrivileges=yes
@@ -245,7 +245,7 @@ sudo tee /usr/local/bin/terrafusion-healthcheck.sh > /dev/null << 'EOF'
 # Monitors API, database, and system resources
 
 HEALTH_LOG="/var/log/terrafusion/health.log"
-API_URL="http://localhost:5000/health"
+API_URL="http://localhost:${TF_STATIC_PORT:-8080}/health"
 DB_NAME="terrafusion_benton"
 
 log_message() {

@@ -1,0 +1,41 @@
+[package]
+name = "terrafusion-agent-coordination"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+# Workspace dependencies
+tokio.workspace = true
+async-trait.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+dashmap.workspace = true
+crossbeam.workspace = true
+parking_lot.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+prometheus.workspace = true
+
+# Local dependencies
+terrafusion-security-layer = { path = "../security-layer" }
+terrafusion-performance-monitor = { path = "../performance-monitor" }
+
+# Agent-specific dependencies
+futures = "0.3"
+async-channel = "2.1"
+priority-queue = "1.3"
+petgraph = "0.6"
+
+[dev-dependencies]
+tokio-test = "0.4"
+criterion = "0.5"
+proptest = "1.4"
+
+[[bench]]
+name = "agent_benchmarks"
+harness = false

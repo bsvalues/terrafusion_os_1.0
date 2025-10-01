@@ -3,13 +3,15 @@
 ## ✅ FRONTEND SUCCESSFULLY LAUNCHED!
 
 ### Access the Application:
-**URL**: http://localhost:3500/
+
+**URL**: http://localhost:\${{TF_PORT_3500:-3500}}/
 
 ## 📊 AUDIT RESULTS
 
 ### ✅ Components Implemented (100% Complete)
 
 #### Core Government Module
+
 - **App.tsx** - Main government records interface
 - **InstantSearch.tsx** - One search box that finds everything
 - **AIInsights.tsx** - Proactive corruption/efficiency detection
@@ -18,6 +20,7 @@
 - **ShockAndAwe.tsx** - AI chat that closes deals
 
 #### Revolutionary Public Portal
+
 - **PublicPortal.tsx** - The ONE interface citizens actually love
 - **CitizenMobile.tsx** - Native-feeling mobile experience
 - **ProactiveNotifications.tsx** - AI alerts before problems happen
@@ -27,14 +30,18 @@
 ### 🎯 VIEWING OPTIONS
 
 #### 1. Government Records View (Default)
-**URL**: http://localhost:3500/
+
+**URL**: http://localhost:\${{TF_PORT_3500:-3500}}/
+
 - See the shock-and-awe interface
 - Watch AI discover issues in real-time
 - Test competitor migration (60 seconds)
 - Experience 379,000,000× speed difference
 
 #### 2. Public Portal View
-**URL**: http://localhost:3500/?portal=public
+
+**URL**: http://localhost:\${{TF_PORT_3500:-3500}}/?portal=public
+
 - ONE search box (no menus!)
 - Natural language understanding
 - Voice & photo search
@@ -44,6 +51,7 @@
 ### 📱 FEATURES TO TEST
 
 #### In Government View:
+
 1. **Instant Search** - Type anything, get results in 0.001s
 2. **AI Discoveries** - See corruption/efficiency issues found automatically
 3. **County Pulse** - Watch beautiful real-time visualizations
@@ -51,6 +59,7 @@
 5. **Shock Chat** - Wait 10 seconds for proactive AI to engage
 
 #### In Public Portal View:
+
 1. **Natural Language** - Try "dog license" or "water bill"
 2. **Voice Search** - Click microphone icon
 3. **Quick Actions** - Pre-configured common tasks
@@ -68,25 +77,27 @@
 ### 💡 SWITCHING BETWEEN VIEWS
 
 #### Government Portal:
+
 ```
-http://localhost:3500/
+http://localhost:\${{TF_PORT_3500:-3500}}/
 ```
 
 #### Public Portal:
+
 ```
-http://localhost:3500/?portal=public
+http://localhost:\${{TF_PORT_3500:-3500}}/?portal=public
 ```
 
 ### 🔥 THE CHAMPIONSHIP DIFFERENCE
 
-| Feature | Tyler Technologies | Terrafusion |
-|---------|-------------------|-------------|
-| Search Speed | 30-45 seconds | 0.001 seconds |
-| Installation | 6-12 months | Already done |
-| Interface | 168 links | 1 search box |
-| Mobile | "Use desktop" | Beautiful PWA |
-| AI | None | Proactive 24/7 |
-| Cost | $500,000+ | $1/citizen/year |
+| Feature      | Tyler Technologies | Terrafusion     |
+| ------------ | ------------------ | --------------- |
+| Search Speed | 30-45 seconds      | 0.001 seconds   |
+| Installation | 6-12 months        | Already done    |
+| Interface    | 168 links          | 1 search box    |
+| Mobile       | "Use desktop"      | Beautiful PWA   |
+| AI           | None               | Proactive 24/7  |
+| Cost         | $500,000+          | $1/citizen/year |
 
 ### 📈 WHAT HAPPENS NEXT
 
@@ -108,12 +119,14 @@ http://localhost:3500/?portal=public
 ### 🎯 QUICK DEMOS
 
 #### Shock a County Official:
+
 1. Show them search working in 0.001s
 2. Show AI finding $2.3M in savings
 3. Offer migration from Tyler in 60 seconds
 4. Close with "$1/citizen/year"
 
 #### Delight a Citizen:
+
 1. Show ONE search box
 2. Type "dog license" - instant results
 3. Show mobile view
@@ -124,6 +137,7 @@ http://localhost:3500/?portal=public
 ## 📞 PRODUCTION DEPLOYMENT
 
 When ready for production:
+
 ```bash
 npm run build
 # Files will be in ./dist
@@ -134,11 +148,11 @@ npm run build
 
 **THE BOTTOM LINE:**
 
-We didn't just build software.
-We built the reason government software companies go extinct.
+We didn't just build software. We built the reason government software companies
+go extinct.
 
 **GOVERNMENT. TRANSCENDED. INEVITABLE.** 🚀
 
 ---
 
-*Access at: http://localhost:3500/*
+_Access at: http://localhost:\${{TF_PORT_3500:-3500}}/_

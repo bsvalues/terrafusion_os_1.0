@@ -11,11 +11,13 @@
 ## Quick Start
 
 ### 1. Clone and Setup
+
 ```bash
 cd /mnt/e/TerraFusion_Master_Workspace
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 # Install dependencies for all frontend apps
 for app in Frontend/apps/*; do
@@ -31,6 +33,7 @@ done
 ```
 
 ### 3. Environment Configuration
+
 ```bash
 # Create .env file
 cat > .env << EOF
@@ -47,21 +50,23 @@ JWT_SECRET=your-secret-key-here
 JWT_EXPIRY=24h
 
 # API
-API_PORT=8080
+API_PORT=\${{TF_ADMIN_PORT:-8080}}
 NODE_ENV=production
 
 # Frontend URLs
-VITE_API_URL=http://localhost:8080
+VITE_API_URL=http://localhost:\${{TF_ADMIN_PORT:-8080}}
 EOF
 ```
 
 ### 4. Build Docker Images
+
 ```bash
 # Build all services
 docker-compose -f docker-compose.production.yml build
 ```
 
 ### 5. Start Services
+
 ```bash
 # Start all services
 docker-compose -f docker-compose.production.yml up -d
@@ -73,16 +78,18 @@ docker-compose -f docker-compose.production.yml ps
 ## Development Deployment
 
 ### Local Development
+
 ```bash
 # Start individual app
 cd Frontend/apps/costforge
 npm run dev
 
 # Start with specific port
-npm run dev -- --port 3001
+npm run dev -- --port \${{TF_SHELL_PORT:-3001}}
 ```
 
 ### Full Stack Development
+
 ```bash
 # Start backend
 cd Backend
@@ -116,6 +123,7 @@ docker run -it --rm \
 ```
 
 Update `nginx.conf`:
+
 ```nginx
 server {
     listen 443 ssl;
@@ -125,6 +133,7 @@ server {
 ```
 
 ### 3. Database Migration
+
 ```bash
 # Run database migrations
 docker-compose exec backend /app/migrate
@@ -136,6 +145,7 @@ docker-compose exec postgres pg_dump -U terrafusion terrafusion > backup.sql
 ### 4. Deploy to Cloud
 
 #### AWS Deployment
+
 ```bash
 # Build and push to ECR
 aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_URI
@@ -147,6 +157,7 @@ aws ecs update-service --cluster terrafusion --service terrafusion-app --force-n
 ```
 
 #### Docker Swarm
+
 ```bash
 # Initialize swarm
 docker swarm init
@@ -156,6 +167,7 @@ docker stack deploy -c docker-compose.production.yml terrafusion
 ```
 
 #### Kubernetes
+
 ```bash
 # Apply configurations
 kubectl apply -f k8s/
@@ -167,6 +179,7 @@ kubectl get pods -n terrafusion
 ## Monitoring & Maintenance
 
 ### Health Checks
+
 ```bash
 # Check all services
 for port in 3001 3002 3003 3005 3006 3007 5006 5007 5010 8080; do
@@ -176,6 +189,7 @@ done
 ```
 
 ### Logs
+
 ```bash
 # View all logs
 docker-compose -f docker-compose.production.yml logs -f
@@ -185,6 +199,7 @@ docker-compose -f docker-compose.production.yml logs -f costforge
 ```
 
 ### Performance Monitoring
+
 ```bash
 # Resource usage
 docker stats
@@ -198,6 +213,7 @@ docker-compose exec postgres psql -U terrafusion -c "SELECT * FROM pg_stat_activ
 ### Common Issues
 
 #### 1. Port Already in Use
+
 ```bash
 # Find process using port
 lsof -i :3001
@@ -207,6 +223,7 @@ kill -9 <PID>
 ```
 
 #### 2. Docker Network Issues
+
 ```bash
 # Recreate network
 docker network rm terrafusion-network
@@ -214,6 +231,7 @@ docker network create terrafusion-network
 ```
 
 #### 3. Database Connection Failed
+
 ```bash
 # Check database logs
 docker-compose logs postgres
@@ -223,6 +241,7 @@ docker-compose exec postgres psql -U terrafusion
 ```
 
 #### 4. Frontend Can't Connect to Backend
+
 - Check CORS configuration
 - Verify API_URL environment variable
 - Check network connectivity
@@ -230,6 +249,7 @@ docker-compose exec postgres psql -U terrafusion
 ## Backup & Recovery
 
 ### Automated Backups
+
 ```bash
 # Create backup script
 cat > backup.sh << 'EOF'
@@ -244,6 +264,7 @@ EOF
 ```
 
 ### Recovery Procedure
+
 ```bash
 # Restore database
 docker-compose exec -T postgres psql -U terrafusion terrafusion < backup.sql
@@ -255,6 +276,7 @@ tar -xzf backups/apps_20250803.tar.gz
 ## Scaling
 
 ### Horizontal Scaling
+
 ```bash
 # Scale specific service
 docker-compose -f docker-compose.production.yml up -d --scale costforge=3
@@ -264,6 +286,7 @@ docker-compose -f docker-compose.production.yml up -d --scale costforge=3
 ```
 
 ### Vertical Scaling
+
 ```yaml
 # Update docker-compose.yml
 services:
@@ -278,6 +301,7 @@ services:
 ## Security Hardening
 
 ### 1. Network Security
+
 ```bash
 # Create firewall rules
 ufw allow 80/tcp
@@ -286,6 +310,7 @@ ufw enable
 ```
 
 ### 2. Container Security
+
 ```bash
 # Run security scan
 docker scan terrafusion/costforge:latest
@@ -295,6 +320,7 @@ USER node
 ```
 
 ### 3. Secret Management
+
 ```bash
 # Use Docker secrets
 echo "password" | docker secret create db_password -
@@ -303,6 +329,7 @@ echo "password" | docker secret create db_password -
 ## CI/CD Pipeline
 
 ### GitHub Actions Example
+
 ```yaml
 name: Deploy Terrafusion
 on:
@@ -324,23 +351,26 @@ jobs:
 ## Post-Deployment
 
 ### 1. Verification
+
 - [ ] All health checks passing
 - [ ] User authentication working
 - [ ] Data persistence verified
 - [ ] Performance benchmarks met
 
 ### 2. Monitoring Setup
+
 - [ ] Alerts configured
 - [ ] Dashboards created
 - [ ] Log aggregation working
 - [ ] Backup automation verified
 
 ### 3. Documentation
+
 - [ ] Update deployment notes
 - [ ] Document any custom configurations
 - [ ] Create runbooks for common issues
 
 ---
 
-*Last Updated: August 2025*  
-*Deployment Version: 2.0*
+_Last Updated: August 2025_  
+_Deployment Version: 2.0_

@@ -29,7 +29,14 @@
     "webpack": "^5.0.0",
     "typescript": "^5.0.0"
   },
-  "keywords": ["government", "core", "property-assessment", "dotnet", "react", "terrafusion"],
+  "keywords": [
+    "government",
+    "core",
+    "property-assessment",
+    "dotnet",
+    "react",
+    "terrafusion"
+  ],
   "author": "Terrafusion OS Team",
   "license": "Government",
   "repository": {

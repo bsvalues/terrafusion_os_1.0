@@ -1,14 +1,17 @@
 # TerraFusion .ai Directory Index
 
 ## Directory Overview
+
 **Location**: `/.ai/`  
-**Purpose**: Advanced AI infrastructure, Claude-Flow integration, and government AI orchestration  
+**Purpose**: Advanced AI infrastructure, Claude-Flow integration, and government
+AI orchestration  
 **Classification**: Core AI Platform Infrastructure  
-**Security Level**: Government-Grade AI Operations  
+**Security Level**: Government-Grade AI Operations
 
 ## Architecture Summary
 
 ### Primary Components
+
 ```
 .ai/
 ├── AI_SUITE_ARCHITECTURE.md         # Comprehensive AI platform architecture
@@ -28,6 +31,7 @@
 ```
 
 ### Key Capabilities
+
 - **AI Suite Architecture**: 1,008 agents across 32 government modules
 - **Claude-Flow Integration**: v2.0.0 AI workflow orchestration
 - **Model Context Protocol**: Advanced AI tool integration
@@ -37,6 +41,7 @@
 ## Core AI Infrastructure
 
 ### AI Suite Architecture (11KB Documentation)
+
 - **Swarm Orchestration**: 1,008 AI agents across Tier 1-3 modules
 - **Agent Distribution**: Revenue hunters, assessors, compliance monitors
 - **Government Integration**: Harris PACS, Tyler Technologies, legacy systems
@@ -44,12 +49,14 @@
 - **ROI Framework**: Realistic 3.9x performance improvements (validated)
 
 ### AI Training Platform (12KB Documentation)
+
 - **Custom Model Development**: Government-specific AI model training
 - **Transfer Learning**: Adaptation of pre-trained models for jurisdictions
 - **Federated Learning**: Multi-county collaborative model training
 - **Validation Framework**: Comprehensive testing and government compliance
 
 ### AI Workflow Engine (10KB Documentation)
+
 - **Government Process Automation**: Property assessment workflows
 - **Visual Workflow Designer**: Non-technical government user interface
 - **Decision Trees**: AI-powered decisions with complete audit trails
@@ -58,24 +65,26 @@
 ## Claude-Flow Integration Platform
 
 ### Core Integration (`claude-flow/`)
+
 ```typescript
 // ClaudeFlowIntegration.ts - Main integration service
 export class ClaudeFlowIntegration {
-    // AI workflow orchestration
-    // MCP tool integration
-    // Government process automation
-    // Legacy system connectivity
+  // AI workflow orchestration
+  // MCP tool integration
+  // Government process automation
+  // Legacy system connectivity
 }
 
 // ClaudeFlowMCPDevOpsService.ts - DevOps automation
 export class ClaudeFlowMCPDevOpsService {
-    // Automated deployment pipelines
-    // Government infrastructure management
-    // AI model deployment automation
+  // Automated deployment pipelines
+  // Government infrastructure management
+  // AI model deployment automation
 }
 ```
 
 ### Configuration Management
+
 ```json
 // mcp-servers.json - MCP server configuration
 {
@@ -96,6 +105,7 @@ export class ClaudeFlowMCPDevOpsService {
 ```
 
 ### Setup and Operations
+
 ```bash
 # Setup Claude-Flow integration
 ./claude-flow/scripts/setup-integration.sh
@@ -110,18 +120,21 @@ docker build -f claude-flow/Dockerfile.dev -t claude-flow-dev .
 ## Core AI Services
 
 ### AI Agent Manager (`core/AIAgentManager.ts`)
+
 - **Agent Lifecycle**: Deployment, monitoring, scaling, retirement
 - **Task Distribution**: Intelligent workload balancing
 - **Performance Optimization**: Real-time efficiency tracking
 - **Government Integration**: Module-specific agent deployment
 
 ### AI Model Hub (`core/AIModelHub.ts`)
+
 - **Multi-Provider Support**: Claude, GPT-4, Llama, Gemini integration
 - **Model Registry**: Centralized catalog of available AI models
 - **Version Management**: Model versioning and rollback capabilities
 - **Cost Optimization**: Intelligent routing for government budgets
 
 ### Claude-Flow Core Integration (`core/ClaudeFlowIntegration.ts`)
+
 - **Workflow Orchestration**: Government process automation
 - **AI Tool Integration**: MCP protocol implementation
 - **Legacy System Bridges**: Harris PACS, Tyler Technologies
@@ -130,6 +143,7 @@ docker build -f claude-flow/Dockerfile.dev -t claude-flow-dev .
 ## Government AI Applications
 
 ### Property Assessment Automation
+
 1. **Data Ingestion**: Harris PACS integration (89,247 parcels)
 2. **AI Analysis**: Automated property valuation and assessment
 3. **Compliance Validation**: Regulatory compliance checking
@@ -137,6 +151,7 @@ docker build -f claude-flow/Dockerfile.dev -t claude-flow-dev .
 5. **Audit Documentation**: Complete decision trail for government oversight
 
 ### Compliance & Governance Framework
+
 - **FISMA Compliance**: Federal security standards implementation
 - **Audit Trails**: Complete AI decision and action logging
 - **Bias Detection**: Algorithmic fairness monitoring
@@ -146,6 +161,7 @@ docker build -f claude-flow/Dockerfile.dev -t claude-flow-dev .
 ## Development Environment
 
 ### TypeScript Configuration
+
 ```json
 // tsconfig.json - TypeScript project configuration
 {
@@ -163,6 +179,7 @@ docker build -f claude-flow/Dockerfile.dev -t claude-flow-dev .
 ```
 
 ### Package Management
+
 ```json
 // package.json - Dependencies and scripts
 {
@@ -186,6 +203,7 @@ docker build -f claude-flow/Dockerfile.dev -t claude-flow-dev .
 ## API Architecture
 
 ### Core Endpoints
+
 ```typescript
 // Claude-Flow API endpoints
 GET  /ai/health                    # AI system health status
@@ -197,19 +215,21 @@ POST /ai/models/{id}/inference     # AI model inference
 ```
 
 ### Integration Points
+
 ```typescript
 // Government system integration
 interface GovernmentIntegration {
-  harrisPagess: 'v12.4.7',          // Property assessment system
-  tylerTechnologies: 'v2024.1',     // ERP and financial systems
-  aumentumSoftware: 'v10.5',        // Assessment and taxation
-  visionAppraisal: 'v8.2'           // Property valuation
+  harrisPagess: 'v12.4.7'; // Property assessment system
+  tylerTechnologies: 'v2024.1'; // ERP and financial systems
+  aumentumSoftware: 'v10.5'; // Assessment and taxation
+  visionAppraisal: 'v8.2'; // Property valuation
 }
 ```
 
 ## Security and Compliance
 
 ### Government Security Framework
+
 - **Access Control**: Role-based AI service permissions
 - **Data Encryption**: End-to-end encryption for AI communications
 - **Audit Logging**: Complete AI operation tracking
@@ -217,20 +237,22 @@ interface GovernmentIntegration {
 - **Compliance Validation**: Automated FISMA and NIST compliance checking
 
 ### AI Governance
+
 ```typescript
 // AI governance and oversight
 interface AIGovernance {
-  auditTrails: 'complete_decision_logging',
-  biasDetection: 'algorithmic_fairness_monitoring',
-  explainableAI: 'transparent_decision_processes',
-  complianceChecks: 'fisma_nist_validation',
-  governmentOversight: 'administrative_review_controls'
+  auditTrails: 'complete_decision_logging';
+  biasDetection: 'algorithmic_fairness_monitoring';
+  explainableAI: 'transparent_decision_processes';
+  complianceChecks: 'fisma_nist_validation';
+  governmentOversight: 'administrative_review_controls';
 }
 ```
 
 ## Performance Metrics
 
 ### AI System Performance
+
 - **Response Time**: <100ms average AI inference
 - **Throughput**: 1,000+ concurrent AI operations
 - **Availability**: 99.9% uptime target
@@ -238,6 +260,7 @@ interface AIGovernance {
 - **Cost Efficiency**: 60% reduction in manual processing costs
 
 ### Government Workload Metrics
+
 - **Property Assessment**: 500 parcels/hour automated processing
 - **Compliance Monitoring**: Real-time regulatory validation
 - **Revenue Discovery**: 3.9x improvement in revenue identification
@@ -246,6 +269,7 @@ interface AIGovernance {
 ## Deployment and Operations
 
 ### Docker Deployment
+
 ```bash
 # Build Claude-Flow development environment
 docker build -f claude-flow/Dockerfile.dev -t claude-flow-dev .
@@ -266,6 +290,7 @@ docker run -d --name claude-flow-prod \
 ```
 
 ### Integration Testing
+
 ```bash
 # Setup Claude-Flow integration
 cd .ai/claude-flow
@@ -284,6 +309,7 @@ npm run test:compliance
 ## Monitoring and Observability
 
 ### AI System Monitoring
+
 - **Agent Health**: Real-time 1,008 agent status monitoring
 - **Model Performance**: AI model accuracy and speed metrics
 - **Resource Usage**: CPU, memory, and GPU utilization tracking
@@ -291,6 +317,7 @@ npm run test:compliance
 - **Government Compliance**: Continuous regulatory compliance validation
 
 ### Operational Dashboards
+
 - **AI Analytics**: Real-time AI performance and decision metrics
 - **Government Workflows**: Process automation success rates
 - **Revenue Discovery**: Tax optimization and collection tracking
@@ -301,6 +328,7 @@ npm run test:compliance
 ## Quick Reference
 
 ### Essential Commands
+
 ```bash
 # Start AI development environment
 cd .ai/claude-flow && npm run dev
@@ -311,17 +339,19 @@ cd .ai/claude-flow && npm run dev
 # Build production AI services
 docker build -f Dockerfile.dev -t ai-services .
 
-# Monitor AI agent health  
-curl http://localhost:8080/ai/agents/health
+# Monitor AI agent health
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/ai/agents/health
 ```
 
 ### Key Configuration Files
+
 - `claude-flow/config/mcp-servers.json`: MCP server configuration
 - `mcp/claude-flow-mcp-config.json`: Claude-Flow MCP integration
 - `claude-flow/package.json`: Dependencies and build scripts
 - `claude-flow/tsconfig.json`: TypeScript compilation settings
 
 ### Related Documentation
+
 - **[CLAUDE-ai.md](../CLAUDE-ai.md)**: AI strategy and implementation
 - **[ai-models/index.md](../ai-models/index.md)**: AI swarm orchestration
 - **[CLAUDE-backend.md](../CLAUDE-backend.md)**: Backend integration
@@ -330,4 +360,4 @@ curl http://localhost:8080/ai/agents/health
 
 **Last Updated**: August 27, 2025  
 **Version**: TerraFusion OS 1.0 / Claude-Flow v2.0.0-alpha  
-**Authority**: TerraFusion AI Platform Division  
+**Authority**: TerraFusion AI Platform Division

@@ -1,0 +1,65 @@
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+# Environments
+environments:
+  staging:
+    values:
+      - env/staging.values.yaml
+  production:
+    values:
+      - env/production.values.yaml
+
+# Releases
+releases:
+  - name: redis
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/redis
+    version: 19.5.3
+    values:
+      - architecture: standalone
+        auth:
+          enabled: false
+        master:
+          persistence:
+            enabled: false
+  - name: grfe-service
+    namespace: {{ .Values.namespace }}
+    chart: ../helm/grfe-service
+    values:
+      - image:
+          repository: {{ .Values.images.service }}
+          tag: {{ .Values.imageTag }}
+        env:
+          - name: RUST_LOG
+            value: info
+          - name: REDIS_URL
+            value: {{ .Values.redis.url }}
+          - name: QUOTA_LIMIT_PER_MIN
+            value: "{{ .Values.quota.limitPerMin }}"
+        ingress:
+          enabled: false
+  - name: golden-ui
+    namespace: {{ .Values.namespace }}
+    chart: ../helm/golden-ui
+    values:
+      - image:
+          repository: {{ .Values.images.ui }}
+          tag: {{ .Values.imageTag }}
+        env:
+          - name: GOLDEN_SERVICE_URL
+            value: "http://grfe-service.{{ .Values.namespace }}.svc.cluster.local:8080"
+          - name: NEXT_PUBLIC_JWKS_URI
+            value: {{ .Values.auth.jwks }}
+          - name: NEXT_PUBLIC_ISSUER
+            value: {{ .Values.auth.issuer }}
+          - name: NEXT_PUBLIC_AUDIENCE
+            value: {{ .Values.auth.audience }}
+        ingress:
+          enabled: true
+          hosts:
+            - host: {{ .Values.domain }}
+              paths:
+                - path: /
+                  pathType: Prefix

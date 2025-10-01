@@ -13,9 +13,9 @@ MESH_DB="${MESH_DB:-terrafusion_mesh}"
 MESH_USER="${DB_USER:-tfmesh}"
 MESH_PASS="${DB_PASS:-$(generate_password)}"
 MESH_TYPE="${MESH_TYPE:-istio}" # istio or linkerd
-KIALI_URL="${KIALI_URL:-http://localhost:20001}"
-GRAFANA_URL="${GRAFANA_URL:-http://localhost:3000}"
-JAEGER_URL="${JAEGER_URL:-http://localhost:16686}"
+KIALI_URL="${KIALI_URL:-http://localhost:\${{TF_FRONTEND_PORT:-3000}}}"
+GRAFANA_URL="${GRAFANA_URL:-http://localhost:\${{TF_FRONTEND_PORT:-3000}}}"
+JAEGER_URL="${JAEGER_URL:-http://localhost:\${{TF_FRONTEND_PORT:-3000}}}"
 
 # Initialize database
 init_mesh_database() {

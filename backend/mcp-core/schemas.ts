@@ -1,6 +1,6 @@
 /**
  * MCP Schemas
- * 
+ *
  * This file contains JSON schema definitions for the Building Cost Building System
  * following the Model Content Protocol (MCP) principles. Each schema defines
  * the structure, constraints, and validation rules for a specific data type.
@@ -37,21 +37,21 @@ export const costMatrixSchema: JSONSchemaType<CostMatrix> = {
     complexityFactorBase: { type: 'number', minimum: 0 },
     qualityFactorBase: { type: 'number', minimum: 0 },
     conditionFactorBase: { type: 'number', minimum: 0 },
-    year: { type: 'integer', minimum: 2000 }
+    year: { type: 'integer', minimum: 2000 },
   },
   required: [
-    'id', 
-    'region', 
-    'buildingType', 
-    'baseCost', 
-    'county', 
-    'state', 
+    'id',
+    'region',
+    'buildingType',
+    'baseCost',
+    'county',
+    'state',
     'complexityFactorBase',
     'qualityFactorBase',
     'conditionFactorBase',
-    'year'
+    'year',
   ],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
 /**
@@ -73,10 +73,10 @@ export const buildingTypeSchema: JSONSchemaType<BuildingType> = {
     name: { type: 'string' },
     description: { type: 'string' },
     category: { type: 'string' },
-    defaultComplexity: { type: 'number', minimum: 0 }
+    defaultComplexity: { type: 'number', minimum: 0 },
   },
   required: ['code', 'name', 'description', 'category', 'defaultComplexity'],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
 /**
@@ -98,10 +98,10 @@ export const regionSchema: JSONSchemaType<Region> = {
     name: { type: 'string' },
     state: { type: 'string' },
     costFactor: { type: 'number', minimum: 0 },
-    description: { type: 'string', nullable: true }
+    description: { type: 'string', nullable: true },
   },
   required: ['code', 'name', 'state', 'costFactor'],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
 /**
@@ -135,7 +135,7 @@ export const buildingCalculationInputSchema: JSONSchemaType<BuildingCalculationI
     materials: { type: 'array', items: { type: 'string' }, nullable: true },
     qualityGrade: { type: 'string', nullable: true },
     stories: { type: 'integer', nullable: true, minimum: 1 },
-    occupancyType: { type: 'string', nullable: true }
+    occupancyType: { type: 'string', nullable: true },
   },
   required: [
     'region',
@@ -143,9 +143,9 @@ export const buildingCalculationInputSchema: JSONSchemaType<BuildingCalculationI
     'squareFootage',
     'complexityFactor',
     'conditionFactor',
-    'yearBuilt'
+    'yearBuilt',
   ],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
 /**
@@ -182,15 +182,15 @@ export const buildingCalculationResultSchema: JSONSchemaType<BuildingCalculation
     materialCosts: {
       type: 'object',
       nullable: true,
-      additionalProperties: { type: 'number' }
+      additionalProperties: { type: 'number' },
     },
     breakdown: {
       type: 'object',
       nullable: true,
-      additionalProperties: { type: 'number' }
+      additionalProperties: { type: 'number' },
     },
-    error: { type: 'string', nullable: true }
+    error: { type: 'string', nullable: true },
   },
   required: ['baseCost', 'totalCost'],
-  additionalProperties: false
+  additionalProperties: false,
 };

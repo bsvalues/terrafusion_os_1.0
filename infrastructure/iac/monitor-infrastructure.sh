@@ -221,7 +221,7 @@ check_application_status() {
     local backend_pods=$(get_pod_status $NAMESPACE "terrafusion-backend")
     if [ -n "$backend_pods" ]; then
         while IFS='|' read -r name status ready restarts cpu memory node; do
-            local health=$(check_service_health "terrafusion-backend" $NAMESPACE "http://localhost:8080/health" || echo "❌ UNHEALTHY")
+            local health=$(check_service_health "terrafusion-backend" $NAMESPACE "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health" || echo "❌ UNHEALTHY")
             local resources=$(get_resource_utilization $NAMESPACE "terrafusion-backend")
             printf "%-20s | %-10s | %-8s | %-8s | %-15s | %-15s\n" "Backend" "$status" "$ready" "$restarts" "$health" "$resources"
             break
@@ -234,7 +234,7 @@ check_application_status() {
     local costforge_pods=$(get_pod_status $NAMESPACE "terrafusion-costforge")
     if [ -n "$costforge_pods" ]; then
         while IFS='|' read -r name status ready restarts cpu memory node; do
-            local health=$(check_service_health "terrafusion-costforge" $NAMESPACE "http://localhost:3001/health" || echo "❌ UNHEALTHY")
+            local health=$(check_service_health "terrafusion-costforge" $NAMESPACE "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health" || echo "❌ UNHEALTHY")
             local resources=$(get_resource_utilization $NAMESPACE "terrafusion-costforge")
             printf "%-20s | %-10s | %-8s | %-8s | %-15s | %-15s\n" "CostForge" "$status" "$ready" "$restarts" "$health" "$resources"
             break
@@ -247,7 +247,7 @@ check_application_status() {
     local workbench_pods=$(get_pod_status $NAMESPACE "terrafusion-propertyworkbench")
     if [ -n "$workbench_pods" ]; then
         while IFS='|' read -r name status ready restarts cpu memory node; do
-            local health=$(check_service_health "terrafusion-propertyworkbench" $NAMESPACE "http://localhost:3002/health" || echo "❌ UNHEALTHY")
+            local health=$(check_service_health "terrafusion-propertyworkbench" $NAMESPACE "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health" || echo "❌ UNHEALTHY")
             local resources=$(get_resource_utilization $NAMESPACE "terrafusion-propertyworkbench")
             printf "%-20s | %-10s | %-8s | %-8s | %-15s | %-15s\n" "PropertyWorkbench" "$status" "$ready" "$restarts" "$health" "$resources"
             break
@@ -260,7 +260,7 @@ check_application_status() {
     local insight_pods=$(get_pod_status $NAMESPACE "terrafusion-terrainsight")
     if [ -n "$insight_pods" ]; then
         while IFS='|' read -r name status ready restarts cpu memory node; do
-            local health=$(check_service_health "terrafusion-terrainsight" $NAMESPACE "http://localhost:3003/health" || echo "❌ UNHEALTHY")
+            local health=$(check_service_health "terrafusion-terrainsight" $NAMESPACE "http://localhost:\${{TF_ADMIN_PORT:-8080}}/health" || echo "❌ UNHEALTHY")
             local resources=$(get_resource_utilization $NAMESPACE "terrafusion-terrainsight")
             printf "%-20s | %-10s | %-8s | %-8s | %-15s | %-15s\n" "TerraInsight" "$status" "$ready" "$restarts" "$health" "$resources"
             break
@@ -344,7 +344,7 @@ show_quick_actions() {
     echo -e "${CYAN}⚡ QUICK ACTIONS${NC}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "1. View ArgoCD UI:    kubectl port-forward svc/argocd-server -n argocd 8080:443"
-    echo "2. View Grafana:      kubectl port-forward svc/terrafusion-grafana -n observability 3000:3000"
+    echo "2. View Grafana:      kubectl port-forward svc/terrafusion-grafana -n observability 3000:${TF_FRONTEND_PORT:-3102}"
     echo "3. View Jaeger:       kubectl port-forward svc/terrafusion-jaeger-query -n observability 16686:16686"
     echo "4. View Kibana:       kubectl port-forward svc/terrafusion-kibana-kb-http -n observability 5601:5601"
     echo "5. Scale Backend:     kubectl scale deployment terrafusion-backend --replicas=10 -n terrafusion"

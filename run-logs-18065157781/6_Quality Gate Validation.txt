@@ -1,0 +1,195 @@
+﻿2025-09-27T21:26:33.3229764Z Current runner version: '2.328.0'
+2025-09-27T21:26:33.3264420Z ##[group]Runner Image Provisioner
+2025-09-27T21:26:33.3265784Z Hosted Compute Agent
+2025-09-27T21:26:33.3266699Z Version: 20250912.392
+2025-09-27T21:26:33.3267698Z Commit: d921fda672a98b64f4f82364647e2f10b2267d0b
+2025-09-27T21:26:33.3268754Z Build Date: 2025-09-12T15:23:14Z
+2025-09-27T21:26:33.3269884Z ##[endgroup]
+2025-09-27T21:26:33.3270724Z ##[group]Operating System
+2025-09-27T21:26:33.3271774Z Ubuntu
+2025-09-27T21:26:33.3272524Z 24.04.3
+2025-09-27T21:26:33.3273273Z LTS
+2025-09-27T21:26:33.3274118Z ##[endgroup]
+2025-09-27T21:26:33.3275129Z ##[group]Runner Image
+2025-09-27T21:26:33.3276117Z Image: ubuntu-24.04
+2025-09-27T21:26:33.3276978Z Version: 20250922.53.1
+2025-09-27T21:26:33.3278938Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250922.53/images/ubuntu/Ubuntu2404-Readme.md
+2025-09-27T21:26:33.3281888Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250922.53
+2025-09-27T21:26:33.3283661Z ##[endgroup]
+2025-09-27T21:26:33.3285997Z ##[group]GITHUB_TOKEN Permissions
+2025-09-27T21:26:33.3288510Z Contents: read
+2025-09-27T21:26:33.3289312Z Metadata: read
+2025-09-27T21:26:33.3290290Z Packages: read
+2025-09-27T21:26:33.3291082Z ##[endgroup]
+2025-09-27T21:26:33.3294572Z Secret source: Actions
+2025-09-27T21:26:33.3295716Z Prepare workflow directory
+2025-09-27T21:26:33.3871984Z Prepare all required actions
+2025-09-27T21:26:33.3929341Z Getting action download info
+2025-09-27T21:26:33.6189912Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+2025-09-27T21:26:34.2032078Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2025-09-27T21:26:34.3631316Z Download action repository 'actions/setup-dotnet@v4' (SHA:67a3573c9a986a3f9c594539f4ab511d57bb3ce9)
+2025-09-27T21:26:34.7204406Z Complete job name: Quality Gate Validation
+2025-09-27T21:26:34.8016307Z ##[group]Run actions/checkout@v4
+2025-09-27T21:26:34.8017639Z with:
+2025-09-27T21:26:34.8018380Z   fetch-depth: 0
+2025-09-27T21:26:34.8019236Z   repository: bsvalues/terrafusion_os_1.0
+2025-09-27T21:26:34.8020547Z   token: ***
+2025-09-27T21:26:34.8021305Z   ssh-strict: true
+2025-09-27T21:26:34.8022082Z   ssh-user: git
+2025-09-27T21:26:34.8022888Z   persist-credentials: true
+2025-09-27T21:26:34.8023774Z   clean: true
+2025-09-27T21:26:34.8024756Z   sparse-checkout-cone-mode: true
+2025-09-27T21:26:34.8025746Z   fetch-tags: false
+2025-09-27T21:26:34.8026573Z   show-progress: true
+2025-09-27T21:26:34.8027385Z   lfs: false
+2025-09-27T21:26:34.8028130Z   submodules: false
+2025-09-27T21:26:34.8028945Z   set-safe-directory: true
+2025-09-27T21:26:34.8030168Z env:
+2025-09-27T21:26:34.8030895Z   NODE_VERSION: 18
+2025-09-27T21:26:34.8031709Z   DOTNET_VERSION: 8.0.x
+2025-09-27T21:26:34.8032541Z ##[endgroup]
+2025-09-27T21:26:34.9129774Z Syncing repository: bsvalues/terrafusion_os_1.0
+2025-09-27T21:26:34.9133119Z ##[group]Getting Git version info
+2025-09-27T21:26:34.9134971Z Working directory is '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+2025-09-27T21:26:34.9137364Z [command]/usr/bin/git version
+2025-09-27T21:26:35.0299475Z git version 2.51.0
+2025-09-27T21:26:35.0328567Z ##[endgroup]
+2025-09-27T21:26:35.0345508Z Temporarily overriding HOME='/home/runner/work/_temp/939f329f-51d4-4b2e-b5a8-f50535c258a5' before making global git config changes
+2025-09-27T21:26:35.0350176Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-27T21:26:35.0354534Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T21:26:35.0445847Z Deleting the contents of '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+2025-09-27T21:26:35.0449697Z ##[group]Initializing the repository
+2025-09-27T21:26:35.0454643Z [command]/usr/bin/git init /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T21:26:35.1650639Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-09-27T21:26:35.1652964Z hint: is subject to change. To configure the initial branch name to use in all
+2025-09-27T21:26:35.1655239Z hint: of your new repositories, which will suppress this warning, call:
+2025-09-27T21:26:35.1656635Z hint:
+2025-09-27T21:26:35.1657668Z hint: 	git config --global init.defaultBranch <name>
+2025-09-27T21:26:35.1658841Z hint:
+2025-09-27T21:26:35.1659967Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-09-27T21:26:35.1661805Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-09-27T21:26:35.1663244Z hint:
+2025-09-27T21:26:35.1664039Z hint: 	git branch -m <name>
+2025-09-27T21:26:35.1665081Z hint:
+2025-09-27T21:26:35.1666319Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-09-27T21:26:35.1699160Z Initialized empty Git repository in /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0/.git/
+2025-09-27T21:26:35.1714971Z [command]/usr/bin/git remote add origin https://github.com/bsvalues/terrafusion_os_1.0
+2025-09-27T21:26:35.1857316Z ##[endgroup]
+2025-09-27T21:26:35.1859944Z ##[group]Disabling automatic garbage collection
+2025-09-27T21:26:35.1862284Z [command]/usr/bin/git config --local gc.auto 0
+2025-09-27T21:26:35.1891904Z ##[endgroup]
+2025-09-27T21:26:35.1894424Z ##[group]Setting up auth
+2025-09-27T21:26:35.1899596Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-27T21:26:35.1931838Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-27T21:26:35.4051311Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-09-27T21:26:35.4081341Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-09-27T21:26:35.4308569Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-09-27T21:26:35.4342124Z ##[endgroup]
+2025-09-27T21:26:35.4342927Z ##[group]Fetching the repository
+2025-09-27T21:26:35.4351028Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +2690ac6f2820a8a791fae696af5a62a2a14324ef:refs/remotes/pull/1/merge
+2025-09-27T21:26:40.8221971Z From https://github.com/bsvalues/terrafusion_os_1.0
+2025-09-27T21:26:40.8223972Z  * [new branch]        feature/disable-marketplace-default      -> origin/feature/disable-marketplace-default
+2025-09-27T21:26:40.8225276Z  * [new branch]        main                                     -> origin/main
+2025-09-27T21:26:40.8226159Z  * [new branch]        master                                   -> origin/master
+2025-09-27T21:26:40.8226901Z  * [new tag]           v0.1.0                                   -> v0.1.0
+2025-09-27T21:26:40.8227551Z  * [new ref]           2690ac6f2820a8a791fae696af5a62a2a14324ef -> pull/1/merge
+2025-09-27T21:26:40.8314464Z ##[endgroup]
+2025-09-27T21:26:40.8315295Z ##[group]Determining the checkout info
+2025-09-27T21:26:40.8316218Z ##[endgroup]
+2025-09-27T21:26:40.8321680Z [command]/usr/bin/git sparse-checkout disable
+2025-09-27T21:26:40.8413317Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-09-27T21:26:40.8441153Z ##[group]Checking out the ref
+2025-09-27T21:26:40.8445659Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1/merge
+2025-09-27T21:26:41.9203541Z Updating files:  61% (11470/18798)
+2025-09-27T21:26:41.9306114Z Updating files:  62% (11655/18798)
+2025-09-27T21:26:41.9440084Z Updating files:  63% (11843/18798)
+2025-09-27T21:26:41.9534971Z Updating files:  64% (12031/18798)
+2025-09-27T21:26:41.9640282Z Updating files:  65% (12219/18798)
+2025-09-27T21:26:41.9722152Z Updating files:  66% (12407/18798)
+2025-09-27T21:26:41.9825005Z Updating files:  67% (12595/18798)
+2025-09-27T21:26:42.0009733Z Updating files:  68% (12783/18798)
+2025-09-27T21:26:42.0136987Z Updating files:  69% (12971/18798)
+2025-09-27T21:26:42.0260208Z Updating files:  70% (13159/18798)
+2025-09-27T21:26:42.0365504Z Updating files:  71% (13347/18798)
+2025-09-27T21:26:42.0564032Z Updating files:  72% (13535/18798)
+2025-09-27T21:26:42.0763461Z Updating files:  73% (13723/18798)
+2025-09-27T21:26:42.0897339Z Updating files:  74% (13911/18798)
+2025-09-27T21:26:42.0991902Z Updating files:  75% (14099/18798)
+2025-09-27T21:26:42.1177110Z Updating files:  76% (14287/18798)
+2025-09-27T21:26:42.1263169Z Updating files:  77% (14475/18798)
+2025-09-27T21:26:42.1342174Z Updating files:  78% (14663/18798)
+2025-09-27T21:26:42.1835829Z Updating files:  79% (14851/18798)
+2025-09-27T21:26:42.1937597Z Updating files:  80% (15039/18798)
+2025-09-27T21:26:42.2013407Z Updating files:  81% (15227/18798)
+2025-09-27T21:26:42.2112718Z Updating files:  82% (15415/18798)
+2025-09-27T21:26:42.2237856Z Updating files:  83% (15603/18798)
+2025-09-27T21:26:42.2362588Z Updating files:  84% (15791/18798)
+2025-09-27T21:26:42.2469797Z Updating files:  85% (15979/18798)
+2025-09-27T21:26:42.2625129Z Updating files:  86% (16167/18798)
+2025-09-27T21:26:42.2798048Z Updating files:  87% (16355/18798)
+2025-09-27T21:26:42.2958262Z Updating files:  88% (16543/18798)
+2025-09-27T21:26:42.3101339Z Updating files:  89% (16731/18798)
+2025-09-27T21:26:42.3249843Z Updating files:  90% (16919/18798)
+2025-09-27T21:26:42.3425081Z Updating files:  91% (17107/18798)
+2025-09-27T21:26:42.3547439Z Updating files:  92% (17295/18798)
+2025-09-27T21:26:42.3686489Z Updating files:  93% (17483/18798)
+2025-09-27T21:26:42.3848596Z Updating files:  94% (17671/18798)
+2025-09-27T21:26:42.4064164Z Updating files:  95% (17859/18798)
+2025-09-27T21:26:42.4176203Z Updating files:  96% (18047/18798)
+2025-09-27T21:26:42.4354203Z Updating files:  97% (18235/18798)
+2025-09-27T21:26:42.4483337Z Updating files:  98% (18423/18798)
+2025-09-27T21:26:42.4615628Z Updating files:  99% (18611/18798)
+2025-09-27T21:26:42.4615992Z Updating files: 100% (18798/18798)
+2025-09-27T21:26:42.4616378Z Updating files: 100% (18798/18798), done.
+2025-09-27T21:26:42.4845853Z Note: switching to 'refs/remotes/pull/1/merge'.
+2025-09-27T21:26:42.4846255Z 
+2025-09-27T21:26:42.4846572Z You are in 'detached HEAD' state. You can look around, make experimental
+2025-09-27T21:26:42.4847312Z changes and commit them, and you can discard any commits you make in this
+2025-09-27T21:26:42.4848014Z state without impacting any branches by switching back to a branch.
+2025-09-27T21:26:42.4848414Z 
+2025-09-27T21:26:42.4848678Z If you want to create a new branch to retain commits you create, you may
+2025-09-27T21:26:42.4849341Z do so (now or later) by using -c with the switch command. Example:
+2025-09-27T21:26:42.4849705Z 
+2025-09-27T21:26:42.4849850Z   git switch -c <new-branch-name>
+2025-09-27T21:26:42.4850116Z 
+2025-09-27T21:26:42.4850292Z Or undo this operation with:
+2025-09-27T21:26:42.4850532Z 
+2025-09-27T21:26:42.4850668Z   git switch -
+2025-09-27T21:26:42.4850841Z 
+2025-09-27T21:26:42.4851161Z Turn off this advice by setting config variable advice.detachedHead to false
+2025-09-27T21:26:42.4851637Z 
+2025-09-27T21:26:42.4852199Z HEAD is now at 2690ac6f Merge 4fc7bc8324b279cd0a43b75ce37627c74a29060f into 68c8b3a5a3b09a7f227bfbf9fcabbf1f9f497fb8
+2025-09-27T21:26:42.4897882Z ##[endgroup]
+2025-09-27T21:26:42.4940816Z [command]/usr/bin/git log -1 --format=%H
+2025-09-27T21:26:42.4963718Z 2690ac6f2820a8a791fae696af5a62a2a14324ef
+2025-09-27T21:26:42.5178455Z ##[group]Run actions/setup-node@v4
+2025-09-27T21:26:42.5178709Z with:
+2025-09-27T21:26:42.5178879Z   node-version: 18
+2025-09-27T21:26:42.5179059Z   cache: npm
+2025-09-27T21:26:42.5179228Z   always-auth: false
+2025-09-27T21:26:42.5179493Z   check-latest: false
+2025-09-27T21:26:42.5179836Z   token: ***
+2025-09-27T21:26:42.5180000Z env:
+2025-09-27T21:26:42.5180151Z   NODE_VERSION: 18
+2025-09-27T21:26:42.5180324Z   DOTNET_VERSION: 8.0.x
+2025-09-27T21:26:42.5180709Z ##[endgroup]
+2025-09-27T21:26:42.7475304Z Found in cache @ /opt/hostedtoolcache/node/18.20.8/x64
+2025-09-27T21:26:42.7476083Z ##[group]Environment details
+2025-09-27T21:26:45.6437702Z node: v18.20.8
+2025-09-27T21:26:45.6437952Z npm: 10.8.2
+2025-09-27T21:26:45.6438117Z yarn: 1.22.22
+2025-09-27T21:26:45.6439241Z ##[endgroup]
+2025-09-27T21:26:45.6459487Z [command]/opt/hostedtoolcache/node/18.20.8/x64/bin/npm config get cache
+2025-09-27T21:26:46.0452158Z /home/runner/.npm
+2025-09-27T21:26:46.0589775Z ##[error]Dependencies lock file is not found in /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0. Supported file patterns: package-lock.json,npm-shrinkwrap.json,yarn.lock
+2025-09-27T21:26:46.0744130Z Post job cleanup.
+2025-09-27T21:26:46.1667537Z [command]/usr/bin/git version
+2025-09-27T21:26:46.1709507Z git version 2.51.0
+2025-09-27T21:26:46.1751182Z Temporarily overriding HOME='/home/runner/work/_temp/bdbb873c-ffb8-4972-b4c4-c8d2bb0ab9af' before making global git config changes
+2025-09-27T21:26:46.1752073Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-27T21:26:46.1756796Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+2025-09-27T21:26:46.1789113Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-27T21:26:46.1820509Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-27T21:26:46.2107334Z fatal: No url found for submodule path 'docs/src-tauri/TerraFusion_Hybrid_Championship' in .gitmodules
+2025-09-27T21:26:46.2138080Z ##[warning]The process '/usr/bin/git' failed with exit code 128
+2025-09-27T21:26:46.2220962Z Cleaning up orphan processes

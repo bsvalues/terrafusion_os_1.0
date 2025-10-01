@@ -1,0 +1,82 @@
+{
+  "color": {
+    "accent": {
+      "primary": {
+        "value": "#00B3A4",
+        "attributes": {
+          "county": "Benton",
+          "category": "accent"
+        }
+      },
+      "hero": {
+        "value": "#0A1E2E",
+        "attributes": {
+          "county": "Benton",
+          "category": "accent"
+        }
+      },
+      "light": {
+        "value": "#33C7BB",
+        "attributes": {
+          "county": "Benton",
+          "category": "accent"
+        }
+      },
+      "dark": {
+        "value": "#008A7D",
+        "attributes": {
+          "county": "Benton",
+          "category": "accent"
+        }
+      }
+    }
+  },
+  "gradient": {
+    "county-primary": {
+      "value": "linear-gradient(135deg, #00B3A4, #0891b2)",
+      "attributes": {
+        "county": "Benton",
+        "category": "gradient"
+      }
+    },
+    "county-hero": {
+      "value": "linear-gradient(135deg, #0A1E2E, #00B3A4)",
+      "attributes": {
+        "county": "Benton",
+        "category": "gradient"
+      }
+    },
+    "county-glass": {
+      "value": "linear-gradient(135deg, rgba(0, 179, 164, 0.1), rgba(8, 145, 178, 0.1))",
+      "attributes": {
+        "county": "Benton",
+        "category": "gradient"
+      }
+    }
+  },
+  "shadow": {
+    "county-glow": {
+      "value": "0 0 30px rgba(0, 179, 164, 0.3)",
+      "attributes": {
+        "county": "Benton",
+        "category": "shadow"
+      }
+    },
+    "county-button": {
+      "value": "0 4px 15px rgba(0, 179, 164, 0.3)",
+      "attributes": {
+        "county": "Benton",
+        "category": "shadow"
+      }
+    }
+  },
+  "border": {
+    "county-glass": {
+      "value": "rgba(0, 179, 164, 0.2)",
+      "attributes": {
+        "county": "Benton",
+        "category": "border"
+      }
+    }
+  }
+}

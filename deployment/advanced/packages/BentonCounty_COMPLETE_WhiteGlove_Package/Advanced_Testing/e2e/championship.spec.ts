@@ -7,9 +7,9 @@ import { test, expect } from '@playwright/test';
 
 // Championship performance targets
 const PERFORMANCE_TARGETS = {
-  startupTime: 2000,      // 2 seconds
-  pageLoadTime: 1000,     // 1 second
-  interactionDelay: 100,  // 100ms
+  startupTime: 2000, // 2 seconds
+  pageLoadTime: 1000, // 1 second
+  interactionDelay: 100, // 100ms
   memoryLimit: 50 * 1024 * 1024, // 50MB
 };
 
@@ -27,7 +27,7 @@ test.describe('Terrafusion Championship E2E Tests', () => {
     const loadTime = Date.now() - startTime;
 
     expect(loadTime).toBeLessThan(PERFORMANCE_TARGETS.startupTime);
-    
+
     // Verify app is ready
     await expect(page.locator('[data-testid="app-ready"]')).toBeVisible();
   });
@@ -36,14 +36,14 @@ test.describe('Terrafusion Championship E2E Tests', () => {
     // Open terra-agent
     const agentPage = await context.newPage();
     await agentPage.goto('/apps/terra-agent');
-    
+
     // Open gispro
     const gisPage = await context.newPage();
     await gisPage.goto('/apps/gispro');
-    
+
     // Send message from agent to gis
     await agentPage.click('[data-testid="send-coordinates"]');
-    
+
     // Verify message received in gis
     await expect(gisPage.locator('[data-testid="coordinates-received"]')).toBeVisible();
   });
@@ -69,10 +69,10 @@ test.describe('Terrafusion Championship E2E Tests', () => {
     for (const app of apps) {
       const appPage = await context.newPage();
       await appPage.goto(`/apps/${app}`);
-      
+
       // Wait for app to be ready
       await expect(appPage.locator('[data-testid="app-container"]')).toBeVisible();
-      
+
       // Check for no console errors
       const errors: string[] = [];
       appPage.on('console', msg => {
@@ -80,13 +80,13 @@ test.describe('Terrafusion Championship E2E Tests', () => {
           errors.push(msg.text());
         }
       });
-      
+
       // Basic interaction test
       const button = appPage.locator('button').first();
       if (await button.isVisible()) {
         await button.click();
       }
-      
+
       expect(errors).toHaveLength(0);
       await appPage.close();
     }
@@ -94,89 +94,87 @@ test.describe('Terrafusion Championship E2E Tests', () => {
 
   test('Unified design system is consistent', async ({ page }) => {
     await page.goto('/apps/terra-agent');
-    
+
     // Check primary button styling
     const primaryButton = page.locator('[data-testid="primary-button"]');
-    const buttonColor = await primaryButton.evaluate(el => 
-      window.getComputedStyle(el).backgroundColor
+    const buttonColor = await primaryButton.evaluate(
+      el => window.getComputedStyle(el).backgroundColor
     );
-    
+
     expect(buttonColor).toBe('rgb(76, 175, 80)'); // Primary green
-    
+
     // Check typography
     const heading = page.locator('h1').first();
-    const fontSize = await heading.evaluate(el =>
-      window.getComputedStyle(el).fontSize
-    );
-    
+    const fontSize = await heading.evaluate(el => window.getComputedStyle(el).fontSize);
+
     expect(fontSize).toBe('48px'); // 3rem
   });
 
   test('Performance stays within budget during usage', async ({ page }) => {
     await page.goto('/apps/costforge-ai');
-    
+
     // Start performance monitoring
     const metrics = await page.evaluate(() => {
       const startTime = performance.now();
       const startMemory = (performance as any).memory?.usedJSHeapSize || 0;
-      
+
       return { startTime, startMemory };
     });
-    
+
     // Perform heavy operations
     await page.click('[data-testid="analyze-costs"]');
     await page.waitForSelector('[data-testid="analysis-complete"]');
-    
+
     // Check performance
-    const endMetrics = await page.evaluate((start) => {
+    const endMetrics = await page.evaluate(start => {
       const endTime = performance.now();
       const endMemory = (performance as any).memory?.usedJSHeapSize || 0;
-      
+
       return {
         duration: endTime - start.startTime,
         memoryIncrease: endMemory - start.startMemory,
       };
     }, metrics);
-    
+
     expect(endMetrics.duration).toBeLessThan(5000); // 5 seconds for analysis
     expect(endMetrics.memoryIncrease).toBeLessThan(PERFORMANCE_TARGETS.memoryLimit);
   });
 
   test('Data persistence works across app restarts', async ({ page, context }) => {
     await page.goto('/apps/property-workbench');
-    
+
     // Create test data
     await page.fill('[data-testid="property-name"]', 'Test Property');
     await page.click('[data-testid="save-property"]');
-    
+
     // Verify saved
     await expect(page.locator('text=Test Property')).toBeVisible();
-    
+
     // Simulate app restart
     await page.reload();
-    
+
     // Verify data persists
     await expect(page.locator('text=Test Property')).toBeVisible();
   });
 
   test('Error handling and recovery', async ({ page }) => {
     await page.goto('/apps/terra-flow');
-    
+
     // Simulate network error
     await page.route('**/api/**', route => route.abort());
-    
+
     // Try to perform action
     await page.click('[data-testid="sync-data"]');
-    
+
     // Verify error message appears
     await expect(page.locator('[data-testid="error-message"]')).toBeVisible();
-    
+
     // Verify retry option
     await expect(page.locator('[data-testid="retry-button"]')).toBeVisible();
-    
+
     // Restore network
     await page.unroute('**/api/**');
-    
+
     // Retry should work
     await page.click('[data-testid="retry-button"]');
     await expect(page.locator('[data-testid="sync-success"]')).toBeVisible();
@@ -184,13 +182,13 @@ test.describe('Terrafusion Championship E2E Tests', () => {
 
   test('Accessibility standards are met', async ({ page }) => {
     await page.goto('/apps/terra-insight');
-    
+
     // Check for accessibility violations
     const accessibilityReport = await page.evaluate(() => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         // Simple accessibility checks
         const issues: string[] = [];
-        
+
         // Check for alt text on images
         const images = document.querySelectorAll('img');
         images.forEach(img => {
@@ -198,7 +196,7 @@ test.describe('Terrafusion Championship E2E Tests', () => {
             issues.push(`Image missing alt text: ${img.src}`);
           }
         });
-        
+
         // Check for button labels
         const buttons = document.querySelectorAll('button');
         buttons.forEach(btn => {
@@ -206,7 +204,7 @@ test.describe('Terrafusion Championship E2E Tests', () => {
             issues.push('Button missing label');
           }
         });
-        
+
         // Check for form labels
         const inputs = document.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
@@ -215,11 +213,11 @@ test.describe('Terrafusion Championship E2E Tests', () => {
             issues.push(`Input missing label: ${id}`);
           }
         });
-        
+
         resolve(issues);
       });
     });
-    
+
     expect(accessibilityReport).toHaveLength(0);
   });
 
@@ -231,10 +229,10 @@ test.describe('Terrafusion Championship E2E Tests', () => {
       accessibilityPassed: true,
       crossAppCommunication: true,
     };
-    
+
     // Run comprehensive checks
     await page.goto('/');
-    
+
     // Check all metrics
     const diagnostics = await page.evaluate(() => {
       return {
@@ -243,12 +241,12 @@ test.describe('Terrafusion Championship E2E Tests', () => {
         resourceCount: performance.getEntriesByType('resource').length,
       };
     });
-    
+
     // Verify championship standards
     expect(diagnostics.loadTime).toBeLessThan(PERFORMANCE_TARGETS.pageLoadTime);
     expect(diagnostics.memoryUsage).toBeLessThan(PERFORMANCE_TARGETS.memoryLimit);
     expect(diagnostics.resourceCount).toBeLessThan(100); // Resource optimization
-    
+
     // All checks passed = Championship ready
     expect(Object.values(results).every(v => v === true)).toBe(true);
   });
@@ -257,29 +255,31 @@ test.describe('Terrafusion Championship E2E Tests', () => {
 test.describe('Performance Benchmarks', () => {
   test('Measure and report performance metrics', async ({ page }) => {
     const metrics: any = {};
-    
+
     // Test each app's performance
     const apps = ['terra-agent', 'gispro', 'costforge-ai'];
-    
+
     for (const app of apps) {
       await page.goto(`/apps/${app}`);
-      
+
       const appMetrics = await page.evaluate(() => {
         const navigation = performance.getEntriesByType('navigation')[0] as any;
         return {
-          domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+          domContentLoaded:
+            navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
           loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
           firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime || 0,
-          firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0,
+          firstContentfulPaint:
+            performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0,
         };
       });
-      
+
       metrics[app] = appMetrics;
     }
-    
+
     // Log metrics for reporting
     console.log('Performance Metrics:', JSON.stringify(metrics, null, 2));
-    
+
     // Verify all apps meet targets
     Object.values(metrics).forEach((appMetric: any) => {
       expect(appMetric.loadComplete).toBeLessThan(PERFORMANCE_TARGETS.pageLoadTime);

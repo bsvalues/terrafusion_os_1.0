@@ -106,7 +106,7 @@ export class SwarmInitializationService {
         modulesIntegrated: 33, // Terrafusion OS has 33 modules
         intelligenceSystemActive: intelligenceActive,
         initializationTime,
-        errorMessages: errors
+        errorMessages: errors,
       };
 
       if (result.success) {
@@ -115,7 +115,7 @@ export class SwarmInitializationService {
           agents: result.agentsCreated,
           modules: result.modulesIntegrated,
           intelligence: result.intelligenceSystemActive,
-          time: `${initializationTime.toFixed(2)}ms`
+          time: `${initializationTime.toFixed(2)}ms`,
         });
       } else {
         this.logger.error('❌ AI Swarm System Initialization Failed');
@@ -127,14 +127,14 @@ export class SwarmInitializationService {
     } catch (error) {
       const initializationTime = performance.now() - startTime;
       this.logger.error('💥 Critical error during swarm initialization:', error);
-      
+
       return {
         success: false,
         agentsCreated: 0,
         modulesIntegrated: 0,
         intelligenceSystemActive: false,
         initializationTime,
-        errorMessages: [`Critical initialization error: ${error.message}`]
+        errorMessages: [`Critical initialization error: ${error.message}`],
       };
     }
   }
@@ -152,7 +152,7 @@ export class SwarmInitializationService {
       return {
         initialized: false,
         metrics: null,
-        health: { status: 'not_initialized' }
+        health: { status: 'not_initialized' },
       };
     }
 
@@ -164,7 +164,7 @@ export class SwarmInitializationService {
       initialized: true,
       metrics,
       intelligence,
-      health
+      health,
     };
   }
 
@@ -196,15 +196,17 @@ export class SwarmInitializationService {
   /**
    * Force restart of the swarm system
    */
-  public async restartSwarmSystem(config?: SwarmInitializationConfig): Promise<InitializationResult> {
+  public async restartSwarmSystem(
+    config?: SwarmInitializationConfig
+  ): Promise<InitializationResult> {
     this.logger.info('🔄 Restarting AI Swarm System...');
-    
+
     // Shutdown existing system
     await this.shutdownSwarmSystem();
-    
+
     // Wait a moment for cleanup
     await this.delay(1000);
-    
+
     // Reinitialize
     return await this.initializeSwarmSystem(config);
   }
@@ -218,7 +220,7 @@ export class SwarmInitializationService {
       emergentIntelligence: true,
       performanceMonitoring: true,
       evolutionaryOptimization: true,
-      debugMode: false
+      debugMode: false,
     };
   }
 
@@ -229,7 +231,7 @@ export class SwarmInitializationService {
       modulesIntegrated: 0,
       intelligenceSystemActive: false,
       initializationTime: performance.now() - startTime,
-      errorMessages: errors
+      errorMessages: errors,
     };
   }
 
@@ -268,14 +270,14 @@ export class SwarmInitializationService {
     // Simulate module accessibility check
     const expectedModules = [
       'ai-command-brain',
-      'government-edition', 
+      'government-edition',
       'ai-swarm',
       'marketplace-champion',
       'costforge-ai-champion',
       'terra-fusion-sync',
       'unified-system',
       'terra-miner',
-      'commercial-suite'
+      'commercial-suite',
       // ... more modules
     ];
 
@@ -285,7 +287,7 @@ export class SwarmInitializationService {
     for (const module of expectedModules) {
       // Simulate module access check (in real implementation, would check actual module availability)
       const isAccessible = Math.random() > 0.1; // 90% success rate for simulation
-      
+
       if (isAccessible) {
         accessible.push(module);
       } else {
@@ -296,37 +298,37 @@ export class SwarmInitializationService {
     return {
       success: inaccessible.length === 0,
       accessibleModules: accessible,
-      inaccessibleModules: inaccessible
+      inaccessibleModules: inaccessible,
     };
   }
 
   private async registerSwarmService(): Promise<void> {
     // Register the swarm coordinator as a service that modules can use
     this.logger.info('📝 Registering swarm service with Terrafusion OS');
-    
+
     // In a real implementation, this would register with the module registry
     // For now, we'll simulate successful registration
     await this.delay(100);
-    
+
     this.logger.info('✅ Swarm service registered');
   }
 
   private async setupInterModuleCommunication(): Promise<void> {
     this.logger.info('🔗 Setting up inter-module communication channels');
-    
+
     // Setup communication protocols between swarm and modules
     await this.delay(50);
-    
+
     this.logger.info('✅ Inter-module communication established');
   }
 
   private async setupPerformanceMonitoring(): Promise<void> {
     this.logger.info('📊 Setting up performance monitoring...');
-    
+
     // Setup monitoring endpoints
     // Setup metric collection
     // Setup alerting (if needed)
-    
+
     await this.delay(75);
     this.logger.info('✅ Performance monitoring active');
   }
@@ -348,20 +350,20 @@ export class SwarmInitializationService {
       checks.push({
         check: 'agent_count',
         status: 'critical',
-        message: `Only ${metrics.totalAgents}/1008 agents active`
+        message: `Only ${metrics.totalAgents}/1008 agents active`,
       });
     } else if (metrics.totalAgents < 1008) {
       warnings++;
       checks.push({
         check: 'agent_count',
         status: 'warning',
-        message: `${metrics.totalAgents}/1008 agents active`
+        message: `${metrics.totalAgents}/1008 agents active`,
       });
     } else {
       checks.push({
         check: 'agent_count',
         status: 'healthy',
-        message: `All ${metrics.totalAgents} agents active`
+        message: `All ${metrics.totalAgents} agents active`,
       });
     }
 
@@ -371,14 +373,14 @@ export class SwarmInitializationService {
       checks.push({
         check: 'performance',
         status: 'critical',
-        message: `Low performance: ${(metrics.averagePerformance * 100).toFixed(1)}%`
+        message: `Low performance: ${(metrics.averagePerformance * 100).toFixed(1)}%`,
       });
     } else if (metrics.averagePerformance < 0.85) {
       warnings++;
       checks.push({
-        check: 'performance', 
+        check: 'performance',
         status: 'warning',
-        message: `Moderate performance: ${(metrics.averagePerformance * 100).toFixed(1)}%`
+        message: `Moderate performance: ${(metrics.averagePerformance * 100).toFixed(1)}%`,
       });
     }
 
@@ -388,25 +390,24 @@ export class SwarmInitializationService {
       checks.push({
         check: 'error_rate',
         status: 'critical',
-        message: `High error rate: ${(metrics.errorRate * 100).toFixed(2)}%`
+        message: `High error rate: ${(metrics.errorRate * 100).toFixed(2)}%`,
       });
     } else if (metrics.errorRate > 0.05) {
       warnings++;
       checks.push({
         check: 'error_rate',
         status: 'warning',
-        message: `Elevated error rate: ${(metrics.errorRate * 100).toFixed(2)}%`
+        message: `Elevated error rate: ${(metrics.errorRate * 100).toFixed(2)}%`,
       });
     }
 
-    const overallStatus = criticalIssues > 0 ? 'critical' : 
-                         warnings > 0 ? 'warning' : 'healthy';
+    const overallStatus = criticalIssues > 0 ? 'critical' : warnings > 0 ? 'warning' : 'healthy';
 
     return {
       status: overallStatus,
       criticalIssues,
       warnings,
-      details: checks
+      details: checks,
     };
   }
 

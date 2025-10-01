@@ -63,13 +63,13 @@ try {
     Write-Host ""
     
     # Start services in background
-    Write-Host "Starting AI Command Brain (Port 3001)..." -ForegroundColor Cyan
+    Write-Host "Starting AI Command Brain (Port \${{TF_SHELL_PORT:-3001}})..." -ForegroundColor Cyan
     Start-Process powershell -ArgumentList "-NoExit", "-Command", "node ai-command-brain.js" -WindowStyle Minimized
     
-    Write-Host "Starting AI Swarm (Port 3002)..." -ForegroundColor Cyan
+    Write-Host "Starting AI Swarm (Port \${{TF_SHELL_PORT:-3001}})..." -ForegroundColor Cyan
     Start-Process powershell -ArgumentList "-NoExit", "-Command", "node ai-swarm.js" -WindowStyle Minimized
     
-    Write-Host "Starting AI Advanced (Port 3003)..." -ForegroundColor Cyan
+    Write-Host "Starting AI Advanced (Port \${{TF_SHELL_PORT:-3001}})..." -ForegroundColor Cyan
     Start-Process powershell -ArgumentList "-NoExit", "-Command", "node ai-advanced.js" -WindowStyle Minimized
     
     Write-Host ""
@@ -85,7 +85,7 @@ try {
     
     # Check AI Command Brain
     try {
-        $response = Invoke-RestMethod -Uri "http://localhost:3001/api/ai-command-brain/health" -Method GET -ErrorAction Stop
+        $response = Invoke-RestMethod -Uri "http://localhost:\${{TF_SHELL_PORT:-3001}}/api/ai-command-brain/health" -Method GET -ErrorAction Stop
         Write-Host "✅ AI Command Brain: $($response.status)" -ForegroundColor Green
         Write-Host "   Agents: 336 command orchestration agents" -ForegroundColor Gray
     }
@@ -96,7 +96,7 @@ try {
     
     # Check AI Swarm
     try {
-        $response = Invoke-RestMethod -Uri "http://localhost:3002/api/ai-swarm/health" -Method GET -ErrorAction Stop
+        $response = Invoke-RestMethod -Uri "http://localhost:\${{TF_SHELL_PORT:-3001}}/api/ai-swarm/health" -Method GET -ErrorAction Stop
         Write-Host "✅ AI Swarm: $($response.status)" -ForegroundColor Green
         Write-Host "   Agents: 1,008 swarm agents" -ForegroundColor Gray
         Write-Host "   MCP Tools: 87 tools" -ForegroundColor Gray
@@ -108,7 +108,7 @@ try {
     
     # Check AI Advanced
     try {
-        $response = Invoke-RestMethod -Uri "http://localhost:3003/api/ai-advanced/health" -Method GET -ErrorAction Stop
+        $response = Invoke-RestMethod -Uri "http://localhost:\${{TF_SHELL_PORT:-3001}}/api/ai-advanced/health" -Method GET -ErrorAction Stop
         Write-Host "✅ AI Advanced: $($response.status)" -ForegroundColor Green
         Write-Host "   Agents: 672 advanced AI agents" -ForegroundColor Gray
         Write-Host "   Capabilities: Revenue, Temporal, MCP, Quantum" -ForegroundColor Gray
@@ -123,9 +123,9 @@ try {
         Write-Host "🎉 All AI Services are running successfully!" -ForegroundColor Green
         Write-Host ""
         Write-Host "📡 Service Endpoints:" -ForegroundColor Cyan
-        Write-Host "   AI Command Brain: http://localhost:3001" -ForegroundColor White
-        Write-Host "   AI Swarm:        http://localhost:3002" -ForegroundColor White
-        Write-Host "   AI Advanced:     http://localhost:3003" -ForegroundColor White
+        Write-Host "   AI Command Brain: http://localhost:\${{TF_SHELL_PORT:-3001}}" -ForegroundColor White
+        Write-Host "   AI Swarm:        http://localhost:\${{TF_SHELL_PORT:-3001}}" -ForegroundColor White
+        Write-Host "   AI Advanced:     http://localhost:\${{TF_SHELL_PORT:-3001}}" -ForegroundColor White
         Write-Host ""
         Write-Host "📊 Total AI Resources:" -ForegroundColor Cyan
         Write-Host "   • 2,016 AI Agents deployed" -ForegroundColor White
@@ -143,5 +143,5 @@ finally {
 
 Write-Host ""
 Write-Host "💡 To check AI swarm status:" -ForegroundColor Cyan
-Write-Host "   curl http://localhost:5000/api/swarm/status" -ForegroundColor Gray
+Write-Host "   curl http://localhost:\${{TF_SHELL_PORT:-3001}}/api/swarm/status" -ForegroundColor Gray
 Write-Host ""

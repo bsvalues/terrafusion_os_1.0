@@ -1,0 +1,476 @@
+# TerraFusion OS Module Ecosystem - UAT Deployment
+# All 35+ government modules with hot-swappable testing and marketplace validation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-modules-config
+  namespace: bcw-uat
+data:
+  TERRAFUSION_ENVIRONMENT: "uat"
+  TERRAFUSION_MODULE_COUNT: "35"
+  TERRAFUSION_MARKETPLACE_MODE: "sandbox"
+  TERRAFUSION_LICENSE_VALIDATION: "enabled"
+  TERRAFUSION_HOT_SWAP: "enabled"
+  MODULE_REGISTRY_URL: "https://marketplace-uat.benton.wa.gov"
+  MODULE_LICENSING_URL: "https://licensing-uat.benton.wa.gov"
+
+---
+# Module Orchestrator - Manages all 35+ TerraFusion modules
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: module-orchestrator
+  namespace: bcw-uat
+  labels:
+    app: module-orchestrator
+    component: terrafusion-modules
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: module-orchestrator
+  template:
+    metadata:
+      labels:
+        app: module-orchestrator
+        component: terrafusion-modules
+    spec:
+      containers:
+        - name: orchestrator
+          image: ghcr.io/terrafusion/module-orchestrator:latest
+          envFrom:
+            - configMapRef:
+                name: terrafusion-modules-config
+            - secretRef:
+                name: module-secrets
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: grpc
+              containerPort: 9090
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+          volumeMounts:
+            - name: module-registry
+              mountPath: /app/modules
+            - name: module-configs
+              mountPath: /app/config
+      volumes:
+        - name: module-registry
+          persistentVolumeClaim:
+            claimName: module-registry-pvc
+        - name: module-configs
+          configMap:
+            name: module-configurations
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: module-orchestrator
+  namespace: bcw-uat
+spec:
+  selector:
+    app: module-orchestrator
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+    - name: grpc
+      port: 9090
+      targetPort: 9090
+
+---
+# Tier 1 Modules - Core Government Operations
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tier1-modules
+  namespace: bcw-uat
+  labels:
+    app: tier1-modules
+    tier: core-government
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tier1-modules
+  template:
+    metadata:
+      labels:
+        app: tier1-modules
+        tier: core-government
+    spec:
+      containers:
+        # AI Swarm Module
+        - name: ai-swarm
+          image: ghcr.io/terrafusion/ai-swarm:latest
+          env:
+            - name: MODULE_NAME
+              value: "ai-swarm"
+            - name: MODULE_VERSION
+              value: "v2.1.0"
+            - name: AI_AGENT_COUNT
+              value: "1008"
+            - name: RUST_AGENT_COUNT
+              value: "50000"
+          ports:
+            - containerPort: 8081
+          resources:
+            requests:
+              cpu: "1"
+              memory: "2Gi"
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+
+        # Government Edition Module
+        - name: government-edition
+          image: ghcr.io/terrafusion/government-edition:latest
+          env:
+            - name: MODULE_NAME
+              value: "government-edition"
+            - name: MODULE_VERSION
+              value: "v1.5.0"
+            - name: COMPLIANCE_LEVEL
+              value: "FISMA"
+          ports:
+            - containerPort: 8082
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+
+        # CostForge AI Module
+        - name: costforge-ai
+          image: ghcr.io/terrafusion/costforge-ai:latest
+          env:
+            - name: MODULE_NAME
+              value: "costforge-ai"
+            - name: MODULE_VERSION
+              value: "v3.2.0"
+            - name: VALUATION_ENGINE
+              value: "elite-rust"
+          ports:
+            - containerPort: 8083
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+
+---
+# Tier 2 Modules - Essential Operations
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tier2-modules
+  namespace: bcw-uat
+  labels:
+    app: tier2-modules
+    tier: essential-operations
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tier2-modules
+  template:
+    metadata:
+      labels:
+        app: tier2-modules
+        tier: essential-operations
+    spec:
+      containers:
+        # Terra Collections Module
+        - name: terra-collections
+          image: ghcr.io/terrafusion/terra-collections:latest
+          env:
+            - name: MODULE_NAME
+              value: "terra-collections"
+            - name: MODULE_VERSION
+              value: "v2.1.0"
+            - name: COLLECTION_AGENCY_MODE
+              value: "government"
+          ports:
+            - containerPort: 8084
+
+        # Unified System Module
+        - name: unified-system
+          image: ghcr.io/terrafusion/unified-system:latest
+          env:
+            - name: MODULE_NAME
+              value: "unified-system"
+            - name: MODULE_VERSION
+              value: "v1.8.0"
+          ports:
+            - containerPort: 8085
+
+        # GISPro Module
+        - name: gispro
+          image: ghcr.io/terrafusion/gispro:latest
+          env:
+            - name: MODULE_NAME
+              value: "gispro"
+            - name: MODULE_VERSION
+              value: "v4.1.0"
+            - name: SPATIAL_ENGINE
+              value: "postgis-advanced"
+          ports:
+            - containerPort: 8086
+
+        # Digital Transformation Module
+        - name: digital-transformation
+          image: ghcr.io/terrafusion/digital-transformation:latest
+          env:
+            - name: MODULE_NAME
+              value: "digital-transformation"
+            - name: MODULE_VERSION
+              value: "v2.0.0"
+          ports:
+            - containerPort: 8087
+
+---
+# Tier 3 Modules - Extended Features
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tier3-modules
+  namespace: bcw-uat
+  labels:
+    app: tier3-modules
+    tier: extended-features
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tier3-modules
+  template:
+    metadata:
+      labels:
+        app: tier3-modules
+        tier: extended-features
+    spec:
+      containers:
+        # Commercial Suite Module
+        - name: commercial-suite
+          image: ghcr.io/terrafusion/commercial-suite:latest
+          env:
+            - name: MODULE_NAME
+              value: "commercial-suite"
+            - name: MODULE_VERSION
+              value: "v1.4.0"
+          ports:
+            - containerPort: 8088
+
+        # Shock and Awe Module
+        - name: shock-and-awe
+          image: ghcr.io/terrafusion/shock-and-awe:latest
+          env:
+            - name: MODULE_NAME
+              value: "shock-and-awe"
+            - name: MODULE_VERSION
+              value: "v1.2.0"
+          ports:
+            - containerPort: 8089
+
+        # Advanced Analytics Module
+        - name: advanced-analytics
+          image: ghcr.io/terrafusion/advanced-analytics:latest
+          env:
+            - name: MODULE_NAME
+              value: "advanced-analytics"
+            - name: MODULE_VERSION
+              value: "v2.3.0"
+          ports:
+            - containerPort: 8090
+
+---
+# Module Health Monitoring
+apiVersion: v1
+kind: Service
+metadata:
+  name: module-health-monitor
+  namespace: bcw-uat
+spec:
+  selector:
+    component: terrafusion-modules
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+
+---
+# Module Registry PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: module-registry-pvc
+  namespace: bcw-uat
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+
+---
+# Module Hot-Swap Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: module-configurations
+  namespace: bcw-uat
+data:
+  # Hot-swap configuration for UAT testing
+  hot-swap-config.yaml: |
+    hotSwap:
+      enabled: true
+      gracefulShutdownTimeout: 30s
+      startupTimeout: 60s
+      healthCheckInterval: 5s
+      
+    modules:
+      ai-swarm:
+        priority: critical
+        dependencies: []
+        hotSwappable: true
+        
+      government-edition:
+        priority: critical
+        dependencies: []
+        hotSwappable: true
+        
+      costforge-ai:
+        priority: high
+        dependencies: ["ai-swarm"]
+        hotSwappable: true
+        
+      terra-collections:
+        priority: high
+        dependencies: ["government-edition"]
+        hotSwappable: true
+        
+      gispro:
+        priority: medium
+        dependencies: []
+        hotSwappable: true
+        
+      commercial-suite:
+        priority: low
+        dependencies: ["costforge-ai"]
+        hotSwappable: true
+
+  # Licensing validation for UAT
+  licensing-config.yaml: |
+    licensing:
+      mode: sandbox
+      validateSignatures: true
+      allowDeveloperLicenses: true
+      gracePeriod: 30d
+      
+    sandbox:
+      unlimitedUsers: true
+      fullFeatureAccess: true
+      debugMode: true
+      telemetryEnabled: true
+
+  # Module marketplace integration
+  marketplace-config.yaml: |
+    marketplace:
+      baseUrl: "https://marketplace-uat.benton.wa.gov"
+      apiVersion: "v2"
+      authentication:
+        method: "jwt"
+        tokenRefreshInterval: "1h"
+      
+    catalog:
+      autoUpdate: true
+      updateInterval: "1h"
+      enableBetaModules: true
+      
+    revenue:
+      trackingEnabled: true
+      simulatedTransactions: true
+      reportingInterval: "daily"
+
+---
+# Module Secrets (will be populated by external secrets operator)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: module-secrets
+  namespace: bcw-uat
+type: Opaque
+data:
+  # These will be populated by external-secrets-operator
+  MODULE_REGISTRY_TOKEN: ""
+  LICENSING_API_KEY: ""
+  MARKETPLACE_CLIENT_SECRET: ""
+  TERRAFUSION_MODULE_SIGNING_KEY: ""
+
+---
+# Network Policy for Module Communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: module-network-policy
+  namespace: bcw-uat
+spec:
+  podSelector:
+    matchLabels:
+      component: terrafusion-modules
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: os-api
+        - podSelector:
+            matchLabels:
+              app: os-ui
+      ports:
+        - protocol: TCP
+          port: 8080
+    - from:
+        - podSelector:
+            matchLabels:
+              component: terrafusion-modules
+      ports:
+        - protocol: TCP
+          port: 9090
+  egress:
+    - to: []  # Allow all egress for UAT testing
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 5432  # Database access

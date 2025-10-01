@@ -1,0 +1,25 @@
+[package]
+name = "geospatial-engine"
+version = "1.0.0"
+edition = "2021"
+authors = ["TerraFusion cOS Team"]
+description = "Elite GIS Processing for Benton County Washington Parcels"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+uuid = { version = "1", features = ["serde", "v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+geo = { version = "0.28", features = ["serde"] }
+geozero = "0.9"
+geo-types = { version = "0.7", features = ["serde"] }
+proj = "0.27"
+rayon = "1.7"
+
+[lib]
+name = "geospatial_engine"
+path = "src/lib.rs"

@@ -4,7 +4,9 @@
 
 ### What is Terrafusion?
 
-Terrafusion is a comprehensive government operations platform that streamlines services, improves efficiency, and enhances citizen engagement through advanced technology including AI, edge computing, and quantum capabilities.
+Terrafusion is a comprehensive government operations platform that streamlines
+services, improves efficiency, and enhances citizen engagement through advanced
+technology including AI, edge computing, and quantum capabilities.
 
 ### Who can use Terrafusion?
 
@@ -35,7 +37,8 @@ Yes, Terrafusion implements multiple security layers:
 
 ### How do I get an account?
 
-Accounts are created by your organization's administrator. You'll receive an invitation email with instructions to set up your account.
+Accounts are created by your organization's administrator. You'll receive an
+invitation email with instructions to set up your account.
 
 ### I forgot my password. What should I do?
 
@@ -408,5 +411,5 @@ Yes! Submit requests through:
 
 ---
 
-**Still have questions?**
-Contact our support team at support@terrafusion.gov or call 1-800-TERRA-FUS.
+**Still have questions?** Contact our support team at support@terrafusion.gov or
+call 1-800-TERRA-FUS.

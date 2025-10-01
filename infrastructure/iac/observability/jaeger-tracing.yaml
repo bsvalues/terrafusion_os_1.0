@@ -149,28 +149,28 @@ spec:
       otlp:
         protocols:
           grpc:
-            endpoint: 0.0.0.0:4317
+            endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
           http:
-            endpoint: 0.0.0.0:4318
+            endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
       jaeger:
         protocols:
           grpc:
-            endpoint: 0.0.0.0:14250
+            endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
           thrift_http:
-            endpoint: 0.0.0.0:14268
+            endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
           thrift_compact:
-            endpoint: 0.0.0.0:6831
+            endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
           thrift_binary:
-            endpoint: 0.0.0.0:6832
+            endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
       zipkin:
-        endpoint: 0.0.0.0:9411
+        endpoint: 0.0.0.0:\${{TF_PORT_4317:-4317}}
       prometheus:
         config:
           scrape_configs:
           - job_name: 'otel-collector'
             scrape_interval: 10s
             static_configs:
-            - targets: ['0.0.0.0:8888']
+            - targets: ['0.0.0.0:\${{TF_PORT_4317:-4317}}']
 
     processors:
       batch:
@@ -195,7 +195,7 @@ spec:
         tls:
           insecure: true
       prometheus:
-        endpoint: "0.0.0.0:8889"
+        endpoint: "0.0.0.0:\${{TF_PORT_4317:-4317}}"
       elasticsearch:
         endpoints:
         - https://terrafusion-elastic-es-http:9200

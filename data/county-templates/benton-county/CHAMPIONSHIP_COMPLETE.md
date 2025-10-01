@@ -92,7 +92,7 @@ cd /mnt/e/TerraFusion_Master_Workspace/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK
 open CHAMPIONSHIP_DASHBOARD.html
 # or
 python3 -m http.server 8000
-# Navigate to http://localhost:8000/CHAMPIONSHIP_DASHBOARD.html
+# Navigate to http://localhost:\${{TF_DOCS_PORT:-8000}}/CHAMPIONSHIP_DASHBOARD.html
 ```
 
 ### Test Routing

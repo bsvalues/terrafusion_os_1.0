@@ -23,7 +23,7 @@
     "id": "ai-command-brain",
     "category": "AI & Intelligence",
     "priority": "critical",
-    "port": 3600,
+    "port": "${TF_PORT_3600:-3600}",
     "autoStart": true
   }
 }

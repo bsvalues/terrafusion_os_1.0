@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package terrafusion.demo.v1;
+
+service DemoService {
+  rpc GetSystemStatus(SystemStatusRequest) returns (SystemStatusResponse);
+  rpc GetModuleHealth(ModuleHealthRequest) returns (ModuleHealthResponse);
+}
+
+message SystemStatusRequest {
+  string system_id = 1;
+}
+
+message SystemStatusResponse {
+  string system_id = 1;
+  string status = 2;
+  int32 total_modules = 3;
+  int32 active_modules = 4;
+  string timestamp = 5;
+}
+
+message ModuleHealthRequest {
+  string module_id = 1;
+}
+
+message ModuleHealthResponse {
+  string module_id = 1;
+  string health_status = 2;
+  double cpu_usage = 3;
+  int64 memory_usage = 4;
+  string last_updated = 5;
+}

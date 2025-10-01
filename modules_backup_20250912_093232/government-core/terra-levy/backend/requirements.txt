@@ -1,0 +1,21 @@
+flask>=2.2
+flask_sqlalchemy>=3.0
+flask_migrate>=4.0
+flask_wtf>=1.0
+flask_login>=0.6
+psycopg2-binary>=2.9
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+statsmodels>=0.14
+gunicorn>=21.2
+anthropic>=0.3
+openai
+anthropic
+perplexity-ai
+google-generativeai
+pytest>=7.0
+pytest-cov>=4.0
+flask-swagger-ui
+flasgger
+C:\Users\bs\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\Scripts\pytest.exe --maxfail=1 --disable-warnings -q

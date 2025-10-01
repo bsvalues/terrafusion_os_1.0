@@ -17,11 +17,7 @@
       "altman-openai-beneficial",
       "belichick-brady-execution"
     ],
-    "enterpriseInstallers": [
-      "windows-msi",
-      "linux-deb",
-      "macos-pkg"
-    ],
+    "enterpriseInstallers": ["windows-msi", "linux-deb", "macos-pkg"],
     "marketplacePackages": [
       "marketplace-belichick-supreme-commander",
       "marketplace-brady-ai-government",
@@ -78,13 +74,7 @@
       "Docker",
       "Kubernetes"
     ],
-    "compliance": [
-      "SOC 2",
-      "HIPAA",
-      "FedRAMP",
-      "StateRAMP",
-      "CJIS"
-    ],
+    "compliance": ["SOC 2", "HIPAA", "FedRAMP", "StateRAMP", "CJIS"],
     "enterpriseReady": true,
     "governmentCertified": true,
     "patentProtected": true

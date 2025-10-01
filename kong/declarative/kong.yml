@@ -1,0 +1,439 @@
+_format_version: "3.0"
+_transform: true
+
+# TerraFusion Government API Gateway Configuration
+# FISMA Compliant • Rate Limited • Authenticated • Monitored
+
+services:
+  # TerraFusion API Gateway
+  - name: terrafusion-api
+    url: http://host.docker.internal:${TF_API_PORT:-5046}
+    protocol: http
+    host: host.docker.internal
+    port: 5000
+    path: /
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    tags:
+      - terrafusion
+      - api
+      - government
+      - production
+
+  # TerraFusion Frontend PWA
+  - name: terrafusion-frontend
+    url: http://host.docker.internal:${TF_FRONTEND_PORT:-3102}
+    protocol: http
+    host: host.docker.internal
+    port: 3000
+    path: /
+    retries: 3
+    connect_timeout: 30000
+    write_timeout: 30000
+    read_timeout: 30000
+    tags:
+      - terrafusion
+      - frontend
+      - pwa
+      - production
+
+  # TerraFusion Message Bus
+  - name: terrafusion-message-bus
+    url: http://host.docker.internal:${TF_STATIC_PORT:-8080}
+    protocol: http
+    host: host.docker.internal
+    port: 8080
+    path: /
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    tags:
+      - terrafusion
+      - messaging
+      - websocket
+      - production
+
+  # TerraFusion AI Swarm
+  - name: terrafusion-ai-swarm
+    url: http://host.docker.internal:${TF_SHELL_PORT:-3103}
+    protocol: http
+    host: host.docker.internal
+    port: 3001
+    path: /
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    tags:
+      - terrafusion
+      - ai
+      - swarm
+      - production
+
+routes:
+  # API Routes
+  - name: terrafusion-api-route
+    service: terrafusion-api
+    protocols:
+      - http
+      - https
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - OPTIONS
+    paths:
+      - /api
+    strip_path: false
+    preserve_host: true
+    tags:
+      - api
+      - government
+
+  # Frontend Routes
+  - name: terrafusion-frontend-route
+    service: terrafusion-frontend
+    protocols:
+      - http
+      - https
+    methods:
+      - GET
+    paths:
+      - /
+      - /dashboard
+      - /modules
+      - /admin
+    strip_path: false
+    preserve_host: true
+    tags:
+      - frontend
+      - ui
+
+  # WebSocket/Message Bus Routes
+  - name: terrafusion-ws-route
+    service: terrafusion-message-bus
+    protocols:
+      - http
+      - https
+    methods:
+      - GET
+      - POST
+    paths:
+      - /ws
+      - /socket.io
+    strip_path: false
+    preserve_host: true
+    tags:
+      - websocket
+      - messaging
+
+  # AI Swarm Routes
+  - name: terrafusion-ai-route
+    service: terrafusion-ai-swarm
+    protocols:
+      - http
+      - https
+    methods:
+      - GET
+      - POST
+    paths:
+      - /ai
+      - /swarm
+      - /agents
+    strip_path: false
+    preserve_host: true
+    tags:
+      - ai
+      - swarm
+
+consumers:
+  # Government Admin Consumer
+  - username: government-admin
+    custom_id: gov-admin-001
+    tags:
+      - government
+      - admin
+      - tier-1
+
+  # County Admin Consumer
+  - username: county-admin
+    custom_id: county-admin-001
+    tags:
+      - county
+      - admin
+      - tier-2
+
+  # Public Service Consumer
+  - username: public-service
+    custom_id: public-service-001
+    tags:
+      - public
+      - service
+      - tier-3
+
+  # AI Agent Consumer
+  - username: ai-agent
+    custom_id: ai-agent-001
+    tags:
+      - ai
+      - automation
+      - tier-system
+
+plugins:
+  # Global Rate Limiting (Government Compliance)
+  - name: rate-limiting
+    config:
+      minute: 1000
+      hour: 50000
+      day: 1000000
+      policy: local
+      fault_tolerant: true
+      hide_client_headers: false
+
+  # Global CORS (Cross-Origin Resource Sharing)
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Version
+        - Content-Length
+        - Content-MD5
+        - Content-Type
+        - Date
+        - X-Auth-Token
+        - Authorization
+      exposed_headers:
+        - X-Auth-Token
+      credentials: true
+      max_age: 3600
+
+  # Global Request Size Limiting
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 10
+
+  # Prometheus Metrics (Monitoring)
+  - name: prometheus
+    config:
+      per_consumer: true
+      status_code_metrics: true
+      latency_metrics: true
+      bandwidth_metrics: true
+
+  # API Authentication (JWT)
+  - name: jwt
+    route: terrafusion-api-route
+    config:
+      uri_param_names:
+        - jwt
+      cookie_names:
+        - jwt
+      header_names:
+        - authorization
+      claims_to_verify:
+        - exp
+        - iat
+      key_claim_name: iss
+      secret_is_base64: false
+      run_on_preflight: true
+
+  # API Rate Limiting (Per Route)
+  - name: rate-limiting
+    route: terrafusion-api-route
+    config:
+      minute: 500
+      hour: 10000
+      day: 100000
+      policy: local
+      fault_tolerant: true
+
+  # IP Restriction for Admin Routes
+  - name: ip-restriction
+    route: terrafusion-api-route
+    config:
+      allow:
+        - 127.0.0.1
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+      deny: []
+
+  # Frontend Caching
+  - name: proxy-cache
+    route: terrafusion-frontend-route
+    config:
+      request_method:
+        - GET
+        - HEAD
+      response_code:
+        - 200
+        - 301
+        - 404
+      content_type:
+        - text/plain
+        - application/json
+        - text/css
+        - application/javascript
+        - image/png
+        - image/jpeg
+      cache_ttl: 3600
+      strategy: memory
+
+  # WebSocket Rate Limiting
+  - name: rate-limiting
+    route: terrafusion-ws-route
+    config:
+      minute: 100
+      hour: 1000
+      day: 10000
+      policy: local
+
+  # AI Swarm Authentication
+  - name: key-auth
+    route: terrafusion-ai-route
+    config:
+      key_names:
+        - apikey
+        - x-api-key
+      key_in_body: false
+      key_in_header: true
+      key_in_query: true
+      hide_credentials: true
+      run_on_preflight: true
+
+  # AI Swarm Rate Limiting
+  - name: rate-limiting
+    route: terrafusion-ai-route
+    config:
+      minute: 200
+      hour: 5000
+      day: 50000
+      policy: local
+
+# SSL/TLS Certificates (Production) - Configure separately
+# certificates:
+#   - id: terrafusion-cert-001
+#     cert: |
+#       -----BEGIN CERTIFICATE-----
+#       # Replace with actual SSL certificate
+#       -----END CERTIFICATE-----
+#     key: |
+#       -----BEGIN PRIVATE KEY-----
+#       # Replace with actual private key
+#       -----END PRIVATE KEY-----
+#     tags:
+#       - terrafusion
+#       - production
+
+# SNI Configuration - Configure via Admin API
+# snis:
+#   - name: terrafusion.gov
+#     certificate:
+#       id: "CERTIFICATE_ID_HERE"
+#     tags:
+#       - terrafusion
+#       - government
+
+# Consumer Credentials - Configure via Admin API  
+# jwt_secrets:
+#   - consumer: government-admin
+#     algorithm: HS256
+#     key: government-admin-jwt-key
+#     secret: REPLACE_WITH_SECURE_JWT_SECRET
+#     tags:
+#       - government
+#       - admin
+
+#   - consumer: county-admin
+#     algorithm: HS256
+#     key: county-admin-jwt-key
+#     secret: REPLACE_WITH_SECURE_JWT_SECRET
+#     tags:
+#       - county
+#       - admin
+
+# key_auths:
+#   - consumer: ai-agent
+#     key: REPLACE_WITH_SECURE_API_KEY
+#     tags:
+#       - ai
+#       - automation
+
+# Upstream Health Checks - Configure via Admin API
+# upstreams:
+#   - name: terrafusion-api-upstream
+#     algorithm: round-robin
+#     slots: 1000
+#     healthchecks:
+#       active:
+#         timeout: 5
+#         concurrency: 10
+#         http_path: "/health"
+#         healthy:
+#           interval: 30
+#           http_statuses:
+#             - 200
+#             - 302
+#           successes: 3
+#         unhealthy:
+#           interval: 30
+#           http_statuses:
+#             - 429
+#             - 404
+#             - 500
+#             - 501
+#             - 502
+#             - 503
+#             - 504
+#             - 505
+#           tcp_failures: 3
+#           timeouts: 3
+#           http_failures: 5
+#       passive:
+#         healthy:
+#           http_statuses:
+#             - 200
+#             - 201
+#             - 202
+#             - 203
+#             - 204
+#             - 205
+#             - 206
+#             - 300
+#             - 301
+#             - 302
+#             - 303
+#             - 304
+#             - 307
+#             - 308
+#           successes: 5
+#         unhealthy:
+#           http_statuses:
+#             - 429
+#             - 500
+#             - 503
+#           tcp_failures: 2
+#           timeouts: 7
+#           http_failures: 5
+
+# targets:
+#   - target: host.docker.internal:${TF_API_PORT:-5046}
+#     upstream: terrafusion-api-upstream
+#     weight: 100
+#     tags:
+#       - api
+#       - primary

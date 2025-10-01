@@ -84,7 +84,7 @@ export default class BasicDashboardPlugin {
     }
   }
 }
-`
+`,
       },
       {
         path: 'src/components/Dashboard.tsx',
@@ -131,7 +131,8 @@ export const DashboardComponent: React.FC<{ data?: any }> = ({ data }) => {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow"><>
+    <div className="p-6 bg-white rounded-lg shadow">
+<>
 <>
 
       <h2 className="text-2xl font-bold text-gray-900 mb-6">County Analytics</h2>
@@ -139,7 +140,8 @@ export const DashboardComponent: React.FC<{ data?: any }> = ({ data }) => {
       <div
 </>
 </> className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-blue-50 p-4 rounded-lg"><>
+        <div className="bg-blue-50 p-4 rounded-lg">
+<>
 <>
 
           <h3 className="text-lg font-semibold text-blue-900">Total Properties</h3>
@@ -147,7 +149,8 @@ export const DashboardComponent: React.FC<{ data?: any }> = ({ data }) => {
 </>
 </> className="text-3xl font-bold text-blue-600">{data?.totalProperties || '12,345'}</p>
         </div>
-        <div className="bg-green-50 p-4 rounded-lg"><>
+        <div className="bg-green-50 p-4 rounded-lg">
+<>
 <>
 
           <h3 className="text-lg font-semibold text-green-900">Assessments</h3>
@@ -155,7 +158,8 @@ export const DashboardComponent: React.FC<{ data?: any }> = ({ data }) => {
 </>
 </> className="text-3xl font-bold text-green-600">{data?.totalAssessments || '8,901'}</p>
         </div>
-        <div className="bg-purple-50 p-4 rounded-lg"><>
+        <div className="bg-purple-50 p-4 rounded-lg">
+<>
 <>
 
           <h3 className="text-lg font-semibold text-purple-900">Revenue</h3>
@@ -171,9 +175,9 @@ export const DashboardComponent: React.FC<{ data?: any }> = ({ data }) => {
     </div>
   );
 };
-`
-      }
-    ]
+`,
+      },
+    ],
   },
 
   {
@@ -214,9 +218,9 @@ export default class ApiServicePlugin {
     this.sdk.getLogger().info('API Service Plugin deactivated');
   }
 }
-`
-      }
-    ]
+`,
+      },
+    ],
   },
 
   {
@@ -271,10 +275,10 @@ export default class WorkflowAutomationPlugin {
     });
   }
 }
-`
-      }
-    ]
-  }
+`,
+      },
+    ],
+  },
 ];
 
 // Template Generator Functions
@@ -297,7 +301,7 @@ export class TemplateGenerator {
           type: perm,
           scope: 'plugin_scope',
           description: `Required for ${perm} operations`,
-          required: true
+          required: true,
         })),
         dependencies: [],
         api: this.generateApiEndpoints(template),
@@ -305,17 +309,17 @@ export class TemplateGenerator {
         hooks: [
           { event: 'install', handler: 'onInstall', async: false },
           { event: 'activate', handler: 'onActivate', async: false },
-          { event: 'deactivate', handler: 'onDeactivate', async: false }
+          { event: 'deactivate', handler: 'onDeactivate', async: false },
         ],
         compliance: [
-          { standard: 'CountyOS', level: 'required', description: 'Basic CountyOS compliance' }
-        ]
+          { standard: 'CountyOS', level: 'required', description: 'Basic CountyOS compliance' },
+        ],
       },
       targeting: {
         county_sizes: ['small', 'medium', 'large'],
         county_types: ['rural', 'urban', 'suburban'],
-        specialties: []
-      }
+        specialties: [],
+      },
     };
   }
 
@@ -326,23 +330,26 @@ export class TemplateGenerator {
       description: options.description || template.description,
       main: 'dist/index.js',
       scripts: {
-        'build': 'tsc',
-        'dev': 'tsc --watch',
-        'test': 'jest',
-        'validate': 'terrafusion validate',
-        'package': 'terrafusion package',
-        'deploy': 'terrafusion deploy'
+        build: 'tsc',
+        dev: 'tsc --watch',
+        test: 'jest',
+        validate: 'terrafusion validate',
+        package: 'terrafusion package',
+        deploy: 'terrafusion deploy',
       },
-      dependencies: template.dependencies.reduce((deps, dep) => {
-        deps[dep] = 'latest';
-        return deps;
-      }, {} as Record<string, string>),
+      dependencies: template.dependencies.reduce(
+        (deps, dep) => {
+          deps[dep] = 'latest';
+          return deps;
+        },
+        {} as Record<string, string>
+      ),
       devDependencies: {
         '@types/node': '^20.0.0',
-        'typescript': '^5.0.0',
-        'jest': '^29.0.0',
-        '@types/jest': '^29.0.0'
-      }
+        typescript: '^5.0.0',
+        jest: '^29.0.0',
+        '@types/jest': '^29.0.0',
+      },
     };
   }
 
@@ -378,9 +385,10 @@ MIT License
 
   // Helper methods
   private static toDisplayName(str: string): string {
-    return str.split(/[-_]/).map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    return str
+      .split(/[-_]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 
   private static generateApiEndpoints(template: PluginTemplate): any[] {
@@ -390,8 +398,8 @@ MIT License
           path: '/health',
           method: 'GET',
           description: 'Health check endpoint',
-          auth_required: false
-        }
+          auth_required: false,
+        },
       ];
     }
     return [];
@@ -399,12 +407,14 @@ MIT License
 
   private static generateUIComponents(template: PluginTemplate): any[] {
     if (template.features.includes('dashboard')) {
-      return [{
-        name: 'main-dashboard',
-        type: 'dashboard',
-        path: '/dashboard',
-        permissions: ['data_read']
-      }];
+      return [
+        {
+          name: 'main-dashboard',
+          type: 'dashboard',
+          path: '/dashboard',
+          permissions: ['data_read'],
+        },
+      ];
     }
     return [];
   }
@@ -422,5 +432,5 @@ export const TemplateUtils = {
 
   getTemplatesByTier: (tier: string): PluginTemplate[] => {
     return PLUGIN_TEMPLATES.filter(template => template.tier === tier);
-  }
+  },
 };

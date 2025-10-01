@@ -3,12 +3,14 @@
 This directory will contain the 147 AI models from the AI Command Brain system.
 
 ## Model Categories:
+
 - Property Valuation Models (CostForge AI)
 - Predictive Analytics Models
 - Neural Intelligence Networks
 - Government Operations Models
 
 ## Migration Status:
+
 - [ ] CostForge AI Models (from Rust backend)
 - [ ] Neural Network Models
 - [ ] Predictive Analytics Models

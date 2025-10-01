@@ -1,9 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "./modules/**/*.{js,ts,jsx,tsx}",
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
+    './modules/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -15,8 +15,8 @@ export default {
         'tf-deep-space': '#0a0f1c',
         'tf-dark-teal': '#1a2f3a',
         'tf-accent-cyan': '#22d3ee',
-      }
+      },
     },
   },
   plugins: [],
-}
+};

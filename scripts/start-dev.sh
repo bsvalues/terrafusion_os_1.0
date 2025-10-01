@@ -19,7 +19,7 @@ BACKEND_PID=$!
 # Wait for backend to start
 echo "Waiting for backend to initialize..."
 for i in {1..30}; do
-    if curl -s http://localhost:5000/api/health > /dev/null 2>&1; then
+    if curl -s http://localhost:${TF_STATIC_PORT:-8080}/api/health > /dev/null 2>&1; then
         echo "Backend is ready!"
         break
     fi
@@ -54,8 +54,8 @@ npm start &
 ELECTRON_PID=$!
 
 echo "TerraFusion Development Environment launched successfully!"
-echo "Backend: http://localhost:5000"
-echo "Frontend: http://localhost:3000"
+echo "Backend: http://localhost:${TF_STATIC_PORT:-8080}"
+echo "Frontend: http://localhost:${TF_STATIC_PORT:-8080}"
 echo "Electron: Desktop application"
 echo ""
 echo "Press Ctrl+C to stop all services"

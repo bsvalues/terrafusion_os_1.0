@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  kong:
+    image: kong:3.4.2-alpine
+    container_name: terrafusion-kong
+    hostname: kong
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:\${{TF_SERVICE_8001_PORT:-8001}}
+      KONG_PROXY_LISTEN: 0.0.0.0:\${{TF_SERVICE_8001_PORT:-8001}}, 0.0.0.0:\${{TF_SERVICE_8001_PORT:-8001}} ssl
+      KONG_PLUGINS: bundled,prometheus,rate-limiting,key-auth,oauth2,jwt,cors,request-size-limiting,response-ratelimiting,ip-restriction
+      KONG_NGINX_WORKER_PROCESSES: auto
+      KONG_NGINX_DAEMON: "off"
+    ports:
+      - "8000:8000"   # Kong proxy HTTP
+      - "8443:8443"   # Kong proxy HTTPS
+      - "8001:8001"   # Kong admin API
+      - "8444:8444"   # Kong admin API HTTPS
+    volumes:
+      - ./kong/declarative:/kong/declarative:ro
+      - ./kong/plugins:/usr/local/share/lua/5.1/kong/plugins:ro
+      - ./kong/ssl:/kong/ssl:ro
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    labels:
+      - "terrafusion.service=kong"
+      - "terrafusion.environment=production"
+      - "terrafusion.component=api-gateway"
+
+  kong-prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: terrafusion-prometheus
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./kong/prometheus:/etc/prometheus:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+    labels:
+      - "terrafusion.service=prometheus"
+      - "terrafusion.environment=production"
+
+  kong-grafana:
+    image: grafana/grafana:10.1.2
+    container_name: terrafusion-grafana
+    hostname: grafana
+    ports:
+      - "3001:${TF_FRONTEND_PORT:-3102}"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SECURITY_SECRET_KEY: terrafusion-grafana-secret
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./kong/grafana:/etc/grafana/provisioning:ro
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+    labels:
+      - "terrafusion.service=grafana"
+      - "terrafusion.environment=production"
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  terrafusion-network:
+    external: true

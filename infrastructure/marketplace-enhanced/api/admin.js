@@ -73,7 +73,8 @@ router.post('/promote', requireAuth, limiter, (req, res) => {
 router.post('/deploy', requireAuth, limiter, (req, res) => {
   // Placeholder: handle file upload, extract, and deploy logic
   // logAdminAction({ pluginId, action: 'deploy', user: req.user });
-  if (metrics.deployCounter && req.body && req.body.pluginId) metrics.deployCounter.inc({ pluginId: req.body.pluginId });
+  if (metrics.deployCounter && req.body && req.body.pluginId)
+    metrics.deployCounter.inc({ pluginId: req.body.pluginId });
   res.json({ message: 'Deploy endpoint not yet implemented' });
 });
 

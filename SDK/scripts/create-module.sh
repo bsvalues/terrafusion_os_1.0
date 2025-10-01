@@ -191,7 +191,7 @@ if [[ "$WITH_FRONTEND" == "true" ]]; then
   "description": "TerraFusion $MODULE_TYPE module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "vite dev --port 3001",
+    "dev": "vite dev --port \${{TF_SHELL_PORT:-3001}}",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
@@ -228,7 +228,7 @@ cat > "$MODULE_DIR/src-tauri/tauri.conf.json" << EOF
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:3001",
+    "devPath": "http://localhost:\${{TF_SHELL_PORT:-3001}}",
     "distDir": "../dist"
   },
   "package": {
@@ -912,7 +912,7 @@ USER terrafusion
 
 EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \\
-    CMD curl -f http://localhost:5000/health || exit 1
+    CMD curl -f http://localhost:\${{TF_SHELL_PORT:-3001}}/health || exit 1
 
 CMD ["dotnet", "${PASCAL_NAME}.dll"]
 EOF

@@ -1,0 +1,191 @@
+{
+  "type": "FeatureCollection",
+  "name": "benton-wa Export",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "1",
+      "properties": {
+        "layer": "parcels",
+        "county": "benton-wa",
+        "name": "Feature 1",
+        "description": "Sample parcels feature for benton-wa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "2",
+      "properties": {
+        "layer": "zoning",
+        "county": "benton-wa",
+        "name": "Feature 2",
+        "description": "Sample zoning feature for benton-wa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "3",
+      "properties": {
+        "layer": "voting_precincts",
+        "county": "benton-wa",
+        "name": "Feature 3",
+        "description": "Sample voting_precincts feature for benton-wa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "4",
+      "properties": {
+        "layer": "fire_districts",
+        "county": "benton-wa",
+        "name": "Feature 4",
+        "description": "Sample fire_districts feature for benton-wa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "exported_by": "county_analyst",
+    "exported_at": "2025-06-09T18:12:16.404056",
+    "layers": [
+      "parcels",
+      "zoning",
+      "voting_precincts",
+      "fire_districts"
+    ],
+    "area_of_interest": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -119.8,
+            46.1
+          ],
+          [
+            -119.0,
+            46.1
+          ],
+          [
+            -119.0,
+            46.4
+          ],
+          [
+            -119.8,
+            46.4
+          ],
+          [
+            -119.8,
+            46.1
+          ]
+        ]
+      ]
+    }
+  }
+}

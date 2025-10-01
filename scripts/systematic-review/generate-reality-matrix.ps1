@@ -2,7 +2,7 @@
 # Hits 4 beacon endpoints and writes truth table
 
 param(
-    [string]$BaseUrl = "http://localhost:5000",
+    [string]$BaseUrl = "http://localhost:\${{TF_API_PORT:-5000}}",
     [string]$OutputPath = "../../docs/REALITY_MATRIX.md"
 )
 

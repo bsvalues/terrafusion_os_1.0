@@ -29,7 +29,7 @@ read -p "Select option (1-5): " option
 case $option in
     1)
         echo "🔥 Launching Development Server..."
-        echo "📍 URL: http://localhost:3500"
+        echo "📍 URL: http://localhost:\${{TF_PORT_3500:-3500}}"
         echo ""
         npm run dev
         ;;
@@ -69,7 +69,7 @@ case $option in
         echo "═══════════════════════════════════════════════════════════════════"
         echo "✅ ALL SYSTEMS OPERATIONAL"
         echo "═══════════════════════════════════════════════════════════════════"
-        echo "📍 Public Records UI: http://localhost:3500"
+        echo "📍 Public Records UI: http://localhost:\${{TF_PORT_3500:-3500}}"
         echo "🧠 AI Engine: Running (PID: $AI_PID)"
         echo "📊 Status: 379,000,000× faster than Tyler Technologies"
         echo ""

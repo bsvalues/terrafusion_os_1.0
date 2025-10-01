@@ -17,7 +17,7 @@ set -euo pipefail
 
 # Configuration
 ACTION="status"
-GATEWAY_PORT=8080
+GATEWAY_PORT=\${{TF_ADMIN_PORT:-8080}}
 CONFIG_FILE="/etc/terrafusion/api-gateway.conf"
 RATE_LIMIT=1000
 THROTTLING_MODE="adaptive"
@@ -143,7 +143,7 @@ bot_protection = $BOT_PROTECTION
 # Monitoring
 monitoring_enabled = $MONITORING_ENABLED
 metrics_endpoint = /metrics
-metrics_port = 9090
+metrics_port=\${{TF_PROMETHEUS_PORT:-9090}}
 
 # Logging
 log_level = INFO
@@ -589,7 +589,7 @@ def load_config():
         'listen_port': 8080,
         'rate_limit_requests_per_minute': 1000,
         'rate_limit_window': 60,
-        'backend_servers': ['localhost:8001', 'localhost:8002'],
+        'backend_servers': ['localhost:\${{TF_SERVICE_8001_PORT:-8001}}', 'localhost:\${{TF_SERVICE_8001_PORT:-8001}}'],
         'health_check_interval': 30,
         'log_level': 'INFO',
         'log_file': '/var/log/terrafusion/api-gateway.log'

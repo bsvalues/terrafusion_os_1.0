@@ -730,7 +730,7 @@ enhanced_integration:
   # Championship System Integration
   championship_system:
     enabled: true
-    base_url: "http://localhost:8000"
+    base_url: "http://localhost:\${{TF_DOCS_PORT:-8000}}"
     api_key_env: "CHAMPIONSHIP_API_KEY"
     sync_interval: 300  # 5 minutes
     

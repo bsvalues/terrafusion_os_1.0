@@ -1,6 +1,6 @@
 /**
  * Schema Registry for MCP
- * 
+ *
  * This module implements the Schema Registry and Validator for the Model Content Protocol.
  * It provides functionality to register, retrieve, and validate against JSON schemas.
  */
@@ -96,10 +96,10 @@ export class SchemaValidator {
     const schema = this.registry.get(schemaName);
     const validate = this.ajv.compile(schema);
     const valid = validate(data);
-    
+
     return {
       valid,
-      errors: valid ? null : validate.errors
+      errors: valid ? null : validate.errors,
     };
   }
 }
@@ -112,8 +112,8 @@ export function createDefaultRegistry(): SchemaRegistry {
   // This will be used to create a pre-populated registry
   // with all standard schemas for the application
   const registry = new SchemaRegistry();
-  
+
   // Import schemas will be added here in a future implementation
-  
+
   return registry;
 }

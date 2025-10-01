@@ -1,6 +1,6 @@
 /**
  * Function Registry for MCP
- * 
+ *
  * This module implements the Function Registry and Executor for the Model Content Protocol.
  * It provides functionality to register, retrieve, and execute functions with validation.
  */
@@ -47,11 +47,11 @@ export class FunctionRegistry {
     if (!this.schemaRegistry.exists(functionDef.inputSchema)) {
       throw new Error(`Input schema ${functionDef.inputSchema} not found in registry`);
     }
-    
+
     if (!this.schemaRegistry.exists(functionDef.outputSchema)) {
       throw new Error(`Output schema ${functionDef.outputSchema} not found in registry`);
     }
-    
+
     this.functions.set(functionDef.name, functionDef);
   }
 
@@ -113,7 +113,7 @@ export class FunctionExecutor {
   async execute(functionName: string, params: any): Promise<any> {
     // Get function definition
     const functionDef = this.functionRegistry.get(functionName);
-    
+
     // Validate input parameters
     const inputValidation = this.schemaValidator.validate(functionDef.inputSchema, params);
     if (!inputValidation.valid) {
@@ -128,14 +128,14 @@ export class FunctionExecutor {
     } catch (error) {
       throw new Error(`Execution failed for function ${functionName}: ${(error as Error).message}`);
     }
-    
+
     // Validate output result
     const outputValidation = this.schemaValidator.validate(functionDef.outputSchema, result);
     if (!outputValidation.valid) {
       const errors = JSON.stringify(outputValidation.errors);
       throw new Error(`Output validation failed for function ${functionName}: ${errors}`);
     }
-    
+
     return result;
   }
 }
@@ -149,8 +149,8 @@ export function createDefaultExecutor(): FunctionExecutor {
   // with common functions for the application
   const schemaRegistry = new SchemaRegistry();
   const functionRegistry = new FunctionRegistry(schemaRegistry);
-  
+
   // Register schemas and functions will be added here in a future implementation
-  
+
   return new FunctionExecutor(functionRegistry, schemaRegistry);
 }

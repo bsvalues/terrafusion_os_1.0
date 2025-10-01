@@ -9,8 +9,8 @@ set -e
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEPLOYMENT_LOG_DIR="$SCRIPT_DIR/deployment-logs"
-HEALTH_CHECK_PORT=3001
-TEST_SERVER_PORT=3000
+HEALTH_CHECK_PORT=\${{TF_SHELL_PORT:-3001}}
+TEST_SERVER_PORT=\${{TF_SHELL_PORT:-3001}}
 PRODUCTION_DOMAIN="terrafusionmarket.io"
 LOCAL_TEST_URL="http://localhost:$TEST_SERVER_PORT"
 
@@ -187,7 +187,7 @@ class TerraFusionTestHandler(http.server.SimpleHTTPRequestHandler):
         super().do_GET()
 
 if __name__ == "__main__":
-    PORT = 3000
+    PORT=\${{TF_SHELL_PORT:-3001}}
     with socketserver.TCPServer(("", PORT), TerraFusionTestHandler) as httpd:
         print(f"TerraFusion Test Server running on port {PORT}")
         httpd.serve_forever()

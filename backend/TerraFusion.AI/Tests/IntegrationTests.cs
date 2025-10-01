@@ -64,7 +64,7 @@ namespace TerraFusion.AI.Tests
             Assert.NotEmpty(result.ComparableProperties);
             Assert.NotEmpty(result.MarketFactors);
 
-            _output.WriteLine($"Property {result.PropertyId} valued at ${result.EstimatedValue:N0} with {result.ConfidenceScore:P} confidence");
+            _output.WriteLine($"Property {result.PropertyId} valued at {result.EstimatedValue:N0} with {result.ConfidenceScore:P} confidence");
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace TerraFusion.AI.Tests
             Assert.True(result.PredictionRange.Low < result.TotalCost);
             Assert.True(result.PredictionRange.High > result.TotalCost);
 
-            _output.WriteLine($"Project cost predicted at ${result.TotalCost:N0} with {result.ConfidenceScore:P} confidence");
+            _output.WriteLine($"Project cost predicted at {result.TotalCost:N0} with {result.ConfidenceScore:P} confidence");
         }
 
         [Fact]
@@ -180,7 +180,7 @@ namespace TerraFusion.AI.Tests
             Assert.Equal(valuationResult.PropertyId, roiResult.PropertyId);
             Assert.Contains("Spokane", marketResult.Region);
 
-            _output.WriteLine($"Interoperability test: Property ${valuationResult.EstimatedValue:N0}, ROI {roiResult.PredictedROI:P}, Market {marketResult.TrendDirection}");
+            _output.WriteLine($"Interoperability test: Property {valuationResult.EstimatedValue:N0}, ROI {roiResult.PredictedROI:P}, Market {marketResult.TrendDirection}");
         }
 
         [Fact]
@@ -222,3 +222,4 @@ namespace TerraFusion.AI.Tests
         }
     }
 }
+

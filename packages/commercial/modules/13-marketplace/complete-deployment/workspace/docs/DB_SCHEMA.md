@@ -1,13 +1,17 @@
 # Terrafusion Database Schema
 
 ## Database Overview
-Terrafusion uses PostgreSQL as the primary database with Redis for caching and session management. The schema is designed for government-grade data integrity and scalability.
+
+Terrafusion uses PostgreSQL as the primary database with Redis for caching and
+session management. The schema is designed for government-grade data integrity
+and scalability.
 
 ## Core Tables
 
 ### Users & Authentication
 
 #### users
+
 ```sql
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -28,6 +32,7 @@ CREATE INDEX idx_users_role ON users(role);
 ```
 
 #### user_sessions
+
 ```sql
 CREATE TABLE user_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -47,6 +52,7 @@ CREATE INDEX idx_sessions_expires ON user_sessions(expires_at);
 ### Government Entities
 
 #### counties
+
 ```sql
 CREATE TABLE counties (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -68,6 +74,7 @@ CREATE INDEX idx_counties_state ON counties(state_code);
 ```
 
 #### municipalities
+
 ```sql
 CREATE TABLE municipalities (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -90,6 +97,7 @@ CREATE INDEX idx_municipalities_type ON municipalities(type);
 ### Property Management
 
 #### properties
+
 ```sql
 CREATE TABLE properties (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -123,6 +131,7 @@ CREATE INDEX idx_properties_location ON properties USING GIST (point(longitude, 
 ```
 
 #### property_assessments
+
 ```sql
 CREATE TABLE property_assessments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -147,6 +156,7 @@ CREATE INDEX idx_assessments_assessor ON property_assessments(assessor_id);
 ### Tax Management
 
 #### tax_bills
+
 ```sql
 CREATE TABLE tax_bills (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -171,6 +181,7 @@ CREATE INDEX idx_tax_bills_due_date ON tax_bills(due_date);
 ```
 
 #### tax_payments
+
 ```sql
 CREATE TABLE tax_payments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -192,6 +203,7 @@ CREATE INDEX idx_payments_method ON tax_payments(payment_method);
 ### AI & Analytics
 
 #### ai_models
+
 ```sql
 CREATE TABLE ai_models (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -211,6 +223,7 @@ CREATE INDEX idx_models_status ON ai_models(deployment_status);
 ```
 
 #### ai_predictions
+
 ```sql
 CREATE TABLE ai_predictions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -232,6 +245,7 @@ CREATE INDEX idx_predictions_input ON ai_predictions USING GIN (input_data);
 ### Audit & Compliance
 
 #### audit_logs
+
 ```sql
 CREATE TABLE audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -255,6 +269,7 @@ CREATE INDEX idx_audit_created ON audit_logs(created_at);
 ## Redis Schema
 
 ### Session Management
+
 ```
 Key Pattern: session:{token_hash}
 Value: JSON object with user data and session info
@@ -262,6 +277,7 @@ TTL: 24 hours (configurable)
 ```
 
 ### API Caching
+
 ```
 Key Pattern: api_cache:{endpoint}:{params_hash}
 Value: JSON response data
@@ -269,6 +285,7 @@ TTL: 5-60 minutes (endpoint dependent)
 ```
 
 ### Real-time Data
+
 ```
 Key Pattern: realtime:{channel}:{user_id}
 Value: WebSocket connection data
@@ -278,6 +295,7 @@ TTL: Connection lifetime
 ## Data Relationships
 
 ### Primary Relationships
+
 - Counties → Municipalities (1:many)
 - Counties → Properties (1:many)
 - Properties → Assessments (1:many)
@@ -286,6 +304,7 @@ TTL: Connection lifetime
 - Users → Counties (many:1)
 
 ### Indexes & Performance
+
 - All foreign keys have corresponding indexes
 - Geographic data uses PostGIS GIST indexes
 - JSONB fields use GIN indexes for efficient queries
@@ -294,12 +313,14 @@ TTL: Connection lifetime
 ## Backup & Maintenance
 
 ### Backup Strategy
+
 - Full backup: Daily at 2 AM
 - Incremental backup: Every 4 hours
 - Transaction log backup: Every 15 minutes
 - Retention: 30 days full, 7 days incremental
 
 ### Maintenance Tasks
+
 - VACUUM ANALYZE: Weekly
 - REINDEX: Monthly
 - Statistics update: Daily

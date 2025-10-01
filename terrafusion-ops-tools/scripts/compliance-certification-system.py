@@ -120,7 +120,7 @@ class ComplianceCertificationSystem:
     def __init__(self):
         self.session_id = f"compliance_{int(time.time())}"
         self.db_conn = psycopg2.connect('postgresql://postgres@localhost/terrafusion')
-        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.Redis(host='localhost', port=\${{TF_REDIS_PORT:-6379}}, db=0)
         
         # Configuration
         self.compliance_frameworks = {}

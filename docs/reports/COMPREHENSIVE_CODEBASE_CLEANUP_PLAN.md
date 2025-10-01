@@ -1,23 +1,26 @@
 # 🧹 COMPREHENSIVE CODEBASE CLEANUP PLAN
+
 ## Terrafusion OS 1.0 - Archive All Unused Code
 
 **Date**: January 10, 2025  
 **Status**: 🟢 READY FOR EXECUTION  
-**Objective**: Move all unused code, functions, and temporary files to archive/  
+**Objective**: Move all unused code, functions, and temporary files to archive/
 
 ---
 
 ## 🎯 CLEANUP OBJECTIVES
 
 ### **Primary Goals**
+
 - **Archive unused backend services** (32+ services identified)
-- **Archive legacy frontend components** (8+ components identified)  
+- **Archive legacy frontend components** (8+ components identified)
 - **Archive temporary and duplicate files** (100+ files identified)
 - **Archive deprecated documentation** (50+ files identified)
 - **Archive experimental features** (25+ features identified)
 - **Archive unused scripts** (40+ scripts identified)
 
 ### **Success Criteria**
+
 - Clean, maintainable codebase for future engineers
 - All unused code preserved in archive/ for reference
 - Zero impact on active functionality
@@ -28,8 +31,9 @@
 ## 📋 ARCHIVAL TARGETS
 
 ### **1. Backend Services (32 files)**
-**Location**: `backend/Terrafusion.Core/Services/`
-**Status**: Never registered in DI container, not used by 32 official modules
+
+**Location**: `backend/Terrafusion.Core/Services/` **Status**: Never registered
+in DI container, not used by 32 official modules
 
 ```
 AdvancedMLRevenueService.cs
@@ -75,8 +79,9 @@ TylerTechLegacyService.cs
 ```
 
 ### **2. Frontend Components (8 files)**
-**Location**: `frontend/src/components/`
-**Status**: Not used by PWAShell or 32 official modules
+
+**Location**: `frontend/src/components/` **Status**: Not used by PWAShell or 32
+official modules
 
 ```
 components/admin/ (entire directory)
@@ -90,12 +95,14 @@ components/StrategyDashboard.tsx
 ```
 
 ### **3. Frontend Plugins (entire directory)**
-**Location**: `frontend/src/plugins/`
-**Status**: Remnant of static plugin architecture, replaced by dynamic module loading
+
+**Location**: `frontend/src/plugins/` **Status**: Remnant of static plugin
+architecture, replaced by dynamic module loading
 
 ### **4. Temporary Files (100+ files)**
-**Location**: Various directories
-**Status**: Development artifacts, backups, duplicates
+
+**Location**: Various directories **Status**: Development artifacts, backups,
+duplicates
 
 ```
 *.tmp files
@@ -108,8 +115,9 @@ components/StrategyDashboard.tsx
 ```
 
 ### **5. Unused Scripts (40+ files)**
-**Location**: `scripts/`
-**Status**: Legacy deployment scripts, experimental utilities
+
+**Location**: `scripts/` **Status**: Legacy deployment scripts, experimental
+utilities
 
 ```
 deploy-benton-production.sh
@@ -195,8 +203,9 @@ debug-validation.sh
 ```
 
 ### **6. Deprecated Documentation (50+ files)**
-**Location**: Various directories
-**Status**: Outdated documentation, planning artifacts
+
+**Location**: Various directories **Status**: Outdated documentation, planning
+artifacts
 
 ```
 BENTON_COUNTY_PRODUCTION_DEPLOYMENT_PLAN.md
@@ -232,8 +241,9 @@ t-Path E:TerraFusion_OS_1.0
 ```
 
 ### **7. Experimental Features (25+ files)**
-**Location**: Various directories
-**Status**: Prototypes, experiments, unused modules
+
+**Location**: Various directories **Status**: Prototypes, experiments, unused
+modules
 
 ```
 consciousness-service/ (entire directory)
@@ -255,6 +265,7 @@ governance/ (entire directory)
 ## 🚀 EXECUTION PLAN
 
 ### **Phase 1: Backend Services Archive**
+
 ```bash
 # Create archive structure
 mkdir -p archive/backend/services
@@ -267,6 +278,7 @@ mv backend/Terrafusion.Core/Services/AdvancedThreatDetectionService.cs archive/b
 ```
 
 ### **Phase 2: Frontend Components Archive**
+
 ```bash
 # Create archive structure
 mkdir -p archive/frontend/components
@@ -281,6 +293,7 @@ mv frontend/src/components/AISwarmDashboard.tsx archive/frontend/components/
 ```
 
 ### **Phase 3: Scripts Archive**
+
 ```bash
 # Create archive structure
 mkdir -p archive/scripts/legacy
@@ -293,6 +306,7 @@ mv scripts/dev-up.sh archive/scripts/legacy/
 ```
 
 ### **Phase 4: Documentation Archive**
+
 ```bash
 # Create archive structure
 mkdir -p archive/documentation/legacy
@@ -305,6 +319,7 @@ mv "TERRAFUSION_WINDOWS_MACOS_COMPLETE.md" archive/documentation/legacy/
 ```
 
 ### **Phase 5: Experimental Features Archive**
+
 ```bash
 # Create archive structure
 mkdir -p archive/experimental
@@ -317,6 +332,7 @@ mv enhancement-plans archive/experimental/
 ```
 
 ### **Phase 6: Temporary Files Cleanup**
+
 ```bash
 # Remove temporary files
 find . -name "*.tmp" -delete
@@ -333,12 +349,14 @@ find . -name "*.deprecated" -delete
 ## 📊 EXPECTED RESULTS
 
 ### **Before Cleanup**
+
 - **Total Files**: ~500+ files
 - **Unused Code**: ~200+ files (40%)
 - **Temporary Files**: ~100+ files (20%)
 - **Documentation**: ~50+ files (10%)
 
 ### **After Cleanup**
+
 - **Active Files**: ~150+ files (30%)
 - **Archived Files**: ~350+ files (70%)
 - **Clean Codebase**: ✅
@@ -349,6 +367,7 @@ find . -name "*.deprecated" -delete
 ## 🔍 VERIFICATION STEPS
 
 ### **Post-Cleanup Validation**
+
 1. **Build Test**: Ensure application builds successfully
 2. **Runtime Test**: Verify all functionality works
 3. **Module Test**: Confirm 32 official modules load correctly
@@ -356,6 +375,7 @@ find . -name "*.deprecated" -delete
 5. **Documentation Test**: Update README with new structure
 
 ### **Archive Accessibility**
+
 ```bash
 # Test archive access
 ls -la archive/
@@ -368,6 +388,7 @@ find archive/ -name "*.tsx" | head -10
 ## 📝 ARCHIVE DOCUMENTATION
 
 ### **Archive Structure**
+
 ```
 archive/
 ├── backend/
@@ -387,6 +408,7 @@ archive/
 ```
 
 ### **Restoration Guidelines**
+
 - All archived files are preserved for reference
 - Restoration requires testing and validation
 - Update documentation when restoring files

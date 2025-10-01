@@ -174,7 +174,7 @@ validate_performance_improvements() {
     # Run performance tests
     if command -v lighthouse >/dev/null 2>&1; then
         lighthouse --only-categories=performance --chrome-flags="--headless" \
-            http://localhost:3000/valuation \
+            http://localhost:\${{TF_FRONTEND_PORT:-3000}}/valuation \
             --output=json \
             --output-path="$RESULTS_DIR/performance-after.json"
         

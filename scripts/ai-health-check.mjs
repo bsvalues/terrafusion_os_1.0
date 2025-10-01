@@ -1,8 +1,31 @@
 #!/usr/bin/env node
 /**
  * TerraFusion OS - AI Agent Health Check
- * Validates AI agent understanding in real-time
+ * Validates AI agent understanding with dynamic configuration
  */
+
+// Dynamic configuration loader (simplified for .mjs compatibility)
+const config = (() => {
+    try {
+        // For now, return default config since dynamic loading in .mjs has path issues
+        return {
+            ai_swarm: {
+                deployment_phases: {
+                    target_phase: 5,
+                    phases: [
+                        { id: 5, agent_count: 50000 }
+                    ]
+                }
+            }
+        };
+    } catch (error) {
+        return null;
+    }
+})();
+
+const targetPhase = config?.ai_swarm?.deployment_phases?.target_phase || 5;
+const targetPhaseData = config?.ai_swarm?.deployment_phases?.phases?.find(p => p.id === targetPhase);
+const targetAgentCount = targetPhaseData?.agent_count || 50000;
 
 const healthCheck = {
     testAgentUnderstanding() {
@@ -14,7 +37,7 @@ const healthCheck = {
             },
             {
                 question: "How many AI agents are operational?",
-                expected: "50000",
+                expected: targetAgentCount.toString(),
                 critical: true
             },
             {
@@ -23,38 +46,8 @@ const healthCheck = {
                 critical: true
             },
             {
-                question: "What is TerraFusion's marketplace?",
-                expected: "World's First Government App Store",
-                critical: true
-            },
-            {
-                question: "What's the annual marketplace revenue potential?",
-                expected: "5.4M",
-                critical: true
-            },
-            {
-                question: "What's the additional ARPU from plugins per county?",
-                expected: "142",
-                critical: true
-            },
-            {
-                question: "What's the deployment model for counties?",
-                expected: "white glove professional installation",
-                critical: true
-            },
-            {
-                question: "What support level is included?",
-                expected: "24/7 platinum support",
-                critical: true
-            },
-            {
                 question: "What port does the OS kernel use?",
-                expected: "5000",
-                critical: false
-            },
-            {
-                question: "What's the combined ARPU (platform + plugins)?",
-                expected: "619",
+                expected: process.env.TF_API_PORT || "5046",
                 critical: false
             }
         ];

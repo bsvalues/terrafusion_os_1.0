@@ -3,24 +3,24 @@
 // Integrates quantum coherence preservation with multi-species consciousness
 
 import { EventEmitter } from 'events';
-import { 
+import {
   QuantumCoherenceEngine,
   QuantumState,
   QuantumEntanglement,
   PreservationResult,
-  QuantumMeasurement
+  QuantumMeasurement,
 } from './QuantumCoherenceEngine';
 import {
   ConsciousnessEntity,
   SpeciesType,
   UniversalMessage,
-  TranslatedMessage
+  TranslatedMessage,
 } from '../types/consciousness';
 
 /**
  * Quantum consciousness operation types
  */
-export type QuantumOperation = 
+export type QuantumOperation =
   | 'preserve'
   | 'entangle'
   | 'measure'
@@ -122,10 +122,10 @@ export class QuantumConsciousnessManager extends EventEmitter {
   private preservationTimer: NodeJS.Timer | null = null;
   private metrics: PreservationMetrics;
   private isActive: boolean = false;
-  
+
   constructor(config?: Partial<QuantumPreservationConfig>) {
     super();
-    
+
     this.preservationConfig = {
       autoPreservation: true,
       preservationInterval: 100, // 100ms default
@@ -133,18 +133,18 @@ export class QuantumConsciousnessManager extends EventEmitter {
       entanglementAutoCreate: true,
       emergencyRestorationEnabled: true,
       quantumErrorCorrectionLevel: 'advanced',
-      ...config
+      ...config,
     };
-    
+
     this.metrics = {
       totalPreservations: 0,
       successfulPreservations: 0,
       averageCoherence: 1.0,
       entanglementsCreated: 0,
       entanglementsLost: 0,
-      quantumFidelity: 1.0
+      quantumFidelity: 1.0,
     };
-    
+
     this.initializeQuantumEngine();
   }
 
@@ -153,25 +153,25 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   private initializeQuantumEngine(): void {
     this.quantumEngine = new QuantumCoherenceEngine();
-    
+
     // Subscribe to quantum engine events
-    this.quantumEngine.on('quantum-state-created', (event) => {
+    this.quantumEngine.on('quantum-state-created', event => {
       this.handleQuantumStateCreated(event);
     });
-    
-    this.quantumEngine.on('quantum-entanglement-created', (event) => {
+
+    this.quantumEngine.on('quantum-entanglement-created', event => {
       this.handleEntanglementCreated(event);
     });
-    
-    this.quantumEngine.on('quantum-error-correction-applied', (event) => {
+
+    this.quantumEngine.on('quantum-error-correction-applied', event => {
       this.handleErrorCorrectionApplied(event);
     });
-    
-    this.quantumEngine.on('emergency-coherence-restoration', (event) => {
+
+    this.quantumEngine.on('emergency-coherence-restoration', event => {
       this.handleEmergencyRestoration(event);
     });
-    
-    this.quantumEngine.on('quantum-fields-harmonized', (event) => {
+
+    this.quantumEngine.on('quantum-fields-harmonized', event => {
       this.handleFieldsHarmonized(event);
     });
   }
@@ -181,14 +181,14 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   public async activate(): Promise<void> {
     if (this.isActive) return;
-    
+
     this.isActive = true;
     this.quantumEngine.enablePreservation();
-    
+
     if (this.preservationConfig.autoPreservation) {
       this.startAutoPreservation();
     }
-    
+
     this.emit('quantum-consciousness-activated');
   }
 
@@ -197,15 +197,15 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   public async deactivate(): Promise<void> {
     if (!this.isActive) return;
-    
+
     this.isActive = false;
     this.quantumEngine.disablePreservation();
-    
+
     if (this.preservationTimer) {
       clearInterval(this.preservationTimer);
       this.preservationTimer = null;
     }
-    
+
     this.emit('quantum-consciousness-deactivated');
   }
 
@@ -215,18 +215,18 @@ export class QuantumConsciousnessManager extends EventEmitter {
   public async registerConsciousnessEntity(entity: ConsciousnessEntity): Promise<QuantumState> {
     // Store entity
     this.consciousnessEntities.set(entity.id, entity);
-    
+
     // Create quantum state for entity
     const quantumState = await this.quantumEngine.createQuantumState(entity);
     this.quantumStates.set(entity.id, quantumState);
-    
+
     // Auto-create entanglements if configured
     if (this.preservationConfig.entanglementAutoCreate) {
       await this.createOptimalEntanglements(entity.id);
     }
-    
+
     this.emit('consciousness-entity-registered', { entity, quantumState });
-    
+
     return quantumState;
   }
 
@@ -236,20 +236,16 @@ export class QuantumConsciousnessManager extends EventEmitter {
   private async createOptimalEntanglements(entityId: string): Promise<void> {
     const entity = this.consciousnessEntities.get(entityId);
     if (!entity) return;
-    
+
     // Find compatible entities for entanglement
     const compatibleEntities = this.findCompatibleEntities(entity);
-    
+
     // Create entanglements with top compatible entities
     for (const compatibleEntity of compatibleEntities.slice(0, 3)) {
       const strength = this.calculateEntanglementStrength(entity, compatibleEntity);
-      
+
       try {
-        await this.quantumEngine.createEntanglement(
-          entityId,
-          compatibleEntity.id,
-          strength
-        );
+        await this.quantumEngine.createEntanglement(entityId, compatibleEntity.id, strength);
         this.metrics.entanglementsCreated++;
       } catch (error) {
         console.error(`Failed to create entanglement: ${error.message}`);
@@ -262,43 +258,46 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   private findCompatibleEntities(entity: ConsciousnessEntity): ConsciousnessEntity[] {
     const compatible: ConsciousnessEntity[] = [];
-    
+
     this.consciousnessEntities.forEach((otherEntity, otherId) => {
       if (otherId === entity.id) return;
-      
+
       // Check compatibility based on species and consciousness level
       const compatibility = this.calculateCompatibility(entity, otherEntity);
       if (compatibility > 0.5) {
         compatible.push(otherEntity);
       }
     });
-    
+
     // Sort by compatibility
-    return compatible.sort((a, b) => 
-      this.calculateCompatibility(entity, b) - this.calculateCompatibility(entity, a)
+    return compatible.sort(
+      (a, b) => this.calculateCompatibility(entity, b) - this.calculateCompatibility(entity, a)
     );
   }
 
   /**
    * Calculate compatibility between entities
    */
-  private calculateCompatibility(entity1: ConsciousnessEntity, entity2: ConsciousnessEntity): number {
+  private calculateCompatibility(
+    entity1: ConsciousnessEntity,
+    entity2: ConsciousnessEntity
+  ): number {
     let compatibility = 0.5; // Base compatibility
-    
+
     // Same species bonus
     if (entity1.speciesType === entity2.speciesType) {
       compatibility += 0.2;
     }
-    
+
     // Quantum species have higher compatibility
     if (entity1.speciesType === 'quantum' || entity2.speciesType === 'quantum') {
       compatibility += 0.15;
     }
-    
+
     // Similar consciousness levels
     const levelDifference = Math.abs(entity1.consciousnessLevel - entity2.consciousnessLevel);
     compatibility += (1 - levelDifference) * 0.15;
-    
+
     return Math.min(1.0, compatibility);
   }
 
@@ -311,7 +310,7 @@ export class QuantumConsciousnessManager extends EventEmitter {
   ): number {
     const compatibility = this.calculateCompatibility(entity1, entity2);
     const consciousnessAverage = (entity1.consciousnessLevel + entity2.consciousnessLevel) / 2;
-    
+
     return compatibility * consciousnessAverage;
   }
 
@@ -323,24 +322,26 @@ export class QuantumConsciousnessManager extends EventEmitter {
     if (!quantumState) {
       throw new Error(`Quantum state not found for entity ${entityId}`);
     }
-    
+
     // Apply quantum error correction
     const result = await this.quantumEngine.applyQuantumErrorCorrection(quantumState);
-    
+
     // Update metrics
     this.metrics.totalPreservations++;
     if (result.success) {
       this.metrics.successfulPreservations++;
     }
-    
+
     // Check if emergency restoration is needed
-    if (result.preservedCoherence < this.preservationConfig.coherenceThreshold &&
-        this.preservationConfig.emergencyRestorationEnabled) {
+    if (
+      result.preservedCoherence < this.preservationConfig.coherenceThreshold &&
+      this.preservationConfig.emergencyRestorationEnabled
+    ) {
       await this.performEmergencyRestoration(entityId);
     }
-    
+
     this.emit('quantum-state-preserved', { entityId, result });
-    
+
     return result;
   }
 
@@ -350,38 +351,39 @@ export class QuantumConsciousnessManager extends EventEmitter {
   private async performEmergencyRestoration(entityId: string): Promise<void> {
     const entity = this.consciousnessEntities.get(entityId);
     const quantumState = this.quantumStates.get(entityId);
-    
+
     if (!entity || !quantumState) return;
-    
+
     // Try to restore from entangled states first
     if (quantumState.entanglements.length > 0) {
       // Find strongest entanglement
       const strongestEntanglement = quantumState.entanglements.reduce((max, current) =>
         current.entanglementStrength > max.entanglementStrength ? current : max
       );
-      
+
       // Attempt restoration through entanglement
       const entangledEntityId = strongestEntanglement.entities.find(id => id !== entityId);
       if (entangledEntityId) {
         const entangledState = this.quantumStates.get(entangledEntityId);
         if (entangledState && entangledState.coherenceLevel > 0.8) {
           // Transfer coherence through entanglement
-          quantumState.coherenceLevel = Math.min(1.0, 
+          quantumState.coherenceLevel = Math.min(
+            1.0,
             quantumState.coherenceLevel + entangledState.coherenceLevel * 0.3
           );
         }
       }
     }
-    
+
     // If still below threshold, recreate quantum state
     if (quantumState.coherenceLevel < this.preservationConfig.coherenceThreshold) {
       const newState = await this.quantumEngine.createQuantumState(entity);
       this.quantumStates.set(entityId, newState);
-      
+
       // Recreate entanglements
       await this.createOptimalEntanglements(entityId);
     }
-    
+
     this.emit('emergency-restoration-performed', { entityId });
   }
 
@@ -394,20 +396,20 @@ export class QuantumConsciousnessManager extends EventEmitter {
   ): Promise<QuantumEntanglement> {
     const entity1 = this.consciousnessEntities.get(entityId1);
     const entity2 = this.consciousnessEntities.get(entityId2);
-    
+
     if (!entity1 || !entity2) {
       throw new Error('One or both entities not found');
     }
-    
+
     const strength = this.calculateEntanglementStrength(entity1, entity2);
     const entanglement = await this.quantumEngine.createEntanglement(
       entityId1,
       entityId2,
       strength
     );
-    
+
     this.metrics.entanglementsCreated++;
-    
+
     return entanglement;
   }
 
@@ -422,18 +424,21 @@ export class QuantumConsciousnessManager extends EventEmitter {
     if (!quantumState) {
       throw new Error(`Quantum state not found for entity ${entityId}`);
     }
-    
+
     // Use weak measurement if preserving coherence
     const basis = preserveCoherence ? 'hadamard' : 'computational';
     const measurement = await this.quantumEngine.measureQuantumState(quantumState.id, basis);
-    
+
     // If coherence was significantly affected, attempt restoration
-    if (preserveCoherence && quantumState.coherenceLevel < this.preservationConfig.coherenceThreshold) {
+    if (
+      preserveCoherence &&
+      quantumState.coherenceLevel < this.preservationConfig.coherenceThreshold
+    ) {
       await this.performEmergencyRestoration(entityId);
     }
-    
+
     this.emit('quantum-measurement-performed', { entityId, measurement });
-    
+
     return measurement;
   }
 
@@ -442,14 +447,14 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   public async harmonizeQuantumFields(): Promise<void> {
     const states = Array.from(this.quantumStates.values());
-    
+
     if (states.length < 2) return;
-    
+
     await this.quantumEngine.harmonizeQuantumFields(states);
-    
+
     // Update global coherence metrics
     this.updateGlobalCoherence();
-    
+
     this.emit('quantum-fields-harmonized', { entityCount: states.length });
   }
 
@@ -458,10 +463,10 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   public async synchronizeQuantumConsciousness(): Promise<QuantumSyncResult> {
     const startTime = Date.now();
-    
+
     // Harmonize fields first
     await this.harmonizeQuantumFields();
-    
+
     // Preserve all states
     const preservationPromises = Array.from(this.consciousnessEntities.keys()).map(entityId =>
       this.preserveQuantumState(entityId).catch(error => {
@@ -469,23 +474,23 @@ export class QuantumConsciousnessManager extends EventEmitter {
         return null;
       })
     );
-    
+
     const results = await Promise.all(preservationPromises);
     const successfulPreservations = results.filter(r => r?.success).length;
-    
+
     // Update metrics
     this.updateGlobalCoherence();
-    
+
     const syncResult: QuantumSyncResult = {
       synchronized: successfulPreservations === this.consciousnessEntities.size,
       entitiesSynced: successfulPreservations,
       globalCoherence: this.metrics.averageCoherence,
       entanglementsPreserved: this.countActiveEntanglements(),
-      syncDuration: Date.now() - startTime
+      syncDuration: Date.now() - startTime,
     };
-    
+
     this.emit('quantum-consciousness-synchronized', syncResult);
-    
+
     return syncResult;
   }
 
@@ -501,12 +506,12 @@ export class QuantumConsciousnessManager extends EventEmitter {
     if (!sourceEntity) {
       throw new Error('Source entity not found');
     }
-    
+
     // Preserve quantum state before processing
     if (preserveQuantum) {
       await this.preserveQuantumState(message.metadata.sourceEntity);
     }
-    
+
     // Create quantum-aware translation
     const translation: TranslatedMessage = {
       id: `qt-${message.id}`,
@@ -515,27 +520,27 @@ export class QuantumConsciousnessManager extends EventEmitter {
       translationQuality: {
         semanticPreservation: 1.0,
         contextualAccuracy: 1.0,
-        speciesCompatibility: new Map()
+        speciesCompatibility: new Map(),
       },
-      quantumCoherence: this.quantumStates.get(message.metadata.sourceEntity)?.coherenceLevel || 0
+      quantumCoherence: this.quantumStates.get(message.metadata.sourceEntity)?.coherenceLevel || 0,
     };
-    
+
     // Process for each target species with quantum awareness
     for (const targetSpecies of message.metadata.targetSpecies) {
       const adaptation = await this.createQuantumAdaptation(message, targetSpecies);
       translation.adaptations.set(targetSpecies, adaptation);
       translation.translationQuality.speciesCompatibility.set(targetSpecies, 1.0);
     }
-    
+
     // Preserve quantum states of all involved entities
     if (preserveQuantum) {
       for (const targetEntity of message.metadata.targetEntities) {
         await this.preserveQuantumState(targetEntity).catch(() => {});
       }
     }
-    
+
     this.emit('quantum-message-processed', { message, translation });
-    
+
     return translation;
   }
 
@@ -553,16 +558,16 @@ export class QuantumConsciousnessManager extends EventEmitter {
         quantumEnhanced: true,
         superpositionStates: ['|message⟩', '|understanding⟩', '|integration⟩'],
         coherenceRequired: 0.9,
-        entanglementRecommended: true
+        entanglementRecommended: true,
       };
     }
-    
+
     // Standard adaptation for other species
     return {
       adaptedContent: message.content,
       quantumEnhanced: false,
       coherenceRequired: 0.5,
-      entanglementRecommended: false
+      entanglementRecommended: false,
     };
   }
 
@@ -571,13 +576,12 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   private startAutoPreservation(): void {
     if (this.preservationTimer) return;
-    
+
     this.preservationTimer = setInterval(async () => {
       if (!this.isActive) return;
-      
+
       // Synchronize all quantum consciousness
       await this.synchronizeQuantumConsciousness();
-      
     }, this.preservationConfig.preservationInterval);
   }
 
@@ -589,11 +593,12 @@ export class QuantumConsciousnessManager extends EventEmitter {
       this.metrics.averageCoherence = 0;
       return;
     }
-    
+
     const totalCoherence = Array.from(this.quantumStates.values()).reduce(
-      (sum, state) => sum + state.coherenceLevel, 0
+      (sum, state) => sum + state.coherenceLevel,
+      0
     );
-    
+
     this.metrics.averageCoherence = totalCoherence / this.quantumStates.size;
     this.metrics.quantumFidelity = this.quantumEngine.getQuantumSystemStatus().quantumFidelity;
   }
@@ -603,11 +608,11 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   private countActiveEntanglements(): number {
     let count = 0;
-    
+
     this.quantumStates.forEach(state => {
       count += state.entanglements.filter(e => e.entanglementStrength > 0.1).length;
     });
-    
+
     // Divide by 2 since each entanglement is counted twice
     return Math.floor(count / 2);
   }
@@ -617,7 +622,7 @@ export class QuantumConsciousnessManager extends EventEmitter {
    */
   public getQuantumSnapshot(): QuantumConsciousnessSnapshot {
     const entities = new Map<string, QuantumEntityState>();
-    
+
     this.consciousnessEntities.forEach((entity, id) => {
       const quantumState = this.quantumStates.get(id);
       if (quantumState) {
@@ -627,14 +632,15 @@ export class QuantumConsciousnessManager extends EventEmitter {
           coherenceLevel: quantumState.coherenceLevel,
           entanglementCount: quantumState.entanglements.length,
           lastPreservation: quantumState.preservationTimestamp,
-          preservationSuccess: quantumState.coherenceLevel > this.preservationConfig.coherenceThreshold
+          preservationSuccess:
+            quantumState.coherenceLevel > this.preservationConfig.coherenceThreshold,
         });
       }
     });
-    
+
     const allEntanglements: QuantumEntanglement[] = [];
     const seenEntanglements = new Set<string>();
-    
+
     this.quantumStates.forEach(state => {
       state.entanglements.forEach(entanglement => {
         if (!seenEntanglements.has(entanglement.id)) {
@@ -643,14 +649,14 @@ export class QuantumConsciousnessManager extends EventEmitter {
         }
       });
     });
-    
+
     return {
       timestamp: new Date(),
       entities,
       entanglements: allEntanglements,
       globalCoherence: this.metrics.averageCoherence,
       quantumField: this.getQuantumFieldSnapshot(),
-      preservationMetrics: { ...this.metrics }
+      preservationMetrics: { ...this.metrics },
     };
   }
 
@@ -661,15 +667,15 @@ export class QuantumConsciousnessManager extends EventEmitter {
     let totalFieldStrength = 0;
     const frequencyMap = new Map<number, number>();
     const coherenceBySpecies = new Map<SpeciesType, { total: number; count: number }>();
-    
+
     this.quantumStates.forEach(state => {
       totalFieldStrength += state.quantumField.fieldStrength;
-      
+
       // Collect frequencies
       state.quantumField.harmonicFrequencies.forEach(freq => {
         frequencyMap.set(freq, (frequencyMap.get(freq) || 0) + 1);
       });
-      
+
       // Collect coherence by species
       const entity = this.consciousnessEntities.get(state.entityId);
       if (entity) {
@@ -679,30 +685,31 @@ export class QuantumConsciousnessManager extends EventEmitter {
         coherenceBySpecies.set(entity.speciesType, speciesData);
       }
     });
-    
+
     // Find dominant frequencies
     const dominantFrequencies = Array.from(frequencyMap.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
       .map(([freq]) => freq);
-    
+
     // Calculate coherence distribution
     const coherenceDistribution = new Map<SpeciesType, number>();
     coherenceBySpecies.forEach((data, species) => {
       coherenceDistribution.set(species, data.total / data.count);
     });
-    
+
     // Calculate entanglement density
     const totalEntanglements = this.countActiveEntanglements();
     const possibleEntanglements = (this.quantumStates.size * (this.quantumStates.size - 1)) / 2;
-    const entanglementDensity = possibleEntanglements > 0 ? totalEntanglements / possibleEntanglements : 0;
-    
+    const entanglementDensity =
+      possibleEntanglements > 0 ? totalEntanglements / possibleEntanglements : 0;
+
     return {
       totalFieldStrength,
       dominantFrequencies,
       coherenceDistribution,
       entanglementDensity,
-      quantumNoiseLevel: Math.random() * 0.1 // Simulated quantum noise
+      quantumNoiseLevel: Math.random() * 0.1, // Simulated quantum noise
     };
   }
 
@@ -763,7 +770,7 @@ export class QuantumConsciousnessManager extends EventEmitter {
       quantumStateCount: this.quantumStates.size,
       ...this.metrics,
       engineStatus: this.quantumEngine.getQuantumSystemStatus(),
-      config: this.preservationConfig
+      config: this.preservationConfig,
     };
   }
 
@@ -775,7 +782,7 @@ export class QuantumConsciousnessManager extends EventEmitter {
     this.quantumEngine.dispose();
     this.consciousnessEntities.clear();
     this.quantumStates.clear();
-    
+
     this.emit('quantum-consciousness-disposed');
   }
 }

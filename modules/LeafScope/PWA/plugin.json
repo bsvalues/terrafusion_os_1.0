@@ -1,0 +1,34 @@
+{
+  "id": "LeafScope",
+  "name": "LeafScope",
+  "version": "1.0.0",
+  "type": "module",
+  "entry": "./index.js",
+  "description": "TerraFusion LeafScope module for government operations",
+  "category": "government",
+  "price": "$2300/year",
+  "author": "TerraFusion OS",
+  "marketplace": {
+    "featured": true,
+    "revenue_sharing": "70_30",
+    "compatibility": ["all_counties"],
+    "requirements": ["terrafusion_os_1.0"],
+    "rating": 4.7,
+    "downloads": 1271
+  },
+  "endpoints": {
+    "health": "/modules/LeafScope/health",
+    "api": "/modules/LeafScope/api",
+    "ui": "/modules/LeafScope/ui"
+  },
+  "permissions": [
+    "government_data_access",
+    "county_system_integration",
+    "revenue_tracking"
+  ],
+  "hot_swap": {
+    "enabled": true,
+    "restart_required": false,
+    "dependencies": []
+  }
+}

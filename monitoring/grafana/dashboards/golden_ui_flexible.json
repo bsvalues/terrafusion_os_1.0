@@ -1,0 +1,118 @@
+{
+  "title": "Golden UI \u2014 Flexible Product (Ingress Agnostic)",
+  "templating": {
+    "list": [
+      {
+        "name": "ds",
+        "type": "datasource",
+        "query": "prometheus",
+        "label": "Datasource",
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        }
+      },
+      {
+        "name": "host",
+        "type": "query",
+        "datasource": "$ds",
+        "label": "Host (ingress)",
+        "query": "label_values(nginx_ingress_controller_requests, host)",
+        "current": {
+          "text": "golden.example.gov",
+          "value": "golden.example.gov"
+        }
+      },
+      {
+        "name": "ingress_mode",
+        "type": "custom",
+        "label": "Ingress mode",
+        "query": "nginx,envoy,traefik",
+        "current": {
+          "text": "nginx",
+          "value": "nginx"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Requests/sec by path",
+      "datasource": "$ds",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (path) (rate(nginx_ingress_controller_requests{host=~\"$host\"}[$__rate_interval]))",
+          "legendFormat": "nginx {{path}}"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (envoy_response_code, envoy_cluster_name) (rate(envoy_http_downstream_rq_total[$__rate_interval]))",
+          "legendFormat": "envoy {{envoy_cluster_name}}"
+        },
+        {
+          "refId": "C",
+          "expr": "sum by (service, code) (rate(traefik_service_requests_total[$__rate_interval]))",
+          "legendFormat": "traefik {{service}} {{code}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "p95 latency",
+      "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{host=~\"$host\"}[$__rate_interval])) by (le))",
+          "legendFormat": "nginx p95"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum(rate(envoy_http_downstream_rq_time_bucket[$__rate_interval])) by (le))",
+          "legendFormat": "envoy p95"
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.95, sum(rate(traefik_service_request_duration_seconds_bucket[$__rate_interval])) by (le))",
+          "legendFormat": "traefik p95"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP 4xx/5xx %",
+      "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum(rate(nginx_ingress_controller_requests{status=~\"4..|5..\",host=~\"$host\"}[$__rate_interval])) / sum(rate(nginx_ingress_controller_requests{host=~\"$host\"}[$__rate_interval]))",
+          "legendFormat": "nginx"
+        },
+        {
+          "refId": "B",
+          "expr": "100 * sum(rate(envoy_http_downstream_rq_xx{xx=\"4xx\"}[$__rate_interval]) + rate(envoy_http_downstream_rq_xx{xx=\"5xx\"}[$__rate_interval])) / sum(rate(envoy_http_downstream_rq_total[$__rate_interval]))",
+          "legendFormat": "envoy"
+        },
+        {
+          "refId": "C",
+          "expr": "100 * sum(rate(traefik_service_requests_total{code=~\"4..|5..\"}[$__rate_interval])) / sum(rate(traefik_service_requests_total[$__rate_interval]))",
+          "legendFormat": "traefik"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

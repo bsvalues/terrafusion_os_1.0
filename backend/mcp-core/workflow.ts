@@ -1,6 +1,6 @@
 /**
  * Workflow Engine for MCP
- * 
+ *
  * This module implements the Workflow Engine for the Model Content Protocol.
  * It provides functionality to define, register, and execute workflows based on the
  * perception-reasoning-action cycle.
@@ -158,9 +158,9 @@ export class WorkflowEngine {
     const state = new WorkflowState();
     const startTime = Date.now();
     const stepsExecuted: string[] = [];
-    
+
     let currentInput = input;
-    
+
     for (const step of workflow.steps) {
       // Check step condition if defined
       if (step.condition) {
@@ -169,7 +169,7 @@ export class WorkflowEngine {
           continue; // Skip this step
         }
       }
-      
+
       try {
         currentInput = await step.execute(currentInput, state);
         stepsExecuted.push(step.name);
@@ -193,9 +193,9 @@ export class WorkflowEngine {
         }
       }
     }
-    
+
     const executionTime = Date.now() - startTime;
-    
+
     // We're returning just the current input for now instead of the full result object
     // to simplify the implementation and match the test expectations
     return currentInput;
@@ -217,21 +217,21 @@ export function createStandardWorkflowSteps(): {
       execute: async (input, state) => {
         // Implement perception logic
         return { ...input, perception: 'processed' };
-      }
+      },
     },
     reasoning: {
       name: 'reasoning',
       execute: async (input, state) => {
         // Implement reasoning logic
         return { ...input, reasoning: 'analyzed' };
-      }
+      },
     },
     action: {
       name: 'action',
       execute: async (input, state) => {
         // Implement action logic
         return { ...input, action: 'executed' };
-      }
-    }
+      },
+    },
   };
 }

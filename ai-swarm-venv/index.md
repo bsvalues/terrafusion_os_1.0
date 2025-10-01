@@ -1,14 +1,16 @@
 # ai-swarm-venv Directory Index
 
 ## Directory Overview
+
 **Location**: `/ai-swarm-venv/`  
 **Purpose**: Python virtual environment for AI agent swarm orchestration  
 **Classification**: AI Infrastructure Environment  
-**Security Level**: Isolated AI Development Environment  
+**Security Level**: Isolated AI Development Environment
 
 ## Architecture Summary
 
 ### Primary Components
+
 ```
 ai-swarm-venv/
 ├── bin/                                # Python executable binaries and scripts
@@ -22,6 +24,7 @@ ai-swarm-venv/
 ```
 
 ### Key Capabilities
+
 - **AI Agent Runtime**: Isolated Python environment for 1,008 AI agents
 - **ML Framework Integration**: TensorFlow, PyTorch, scikit-learn isolation
 - **Government AI Libraries**: Specialized government AI packages
@@ -31,6 +34,7 @@ ai-swarm-venv/
 ## Python Virtual Environment Architecture
 
 ### Environment Configuration (`pyvenv.cfg`)
+
 ```ini
 home = /usr/bin
 include-system-site-packages = false
@@ -40,6 +44,7 @@ command = /usr/bin/python -m venv ai-swarm-venv
 ```
 
 ### Core Environment Specifications
+
 - **Python Version**: 3.12.0 (Latest stable with AI optimizations)
 - **Architecture**: 64-bit Linux (government cloud compatible)
 - **Isolation Level**: Complete isolation from system packages
@@ -49,6 +54,7 @@ command = /usr/bin/python -m venv ai-swarm-venv
 ## AI Agent Environment Dependencies
 
 ### Core AI/ML Framework Stack
+
 ```python
 # Essential AI frameworks for government operations
 tensorflow>=2.14.0              # Deep learning framework
@@ -73,6 +79,7 @@ websockets>=12.0                # Real-time communication
 ```
 
 ### Government-Specific AI Packages
+
 ```python
 # Government compliance and security
 cryptography>=41.0.0            # Government-grade encryption
@@ -100,6 +107,7 @@ psutil>=5.9.6                   # System monitoring
 ## AI Agent Swarm Integration
 
 ### Agent Runtime Environment
+
 ```python
 # AI agent execution environment
 class AIAgentEnvironment:
@@ -108,7 +116,7 @@ class AIAgentEnvironment:
         self.agent_count = 1008
         self.isolation_level = "complete"
         self.security_model = "government_grade"
-        
+
     async def initialize_swarm(self):
         """Initialize 1,008 AI agents in isolated environment"""
         agents = []
@@ -123,6 +131,7 @@ class AIAgentEnvironment:
 ```
 
 ### Agent Communication Framework
+
 ```python
 # Inter-agent communication using Redis and MQTT
 import asyncio
@@ -131,10 +140,10 @@ from asyncio_mqtt import Client as MQTTClient
 
 class AgentCommunicationFramework:
     def __init__(self):
-        self.redis_client = redis.from_url("redis://localhost:6379")
+        self.redis_client = redis.from_url("redis://localhost:\${{TF_REDIS_PORT:-6379}}")
         self.mqtt_broker = "localhost"
         self.coordination_topic = "terrafusion/agents/coordination"
-    
+
     async def setup_agent_network(self):
         """Setup communication network for 1,008 agents"""
         async with MQTTClient(self.mqtt_broker) as client:
@@ -145,19 +154,20 @@ class AgentCommunicationFramework:
 ## Government AI Development Environment
 
 ### Security and Compliance Framework
+
 ```python
 # Government-grade security for AI operations
 class GovernmentAISecurity:
     def __init__(self):
         self.compliance_frameworks = [
             "FISMA",
-            "NIST-800-53", 
+            "NIST-800-53",
             "SOC2",
             "FedRAMP"
         ]
         self.encryption_standard = "AES-256"
         self.audit_logging = True
-    
+
     def validate_ai_operation(self, operation):
         """Validate AI operations against government standards"""
         security_checks = [
@@ -170,6 +180,7 @@ class GovernmentAISecurity:
 ```
 
 ### AI Model Management
+
 ```python
 # AI model lifecycle management in government environment
 import torch
@@ -181,21 +192,21 @@ class GovernmentAIModelManager:
         self.model_registry = {}
         self.security_scanner = SecurityModelScanner()
         self.compliance_validator = ComplianceValidator()
-    
+
     async def load_government_model(self, model_name: str):
         """Load AI model with government security validation"""
         # Security scan model before loading
         security_report = await self.security_scanner.scan_model(model_name)
         if not security_report.is_safe:
             raise SecurityError(f"Model {model_name} failed security scan")
-        
+
         # Load with government compliance wrapper
         model = AutoModel.from_pretrained(
             model_name,
             trust_remote_code=False,  # Government security requirement
             use_safetensors=True      # Secure tensor format
         )
-        
+
         # Wrap with compliance monitoring
         return GovernmentModelWrapper(model, compliance_validator=self.compliance_validator)
 ```
@@ -203,6 +214,7 @@ class GovernmentAIModelManager:
 ## Performance and Resource Management
 
 ### Virtual Environment Performance
+
 - **Memory Isolation**: Complete memory sandboxing from system Python
 - **CPU Optimization**: Python 3.12 performance improvements for AI workloads
 - **Disk I/O**: Optimized package loading for ML libraries
@@ -210,6 +222,7 @@ class GovernmentAIModelManager:
 - **Resource Limits**: Configurable memory and CPU limits per agent
 
 ### AI Workload Optimization
+
 ```python
 # Performance optimization for AI agent swarm
 class AIPerformanceOptimizer:
@@ -217,7 +230,7 @@ class AIPerformanceOptimizer:
         self.max_concurrent_agents = 1008
         self.memory_per_agent = "256MB"
         self.cpu_shares_per_agent = 0.1
-    
+
     async def optimize_swarm_performance(self):
         """Optimize performance for 1,008 concurrent AI agents"""
         optimizations = [
@@ -231,6 +244,7 @@ class AIPerformanceOptimizer:
 ```
 
 ### Resource Monitoring
+
 ```python
 # AI environment resource monitoring
 import psutil
@@ -242,7 +256,7 @@ class AIEnvironmentMonitor:
         self.cpu_usage = Gauge('ai_swarm_cpu_percent', 'AI swarm CPU usage')
         self.agent_count = Gauge('ai_swarm_active_agents', 'Active AI agents')
         self.inference_requests = Counter('ai_swarm_inferences_total', 'AI inference requests')
-    
+
     async def monitor_ai_resources(self):
         """Monitor AI swarm resource utilization"""
         while True:
@@ -255,6 +269,7 @@ class AIEnvironmentMonitor:
 ## Development and Deployment
 
 ### Environment Setup and Activation
+
 ```bash
 # Virtual environment management
 python3.12 -m venv ai-swarm-venv       # Create virtual environment
@@ -272,6 +287,7 @@ pip list | grep -E "(torch|tensorflow|anthropic)" # Verify AI packages
 ```
 
 ### AI Agent Development Workflow
+
 ```bash
 # AI agent development within virtual environment
 cd ai-models/swarm/
@@ -287,6 +303,7 @@ python benchmark/swarm_coordination.py # Test 1,008 agent coordination
 ```
 
 ### Government Deployment Preparation
+
 ```bash
 # Production environment preparation
 pip freeze > requirements.txt          # Lock dependency versions
@@ -302,6 +319,7 @@ python scripts/performance_test.py     # Performance validation
 ## Security and Compliance
 
 ### Virtual Environment Security
+
 - **Package Isolation**: Complete isolation from system Python packages
 - **Dependency Control**: Locked versions for security and reproducibility
 - **Security Scanning**: Regular vulnerability scanning of AI packages
@@ -309,6 +327,7 @@ python scripts/performance_test.py     # Performance validation
 - **Access Control**: Restricted access to AI environment and models
 
 ### AI-Specific Security Measures
+
 ```python
 # AI security framework within virtual environment
 class AISecurityFramework:
@@ -322,7 +341,7 @@ class AISecurityFramework:
             "file_system_access",
             "network_access"
         ]
-    
+
     def validate_ai_operation(self, operation):
         """Validate AI operations for government compliance"""
         return all([
@@ -336,14 +355,15 @@ class AISecurityFramework:
 ## Integration Architecture
 
 ### Terrafusion Platform Integration
+
 ```python
 # Integration with Terrafusion OS components
 class TerraFusionAIIntegration:
     def __init__(self):
-        self.api_endpoint = "http://localhost:5000"
-        self.redis_cache = "redis://localhost:6379"
-        self.postgres_db = "postgresql://localhost:5432/terrafusion"
-    
+        self.api_endpoint = "http://localhost:\${{TF_REDIS_PORT:-6379}}"
+        self.redis_cache = "redis://localhost:\${{TF_REDIS_PORT:-6379}}"
+        self.postgres_db = "postgresql://localhost:\${{TF_REDIS_PORT:-6379}}/terrafusion"
+
     async def integrate_with_platform(self):
         """Integrate AI swarm with Terrafusion platform"""
         integrations = [
@@ -356,6 +376,7 @@ class TerraFusionAIIntegration:
 ```
 
 ### Government System Integration
+
 ```python
 # Government system integration patterns
 class GovernmentSystemIntegration:
@@ -363,7 +384,7 @@ class GovernmentSystemIntegration:
         self.harris_pacs_endpoint = "https://harris-pacs.county.gov"
         self.tyler_technologies_api = "https://tyler-api.county.gov"
         self.federal_ai_gateway = "https://ai-gateway.gov"
-    
+
     async def setup_government_integrations(self):
         """Setup AI agent integration with government systems"""
         government_apis = [
@@ -379,6 +400,7 @@ class GovernmentSystemIntegration:
 ## Quick Reference
 
 ### Essential Commands
+
 ```bash
 # Environment management
 source ai-swarm-venv/bin/activate      # Activate AI environment
@@ -393,12 +415,14 @@ python scripts/benchmark_ai.py         # Performance benchmarking
 ```
 
 ### Key Directories
+
 - **`bin/`**: Python executables and AI scripts
 - **`lib/python3.12/site-packages/`**: Installed AI/ML packages
 - **`include/`**: Python development headers
 - **`pyvenv.cfg`**: Environment configuration
 
 ### Integration Points
+
 - **Terrafusion API**: HTTP integration with main platform
 - **Redis Cache**: Agent coordination and state management
 - **PostgreSQL**: AI model metadata and results storage
@@ -408,4 +432,4 @@ python scripts/benchmark_ai.py         # Performance benchmarking
 
 **Last Updated**: August 27, 2025  
 **Version**: Python 3.12.0 AI Swarm Environment  
-**Authority**: Terrafusion AI Infrastructure Division  
+**Authority**: Terrafusion AI Infrastructure Division

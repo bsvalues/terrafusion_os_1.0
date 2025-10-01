@@ -296,7 +296,7 @@ export class MarketplaceMonitoring {
   // Real-time metrics collection
   async collectMetrics(): Promise<MonitoringMetrics> {
     const timestamp = new Date().toISOString();
-    
+
     const metrics: MonitoringMetrics = {
       system: await this.collectSystemMetrics(),
       marketplace: await this.collectMarketplaceMetrics(),
@@ -304,14 +304,14 @@ export class MarketplaceMonitoring {
       users: await this.collectUserMetrics(),
       performance: await this.collectPerformanceMetrics(),
       security: await this.collectSecurityMetrics(),
-      business: await this.collectBusinessMetrics()
+      business: await this.collectBusinessMetrics(),
     };
 
     this.metrics.set(timestamp, metrics);
-    
+
     // Check for alerts
     await this.checkAlertConditions(metrics);
-    
+
     return metrics;
   }
 
@@ -351,7 +351,7 @@ export class MarketplaceMonitoring {
   ): Promise<MonitoringReport> {
     const reportId = `${type}-${period}-${Date.now()}`;
     const metrics = this.getCurrentMetrics();
-    
+
     if (!metrics) {
       throw new Error('No metrics available for report generation');
     }
@@ -369,7 +369,7 @@ export class MarketplaceMonitoring {
       metrics,
       insights,
       recommendations,
-      trends
+      trends,
     };
 
     this.reports.set(reportId, report);
@@ -422,8 +422,8 @@ export class MarketplaceMonitoring {
         api: metrics.system.responseTime < 1000 ? 'healthy' : 'degraded',
         database: metrics.performance.databasePerformance.queryTime < 100 ? 'healthy' : 'degraded',
         cache: metrics.performance.cachePerformance.hitRate > 0.8 ? 'healthy' : 'degraded',
-        search: metrics.performance.searchPerformance.searchLatency < 200 ? 'healthy' : 'degraded'
-      }
+        search: metrics.performance.searchPerformance.searchLatency < 200 ? 'healthy' : 'degraded',
+      },
     };
   }
 
@@ -443,7 +443,7 @@ export class MarketplaceMonitoring {
           query: 'uptime',
           visualization: { chartType: 'line' },
           position: { x: 0, y: 0 },
-          size: { width: 2, height: 1 }
+          size: { width: 2, height: 1 },
         },
         {
           id: 'response-time',
@@ -453,7 +453,7 @@ export class MarketplaceMonitoring {
           query: 'responseTime',
           visualization: { chartType: 'line', colors: ['#3b82f6'] },
           position: { x: 2, y: 0 },
-          size: { width: 4, height: 2 }
+          size: { width: 4, height: 2 },
         },
         {
           id: 'error-rate',
@@ -463,7 +463,7 @@ export class MarketplaceMonitoring {
           query: 'errorRate',
           visualization: { chartType: 'area', colors: ['#ef4444'] },
           position: { x: 0, y: 2 },
-          size: { width: 3, height: 2 }
+          size: { width: 3, height: 2 },
         },
         {
           id: 'active-alerts',
@@ -473,13 +473,13 @@ export class MarketplaceMonitoring {
           query: 'active',
           visualization: {},
           position: { x: 3, y: 2 },
-          size: { width: 3, height: 2 }
-        }
+          size: { width: 3, height: 2 },
+        },
       ],
       layout: { columns: 6, rows: 4, responsive: true },
       filters: [],
       refreshInterval: 30,
-      permissions: ['admin', 'operator']
+      permissions: ['admin', 'operator'],
     };
 
     // Marketplace Dashboard
@@ -496,7 +496,7 @@ export class MarketplaceMonitoring {
           query: 'pluginDownloads',
           visualization: { chartType: 'bar' },
           position: { x: 0, y: 0 },
-          size: { width: 2, height: 1 }
+          size: { width: 2, height: 1 },
         },
         {
           id: 'user-engagement',
@@ -506,7 +506,7 @@ export class MarketplaceMonitoring {
           query: 'userEngagement',
           visualization: { chartType: 'line', colors: ['#10b981'] },
           position: { x: 2, y: 0 },
-          size: { width: 4, height: 2 }
+          size: { width: 4, height: 2 },
         },
         {
           id: 'revenue-trends',
@@ -516,15 +516,15 @@ export class MarketplaceMonitoring {
           query: 'revenue',
           visualization: { chartType: 'area', colors: ['#8b5cf6'] },
           position: { x: 0, y: 2 },
-          size: { width: 6, height: 2 }
-        }
+          size: { width: 6, height: 2 },
+        },
       ],
       layout: { columns: 6, rows: 4, responsive: true },
       filters: [
-        { field: 'timeRange', operator: 'between', value: ['7d', 'now'], label: 'Last 7 Days' }
+        { field: 'timeRange', operator: 'between', value: ['7d', 'now'], label: 'Last 7 Days' },
       ],
       refreshInterval: 60,
-      permissions: ['admin', 'business', 'analyst']
+      permissions: ['admin', 'business', 'analyst'],
     };
 
     this.dashboards.set(systemDashboard.id, systemDashboard);
@@ -554,7 +554,7 @@ export class MarketplaceMonitoring {
       memoryUsage: 40 + Math.random() * 30,
       diskUsage: 50 + Math.random() * 20,
       networkIO: Math.random() * 1000,
-      activeConnections: 100 + Math.random() * 200
+      activeConnections: 100 + Math.random() * 200,
     };
   }
 
@@ -569,7 +569,7 @@ export class MarketplaceMonitoring {
       recommendations: 2000 + Math.floor(Math.random() * 1000),
       conversionRate: 15 + Math.random() * 10,
       userSatisfaction: 4.2 + Math.random() * 0.6,
-      marketplaceRevenue: 50000 + Math.random() * 20000
+      marketplaceRevenue: 50000 + Math.random() * 20000,
     };
   }
 
@@ -586,7 +586,7 @@ export class MarketplaceMonitoring {
       performanceScore: 85 + Math.random() * 10,
       securityScore: 90 + Math.random() * 8,
       updateFrequency: Math.random() * 30,
-      supportTickets: Math.floor(Math.random() * 10)
+      supportTickets: Math.floor(Math.random() * 10),
     };
   }
 
@@ -601,7 +601,7 @@ export class MarketplaceMonitoring {
       bounceRate: 20 + Math.random() * 10,
       userEngagement: 70 + Math.random() * 20,
       supportSatisfaction: 4.0 + Math.random() * 0.8,
-      churnRate: 5 + Math.random() * 3
+      churnRate: 5 + Math.random() * 3,
     };
   }
 
@@ -612,36 +612,36 @@ export class MarketplaceMonitoring {
         p95: 200 + Math.random() * 100,
         p99: 500 + Math.random() * 200,
         average: 150 + Math.random() * 75,
-        max: 1000 + Math.random() * 500
+        max: 1000 + Math.random() * 500,
       },
       databasePerformance: {
         connectionPool: 80 + Math.random() * 15,
         queryTime: 50 + Math.random() * 30,
         slowQueries: Math.floor(Math.random() * 5),
         deadlocks: Math.floor(Math.random() * 2),
-        replicationLag: Math.random() * 10
+        replicationLag: Math.random() * 10,
       },
       cachePerformance: {
         hitRate: 0.85 + Math.random() * 0.1,
         missRate: 0.1 + Math.random() * 0.05,
         evictionRate: Math.random() * 0.05,
         memoryUsage: 60 + Math.random() * 20,
-        keyCount: 10000 + Math.floor(Math.random() * 5000)
+        keyCount: 10000 + Math.floor(Math.random() * 5000),
       },
       cdnPerformance: {
         hitRate: 0.9 + Math.random() * 0.08,
         bandwidth: 1000 + Math.random() * 500,
         requests: 100000 + Math.floor(Math.random() * 50000),
         originRequests: 10000 + Math.floor(Math.random() * 5000),
-        cacheRatio: 0.85 + Math.random() * 0.1
+        cacheRatio: 0.85 + Math.random() * 0.1,
       },
       searchPerformance: {
         searchLatency: 50 + Math.random() * 30,
         searchAccuracy: 0.9 + Math.random() * 0.08,
         searchVolume: 5000 + Math.floor(Math.random() * 2000),
         zeroResults: Math.floor(Math.random() * 100),
-        clickThroughRate: 0.3 + Math.random() * 0.2
-      }
+        clickThroughRate: 0.3 + Math.random() * 0.2,
+      },
     };
   }
 
@@ -654,11 +654,11 @@ export class MarketplaceMonitoring {
         high: Math.floor(Math.random() * 5),
         medium: Math.floor(Math.random() * 10),
         low: Math.floor(Math.random() * 20),
-        resolved: Math.floor(Math.random() * 50)
+        resolved: Math.floor(Math.random() * 50),
       },
       complianceScore: 85 + Math.random() * 10,
       auditEvents: Math.floor(Math.random() * 1000),
-      securityIncidents: Math.floor(Math.random() * 3)
+      securityIncidents: Math.floor(Math.random() * 3),
     };
   }
 
@@ -674,33 +674,51 @@ export class MarketplaceMonitoring {
         marketPosition: 2 + Math.random(),
         featureComparison: 85 + Math.random() * 10,
         pricingComparison: 90 + Math.random() * 8,
-        customerSatisfaction: 4.3 + Math.random() * 0.5
-      }
+        customerSatisfaction: 4.3 + Math.random() * 0.5,
+      },
     };
   }
 
   private async checkAlertConditions(metrics: MonitoringMetrics): Promise<void> {
     // Check system alerts
     if (metrics.system.errorRate > 5) {
-      this.createAlert('high-error-rate', 'critical', 'system', 
-        'High Error Rate Detected', 
+      this.createAlert(
+        'high-error-rate',
+        'critical',
+        'system',
+        'High Error Rate Detected',
         `Error rate is ${metrics.system.errorRate.toFixed(2)}%, exceeding threshold of 5%`,
-        'errorRate', 5, metrics.system.errorRate);
+        'errorRate',
+        5,
+        metrics.system.errorRate
+      );
     }
 
     if (metrics.system.responseTime > 1000) {
-      this.createAlert('slow-response', 'high', 'performance',
+      this.createAlert(
+        'slow-response',
+        'high',
+        'performance',
         'Slow Response Time',
         `Average response time is ${metrics.system.responseTime.toFixed(0)}ms, exceeding threshold of 1000ms`,
-        'responseTime', 1000, metrics.system.responseTime);
+        'responseTime',
+        1000,
+        metrics.system.responseTime
+      );
     }
 
     // Check security alerts
     if (metrics.security.vulnerabilities.critical > 0) {
-      this.createAlert('critical-vulnerabilities', 'critical', 'security',
+      this.createAlert(
+        'critical-vulnerabilities',
+        'critical',
+        'security',
         'Critical Vulnerabilities Detected',
         `${metrics.security.vulnerabilities.critical} critical vulnerabilities found`,
-        'criticalVulnerabilities', 0, metrics.security.vulnerabilities.critical);
+        'criticalVulnerabilities',
+        0,
+        metrics.security.vulnerabilities.critical
+      );
     }
   }
 
@@ -730,22 +748,25 @@ export class MarketplaceMonitoring {
           type: 'investigate',
           description: 'Investigate root cause',
           automated: false,
-          executed: false
+          executed: false,
         },
         {
           type: 'notify',
           description: 'Notify operations team',
           automated: true,
           executed: true,
-          timestamp: new Date().toISOString()
-        }
-      ]
+          timestamp: new Date().toISOString(),
+        },
+      ],
     };
 
     this.alerts.set(id, alert);
   }
 
-  private async generateInsights(metrics: MonitoringMetrics, period: string): Promise<ReportInsight[]> {
+  private async generateInsights(
+    metrics: MonitoringMetrics,
+    period: string
+  ): Promise<ReportInsight[]> {
     const insights: ReportInsight[] = [];
 
     // Performance insights
@@ -756,7 +777,7 @@ export class MarketplaceMonitoring {
         description: 'System response times are well within acceptable limits',
         impact: 'positive',
         confidence: 0.9,
-        dataPoints: [{ metric: 'responseTime', value: metrics.system.responseTime }]
+        dataPoints: [{ metric: 'responseTime', value: metrics.system.responseTime }],
       });
     }
 
@@ -768,7 +789,7 @@ export class MarketplaceMonitoring {
         description: 'Marketplace conversion rate is above industry average',
         impact: 'positive',
         confidence: 0.85,
-        dataPoints: [{ metric: 'conversionRate', value: metrics.marketplace.conversionRate }]
+        dataPoints: [{ metric: 'conversionRate', value: metrics.marketplace.conversionRate }],
       });
     }
 
@@ -791,10 +812,10 @@ export class MarketplaceMonitoring {
         actionItems: [
           'Review cache configuration',
           'Optimize cache key strategies',
-          'Increase cache memory allocation'
+          'Increase cache memory allocation',
         ],
         estimatedImpact: '15% performance improvement',
-        estimatedEffort: '2-3 days'
+        estimatedEffort: '2-3 days',
       });
     }
 
@@ -811,9 +832,13 @@ export class MarketplaceMonitoring {
         significance: 'high',
         forecast: [
           { timestamp: new Date().toISOString(), predicted: 5500, confidence: 0.85 },
-          { timestamp: new Date(Date.now() + 86400000).toISOString(), predicted: 5750, confidence: 0.80 }
-        ]
-      }
+          {
+            timestamp: new Date(Date.now() + 86400000).toISOString(),
+            predicted: 5750,
+            confidence: 0.8,
+          },
+        ],
+      },
     ];
   }
 }

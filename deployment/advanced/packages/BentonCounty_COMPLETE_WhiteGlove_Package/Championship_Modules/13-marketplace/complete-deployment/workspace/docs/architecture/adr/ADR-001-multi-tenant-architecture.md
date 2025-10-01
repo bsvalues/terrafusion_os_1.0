@@ -6,7 +6,8 @@ Accepted
 
 ## Context
 
-Terrafusion needs to support multiple government entities (counties, states, federal agencies) while ensuring:
+Terrafusion needs to support multiple government entities (counties, states,
+federal agencies) while ensuring:
 
 - Complete data isolation between tenants
 - Efficient resource utilization
@@ -17,12 +18,15 @@ Terrafusion needs to support multiple government entities (counties, states, fed
 We evaluated three approaches:
 
 1. **Separate Database per Tenant**: Each tenant gets their own database
-2. **Shared Database, Separate Schema**: All tenants share a database but have separate schemas
-3. **Shared Database, Shared Schema**: All tenants share the same schema with row-level security
+2. **Shared Database, Separate Schema**: All tenants share a database but have
+   separate schemas
+3. **Shared Database, Shared Schema**: All tenants share the same schema with
+   row-level security
 
 ## Decision
 
-We will implement **Shared Database, Separate Schema** approach with the following architecture:
+We will implement **Shared Database, Separate Schema** approach with the
+following architecture:
 
 - Single PostgreSQL cluster with separate schemas per tenant
 - Row-level security (RLS) as an additional security layer
@@ -59,7 +63,7 @@ CREATE POLICY tenant_isolation ON sensitive_data
 // Middleware for tenant resolution
 export async function resolveTenant(req: Request): Promise<string> {
   // 1. Check subdomain
-  const subdomain = req.hostname.split(".")[0];
+  const subdomain = req.hostname.split('.')[0];
 
   // 2. Validate tenant exists
   const tenant = await tenantRepository.findByDomain(subdomain);
@@ -91,10 +95,13 @@ export async function resolveTenant(req: Request): Promise<string> {
 
 ### Mitigation Strategies
 
-1. **Automated Schema Management**: Build tools for automated schema creation and migration
-2. **Connection Pool Optimization**: Implement smart connection pooling with tenant affinity
+1. **Automated Schema Management**: Build tools for automated schema creation
+   and migration
+2. **Connection Pool Optimization**: Implement smart connection pooling with
+   tenant affinity
 3. **Monitoring**: Add tenant-aware monitoring and alerting
-4. **Migration Tools**: Create robust migration tools that handle all tenant schemas
+4. **Migration Tools**: Create robust migration tools that handle all tenant
+   schemas
 
 ## References
 

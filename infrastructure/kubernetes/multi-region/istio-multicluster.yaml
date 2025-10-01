@@ -324,5 +324,5 @@ spec:
       number: 8080
       protocol: HTTP
       name: http-cosmic
-    defaultEndpoint: 127.0.0.1:8080
+    defaultEndpoint: 127.0.0.1:\${{TF_ADMIN_PORT:-8080}}
     captureMode: REDIRECT

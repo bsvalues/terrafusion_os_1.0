@@ -109,36 +109,36 @@ public class AIServiceInfrastructure : IAIServiceInfrastructure
         }
     }
 
-    public async Task<bool> ValidateModelAsync(string modelId, string version)
+    public Task<bool> ValidateModelAsync(string modelId, string version)
     {
         try
         {
             if (!_availableModels.TryGetValue(modelId, out var model))
             {
                 _logger.LogWarning("Model {ModelId} not found in available models", modelId);
-                return false;
+                return Task.FromResult(false);
             }
 
             if (!string.IsNullOrEmpty(version) && model.Version != version)
             {
                 _logger.LogWarning("Model {ModelId} version mismatch. Expected: {ExpectedVersion}, Available: {AvailableVersion}", 
                     modelId, version, model.Version);
-                return false;
+                return Task.FromResult(false);
             }
 
             // Check if model is healthy
             if (!model.IsHealthy)
             {
                 _logger.LogWarning("Model {ModelId} is not healthy", modelId);
-                return false;
+                return Task.FromResult(false);
             }
 
-            return true;
+            return Task.FromResult(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Model validation failed for {ModelId}", modelId);
-            return false;
+            return Task.FromResult(false);
         }
     }
 
@@ -293,7 +293,7 @@ public class AIServiceInfrastructure : IAIServiceInfrastructure
             {
                 messages = new[]
                 {
-                    new { role = "user", content = request.Input.ToString() }
+                    new { role = "user", content = request.Input?.ToString() ?? "" }
                 },
                 temperature = request.Parameters.GetValueOrDefault("temperature", 0.7),
                 max_tokens = request.Parameters.GetValueOrDefault("max_tokens", 150),
@@ -319,9 +319,9 @@ public class AIServiceInfrastructure : IAIServiceInfrastructure
                 return new AIResponse<T>
                 {
                     Success = true,
-                    Data = (T)(object)generatedText,
-                    RequestId = requestId,
-                    ModelId = request.ModelId,
+                    Data = (T)(object)(generatedText ?? ""),
+                    RequestId = requestId ?? "",
+                    ModelId = request.ModelId ?? "",
                     TokensUsed = result.GetProperty("usage").GetProperty("total_tokens").GetInt32()
                 };
             }
@@ -347,7 +347,7 @@ public class AIServiceInfrastructure : IAIServiceInfrastructure
             // Simulate embedding generation (in real implementation, call Azure OpenAI embeddings API)
             await Task.Delay(100); // Simulate API call
 
-            var embedding = GenerateSimulatedEmbedding(request.Input.ToString());
+            var embedding = GenerateSimulatedEmbedding(request.Input?.ToString() ?? "");
             
             return new AIResponse<T>
             {

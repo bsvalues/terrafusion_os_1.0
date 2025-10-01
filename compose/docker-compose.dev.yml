@@ -17,7 +17,7 @@ services:
       - DOTNET_WATCH=true
     command: ["dotnet", "watch", "run", "--project", "/app/backend/TerraFusion.API/TerraFusion.API.csproj"]
     ports:
-      - "5000:5000"
+      - "5000:${TF_API_PORT:-5046}"
       - "5001:5001" # HTTPS port for development
 
   terrafusion-frontend:
@@ -30,8 +30,8 @@ services:
       - NODE_ENV=development
     command: ["npm", "run", "dev", "--", "--host"]
     ports:
-      - "3000:3000"
-      - "3001:3001" # Vite HMR port
+      - "3000:${TF_FRONTEND_PORT:-3102}"
+      - "3001:${TF_SHELL_PORT:-3103}" # Vite HMR port
 
   ai-command-brain:
     volumes:
@@ -63,6 +63,6 @@ services:
     container_name: terrafusion-adminer
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8080:${TF_STATIC_PORT:-8080}"
     networks:
       - terrafusion-network

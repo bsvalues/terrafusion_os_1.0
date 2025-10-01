@@ -463,8 +463,8 @@ export class EnterpriseIntegration {
       compliance: {
         status: 'pending',
         assessments: [],
-        certifications: []
-      }
+        certifications: [],
+      },
     };
 
     this.deployments.set(deployment.deploymentId, deployment);
@@ -493,17 +493,13 @@ export class EnterpriseIntegration {
       }
 
       // Configure integrations
-      deployment.integrations = await this.setupIntegrations(
-        deployment,
-        config.integration
-      );
+      deployment.integrations = await this.setupIntegrations(deployment, config.integration);
 
       // Run compliance validation
       deployment.compliance = await this.validateCompliance(deployment, config);
 
       deployment.status = 'completed';
       deployment.endTime = new Date().toISOString();
-
     } catch (error) {
       deployment.status = 'failed';
       deployment.error = error.message;
@@ -520,7 +516,7 @@ export class EnterpriseIntegration {
     sharedResources: string[]
   ): Promise<string> {
     const consortiumId = `consortium-${Date.now()}`;
-    
+
     const consortiumConfig: EnterpriseConfig = {
       organizationId: consortiumId,
       organizationName: name,
@@ -536,8 +532,8 @@ export class EnterpriseIntegration {
           enabled: true,
           shareTypes: sharedResources,
           restrictions: [],
-          auditLevel: 'comprehensive'
-        }
+          auditLevel: 'comprehensive',
+        },
       })),
       customMarketplace: {
         enabled: true,
@@ -548,19 +544,19 @@ export class EnterpriseIntegration {
           colors: {
             primary: '#1e40af',
             secondary: '#64748b',
-            accent: '#0ea5e9'
+            accent: '#0ea5e9',
           },
           fonts: {
             primary: 'Inter',
-            secondary: 'Roboto'
-          }
+            secondary: 'Roboto',
+          },
         },
         catalog: {
           visibility: 'private',
           categories: ['shared-services', 'consortium-tools'],
           featuredPlugins: [],
           hiddenPlugins: [],
-          customPlugins: []
+          customPlugins: [],
         },
         approval: {
           enabled: true,
@@ -570,11 +566,11 @@ export class EnterpriseIntegration {
               approvers: ['tech-lead@consortium.gov'],
               criteria: ['security', 'compatibility'],
               timeout: 72,
-              escalation: ['cto@consortium.gov']
-            }
+              escalation: ['cto@consortium.gov'],
+            },
           ],
           autoApproval: [],
-          notifications: []
+          notifications: [],
         },
         pricing: {
           model: 'consortium',
@@ -583,16 +579,16 @@ export class EnterpriseIntegration {
               type: 'volume',
               threshold: 5,
               discount: 20,
-              conditions: ['multi-county-deployment']
-            }
+              conditions: ['multi-county-deployment'],
+            },
           ],
           billing: {
             frequency: 'annually',
             consolidation: true,
             currency: 'USD',
-            paymentTerms: 30
-          }
-        }
+            paymentTerms: 30,
+          },
+        },
       },
       governance: {
         policies: [],
@@ -602,7 +598,7 @@ export class EnterpriseIntegration {
           retention: 2555, // 7 years
           events: ['access', 'modification', 'sharing'],
           realTime: true,
-          compliance: ['FISMA', 'NIST']
+          compliance: ['FISMA', 'NIST'],
         },
         dataGovernance: {
           classification: [],
@@ -612,9 +608,9 @@ export class EnterpriseIntegration {
             anonymization: true,
             encryption: true,
             accessLogging: true,
-            consentManagement: true
-          }
-        }
+            consentManagement: true,
+          },
+        },
       },
       compliance: {
         frameworks: [
@@ -626,23 +622,23 @@ export class EnterpriseIntegration {
               required: true,
               authority: 'FedRAMP',
               validityPeriod: 365,
-              renewalProcess: []
-            }
-          }
+              renewalProcess: [],
+            },
+          },
         ],
         assessments: [],
         reporting: {
           automated: true,
           frequency: 'quarterly',
           recipients: ['compliance@consortium.gov'],
-          format: ['pdf', 'json']
+          format: ['pdf', 'json'],
         },
         monitoring: {
           continuous: true,
           alerts: true,
           thresholds: {},
-          remediation: []
-        }
+          remediation: [],
+        },
       },
       integration: {
         apis: [],
@@ -650,15 +646,15 @@ export class EnterpriseIntegration {
           enabled: true,
           provider: 'SAML',
           configuration: {},
-          fallback: true
+          fallback: true,
         },
         dataSync: {
           enabled: true,
           frequency: 'daily',
           direction: 'bidirectional',
-          transformations: []
+          transformations: [],
         },
-        webhooks: []
+        webhooks: [],
       },
       support: {
         tier: 'enterprise',
@@ -667,23 +663,23 @@ export class EnterpriseIntegration {
             critical: 2,
             high: 4,
             medium: 8,
-            low: 24
+            low: 24,
           },
           resolutionTime: {
             critical: 4,
             high: 8,
             medium: 24,
-            low: 72
+            low: 72,
           },
-          availability: 99.9
+          availability: 99.9,
         },
         contacts: [],
         escalation: {
           levels: [],
           triggers: [],
-          notifications: []
-        }
-      }
+          notifications: [],
+        },
+      },
     };
 
     const configId = await this.createEnterpriseConfig(consortiumConfig);
@@ -715,7 +711,7 @@ export class EnterpriseIntegration {
     config: EnterpriseConfig
   ): Promise<void> {
     console.log(`Deploying to county: ${county.countyName}`);
-    
+
     const countyDeployment: CountyDeployment = {
       countyId: county.countyId,
       status: 'deploying',
@@ -730,10 +726,10 @@ export class EnterpriseIntegration {
             name: 'System Down',
             condition: 'uptime < 99%',
             severity: 'critical',
-            recipients: ['ops@county.gov']
-          }
-        ]
-      }
+            recipients: ['ops@county.gov'],
+          },
+        ],
+      },
     };
 
     // Simulate deployment process
@@ -755,7 +751,7 @@ export class EnterpriseIntegration {
       url: `https://${marketplaceConfig.storeId}.marketplace.terrafusion.com`,
       branding: marketplaceConfig.branding,
       catalog: marketplaceConfig.catalog,
-      deployedAt: new Date().toISOString()
+      deployedAt: new Date().toISOString(),
     };
   }
 
@@ -772,7 +768,7 @@ export class EnterpriseIntegration {
         status: 'active',
         endpoint: api.endpoint,
         healthCheck: 'healthy',
-        lastSync: new Date().toISOString()
+        lastSync: new Date().toISOString(),
       });
     }
 
@@ -781,7 +777,7 @@ export class EnterpriseIntegration {
         type: 'sso',
         name: 'Single Sign-On',
         status: 'active',
-        healthCheck: 'healthy'
+        healthCheck: 'healthy',
       });
     }
 
@@ -793,13 +789,13 @@ export class EnterpriseIntegration {
     config: EnterpriseConfig
   ): Promise<ComplianceStatus> {
     const assessments: ComplianceAssessmentResult[] = [];
-    
+
     for (const framework of config.compliance.frameworks) {
       assessments.push({
         framework: framework.name,
         status: 'passed',
         score: 95,
-        lastAssessment: new Date().toISOString()
+        lastAssessment: new Date().toISOString(),
       });
     }
 
@@ -811,9 +807,9 @@ export class EnterpriseIntegration {
           name: 'FedRAMP',
           status: 'valid',
           validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-          authority: 'GSA'
-        }
-      ]
+          authority: 'GSA',
+        },
+      ],
     };
   }
 }

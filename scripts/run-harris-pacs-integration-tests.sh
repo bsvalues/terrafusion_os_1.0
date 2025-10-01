@@ -237,7 +237,7 @@ start_test_infrastructure() {
     while [ $attempt -le $max_attempts ]; do
         log_info "Health check attempt $attempt/$max_attempts..."
         
-        if curl -f -s http://localhost:8180/health >/dev/null 2>&1; then
+        if curl -f -s http://localhost:\${{TF_PORT_8180:-8180}}/health >/dev/null 2>&1; then
             log_info "  ✓ Harris PACS Mock: Healthy"
             break
         else
@@ -377,7 +377,7 @@ EOF
     local execution_response=$(curl -s -X POST \
         -H "Content-Type: application/json" \
         -d "$test_payload" \
-        http://localhost:9000/api/execute_comprehensive_tests)
+        http://localhost:\${{TF_PORT_8180:-8180}}/api/execute_comprehensive_tests)
     
     if [ $? -ne 0 ]; then
         log_error "Failed to start Harris PACS integration tests"
@@ -396,7 +396,7 @@ EOF
     
     while [ $elapsed_seconds -lt $timeout_seconds ]; do
         # Check test status
-        local status_response=$(curl -s "http://localhost:9000/api/test_status/$test_execution_id")
+        local status_response=$(curl -s "http://localhost:\${{TF_PORT_8180:-8180}}/api/test_status/$test_execution_id")
         local test_status=$(echo "$status_response" | jq -r '.status // "unknown"')
         local progress=$(echo "$status_response" | jq -r '.progress_percentage // 0')
         
@@ -407,7 +407,7 @@ EOF
             log_success "Harris PACS integration tests completed successfully"
             
             # Fetch final results
-            local final_results=$(curl -s "http://localhost:9000/api/test_results/$test_execution_id")
+            local final_results=$(curl -s "http://localhost:\${{TF_PORT_8180:-8180}}/api/test_results/$test_execution_id")
             echo "$final_results" > "$test_results_file"
             
             # Display results summary
@@ -417,7 +417,7 @@ EOF
             log_error "Harris PACS integration tests failed"
             
             # Fetch failure details
-            local failure_details=$(curl -s "http://localhost:9000/api/test_results/$test_execution_id")
+            local failure_details=$(curl -s "http://localhost:\${{TF_PORT_8180:-8180}}/api/test_results/$test_execution_id")
             echo "$failure_details" > "$test_results_file"
             
             display_test_results "$failure_details"
@@ -525,7 +525,7 @@ generate_test_report() {
     local report_file="${report_dir}/harris-pacs-test-report-${timestamp}.html"
     
     # Generate comprehensive HTML report
-    curl -s "http://localhost:9000/api/generate_report?format=html" > "$report_file"
+    curl -s "http://localhost:\${{TF_PORT_8180:-8180}}/api/generate_report?format=html" > "$report_file"
     
     if [ -f "$report_file" ]; then
         log_success "Test report generated: $report_file"

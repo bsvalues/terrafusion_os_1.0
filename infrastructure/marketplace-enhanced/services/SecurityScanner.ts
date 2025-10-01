@@ -16,7 +16,7 @@ class DefaultLogger implements ILogger {
   info(_message: string): void {
     // Silent logging for security scanner
   }
-  
+
   error(_message: string, _error?: Error | unknown): void {
     // Silent logging for security scanner
   }
@@ -53,7 +53,14 @@ export interface SecurityReport {
 
 export interface Vulnerability {
   id: string;
-  type: 'xss' | 'sql_injection' | 'csrf' | 'insecure_crypto' | 'path_traversal' | 'code_injection' | 'other';
+  type:
+    | 'xss'
+    | 'sql_injection'
+    | 'csrf'
+    | 'insecure_crypto'
+    | 'path_traversal'
+    | 'code_injection'
+    | 'other';
   severity: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   description: string;
@@ -147,7 +154,7 @@ export class SecurityScanner {
       compliance_standards: ['NIST', 'FISMA', 'SOC2', 'CountyOS'],
       scan_timeout: 300000, // 5 minutes
       max_file_size: 10 * 1024 * 1024, // 10MB
-      ...config
+      ...config,
     };
 
     this.initializeSecurityRules();
@@ -177,17 +184,17 @@ export class SecurityScanner {
           documentation_coverage: 0,
           code_duplication: 0,
           security_hotspots: 0,
-          technical_debt_minutes: 0
+          technical_debt_minutes: 0,
         },
         dependencies: {
           total_dependencies: 0,
           outdated_dependencies: 0,
           vulnerable_dependencies: [],
           license_issues: [],
-          supply_chain_risk: 0
+          supply_chain_risk: 0,
         },
         recommendations: [],
-        certification_status: 'pending'
+        certification_status: 'pending',
       };
 
       // Perform security scans
@@ -207,7 +214,7 @@ export class SecurityScanner {
 
       // Calculate overall score and risk level
       this.calculateOverallScore(report);
-      
+
       // Generate recommendations
       report.recommendations = this.generateRecommendations(report);
 
@@ -218,7 +225,6 @@ export class SecurityScanner {
       this.logger.info(`Security scan completed for ${pluginId} in ${scanTime}ms`);
 
       return report;
-
     } catch (error) {
       this.logger.error(`Security scan failed for plugin ${pluginId}:`, error);
       throw new Error(`Security scan failed: ${error.message}`);
@@ -238,13 +244,13 @@ export class SecurityScanner {
       documentation_coverage: 72,
       code_duplication: 5,
       security_hotspots: 0,
-      technical_debt_minutes: 45
+      technical_debt_minutes: 45,
     };
 
     try {
       // Scan for common vulnerability patterns
       const files = await this.getSourceFiles(pluginPath);
-      
+
       for (const file of files) {
         // Validate file path before reading
         if (!file || typeof file !== 'string') {
@@ -256,8 +262,9 @@ export class SecurityScanner {
       }
 
       // Update security hotspots count
-      codeQuality.security_hotspots = vulnerabilities.filter(v => v.severity === 'high' || v.severity === 'critical').length;
-
+      codeQuality.security_hotspots = vulnerabilities.filter(
+        v => v.severity === 'high' || v.severity === 'critical'
+      ).length;
     } catch (error) {
       this.logger.error('Static analysis failed:', error);
     }
@@ -266,7 +273,10 @@ export class SecurityScanner {
   }
 
   // File vulnerability scanning
-  private async scanFileForVulnerabilities(filePath: string, content: string): Promise<Vulnerability[]> {
+  private async scanFileForVulnerabilities(
+    filePath: string,
+    content: string
+  ): Promise<Vulnerability[]> {
     const vulnerabilities: Vulnerability[] = [];
     const lines = content.split('\n');
 
@@ -275,7 +285,7 @@ export class SecurityScanner {
       /innerHTML\s*=\s*.*\+/g,
       /document\.write\s*\(/g,
       /eval\s*\(/g,
-      /dangerouslySetInnerHTML/g
+      /dangerouslySetInnerHTML/g,
     ];
 
     xssPatterns.forEach(pattern => {
@@ -292,18 +302,14 @@ export class SecurityScanner {
             cwe_id: 'CWE-79',
             cvss_score: 7.5,
             remediation: 'Use proper input sanitization and output encoding',
-            false_positive_likelihood: 0.3
+            false_positive_likelihood: 0.3,
           });
         }
       });
     });
 
     // SQL Injection Detection
-    const sqlPatterns = [
-      /query\s*\+\s*.*\+/g,
-      /execute\s*\(\s*".*"\s*\+/g,
-      /SELECT.*\+.*FROM/gi
-    ];
+    const sqlPatterns = [/query\s*\+\s*.*\+/g, /execute\s*\(\s*".*"\s*\+/g, /SELECT.*\+.*FROM/gi];
 
     sqlPatterns.forEach(pattern => {
       lines.forEach((line /* , index */) => {
@@ -319,19 +325,14 @@ export class SecurityScanner {
             cwe_id: 'CWE-89',
             cvss_score: 9.0,
             remediation: 'Use parameterized queries or prepared statements',
-            false_positive_likelihood: 0.2
+            false_positive_likelihood: 0.2,
           });
         }
       });
     });
 
     // Insecure Cryptography
-    const cryptoPatterns = [
-      /MD5\s*\(/g,
-      /SHA1\s*\(/g,
-      /DES\s*\(/g,
-      /Math\.random\s*\(\)/g
-    ];
+    const cryptoPatterns = [/MD5\s*\(/g, /SHA1\s*\(/g, /DES\s*\(/g, /Math\.random\s*\(\)/g];
 
     cryptoPatterns.forEach(pattern => {
       lines.forEach((line /* , index */) => {
@@ -347,18 +348,14 @@ export class SecurityScanner {
             cwe_id: 'CWE-327',
             cvss_score: 5.5,
             remediation: 'Use strong cryptographic algorithms (SHA-256, AES)',
-            false_positive_likelihood: 0.1
+            false_positive_likelihood: 0.1,
           });
         }
       });
     });
 
     // Path Traversal
-    const pathPatterns = [
-      /\.\.\//g,
-      /\.\.\\/g,
-      /path\.join\s*\(.*\.\./g
-    ];
+    const pathPatterns = [/\.\.\//g, /\.\.\\/g, /path\.join\s*\(.*\.\./g];
 
     pathPatterns.forEach(pattern => {
       lines.forEach((line /* , index */) => {
@@ -374,7 +371,7 @@ export class SecurityScanner {
             cwe_id: 'CWE-22',
             cvss_score: 7.0,
             remediation: 'Validate and sanitize file paths, use path.resolve()',
-            false_positive_likelihood: 0.4
+            false_positive_likelihood: 0.4,
           });
         }
       });
@@ -386,18 +383,18 @@ export class SecurityScanner {
   // Dependency Analysis
   private async analyzeDependencies(pluginPath: string): Promise<DependencyAnalysis> {
     const packageJsonPath = path.join(pluginPath, 'package.json');
-    
+
     try {
       const packageContent = await fs.readFile(packageJsonPath, 'utf-8');
       const packageJson = JSON.parse(packageContent);
-      
+
       const dependencies = {
-        ...packageJson.dependencies || {},
-        ...packageJson.devDependencies || {}
+        ...(packageJson.dependencies || {}),
+        ...(packageJson.devDependencies || {}),
       };
 
       const totalDeps = Object.keys(dependencies).length;
-      
+
       // Mock vulnerability scanning (would integrate with real vulnerability databases)
       const vulnerableDeps: VulnerableDependency[] = [
         {
@@ -406,8 +403,8 @@ export class SecurityScanner {
           vulnerability_id: 'CVE-2021-23337',
           severity: 'high',
           description: 'Command injection vulnerability',
-          patched_version: '4.17.21'
-        }
+          patched_version: '4.17.21',
+        },
       ];
 
       const licenseIssues: LicenseIssue[] = [];
@@ -417,9 +414,8 @@ export class SecurityScanner {
         outdated_dependencies: Math.floor(totalDeps * 0.2), // Mock 20% outdated
         vulnerable_dependencies: vulnerableDeps,
         license_issues: licenseIssues,
-        supply_chain_risk: this.calculateSupplyChainRisk(totalDeps, vulnerableDeps.length)
+        supply_chain_risk: this.calculateSupplyChainRisk(totalDeps, vulnerableDeps.length),
       };
-
     } catch (error) {
       this.logger.error('Dependency analysis failed:', error);
       return {
@@ -427,7 +423,7 @@ export class SecurityScanner {
         outdated_dependencies: 0,
         vulnerable_dependencies: [],
         license_issues: [],
-        supply_chain_risk: 0
+        supply_chain_risk: 0,
       };
     }
   }
@@ -435,7 +431,7 @@ export class SecurityScanner {
   // Compliance Checking
   private async performComplianceCheck(pluginPath: string): Promise<ComplianceCheck[]> {
     const checks: ComplianceCheck[] = [];
-    
+
     // Validate plugin path exists
     const isValidPath = pluginPath && pluginPath.length > 0;
 
@@ -444,11 +440,11 @@ export class SecurityScanner {
       standard: 'NIST',
       requirement: 'Access Control (PR.AC)',
       status: isValidPath ? 'compliant' : 'non_compliant',
-      details: isValidPath ? 
-        'Plugin implements proper authentication and authorization' : 
-        'Invalid plugin path provided',
+      details: isValidPath
+        ? 'Plugin implements proper authentication and authorization'
+        : 'Invalid plugin path provided',
       evidence: ['auth.ts', 'middleware/auth.ts'],
-      remediation_required: false
+      remediation_required: false,
     });
 
     checks.push({
@@ -457,7 +453,7 @@ export class SecurityScanner {
       status: 'compliant',
       details: 'Data encryption and secure storage implemented',
       evidence: ['crypto.ts', 'database/encryption.ts'],
-      remediation_required: false
+      remediation_required: false,
     });
 
     // FISMA Compliance
@@ -466,7 +462,7 @@ export class SecurityScanner {
       requirement: 'Configuration Management',
       status: 'compliant',
       details: 'Secure configuration management practices followed',
-      remediation_required: false
+      remediation_required: false,
     });
 
     checks.push({
@@ -474,7 +470,7 @@ export class SecurityScanner {
       requirement: 'Incident Response',
       status: 'partial',
       details: 'Basic logging implemented, enhanced monitoring recommended',
-      remediation_required: true
+      remediation_required: true,
     });
 
     // SOC 2 Type II
@@ -483,7 +479,7 @@ export class SecurityScanner {
       requirement: 'Security Principle',
       status: 'compliant',
       details: 'Security controls and monitoring in place',
-      remediation_required: false
+      remediation_required: false,
     });
 
     // CountyOS Specific
@@ -492,7 +488,7 @@ export class SecurityScanner {
       requirement: 'Municipal Data Protection',
       status: 'compliant',
       details: 'Meets county-specific data protection requirements',
-      remediation_required: false
+      remediation_required: false,
     });
 
     checks.push({
@@ -501,7 +497,7 @@ export class SecurityScanner {
       status: 'compliant',
       details: 'Comprehensive audit logging implemented',
       evidence: ['audit/logger.ts'],
-      remediation_required: false
+      remediation_required: false,
     });
 
     return checks;
@@ -514,24 +510,42 @@ export class SecurityScanner {
     // Deduct points for vulnerabilities
     report.vulnerabilities.forEach(vuln => {
       switch (vuln.severity) {
-        case 'critical': score -= 25; break;
-        case 'high': score -= 15; break;
-        case 'medium': score -= 8; break;
-        case 'low': score -= 3; break;
+        case 'critical':
+          score -= 25;
+          break;
+        case 'high':
+          score -= 15;
+          break;
+        case 'medium':
+          score -= 8;
+          break;
+        case 'low':
+          score -= 3;
+          break;
       }
     });
 
     // Deduct points for compliance issues
-    const nonCompliantChecks = report.compliance_checks.filter(c => c.status === 'non_compliant').length;
+    const nonCompliantChecks = report.compliance_checks.filter(
+      c => c.status === 'non_compliant'
+    ).length;
     score -= nonCompliantChecks * 10;
 
     // Deduct points for vulnerable dependencies
     report.dependencies.vulnerable_dependencies.forEach(dep => {
       switch (dep.severity) {
-        case 'critical': score -= 20; break;
-        case 'high': score -= 12; break;
-        case 'medium': score -= 6; break;
-        case 'low': score -= 2; break;
+        case 'critical':
+          score -= 20;
+          break;
+        case 'high':
+          score -= 12;
+          break;
+        case 'medium':
+          score -= 6;
+          break;
+        case 'low':
+          score -= 2;
+          break;
       }
     });
 
@@ -563,8 +577,8 @@ export class SecurityScanner {
         impact: 'Prevents cross-site scripting vulnerabilities',
         code_examples: [
           'import DOMPurify from "dompurify";',
-          'const sanitized = DOMPurify.sanitize(userInput);'
-        ]
+          'const sanitized = DOMPurify.sanitize(userInput);',
+        ],
       });
     }
 
@@ -578,8 +592,8 @@ export class SecurityScanner {
         impact: 'Eliminates SQL injection vulnerabilities',
         code_examples: [
           'const query = "SELECT * FROM users WHERE id = ?";',
-          'db.query(query, [userId], callback);'
-        ]
+          'db.query(query, [userId], callback);',
+        ],
       });
     }
 
@@ -592,7 +606,7 @@ export class SecurityScanner {
         title: 'Address Compliance Gaps',
         description: `Fix ${nonCompliantChecks.length} compliance issues to meet regulatory requirements`,
         implementation_effort: 'high',
-        impact: 'Ensures regulatory compliance and reduces legal risk'
+        impact: 'Ensures regulatory compliance and reduces legal risk',
       });
     }
 
@@ -604,7 +618,7 @@ export class SecurityScanner {
         title: 'Reduce Code Complexity',
         description: 'Refactor complex functions to improve maintainability',
         implementation_effort: 'high',
-        impact: 'Improves code maintainability and reduces bug likelihood'
+        impact: 'Improves code maintainability and reduces bug likelihood',
       });
     }
 
@@ -616,7 +630,7 @@ export class SecurityScanner {
         title: 'Update Vulnerable Dependencies',
         description: `Update ${report.dependencies.vulnerable_dependencies.length} vulnerable dependencies`,
         implementation_effort: 'low',
-        impact: 'Eliminates known security vulnerabilities in dependencies'
+        impact: 'Eliminates known security vulnerabilities in dependencies',
       });
     }
 
@@ -628,7 +642,9 @@ export class SecurityScanner {
     // Certification criteria
     const criticalVulns = report.vulnerabilities.filter(v => v.severity === 'critical').length;
     const highVulns = report.vulnerabilities.filter(v => v.severity === 'high').length;
-    const nonCompliantChecks = report.compliance_checks.filter(c => c.status === 'non_compliant').length;
+    const nonCompliantChecks = report.compliance_checks.filter(
+      c => c.status === 'non_compliant'
+    ).length;
 
     // Fail conditions
     if (criticalVulns > 0) return 'failed';
@@ -647,10 +663,10 @@ export class SecurityScanner {
     const scanDirectory = async (dir: string): Promise<void> => {
       try {
         const entries = await fs.readdir(dir, { withFileTypes: true });
-        
+
         for (const entry of entries) {
           const fullPath = path.join(dir, entry.name);
-          
+
           if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
             await scanDirectory(fullPath);
           } else if (entry.isFile() && extensions.some(ext => entry.name.endsWith(ext))) {
@@ -689,9 +705,11 @@ export class SecurityScanner {
   }
 
   // Public API Methods
-  async scanMultiplePlugins(pluginPaths: Array<{ path: string; id: string }>): Promise<SecurityReport[]> {
+  async scanMultiplePlugins(
+    pluginPaths: Array<{ path: string; id: string }>
+  ): Promise<SecurityReport[]> {
     const reports: SecurityReport[] = [];
-    
+
     for (const plugin of pluginPaths) {
       try {
         const report = await this.scanPlugin(plugin.path, plugin.id);
@@ -723,13 +741,14 @@ export class SecurityScanner {
           value: (standardCompliant / standardChecks.length) * 100,
           writable: true,
           enumerable: true,
-          configurable: true
+          configurable: true,
         });
       }
     });
 
-    const criticalIssues = reports.reduce((sum, r) => 
-      sum + r.vulnerabilities.filter(v => v.severity === 'critical').length, 0
+    const criticalIssues = reports.reduce(
+      (sum, r) => sum + r.vulnerabilities.filter(v => v.severity === 'critical').length,
+      0
     );
 
     const allRecommendations = reports.flatMap(r => r.recommendations);
@@ -738,7 +757,7 @@ export class SecurityScanner {
       overall_compliance: overallCompliance,
       by_standard: byStandard,
       critical_issues: criticalIssues,
-      recommendations: allRecommendations
+      recommendations: allRecommendations,
     };
   }
 }

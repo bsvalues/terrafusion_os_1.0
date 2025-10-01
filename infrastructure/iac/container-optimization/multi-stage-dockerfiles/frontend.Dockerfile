@@ -155,7 +155,7 @@ EOF
 # Create health check script
 COPY --chown=nginxuser:nginx <<EOF /usr/local/bin/healthcheck.sh
 #!/bin/sh
-curl -f http://localhost:3000/health || exit 1
+curl -f http://localhost:\${{TF_FRONTEND_PORT:-3000}}/health || exit 1
 EOF
 
 RUN chmod +x /usr/local/bin/healthcheck.sh

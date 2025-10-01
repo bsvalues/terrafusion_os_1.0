@@ -5,12 +5,7 @@
   "functions": 95,
   "branches": 90,
   "statements": 95,
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.js",
-    "src/**/*.jsx"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"],
   "exclude": [
     "**/*.d.ts",
     "**/*.test.*",
@@ -19,12 +14,7 @@
     "**/coverage/**",
     "**/dist/**"
   ],
-  "reporter": [
-    "text",
-    "html",
-    "lcov",
-    "json-summary"
-  ],
+  "reporter": ["text", "html", "lcov", "json-summary"],
   "report-dir": "coverage",
   "temp-dir": ".nyc_output"
 }

@@ -1,13 +1,17 @@
 # docker - Container Orchestration and Microservices Hub
 
 **Status**: Operational ✅  
-**Purpose**: Docker containerization frameworks and microservices orchestration  
-**Integration**: Multi-service container deployment with Docker Compose and enterprise orchestration  
-**Compliance**: Government-grade container security with FISMA compliance and production orchestration  
+**Purpose**: Docker containerization frameworks and microservices
+orchestration  
+**Integration**: Multi-service container deployment with Docker Compose and
+enterprise orchestration  
+**Compliance**: Government-grade container security with FISMA compliance and
+production orchestration
 
 ## Quick Start
 
 ### Docker Container Operations
+
 ```bash
 # Build all containers
 docker-compose build
@@ -23,6 +27,7 @@ docker-compose down
 ```
 
 ### Production Container Deployment
+
 ```bash
 # Build production containers
 docker-compose -f docker-compose.prod.yml build
@@ -40,12 +45,14 @@ docker-compose -f docker-compose.prod.yml ps
 ## Key Features
 
 ### Multi-Service Containerization
+
 - **Backend Service**: .NET 8.0 API containerization with multi-stage builds
 - **Frontend Service**: React 18 production container with static optimization
 - **AI Swarm Service**: 1,008 AI agents containerization with ML coordination
 - **Database Services**: PostgreSQL and Redis container orchestration
 
 ### Container Orchestration
+
 ```yaml
 container_services:
   backend_service:
@@ -53,19 +60,19 @@ container_services:
     - Production security hardening
     - API gateway and routing configuration
     - Government compliance validation
-  
+
   frontend_service:
     - React 18 static content serving
     - Nginx optimization and compression
     - Content security policy configuration
     - Government frontend compliance
-  
+
   ai_swarm_service:
     - Python ML container optimization
     - AI agent coordination containerization
     - Resource management and scaling
     - Government AI compliance validation
-  
+
   database_services:
     - PostgreSQL production deployment
     - Redis cache service optimization
@@ -76,6 +83,7 @@ container_services:
 ## Docker Compose Configuration
 
 ### Development Environment
+
 ```yaml
 # docker-compose.yml
 version: '3.8'
@@ -109,16 +117,16 @@ services:
     networks:
       - terrafusion-network
     ports:
-      - "5000:80"
+      - '5000:80'
 
   frontend:
     build:
       context: .
       dockerfile: docker/Dockerfile.frontend
     environment:
-      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_API_URL=http://localhost:\${{TF_API_PORT:-5000}}
     ports:
-      - "3000:80"
+      - '3000:80'
     networks:
       - terrafusion-network
 
@@ -143,6 +151,7 @@ networks:
 ```
 
 ### Production Configuration
+
 - **Resource Limits**: CPU and memory constraints for production workloads
 - **Health Checks**: Container health monitoring and recovery
 - **Security Configuration**: Production security hardening and policies
@@ -151,6 +160,7 @@ networks:
 ## Container Security
 
 ### Security Framework
+
 ```yaml
 container_security:
   image_security:
@@ -158,13 +168,13 @@ container_security:
     - Minimal base images (distroless/alpine)
     - Security baseline compliance
     - Government security validation
-  
+
   runtime_security:
     - Runtime behavior monitoring
     - Container access control policies
     - Security context configuration
     - Government runtime compliance
-  
+
   network_security:
     - Container network isolation
     - Service mesh security policies
@@ -173,6 +183,7 @@ container_security:
 ```
 
 ### Government Compliance
+
 - **FISMA Compliance**: Container security controls and audit trails
 - **FedRAMP Validation**: Container cloud authorization and monitoring
 - **Section 508 Accessibility**: Container accessibility compliance
@@ -181,6 +192,7 @@ container_security:
 ## Multi-Stage Container Builds
 
 ### Backend Container (Dockerfile.backend)
+
 ```dockerfile
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
@@ -208,6 +220,7 @@ ENTRYPOINT ["dotnet", "Terrafusion.API.dll"]
 ```
 
 ### Frontend Container (Dockerfile.frontend)
+
 ```dockerfile
 FROM node:18-alpine AS build
 WORKDIR /app
@@ -225,6 +238,7 @@ CMD ["nginx", "-g", "daemon off;"]
 ```
 
 ### AI Swarm Container (Dockerfile.ai-swarm)
+
 ```dockerfile
 FROM python:3.11-slim AS base
 WORKDIR /app
@@ -243,6 +257,7 @@ CMD ["python", "swarm_coordinator.py"]
 ## Container Monitoring and Observability
 
 ### Health Monitoring
+
 ```yaml
 health_monitoring:
   container_health:
@@ -250,13 +265,13 @@ health_monitoring:
     - Resource utilization monitoring
     - Container performance metrics
     - Government monitoring compliance
-  
+
   service_monitoring:
     - Service discovery and health checks
     - Inter-service communication monitoring
     - Load balancing and traffic distribution
     - Government service compliance
-  
+
   application_monitoring:
     - Application performance monitoring (APM)
     - Distributed tracing integration
@@ -265,7 +280,9 @@ health_monitoring:
 ```
 
 ### Performance Metrics
-- **Container Startup Time**: Sub-30 second container startup (18 seconds validated)
+
+- **Container Startup Time**: Sub-30 second container startup (18 seconds
+  validated)
 - **Service Response Time**: Sub-100ms service response (67ms average)
 - **Resource Efficiency**: 85% resource utilization target (82% validated)
 - **Service Availability**: 99.99% service availability (99.97% achieved)
@@ -273,26 +290,27 @@ health_monitoring:
 ## Multi-County Container Coordination
 
 ### County-Specific Container Deployment
+
 ```yaml
 county_containers:
   yakima_county:
-    deployment_type: "Flagship container deployment"
+    deployment_type: 'Flagship container deployment'
     capabilities:
       - Advanced container optimization
       - Multi-county container leadership
       - County-specific container customization
       - Government container compliance excellence
-  
+
   cowlitz_county:
-    deployment_type: "Customized workflow containers"
+    deployment_type: 'Customized workflow containers'
     capabilities:
       - Workflow-optimized container strategies
       - County-specific container automation
       - Local government container compliance
       - Process efficiency container optimization
-  
+
   benton_county:
-    deployment_type: "Production containers with Harris PACS"
+    deployment_type: 'Production containers with Harris PACS'
     capabilities:
       - Production-grade container validation
       - Harris PACS container integration
@@ -303,6 +321,7 @@ county_containers:
 ## Usage Examples
 
 ### Development Operations
+
 ```bash
 # Initialize development environment
 docker-compose up -d postgres redis
@@ -320,6 +339,7 @@ docker-compose exec postgres psql -U terrafusion -d terrafusion
 ```
 
 ### Production Operations
+
 ```bash
 # Deploy to production
 docker-compose -f docker-compose.prod.yml up -d
@@ -338,6 +358,7 @@ docker-compose -f docker-compose.prod.yml up -d --no-deps backend
 ```
 
 ### Container Security Operations
+
 ```bash
 # Scan containers for vulnerabilities
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
@@ -352,6 +373,7 @@ docker inspect terrafusion/backend:latest | jq '.[].Config.SecurityOpt'
 ```
 
 ### Container Monitoring Operations
+
 ```bash
 # Monitor container performance
 docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}"
@@ -368,6 +390,7 @@ docker-compose logs --since="1h" ai-swarm
 ## Container Backup and Recovery
 
 ### Backup Strategies
+
 ```yaml
 backup_frameworks:
   container_state_backup:
@@ -375,13 +398,13 @@ backup_frameworks:
     - Application state preservation
     - Data volume backup coordination
     - Government backup compliance
-  
+
   data_volume_backup:
     - Database volume backup automation
     - Application data backup strategies
     - Backup encryption and security
     - Government data backup compliance
-  
+
   configuration_backup:
     - Docker Compose configuration backup
     - Environment variable backup
@@ -390,6 +413,7 @@ backup_frameworks:
 ```
 
 ### Disaster Recovery
+
 - **Container Recovery**: Automated container restoration from backups
 - **Service Recovery**: Multi-service recovery coordination and validation
 - **Data Recovery**: Database and application data recovery procedures
@@ -398,6 +422,7 @@ backup_frameworks:
 ## Container Performance Optimization
 
 ### Optimization Strategies
+
 ```yaml
 performance_optimization:
   build_optimization:
@@ -405,13 +430,13 @@ performance_optimization:
     - Layer caching strategies
     - Image size reduction techniques
     - Government optimization standards
-  
+
   runtime_optimization:
     - Container resource allocation
     - Memory and CPU optimization
     - Network performance tuning
     - Government runtime compliance
-  
+
   scaling_optimization:
     - Horizontal scaling automation
     - Load balancing optimization
@@ -423,9 +448,14 @@ performance_optimization:
 
 ## Container Management Excellence
 
-Terrafusion OS docker directory provides comprehensive Docker containerization frameworks with multi-service orchestration, container security systems, microservices deployment strategies, and government-grade container security. The system features enterprise container orchestration with FISMA compliance and multi-county coordination capabilities.
+Terrafusion OS docker directory provides comprehensive Docker containerization
+frameworks with multi-service orchestration, container security systems,
+microservices deployment strategies, and government-grade container security.
+The system features enterprise container orchestration with FISMA compliance and
+multi-county coordination capabilities.
 
-**Ready for Government Deployment**: Complete container framework with enterprise orchestration and compliance integration.
+**Ready for Government Deployment**: Complete container framework with
+enterprise orchestration and compliance integration.
 
 **Authority**: Terrafusion Container Engineering Division  
 **Last Updated**: August 27, 2025

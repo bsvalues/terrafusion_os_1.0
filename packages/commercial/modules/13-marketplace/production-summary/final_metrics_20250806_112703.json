@@ -28,7 +28,7 @@
     },
     "deployment_assets_created": [
       "production-deployment-simulator.sh",
-      "production-monitoring.sh", 
+      "production-monitoring.sh",
       "health-check-endpoints.js",
       "deployment-validation-checklist.md"
     ],

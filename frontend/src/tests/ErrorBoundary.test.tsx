@@ -8,19 +8,13 @@ import { useErrorHandler } from '../hooks/useErrorHandler';
 
 // Mock console.error to avoid noise in tests
 const originalError = console.error;
-beforeAll(() => {
-  console.error = jest.fn();
-});
+beforeAll(() => { console.error = jest.fn(); });
 
-afterAll(() => {
-  console.error = originalError;
-});
+afterAll(() => { console.error = originalError; });
 
 // Component that throws an error for testing
-const ThrowError: React.FC<{ shouldThrow: boolean; errorMessage?: string }> = ({
-  shouldThrow,
-  errorMessage = 'Test error',
-}) => {
+const ThrowError: React.FC<{ shouldThrow: boolean; errorMessage?: string }> = ({ shouldThrow,
+  errorMessage = 'Test error' }) => {
   if (shouldThrow) {
     throw new Error(errorMessage);
   }
@@ -47,31 +41,19 @@ const AsyncErrorComponent: React.FC<{ shouldFail: boolean }> = ({ shouldFail }) 
     }
   };
 
-  return (
-    <button onClick={handleClick} data-testid='async-error-button'>
-      Trigger Async Error
-    </button>
-  );
+  return (<button onClick={handleClick} data-testid='async-error-button'>Trigger Async Error</button>);
 };
 
 describe('Error Boundary System', () => {
   describe('ErrorBoundary Component', () => {
     it('should render children when no error occurs', () => {
-      render(
-        <ErrorBoundary>
-          <ThrowError shouldThrow={false} />
-        </ErrorBoundary>
-      );
+      render(<ErrorBoundary><ThrowError shouldThrow={false} /></ErrorBoundary>);
 
       expect(screen.getByText('No error')).toBeInTheDocument();
     });
 
     it('should catch and display error when child component throws', () => {
-      render(
-        <ErrorBoundary>
-          <ThrowError shouldThrow={true} errorMessage='Component crashed' />
-        </ErrorBoundary>
-      );
+      render(<ErrorBoundary><ThrowError shouldThrow={true} errorMessage='Component crashed' /></ErrorBoundary>);
 
       expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
@@ -81,11 +63,7 @@ describe('Error Boundary System', () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
-      render(
-        <ErrorBoundary showErrorDetails={true}>
-          <ThrowError shouldThrow={true} errorMessage='Detailed error message' />
-        </ErrorBoundary>
-      );
+      render(<ErrorBoundary showErrorDetails={true}><ThrowError shouldThrow={true} errorMessage='Detailed error message' /></ErrorBoundary>);
 
       expect(screen.getByText(/detailed error message/i)).toBeInTheDocument();
 
@@ -96,11 +74,7 @@ describe('Error Boundary System', () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
-      render(
-        <ErrorBoundary showErrorDetails={false}>
-          <ThrowError shouldThrow={true} errorMessage='Secret error details' />
-        </ErrorBoundary>
-      );
+      render(<ErrorBoundary showErrorDetails={false}><ThrowError shouldThrow={true} errorMessage='Secret error details' /></ErrorBoundary>);
 
       expect(screen.queryByText(/secret error details/i)).not.toBeInTheDocument();
       expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
@@ -111,17 +85,11 @@ describe('Error Boundary System', () => {
     it('should call onError callback when error occurs', () => {
       const onErrorMock = jest.fn();
 
-      render(
-        <ErrorBoundary onError={onErrorMock}>
-          <ThrowError shouldThrow={true} errorMessage='Callback test error' />
-        </ErrorBoundary>
-      );
+      render(<ErrorBoundary onError={onErrorMock}><ThrowError shouldThrow={true} errorMessage='Callback test error' /></ErrorBoundary>);
 
       expect(onErrorMock).toHaveBeenCalledWith(
         expect.any(Error),
-        expect.objectContaining({
-          componentStack: expect.any(String),
-        })
+        expect.objectContaining({ componentStack: expect.any(String) })
       );
     });
 
@@ -134,11 +102,7 @@ describe('Error Boundary System', () => {
           return () => clearTimeout(timer);
         }, []);
 
-        return (
-          <ErrorBoundary>
-            <ThrowError shouldThrow={shouldThrow} />
-          </ErrorBoundary>
-        );
+        return (<ErrorBoundary><ThrowError shouldThrow={shouldThrow} /></ErrorBoundary>);
       };
 
       render(<TestComponent />);
@@ -150,9 +114,7 @@ describe('Error Boundary System', () => {
       fireEvent.click(screen.getByRole('button', { name: /try again/i }));
 
       // Should recover after component stops throwing
-      await waitFor(() => {
-        expect(screen.getByText('No error')).toBeInTheDocument();
-      });
+      await waitFor(() => { expect(screen.getByText('No error')).toBeInTheDocument(); });
     });
   });
 
@@ -171,32 +133,16 @@ describe('Error Boundary System', () => {
 
       return (
         <div>
-
-
-          <button onClick={triggerError} data-testid='trigger-error'>
-            Trigger Error
-          </button>
-          <button
-
-onClick={clearErrors} data-testid='clear-errors'>
-            Clear Errors
-          </button>
-
-
+          <button onClick={triggerError} data-testid='trigger-error'>Trigger Error</button>
+          <button onClick={clearErrors} data-testid='clear-errors'>Clear Errors</button>
           <div data-testid='error-count'>{state.errors.length}</div>
-          <div
-
-data-testid='has-errors'>{hasErrors.toString()}</div>
+          <div data-testid='has-errors'>{hasErrors.toString()}</div>
         </div>
       );
     };
 
     it('should manage error state correctly', () => {
-      render(
-        <ErrorProvider>
-          <ErrorContextTestComponent />
-        </ErrorProvider>
-      );
+      render(<ErrorProvider><ErrorContextTestComponent /></ErrorProvider>);
 
       // Initially no errors
       expect(screen.getByTestId('error-count')).toHaveTextContent('0');
@@ -220,11 +166,7 @@ data-testid='has-errors'>{hasErrors.toString()}</div>
     it('should auto-remove non-critical errors after timeout', async () => {
       jest.useFakeTimers();
 
-      render(
-        <ErrorProvider>
-          <ErrorContextTestComponent />
-        </ErrorProvider>
-      );
+      render(<ErrorProvider><ErrorContextTestComponent /></ErrorProvider>);
 
       // Trigger error
       fireEvent.click(screen.getByTestId('trigger-error'));
@@ -236,9 +178,7 @@ data-testid='has-errors'>{hasErrors.toString()}</div>
       });
 
       // Error should be auto-removed
-      await waitFor(() => {
-        expect(screen.getByTestId('error-count')).toHaveTextContent('0');
-      });
+      await waitFor(() => { expect(screen.getByTestId('error-count')).toHaveTextContent('0'); });
 
       jest.useRealTimers();
     });
@@ -294,37 +234,17 @@ data-testid='has-errors'>{hasErrors.toString()}</div>
 
       return (
         <div>
-
-
-          <button onClick={testAsyncError} data-testid='test-async'>
-            Test Async Error
-          </button>
-          <button
-
-onClick={testApiError} data-testid='test-api'>
-            Test API Error
-          </button>
-
-
-          <button onClick={testValidationError} data-testid='test-validation'>
-            Test Validation Error
-          </button>
-          <button
-
-onClick={testRetryOperation} data-testid='test-retry'>
-            Test Retry Operation
-          </button>
+          <button onClick={testAsyncError} data-testid='test-async'>Test Async Error</button>
+          <button onClick={testApiError} data-testid='test-api'>Test API Error</button>
+          <button onClick={testValidationError} data-testid='test-validation'>Test Validation Error</button>
+          <button onClick={testRetryOperation} data-testid='test-retry'>Test Retry Operation</button>
           <div data-testid='result'>{result}</div>
         </div>
       );
     };
 
     it('should handle different error types correctly', async () => {
-      render(
-        <ErrorProvider>
-          <ErrorHandlerTestComponent />
-        </ErrorProvider>
-      );
+      render(<ErrorProvider><ErrorHandlerTestComponent /></ErrorProvider>);
 
       // Test async error handling
       fireEvent.click(screen.getByTestId('test-async'));
@@ -334,23 +254,17 @@ onClick={testRetryOperation} data-testid='test-retry'>
 
       // Test API error handling
       fireEvent.click(screen.getByTestId('test-api'));
-      await waitFor(() => {
-        expect(screen.getByTestId('result')).toHaveTextContent('API error handled:');
-      });
+      await waitFor(() => { expect(screen.getByTestId('result')).toHaveTextContent('API error handled:'); });
 
       // Test validation error handling
       fireEvent.click(screen.getByTestId('test-validation'));
-      await waitFor(() => {
-        expect(screen.getByTestId('result')).toHaveTextContent('Validation error handled:');
-      });
+      await waitFor(() => { expect(screen.getByTestId('result')).toHaveTextContent('Validation error handled:'); });
 
       // Test retry operation
       fireEvent.click(screen.getByTestId('test-retry'));
-      await waitFor(() => {
-        expect(screen.getByTestId('result')).toHaveTextContent(
-          'Retry result: Success after retries'
-        );
-      });
+      await waitFor(() => { expect(screen.getByTestId('result')).toHaveTextContent(
+        'Retry result: Success after retries'
+      ); });
     });
   });
 
@@ -358,15 +272,7 @@ onClick={testRetryOperation} data-testid='test-retry'>
     it('should not impact performance when no errors occur', () => {
       const start = performance.now();
 
-      render(
-        <ErrorBoundary>
-          <div>
-            {Array.from({ length: 1000 }, (_, i) => (
-              <span key={i}>Item {i}</span>
-            ))}
-          </div>
-        </ErrorBoundary>
-      );
+      render(<ErrorBoundary><div>{Array.from({ length: 1000 }, (_, i) => (<span key={i}>Item {i}</span>))}</div></ErrorBoundary>);
 
       const end = performance.now();
       const renderTime = end - start;
@@ -404,16 +310,12 @@ onClick={testRetryOperation} data-testid='test-retry'>
       };
 
       render(
-        <ErrorBoundary>
-          <TestComponent />
-        </ErrorBoundary>
+        <ErrorBoundary><TestComponent /></ErrorBoundary>
       );
 
       // Wait for error cycles to complete
       await waitFor(
-        () => {
-          expect(screen.getByTestId('error-cycles')).toHaveTextContent('5');
-        },
+        () => { expect(screen.getByTestId('error-cycles')).toHaveTextContent('5'); },
         { timeout: 2000 }
       );
 
@@ -431,25 +333,11 @@ onClick={testRetryOperation} data-testid='test-retry'>
           throw new Error('Property assessment failed');
         }
 
-        return (
-          <div>
-
-
-            <div>Property Assessment Module</div>
-            <button
-
-onClick={() => setShouldFail(true)} data-testid='fail-assessment'>
-              Trigger Assessment Error
-            </button>
-          </div>
-        );
+        return (<div><div>Property Assessment Module</div><button onClick={() => setShouldFail(true)} data-testid='fail-assessment'>
+              Trigger Assessment Error</button></div>);
       };
 
-      render(
-        <ErrorBoundary>
-          <PropertyAssessmentComponent />
-        </ErrorBoundary>
-      );
+      render(<ErrorBoundary><PropertyAssessmentComponent /></ErrorBoundary>);
 
       expect(screen.getByText('Property Assessment Module')).toBeInTheDocument();
 
@@ -463,7 +351,9 @@ onClick={() => setShouldFail(true)} data-testid='fail-assessment'>
 });
 
 // Test utilities
-export const renderWithErrorProvider = (component: React.ReactElement): ReturnType<typeof render> => {
+export const renderWithErrorProvider = (
+  component: React.ReactElement
+): ReturnType<typeof render> => {
   return render(<ErrorProvider>{component}</ErrorProvider>);
 };
 

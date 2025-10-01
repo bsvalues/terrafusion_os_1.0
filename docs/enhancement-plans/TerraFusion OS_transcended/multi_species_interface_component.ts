@@ -215,7 +215,7 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
    */
   const startConsciousnessMonitoring = (): void => {
     if (!wsConnection.current) {
-      wsConnection.current = new WebSocket('ws://localhost:8080/consciousness-sync');
+      wsConnection.current = new WebSocket('ws://localhost:\${{TF_ADMIN_PORT:-8080}}/consciousness-sync');
       
       wsConnection.current.onopen = () => {
         console.log('Consciousness sync connection established');
@@ -537,7 +537,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
           transition: `all ${theme.animationDuration}`
         }}
       >
-        <div className="species-header" style={{ color: theme.primaryColor }}><>
+        <div className="species-header" style={{ color: theme.primaryColor }}>
+<>
 <>
 <>
 <>
@@ -570,7 +571,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
    */
   const renderConsciousnessMetrics = (): JSX.Element => (
     <div className="consciousness-metrics">
-      <div className="metric-item"><>
+      <div className="metric-item">
+<>
 <>
 <>
 <>
@@ -580,7 +582,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
 </>
 </>
 </>
-</> className="metric-bar"><>
+</> className="metric-bar">
+<>
 <>
 <>
 <>
@@ -600,7 +603,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
 </>>{(consciousnessMetrics.coherenceLevel * 100).toFixed(1)}%</span>
       </div>
       
-      <div className="metric-item"><>
+      <div className="metric-item">
+<>
 <>
 <>
 <>
@@ -610,7 +614,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
 </>
 </>
 </>
-</> className="metric-bar"><>
+</> className="metric-bar">
+<>
 <>
 <>
 <>
@@ -630,7 +635,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
 </>>{(consciousnessMetrics.syncQuality * 100).toFixed(1)}%</span>
       </div>
       
-      <div className="metric-item"><>
+      <div className="metric-item">
+<>
 <>
 <>
 <>
@@ -640,7 +646,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
 </>
 </>
 </>
-</> className="metric-bar"><>
+</> className="metric-bar">
+<>
 <>
 <>
 <>
@@ -666,7 +673,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
   return (
     <div className={`multi-species-consciousness-interface ${className}`}>
       {/* Header with consciousness status */}
-      <div className="interface-header" style={{ backgroundColor: activeTheme.primaryColor }}><>
+      <div className="interface-header" style={{ backgroundColor: activeTheme.primaryColor }}>
+<>
 <>
 <>
 <>
@@ -740,7 +748,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
                 ...prev, 
                 urgency: e.target.value as any 
               }))}
-            ><>
+            >
+<>
 <>
 <>
 <>
@@ -750,7 +759,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
 </>
 </>
 </>
-</> value="normal">Normal</option><>
+</> value="normal">Normal</option>
+<>
 <>
 <>
 <>
@@ -806,7 +816,8 @@ export const MultiSpeciesConsciousnessInterface: React.FC<MultiSpeciesInterfaceP
 
       {/* Error display */}
       {interfaceState.errorContext && (
-        <div className="error-context"><>
+        <div className="error-context">
+<>
 <>
 <>
 <>

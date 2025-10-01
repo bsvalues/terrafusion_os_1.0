@@ -3,11 +3,15 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const client = require('prom-client');
 
-const gauge = new client.Gauge({ name: 'plugin_health_status', help: 'Plugin health (1=healthy, 0=unhealthy)', labelNames: ['pluginId'] });
+const gauge = new client.Gauge({
+  name: 'plugin_health_status',
+  help: 'Plugin health (1=healthy, 0=unhealthy)',
+  labelNames: ['pluginId'],
+});
 client.collectDefaultMetrics();
 
 const PLUGIN_SIDEBAR = '../plugins/sidebar.json';
-const HEALTH_ENDPOINT = 'http://localhost:3000/api/plugin-health';
+const HEALTH_ENDPOINT = 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/plugin-health';
 
 async function probe() {
   const sidebar = JSON.parse(fs.readFileSync(PLUGIN_SIDEBAR, 'utf8'));
@@ -15,7 +19,7 @@ async function probe() {
   const res = await fetch(HEALTH_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(ids)
+    body: JSON.stringify(ids),
   });
   const health = await res.json();
   for (const id of ids) {

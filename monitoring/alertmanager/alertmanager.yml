@@ -26,25 +26,25 @@ route:
 receivers:
   - name: 'web.hook'
     webhook_configs:
-      - url: 'http://127.0.0.1:5001/'
+      - url: 'http://127.0.0.1:\${{TF_API_HTTPS_PORT:-5001}}/'
 
   - name: 'critical-alerts'
     webhook_configs:
-      - url: 'http://127.0.0.1:5001/critical'
+      - url: 'http://127.0.0.1:\${{TF_API_HTTPS_PORT:-5001}}/critical'
     email_configs:
       - to: 'admin@terrafusion.local'
         send_resolved: true
 
   - name: 'ai-swarm-alerts'
     webhook_configs:
-      - url: 'http://127.0.0.1:5001/ai-swarm'
+      - url: 'http://127.0.0.1:\${{TF_API_HTTPS_PORT:-5001}}/ai-swarm'
     email_configs:
       - to: 'ai-team@terrafusion.local'
         send_resolved: true
 
   - name: 'backend-alerts'
     webhook_configs:
-      - url: 'http://127.0.0.1:5001/backend'
+      - url: 'http://127.0.0.1:\${{TF_API_HTTPS_PORT:-5001}}/backend'
     email_configs:
       - to: 'devops@terrafusion.local'
         send_resolved: true

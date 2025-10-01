@@ -1,0 +1,141 @@
+{
+  "name": "Golden Ratio Engine",
+  "slug": "golden-ratio-engine",
+  "version": "1.0.0",
+  "displayName": "Golden Ratio Engine (φ)",
+  "description": "φ-governed mathematical doctrine for government property valuations, φ-ring analysis, and harmonic data processing in TerraFusion OS.",
+  "category": "core-government",
+  "tier": "Tier 1",
+  "pricing": {
+    "base": 89,
+    "per_analysis": 1.618,
+    "enterprise": 233
+  },
+  "service": {
+    "baseUrl": "http://localhost:${GRE_SERVICE_PORT:-8080}",
+    "healthPath": "/health",
+    "endpoints": {
+      "fib": "/fib",
+      "goldenSection": "/opt/golden-section", 
+      "goldenLaplacian": "/graph/golden-laplacian",
+      "gre_score": "/api/v1/gre/score",
+      "gre_tune": "/api/v1/gre/tune",
+      "gre_health": "/api/v1/gre/health"
+    }
+  },
+  "rbac": {
+    "roles": [
+      "Public",
+      "User",
+      "Assessor",
+      "Realtor",
+      "CountyAdmin",
+      "EnterpriseAdmin"
+    ],
+    "permissions": {
+      "Public": [
+        "ui:read"
+      ],
+      "User": [
+        "ui:read",
+        "fib:read"
+      ],
+      "Assessor": [
+        "ui:read",
+        "fib:read",
+        "opt:run",
+        "graph:run",
+        "gre:score",
+        "gre:tune"
+      ],
+      "Realtor": [
+        "ui:read",
+        "fib:read",
+        "opt:run",
+        "gre:score"
+      ],
+      "CountyAdmin": [
+        "*"
+      ],
+      "EnterpriseAdmin": [
+        "*"
+      ]
+    }
+  },
+  "billing": {
+    "tiers": {
+      "Tier1": {
+        "monthlyPrice": 89,
+        "description": "φ-Ring Analysis & Basic Valuations",
+        "features": [
+          "φ-ring property analysis",
+          "Basic Golden Ratio calculations",
+          "Standard φ-governed kernels",
+          "Up to 1,000 valuations/month"
+        ]
+      },
+      "Tier2": {
+        "monthlyPrice": 144,
+        "description": "Enhanced φ-Analytics & Explanations",
+        "features": [
+          "All Tier 1 features",
+          "Advanced φ-ring visualizations",
+          "Explainable AI with φ-weights",
+          "CSV/GeoJSON exports",
+          "Up to 5,000 valuations/month"
+        ]
+      },
+      "Tier3": {
+        "monthlyPrice": 233,
+        "description": "Enterprise φ-Optimization & Tuning",
+        "features": [
+          "All Tier 2 features", 
+          "Golden section optimization",
+          "Parameter tuning interface",
+          "Custom φ-kernel configurations",
+          "Unlimited valuations",
+          "Priority support"
+        ]
+      }
+    },
+    "usageBased": {
+      "perAnalysis": 1.618,
+      "perOptimization": 2.618,
+      "perTuning": 4.236
+    }
+  },
+  "integration": {
+    "terrafusion": {
+      "rustEngine": "golden-service",
+      "apiGateway": "/api/v1/gre/*",
+      "ffiBindings": true,
+      "monitoring": "prometheus",
+      "compliance": "FISMA"
+    }
+  },
+  "ui": {
+    "framework": "NextJS",
+    "components": [
+      "GoldenThreadDashboard",
+      "PhiRingVisualizer", 
+      "ParameterTuner",
+      "ExplainabilityView"
+    ],
+    "routes": [
+      "/golden",
+      "/golden/graph",
+      "/golden/opt"
+    ]
+  },
+  "dependencies": {
+    "rust": [
+      "golden-core",
+      "golden-graph",
+      "golden-opt",
+      "golden-service"
+    ],
+    "dotnet": [
+      "TerraFusion.API.GoldenRatio"
+    ]
+  }
+}

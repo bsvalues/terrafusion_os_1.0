@@ -188,7 +188,7 @@ export class MarketplaceDeployment {
     config: DeploymentConfig
   ): Promise<DeploymentPlan> {
     const planId = `marketplace-${name}-${version}-${Date.now()}`;
-    
+
     const components = await this.generateComponentDeployments(config);
     const dependencies = await this.analyzeDependencies(components);
     const rollbackPlan = await this.generateRollbackPlan(components, config);
@@ -202,7 +202,7 @@ export class MarketplaceDeployment {
       dependencies,
       rollbackPlan,
       validationSteps,
-      estimatedDuration: this.estimateDeploymentDuration(components)
+      estimatedDuration: this.estimateDeploymentDuration(components),
     };
 
     this.deploymentPlans.set(planId, plan);
@@ -228,8 +228,8 @@ export class MarketplaceDeployment {
         successRate: 0,
         rollbackRate: 0,
         mttr: 0,
-        availability: 0
-      }
+        availability: 0,
+      },
     };
 
     this.deploymentStatus.set(planId, status);
@@ -255,7 +255,6 @@ export class MarketplaceDeployment {
       status.progress = 100;
 
       this.logDeployment(status, 'info', 'system', 'Deployment completed successfully');
-
     } catch (error) {
       status.status = 'failed';
       status.endTime = new Date().toISOString();
@@ -287,8 +286,8 @@ export class MarketplaceDeployment {
         successRate: 0,
         rollbackRate: 0,
         mttr: 0,
-        availability: 0
-      }
+        availability: 0,
+      },
     };
 
     this.deploymentStatus.set(planId, status);
@@ -317,7 +316,6 @@ export class MarketplaceDeployment {
       status.status = 'completed';
       status.endTime = new Date().toISOString();
       status.progress = 100;
-
     } catch (error) {
       // Rollback to blue environment
       await this.rollbackToBlue(plan, status);
@@ -350,8 +348,8 @@ export class MarketplaceDeployment {
         successRate: 0,
         rollbackRate: 0,
         mttr: 0,
-        availability: 0
-      }
+        availability: 0,
+      },
     };
 
     this.deploymentStatus.set(planId, status);
@@ -380,7 +378,6 @@ export class MarketplaceDeployment {
       status.status = 'completed';
       status.endTime = new Date().toISOString();
       status.progress = 100;
-
     } catch (error) {
       // Rollback canary
       await this.rollbackCanary(plan, status);
@@ -413,7 +410,7 @@ export class MarketplaceDeployment {
     }
 
     // Deploy to secondary regions
-    const secondaryPromises = regions.slice(1).map(async (region) => {
+    const secondaryPromises = regions.slice(1).map(async region => {
       const regionPlanId = `${planId}-${region}`;
       const regionStatus = await this.executeDeployment(regionPlanId);
       regionStatuses.set(region, regionStatus);
@@ -448,21 +445,21 @@ export class MarketplaceDeployment {
         targetCPU: 70,
         targetMemory: 80,
         scaleUpCooldown: 300,
-        scaleDownCooldown: 600
+        scaleDownCooldown: 600,
       },
       securityConfig: {
         encryption: {
           atRest: true,
           inTransit: true,
-          keyRotation: true
+          keyRotation: true,
         },
         authentication: {
           mfa: true,
           sso: true,
-          sessionTimeout: 3600
+          sessionTimeout: 3600,
         },
         compliance: ['SOC2', 'FISMA', 'NIST'],
-        auditLogging: true
+        auditLogging: true,
       },
       monitoringConfig: {
         metrics: ['cpu', 'memory', 'disk', 'network', 'requests', 'errors'],
@@ -472,30 +469,30 @@ export class MarketplaceDeployment {
             metric: 'error_rate',
             threshold: 5,
             severity: 'critical',
-            recipients: ['ops-team@terrafusion.com']
-          }
+            recipients: ['ops-team@terrafusion.com'],
+          },
         ],
         logging: {
           level: 'info',
           retention: 90,
           structured: true,
-          destinations: ['cloudwatch', 'elasticsearch']
+          destinations: ['cloudwatch', 'elasticsearch'],
         },
         healthChecks: [
           {
             endpoint: '/health',
             interval: 30,
             timeout: 5,
-            retries: 3
-          }
-        ]
+            retries: 3,
+          },
+        ],
       },
       backupConfig: {
         enabled: true,
         frequency: '0 2 * * *', // Daily at 2 AM
         retention: 30,
         encryption: true,
-        crossRegion: true
+        crossRegion: true,
       },
       networkConfig: {
         vpc: 'vpc-terrafusion-prod',
@@ -503,25 +500,27 @@ export class MarketplaceDeployment {
         loadBalancer: {
           type: 'application',
           scheme: 'internet-facing',
-          healthCheck: '/health'
+          healthCheck: '/health',
         },
         cdn: {
           enabled: true,
           caching: {
             staticAssets: 86400, // 24 hours
-            apiResponses: 300,   // 5 minutes
-            plugins: 3600       // 1 hour
+            apiResponses: 300, // 5 minutes
+            plugins: 3600, // 1 hour
           },
-          compression: true
-        }
-      }
+          compression: true,
+        },
+      },
     };
 
     // Create default production deployment plan
     this.createDeploymentPlan('marketplace', '3.0.0', productionConfig);
   }
 
-  private async generateComponentDeployments(config: DeploymentConfig): Promise<ComponentDeployment[]> {
+  private async generateComponentDeployments(
+    config: DeploymentConfig
+  ): Promise<ComponentDeployment[]> {
     return [
       {
         name: 'marketplace-api',
@@ -532,20 +531,20 @@ export class MarketplaceDeployment {
           cpu: '1000m',
           memory: '2Gi',
           storage: '10Gi',
-          network: '1Gbps'
+          network: '1Gbps',
         },
         environment: {
           NODE_ENV: config.environment,
           LOG_LEVEL: config.monitoringConfig.logging.level,
           DB_HOST: 'marketplace-db',
-          REDIS_HOST: 'marketplace-cache'
+          REDIS_HOST: 'marketplace-cache',
         },
         healthCheck: {
           endpoint: '/health',
           interval: 30,
           timeout: 5,
-          retries: 3
-        }
+          retries: 3,
+        },
       },
       {
         name: 'marketplace-web',
@@ -556,18 +555,18 @@ export class MarketplaceDeployment {
           cpu: '500m',
           memory: '1Gi',
           storage: '5Gi',
-          network: '1Gbps'
+          network: '1Gbps',
         },
         environment: {
           NODE_ENV: config.environment,
-          API_URL: 'https://api.marketplace.terrafusion.com'
+          API_URL: 'https://api.marketplace.terrafusion.com',
         },
         healthCheck: {
           endpoint: '/health',
           interval: 30,
           timeout: 5,
-          retries: 3
-        }
+          retries: 3,
+        },
       },
       {
         name: 'marketplace-db',
@@ -578,19 +577,19 @@ export class MarketplaceDeployment {
           cpu: '2000m',
           memory: '4Gi',
           storage: '100Gi',
-          network: '1Gbps'
+          network: '1Gbps',
         },
         environment: {
           POSTGRES_DB: 'marketplace',
           POSTGRES_USER: 'marketplace',
-          POSTGRES_PASSWORD: '${DB_PASSWORD}'
+          POSTGRES_PASSWORD: '${DB_PASSWORD}',
         },
         healthCheck: {
           endpoint: '/health',
           interval: 60,
           timeout: 10,
-          retries: 3
-        }
+          retries: 3,
+        },
       },
       {
         name: 'marketplace-cache',
@@ -601,18 +600,18 @@ export class MarketplaceDeployment {
           cpu: '500m',
           memory: '2Gi',
           storage: '20Gi',
-          network: '1Gbps'
+          network: '1Gbps',
         },
         environment: {
-          REDIS_PASSWORD: '${REDIS_PASSWORD}'
+          REDIS_PASSWORD: '${REDIS_PASSWORD}',
         },
         healthCheck: {
           endpoint: '/health',
           interval: 30,
           timeout: 5,
-          retries: 3
-        }
-      }
+          retries: 3,
+        },
+      },
     ];
   }
 
@@ -630,17 +629,17 @@ export class MarketplaceDeployment {
         'Health check failures > 50%',
         'Error rate > 10%',
         'Response time > 5000ms',
-        'Manual trigger'
+        'Manual trigger',
       ],
       steps: [
         'Stop new deployments',
         'Route traffic to previous version',
         'Restore database if needed',
         'Verify system health',
-        'Notify stakeholders'
+        'Notify stakeholders',
       ],
       estimatedTime: '10-15 minutes',
-      dataRecovery: true
+      dataRecovery: true,
     };
   }
 
@@ -650,26 +649,26 @@ export class MarketplaceDeployment {
         name: 'Health Check',
         type: 'health',
         timeout: 300,
-        retries: 3
+        retries: 3,
       },
       {
         name: 'Functional Tests',
         type: 'functional',
         timeout: 600,
-        retries: 2
+        retries: 2,
       },
       {
         name: 'Performance Tests',
         type: 'performance',
         timeout: 900,
-        retries: 1
+        retries: 1,
       },
       {
         name: 'Security Scan',
         type: 'security',
         timeout: 1200,
-        retries: 1
-      }
+        retries: 1,
+      },
     ];
   }
 
@@ -680,48 +679,57 @@ export class MarketplaceDeployment {
     return `${totalMinutes} minutes`;
   }
 
-  private async preDeploymentValidation(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
+  private async preDeploymentValidation(
+    plan: DeploymentPlan,
+    status: DeploymentStatus
+  ): Promise<void> {
     this.updateStatus(status, 'Pre-deployment validation', 5);
     this.logDeployment(status, 'info', 'validation', 'Starting pre-deployment validation');
-    
+
     // Simulate validation
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     this.logDeployment(status, 'info', 'validation', 'Pre-deployment validation completed');
   }
 
-  private async deployInfrastructure(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
+  private async deployInfrastructure(
+    plan: DeploymentPlan,
+    status: DeploymentStatus
+  ): Promise<void> {
     this.updateStatus(status, 'Deploying infrastructure', 20);
     this.logDeployment(status, 'info', 'infrastructure', 'Deploying infrastructure components');
-    
+
     // Simulate infrastructure deployment
     await new Promise(resolve => setTimeout(resolve, 5000));
-    
+
     this.logDeployment(status, 'info', 'infrastructure', 'Infrastructure deployment completed');
   }
 
   private async deployComponents(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
     this.updateStatus(status, 'Deploying components', 50);
-    
+
     for (const component of plan.components) {
       this.logDeployment(status, 'info', component.name, `Deploying ${component.name}`);
-      
+
       // Simulate component deployment
       await new Promise(resolve => setTimeout(resolve, 3000));
-      
+
       this.logDeployment(status, 'info', component.name, `${component.name} deployed successfully`);
     }
   }
 
-  private async postDeploymentValidation(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
+  private async postDeploymentValidation(
+    plan: DeploymentPlan,
+    status: DeploymentStatus
+  ): Promise<void> {
     this.updateStatus(status, 'Post-deployment validation', 80);
-    
+
     for (const step of plan.validationSteps) {
       this.logDeployment(status, 'info', 'validation', `Running ${step.name}`);
-      
+
       // Simulate validation step
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       this.logDeployment(status, 'info', 'validation', `${step.name} completed`);
     }
   }
@@ -729,21 +737,21 @@ export class MarketplaceDeployment {
   private async setupMonitoring(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
     this.updateStatus(status, 'Setting up monitoring', 90);
     this.logDeployment(status, 'info', 'monitoring', 'Setting up monitoring and alerting');
-    
+
     // Simulate monitoring setup
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     this.logDeployment(status, 'info', 'monitoring', 'Monitoring setup completed');
   }
 
   private async executeRollback(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
     this.logDeployment(status, 'info', 'rollback', 'Executing rollback plan');
-    
+
     for (const step of plan.rollbackPlan.steps) {
       this.logDeployment(status, 'info', 'rollback', `Executing: ${step}`);
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    
+
     status.status = 'rolled-back';
     this.logDeployment(status, 'info', 'rollback', 'Rollback completed');
   }
@@ -765,35 +773,51 @@ export class MarketplaceDeployment {
       level,
       component,
       message,
-      details
+      details,
     };
-    
+
     status.logs.push(log);
     console.log(`[${level.toUpperCase()}] ${component}: ${message}`);
   }
 
   // Blue-Green deployment methods
-  private async deployToGreenEnvironment(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
+  private async deployToGreenEnvironment(
+    plan: DeploymentPlan,
+    status: DeploymentStatus
+  ): Promise<void> {
     this.logDeployment(status, 'info', 'blue-green', 'Deploying to green environment');
     await new Promise(resolve => setTimeout(resolve, 10000));
   }
 
-  private async validateGreenEnvironment(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
+  private async validateGreenEnvironment(
+    plan: DeploymentPlan,
+    status: DeploymentStatus
+  ): Promise<void> {
     this.logDeployment(status, 'info', 'blue-green', 'Validating green environment');
     await new Promise(resolve => setTimeout(resolve, 5000));
   }
 
-  private async switchTrafficToGreen(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
+  private async switchTrafficToGreen(
+    plan: DeploymentPlan,
+    status: DeploymentStatus
+  ): Promise<void> {
     this.logDeployment(status, 'info', 'blue-green', 'Switching traffic to green');
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
-  private async monitorDeployment(plan: DeploymentPlan, status: DeploymentStatus, duration: number): Promise<void> {
+  private async monitorDeployment(
+    plan: DeploymentPlan,
+    status: DeploymentStatus,
+    duration: number
+  ): Promise<void> {
     this.logDeployment(status, 'info', 'blue-green', `Monitoring for ${duration} seconds`);
     await new Promise(resolve => setTimeout(resolve, duration * 1000));
   }
 
-  private async cleanupBlueEnvironment(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
+  private async cleanupBlueEnvironment(
+    plan: DeploymentPlan,
+    status: DeploymentStatus
+  ): Promise<void> {
     this.logDeployment(status, 'info', 'blue-green', 'Cleaning up blue environment');
     await new Promise(resolve => setTimeout(resolve, 3000));
   }
@@ -804,23 +828,43 @@ export class MarketplaceDeployment {
   }
 
   // Canary deployment methods
-  private async deployCanaryInstances(plan: DeploymentPlan, status: DeploymentStatus, percentage: number): Promise<void> {
+  private async deployCanaryInstances(
+    plan: DeploymentPlan,
+    status: DeploymentStatus,
+    percentage: number
+  ): Promise<void> {
     this.logDeployment(status, 'info', 'canary', `Deploying ${percentage}% canary instances`);
     await new Promise(resolve => setTimeout(resolve, 8000));
   }
 
-  private async routeTrafficToCanary(plan: DeploymentPlan, status: DeploymentStatus, percentage: number): Promise<void> {
+  private async routeTrafficToCanary(
+    plan: DeploymentPlan,
+    status: DeploymentStatus,
+    percentage: number
+  ): Promise<void> {
     this.logDeployment(status, 'info', 'canary', `Routing ${percentage}% traffic to canary`);
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
-  private async monitorCanaryHealth(plan: DeploymentPlan, status: DeploymentStatus, duration: number): Promise<boolean> {
-    this.logDeployment(status, 'info', 'canary', `Monitoring canary health for ${duration} seconds`);
+  private async monitorCanaryHealth(
+    plan: DeploymentPlan,
+    status: DeploymentStatus,
+    duration: number
+  ): Promise<boolean> {
+    this.logDeployment(
+      status,
+      'info',
+      'canary',
+      `Monitoring canary health for ${duration} seconds`
+    );
     await new Promise(resolve => setTimeout(resolve, duration * 1000));
     return true; // Simulate healthy canary
   }
 
-  private async graduateCanaryDeployment(plan: DeploymentPlan, status: DeploymentStatus): Promise<void> {
+  private async graduateCanaryDeployment(
+    plan: DeploymentPlan,
+    status: DeploymentStatus
+  ): Promise<void> {
     this.logDeployment(status, 'info', 'canary', 'Graduating canary to full deployment');
     await new Promise(resolve => setTimeout(resolve, 10000));
   }

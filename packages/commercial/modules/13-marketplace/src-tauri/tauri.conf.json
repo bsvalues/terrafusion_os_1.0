@@ -30,10 +30,7 @@
       },
       "fs": {
         "all": true,
-        "scope": [
-          "/terra-fusion-dashboard/*",
-          "/terra-fusion-dashboard/**/*"
-        ]
+        "scope": ["/terra-fusion-dashboard/*", "/terra-fusion-dashboard/**/*"]
       },
       "dialog": {
         "all": true

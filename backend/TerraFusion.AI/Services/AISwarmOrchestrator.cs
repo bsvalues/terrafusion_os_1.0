@@ -28,7 +28,7 @@ namespace TerraFusion.AI.Services
 
             // Get service URLs from configuration or use defaults
             _gaugeTheoryServiceUrl = _configuration["AI:GaugeTheoryServiceUrl"] ?? "http://localhost:8001";
-            _claudeFlowServiceUrl = _configuration["AI:ClaudeFlowServiceUrl"] ?? "http://localhost:8002";
+            _claudeFlowServiceUrl = _configuration["AI:ClaudeFlowServiceUrl"] ?? "http://localhost:8001";
         }
 
         public async Task<AISwarmStatus> GetSwarmStatusAsync()

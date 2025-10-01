@@ -24,8 +24,8 @@ on:
         type: boolean
 
 env:
-  SECURITY_ALERT_WEBHOOK: ${{ secrets.SECURITY_ALERT_WEBHOOK || 'https://localhost:3000/security-webhook' }}
-  FISMA_COMPLIANCE_ENDPOINT: ${{ secrets.FISMA_COMPLIANCE_ENDPOINT || 'http://localhost:5000/api/compliance' }}
+  SECURITY_ALERT_WEBHOOK: ${{ secrets.SECURITY_ALERT_WEBHOOK || 'https://localhost:\${{TF_FRONTEND_PORT:-3000}}/security-webhook' }}
+  FISMA_COMPLIANCE_ENDPOINT: ${{ secrets.FISMA_COMPLIANCE_ENDPOINT || 'http://localhost:\${{TF_FRONTEND_PORT:-3000}}/api/compliance' }}
   HARRIS_PACS_SECURITY_KEY: ${{ secrets.HARRIS_PACS_SECURITY_KEY || 'local-dev-key' }}
 
 permissions:
@@ -157,7 +157,7 @@ jobs:
           echo "🔔 Security scan completed for ${{ matrix.scan-target }}"
           
           # Only send webhook if properly configured (not localhost)
-          if [[ "$SECURITY_ALERT_WEBHOOK" != "https://localhost:3000/security-webhook" ]]; then
+          if [[ "$SECURITY_ALERT_WEBHOOK" != "https://localhost:\${{TF_FRONTEND_PORT:-3000}}/security-webhook" ]]; then
             echo "📡 Sending security alert to configured webhook..."
             curl -X POST "$SECURITY_ALERT_WEBHOOK" \
               -H "Content-Type: application/json" \
@@ -468,7 +468,7 @@ jobs:
           echo "📊 Reports generated and uploaded as artifacts"
           
           # Only send webhook if properly configured (not localhost)
-          if [[ "$SECURITY_ALERT_WEBHOOK" != "https://localhost:3000/security-webhook" ]]; then
+          if [[ "$SECURITY_ALERT_WEBHOOK" != "https://localhost:\${{TF_FRONTEND_PORT:-3000}}/security-webhook" ]]; then
             echo "📡 Sending success notification to security team..."
             curl -X POST "$SECURITY_ALERT_WEBHOOK" \
               -H "Content-Type: application/json" \

@@ -8,8 +8,8 @@ echo.
 
 REM Set production environment variables
 set ASPNETCORE_ENVIRONMENT=Production
-set ASPNETCORE_PORT=5000
-set ASPNETCORE_URLS=http://localhost:5000
+set ASPNETCORE_PORT=\${{TF_API_PORT:-5000}}
+set ASPNETCORE_URLS=http://localhost:\${{TF_API_PORT:-5000}}
 
 REM Start the production API
 echo Starting API on port %ASPNETCORE_PORT%...

@@ -1,6 +1,6 @@
 /**
  * Model Content Protocol (MCP) Implementation
- * 
+ *
  * This is the main entry point for the MCP implementation, exporting all
  * components and utilities for standardizing AI content processing.
  */
@@ -13,7 +13,7 @@ export {
   SchemaRegistry,
   SchemaValidator,
   ValidationResult,
-  createDefaultRegistry
+  createDefaultRegistry,
 } from './schemaRegistry';
 
 // Export Function Registry and Executor
@@ -21,7 +21,7 @@ export {
   MCPFunction,
   FunctionRegistry,
   FunctionExecutor,
-  createDefaultExecutor
+  createDefaultExecutor,
 } from './functionRegistry';
 
 // Export Workflow Engine
@@ -31,7 +31,7 @@ export {
   WorkflowDefinition,
   WorkflowExecutionResult,
   WorkflowEngine,
-  createStandardWorkflowSteps
+  createStandardWorkflowSteps,
 } from './workflow';
 
 /**
@@ -42,10 +42,10 @@ export function initializeMCP() {
   const schemaRegistry = createDefaultRegistry();
   const functionExecutor = createDefaultExecutor();
   const workflowEngine = new WorkflowEngine();
-  
+
   return {
     schemaRegistry,
     functionExecutor,
-    workflowEngine
+    workflowEngine,
   };
 }

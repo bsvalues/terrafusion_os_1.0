@@ -66,8 +66,8 @@
       "timestamp": "2025-08-29T07:08:55.620083",
       "results": {
         "optimization_type": "cost",
-        "original_cost": 1.2500000000000002e+16,
-        "optimized_cost": 1.0625000000000002e+16,
+        "original_cost": 1.2500000000000002e16,
+        "optimized_cost": 1.0625000000000002e16,
         "cost_savings": 0.14999999999999997,
         "recommendations": [
           "Optimize citizen interaction energy",
@@ -115,8 +115,8 @@
       "timestamp": "2025-08-29T07:08:55.627915",
       "results": {
         "optimization_type": "cost",
-        "original_cost": 4.21875e+16,
-        "optimized_cost": 3.5859375e+16,
+        "original_cost": 4.21875e16,
+        "optimized_cost": 3.5859375e16,
         "cost_savings": 0.15,
         "recommendations": [
           "Optimize citizen interaction energy",

@@ -32,7 +32,7 @@ We've created the **WORLD'S MOST ADVANCED GOVERNMENT AI SYSTEM** by combining:
 ✅ **`ENHANCED_HYBRID_COMPLETE_SUMMARY.md`** (This file) - Deployment summary  
 
 ### **🏗️ Production Infrastructure**
-✅ **Enhanced API Service** - FastAPI with advanced routing on port 8081  
+✅ **Enhanced API Service** - FastAPI with advanced routing on port \${{TF_METRICS_PORT:-8081}}  
 ✅ **Systemd Service** - Auto-starting enhanced hybrid service  
 ✅ **Model Management** - Local OpenAI OSS model loading and optimization  
 ✅ **GPU Support** - Multi-GPU deployment with memory optimization  
@@ -137,7 +137,7 @@ We've created the **WORLD'S MOST ADVANCED GOVERNMENT AI SYSTEM** by combining:
 
 ### **Enhanced System Stack**
 ```
-🌐 API Layer (Port 8081)
+🌐 API Layer (Port \${{TF_METRICS_PORT:-8081}})
 ├── Enhanced FastAPI Service
 ├── Multi-layer Authentication  
 ├── Advanced Rate Limiting

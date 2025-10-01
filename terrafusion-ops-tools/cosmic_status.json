@@ -4,12 +4,12 @@
   "status": "INITIALIZING",
   "phases": {},
   "systems": {
-    "enterprise_orchestrator": {"status": "PENDING", "health": 0},
-    "neural_consciousness": {"status": "PENDING", "health": 0},
-    "holographic_storage": {"status": "PENDING", "health": 0},
-    "biometric_security": {"status": "PENDING", "health": 0},
-    "interplanetary_deployment": {"status": "PENDING", "health": 0},
-    "cosmic_orchestrator": {"status": "PENDING", "health": 0}
+    "enterprise_orchestrator": { "status": "PENDING", "health": 0 },
+    "neural_consciousness": { "status": "PENDING", "health": 0 },
+    "holographic_storage": { "status": "PENDING", "health": 0 },
+    "biometric_security": { "status": "PENDING", "health": 0 },
+    "interplanetary_deployment": { "status": "PENDING", "health": 0 },
+    "cosmic_orchestrator": { "status": "PENDING", "health": 0 }
   },
   "metrics": {
     "cosmic_awareness": 0,

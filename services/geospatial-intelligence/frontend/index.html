@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/terrafusion-logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TerraFusion OS Geospatial Intelligence Services - Advanced GIS mapping, satellite imagery analysis, and spatial data processing for comprehensive geographic intelligence and environmental monitoring in Benton County Washington" />
+    <meta name="keywords" content="TerraFusion OS, Geospatial Intelligence, GIS, Satellite Imagery, Spatial Analysis, Mapping, Geographic Data, Remote Sensing, Environmental Monitoring, 3D Visualization, Government GIS, Benton County" />
+    <meta name="author" content="TerraFusion OS - Government Operating System" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: http:; connect-src 'self' ws: wss: https:; font-src 'self' https://fonts.gstatic.com;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA -->
+    <meta name="theme-color" content="#0099ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <title>TerraFusion OS - Geospatial Intelligence Services</title>
+    
+    <style>
+      /* Critical CSS for loading state */
+      #root {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0d1421 0%, #1a2538 50%, #243448 100%);
+        color: #ffffff;
+        font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+      
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0d1421 0%, #1a2538 50%, #243448 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #ffffff;
+        z-index: 9999;
+      }
+      
+      .loading-logo {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+      }
+      
+      .loading-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(0, 153, 255, 0.3);
+        border-top: 3px solid #0099ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <!-- Loading screen shown until React app loads -->
+      <div class="loading-screen" id="loading-screen">
+        <div class="loading-logo">🌍</div>
+        <div class="loading-text">
+          TerraFusion OS<br>
+          Geospatial Intelligence Services<br>
+          <small>Loading Advanced GIS Platform...</small>
+        </div>
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+    
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <script>
+      // Hide loading screen once app is ready
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.style.transition = 'opacity 0.5s ease-out';
+            setTimeout(function() {
+              loadingScreen.style.display = 'none';
+            }, 500);
+          }
+        }, 1000);
+      });
+      
+      // Performance monitoring
+      if ('performance' in window) {
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            console.log('Geospatial Intelligence Services Load Time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+          }, 0);
+        });
+      }
+      
+      // Error handling
+      window.addEventListener('error', function(e) {
+        console.error('Geospatial Intelligence Services Error:', e.error);
+      });
+      
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('Geospatial Intelligence Services Unhandled Promise Rejection:', e.reason);
+      });
+    </script>
+  </body>
+</html>

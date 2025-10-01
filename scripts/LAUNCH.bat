@@ -36,8 +36,8 @@ goto start
 :dev
 echo.
 echo Starting TerraFusion OS Development Environment...
-echo Backend: .NET 8.0 API (https://localhost:5001)
-echo Frontend: React 18 PWA (http://localhost:3000)
+echo Backend: .NET 8.0 API (https://localhost:\${{TF_API_HTTPS_PORT:-5001}})
+echo Frontend: React 18 PWA (http://localhost:\${{TF_API_HTTPS_PORT:-5001}})
 echo.
 npm run dev
 goto end

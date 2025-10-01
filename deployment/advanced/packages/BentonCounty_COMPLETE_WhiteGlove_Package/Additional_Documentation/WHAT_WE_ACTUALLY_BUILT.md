@@ -3,13 +3,14 @@
 ## WE BUILT IT RIGHT THE FIRST TIME
 
 ### The Architecture (CORRECT):
+
 ```
 Terrafusion Platform
     ├── Control Center (Marketplace) - THE MAIN APP
     │   └── Manages and launches all other apps
     │
     ├── Module 1: TerraAgent (standalone app)
-    ├── Module 2: TerraFlow (standalone app)  
+    ├── Module 2: TerraFlow (standalone app)
     ├── Module 3: WebAuditTracker (standalone app)
     ├── Module 4: TerraLevy (standalone app)
     ├── Module 5: TerraMiner (standalone app)
@@ -26,6 +27,7 @@ Terrafusion Platform
 ## THIS IS MICROSERVICES!
 
 Each app:
+
 - ✅ Runs independently
 - ✅ Has its own process
 - ✅ Communicates via IPC (Inter-Process Communication)
@@ -96,6 +98,7 @@ npm run tauri build
 6. OR launch modules directly
 
 **THIS IS EXACTLY LIKE:**
+
 - Microsoft Office (Word, Excel, PowerPoint = separate but integrated)
 - Adobe Creative Cloud (Photoshop, Illustrator = separate but integrated)
 - JetBrains IDEs (IntelliJ, WebStorm = separate but integrated)

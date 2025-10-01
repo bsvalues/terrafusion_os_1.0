@@ -694,7 +694,7 @@ async def main():
         
         # Start Prometheus metrics server
         start_http_server(9600)
-        logger.info("Prometheus metrics server started on port 9600")
+        logger.info("Prometheus metrics server started on port \${{TF_PORT_9600:-9600}}")
         
         # Choose execution mode
         continuous_mode = os.getenv('CONTINUOUS_TESTING_MODE', 'false').lower() == 'true'

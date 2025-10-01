@@ -89,9 +89,9 @@ public static class DatabaseConfiguration
         builder.CommandTimeout = poolConfig.GetValue("CommandTimeoutSeconds", 30);
         builder.CancellationTimeout = poolConfig.GetValue("CancellationTimeoutSeconds", 2);
 
-        // Security and reliability
-        builder.TrustServerCertificate = false; // Enforce SSL certificate validation
-        builder.SslMode = Enum.Parse<SslMode>(poolConfig.GetValue("SslMode", "Require"));
+        // Security and reliability - Updated to remove obsolete TrustServerCertificate
+        builder.SslMode = Enum.Parse<SslMode>(poolConfig.GetValue("SslMode", "Require") ?? "Require");
+        // Note: TrustServerCertificate is obsolete in newer Npgsql versions - SSL validation is handled by SslMode
         builder.KeepAlive = poolConfig.GetValue("KeepAliveSeconds", 30);
 
         // Government compliance
@@ -217,18 +217,18 @@ public class DatabaseConnectionManager
         }
     }
 
-    public async Task<ConnectionPoolStats> GetPoolStatsAsync()
+    public Task<ConnectionPoolStats> GetPoolStatsAsync()
     {
         lock (_statsLock)
         {
-            return new ConnectionPoolStats
+            return Task.FromResult(new ConnectionPoolStats
             {
                 TotalConnectionsCreated = _stats.TotalConnectionsCreated,
                 ActiveConnections = _stats.ActiveConnections,
                 FailedConnections = _stats.FailedConnections,
                 AverageConnectionTimeMs = _stats.AverageConnectionTimeMs,
                 LastUpdated = DateTime.UtcNow
-            };
+            });
         }
     }
 
@@ -256,9 +256,17 @@ internal class TrackedConnection : IDbConnection
         _manager = manager;
     }
 
+#pragma warning disable CS8769 // Nullability mismatch - interface implementation uses legacy non-nullable annotations
+    string IDbConnection.ConnectionString 
+    { 
+        get => _connection.ConnectionString ?? string.Empty; 
+        set => _connection.ConnectionString = value; 
+    }
+#pragma warning restore CS8769
+    
     public string ConnectionString 
     { 
-        get => _connection.ConnectionString; 
+        get => _connection.ConnectionString ?? string.Empty; 
         set => _connection.ConnectionString = value; 
     }
 

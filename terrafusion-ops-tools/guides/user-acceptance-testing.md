@@ -1,9 +1,12 @@
 # Terrafusion User Acceptance Testing (UAT) Guide
 
 ## Overview
-This guide provides a structured approach for validating that Terrafusion meets business requirements and user expectations before production deployment.
+
+This guide provides a structured approach for validating that Terrafusion meets
+business requirements and user expectations before production deployment.
 
 ## UAT Objectives
+
 1. Verify all business requirements are met
 2. Ensure user workflows function correctly
 3. Validate data accuracy and integrity
@@ -13,6 +16,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 ## Test Environment Setup
 
 ### Prerequisites
+
 - [ ] UAT environment deployed (identical to production)
 - [ ] Test data loaded (representative of production)
 - [ ] Test user accounts created for each role
@@ -21,33 +25,35 @@ This guide provides a structured approach for validating that Terrafusion meets 
 
 ### Test User Accounts
 
-| Role | Username | Purpose | Permissions |
-|------|----------|---------|-------------|
-| Admin | uat_admin | System administration | Full access |
-| Assessor | uat_assessor | Cost assessment | Create/edit projects |
-| Auditor | uat_auditor | Review and approve | Read-only + approve |
-| Manager | uat_manager | Reports and oversight | View all projects |
-| Guest | uat_guest | Limited access | View public data |
+| Role     | Username     | Purpose               | Permissions          |
+| -------- | ------------ | --------------------- | -------------------- |
+| Admin    | uat_admin    | System administration | Full access          |
+| Assessor | uat_assessor | Cost assessment       | Create/edit projects |
+| Auditor  | uat_auditor  | Review and approve    | Read-only + approve  |
+| Manager  | uat_manager  | Reports and oversight | View all projects    |
+| Guest    | uat_guest    | Limited access        | View public data     |
 
 ## UAT Test Scenarios
 
 ### 1. User Authentication & Authorization
 
 #### Test Case: Login Flow
-**Precondition**: User has valid credentials
-**Steps**:
+
+**Precondition**: User has valid credentials **Steps**:
+
 1. Navigate to https://uat.terrafusion.com
 2. Enter username and password
 3. Click "Login"
 4. Verify dashboard loads
 5. Check user name displayed correctly
 
-**Expected**: Successful login, appropriate dashboard shown
-**Pass/Fail**: [ ]
-**Notes**: _______________
+**Expected**: Successful login, appropriate dashboard shown **Pass/Fail**: [ ]
+**Notes**: ******\_\_\_******
 
 #### Test Case: Role-Based Access
+
 **For each role, verify**:
+
 - [ ] Correct menu items visible
 - [ ] Appropriate permissions enforced
 - [ ] Unauthorized actions blocked
@@ -58,6 +64,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 #### Workflow: Create New Project Assessment
 
 **As an Assessor:**
+
 1. **Project Creation**
    - [ ] Click "New Project"
    - [ ] Enter project details:
@@ -92,16 +99,17 @@ This guide provides a structured approach for validating that Terrafusion meets 
    - [ ] Check notification sent
 
 **Expected Results**:
+
 - Project saved successfully
 - Calculations accurate
 - Workflow completes without errors
 
-**Pass/Fail**: [ ]
-**Issues Found**: _______________
+**Pass/Fail**: [ ] **Issues Found**: ******\_\_\_******
 
 #### Workflow: AI-Powered Cost Estimation
 
 **Steps**:
+
 1. **Initiate AI Analysis**
    - [ ] Select "AI Cost Wizard"
    - [ ] Upload project specifications
@@ -115,13 +123,13 @@ This guide provides a structured approach for validating that Terrafusion meets 
    - [ ] Adjust if needed
    - [ ] Accept recommendations
 
-**Expected**: AI provides reasonable estimates quickly
-**Pass/Fail**: [ ]
-**Processing Time**: _____ seconds
+**Expected**: AI provides reasonable estimates quickly **Pass/Fail**: [ ]
+**Processing Time**: **\_** seconds
 
 #### Workflow: Project Approval Process
 
 **As an Auditor:**
+
 1. **Review Submitted Projects**
    - [ ] Access pending approvals
    - [ ] Open project details
@@ -135,14 +143,14 @@ This guide provides a structured approach for validating that Terrafusion meets 
    - [ ] Verify status updates
    - [ ] Check notifications sent
 
-**Expected**: Smooth approval workflow
-**Pass/Fail**: [ ]
+**Expected**: Smooth approval workflow **Pass/Fail**: [ ]
 
 ### 3. Reporting & Analytics
 
 #### Test Case: Generate Reports
 
 **Report Types to Test**:
+
 1. **Project Summary Report**
    - [ ] Select date range
    - [ ] Choose report format (PDF/Excel)
@@ -162,15 +170,15 @@ This guide provides a structured approach for validating that Terrafusion meets 
    - [ ] Verify timestamps
    - [ ] Check user attribution
 
-**Expected**: Reports generate correctly with accurate data
-**Pass/Fail**: [ ]
-**Generation Time**: _____ seconds
+**Expected**: Reports generate correctly with accurate data **Pass/Fail**: [ ]
+**Generation Time**: **\_** seconds
 
 ### 4. Data Management
 
 #### Test Case: Search and Filter
 
 **Search Scenarios**:
+
 - [ ] Search by project name
 - [ ] Filter by date range
 - [ ] Filter by status
@@ -179,12 +187,12 @@ This guide provides a structured approach for validating that Terrafusion meets 
 - [ ] Sort results
 - [ ] Pagination works
 
-**Expected**: Fast, accurate search results
-**Pass/Fail**: [ ]
+**Expected**: Fast, accurate search results **Pass/Fail**: [ ]
 
 #### Test Case: Bulk Operations
 
 **If Available**:
+
 - [ ] Select multiple projects
 - [ ] Bulk status update
 - [ ] Bulk export
@@ -196,6 +204,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 #### Test Case: Email Notifications
 
 **Trigger Events**:
+
 - [ ] New user registration
 - [ ] Password reset
 - [ ] Project submission
@@ -203,6 +212,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 - [ ] Report generation
 
 **Verify**:
+
 - [ ] Emails received
 - [ ] Content correct
 - [ ] Links functional
@@ -211,6 +221,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 #### Test Case: External Systems
 
 **If Applicable**:
+
 - [ ] Data import from legacy system
 - [ ] Export to accounting system
 - [ ] API integrations working
@@ -221,41 +232,43 @@ This guide provides a structured approach for validating that Terrafusion meets 
 #### Test Case: Invalid Operations
 
 **Test Scenarios**:
+
 1. **Invalid Data Entry**
    - [ ] Enter negative costs
    - [ ] Enter invalid dates
    - [ ] Exceed character limits
    - [ ] Upload wrong file types
-   
+
    **Expected**: Clear error messages, no data corruption
 
 2. **System Limits**
    - [ ] Create maximum projects
    - [ ] Upload large files
    - [ ] Concurrent user actions
-   
+
    **Expected**: Graceful handling, appropriate messages
 
 3. **Network Issues**
    - [ ] Slow connection behavior
    - [ ] Connection timeout handling
    - [ ] Retry mechanisms
-   
+
    **Expected**: No data loss, clear feedback
 
 ### 7. Performance Testing
 
 #### Response Time Checks
 
-| Action | Target Time | Actual Time | Pass/Fail |
-|--------|------------|-------------|-----------|
-| Login | <2 seconds | _____ | [ ] |
-| Page Load | <3 seconds | _____ | [ ] |
-| Search | <2 seconds | _____ | [ ] |
-| Report Generation | <10 seconds | _____ | [ ] |
-| File Upload (10MB) | <30 seconds | _____ | [ ] |
+| Action             | Target Time | Actual Time | Pass/Fail |
+| ------------------ | ----------- | ----------- | --------- |
+| Login              | <2 seconds  | **\_**      | [ ]       |
+| Page Load          | <3 seconds  | **\_**      | [ ]       |
+| Search             | <2 seconds  | **\_**      | [ ]       |
+| Report Generation  | <10 seconds | **\_**      | [ ]       |
+| File Upload (10MB) | <30 seconds | **\_**      | [ ]       |
 
 #### Concurrent Users
+
 - [ ] 10 users simultaneously
 - [ ] 50 users simultaneously
 - [ ] 100 users (if expected)
@@ -263,6 +276,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 ### 8. Usability Assessment
 
 #### User Experience Checklist
+
 - [ ] Navigation is intuitive
 - [ ] Forms are easy to complete
 - [ ] Help text is useful
@@ -277,26 +291,26 @@ This guide provides a structured approach for validating that Terrafusion meets 
 ### Issue Template
 
 ```markdown
-**Issue ID**: UAT-[Number]
-**Date Found**: [Date]
-**Tester**: [Name]
+**Issue ID**: UAT-[Number] **Date Found**: [Date] **Tester**: [Name]
 **Severity**: Critical | High | Medium | Low
 
 **Summary**: [Brief description]
 
 **Steps to Reproduce**:
+
 1. [Step 1]
 2. [Step 2]
 3. [Step 3]
 
-**Expected Result**: [What should happen]
-**Actual Result**: [What actually happened]
+**Expected Result**: [What should happen] **Actual Result**: [What actually
+happened]
 
-**Screenshots/Evidence**: [Attach if applicable]
-**Browser/Device**: [Chrome, Firefox, Safari, etc.]
+**Screenshots/Evidence**: [Attach if applicable] **Browser/Device**: [Chrome,
+Firefox, Safari, etc.]
 ```
 
 ### Severity Definitions
+
 - **Critical**: Blocks core functionality, data loss risk
 - **High**: Major feature broken, no workaround
 - **Medium**: Feature impaired, workaround exists
@@ -305,6 +319,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 ## UAT Exit Criteria
 
 ### Must Pass (Go-Live Requirements)
+
 - [ ] All critical business workflows functional
 - [ ] No critical or high severity issues open
 - [ ] Performance meets requirements
@@ -313,6 +328,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 - [ ] All user roles can perform assigned tasks
 
 ### Should Pass (Recommended)
+
 - [ ] Medium severity issues have workarounds
 - [ ] User documentation complete
 - [ ] Training materials ready
@@ -322,20 +338,24 @@ This guide provides a structured approach for validating that Terrafusion meets 
 
 ### Approval Matrix
 
-| Stakeholder | Role | Signature | Date |
-|-------------|------|-----------|------|
-| [Name] | Business Owner | _______ | ____ |
-| [Name] | IT Manager | _______ | ____ |
-| [Name] | Lead Assessor | _______ | ____ |
-| [Name] | Audit Manager | _______ | ____ |
-| [Name] | Operations | _______ | ____ |
+| Stakeholder | Role           | Signature  | Date     |
+| ----------- | -------------- | ---------- | -------- |
+| [Name]      | Business Owner | **\_\_\_** | \_\_\_\_ |
+| [Name]      | IT Manager     | **\_\_\_** | \_\_\_\_ |
+| [Name]      | Lead Assessor  | **\_\_\_** | \_\_\_\_ |
+| [Name]      | Audit Manager  | **\_\_\_** | \_\_\_\_ |
+| [Name]      | Operations     | **\_\_\_** | \_\_\_\_ |
 
 ### Sign-Off Statement
-"We confirm that User Acceptance Testing has been completed for Terrafusion. The system meets our business requirements and is approved for production deployment, subject to the resolution of agreed-upon issues."
+
+"We confirm that User Acceptance Testing has been completed for Terrafusion. The
+system meets our business requirements and is approved for production
+deployment, subject to the resolution of agreed-upon issues."
 
 ## Post-UAT Actions
 
 ### Before Go-Live
+
 1. **Issue Resolution**
    - [ ] Fix all critical issues
    - [ ] Fix high priority issues
@@ -357,6 +377,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 ## UAT Best Practices
 
 ### Do's
+
 - Test with real-world scenarios
 - Document everything
 - Test edge cases
@@ -366,6 +387,7 @@ This guide provides a structured approach for validating that Terrafusion meets 
 - Check integration points
 
 ### Don'ts
+
 - Don't skip "obvious" tests
 - Don't test only happy paths
 - Don't ignore minor issues
@@ -375,11 +397,10 @@ This guide provides a structured approach for validating that Terrafusion meets 
 
 ## Support During UAT
 
-**UAT Coordinator**: [Name] - [Email]
-**Technical Support**: uat-support@terrafusion.com
-**Issue Tracking**: https://jira.terrafusion.com/uat
-**Daily Stand-ups**: 9:00 AM via Teams
-**UAT Period**: [Start Date] to [End Date]
+**UAT Coordinator**: [Name] - [Email] **Technical Support**:
+uat-support@terrafusion.com **Issue Tracking**: https://jira.terrafusion.com/uat
+**Daily Stand-ups**: 9:00 AM via Teams **UAT Period**: [Start Date] to [End
+Date]
 
 ---
 

@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('AI Swarm API Integration', () => {
-  const baseURL = 'http://127.0.0.1:5000';
+  const baseURL = 'http://127.0.0.1:\${{TF_API_PORT:-5000}}';
 
   test('AI Swarm status endpoint returns valid data', async ({ request }) => {
     // Test actual API endpoint

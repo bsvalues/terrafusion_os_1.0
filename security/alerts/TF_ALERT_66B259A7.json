@@ -1,0 +1,25 @@
+{
+  "alert_id": "TF_ALERT_66B259A7",
+  "timestamp": "2025-09-16 09:56:50.660421",
+  "event_type": "SecurityEvent.DATA_EXFILTRATION",
+  "threat_level": "ThreatLevel.HIGH",
+  "source_ip": "45.123.89.45",
+  "user_id": "user_5847",
+  "description": "Potential data exfiltration detected - unusual data transfer patterns",
+  "ai_confidence": 0.7910339780467124,
+  "affected_systems": [
+    "database_server",
+    "file_server"
+  ],
+  "remediation_actions": [
+    "Immediately block source IP address",
+    "Escalate to incident response team",
+    "Initiate forensic analysis",
+    "Audit data access logs",
+    "Review user permissions",
+    "Implement data loss prevention measures",
+    "Update threat intelligence database",
+    "Generate security alert report"
+  ],
+  "status": "active"
+}

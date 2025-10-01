@@ -9,7 +9,9 @@ function makeStore(pre?: any) {
 describe('compGrid store', () => {
   it('immutably applies complex transforms & normalized updates', () => {
     const store = makeStore();
-    store.dispatch(addRow({ id: 'temp-1', address: '123 Main St', price: 425000, optimistic: true }));
+    store.dispatch(
+      addRow({ id: 'temp-1', address: '123 Main St', price: 425000, optimistic: true })
+    );
     expect(store.getState().compGrid.rows.byId['temp-1'].optimistic).toBe(true);
 
     store.dispatch(addRowCommitted({ tempId: 'temp-1', id: 'row-1' }));

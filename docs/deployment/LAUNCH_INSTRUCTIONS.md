@@ -16,6 +16,7 @@
 ## **🚀 MANUAL LAUNCH STEPS (RECOMMENDED)**
 
 ### **Option 1: Windows PowerShell (BEST)**
+
 ```powershell
 # Open PowerShell as Administrator
 cd E:\TerraFusion_OS_1.0\modules\costforge-ai
@@ -30,10 +31,11 @@ npm install
 # Launch unified application
 npm run dev
 
-# Access at: http://localhost:3008
+# Access at: http://localhost:\${{TF_FRONTEND_3008_PORT:-3008}}
 ```
 
 ### **Option 2: VS Code Terminal**
+
 ```bash
 # Open in VS Code terminal
 cd modules/costforge-ai
@@ -49,6 +51,7 @@ npm run dev
 ```
 
 ### **Option 3: Docker (Platform Independent)**
+
 ```dockerfile
 # Create Dockerfile in modules/costforge-ai/
 FROM node:20-alpine
@@ -70,32 +73,37 @@ docker run -p 3008:3008 terrafusion-unified
 
 ## **🎯 VERIFICATION CHECKLIST**
 
-Once launched at **http://localhost:3008**, verify these features:
+Once launched at **http://localhost:\${{TF_FRONTEND_3008_PORT:-3008}}**, verify these features:
 
 ### **✅ Core Application Pages:**
+
 - **Landing Page** → TerraBuild branding visible
 - **/calculator** → Cost calculation interface
 - **/enhanced-calculator** → Advanced calculator
 - **/dashboard** → Main dashboard view
 
 ### **✅ AI Features:**
+
 - **/ai-tools** → AI prediction tools
 - **/ai-cost-wizard** → AI-powered cost wizard
 - **/ar-visualization** → 3D property visualization
 
 ### **✅ Data & Analytics:**
+
 - **/analytics** → Data visualization dashboard
 - **/visualizations** → Interactive charts
 - **/benchmarking** → Performance benchmarks
 - **/reports** → Report generation
 
 ### **✅ Advanced Features:**
+
 - **/data-import** → File upload interface
 - **/what-if-scenarios** → Scenario planning
 - **/shared-projects** → Collaboration tools
 - **/benton-county-demo** → County-specific demo
 
 ### **✅ Integration Points:**
+
 - **/data-connections** → External data sources
 - **/ftp-connection** → FTP data integration
 - **/documentation** → Help and guides
@@ -128,7 +136,8 @@ fetch('/api/health')
 ## **📊 UNIFIED APPLICATION FEATURES**
 
 ### **From TerraBuild (100% Integrated):**
-- ✅ **BCBS Cost Calculator** 
+
+- ✅ **BCBS Cost Calculator**
 - ✅ **AI Prediction Engine**
 - ✅ **Data Visualization Suite**
 - ✅ **File Import/Export System**
@@ -140,6 +149,7 @@ fetch('/api/health')
 - ✅ **FTP Data Integration**
 
 ### **From CostForge (Preserved):**
+
 - ✅ **Tauri Desktop Integration**
 - ✅ **Terrafusion Ecosystem Compatibility**
 - ✅ **Government Branding**
@@ -162,6 +172,7 @@ fetch('/api/health')
 ## **🔧 TROUBLESHOOTING**
 
 ### **If npm install fails:**
+
 ```powershell
 # Clear npm cache
 npm cache clean --force
@@ -172,10 +183,11 @@ yarn install
 yarn dev
 ```
 
-### **If port 3008 is busy:**
+### **If port \${{TF_FRONTEND_3008_PORT:-3008}} is busy:**
+
 ```powershell
 # Use different port
-npm run dev -- --port 3009
+npm run dev -- --port \${{TF_FRONTEND_3008_PORT:-3008}}
 
 # Or kill existing process
 netstat -ano | findstr :3008
@@ -183,6 +195,7 @@ taskkill /PID <process_id> /F
 ```
 
 ### **If build errors occur:**
+
 ```powershell
 # Check TypeScript
 npx tsc --noEmit
@@ -206,8 +219,10 @@ npm audit fix
 
 ## **STATUS: READY FOR LAUNCH** ✨
 
-**The consolidation is COMPLETE. All 243 components and 59 pages are unified into a single application.**
+**The consolidation is COMPLETE. All 243 components and 59 pages are unified
+into a single application.**
 
-**Execute the PowerShell commands above to launch your unified Terrafusion application!**
+**Execute the PowerShell commands above to launch your unified Terrafusion
+application!**
 
-**🎯 Target: http://localhost:3008**
+**🎯 Target: http://localhost:\${{TF_FRONTEND_3008_PORT:-3008}}**

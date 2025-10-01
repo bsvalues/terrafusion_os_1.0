@@ -511,7 +511,7 @@ cat > demo-api.js << 'EOF'
 // TerraFusion Demo API Server
 const express = require('express');
 const app = express();
-const PORT = 3001;
+const PORT=\${{TF_SHELL_PORT:-3001}};
 
 // Demo endpoints
 app.get('/api/demo/status', (req, res) => {
@@ -600,7 +600,7 @@ server {
     
     # Demo API
     location /api/demo {
-        proxy_pass http://localhost:3001;
+        proxy_pass http://localhost:\${{TF_SHELL_PORT:-3001}};
         proxy_set_header X-Demo-Request "true";
     }
     
