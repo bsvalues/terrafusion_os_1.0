@@ -24,10 +24,12 @@ jobs:
           fi
 
       - name: Build County Operating System UI
-        working-directory: terrafusion-cos/frontend_engine
+        working-directory: terrafusion-cos
         run: |
           npm install
-          npm run ci:build
+          # The electron package has a postinstall that runs electron-builder install-app-deps
+          # Now run webpack to build the frontend
+          npx webpack --config frontend_engine/webpack.config.js --mode production
 
       - name: Package UI deterministically
         run: |
