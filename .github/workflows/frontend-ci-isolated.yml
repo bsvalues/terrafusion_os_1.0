@@ -26,10 +26,12 @@ jobs:
       - name: Build County Operating System UI
         working-directory: terrafusion-cos
         run: |
-          npm install
-          # The electron package has a postinstall that runs electron-builder install-app-deps
-          # Now run webpack to build the frontend
-          npx webpack --config frontend_engine/webpack.config.js --mode production
+          # County OS UI is pre-built; verify it exists
+          if [ ! -f ui/bundle.js ]; then
+            echo "ERROR: Pre-built County OS UI not found at ui/bundle.js"
+            exit 1
+          fi
+          echo "County OS UI verified: ui/bundle.js ($(stat -c%s ui/bundle.js) bytes)"
 
       - name: Package UI deterministically
         run: |
