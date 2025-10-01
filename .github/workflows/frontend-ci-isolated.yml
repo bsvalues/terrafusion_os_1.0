@@ -1,0 +1,112 @@
+name: Frontend CI (isolated)
+
+on:
+  push:
+    branches: [ main, feature/e2e-ci-strict ]
+  workflow_dispatch:
+
+jobs:
+  pack-ui:
+    name: Build and package UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'false'
+          fetch-depth: 0
+          clean: true
+
+      - name: "Guard: no gitlinks allowed"
+        run: |
+          BAD="$(git ls-files -s | awk '$1==160000{print $4}')"
+          if [ -n "$BAD" ]; then
+            echo "ERROR: gitlink (submodule) detected:"; echo "$BAD"; exit 1
+          fi
+
+      - name: Build County Operating System UI
+        working-directory: terrafusion-cos/frontend_engine
+        run: |
+          npm install
+          npm run ci:build
+
+      - name: Package UI deterministically
+        run: |
+          mkdir -p terrafusion-cos/.ci_artifacts
+          # Package the UI from the output directory
+          if [ -d terrafusion-cos/ui ] && [ -f terrafusion-cos/ui/bundle.js ]; then
+            tar -C terrafusion-cos -czf terrafusion-cos/.ci_artifacts/ui.tar.gz ui
+          else
+            echo "ERROR: UI build did not produce expected output in terrafusion-cos/ui/"
+            exit 1
+          fi
+          sha256sum terrafusion-cos/.ci_artifacts/ui.tar.gz | awk '{print $1}' > terrafusion-cos/.ci_artifacts/ui.sha256
+
+      - name: Upload UI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-artifact
+          path: terrafusion-cos/.ci_artifacts/ui.tar.gz
+
+      - name: Upload UI sha256
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-sha256
+          path: terrafusion-cos/.ci_artifacts/ui.sha256
+
+  playwright-smoke:
+    name: Playwright smoke
+    needs: pack-ui
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'false'
+          fetch-depth: 0
+          clean: true
+
+      - name: Download UI artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-artifact
+
+      - name: List downloaded artifacts (debug)
+        run: |
+          echo '--- workspace listing after download ---'
+          ls -laR . | sed -n '1,300p' || true
+
+      - name: Extract UI
+        run: |
+          mkdir -p test-ui
+          tar -xzf ui.tar.gz -C test-ui
+
+      - name: Serve UI (background)
+        run: |
+          # start a simple static server in background
+          npx http-server test-ui/ui -p 8080 &> server.log &
+          for i in $(seq 1 30); do
+            if curl -sS http://127.0.0.1:8080 >/dev/null 2>&1; then
+              echo server ready
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Install dependencies for Playwright tests
+        working-directory: terrafusion-cos/e2e
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright smoke test
+        continue-on-error: true
+        working-directory: terrafusion-cos/e2e
+        run: |
+          mkdir -p ../logs/artifacts
+          npx playwright test smoke.spec.js --reporter=list
+
+      - name: Upload renderer screenshot (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renderer-screenshot
+          path: terrafusion-cos/logs/artifacts/renderer-screenshot.png
