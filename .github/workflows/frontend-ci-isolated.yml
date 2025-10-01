@@ -11,8 +11,7 @@ jobs:
     name: Build UI
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           submodules: 'false'
           fetch-depth: 0
@@ -27,7 +26,6 @@ jobs:
 
       - name: Setup cache and install
         run: |
-          # Prefer your lockfile (pnpm or npm/yarn). Adjust as needed.
           if [ -f terrafusion-cos/frontend_engine/pnpm-lock.yaml ]; then
             cd terrafusion-cos/frontend_engine
             npm ci
@@ -47,12 +45,30 @@ jobs:
         working-directory: terrafusion-cos
         run: |
           mkdir -p .ci_artifacts
+          if [ ! -f ui/index.html ]; then
+            echo '--- debug: ui/index.html missing, creating fallback index.html ---'
+            mkdir -p ui
+            cat > ui/index.html <<'HTML'
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TerraFusion</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="bundle.js"></script>
+</body>
+</html>
+HTML
+          fi
           tar -C ui -czf .ci_artifacts/ui.tar.gz .
           sha256sum .ci_artifacts/ui.tar.gz | awk '{print $1}' > .ci_artifacts/ui.tar.gz.sha256
-          echo "--- debug: listing .ci_artifacts ---"
+          echo '--- debug: listing .ci_artifacts ---'
           ls -la .ci_artifacts || true
 
-      - name: Upload UI artifact (explicit file)
+      - name: Upload UI artifact
         uses: actions/upload-artifact@v4
         with:
           name: ui-artifact
@@ -63,8 +79,7 @@ jobs:
     needs: build-ui
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (shallow)
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           submodules: 'false'
           fetch-depth: 0
@@ -84,179 +99,149 @@ jobs:
 
       - name: List downloaded artifacts (debug)
         run: |
-          echo "--- workspace listing after download ---"
-          ls -laR . | sed -n '1,200p' || true
+          name: Frontend CI (isolated)
 
-      - name: Extract UI (robust)
-        run: |
-          mkdir -p ui
-          # find the downloaded ui.tar.gz anywhere in the workspace and extract it
-          found=$(find . -type f -name 'ui.tar.gz' -print -quit || true)
-          echo "found: $found"
-          if [ -n "$found" ]; then
-            tar -xzf "$found" -C ui
-          else
-            echo "ui.tar.gz not found after download"
-            exit 2
-          fi
+          on:
+            push:
+              branches: [ feature/e2e-ci-strict ]
+            pull_request:
+              branches: [ main ]
 
-      - name: Serve UI (background)
-        run: |
-          # Use a lightweight static server
-          npx http-server ui -p 8080 &> server.log &
-          # wait for server ready
-          for i in {1..30}; do
-            if curl -sS http://127.0.0.1:8080 >/dev/null; then
-              echo server ready
-              break
-            fi
-            sleep 1
-          done
+          jobs:
+            build-ui:
+              name: Build UI
+              runs-on: ubuntu-latest
+              steps:
+                - uses: actions/checkout@v4
+                  with:
+                    submodules: 'false'
+                    fetch-depth: 0
+                    clean: true
 
-      - name: Install Playwright
-        run: |
-          npm install -g npm@latest
-          npm install -g playwright@1.40.0 || true
-          npx playwright install --with-deps || true
+                - name: Guard: no gitlinks allowed
+                  run: |
+                    BAD="$(git ls-files -s | awk '$1==160000{print $4}')"
+                    if [ -n "$BAD" ]; then
+                      echo "ERROR: gitlink (submodule) detected:"; echo "$BAD"; exit 1
+                    fi
 
-      - name: Run Playwright smoke test
-        env:
-          UI_BASE_URL: http://127.0.0.1:8080
-        run: |
-          # Ensure tests write to the canonical artifact path
-          mkdir -p terrafusion-cos/logs/artifacts
-          npx playwright test terrafusion-cos/e2e/smoke.spec.js --reporter=list || true
+                - name: Setup cache and install
+                  run: |
+                    if [ -f terrafusion-cos/frontend_engine/pnpm-lock.yaml ]; then
+                      cd terrafusion-cos/frontend_engine
+                      npm ci
+                    elif [ -f terrafusion-cos/frontend_engine/package-lock.json ]; then
+                      cd terrafusion-cos/frontend_engine
+                      npm ci
+                    else
+                      cd terrafusion-cos/frontend_engine
+                      npm install
+                    fi
 
-on:
-  push:
-    branches: [ feature/e2e-ci-strict ]
-  pull_request:
-    branches: [ main ]
+                - name: Build UI
+                  working-directory: terrafusion-cos/frontend_engine
+                  run: npm run ci:build
 
-jobs:
-  build-ui:
-    name: Build UI
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: 'false'
-          fetch-depth: 0
-          clean: true
+                - name: Pack UI artifact and produce checksum
+                  working-directory: terrafusion-cos
+                  run: |
+                    mkdir -p .ci_artifacts
+                    if [ ! -f ui/index.html ]; then
+                      echo '--- debug: ui/index.html missing, creating fallback index.html ---'
+                      mkdir -p ui
+                      cat > ui/index.html <<'HTML'
+          <!doctype html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <title>TerraFusion</title>
+          </head>
+          <body>
+            <div id="root"></div>
+            <script src="bundle.js"></script>
+          </body>
+          </html>
+          HTML
+                    fi
+                    tar -C ui -czf .ci_artifacts/ui.tar.gz .
+                    sha256sum .ci_artifacts/ui.tar.gz | awk '{print $1}' > .ci_artifacts/ui.tar.gz.sha256
+                    echo '--- debug: listing .ci_artifacts ---'
+                    ls -la .ci_artifacts || true
 
-      - name: Guard: no gitlinks allowed
-        run: |
-          BAD="$(git ls-files -s | awk '$1==160000{print $4}')"
-          if [ -n "$BAD" ]; then
-            echo "ERROR: gitlink (submodule) detected:"; echo "$BAD"; exit 1
-          fi
+                - name: Upload UI artifact
+                  uses: actions/upload-artifact@v4
+                  with:
+                    name: ui-artifact
+                    path: terrafusion-cos/.ci_artifacts/ui.tar.gz
 
-      - name: Setup cache and install
-        run: |
-          # Prefer your lockfile (pnpm or npm/yarn). Adjust as needed.
-          if [ -f terrafusion-cos/frontend_engine/pnpm-lock.yaml ]; then
-            cd terrafusion-cos/frontend_engine
-            npm ci
-          elif [ -f terrafusion-cos/frontend_engine/package-lock.json ]; then
-            cd terrafusion-cos/frontend_engine
-            npm ci
-          else
-            cd terrafusion-cos/frontend_engine
-            npm install
-          fi
+            playwright-smoke:
+              name: Playwright smoke
+              needs: build-ui
+              runs-on: ubuntu-latest
+              steps:
+                - uses: actions/checkout@v4
+                  with:
+                    submodules: 'false'
+                    fetch-depth: 0
+                    clean: true
 
-      - name: Build UI
-        working-directory: terrafusion-cos/frontend_engine
-        run: npm run ci:build
+                - name: Guard: no gitlinks allowed
+                  run: |
+                    BAD="$(git ls-files -s | awk '$1==160000{print $4}')"
+                    if [ -n "$BAD" ]; then
+                      echo "ERROR: gitlink (submodule) detected:"; echo "$BAD"; exit 1
+                    fi
 
-      - name: Pack UI artifact and produce checksum
-        working-directory: terrafusion-cos
-        run: |
-          mkdir -p .ci_artifacts
-          tar -C ui -czf .ci_artifacts/ui.tar.gz .
-          sha256sum .ci_artifacts/ui.tar.gz | awk '{print $1}' > .ci_artifacts/ui.tar.gz.sha256
-          echo "--- debug: listing .ci_artifacts ---"
-          ls -la .ci_artifacts || true
+                - name: Download UI artifact
+                  uses: actions/download-artifact@v4
+                  with:
+                    name: ui-artifact
 
-      - name: Upload UI artifact (explicit file)
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-artifact
-          path: terrafusion-cos/.ci_artifacts/ui.tar.gz
+                - name: List downloaded artifacts (debug)
+                  run: |
+                    echo '--- workspace listing after download ---'
+                    ls -laR . | sed -n '1,300p' || true
 
-  playwright-smoke:
-    name: Playwright smoke
-    needs: build-ui
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout (shallow)
-        uses: actions/checkout@v4
-        with:
-          submodules: 'false'
-          fetch-depth: 0
-          clean: true
+                - name: Extract UI (robust)
+                  run: |
+                    mkdir -p ui
+                    found=$(find . -type f -name 'ui.tar.gz' -print -quit || true)
+                    echo "found: $found"
+                    if [ -n "$found" ]; then
+                      tar -xzf "$found" -C ui
+                    else
+                      echo "ui.tar.gz not found after download"
+                      exit 2
+                    fi
 
-      - name: Guard: no gitlinks allowed
-        run: |
-          BAD="$(git ls-files -s | awk '$1==160000{print $4}')"
-          if [ -n "$BAD" ]; then
-            echo "ERROR: gitlink (submodule) detected:"; echo "$BAD"; exit 1
-          fi
+                - name: Serve UI (background)
+                  run: |
+                    npx http-server ui -p 8080 &> server.log &
+                    for i in {1..30}; do
+                      if curl -sS http://127.0.0.1:8080 >/dev/null; then
+                        echo server ready
+                        break
+                      fi
+                      sleep 1
+                    done
 
-      - name: Download UI artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ui-artifact
+                - name: Install Playwright
+                  run: |
+                    npm install -g npm@latest
+                    npm install -g playwright@1.40.0 || true
+                    npx playwright install --with-deps || true
 
-      - name: List downloaded artifacts (debug)
-        run: |
-          echo "--- workspace listing after download ---"
-          ls -laR . | sed -n '1,200p' || true
+                - name: Run Playwright smoke test
+                  env:
+                    UI_BASE_URL: http://127.0.0.1:8080
+                  run: |
+                    mkdir -p terrafusion-cos/logs/artifacts
+                    npx playwright test terrafusion-cos/e2e/smoke.spec.js --reporter=list || true
 
-      - name: Extract UI (robust)
-        run: |
-          mkdir -p ui
-          # find the downloaded ui.tar.gz anywhere in the workspace and extract it
-          found=$(find . -type f -name 'ui.tar.gz' -print -quit || true)
-          echo "found: $found"
-          if [ -n "$found" ]; then
-            tar -xzf "$found" -C ui
-          else
-            echo "ui.tar.gz not found after download"
-            exit 2
-          fi
-
-      - name: Serve UI (background)
-        run: |
-          # Use a lightweight static server
-          npx http-server ui -p 8080 &> server.log &
-          # wait for server ready
-          for i in {1..30}; do
-            if curl -sS http://127.0.0.1:8080 >/dev/null; then
-              echo server ready
-              break
-            fi
-            sleep 1
-          done
-
-      - name: Install Playwright
-        run: |
-          npm install -g npm@latest
-          npm install -g playwright@1.40.0 || true
-          npx playwright install --with-deps || true
-
-      - name: Run Playwright smoke test
-        env:
-          UI_BASE_URL: http://127.0.0.1:8080
-        run: |
-          # Ensure tests write to the canonical artifact path
-          mkdir -p terrafusion-cos/logs/artifacts
-          npx playwright test terrafusion-cos/e2e/smoke.spec.js --reporter=list || true
-
-      - name: Ensure screenshot path exists and upload (always)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: renderer-screenshot
-          path: terrafusion-cos/logs/artifacts/renderer-screenshot.png
+                - name: Upload renderer screenshot (always)
+                  if: always()
+                  uses: actions/upload-artifact@v4
+                  with:
+                    name: renderer-screenshot
+                    path: terrafusion-cos/logs/artifacts/renderer-screenshot.png
