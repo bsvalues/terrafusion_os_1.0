@@ -1,0 +1,56 @@
+{
+  "name": "terrafusion-cos-desktop",
+  "version": "1.0.0",
+  "description": "TerraFusion cOS - Government Operating System Desktop Shell",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=never",
+    "pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "keywords": [
+    "government",
+    "operating-system",
+    "desktop",
+    "electron",
+    "terrafusion"
+  ],
+  "author": "TerraFusion Technologies",
+  "license": "PROPRIETARY",
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "axios": "^1.5.0",
+    "chart.js": "^4.4.0",
+    "socket.io-client": "^4.7.2"
+  },
+  "build": {
+    "appId": "com.terrafusion.cos.desktop",
+    "productName": "TerraFusion cOS",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "ui/**/*",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/terrafusion-icon.ico",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
