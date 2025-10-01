@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion cOS - Government Operating System</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Custom Title Bar -->
+    <div class="title-bar">
+        <div class="title-bar-content">
+            <div class="title-bar-left">
+                <img src="../assets/terrafusion-logo.png" alt="TerraFusion" class="logo">
+                <span class="title">TerraFusion cOS</span>
+            </div>
+            <div class="title-bar-center">
+                <span class="tagline">Government. Transcended.</span>
+            </div>
+            <div class="title-bar-right">
+                <div class="window-controls">
+                    <button class="window-control minimize" onclick="minimizeWindow()">−</button>
+                    <button class="window-control maximize" onclick="maximizeWindow()">□</button>
+                    <button class="window-control close" onclick="closeWindow()">×</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="system-status">
+                    <div class="status-indicator active"></div>
+                    <span class="status-text">OPERATIONAL</span>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item active" data-section="dashboard">
+                    <div class="nav-icon">🏛️</div>
+                    <span class="nav-label">Dashboard</span>
+                </div>
+                <div class="nav-item" data-section="ai-swarm">
+                    <div class="nav-icon">🤖</div>
+                    <span class="nav-label">AI Swarm</span>
+                </div>
+                <div class="nav-item" data-section="costforge">
+                    <div class="nav-icon">💰</div>
+                    <span class="nav-label">CostForge AI</span>
+                </div>
+                <div class="nav-item" data-section="terraflow">
+                    <div class="nav-icon">⚡</div>
+                    <span class="nav-label">TerraFlow</span>
+                </div>
+                <div class="nav-item" data-section="terrafusion-sync">
+                    <div class="nav-icon">🔄</div>
+                    <span class="nav-label">TerraFusion Sync</span>
+                </div>
+                <div class="nav-item" data-section="security">
+                    <div class="nav-icon">🛡️</div>
+                    <span class="nav-label">Security</span>
+                </div>
+                <div class="nav-item" data-section="monitor">
+                    <div class="nav-icon">📊</div>
+                    <span class="nav-label">Monitor</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title">Government Operations Center</h1>
+                    <div class="section-subtitle">Real-time system monitoring and control</div>
+                </div>
+
+                <!-- Status Cards Grid -->
+                <div class="status-grid">
+                    <div class="status-card ai-swarm">
+                        <div class="card-header">
+                            <div class="card-icon">🤖</div>
+                            <div class="card-title">AI Swarm</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-value" id="ai-agents">50,000+</span>
+                                <span class="metric-label">Active Agents</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="ai-success">99.8%</span>
+                                <span class="metric-label">Success Rate</span>
+                            </div>
+                        </div>
+                        <div class="card-status">
+                            <div class="status-dot active"></div>
+                            <span>OPERATIONAL</span>
+                        </div>
+                    </div>
+
+                    <div class="status-card costforge">
+                        <div class="card-header">
+                            <div class="card-icon">💰</div>
+                            <div class="card-title">CostForge AI</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-value" id="cf-integrations">3</span>
+                                <span class="metric-label">Integrations</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="cf-valuations">1,247</span>
+                                <span class="metric-label">Valuations Today</span>
+                            </div>
+                        </div>
+                        <div class="card-status">
+                            <div class="status-dot active"></div>
+                            <span>ACTIVE</span>
+                        </div>
+                    </div>
+
+                    <div class="status-card security">
+                        <div class="card-header">
+                            <div class="card-icon">🛡️</div>
+                            <div class="card-title">Security Mesh</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-value" id="security-level">GOVERNMENT</span>
+                                <span class="metric-label">Security Level</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="threat-level">LOW</span>
+                                <span class="metric-label">Threat Level</span>
+                            </div>
+                        </div>
+                        <div class="card-status">
+                            <div class="status-dot active"></div>
+                            <span>SECURED</span>
+                        </div>
+                    </div>
+
+                    <div class="status-card sync">
+                        <div class="card-header">
+                            <div class="card-icon">🔄</div>
+                            <div class="card-title">TerraFusion Sync</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-value" id="sync-systems">12</span>
+                                <span class="metric-label">Connected Systems</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="sync-entities">45,892</span>
+                                <span class="metric-label">Entities Synced</span>
+                            </div>
+                        </div>
+                        <div class="card-status">
+                            <div class="status-dot active"></div>
+                            <span>REAL-TIME</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Charts -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>System Performance</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-period="24h">24H</button>
+                                <button class="chart-btn" data-period="7d">7D</button>
+                                <button class="chart-btn" data-period="30d">30D</button>
+                            </div>
+                        </div>
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>AI Swarm Activity</h3>
+                        </div>
+                        <canvas id="aiActivityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="activity-feed">
+                    <div class="feed-header">
+                        <h3>System Activity</h3>
+                        <div class="feed-controls">
+                            <button class="feed-btn" onclick="refreshActivity()">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="feed-content" id="activityFeed">
+                        <!-- Activity items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- CostForge AI Section -->
+            <section id="costforge" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">CostForge AI - Property Valuation Engine</h1>
+                    <div class="section-subtitle">Professional AI-powered property valuation and market analysis</div>
+                </div>
+
+                <div class="costforge-grid">
+                    <!-- Property Valuation Form -->
+                    <div class="valuation-panel">
+                        <div class="panel-header">
+                            <h3>Property Valuation</h3>
+                        </div>
+                        <form id="valuationForm" class="valuation-form">
+                            <div class="form-group">
+                                <label for="propertyAddress">Property Address</label>
+                                <input type="text" id="propertyAddress" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="squareFootage">Square Footage</label>
+                                    <input type="number" id="squareFootage">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bedrooms">Bedrooms</label>
+                                    <input type="number" id="bedrooms">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bathrooms">Bathrooms</label>
+                                    <input type="number" id="bathrooms" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="yearBuilt">Year Built</label>
+                                    <input type="number" id="yearBuilt">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="propertyType">Property Type</label>
+                                <select id="propertyType">
+                                    <option value="single-family">Single Family</option>
+                                    <option value="condo">Condominium</option>
+                                    <option value="townhouse">Townhouse</option>
+                                    <option value="multi-family">Multi-Family</option>
+                                    <option value="commercial">Commercial</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="valuation-btn">
+                                <span class="btn-icon">💰</span>
+                                Generate AI Valuation
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Valuation Results -->
+                    <div class="results-panel">
+                        <div class="panel-header">
+                            <h3>Valuation Results</h3>
+                        </div>
+                        <div id="valuationResults" class="results-content">
+                            <div class="no-results">
+                                <div class="no-results-icon">📊</div>
+                                <p>Enter property information to generate AI-powered valuation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Analysis -->
+                <div class="market-analysis">
+                    <div class="analysis-header">
+                        <h3>Market Analysis</h3>
+                        <div class="analysis-controls">
+                            <input type="text" id="marketArea" placeholder="Enter market area">
+                            <button onclick="runMarketAnalysis()" class="analysis-btn">
+                                <span class="btn-icon">📊</span>
+                                Analyze Market
+                            </button>
+                        </div>
+                    </div>
+                    <div id="marketResults" class="market-results">
+                        <div class="no-results">
+                            <div class="no-results-icon">🏘️</div>
+                            <p>Enter a market area to run comprehensive analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Swarm Section -->
+            <section id="ai-swarm" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">AI Swarm Coordination Center</h1>
+                    <div class="section-subtitle">1,008 AI agents working in harmony</div>
+                </div>
+
+                <div class="swarm-grid">
+                    <div class="swarm-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value">1,008</div>
+                            <div class="metric-label">Active Agents</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">99.8%</div>
+                            <div class="metric-label">Success Rate</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">1.8ms</div>
+                            <div class="metric-label">Response Time</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">Claude</div>
+                            <div class="metric-label">Supreme Commander</div>
+                        </div>
+                    </div>
+
+                    <div class="swarm-controls">
+                        <button class="swarm-btn emergency">
+                            <span class="btn-icon">🚨</span>
+                            Emergency Protocol
+                        </button>
+                        <button class="swarm-btn scale-up">
+                            <span class="btn-icon">📈</span>
+                            Scale Up Agents
+                        </button>
+                        <button class="swarm-btn scale-down">
+                            <span class="btn-icon">📉</span>
+                            Scale Down Agents
+                        </button>
+                        <button class="swarm-btn redistribute">
+                            <span class="btn-icon">🔄</span>
+                            Redistribute Load
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TerraFlow Section -->
+            <section id="terraflow" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">TerraFlow - Workflow Automation</h1>
+                    <div class="section-subtitle">Government process automation and workflow management</div>
+                </div>
+
+                <div class="terraflow-grid">
+                    <div class="workflow-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value">37</div>
+                            <div class="metric-label">Active Workflows</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">98.5%</div>
+                            <div class="metric-label">Success Rate</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">2.3s</div>
+                            <div class="metric-label">Avg Execution</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">Tier 3</div>
+                            <div class="metric-label">Extended Features</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-controls">
+                        <button class="workflow-btn create">
+                            <span class="btn-icon">➕</span>
+                            Create Workflow
+                        </button>
+                        <button class="workflow-btn monitor">
+                            <span class="btn-icon">📊</span>
+                            Monitor Execution
+                        </button>
+                        <button class="workflow-btn optimize">
+                            <span class="btn-icon">⚡</span>
+                            Optimize Performance
+                        </button>
+                        <button class="workflow-btn templates">
+                            <span class="btn-icon">📋</span>
+                            Browse Templates
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TerraFusion Sync Section -->
+            <section id="terrafusion-sync" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">TerraFusion Sync - Data Orchestration Hub</h1>
+                    <div class="section-subtitle">Real-time synchronization with Harris PACS, Tyler, Aumentum, Vision</div>
+                </div>
+
+                <div class="sync-grid">
+                    <div class="sync-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value">100K</div>
+                            <div class="metric-label">Records/Min</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">&lt;2ms</div>
+                            <div class="metric-label">Latency</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">99.9%</div>
+                            <div class="metric-label">Availability</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">4,875</div>
+                            <div class="metric-label">Components</div>
+                        </div>
+                    </div>
+
+                    <div class="sync-integrations">
+                        <div class="integration-card">
+                            <div class="integration-icon">🏛️</div>
+                            <div class="integration-name">Harris PACS</div>
+                            <div class="integration-status connected">Connected</div>
+                        </div>
+                        <div class="integration-card">
+                            <div class="integration-icon">🦅</div>
+                            <div class="integration-name">Tyler EagleView</div>
+                            <div class="integration-status connected">Connected</div>
+                        </div>
+                        <div class="integration-card">
+                            <div class="integration-icon">📊</div>
+                            <div class="integration-name">Aumentum</div>
+                            <div class="integration-status connected">Connected</div>
+                        </div>
+                        <div class="integration-card">
+                            <div class="integration-icon">👁️</div>
+                            <div class="integration-name">Vision Appraisal</div>
+                            <div class="integration-status connected">Connected</div>
+                        </div>
+                    </div>
+
+                    <div class="sync-controls">
+                        <button class="sync-btn full-sync">
+                            <span class="btn-icon">🔄</span>
+                            Full Sync
+                        </button>
+                        <button class="sync-btn incremental">
+                            <span class="btn-icon">⚡</span>
+                            Incremental Sync
+                        </button>
+                        <button class="sync-btn resolve-conflicts">
+                            <span class="btn-icon">🔧</span>
+                            Resolve Conflicts
+                        </button>
+                        <button class="sync-btn audit">
+                            <span class="btn-icon">📋</span>
+                            View Audit Log
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections will be added similarly -->
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Initializing TerraFusion cOS...</div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/costforge.js"></script>
+    <script src="js/ai-swarm.js"></script>
+</body>
+</html>
