@@ -12,8 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: 'false'
+    workflow_dispatch:
           fetch-depth: 0
           clean: true
 
@@ -32,6 +31,10 @@ jobs:
 
       - name: Install dependencies and build
         run: |
+        - name: Show Node/npm versions
+          run: |
+            node -v
+            npm -v
           cd terrafusion-cos/frontend_engine
           npm ci
           npm run ci:build
