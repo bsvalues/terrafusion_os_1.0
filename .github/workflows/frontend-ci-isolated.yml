@@ -10,9 +10,6 @@ jobs:
   build-ui:
     name: Build UI
     runs-on: ubuntu-latest
-    container:
-      # Replace with your pinned container image (GHCR/Azure) with Node 22 and pinned libs
-      image: node:22-bullseye
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,12 +38,14 @@ jobs:
           mkdir -p .ci_artifacts
           tar -C ui -czf .ci_artifacts/ui.tar.gz .
           sha256sum .ci_artifacts/ui.tar.gz | awk '{print $1}' > .ci_artifacts/ui.tar.gz.sha256
+          echo "--- debug: listing .ci_artifacts ---"
+          ls -la .ci_artifacts || true
 
-      - name: Upload UI artifact
+      - name: Upload UI artifact (explicit file)
         uses: actions/upload-artifact@v4
         with:
           name: ui-artifact
-          path: terrafusion-cos/.ci_artifacts/
+          path: terrafusion-cos/.ci_artifacts/ui.tar.gz
 
   playwright-smoke:
     name: Playwright smoke
