@@ -1,0 +1,12 @@
+{
+  "name": "terrafusion-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "smoke": "node smoke-local.js"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.55.1",
+    "fs-extra": "^11.3.2"
+  }
+}
