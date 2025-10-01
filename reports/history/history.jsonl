@@ -1,4 +1,0 @@
-{"ts":"2025-08-18T18:37:34.459Z","sha":null,"ref":null,"coverage":0.975,"lcp":1850,"a11y":0,"lh_pass":true,"budgets_failed":0}
-{"ts":"2025-08-18T18:55:01.611Z","sha":null,"ref":null,"coverage":0.975,"branches":0.973,"lcp":1850,"cls":0.08333333333333333,"a11y":0,"lh_pass":false,"budgets_failed":6,"delta_lcp":0,"delta_cls":null,"delta_coverage":0,"delta_branches":null}
-{"ts":"2025-08-18T18:56:37.460Z","sha":null,"ref":null,"coverage":0.975,"branches":0.973,"lcp":1850,"cls":0.08333333333333333,"a11y":0,"lh_pass":false,"budgets_failed":6,"delta_lcp":0,"delta_cls":0,"delta_coverage":0,"delta_branches":0}
-{"ts":"2025-08-18T19:05:57.006Z","sha":null,"ref":null,"coverage":0.975,"branches":0.973,"lcp":1850,"cls":0.08333333333333333,"a11y":0,"lh_pass":false,"budgets_failed":6,"delta_lcp":0,"delta_cls":0,"delta_coverage":0,"delta_branches":0}

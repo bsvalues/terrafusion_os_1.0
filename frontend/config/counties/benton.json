@@ -1,9 +1,0 @@
-{
-  "countyId": "benton",
-  "legacySystem": "PACS_9.0",
-  "requiredModules": ["cama-core", "levy-core", "gis-core", "valuation-tools", "harris-pacs"],
-  "conversionMappings": {
-    "PACS_PARCEL_ID": "TF_PARCEL_UUID",
-    "PACS_OWNER_REC": "TF_OWNER_ENTITY"
-  }
-}

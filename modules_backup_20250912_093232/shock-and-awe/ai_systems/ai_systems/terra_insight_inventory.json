@@ -1,7 +1,0 @@
-{
-  "agents": ["replit-agent"],
-  "models": [],
-  "tools": [],
-  "prompts": [],
-  "mcp_systems": []
-}

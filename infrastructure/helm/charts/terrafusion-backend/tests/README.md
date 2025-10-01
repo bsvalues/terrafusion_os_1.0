@@ -1,1 +1,0 @@
-These CI values (`ci-values.yaml`) disable optional subcharts and monitoring so `helm lint`/`helm template` run deterministically in CI. Production values should live in your env-specific Helm values files.

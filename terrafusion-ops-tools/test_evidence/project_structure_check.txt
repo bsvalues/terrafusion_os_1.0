@@ -1,7 +1,0 @@
-Test: project_structure_check
-Command: test -d '/c/Users/bsval/terrafusion-ops-tools' && test -d '/c/Users/bsval/terrafusion-ops-tools/scripts'
-Expected: 0
-Actual: 0
-Output:
-
-Timestamp: Thu, Jul 24, 2025  5:26:23 PM

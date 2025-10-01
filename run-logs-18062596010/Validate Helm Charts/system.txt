@@ -1,5 +1,0 @@
-2025-09-27T17:08:24.9460000Z Requested labels: ubuntu-latest
-2025-09-27T17:08:24.9460000Z Job defined at: bsvalues/terrafusion_os_1.0/.github/workflows/infrastructure-cicd.yml@refs/pull/1/merge
-2025-09-27T17:08:24.9460000Z Waiting for a runner to pick up this job...
-2025-09-27T17:08:24.9480000Z Job is about to start running on the hosted runner: GitHub Actions 1000004193
-2025-09-27T17:08:24.9480000Z Job is waiting for a hosted runner to come online.

@@ -1,3 +1,0 @@
-backend/quantum-performance/quantum_performance_benchmark.py
-backend/quantum-performance/quantum_roi_calculator.py
-backend/quantum-performance/quantum_test.py

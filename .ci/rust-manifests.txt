@@ -1,6 +1,0 @@
-terrafusion-cos/rust-performance-engine/crates/agent-coordination/Cargo.toml
-terrafusion-cos/rust-performance-engine/crates/ffi-bridge/Cargo.toml
-terrafusion-cos/rust-performance-engine/crates/geospatial-engine/Cargo.toml
-terrafusion-cos/rust-performance-engine/crates/performance-monitor/Cargo.toml
-terrafusion-cos/rust-performance-engine/crates/security-layer/Cargo.toml
-terrafusion-cos/rust-performance-engine/crates/valuation-kernel/Cargo.toml

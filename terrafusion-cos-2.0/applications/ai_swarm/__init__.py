@@ -1,3 +1,0 @@
-# TerraFusion AI Swarm Module
-
-

@@ -1,7 +1,0 @@
-Test: npm_version_check
-Command: npm --version | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
-Expected: 0
-Actual: 0
-Output:
-11.4.2
-Timestamp: Thu, Jul 24, 2025  5:26:23 PM

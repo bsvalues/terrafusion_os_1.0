@@ -1,3 +1,0 @@
-# TerraFusion Sync Module
-
-

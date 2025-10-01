@@ -1,8 +1,0 @@
-{
-  "readme": "README.md",
-  "contributing": "CONTRIBUTING.md",
-  "marketplace": "MARKETPLACE.md",
-  "api_docs": "public/api-docs.html",
-  "user_guide": "docs/user-guide.md",
-  "technical_guide": "docs/technical-guide.md"
-}

@@ -1,7 +1,0 @@
-{
-  "agents": ["terraagent_server.py"],
-  "models": ["model.js", "modelManager.js", "model.test.js"],
-  "tools": [],
-  "prompts": [],
-  "mcp_systems": ["TERRAFUSION_MCP_LIVE_LAUNCHER.py"]
-}

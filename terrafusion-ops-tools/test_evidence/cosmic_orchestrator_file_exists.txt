@@ -1,7 +1,0 @@
-Test: cosmic_orchestrator_file_exists
-Command: test -f '/c/Users/bsval/terrafusion-ops-tools/scripts/terrafusion_cosmic_orchestrator.js'
-Expected: 0
-Actual: 0
-Output:
-
-Timestamp: Thu, Jul 24, 2025  5:26:24 PM

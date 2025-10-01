@@ -1,7 +1,0 @@
-./node_modules/openai/src/_vendor/zod-to-json-schema/parsers/pipeline.ts
-./node_modules/openai/_vendor/zod-to-json-schema/parsers/pipeline.d.ts
-./node_modules/openai/_vendor/zod-to-json-schema/parsers/pipeline.d.ts.map
-./node_modules/openai/_vendor/zod-to-json-schema/parsers/pipeline.js
-./node_modules/openai/_vendor/zod-to-json-schema/parsers/pipeline.js.map
-./node_modules/openai/_vendor/zod-to-json-schema/parsers/pipeline.mjs
-./node_modules/openai/_vendor/zod-to-json-schema/parsers/pipeline.mjs.map

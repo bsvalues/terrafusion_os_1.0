@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://yourdomain.com/sitemap.xml
-
-# Terrafusion Government OS Demo
-# Hostinger Optimized Version

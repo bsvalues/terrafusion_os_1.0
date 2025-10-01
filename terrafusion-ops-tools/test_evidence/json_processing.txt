@@ -1,7 +1,0 @@
-Test: json_processing
-Command: echo '{"test": true, "cosmic": "transcendent"}' | jq '.test, .cosmic' > /dev/null
-Expected: 0
-Actual: 127
-Output:
-scripts/cosmic_test_suite.sh: line 113: jq: command not found
-Timestamp: Thu, Jul 24, 2025  5:26:25 PM

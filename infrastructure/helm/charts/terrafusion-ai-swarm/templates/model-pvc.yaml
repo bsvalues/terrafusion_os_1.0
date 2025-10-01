@@ -1,13 +1,0 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:      
-  name: {{ include "terrafusion-ai-swarm.fullname" . }}-model-pvc
-  labels:
-    {{- include "terrafusion-ai-swarm.labels" . | nindent 4 }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Gi
-  storageClassName: fast-ssd
