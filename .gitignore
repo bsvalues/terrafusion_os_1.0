@@ -45,6 +45,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Phase 3 Extraction Artifacts (archived)
+# Note: Actual extraction scripts archived in archive/phase-3-extraction/
+# Keep Phase 3 documentation files (PHASE_3*.md) for reference
+
 # Runtime data
 pids/
 *.pid
