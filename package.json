@@ -1,11 +1,46 @@
 {
   "name": "terrafusion-os",
   "version": "1.0.0",
-  "description": "Government AI Operating System - Unified Platform",
+  "description": "Government AI Operating System - Coordination Repository (Polyrepo Architecture)",
   "main": "frontend/electron/main.js",
   "homepage": "./",
   "private": true,
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bsvalues/terrafusion_os_1.0.git"
+  },
+  "polyrepo": {
+    "architecture": "Domain-Driven Design (DDD)",
+    "totalRepositories": 12,
+    "extractionPhase": "Phase 3C (October 2025)",
+    "repositories": {
+      "core": [
+        "@terrafusion/core",
+        "@terrafusion/shared",
+        "@terrafusion/packages",
+        "@terrafusion/modules"
+      ],
+      "domains": [
+        "terrafusion-government-platform",
+        "terrafusion-commercial-platform",
+        "terrafusion-ai-platform",
+        "terrafusion-infrastructure-platform"
+      ],
+      "specialized": [
+        "terrafusion-specialized-modules",
+        "terrafusion-developer-tools",
+        "terrafusion-docs",
+        "terrafusion-ui-components"
+      ]
+    },
+    "documentation": [
+      "POLYREPO_MIGRATION_GUIDE.md",
+      "POLYREPO_QUICK_REFERENCE.md",
+      "POLYREPO_STATUS.md",
+      "REPOSITORY_DEPENDENCIES.md"
+    ]
+  },
   "scripts": {
     "ai-agent-info": "echo 'TERRAFUSION OS - Complete Government Operating System with 50,000+ AI Agents. NOT a web app. Read AI_AGENT_START_HERE.md first!'",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",

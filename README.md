@@ -40,6 +40,63 @@ Terrafusion OS 1.0 is a comprehensive AI-powered government operating system tha
 
 ---
 
+## 🏗️ **POLYREPO ARCHITECTURE**
+
+### **Architecture Evolution: Monorepo → Polyrepo**
+
+As of **Phase 3D** (October 2025), TerraFusion OS has transitioned from a monorepo to a **polyrepo architecture** using **Domain-Driven Design (DDD)** principles. The codebase has been split into **12 independent repositories** organized by bounded contexts.
+
+### **📦 Core Repositories (Phase 3B)**
+
+| Repository | Description | GitHub URL |
+|------------|-------------|------------|
+| **terrafusion-core** | Core OS kernel, base services, runtime engine | [github.com/bsvalues/terrafusion-core](https://github.com/bsvalues/terrafusion-core) |
+| **terrafusion-shared** | Shared libraries, utilities, common types | [github.com/bsvalues/terrafusion-shared](https://github.com/bsvalues/terrafusion-shared) |
+| **terrafusion-packages** | Reusable packages and components | [github.com/bsvalues/terrafusion-packages](https://github.com/bsvalues/terrafusion-packages) |
+| **terrafusion-modules** | Core module implementations | [github.com/bsvalues/terrafusion-modules](https://github.com/bsvalues/terrafusion-modules) |
+
+### **🎯 Domain Repositories (Phase 3C)**
+
+| Repository | Domain | Description | GitHub URL |
+|------------|--------|-------------|------------|
+| **terrafusion-government-platform** | Government | County operations, property assessment, PACS integration | [github.com/bsvalues/terrafusion-government-platform](https://github.com/bsvalues/terrafusion-government-platform) |
+| **terrafusion-commercial-platform** | Commercial | Commercial real estate, market analysis, portfolio management | [github.com/bsvalues/terrafusion-commercial-platform](https://github.com/bsvalues/terrafusion-commercial-platform) |
+| **terrafusion-ai-platform** | AI/ML | AI swarm, neural systems, cognitive architecture, Supreme Commander | [github.com/bsvalues/terrafusion-ai-platform](https://github.com/bsvalues/terrafusion-ai-platform) |
+| **terrafusion-infrastructure-platform** | Infrastructure | Infrastructure services, monitoring, logging, health checks | [github.com/bsvalues/terrafusion-infrastructure-platform](https://github.com/bsvalues/terrafusion-infrastructure-platform) |
+| **terrafusion-specialized-modules** | Specialized | Domain-specific tools (GIS, analytics, compliance) | [github.com/bsvalues/terrafusion-specialized-modules](https://github.com/bsvalues/terrafusion-specialized-modules) |
+| **terrafusion-developer-tools** | Developer | Testing frameworks, development utilities | [github.com/bsvalues/terrafusion-developer-tools](https://github.com/bsvalues/terrafusion-developer-tools) |
+| **terrafusion-docs** | Documentation | Architecture docs, guides, API references | [github.com/bsvalues/terrafusion-docs](https://github.com/bsvalues/terrafusion-docs) |
+| **terrafusion-ui-components** | UI/UX | Shared UI components, design system | [github.com/bsvalues/terrafusion-ui-components](https://github.com/bsvalues/terrafusion-ui-components) |
+
+### **🚀 Quick Navigation**
+
+- **All Repositories**: [github.com/bsvalues?tab=repositories&q=terrafusion](https://github.com/bsvalues?tab=repositories&q=terrafusion)
+- **Architecture Docs**: [PHASE_3C_EXTRACTION_COMPLETE.md](./PHASE_3C_EXTRACTION_COMPLETE.md)
+- **Migration Guide**: [POLYREPO_MIGRATION_GUIDE.md](./POLYREPO_MIGRATION_GUIDE.md)
+- **Quick Reference**: [POLYREPO_QUICK_REFERENCE.md](./POLYREPO_QUICK_REFERENCE.md)
+- **Status Dashboard**: [POLYREPO_STATUS.md](./POLYREPO_STATUS.md)
+
+### **💡 Benefits of Polyrepo Architecture**
+
+- **Independent Development**: Teams work independently on their domains
+- **Faster CI/CD**: Smaller repos = faster builds and deployments
+- **Clear Boundaries**: Explicit domain separation and ownership
+- **Flexible Scaling**: Scale teams and infrastructure per domain
+- **Technology Freedom**: Each repo can use optimal tech stack
+- **Reduced Complexity**: Smaller, more focused codebases
+- **Better Security**: Granular access control per repository
+
+### **📖 For Developers**
+
+- **New to Polyrepo?** Start with [POLYREPO_MIGRATION_GUIDE.md](./POLYREPO_MIGRATION_GUIDE.md)
+- **Quick Commands**: See [POLYREPO_QUICK_REFERENCE.md](./POLYREPO_QUICK_REFERENCE.md)
+- **Repository Status**: Check [POLYREPO_STATUS.md](./POLYREPO_STATUS.md)
+- **Dependencies**: Review [REPOSITORY_DEPENDENCIES.md](./REPOSITORY_DEPENDENCIES.md)
+
+**Note**: This monorepo now serves as the **central coordination repository** and contains deployment configurations, documentation, and orchestration scripts.
+
+---
+
 ## 📦 **BENTON COUNTY DELIVERY PACKAGE**
 
 ### **✅ Complete System Ready for Deployment**
