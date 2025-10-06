@@ -1,0 +1,167 @@
+{
+  "registry": "agents",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "agent.swarm.commander",
+      "name": "AI Swarm Supreme Commander",
+      "description": "Autonomous AI swarm coordination agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": "ai-swarm-supreme-commander",
+      "agent_type": "coordinator",
+      "tags": [
+        "ai",
+        "swarm",
+        "commander",
+        "autonomous"
+      ],
+      "capabilities": [
+        "coordination",
+        "strategy",
+        "resource-allocation"
+      ]
+    },
+    {
+      "id": "agent.valuation.specialist",
+      "name": "Valuation Specialist Agent",
+      "description": "AI specialist for property valuation analysis",
+      "owner": "ai-team",
+      "lifecycle": "experimental",
+      "source_path": "agents/valuation-specialist",
+      "agent_type": "specialist",
+      "tags": [
+        "ai",
+        "valuation",
+        "specialist",
+        "analysis"
+      ],
+      "capabilities": [
+        "valuation",
+        "analysis",
+        "reporting"
+      ]
+    },
+    {
+      "id": "agent.consciousness.core",
+      "name": "Consciousness Core Agent",
+      "description": "Core consciousness processing agent",
+      "owner": "ai-team",
+      "lifecycle": "experimental",
+      "source_path": ".ai",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai",
+        "consciousness",
+        "core"
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "agent.",
+      "name": ".devcontainer",
+      "description": ".devcontainer AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.devcontainer",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "agent.claude-flow",
+      "name": "claude-flow",
+      "description": "claude-flow AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.ai/claude-flow",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "agent.config",
+      "name": "config",
+      "description": "config AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".ai/claude-flow/config",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "agent.core",
+      "name": "core",
+      "description": "core AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.ai/core",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "agent.devops",
+      "name": "devops",
+      "description": "devops AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".ai/claude-flow/devops",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "agent.scripts",
+      "name": "scripts",
+      "description": "scripts AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".ai/claude-flow/scripts",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "agent.src",
+      "name": "src",
+      "description": "src AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".ai/claude-flow/src",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "agent.mcp",
+      "name": "mcp",
+      "description": "mcp AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.ai/mcp",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:22.565697",
+  "count": 11
+}

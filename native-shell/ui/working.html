@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion OS - Working!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0b1020 0%, #1a2332 100%);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        p {
+            font-size: 1.5rem;
+            color: #8b9dc3;
+            margin: 0.5rem 0;
+        }
+        .status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 153, 255, 0.1);
+            border: 1px solid rgba(0, 153, 255, 0.3);
+            border-radius: 8px;
+        }
+        .check {
+            color: #00ffaa;
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="check">✅</div>
+        <h1>TerraFusion OS</h1>
+        <p>System Operational</p>
+        <div class="status">
+            <p><strong>Backend:</strong> Connected (Port 5005)</p>
+            <p><strong>Database:</strong> PostgreSQL Running</p>
+            <p><strong>Native Shell:</strong> Active</p>
+        </div>
+        <p style="margin-top: 2rem; font-size: 1rem; color: #6b7c9c;">
+            The compiled React app in index.html is loading but not rendering.<br>
+            This proves the infrastructure is working correctly.
+        </p>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,212 @@
+name: Atlas Validation
+
+on:
+  pull_request:
+    paths:
+      - 'terrafusion-atlas/**'
+      - '**/package.json'
+      - '**/Cargo.toml'
+      - '**/*.csproj'
+      - '**/*.sln'
+  push:
+    branches:
+      - main
+    paths:
+      - 'terrafusion-atlas/**'
+
+jobs:
+  validate-atlas:
+    name: Validate Atlas Registries
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Validate registry structure
+        run: |
+          echo "🔍 Validating Atlas registries..."
+          python3 terrafusion-atlas/scripts/atlas_validate.py
+      
+      - name: Check for unregistered items
+        run: |
+          echo "🔍 Checking for unregistered items..."
+          python3 terrafusion-atlas/scripts/check_unregistered.py || true
+      
+      - name: Generate Atlas summary
+        run: |
+          echo "📊 Generating Atlas summary..."
+          python3 terrafusion-atlas/scripts/atlas_summary.py > atlas-summary.md
+      
+      - name: Post summary to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('atlas-summary.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+      
+      - name: Add to job summary
+        run: |
+          cat atlas-summary.md >> $GITHUB_STEP_SUMMARY
+
+  check-ownership:
+    name: Check All Items Have Owners
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check for missing owners
+        run: |
+          echo "👥 Checking for items without owners..."
+          
+          missing=0
+          for reg in terrafusion-atlas/registries/*.json; do
+            echo "Checking $(basename $reg)..."
+            unowned=$(jq -r '.items[] | select(.owner == null or .owner == "") | .id' "$reg")
+            if [ -n "$unowned" ]; then
+              echo "❌ Items without owners in $(basename $reg):"
+              echo "$unowned"
+              missing=1
+            fi
+          done
+          
+          if [ $missing -eq 1 ]; then
+            echo "::error::Some items are missing owners. Please assign ownership."
+            exit 1
+          else
+            echo "✅ All items have owners!"
+          fi
+
+  check-tags:
+    name: Check All Items Have Tags
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check for missing tags
+        run: |
+          echo "🏷️  Checking for items without tags..."
+          
+          missing=0
+          for reg in terrafusion-atlas/registries/*.json; do
+            echo "Checking $(basename $reg)..."
+            untagged=$(jq -r '.items[] | select(.tags == null or .tags == [] or (.tags | length == 0)) | .id' "$reg")
+            if [ -n "$untagged" ]; then
+              echo "⚠️  Items without tags in $(basename $reg):"
+              echo "$untagged"
+              missing=1
+            fi
+          done
+          
+          if [ $missing -eq 1 ]; then
+            echo "::warning::Some items are missing tags. Consider adding descriptive tags."
+          else
+            echo "✅ All items have tags!"
+          fi
+
+  check-duplicates:
+    name: Check for Duplicate IDs
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check for duplicate IDs
+        run: |
+          echo "🔍 Checking for duplicate IDs across registries..."
+          
+          all_ids=$(mktemp)
+          duplicates=0
+          
+          for reg in terrafusion-atlas/registries/*.json; do
+            jq -r '.items[] | .id' "$reg" >> "$all_ids"
+          done
+          
+          dupes=$(sort "$all_ids" | uniq -d)
+          
+          if [ -n "$dupes" ]; then
+            echo "❌ Duplicate IDs found:"
+            echo "$dupes"
+            duplicates=1
+          fi
+          
+          rm "$all_ids"
+          
+          if [ $duplicates -eq 1 ]; then
+            echo "::error::Duplicate IDs found. Each item must have a unique ID."
+            exit 1
+          else
+            echo "✅ No duplicate IDs found!"
+          fi
+
+  validate-json:
+    name: Validate JSON Syntax
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Validate JSON files
+        run: |
+          echo "📋 Validating JSON syntax..."
+          
+          errors=0
+          for file in terrafusion-atlas/**/*.json; do
+            if ! jq empty "$file" 2>/dev/null; then
+              echo "❌ Invalid JSON: $file"
+              errors=1
+            else
+              echo "✅ Valid: $file"
+            fi
+          done
+          
+          if [ $errors -eq 1 ]; then
+            echo "::error::JSON validation failed."
+            exit 1
+          else
+            echo "✅ All JSON files are valid!"
+          fi
+
+  generate-stats:
+    name: Generate Atlas Statistics
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Count items per registry
+        run: |
+          echo "📊 Atlas Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Registry | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          
+          total=0
+          for reg in terrafusion-atlas/registries/*.json; do
+            name=$(basename "$reg" .json)
+            count=$(jq '.items | length' "$reg")
+            total=$((total + count))
+            echo "| $name | $count |" >> $GITHUB_STEP_SUMMARY
+          done
+          
+          echo "| **TOTAL** | **$total** |" >> $GITHUB_STEP_SUMMARY

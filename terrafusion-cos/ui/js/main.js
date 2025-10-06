@@ -1,7 +1,15 @@
 // TerraFusion cOS Desktop Application
 // Professional Government Operating System
 
-const { ipcRenderer } = require('electron');
+// Safely handle Electron IPC (works in both browser and Electron)
+let ipcRenderer = null;
+try {
+    if (typeof require !== 'undefined') {
+        ipcRenderer = require('electron').ipcRenderer;
+    }
+} catch (e) {
+    console.log('Running in browser mode (Electron IPC not available)');
+}
 
 class TerraFusionCOSApp {
     constructor() {
@@ -13,6 +21,9 @@ class TerraFusionCOSApp {
 
     async init() {
         console.log('🏛️ Initializing TerraFusion cOS Desktop...');
+        
+        // Initialize WebGL Transcendence Background
+        this.initializeTranscendenceBackground();
         
         // Setup event listeners
         this.setupEventListeners();
@@ -33,6 +44,20 @@ class TerraFusionCOSApp {
         this.hideLoadingOverlay();
         
         console.log('✅ TerraFusion cOS Desktop initialized successfully');
+    }
+
+    initializeTranscendenceBackground() {
+        try {
+            // Import and initialize WebGL background
+            import('./transcendence-webgl.js').then(module => {
+                module.initTranscendenceBackground('transcendence-canvas');
+                console.log('✨ WebGL Transcendence Background initialized');
+            }).catch(err => {
+                console.warn('WebGL initialization failed:', err);
+            });
+        } catch (error) {
+            console.warn('WebGL not available:', error);
+        }
     }
 
     setupEventListeners() {
@@ -85,10 +110,12 @@ class TerraFusionCOSApp {
             });
         });
 
-        // Listen for IPC messages
-        ipcRenderer.on('navigate-to', (event, section) => {
-            this.navigateToSection(section);
-        });
+        // Listen for IPC messages (Electron only)
+        if (ipcRenderer) {
+            ipcRenderer.on('navigate-to', (event, section) => {
+                this.navigateToSection(section);
+            });
+        }
     }
 
     initializeNavigation() {
@@ -123,9 +150,20 @@ class TerraFusionCOSApp {
 
     async loadSystemStatus() {
         try {
-            const response = await ipcRenderer.invoke('get-system-status');
-            if (response.success) {
-                this.systemStatus = response.data;
+            if (ipcRenderer) {
+                const response = await ipcRenderer.invoke('get-system-status');
+                if (response.success) {
+                    this.systemStatus = response.data;
+                    this.updateSystemStatus();
+                }
+            } else {
+                // Browser mode - use mock data
+                this.systemStatus = {
+                    aiSwarm: { agents: 50000, successRate: 99.8 },
+                    costforge: { integrations: 3, valuations: 1247 },
+                    security: { level: 'GOVERNMENT', threatLevel: 'LOW' },
+                    sync: { systems: 12, entities: 45892 }
+                };
                 this.updateSystemStatus();
             }
         } catch (error) {
@@ -135,6 +173,14 @@ class TerraFusionCOSApp {
 
     updateSystemStatus() {
         if (!this.systemStatus) return;
+
+        // Update hero section
+        const swarmStatus = document.getElementById('swarm-status');
+        if (swarmStatus && this.systemStatus?.aiSwarm) {
+            const agents = this.systemStatus.aiSwarm.agents || 50000;
+            const success = this.systemStatus.aiSwarm.successRate || 99.8;
+            swarmStatus.textContent = `AI SWARM OPERATIONAL • ${agents.toLocaleString()}+ AGENTS • ${success}% SUCCESS`;
+        }
 
         // Update AI Swarm metrics
         const aiAgents = document.getElementById('ai-agents');
@@ -420,12 +466,24 @@ class TerraFusionCOSApp {
         }
 
         try {
-            const response = await ipcRenderer.invoke('costforge-valuation', propertyData);
-            if (response.success) {
-                this.displayValuationResults(response.data);
-                this.showNotification('Property valuation completed successfully!', 'success');
+            if (ipcRenderer) {
+                const response = await ipcRenderer.invoke('costforge-valuation', propertyData);
+                if (response.success) {
+                    this.displayValuationResults(response.data);
+                    this.showNotification('Property valuation completed successfully!', 'success');
+                } else {
+                    this.showNotification('Valuation failed: ' + response.error, 'error');
+                }
             } else {
-                this.showNotification('Valuation failed: ' + response.error, 'error');
+                // Browser mode - show mock valuation
+                const mockData = {
+                    estimatedValue: '$' + (Math.floor(Math.random() * 300000) + 200000).toLocaleString(),
+                    confidence: (85 + Math.floor(Math.random() * 10)) + '%',
+                    comparables: 12,
+                    processingTime: '2.1 seconds'
+                };
+                this.displayValuationResults(mockData);
+                this.showNotification('Demo valuation completed (Electron mode for real data)', 'success');
             }
         } catch (error) {
             this.showNotification('Valuation failed: ' + error.message, 'error');

@@ -1,0 +1,166 @@
+{
+  "registry": "partners",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "partner.harris",
+      "name": "Harris County Integration",
+      "owner": "partnerships-team",
+      "source_path": "harris_county_integration",
+      "tags": [
+        "harris",
+        "county",
+        "integration"
+      ],
+      "description": "Harris County partnership integration"
+    },
+    {
+      "id": "partner.woolpert",
+      "name": "Woolpert Integration",
+      "owner": "partnerships-team",
+      "source_path": "woolpert",
+      "tags": [
+        "woolpert",
+        "vendor",
+        "gis"
+      ],
+      "description": "Woolpert vendor integration"
+    },
+    {
+      "id": "partners.core",
+      "name": "core",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/.ai/core",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "partners.scripts",
+      "name": "scripts",
+      "owner": "ai-team",
+      "source_path": ".ai/claude-flow/scripts",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "partners.",
+      "name": ".git-temp-clone",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone",
+      "tags": []
+    },
+    {
+      "id": "partners.workflows",
+      "name": "workflows",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/workflows",
+      "tags": []
+    },
+    {
+      "id": "partners.brand-assets",
+      "name": "Brand_Assets",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets",
+      "tags": []
+    },
+    {
+      "id": "partners.brand",
+      "name": "brand",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/brand",
+      "tags": []
+    },
+    {
+      "id": "partners.more-brand",
+      "name": "more brand",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/more brand",
+      "tags": []
+    },
+    {
+      "id": "partners.04-competitive-strategy",
+      "name": "04_COMPETITIVE_STRATEGY",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/PLATFORM_EMPIRE_PLANNING/04_COMPETITIVE_STRATEGY",
+      "tags": []
+    },
+    {
+      "id": "partners.terrafusion-enhanced-ops-integration",
+      "name": "TerraFusion Enhanced Ops Integration",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/TerraFusion Enhanced Ops Integration",
+      "tags": []
+    },
+    {
+      "id": "partners.ai-swarm-supreme-commander",
+      "name": "ai-swarm-supreme-commander",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-swarm-supreme-commander",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "partners.backend",
+      "name": "backend",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend",
+      "tags": []
+    },
+    {
+      "id": "partners.ai-swarm",
+      "name": "ai-swarm",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/backend/ai-swarm",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "partners.integration",
+      "name": "integration",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/integration",
+      "tags": []
+    },
+    {
+      "id": "partners.mcp-core",
+      "name": "mcp-core",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/mcp-core",
+      "tags": []
+    },
+    {
+      "id": "partners.tests",
+      "name": "tests",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/tests",
+      "tags": []
+    },
+    {
+      "id": "partners.strategic",
+      "name": "strategic",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure/strategic",
+      "tags": []
+    },
+    {
+      "id": "partners.county-data",
+      "name": "county-data",
+      "owner": "data-team",
+      "source_path": ".git-temp-clone/county-data",
+      "tags": []
+    },
+    {
+      "id": "partners.tx-harris",
+      "name": "tx-harris",
+      "owner": "data-team",
+      "source_path": ".git-temp-clone/county-data/tx-harris",
+      "tags": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:31.339958",
+  "count": 20
+}

@@ -72,8 +72,8 @@ public class DatabaseInitializationService : IDatabaseInitializationService
                 // Continue with existing database structure
             }
 
-            // Seed production modules
-            await SeedProductionModulesInternalAsync(dbContext);
+            // DISABLED: TerraFusion OS doesn't use modules
+            // await SeedProductionModulesInternalAsync(dbContext);
 
             _isInitialized = true;
             _lastError = string.Empty;

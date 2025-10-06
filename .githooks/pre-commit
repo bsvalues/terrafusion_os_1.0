@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""
+Pre-commit hook to enforce Atlas registration
+Checks that new components are registered in Atlas before commit
+"""
+
+import json
+import sys
+import subprocess
+from pathlib import Path
+
+# Get git root
+result = subprocess.run(['git', 'rev-parse', '--show-toplevel'], 
+                       capture_output=True, text=True)
+REPO_ROOT = Path(result.stdout.strip())
+ATLAS_DIR = REPO_ROOT / 'terrafusion-atlas'
+REGISTRIES_DIR = ATLAS_DIR / 'registries'
+
+def get_staged_files():
+    """Get list of staged files"""
+    result = subprocess.run(
+        ['git', 'diff', '--cached', '--name-only', '--diff-filter=A'],
+        capture_output=True,
+        text=True
+    )
+    return [line.strip() for line in result.stdout.split('\n') if line.strip()]
+
+def is_new_component(file_path):
+    """Determine if file is a new component that needs Atlas registration"""
+    
+    # Skip non-source files
+    skip_patterns = [
+        'test', 'spec', '__tests__', '.test.', '.spec.',
+        'node_modules', 'dist', 'build', '.git',
+        'docs/', 'README', 'CHANGELOG', '.md',
+        '.json', '.yml', '.yaml', '.toml', '.lock'
+    ]
+    
+    if any(pattern in file_path for pattern in skip_patterns):
+        return False
+    
+    # Check if it's a main component file (not a utility)
+    component_indicators = [
+        'src/services/', 'src/engines/', 'src/agents/',
+        'frontend/', 'ui/', 'api/', 'server/',
+        'pipeline/', 'workflow/', 'etl/'
+    ]
+    
+    return any(indicator in file_path for indicator in component_indicators)
+
+def load_atlas_items():
+    """Load all registered Atlas items"""
+    items = {}
+    
+    if not REGISTRIES_DIR.exists():
+        return items
+    
+    for reg_file in REGISTRIES_DIR.glob('*.json'):
+        try:
+            with open(reg_file) as f:
+                data = json.load(f)
+                registry = reg_file.stem
+                items[registry] = data.get('items', [])
+        except Exception:
+            pass
+    
+    return items
+
+def find_atlas_entry(file_path, atlas_items):
+    """Check if file is registered in Atlas"""
+    
+    # Normalize path
+    file_path = file_path.replace('\\', '/')
+    
+    for registry, items in atlas_items.items():
+        for item in items:
+            source_path = item.get('source_path', '').replace('\\', '/')
+            
+            # Check if file is under this Atlas entry's source path
+            if source_path and file_path.startswith(source_path):
+                return True, registry, item.get('id'), item.get('name')
+    
+    return False, None, None, None
+
+def main():
+    """Main pre-commit hook logic"""
+    
+    staged_files = get_staged_files()
+    
+    if not staged_files:
+        sys.exit(0)  # No staged files, nothing to check
+    
+    # Load Atlas registry
+    atlas_items = load_atlas_items()
+    
+    # Check each staged file
+    unregistered_components = []
+    
+    for file_path in staged_files:
+        if is_new_component(file_path):
+            registered, registry, atlas_id, name = find_atlas_entry(file_path, atlas_items)
+            
+            if not registered:
+                unregistered_components.append(file_path)
+    
+    # If unregistered components found, fail the commit
+    if unregistered_components:
+        print("❌ Pre-commit check FAILED: Unregistered components detected\n")
+        print("🗺️  TerraFusion Atlas Registration Required\n")
+        print("The following files appear to be new components but are not")
+        print("registered in the TerraFusion Atlas:\n")
+        
+        for file in unregistered_components:
+            print(f"  • {file}")
+        
+        print("\n📋 To register your component:\n")
+        print("cd terrafusion-atlas")
+        print("python3 scripts/atlas_seed.py \\")
+        print("  --type <service|engine|frontend|agent|module> \\")
+        print("  --id 'your.component.id' \\")
+        print("  --name 'Your Component Name' \\")
+        print("  --description 'Brief description' \\")
+        print("  --owner 'team-name' \\")
+        print("  --tags 'tag1,tag2' \\")
+        print(f"  --path '{unregistered_components[0]}'")
+        print("\n📖 See docs: terrafusion-atlas/docs/ATLAS_PLAYBOOK.md")
+        print("\n💡 To bypass this check (not recommended):")
+        print("   git commit --no-verify")
+        
+        sys.exit(1)
+    
+    # All checks passed
+    print("✅ Atlas pre-commit check passed")
+    sys.exit(0)
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraFusion Module Architecture Map</title>
+  <style>
+    html, body, #cy { 
+      height: 100%; 
+      margin: 0; 
+      padding: 0;
+      background: #0f172a; 
+      color: #e2e8f0; 
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    
+    .overlay {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    
+    .legend {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      pointer-events: auto;
+      max-width: 300px;
+    }
+    
+    .legend h3 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      font-size: 12px;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    
+    .stats {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      pointer-events: auto;
+      min-width: 200px;
+    }
+    
+    .stats h3 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 6px 0;
+      font-size: 12px;
+    }
+    
+    .stat-label {
+      color: #94a3b8;
+    }
+    
+    .stat-value {
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #64748b;
+    }
+    
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(100, 116, 139, 0.3);
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .node-info {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      pointer-events: auto;
+      max-height: 200px;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+    }
+    
+    .node-info.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .node-info h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    
+    .node-info p {
+      margin: 4px 0;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+    
+    .node-info .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0;
+    }
+    
+    .badge {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    
+    .badge.enabled {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+    
+    .badge.disabled {
+      background: rgba(100, 116, 139, 0.2);
+      color: #94a3b8;
+      border-color: rgba(100, 116, 139, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="cy"></div>
+  
+  <div class="overlay">
+    <div class="legend">
+      <h3>🏛️ TerraFusion Module Ecosystem</h3>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #3b82f6;"></div>
+        <span>Government Modules</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #10b981;"></div>
+        <span>Commercial Modules</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #f59e0b;"></div>
+        <span>Core System</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #6b7280;"></div>
+        <span>Disabled</span>
+      </div>
+      <p style="font-size: 10px; color: #64748b; margin-top: 8px;">
+        💡 Click any module to see details<br>
+        🔄 Drag to explore • Scroll to zoom
+      </p>
+    </div>
+  </div>
+  
+  <div class="stats">
+    <h3>📊 System Overview</h3>
+    <div id="stats-content">
+      <div class="stat-item">
+        <span class="stat-label">Loading...</span>
+        <span class="stat-value">-</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+    <div>Loading TerraFusion Architecture...</div>
+  </div>
+  
+  <div class="node-info" id="node-info">
+    <h4 id="node-title">Select a module</h4>
+    <p id="node-description">Click on any module in the diagram to see detailed information</p>
+    <div class="badges" id="node-badges"></div>
+    <div id="node-details"></div>
+  </div>
+
+  <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/cytoscape-cose-bilkent@4.1.0/cytoscape-cose-bilkent.js"></script>
+  <script>
+    let cy;
+    let graphData = null;
+
+    async function initializeGraph() {
+      try {
+        // Fetch module graph data
+        const response = await fetch('/api/modules/graph');
+        if (!response.ok) {
+          throw new Error(`API responded with ${response.status}`);
+        }
+        
+        graphData = await response.json();
+        
+        // Update statistics
+        updateStatistics(graphData.statistics);
+        
+        // Initialize Cytoscape
+        cy = cytoscape({
+          container: document.getElementById('cy'),
+          
+          elements: [
+            ...graphData.nodes.map(node => ({ 
+              data: { 
+                id: node.id, 
+                label: node.label,
+                ...node 
+              } 
+            })),
+            ...graphData.edges.map(edge => ({ 
+              data: { 
+                id: `${edge.source}-${edge.target}`,
+                source: edge.source, 
+                target: edge.target,
+                label: edge.label || edge.type,
+                type: edge.type || 'depends'
+              } 
+            }))
+          ],
+          
+          style: [
+            // Node styles
+            {
+              selector: 'node',
+              style: {
+                'background-color': (node) => getNodeColor(node.data()),
+                'label': 'data(label)',
+                'color': '#e2e8f0',
+                'font-size': '10px',
+                'font-weight': '600',
+                'text-valign': 'center',
+                'text-halign': 'center',
+                'width': '60px',
+                'height': '60px',
+                'border-width': '2px',
+                'border-color': (node) => getBorderColor(node.data()),
+                'border-opacity': 0.8,
+                'background-opacity': 0.9,
+                'font-family': 'Inter, system-ui, sans-serif',
+                'text-wrap': 'wrap',
+                'text-max-width': '50px',
+                'overlay-padding': '4px',
+                'transition-property': 'background-color, border-color, width, height',
+                'transition-duration': '0.2s'
+              }
+            },
+            
+            // Hover effects
+            {
+              selector: 'node:hover',
+              style: {
+                'width': '70px',
+                'height': '70px',
+                'border-width': '3px',
+                'background-opacity': 1,
+                'z-index': 999
+              }
+            },
+            
+            // Selected node
+            {
+              selector: 'node:selected',
+              style: {
+                'border-color': '#60a5fa',
+                'border-width': '4px',
+                'width': '80px',
+                'height': '80px'
+              }
+            },
+            
+            // Disabled nodes
+            {
+              selector: 'node[enabled = false]',
+              style: {
+                'background-color': '#6b7280',
+                'color': '#9ca3af',
+                'opacity': 0.6
+              }
+            },
+            
+            // Core system nodes
+            {
+              selector: 'node[category = "core"]',
+              style: {
+                'background-color': '#f59e0b',
+                'border-color': '#fbbf24',
+                'font-weight': '700'
+              }
+            },
+            
+            // Edge styles
+            {
+              selector: 'edge',
+              style: {
+                'line-color': '#475569',
+                'target-arrow-shape': 'triangle',
+                'target-arrow-color': '#475569',
+                'curve-style': 'bezier',
+                'width': '2px',
+                'opacity': 0.7,
+                'arrow-scale': 1.2,
+                'label': 'data(label)',
+                'font-size': '8px',
+                'color': '#64748b',
+                'text-rotation': 'autorotate',
+                'font-family': 'Inter, system-ui, sans-serif'
+              }
+            },
+            
+            // Edge hover
+            {
+              selector: 'edge:hover',
+              style: {
+                'line-color': '#60a5fa',
+                'target-arrow-color': '#60a5fa',
+                'width': '3px',
+                'opacity': 1
+              }
+            },
+            
+            // Different edge types
+            {
+              selector: 'edge[type = "integrates"]',
+              style: {
+                'line-color': '#10b981',
+                'target-arrow-color': '#10b981',
+                'line-style': 'dashed'
+              }
+            },
+            
+            {
+              selector: 'edge[type = "extends"]',
+              style: {
+                'line-color': '#8b5cf6',
+                'target-arrow-color': '#8b5cf6',
+                'line-style': 'dotted'
+              }
+            }
+          ],
+          
+          layout: {
+            name: 'cose-bilkent',
+            animate: true,
+            animationDuration: 1000,
+            nodeRepulsion: 8000,
+            idealEdgeLength: 100,
+            edgeElasticity: 0.1,
+            nestingFactor: 0.1,
+            gravity: 0.1,
+            numIter: 2500,
+            tile: true,
+            tilingPaddingVertical: 20,
+            tilingPaddingHorizontal: 20
+          },
+          
+          // Interaction settings
+          minZoom: 0.3,
+          maxZoom: 3,
+          wheelSensitivity: 0.1,
+          boxSelectionEnabled: false
+        });
+        
+        // Event handlers
+        cy.on('tap', 'node', function(evt) {
+          const node = evt.target;
+          showNodeInfo(node.data());
+          
+          // Highlight connected nodes
+          cy.elements().removeClass('highlighted dimmed');
+          const connected = node.neighborhood().add(node);
+          connected.addClass('highlighted');
+          cy.elements().not(connected).addClass('dimmed');
+        });
+        
+        cy.on('tap', function(evt) {
+          if (evt.target === cy) {
+            // Clicked on background
+            hideNodeInfo();
+            cy.elements().removeClass('highlighted dimmed');
+          }
+        });
+        
+        // Add highlighting styles
+        cy.style()
+          .selector('.highlighted')
+          .style({
+            'opacity': 1,
+            'z-index': 999
+          })
+          .selector('.dimmed')
+          .style({
+            'opacity': 0.3
+          })
+          .update();
+        
+        // Hide loading indicator
+        document.getElementById('loading').style.display = 'none';
+        
+        console.log('TerraFusion Module Map loaded successfully');
+        
+      } catch (error) {
+        console.error('Error loading module graph:', error);
+        document.getElementById('loading').innerHTML = `
+          <div style="color: #ef4444;">
+            <div>❌ Failed to load module architecture</div>
+            <div style="font-size: 12px; margin-top: 8px;">${error.message}</div>
+            <button onclick="initializeGraph()" style="
+              margin-top: 12px;
+              padding: 8px 16px;
+              background: #3b82f6;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 12px;
+            ">Retry</button>
+          </div>
+        `;
+      }
+    }
+    
+    function getNodeColor(data) {
+      if (!data.enabled) return '#6b7280';
+      
+      switch (data.category) {
+        case 'government': return '#3b82f6';
+        case 'commercial': return '#10b981';
+        case 'core': return '#f59e0b';
+        default: return '#64748b';
+      }
+    }
+    
+    function getBorderColor(data) {
+      if (!data.enabled) return '#9ca3af';
+      
+      switch (data.category) {
+        case 'government': return '#60a5fa';
+        case 'commercial': return '#34d399';
+        case 'core': return '#fbbf24';
+        default: return '#94a3b8';
+      }
+    }
+    
+    function updateStatistics(stats) {
+      const statsContent = document.getElementById('stats-content');
+      statsContent.innerHTML = `
+        <div class="stat-item">
+          <span class="stat-label">Total Modules</span>
+          <span class="stat-value">${stats.total || 0}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Active</span>
+          <span class="stat-value" style="color: #4ade80;">${stats.enabled || 0}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Disabled</span>
+          <span class="stat-value" style="color: #94a3b8;">${stats.disabled || 0}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Government</span>
+          <span class="stat-value" style="color: #60a5fa;">${stats.government || 0}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Commercial</span>
+          <span class="stat-value" style="color: #34d399;">${stats.commercial || 0}</span>
+        </div>
+        <div class="stat-item" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(71, 85, 105, 0.3);">
+          <span class="stat-label">Revenue Model</span>
+          <span class="stat-value" style="color: #fbbf24;">$619/month</span>
+        </div>
+      `;
+    }
+    
+    function showNodeInfo(data) {
+      const nodeInfo = document.getElementById('node-info');
+      const title = document.getElementById('node-title');
+      const description = document.getElementById('node-description');
+      const badges = document.getElementById('node-badges');
+      const details = document.getElementById('node-details');
+      
+      title.textContent = data.label || data.id;
+      description.textContent = data.description || 'TerraFusion government module';
+      
+      // Create badges
+      badges.innerHTML = '';
+      
+      const statusBadge = document.createElement('div');
+      statusBadge.className = `badge ${data.enabled ? 'enabled' : 'disabled'}`;
+      statusBadge.textContent = data.enabled ? '✓ Active' : '⏸️ Disabled';
+      badges.appendChild(statusBadge);
+      
+      if (data.category) {
+        const categoryBadge = document.createElement('div');
+        categoryBadge.className = 'badge';
+        categoryBadge.textContent = data.category.charAt(0).toUpperCase() + data.category.slice(1);
+        badges.appendChild(categoryBadge);
+      }
+      
+      if (data.version) {
+        const versionBadge = document.createElement('div');
+        versionBadge.className = 'badge';
+        versionBadge.textContent = `v${data.version}`;
+        badges.appendChild(versionBadge);
+      }
+      
+      // Create details
+      let detailsHtml = '';
+      
+      if (data.capabilities && data.capabilities.length > 0) {
+        detailsHtml += `
+          <p><strong>Capabilities:</strong> ${data.capabilities.join(', ')}</p>
+        `;
+      }
+      
+      if (data.pricing) {
+        detailsHtml += `
+          <p><strong>Pricing:</strong> ${data.pricing}</p>
+        `;
+      }
+      
+      if (data.category === 'core') {
+        detailsHtml += `
+          <p><strong>Type:</strong> Core TerraFusion OS component</p>
+        `;
+      }
+      
+      details.innerHTML = detailsHtml;
+      
+      nodeInfo.classList.add('visible');
+    }
+    
+    function hideNodeInfo() {
+      const nodeInfo = document.getElementById('node-info');
+      nodeInfo.classList.remove('visible');
+    }
+    
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', initializeGraph);
+    
+    // Auto-refresh every 5 minutes
+    setInterval(() => {
+      if (cy) {
+        initializeGraph();
+      }
+    }, 300000);
+  </script>
+</body>
+</html>

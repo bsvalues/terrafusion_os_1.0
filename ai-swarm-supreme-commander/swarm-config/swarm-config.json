@@ -1,0 +1,13 @@
+{
+  "swarmTotalCapacity": 50000,
+  "deploymentPhases": [
+    { "phase": 1, "agents": 1008, "status": "OPERATIONAL", "deploymentDate": "2025-08-01" },
+    { "phase": 2, "agents": 5000, "status": "SCHEDULED", "deploymentDate": "2026-02-01" },
+    { "phase": 3, "agents": 15000, "status": "PLANNED", "deploymentDate": "2026-08-01" },
+    { "phase": 4, "agents": 35000, "status": "PLANNED", "deploymentDate": "2027-02-01" },
+    { "phase": 5, "agents": 50000, "status": "TARGET", "deploymentDate": "2027-08-01" }
+  ],
+  "proficiencyRange": { "min": 70, "max": 100 },
+  "securityClearanceThreshold": 100,
+  "jsonLimitMb": 50
+}

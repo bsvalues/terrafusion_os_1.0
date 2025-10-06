@@ -1,0 +1,309 @@
+/**
+ * TerraFusion Design System - Unified CSS Import
+ * "Government. Transcended."
+ * 
+ * Import this single file to get all design tokens, animations, and utilities
+ * Usage: <link rel="stylesheet" href="/design-system.css">
+ */
+
+/* === DESIGN TOKENS === */
+@import url('./design-sync/tokens.css');
+
+/* === BRAND ANIMATIONS === */
+@keyframes transcendence-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes clarity-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: var(--glow-transcend);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(0, 255, 238, 0.8);
+  }
+}
+
+/* === UTILITY CLASSES === */
+
+/* Backgrounds */
+.bg-deep-space { background: var(--deep-space); }
+.bg-midnight { background: var(--midnight); }
+.bg-gradient-clarity { background: var(--gradient-clarity); }
+.bg-gradient-transcendence { background: var(--gradient-transcendence); }
+.bg-gradient-dark { background: var(--gradient-dark-bg); }
+
+/* Colors */
+.text-trust-blue { color: var(--trust-blue); }
+.text-transcend-cyan { color: var(--transcend-cyan); }
+.text-success-green { color: var(--success-green); }
+.text-white { color: var(--white); }
+.text-alert { color: var(--alert-red); }
+
+/* Gradient Text */
+.text-gradient-clarity {
+  background: var(--gradient-clarity);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Effects */
+.glow-transcend { box-shadow: var(--glow-transcend); }
+.glow-clarity { box-shadow: var(--glow-clarity); }
+.glow-success { box-shadow: var(--glow-success); }
+
+.blur-glass { backdrop-filter: blur(20px); }
+
+/* Animations */
+.animate-transcendence-pulse {
+  animation: transcendence-pulse 3s ease-in-out infinite;
+}
+
+.animate-clarity-fade {
+  animation: clarity-fade 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* === COMPONENT CLASSES === */
+
+/* TerraFusion Card */
+.terra-card {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--transcend-cyan);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  backdrop-filter: blur(20px);
+  transition: all var(--duration-normal) var(--ease-transcend);
+}
+
+.terra-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--glow-transcend);
+  border-color: var(--transcend-cyan);
+}
+
+/* TerraFusion Button - Primary */
+.terra-btn {
+  padding: 12px 30px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  border-radius: var(--border-radius-full);
+  border: none;
+  cursor: pointer;
+  transition: all var(--duration-quick) var(--ease-transcend);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.terra-btn-primary {
+  background: var(--gradient-clarity);
+  color: var(--deep-space);
+  box-shadow: var(--glow-clarity);
+}
+
+.terra-btn-primary:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(0, 255, 238, 0.6);
+  filter: brightness(1.1);
+}
+
+/* TerraFusion Button - Secondary */
+.terra-btn-secondary {
+  background: transparent;
+  color: var(--transcend-cyan);
+  border: 2px solid var(--transcend-cyan);
+}
+
+.terra-btn-secondary:hover {
+  background: rgba(0, 255, 238, 0.1);
+  transform: translateY(-2px);
+}
+
+/* TerraFusion Button - Alert */
+.terra-btn-alert {
+  background: var(--alert-red);
+  color: var(--white);
+}
+
+.terra-btn-alert:hover {
+  background: #ff5555;
+  transform: translateY(-2px);
+}
+
+/* TerraFusion Hero Section */
+.terra-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-dark-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.terra-hero-content {
+  text-align: center;
+  padding: 4rem 2rem;
+  position: relative;
+  z-index: 1;
+  animation: clarity-fade 1.2s ease-out;
+}
+
+.terra-hero h1 {
+  font-size: var(--font-size-display-large);
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  background: var(--gradient-clarity);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: clarity-fade 1.2s ease-out, transcendence-pulse 4s ease-in-out infinite;
+}
+
+.terra-hero p {
+  font-size: var(--font-size-body-large);
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* TerraFusion Badge */
+.terra-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.2), rgba(0, 255, 238, 0.2));
+  border: 1px solid var(--transcend-cyan);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* TerraFusion Metric Card */
+.terra-metric {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 255, 238, 0.3);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  transition: all var(--duration-normal) var(--ease-transcend);
+}
+
+.terra-metric:hover {
+  border-color: var(--transcend-cyan);
+  box-shadow: var(--glow-transcend);
+}
+
+.terra-metric-value {
+  font-size: var(--font-size-display);
+  font-weight: 300;
+  color: var(--transcend-cyan);
+  margin-bottom: 0.5rem;
+}
+
+.terra-metric-label {
+  font-size: var(--font-size-body);
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* TerraFusion Grid */
+.terra-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.terra-grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.terra-grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.terra-grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .terra-hero h1 {
+    font-size: var(--font-size-display);
+  }
+  
+  .terra-hero p {
+    font-size: var(--font-size-body);
+  }
+  
+  .terra-grid-2,
+  .terra-grid-3,
+  .terra-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === GLOBAL STYLES === */
+body {
+  font-family: var(--font-family);
+  background: var(--gradient-dark-bg);
+  color: var(--white);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+code {
+  font-family: var(--font-mono);
+  background: rgba(0, 255, 238, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}

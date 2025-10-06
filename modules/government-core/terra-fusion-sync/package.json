@@ -53,6 +53,7 @@
     "@tauri-apps/api": "^1.5.3",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "core-js": "^3.45.1",
     "drizzle-orm": "^0.44.5",
     "drizzle-zod": "^0.8.3",
     "embla-carousel-react": "^8.6.0",

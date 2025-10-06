@@ -1,0 +1,74 @@
+{
+  "trust-blue": {
+    "type": "color",
+    "value": "#0099ff"
+  },
+  "transcend-cyan": {
+    "type": "color",
+    "value": "#00ffee"
+  },
+  "success-green": {
+    "type": "color",
+    "value": "#00ffaa"
+  },
+  "deep-space": {
+    "type": "color",
+    "value": "#0b1020"
+  },
+  "midnight": {
+    "type": "color",
+    "value": "#1a1f3a"
+  },
+  "alert-red": {
+    "type": "color",
+    "value": "#ff4444"
+  },
+  "caution-amber": {
+    "type": "color",
+    "value": "#ffaa00"
+  },
+  "clarity-light": {
+    "type": "color",
+    "value": "#e0f7ff"
+  },
+  "white": {
+    "type": "color",
+    "value": "#ffffff"
+  },
+  "font-size-overline": {
+    "type": "dimension",
+    "value": "12px"
+  },
+  "font-size-caption": {
+    "type": "dimension",
+    "value": "14px"
+  },
+  "font-size-body": {
+    "type": "dimension",
+    "value": "16px"
+  },
+  "font-size-body-large": {
+    "type": "dimension",
+    "value": "18px"
+  },
+  "font-size-h3": {
+    "type": "dimension",
+    "value": "24px"
+  },
+  "font-size-h2": {
+    "type": "dimension",
+    "value": "28px"
+  },
+  "font-size-h1": {
+    "type": "dimension",
+    "value": "36px"
+  },
+  "font-size-display": {
+    "type": "dimension",
+    "value": "48px"
+  },
+  "font-size-display-large": {
+    "type": "dimension",
+    "value": "72px"
+  }
+}

@@ -1,0 +1,214 @@
+{
+  "registry": "engines",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "engine.costforge.rust",
+      "name": "CostForge Rust Engine",
+      "description": "High-performance cost calculation engine in Rust",
+      "owner": "kernel-team",
+      "lifecycle": "active",
+      "source_path": "rust-performance-engine",
+      "language": "rust",
+      "tags": [
+        "rust",
+        "engine",
+        "ffi",
+        "wasm",
+        "valuation",
+        "critical"
+      ],
+      "ffi_bindings": [
+        "dotnet",
+        "node",
+        "python"
+      ]
+    },
+    {
+      "id": "engine.valuation.core",
+      "name": "Valuation Engine",
+      "description": "Core property valuation computation engine",
+      "owner": "valuation-team",
+      "lifecycle": "active",
+      "source_path": "valuation-engine",
+      "language": "rust",
+      "tags": [
+        "rust",
+        "engine",
+        "valuation",
+        "performance"
+      ],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.grfe-rust-workspace",
+      "name": "grfe_rust_workspace",
+      "description": "grfe_rust_workspace engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.trust-fabric",
+      "name": "trust-fabric",
+      "description": "trust-fabric engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": "architecture/trust-fabric",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.performance",
+      "name": "performance",
+      "description": "performance engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/module-analysis/performance",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.quantum-performance",
+      "name": "quantum-performance",
+      "description": "quantum-performance engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/quantum-performance",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.grfe-rust-workspace-production-plus",
+      "name": "grfe_rust_workspace_production_plus",
+      "description": "grfe_rust_workspace_production_plus engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.",
+      "name": ".github",
+      "description": ".github engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus/.github",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.crates",
+      "name": "crates",
+      "description": "crates engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus/crates",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.deploy",
+      "name": "deploy",
+      "description": "deploy engine",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus/deploy",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.examples",
+      "name": "examples",
+      "description": "examples engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus/examples",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.autonomous-research-engine",
+      "name": "autonomous-research-engine",
+      "description": "autonomous-research-engine engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/modules_backup_20250912_093232/autonomous-research-engine",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.costforge-ai",
+      "name": "costforge-ai",
+      "description": "costforge-ai engine",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/modules_backup_20250912_093232/costforge-ai",
+      "language": "rust",
+      "tags": [
+        "ai",
+        "os"
+      ],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.golden-ratio-engine",
+      "name": "golden-ratio-engine",
+      "description": "golden-ratio-engine engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/modules/golden-ratio-engine",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.terrafusiondevelopment",
+      "name": "TerraFusionDevelopment",
+      "description": "TerraFusionDevelopment engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": "TerraFusionDevelopment",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.rust-demo-server",
+      "name": "rust-demo-server",
+      "description": "rust-demo-server engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": "TerraFusionDevelopment/rust-demo-server",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    },
+    {
+      "id": "engine.src",
+      "name": "src",
+      "description": "src engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": "TerraFusionDevelopment/rust-demo-server/src",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:19.424094",
+  "count": 17
+}

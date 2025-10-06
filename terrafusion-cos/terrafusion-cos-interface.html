@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion cOS - Government Operating System</title>
+    <style>
+        /* TerraFusion Official Brand System v1.0 */
+        /* Source: Brand_Assets/tf-brand-config.json */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Official TerraFusion Brand Colors */
+            --tf-primary: #0099ff;
+            --tf-primary-dark: #0077cc;
+            --tf-accent: #00ffaa;
+            --tf-accent-dark: #00cc88;
+            --tf-transcend: #00ffee;
+            --tf-dark: #0b1020;
+            --tf-dark-lighter: #1a1f3a;
+            --tf-light: #ffffff;
+            --tf-gray: #888888;
+            --tf-error: #ff3333;
+            --tf-success: #00ff88;
+            --tf-warning: #ffaa00;
+            --tf-clarity: #e0f7ff;
+            
+            /* Official Gradients */
+            --tf-gradient-clarity: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            --tf-gradient-transcend: linear-gradient(135deg, #00ffee 0%, #00ffaa 100%);
+            --tf-gradient-dark: linear-gradient(180deg, #0b1020 0%, #0a0f1c 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: var(--tf-gradient-dark);
+            color: var(--tf-light);
+            overflow: hidden;
+        }
+        
+        .tf-app {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        /* Header with Official Tagline */
+        .tf-header {
+            padding: 16px 32px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 255, 238, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tf-brand-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        /* Transcendence Orb Logo (from brand-kit.md) */
+        .tf-orb {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #00ffee, #00ffaa 50%, #0099ff);
+            box-shadow: 
+                0 0 20px rgba(0, 255, 238, 0.5),
+                inset 0 0 20px rgba(0, 255, 238, 0.3);
+            animation: transcendence-pulse 3s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .tf-orb::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 255, 238, 0.3);
+        }
+        
+        @keyframes transcendence-pulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+        
+        .tf-brand-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--tf-gradient-clarity);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+        
+        .tf-tagline {
+            font-size: 0.875rem;
+            color: var(--tf-transcend);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        
+        .tf-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 255, 170, 0.1);
+            border: 1px solid var(--tf-accent);
+            border-radius: 50px;
+        }
+        
+        .tf-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--tf-accent);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .tf-status-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--tf-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Main Layout */
+        .tf-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Sidebar Navigation */
+        .tf-sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 255, 238, 0.2);
+            padding: 24px;
+        }
+        
+        .tf-nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .tf-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
+        
+        .tf-nav-item:hover {
+            background: rgba(0, 255, 238, 0.1);
+            border-color: rgba(0, 255, 238, 0.3);
+            color: white;
+            transform: translateX(4px);
+        }
+        
+        .tf-nav-item.active {
+            background: var(--tf-gradient-clarity);
+            color: var(--tf-dark);
+            font-weight: 600;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(0, 153, 255, 0.3);
+        }
+        
+        .tf-nav-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Content Area */
+        .tf-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+        
+        .tf-content-header {
+            margin-bottom: 32px;
+        }
+        
+        .tf-content-title {
+            font-size: 2.25rem;
+            font-weight: 900;
+            background: var(--tf-gradient-clarity);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        
+        .tf-content-subtitle {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+        
+        /* Status Cards Grid */
+        .tf-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .tf-card {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 238, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tf-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--tf-gradient-clarity);
+        }
+        
+        .tf-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--tf-transcend);
+            box-shadow: 0 8px 30px rgba(0, 255, 238, 0.4);
+        }
+        
+        .tf-card-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 238, 0.5));
+        }
+        
+        .tf-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .tf-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--tf-transcend);
+            font-family: 'Cascadia Code', 'SF Mono', monospace;
+            margin-bottom: 4px;
+        }
+        
+        .tf-card-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .tf-card-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid var(--tf-success);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--tf-success);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 12px;
+        }
+        
+        /* Module Section */
+        .tf-module-section {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 238, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 32px;
+        }
+        
+        .tf-module-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .tf-module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .tf-module-btn {
+            padding: 20px;
+            background: rgba(0, 153, 255, 0.1);
+            border: 1px solid rgba(0, 255, 238, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .tf-module-btn:hover {
+            background: rgba(0, 255, 238, 0.2);
+            border-color: var(--tf-transcend);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 255, 238, 0.3);
+        }
+        
+        .tf-module-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .tf-module-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .tf-module-tagline {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
+        
+        /* Content Sections */
+        .tf-content-section {
+            display: none;
+        }
+        
+        .tf-content-section.active {
+            display: block;
+            animation: clarity-fade 0.5s ease;
+        }
+        
+        @keyframes clarity-fade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--tf-dark-lighter);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--tf-gradient-clarity);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tf-app">
+        <!-- Official Header -->
+        <header class="tf-header">
+            <div class="tf-brand-section">
+                <!-- Transcendence Orb -->
+                <div class="tf-orb"></div>
+                <div>
+                    <div class="tf-brand-title">TerraFusion cOS</div>
+                    <div class="tf-tagline">Government. Transcended.</div>
+                </div>
+            </div>
+            <div class="tf-status-badge">
+                <div class="tf-status-dot"></div>
+                <span class="tf-status-text">Operational</span>
+            </div>
+        </header>
+        
+        <!-- Main Layout -->
+        <div class="tf-main">
+            <!-- Sidebar Navigation -->
+            <nav class="tf-sidebar">
+                <div class="tf-nav-menu">
+                    <div class="tf-nav-item active" onclick="showSection('dashboard')">
+                        <span class="tf-nav-icon">⊞</span>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="tf-nav-item" onclick="showSection('costforge')">
+                        <span class="tf-nav-icon">💎</span>
+                        <span>CostForge AI</span>
+                    </div>
+                    <div class="tf-nav-item" onclick="showSection('sync')">
+                        <span class="tf-nav-icon">🔄</span>
+                        <span>TerraFusion Sync</span>
+                    </div>
+                    <div class="tf-nav-item" onclick="showSection('flow')">
+                        <span class="tf-nav-icon">⚡</span>
+                        <span>TerraFlow</span>
+                    </div>
+                    <div class="tf-nav-item" onclick="showSection('ai-swarm')">
+                        <span class="tf-nav-icon">🧠</span>
+                        <span>AI Swarm</span>
+                    </div>
+                    <div class="tf-nav-item" onclick="showSection('security')">
+                        <span class="tf-nav-icon">🔒</span>
+                        <span>Security</span>
+                    </div>
+                    <div class="tf-nav-item" onclick="showSection('hybrid-llm')">
+                        <span class="tf-nav-icon">🤖</span>
+                        <span>Hybrid LLM</span>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Content Area -->
+            <main class="tf-content">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="tf-content-section active">
+                    <div class="tf-content-header">
+                        <h1 class="tf-content-title">Government Operations Center</h1>
+                        <p class="tf-content-subtitle">County Operating System - Complete infrastructure substrate</p>
+                    </div>
+                    
+                    <div class="tf-card-grid">
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🤖</div>
+                            <div class="tf-card-title">AI Swarm</div>
+                            <div class="tf-card-value">50,000+</div>
+                            <div class="tf-card-label">Active Agents</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Operational
+                            </div>
+                        </div>
+                        
+                        <div class="tf-card">
+                            <div class="tf-card-icon">💎</div>
+                            <div class="tf-card-title">CostForge AI</div>
+                            <div class="tf-card-value">100%</div>
+                            <div class="tf-card-label">M&S Replacement</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Active
+                            </div>
+                        </div>
+                        
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🔄</div>
+                            <div class="tf-card-title">TerraFusion Sync</div>
+                            <div class="tf-card-value">&lt;2ms</div>
+                            <div class="tf-card-label">Sync Latency</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Real-Time
+                            </div>
+                        </div>
+                        
+                        <div class="tf-card">
+                            <div class="tf-card-icon">⚡</div>
+                            <div class="tf-card-title">TerraFlow</div>
+                            <div class="tf-card-value">99.8%</div>
+                            <div class="tf-card-label">Success Rate</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Automated
+                            </div>
+                        </div>
+                        
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🔒</div>
+                            <div class="tf-card-title">Security Mesh</div>
+                            <div class="tf-card-value">FISMA</div>
+                            <div class="tf-card-label">Compliance</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Secured
+                            </div>
+                        </div>
+                        
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🧠</div>
+                            <div class="tf-card-title">Hybrid LLM</div>
+                            <div class="tf-card-value">5</div>
+                            <div class="tf-card-label">Models Available</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Ready
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Core Modules Section -->
+                    <div class="tf-module-section">
+                        <h2 class="tf-module-section-title">
+                            <span>📦</span>
+                            Core Modules (Included with cOS)
+                        </h2>
+                        <div class="tf-module-grid">
+                            <div class="tf-module-btn" onclick="launchModule('sync')">
+                                <span class="tf-module-icon">🔄</span>
+                                <div class="tf-module-name">TerraFusion Sync</div>
+                                <div class="tf-module-tagline">Synchronization. Transcended.</div>
+                            </div>
+                            <div class="tf-module-btn" onclick="launchModule('flow')">
+                                <span class="tf-module-icon">⚡</span>
+                                <div class="tf-module-name">TerraFlow</div>
+                                <div class="tf-module-tagline">Workflows. Transcended.</div>
+                            </div>
+                            <div class="tf-module-btn" onclick="launchModule('costforge')">
+                                <span class="tf-module-icon">💎</span>
+                                <div class="tf-module-name">CostForge AI Enhanced</div>
+                                <div class="tf-module-tagline">Valuation. Transcended.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other sections will be populated dynamically -->
+                <div id="costforge" class="tf-content-section">
+                    <div class="tf-content-header">
+                        <h1 class="tf-content-title">CostForge AI Enhanced</h1>
+                        <p class="tf-content-subtitle">Marshall & Swift Replacement - Financial Intelligence Layer</p>
+                    </div>
+                    <div style="padding: 40px; text-align: center; color: rgba(255,255,255,0.7);">
+                        <p style="font-size: 1.25rem; margin-bottom: 16px;">Full CostForge AI application</p>
+                        <p>Complete property valuation, cost estimation, and financial intelligence</p>
+                    </div>
+                </div>
+                
+                <div id="sync" class="tf-content-section">
+                    <div class="tf-content-header">
+                        <h1 class="tf-content-title">TerraFusion Sync</h1>
+                        <p class="tf-content-subtitle">Multi-Master Data Replication - Solves Woolpert Mobile Sync</p>
+                    </div>
+                    <div class="tf-card-grid">
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🏛️</div>
+                            <div class="tf-card-title">Harris PACS</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Connected
+                            </div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🦅</div>
+                            <div class="tf-card-title">Tyler EagleView</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Connected
+                            </div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">📊</div>
+                            <div class="tf-card-title">Aumentum</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Connected
+                            </div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">👁️</div>
+                            <div class="tf-card-title">Vision Appraisal</div>
+                            <div class="tf-card-status">
+                                <span class="tf-status-dot"></span>
+                                Connected
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="flow" class="tf-content-section">
+                    <div class="tf-content-header">
+                        <h1 class="tf-content-title">TerraFlow</h1>
+                        <p class="tf-content-subtitle">Visual Workflow Designer - Government Process Automation</p>
+                    </div>
+                    <div style="padding: 40px; text-align: center; color: rgba(255,255,255,0.7);">
+                        <p style="font-size: 1.25rem; margin-bottom: 16px;">Workflow Automation Engine</p>
+                        <p>Visual designer, policy gates, and approval chains</p>
+                    </div>
+                </div>
+                
+                <div id="ai-swarm" class="tf-content-section">
+                    <div class="tf-content-header">
+                        <h1 class="tf-content-title">AI Swarm Coordination</h1>
+                        <p class="tf-content-subtitle">50,000+ AI Agents - Supreme Commander Claude</p>
+                    </div>
+                    <div class="tf-card-grid">
+                        <div class="tf-card">
+                            <div class="tf-card-icon">👑</div>
+                            <div class="tf-card-title">Supreme Commander</div>
+                            <div class="tf-card-value">Claude</div>
+                            <div class="tf-card-label">Orchestration</div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🎖️</div>
+                            <div class="tf-card-title">Field Generals</div>
+                            <div class="tf-card-value">1,220</div>
+                            <div class="tf-card-label">Coordination</div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">⚡</div>
+                            <div class="tf-card-title">Operational Forces</div>
+                            <div class="tf-card-value">48,779</div>
+                            <div class="tf-card-label">Task Execution</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="security" class="tf-content-section">
+                    <div class="tf-content-header">
+                        <h1 class="tf-content-title">Security Mesh</h1>
+                        <p class="tf-content-subtitle">Zero-Trust Architecture - FISMA/NIST/CJIS Compliance</p>
+                    </div>
+                    <div style="padding: 40px; text-align: center; color: rgba(255,255,255,0.7);">
+                        <p style="font-size: 1.25rem; margin-bottom: 16px;">Government-Grade Security</p>
+                        <p>Compliance automation, audit logging, RBAC</p>
+                    </div>
+                </div>
+                
+                <div id="hybrid-llm" class="tf-content-section">
+                    <div class="tf-content-header">
+                        <h1 class="tf-content-title">Hybrid LLM Service</h1>
+                        <p class="tf-content-subtitle">AI Model Orchestration - Claude, GPT, Gemini, Local</p>
+                    </div>
+                    <div class="tf-card-grid">
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🧠</div>
+                            <div class="tf-card-title">Claude Opus</div>
+                            <div class="tf-card-label">Reasoning Tier</div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🧠</div>
+                            <div class="tf-card-title">Claude Sonnet</div>
+                            <div class="tf-card-label">Balanced Tier</div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🧠</div>
+                            <div class="tf-card-title">GPT-4</div>
+                            <div class="tf-card-label">Reasoning Tier</div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🧠</div>
+                            <div class="tf-card-title">GPT-4o</div>
+                            <div class="tf-card-label">Fast Tier</div>
+                        </div>
+                        <div class="tf-card">
+                            <div class="tf-card-icon">🔒</div>
+                            <div class="tf-card-title">Local LLaMA</div>
+                            <div class="tf-card-label">Privacy Tier</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            // Update navigation
+            document.querySelectorAll('.tf-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tf-content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+        
+        function launchModule(moduleId) {
+            console.log('Launching module:', moduleId);
+            // This would launch the actual module application
+            alert(`Launching ${moduleId} module...`);
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,26 @@
+{
+  "name": "ai-swarm-supreme-commander",
+  "version": "1.0.0",
+  "description": "TerraFusion AI Swarm Supreme Commander",
+  "main": "dist/supreme-commander.js",
+  "scripts": {
+    "start": "node dist/supreme-commander.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "ioredis": "^5.3.2",
+    "zod": "^3.22.4",
+    "openai": "^4.30.0",
+    "python-shell": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.4.2",
+    "@types/socket.io": "^3.0.2",
+    "typescript": "^5.2.2"
+  },
+  "author": "TerraFusion Team",
+  "license": "MIT"
+}

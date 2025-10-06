@@ -1,0 +1,103 @@
+/* Traffic Page Styles */
+
+.traffic-page {
+  width: 100%;
+}
+
+.time-range-selector {
+  display: flex;
+  gap: var(--terra-space-2);
+}
+
+.traffic-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--terra-space-4);
+  margin-bottom: var(--terra-space-6);
+}
+
+.corridors-card,
+.incidents-card,
+.sensors-card {
+  margin-bottom: var(--terra-space-6);
+}
+
+.corridors-card h2,
+.incidents-card h2,
+.sensors-card h2 {
+  font-size: var(--terra-font-size-xl);
+  font-weight: var(--terra-font-weight-semibold);
+  margin: 0 0 var(--terra-space-4) 0;
+  color: var(--terra-neutral-900);
+}
+
+.congestion-bar {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  background: var(--terra-neutral-100);
+  border-radius: var(--terra-radius-full);
+  overflow: hidden;
+}
+
+.congestion-fill {
+  position: absolute;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.congestion-bar span {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: var(--terra-font-size-xs);
+  font-weight: var(--terra-font-weight-semibold);
+  color: var(--terra-neutral-900);
+  z-index: 1;
+}
+
+.trend-badge {
+  padding: 4px 8px;
+  border-radius: var(--terra-radius-md);
+  font-size: var(--terra-font-size-xs);
+  font-weight: var(--terra-font-weight-semibold);
+  display: inline-block;
+}
+
+.trend-badge.trend-worsening {
+  background: var(--terra-danger-100);
+  color: var(--terra-danger-700);
+}
+
+.trend-badge.trend-improving {
+  background: var(--terra-success-100);
+  color: var(--terra-success-700);
+}
+
+.trend-badge.trend-stable {
+  background: var(--terra-neutral-100);
+  color: var(--terra-neutral-700);
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--terra-space-4);
+  }
+  
+  .page-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .time-range-selector {
+    width: 100%;
+  }
+  
+  .traffic-stats {
+    grid-template-columns: 1fr;
+  }
+}

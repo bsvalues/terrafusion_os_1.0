@@ -1,0 +1,152 @@
+nats-1   | [1] 2025/09/27 22:38:45.273946 [INF] Starting nats-server
+db-1        | The files belonging to this database system will be owned by user "postgres".
+nats-1      | [1] 2025/09/27 22:38:45.274043 [INF]   Version:  2.12.0
+nats-1      | [1] 2025/09/27 22:38:45.274048 [INF]   Git:      [fc6ec64]
+keycloak-1  | Updating the configuration and installing your custom providers, if any. Please wait.
+nats-1      | [1] 2025/09/27 22:38:45.274050 [INF]   Name:     NDABKKYXTH72RRRHUXXSW4BDL22Y5KIA5NWD3CDTSHDMBTLY4UNVGF2K
+nats-1      | [1] 2025/09/27 22:38:45.274061 [INF]   Node:     qtpyOJWX
+nats-1      | [1] 2025/09/27 22:38:45.274063 [INF]   ID:       NDABKKYXTH72RRRHUXXSW4BDL22Y5KIA5NWD3CDTSHDMBTLY4UNVGF2K
+nats-1      | [1] 2025/09/27 22:38:45.274544 [INF] Starting JetStream
+nats-1      | [1] 2025/09/27 22:38:45.274597 [WRN] Temporary storage directory used, data could be lost on system reboot
+nats-1      | [1] 2025/09/27 22:38:45.278363 [INF]     _ ___ _____ ___ _____ ___ ___   _   __  __
+nats-1      | [1] 2025/09/27 22:38:45.278395 [INF]  _ | | __|_   _/ __|_   _| _ \ __| /_\ |  \/  |
+nats-1      | [1] 2025/09/27 22:38:45.278399 [INF] | || | _|  | | \__ \ | | |   / _| / _ \| |\/| |
+nats-1      | [1] 2025/09/27 22:38:45.278401 [INF]  \__/|___| |_| |___/ |_| |_|_\___/_/ \_\_|  |_|
+nats-1      | [1] 2025/09/27 22:38:45.278403 [INF] 
+nats-1      | [1] 2025/09/27 22:38:45.278405 [INF]          https://docs.nats.io/jetstream
+nats-1      | [1] 2025/09/27 22:38:45.278406 [INF] 
+nats-1      | [1] 2025/09/27 22:38:45.278408 [INF] ---------------- JETSTREAM ----------------
+nats-1      | [1] 2025/09/27 22:38:45.278410 [INF]   Strict:          true
+nats-1      | [1] 2025/09/27 22:38:45.278415 [INF]   Max Memory:      11.36 GB
+nats-1      | [1] 2025/09/27 22:38:45.278418 [INF]   Max Storage:     632.33 GB
+nats-1      | [1] 2025/09/27 22:38:45.278420 [INF]   Store Directory: "/tmp/nats/jetstream"
+nats-1      | [1] 2025/09/27 22:38:45.278422 [INF]   API Level:       2
+nats-1      | [1] 2025/09/27 22:38:45.278424 [INF] -------------------------------------------
+nats-1      | [1] 2025/09/27 22:38:45.293583 [INF] Listening for client connections on 0.0.0.0:4222
+nats-1      | [1] 2025/09/27 22:38:45.294041 [INF] Server is ready
+keycloak-1  | 2025-09-27 22:38:54,943 INFO  [io.qua.dep.QuarkusAugmentor] (main) Quarkus augmentation completed in 8339ms
+keycloak-1  | 2025-09-27 22:38:58,993 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Starting Infinispan embedded cache manager
+keycloak-1  | 2025-09-27 22:38:59,127 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Persistent user sessions enabled and no memory limit found in configuration. Setting max entries for sessions to 10000 entries.
+keycloak-1  | 2025-09-27 22:38:59,128 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Persistent user sessions enabled and no memory limit found in configuration. Setting max entries for clientSessions to 10000 entries.
+keycloak-1  | 2025-09-27 22:38:59,128 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Persistent user sessions enabled and no memory limit found in configuration. Setting max entries for offlineSessions to 10000 entries.
+keycloak-1  | 2025-09-27 22:38:59,128 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Persistent user sessions enabled and no memory limit found in configuration. Setting max entries for offlineClientSessions to 10000 entries.
+keycloak-1  | 2025-09-27 22:38:59,646 INFO  [org.infinispan.CONTAINER] (ForkJoinPool.commonPool-worker-1) ISPN000556: Starting user marshaller 'org.infinispan.commons.marshall.ImmutableProtoStreamMarshaller'
+keycloak-1  | 2025-09-27 22:39:00,582 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_337968, Site name: null
+keycloak-1  | 2025-09-27 22:39:01,916 INFO  [org.keycloak.quarkus.runtime.storage.database.liquibase.QuarkusJpaUpdaterProvider] (main) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+keycloak-1  | 
+redis-1  | 1:C 27 Sep 2025 22:38:45.439 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-1     | 1:C 27 Sep 2025 22:38:45.439 * Redis version=7.4.5, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-1     | 1:C 27 Sep 2025 22:38:45.439 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+redis-1     | 1:M 27 Sep 2025 22:38:45.440 * monotonic clock: POSIX clock_gettime
+redis-1     | 1:M 27 Sep 2025 22:38:45.442 * Running mode=standalone, port=6379.
+redis-1     | 1:M 27 Sep 2025 22:38:45.443 * Server initialized
+redis-1     | 1:M 27 Sep 2025 22:38:45.445 * Ready to accept connections tcp
+db-1        | This user must also own the server process.
+db-1        | 
+db-1        | The database cluster will be initialized with locale "en_US.utf8".
+db-1        | The default database encoding has accordingly been set to "UTF8".
+db-1        | The default text search configuration will be set to "english".
+db-1        | 
+db-1        | Data page checksums are disabled.
+db-1        | 
+db-1        | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+db-1        | creating subdirectories ... ok
+db-1        | selecting dynamic shared memory implementation ... posix
+db-1        | selecting default max_connections ... 100
+db-1        | selecting default shared_buffers ... 128MB
+db-1        | selecting default time zone ... Etc/UTC
+db-1        | creating configuration files ... ok
+db-1        | running bootstrap script ... ok
+db-1        | performing post-bootstrap initialization ... ok
+db-1        | syncing data to disk ... ok
+db-1        | 
+db-1        | 
+db-1        | Success. You can now start the database server using:
+db-1        | 
+db-1        |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+db-1        | 
+db-1        | initdb: warning: enabling "trust" authentication for local connections
+db-1        | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+db-1        | waiting for server to start....2025-09-27 22:39:00.188 UTC [70] LOG:  starting PostgreSQL 15.4 (Debian 15.4-1.pgdg110+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
+db-1        | 2025-09-27 22:39:00.192 UTC [70] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1        | 2025-09-27 22:39:00.247 UTC [73] LOG:  database system was shut down at 2025-09-27 22:38:55 UTC
+db-1        | 2025-09-27 22:39:00.318 UTC [70] LOG:  database system is ready to accept connections
+db-1        |  done
+db-1        | server started
+db-1        | CREATE DATABASE
+db-1        | 
+db-1        | 
+db-1        | /usr/local/bin/docker-entrypoint.sh: sourcing /docker-entrypoint-initdb.d/10_postgis.sh
+db-1        | CREATE DATABASE
+db-1        | Loading PostGIS extensions into template_postgis
+db-1        | CREATE EXTENSION
+db-1        | CREATE EXTENSION
+db-1        | You are now connected to database "template_postgis" as user "postgres".
+db-1        | CREATE EXTENSION
+db-1        | CREATE EXTENSION
+db-1        | Loading PostGIS extensions into terrafusion
+db-1        | CREATE EXTENSION
+db-1        | CREATE EXTENSION
+db-1        | You are now connected to database "terrafusion" as user "postgres".
+db-1        | CREATE EXTENSION
+db-1        | CREATE EXTENSION
+db-1        | 
+keycloak-1  | UPDATE SUMMARY
+keycloak-1  | Run:                        148
+keycloak-1  | Previously run:               0
+keycloak-1  | Filtered out:                 0
+keycloak-1  | -------------------------------
+keycloak-1  | Total change sets:          148
+keycloak-1  | 
+keycloak-1  | 2025-09-27 22:39:05,060 WARN  [io.agroal.pool] (main) Datasource '<default>': JDBC resources leaked: 1 ResultSet(s) and 0 Statement(s)
+keycloak-1  | 2025-09-27 22:39:05,535 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+keycloak-1  | 2025-09-27 22:39:05,587 INFO  [org.keycloak.exportimport.dir.DirImportProvider] (main) Importing from directory /opt/keycloak/bin/../data/import
+keycloak-1  | 2025-09-27 22:39:05,597 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
+keycloak-1  | 2025-09-27 22:39:06,925 INFO  [org.keycloak.services] (main) KC-SERVICES0030: Full model import requested. Strategy: OVERWRITE_EXISTING
+keycloak-1  | 2025-09-27 22:39:07,089 WARN  [io.agroal.pool] (main) Datasource '<default>': JDBC resources leaked: 1 ResultSet(s) and 0 Statement(s)
+keycloak-1  | 2025-09-27 22:39:07,101 INFO  [com.arjuna.ats.jbossatx] (main) ARJUNA032014: Stopping transaction recovery manager
+keycloak-1  | 2025-09-27 22:39:07,359 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Failed to start server in (development) mode
+keycloak-1  | 2025-09-27 22:39:07,360 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Failed to run import
+keycloak-1  | 2025-09-27 22:39:07,360 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Cannot construct instance of `org.keycloak.representations.idm.RoleRepresentation` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('admin')
+keycloak-1  |  at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 15, column: 15] (through reference chain: org.keycloak.representations.idm.RealmRepresentation["roles"]->org.keycloak.representations.idm.RolesRepresentation["realm"]->java.util.ArrayList[0])
+keycloak-1  | 2025-09-27 22:39:07,360 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) For more details run the same command passing the '--verbose' option. Also you can use '--help' to see the details about the usage of the particular command.
+keycloak-1  | 2025-09-27 22:48:19,508 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Starting Infinispan embedded cache manager
+keycloak-1  | 2025-09-27 22:48:19,652 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Persistent user sessions enabled and no memory limit found in configuration. Setting max entries for sessions to 10000 entries.
+keycloak-1  | 2025-09-27 22:48:19,653 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Persistent user sessions enabled and no memory limit found in configuration. Setting max entries for clientSessions to 10000 entries.
+keycloak-1  | 2025-09-27 22:48:19,653 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Persistent user sessions enabled and no memory limit found in configuration. Setting max entries for offlineSessions to 10000 entries.
+keycloak-1  | 2025-09-27 22:48:19,653 INFO  [org.keycloak.quarkus.runtime.storage.infinispan.CacheManagerFactory] (main) Persistent user sessions enabled and no memory limit found in configuration. Setting max entries for offlineClientSessions to 10000 entries.
+keycloak-1  | 2025-09-27 22:48:19,944 INFO  [org.infinispan.CONTAINER] (ForkJoinPool.commonPool-worker-1) ISPN000556: Starting user marshaller 'org.infinispan.commons.marshall.ImmutableProtoStreamMarshaller'
+keycloak-1  | 2025-09-27 22:48:20,645 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_823882, Site name: null
+keycloak-1  | 2025-09-27 22:48:20,706 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+keycloak-1  | 2025-09-27 22:48:21,274 INFO  [org.keycloak.exportimport.dir.DirImportProvider] (main) Importing from directory /opt/keycloak/bin/../data/import
+keycloak-1  | 2025-09-27 22:48:21,278 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
+keycloak-1  | 2025-09-27 22:48:22,706 INFO  [org.keycloak.services] (main) KC-SERVICES0030: Full model import requested. Strategy: OVERWRITE_EXISTING
+keycloak-1  | 2025-09-27 22:48:22,861 WARN  [io.agroal.pool] (main) Datasource '<default>': JDBC resources leaked: 1 ResultSet(s) and 0 Statement(s)
+keycloak-1  | 2025-09-27 22:48:22,872 INFO  [com.arjuna.ats.jbossatx] (main) ARJUNA032014: Stopping transaction recovery manager
+keycloak-1  | 2025-09-27 22:48:23,120 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Failed to start server in (development) mode
+keycloak-1  | 2025-09-27 22:48:23,121 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Failed to run import
+keycloak-1  | 2025-09-27 22:48:23,121 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Cannot construct instance of `org.keycloak.representations.idm.RoleRepresentation` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('admin')
+db-1        | 2025-09-27 22:39:11.430 UTC [70] LOG:  received fast shutdown request
+db-1        | waiting for server to shut down...2025-09-27 22:39:11.435 UTC [70] LOG:  aborting any active transactions
+db-1        | 2025-09-27 22:39:11.439 UTC [70] LOG:  background worker "logical replication launcher" (PID 76) exited with exit code 1
+db-1        | .2025-09-27 22:39:11.502 UTC [97] FATAL:  terminating connection due to administrator command
+db-1        | 2025-09-27 22:39:11.502 UTC [97] LOG:  could not send data to client: Broken pipe
+db-1        | 2025-09-27 22:39:11.515 UTC [71] LOG:  shutting down
+db-1        | 2025-09-27 22:39:11.519 UTC [71] LOG:  checkpoint starting: shutdown immediate
+keycloak-1  |  at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 15, column: 15] (through reference chain: org.keycloak.representations.idm.RealmRepresentation["roles"]->org.keycloak.representations.idm.RolesRepresentation["realm"]->java.util.ArrayList[0])
+keycloak-1  | 2025-09-27 22:48:23,121 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) For more details run the same command passing the '--verbose' option. Also you can use '--help' to see the details about the usage of the particular command.
+db-1        | ..2025-09-27 22:39:14.532 UTC [71] LOG:  checkpoint complete: wrote 4469 buffers (27.3%); 0 WAL file(s) added, 0 removed, 2 recycled; write=1.539 s, sync=1.407 s, total=3.017 s; sync files=963, longest=0.013 s, average=0.002 s; distance=34812 kB, estimate=34812 kB
+db-1        | .2025-09-27 22:39:15.018 UTC [70] LOG:  database system is shut down
+db-1        |  done
+db-1        | server stopped
+db-1        | 
+db-1        | PostgreSQL init process complete; ready for start up.
+db-1        | 
+db-1        | 2025-09-27 22:39:15.162 UTC [1] LOG:  starting PostgreSQL 15.4 (Debian 15.4-1.pgdg110+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
+db-1        | 2025-09-27 22:39:15.163 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db-1        | 2025-09-27 22:39:15.163 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db-1        | 2025-09-27 22:39:15.169 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1        | 2025-09-27 22:39:15.221 UTC [117] LOG:  database system was shut down at 2025-09-27 22:39:14 UTC
+db-1        | 2025-09-27 22:39:15.286 UTC [1] LOG:  database system is ready to accept connections
+db-1        | 2025-09-27 22:44:15.059 UTC [115] LOG:  checkpoint starting: time
+db-1        | 2025-09-27 22:44:35.592 UTC [115] LOG:  checkpoint complete: wrote 219 buffers (1.3%); 0 WAL file(s) added, 0 removed, 1 recycled; write=20.379 s, sync=0.106 s, total=20.533 s; sync files=97, longest=0.005 s, average=0.002 s; distance=9256 kB, estimate=9256 kB

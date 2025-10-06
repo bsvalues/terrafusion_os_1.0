@@ -1,0 +1,107 @@
+/**
+ * Error State Styles
+ */
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.error-state-fullpage {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.error-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--error-600);
+  margin-bottom: 12px;
+}
+
+.error-details {
+  font-size: 14px;
+  color: var(--neutral-600);
+  margin-bottom: 24px;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.error-retry-btn {
+  margin-top: 8px;
+}
+
+/* Inline error message */
+.error-inline {
+  padding: 12px 16px;
+  background-color: var(--error-50);
+  border: 1px solid var(--error-200);
+  border-radius: 8px;
+  color: var(--error-700);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.error-inline-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Toast notification for errors */
+.error-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: var(--error-600);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 400px;
+  animation: slideIn 0.3s ease-out;
+  z-index: 9999;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.error-toast-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.error-toast-close:hover {
+  opacity: 1;
+}

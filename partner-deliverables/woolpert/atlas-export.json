@@ -1,0 +1,66 @@
+{
+  "partner": "Woolpert Inc.",
+  "generated": "2025-10-05T22:35:26.271729",
+  "total_items": 4,
+  "registries": {
+    "datasets": [
+      {
+        "id": "data.parcels.main",
+        "name": "Parcel Database",
+        "description": "Primary parcel data database",
+        "owner": "data-team",
+        "tags": [
+          "parcels",
+          "gis",
+          "postgres",
+          "primary",
+          "confidential"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      },
+      {
+        "id": "data.registry",
+        "name": "registry",
+        "description": "registry dataset",
+        "owner": "platform-team",
+        "tags": [
+          "gis"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      }
+    ],
+    "modules": [
+      {
+        "id": "module.gis.parcel-tools",
+        "name": "GIS Parcel Tools",
+        "description": "GIS tools for parcel management",
+        "owner": "gis-team",
+        "tags": [
+          "gis",
+          "parcel",
+          "tools",
+          "plugin"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      }
+    ],
+    "partners": [
+      {
+        "id": "partner.woolpert",
+        "name": "Woolpert Integration",
+        "description": "Woolpert vendor integration",
+        "owner": "partnerships-team",
+        "tags": [
+          "woolpert",
+          "vendor",
+          "gis"
+        ],
+        "lifecycle": null,
+        "apis": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Frontend",
+  "description": "Web UI, desktop app, or mobile interface",
+  "type": "object",
+  "required": ["id", "name", "owner", "lifecycle", "source_path", "platform"],
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "owner": {"type": "string"},
+    "lifecycle": {"type": "string", "enum": ["active", "deprecated", "experimental", "archived"]},
+    "source_path": {"type": "string"},
+    "platform": {"type": "string", "enum": ["web", "desktop", "mobile", "hybrid"]},
+    "framework": {"type": "string", "description": "e.g., React, Vue, Tauri, Electron"},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "backend_services": {"type": "array", "items": {"type": "string"}}
+  }
+}

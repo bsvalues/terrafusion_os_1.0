@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { OpenAI } from 'openai';
 import { PythonShell } from 'python-shell';
 import { createHash } from 'crypto';
+import { addUIGenerationEndpoint } from './ui-generator-extension';
 
 // AI Swarm Architecture
 interface AIAgent {
@@ -135,6 +136,9 @@ class SupremeCommanderClaude {
     this.setupWebSocket();
     this.initializeAgentSwarm();
     this.startTaskProcessor();
+    
+    // Add UI Generation capability
+    addUIGenerationEndpoint(this.app, this.agents);
   }
 
   private setupRoutes(): void {

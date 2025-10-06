@@ -307,3 +307,80 @@ node_modules/
 .env.local
 target/
 **/Cargo.lock
+
+###############################################################################
+# TerraFusion Architecture Refactoring - Added October 2025
+###############################################################################
+
+# CRITICAL: Never commit backups to Git!
+backup/
+*_backup/
+*_backup_*/
+*BACKUP*/
+FULL_BACKUP*/
+backup_*/
+*.backup
+*.bak
+*.old
+archive/
+archives/
+
+# CRITICAL: Never commit build artifacts
+node_modules/
+dist/
+build/
+out/
+.next/
+target/
+bin/
+obj/
+
+# CRITICAL: Never commit logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# CRITICAL: Never commit data files (use S3/MinIO)
+*.csv
+*.xlsx
+*.xls
+*.shp
+*.shx
+*.dbf
+*.geojson
+*.parquet
+data/
+datasets/
+
+# CRITICAL: Never commit large media (use CDN/S3)
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.mp3
+*.wav
+*.flac
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
+.pytest_cache/
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+tmp/
+temp/
+
+
+# Runtime data files (permissions issues)
+.data/
+data/postgres*/
+data/redis*/

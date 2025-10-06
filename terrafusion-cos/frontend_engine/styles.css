@@ -1,0 +1,280 @@
+/**
+ * TerraFusion cOS - Official Brand Styling
+ * Government Operating System - Professional Enterprise Design
+ */
+
+:root {
+  /* TerraFusion Official Brand Colors */
+  --tf-transcend-cyan: #00e5ff;
+  --tf-trust-blue: #1976d2;
+  --tf-success-green: #4caf50;
+  --tf-deep-space: #0a0f1c;
+  --tf-space-white: #f8fafc;
+  --tf-primary: #0099ff;
+  --tf-accent: #00ffaa;
+  --tf-dark: #0b1020;
+  --tf-dark-lighter: #1a1f3a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  background: var(--tf-deep-space);
+  color: var(--tf-space-white);
+  overflow: hidden;
+}
+
+.tf-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.tf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--tf-dark), var(--tf-dark-lighter));
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+.tf-brand-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tf-tagline {
+  font-size: 0.875rem;
+  color: var(--tf-transcend-cyan);
+  font-weight: 500;
+}
+
+.tf-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tf-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tf-success-green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.tf-status-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--tf-success-green);
+  letter-spacing: 0.05em;
+}
+
+.tf-sidebar {
+  width: 260px;
+  background: var(--tf-dark-lighter);
+  border-right: 1px solid rgba(0, 229, 255, 0.2);
+  padding: 1.5rem;
+}
+
+.tf-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 0.25rem;
+}
+
+.tf-nav-item:hover {
+  background: rgba(0, 229, 255, 0.1);
+  color: white;
+}
+
+.tf-nav-item.active {
+  background: linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-primary));
+  color: var(--tf-dark);
+  font-weight: 600;
+}
+
+.tf-nav-icon {
+  font-size: 1.25rem;
+}
+
+.tf-nav-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.tf-main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background: var(--tf-dark);
+}
+
+.tf-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.tf-section-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2rem;
+}
+
+.tf-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.tf-status-card {
+  background: var(--tf-dark-lighter);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.tf-status-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+  border-color: var(--tf-transcend-cyan);
+}
+
+.tf-status-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.tf-metric {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--tf-transcend-cyan);
+  margin-bottom: 0.5rem;
+}
+
+.tf-status {
+  font-size: 0.875rem;
+  color: var(--tf-success-green);
+  font-weight: 600;
+}
+
+.tf-integration-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.tf-integration-card {
+  background: var(--tf-dark-lighter);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.tf-integration-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.tf-integration-status {
+  font-size: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tf-connected {
+  background: var(--tf-success-green);
+  color: var(--tf-dark);
+}
+
+.tf-workflow-controls,
+.tf-swarm-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.tf-btn {
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tf-btn-primary {
+  background: linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-primary));
+  color: var(--tf-dark);
+}
+
+.tf-btn-secondary {
+  background: var(--tf-dark-lighter);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  color: white;
+}
+
+.tf-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 229, 255, 0.3);
+}
+
+.tf-metric-card {
+  background: var(--tf-dark-lighter);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.tf-metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--tf-transcend-cyan);
+  margin-bottom: 0.5rem;
+}
+
+.tf-metric-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+}
+

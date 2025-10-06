@@ -1,0 +1,144 @@
+/* Portal Header Styles */
+
+.portal-header {
+  background: white;
+  border-bottom: 1px solid var(--terra-neutral-200);
+  box-shadow: var(--terra-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.portal-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--terra-space-4) var(--terra-space-6);
+  gap: var(--terra-space-4);
+}
+
+/* Breadcrumbs */
+.portal-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--terra-space-2);
+  flex-wrap: wrap;
+}
+
+.portal-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--terra-space-2);
+  font-size: var(--terra-font-size-sm);
+}
+
+.portal-breadcrumb-separator {
+  color: var(--terra-neutral-400);
+}
+
+.portal-breadcrumb-link {
+  color: var(--terra-primary-600);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.portal-breadcrumb-link:hover {
+  color: var(--terra-primary-700);
+  text-decoration: underline;
+}
+
+.portal-breadcrumb-current {
+  color: var(--terra-neutral-700);
+  font-weight: var(--terra-font-weight-semibold);
+}
+
+/* Header Actions */
+.portal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--terra-space-3);
+}
+
+.portal-header-search {
+  position: relative;
+}
+
+.portal-search-input {
+  padding: var(--terra-space-2) var(--terra-space-4);
+  padding-right: var(--terra-space-10);
+  border: 1px solid var(--terra-neutral-300);
+  border-radius: var(--terra-radius-md);
+  font-size: var(--terra-font-size-sm);
+  width: 240px;
+  transition: all 0.2s ease;
+}
+
+.portal-search-input:focus {
+  outline: none;
+  border-color: var(--terra-primary-500);
+  box-shadow: 0 0 0 3px var(--terra-primary-100);
+  width: 300px;
+}
+
+.portal-search-icon {
+  position: absolute;
+  right: var(--terra-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.portal-header-button {
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: var(--terra-space-2);
+  border-radius: var(--terra-radius-md);
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portal-header-button:hover {
+  background: var(--terra-neutral-100);
+}
+
+.portal-notification-icon {
+  display: block;
+}
+
+.portal-notification-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--terra-danger-600);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--terra-font-weight-bold);
+  padding: 2px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .portal-header-content {
+    padding: var(--terra-space-3) var(--terra-space-4);
+  }
+  
+  .portal-search-input {
+    width: 160px;
+  }
+  
+  .portal-search-input:focus {
+    width: 200px;
+  }
+  
+  .portal-breadcrumbs {
+    font-size: var(--terra-font-size-xs);
+  }
+}

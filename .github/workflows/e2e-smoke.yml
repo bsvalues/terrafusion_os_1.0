@@ -1,0 +1,47 @@
+name: E2E Smoke - TerraFusion cOS
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install frontend deps
+        working-directory: terrafusion-cos/frontend_engine
+        run: |
+          npm ci
+
+      - name: Build frontend
+        working-directory: terrafusion-cos/frontend_engine
+        run: |
+          npm run ci:build
+
+      - name: Install Playwright browsers
+        working-directory: terrafusion-cos/frontend_engine
+        run: |
+          npx playwright install --with-deps
+
+      - name: Run smoke test
+        working-directory: terrafusion-cos/e2e
+        run: |
+          npx playwright test smoke.spec.js --config=playwright.config.js --project=chromium
+        env:
+          CI: true
+
+      - name: Upload artifacts (screenshot + logs)
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-artifacts
+          path: |
+            terrafusion-cos/logs/artifacts/renderer-screenshot.png
+            terrafusion-cos/logs/electron-main.log

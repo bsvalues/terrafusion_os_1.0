@@ -1,0 +1,209 @@
+/* Portal Navigation Styles */
+
+.portal-nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  background: var(--terra-neutral-900);
+  color: var(--terra-neutral-100);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  z-index: 1000;
+  box-shadow: var(--terra-shadow-xl);
+}
+
+.portal-nav.collapsed {
+  width: 80px;
+}
+
+/* Header */
+.portal-nav-header {
+  padding: var(--terra-space-6);
+  border-bottom: 1px solid var(--terra-neutral-700);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.portal-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--terra-space-3);
+  overflow: hidden;
+}
+
+.portal-nav-logo {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.portal-nav-title h1 {
+  font-size: var(--terra-font-size-lg);
+  font-weight: var(--terra-font-weight-bold);
+  margin: 0;
+  color: var(--terra-primary-400);
+  white-space: nowrap;
+}
+
+.portal-nav-title p {
+  font-size: var(--terra-font-size-sm);
+  color: var(--terra-neutral-400);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.portal-nav-toggle {
+  background: transparent;
+  border: none;
+  color: var(--terra-neutral-400);
+  cursor: pointer;
+  padding: var(--terra-space-2);
+  border-radius: var(--terra-radius-md);
+  font-size: 20px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.portal-nav-toggle:hover {
+  background: var(--terra-neutral-800);
+  color: var(--terra-neutral-100);
+}
+
+/* Menu */
+.portal-nav-menu {
+  flex: 1;
+  padding: var(--terra-space-4) 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.portal-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--terra-space-3);
+  padding: var(--terra-space-3) var(--terra-space-6);
+  color: var(--terra-neutral-300);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border-left: 3px solid transparent;
+}
+
+.portal-nav.collapsed .portal-nav-item {
+  justify-content: center;
+  padding: var(--terra-space-3);
+}
+
+.portal-nav-item:hover {
+  background: var(--terra-neutral-800);
+  color: var(--terra-neutral-100);
+  border-left-color: var(--terra-primary-500);
+}
+
+.portal-nav-item.active {
+  background: var(--terra-neutral-800);
+  color: var(--terra-primary-400);
+  border-left-color: var(--terra-primary-500);
+  font-weight: var(--terra-font-weight-semibold);
+}
+
+.portal-nav-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.portal-nav-label {
+  font-size: var(--terra-font-size-base);
+}
+
+/* Footer */
+.portal-nav-footer {
+  padding: var(--terra-space-4) var(--terra-space-6);
+  border-top: 1px solid var(--terra-neutral-700);
+}
+
+.portal-nav-user {
+  display: flex;
+  align-items: center;
+  gap: var(--terra-space-3);
+}
+
+.portal-nav.collapsed .portal-nav-user {
+  justify-content: center;
+}
+
+.portal-nav-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--terra-primary-600);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--terra-font-weight-bold);
+  font-size: var(--terra-font-size-lg);
+  flex-shrink: 0;
+}
+
+.portal-nav-user-info {
+  overflow: hidden;
+}
+
+.portal-nav-user-name {
+  font-size: var(--terra-font-size-sm);
+  font-weight: var(--terra-font-weight-semibold);
+  color: var(--terra-neutral-100);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portal-nav-user-role {
+  font-size: var(--terra-font-size-xs);
+  color: var(--terra-neutral-400);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Scrollbar */
+.portal-nav-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.portal-nav-menu::-webkit-scrollbar-track {
+  background: var(--terra-neutral-900);
+}
+
+.portal-nav-menu::-webkit-scrollbar-thumb {
+  background: var(--terra-neutral-700);
+  border-radius: 3px;
+}
+
+.portal-nav-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--terra-neutral-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .portal-nav {
+    width: 80px;
+  }
+  
+  .portal-nav-title,
+  .portal-nav-label,
+  .portal-nav-user-info {
+    display: none;
+  }
+  
+  .portal-nav-item {
+    justify-content: center;
+    padding: var(--terra-space-3);
+  }
+}

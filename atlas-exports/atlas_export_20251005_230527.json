@@ -1,0 +1,2463 @@
+{
+  "generated": "2025-10-05T23:05:27.338245",
+  "total_items": 229,
+  "items": [
+    {
+      "id": "agent.swarm.commander",
+      "name": "AI Swarm Supreme Commander",
+      "description": "Autonomous AI swarm coordination agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": "ai-swarm-supreme-commander",
+      "agent_type": "coordinator",
+      "tags": [
+        "ai",
+        "swarm",
+        "commander",
+        "autonomous"
+      ],
+      "capabilities": [
+        "coordination",
+        "strategy",
+        "resource-allocation"
+      ],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.valuation.specialist",
+      "name": "Valuation Specialist Agent",
+      "description": "AI specialist for property valuation analysis",
+      "owner": "ai-team",
+      "lifecycle": "experimental",
+      "source_path": "agents/valuation-specialist",
+      "agent_type": "specialist",
+      "tags": [
+        "ai",
+        "valuation",
+        "specialist",
+        "analysis"
+      ],
+      "capabilities": [
+        "valuation",
+        "analysis",
+        "reporting"
+      ],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.consciousness.core",
+      "name": "Consciousness Core Agent",
+      "description": "Core consciousness processing agent",
+      "owner": "ai-team",
+      "lifecycle": "experimental",
+      "source_path": ".ai",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai",
+        "consciousness",
+        "core"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.",
+      "name": ".devcontainer",
+      "description": ".devcontainer AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.devcontainer",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.claude-flow",
+      "name": "claude-flow",
+      "description": "claude-flow AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.ai/claude-flow",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.config",
+      "name": "config",
+      "description": "config AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".ai/claude-flow/config",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.core",
+      "name": "core",
+      "description": "core AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.ai/core",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.devops",
+      "name": "devops",
+      "description": "devops AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".ai/claude-flow/devops",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.scripts",
+      "name": "scripts",
+      "description": "scripts AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".ai/claude-flow/scripts",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.src",
+      "name": "src",
+      "description": "src AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".ai/claude-flow/src",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "agent.mcp",
+      "name": "mcp",
+      "description": "mcp AI agent",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.ai/mcp",
+      "agent_type": "autonomous",
+      "tags": [
+        "ai"
+      ],
+      "capabilities": [],
+      "registry": "agents"
+    },
+    {
+      "id": "brand.terrafusion",
+      "name": "TerraFusion Brand",
+      "owner": "marketing-team",
+      "source_path": "Brand_Assets",
+      "tags": [
+        "terrafusion",
+        "brand",
+        "design"
+      ],
+      "description": "TerraFusion OS brand identity and assets",
+      "registry": "brands"
+    },
+    {
+      "id": "brand.harris",
+      "name": "Harris Brand Integration",
+      "owner": "marketing-team",
+      "source_path": "harris_brand",
+      "tags": [
+        "harris",
+        "brand",
+        "partner"
+      ],
+      "description": "Harris County brand assets and guidelines",
+      "registry": "brands"
+    },
+    {
+      "id": "brands.",
+      "name": ".playwright-mcp",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.playwright-mcp",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.brand-assets",
+      "name": "Brand_Assets",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend/Brand_Assets",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.complete-assets",
+      "name": "Complete_Assets",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/Complete_Assets",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.brand",
+      "name": "brand",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/brand",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.more-brand",
+      "name": "more brand",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/more brand",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.full-backup-20250915-062012",
+      "name": "FULL_BACKUP_20250915_062012",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.audit-20250913-185959",
+      "name": "AUDIT_20250913_185959",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-workspace-companion/AUDIT_20250913_185959",
+      "tags": [
+        "ai"
+      ],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.apps",
+      "name": "apps",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/apps",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.css",
+      "name": "css",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend/css",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.backend",
+      "name": "backend",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.publish",
+      "name": "publish",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/publish",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.config",
+      "name": "config",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/config",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.devops-handoff-package",
+      "name": "DevOps-Handoff-Package",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment/DevOps-Handoff-Package",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.national",
+      "name": "national",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment/national",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.docs",
+      "name": "docs",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/docs",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "brands.frontend",
+      "name": "frontend",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend",
+      "tags": [],
+      "registry": "brands"
+    },
+    {
+      "id": "compliance.security.audit",
+      "name": "Security Audit Reports",
+      "owner": "security-team",
+      "source_path": "compliance/security",
+      "tags": [
+        "security",
+        "audit",
+        "compliance"
+      ],
+      "description": "Comprehensive security audit documentation",
+      "registry": "compliance"
+    },
+    {
+      "id": "compliance.trust-fabric",
+      "name": "Trust Fabric Framework",
+      "owner": "security-team",
+      "source_path": "trust-fabric",
+      "tags": [
+        "trust",
+        "security",
+        "framework"
+      ],
+      "description": "Trust and security framework documentation",
+      "registry": "compliance"
+    },
+    {
+      "id": "compliance.",
+      "name": ".github",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github",
+      "tags": [],
+      "registry": "compliance"
+    },
+    {
+      "id": "compliance.issue-template",
+      "name": "ISSUE_TEMPLATE",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/ISSUE_TEMPLATE",
+      "tags": [],
+      "registry": "compliance"
+    },
+    {
+      "id": "compliance.workflows",
+      "name": "workflows",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/workflows",
+      "tags": [],
+      "registry": "compliance"
+    },
+    {
+      "id": "compliance.brand-assets",
+      "name": "Brand_Assets",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets",
+      "tags": [],
+      "registry": "compliance"
+    },
+    {
+      "id": "component.sdk.vendor",
+      "name": "Vendor SDK",
+      "owner": "platform-team",
+      "source_path": "vendor-sdk",
+      "tags": [
+        "sdk",
+        "integration",
+        "shared"
+      ],
+      "description": "Shared vendor integration SDK",
+      "registry": "components"
+    },
+    {
+      "id": "components.",
+      "name": ".git-temp-clone",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.sdk",
+      "name": "SDK",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/SDK",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.scripts",
+      "name": "scripts",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/SDK/scripts",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.terrafusion-golden-everything-plus-20250917-181254",
+      "name": "TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.sdks",
+      "name": "sdks",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/sdks",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.ai-swarm-venv",
+      "name": "ai-swarm-venv",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-swarm-venv",
+      "tags": [
+        "ai"
+      ],
+      "registry": "components"
+    },
+    {
+      "id": "components.backend",
+      "name": "backend",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.ai-swarm",
+      "name": "ai-swarm",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/backend/ai-swarm",
+      "tags": [
+        "ai"
+      ],
+      "registry": "components"
+    },
+    {
+      "id": "components.utils",
+      "name": "utils",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/utils",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.config",
+      "name": "config",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/config",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.vendor-integrations",
+      "name": "vendor-integrations",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/demo/vendor-integrations",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.reports",
+      "name": "reports",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/docs/reports",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.vendor-ecosystem",
+      "name": "vendor-ecosystem",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/docs/vendor-ecosystem",
+      "tags": [
+        "os"
+      ],
+      "registry": "components"
+    },
+    {
+      "id": "components.src",
+      "name": "src",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend-vite-backup/src",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.packages",
+      "name": "packages",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend-v2/packages",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.marketplace-enhanced",
+      "name": "marketplace-enhanced",
+      "owner": "marketplace-team",
+      "source_path": ".git-temp-clone/infrastructure/marketplace-enhanced",
+      "tags": [
+        "marketplace"
+      ],
+      "registry": "components"
+    },
+    {
+      "id": "components.shock-and-awe",
+      "name": "shock-and-awe",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/modules_backup_20250912_093232/shock-and-awe",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "components.full-backup-20250915-062012",
+      "name": "FULL_BACKUP_20250915_062012",
+      "owner": "platform-team",
+      "source_path": "FULL_BACKUP_20250915_062012",
+      "tags": [],
+      "registry": "components"
+    },
+    {
+      "id": "data.parcels.main",
+      "name": "Parcel Database",
+      "description": "Primary parcel data database",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": "database",
+      "data_type": "database",
+      "tags": [
+        "parcels",
+        "gis",
+        "postgres",
+        "primary",
+        "confidential"
+      ],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.county.benton",
+      "name": "Benton County Data",
+      "description": "Benton County specific datasets",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": "county-data/benton",
+      "data_type": "export",
+      "tags": [
+        "county",
+        "benton",
+        "data"
+      ],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.",
+      "name": ".schemas",
+      "description": ".schemas dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.schemas",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.nats",
+      "name": "nats",
+      "description": "nats dataset",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": ".data/nats",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.postgres",
+      "name": "postgres",
+      "description": "postgres dataset",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": ".data/postgres",
+      "data_type": "database",
+      "tags": [
+        "os"
+      ],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.redis",
+      "name": "redis",
+      "description": "redis dataset",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": ".data/redis",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.full-backup-20250915-062012",
+      "name": "FULL_BACKUP_20250915_062012",
+      "description": "FULL_BACKUP_20250915_062012 dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.platform-empire-planning",
+      "name": "PLATFORM_EMPIRE_PLANNING",
+      "description": "PLATFORM_EMPIRE_PLANNING dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/PLATFORM_EMPIRE_PLANNING",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.modules-backup-20250912-093232",
+      "name": "modules_backup_20250912_093232",
+      "description": "modules_backup_20250912_093232 dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.registry",
+      "name": "registry",
+      "description": "registry dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/registry",
+      "data_type": "database",
+      "tags": [
+        "gis"
+      ],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.terrafusion-ops",
+      "name": "terrafusion-ops",
+      "description": "terrafusion-ops dataset",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/terrafusion-ops",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.terrafusion-swarm",
+      "name": "terrafusion-swarm",
+      "description": "terrafusion-swarm dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/terrafusion-swarm",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.workspace",
+      "name": "workspace",
+      "description": "workspace dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/workspace",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.backend",
+      "name": "backend",
+      "description": "backend dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.terrafusion",
+      "name": "TerraFusion.Data",
+      "description": "TerraFusion.Data dataset",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/TerraFusion.Data",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.mcp-core",
+      "name": "mcp-core",
+      "description": "mcp-core dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/mcp-core",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.schemas",
+      "name": "schemas",
+      "description": "schemas dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/schemas",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.backup",
+      "name": "backup",
+      "description": "backup dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backup",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "data.before-ai-changes",
+      "name": "before-ai-changes",
+      "description": "before-ai-changes dataset",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backup/before-ai-changes",
+      "data_type": "database",
+      "tags": [
+        "ai"
+      ],
+      "technology": "PostgreSQL",
+      "registry": "datasets"
+    },
+    {
+      "id": "deploy.helm.main",
+      "name": "Main Helm Charts",
+      "owner": "ops-team",
+      "source_path": "helm",
+      "tags": [
+        "helm",
+        "k8s",
+        "deployment"
+      ],
+      "description": "Primary Helm chart deployments",
+      "registry": "deployments"
+    },
+    {
+      "id": "deploy.terraform.infra",
+      "name": "Infrastructure as Code",
+      "owner": "ops-team",
+      "source_path": "terraform-base",
+      "tags": [
+        "terraform",
+        "iac",
+        "infrastructure"
+      ],
+      "description": "Terraform infrastructure definitions",
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.",
+      "name": ".git-temp-clone",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.terrafusion-golden-everything-plus-20250917-181254",
+      "name": "TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.ci",
+      "name": "ci",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/ci",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.helm",
+      "name": "helm",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/helm",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.terrafusion-golden-helmfile-redis-grafana-20250917-181613",
+      "name": "TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.grafana-dashboards",
+      "name": "grafana_dashboards",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/grafana_dashboards",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.helmfile",
+      "name": "helmfile",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/helmfile",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.service-redis-quota",
+      "name": "service_redis_quota",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/service_redis_quota",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.deployment-authorization",
+      "name": "deployment-authorization",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/authorization/deployment-authorization",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.bcw-uat",
+      "name": "bcw-uat",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bcw-uat",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.deploy",
+      "name": "deploy",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deploy",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.terraform",
+      "name": "terraform",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bcw-uat/terraform",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.business-structure",
+      "name": "business-structure",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.deployment",
+      "name": "deployment",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.k8s",
+      "name": "k8s",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deploy/k8s",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.deployed-modules",
+      "name": "deployed_modules",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployed_modules",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.devops-handoff-package",
+      "name": "DevOps-Handoff-Package",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment/DevOps-Handoff-Package",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "deployments.advanced",
+      "name": "advanced",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment/advanced",
+      "tags": [],
+      "registry": "deployments"
+    },
+    {
+      "id": "engine.costforge.rust",
+      "name": "CostForge Rust Engine",
+      "description": "High-performance cost calculation engine in Rust",
+      "owner": "kernel-team",
+      "lifecycle": "active",
+      "source_path": "rust-performance-engine",
+      "language": "rust",
+      "tags": [
+        "rust",
+        "engine",
+        "ffi",
+        "wasm",
+        "valuation",
+        "critical"
+      ],
+      "ffi_bindings": [
+        "dotnet",
+        "node",
+        "python"
+      ],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.valuation.core",
+      "name": "Valuation Engine",
+      "description": "Core property valuation computation engine",
+      "owner": "valuation-team",
+      "lifecycle": "active",
+      "source_path": "valuation-engine",
+      "language": "rust",
+      "tags": [
+        "rust",
+        "engine",
+        "valuation",
+        "performance"
+      ],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.grfe-rust-workspace",
+      "name": "grfe_rust_workspace",
+      "description": "grfe_rust_workspace engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.trust-fabric",
+      "name": "trust-fabric",
+      "description": "trust-fabric engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": "architecture/trust-fabric",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.performance",
+      "name": "performance",
+      "description": "performance engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/module-analysis/performance",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.quantum-performance",
+      "name": "quantum-performance",
+      "description": "quantum-performance engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/quantum-performance",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.grfe-rust-workspace-production-plus",
+      "name": "grfe_rust_workspace_production_plus",
+      "description": "grfe_rust_workspace_production_plus engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.",
+      "name": ".github",
+      "description": ".github engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus/.github",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.crates",
+      "name": "crates",
+      "description": "crates engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus/crates",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.deploy",
+      "name": "deploy",
+      "description": "deploy engine",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus/deploy",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.examples",
+      "name": "examples",
+      "description": "examples engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/grfe_rust_workspace_production_plus/examples",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.autonomous-research-engine",
+      "name": "autonomous-research-engine",
+      "description": "autonomous-research-engine engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/modules_backup_20250912_093232/autonomous-research-engine",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.costforge-ai",
+      "name": "costforge-ai",
+      "description": "costforge-ai engine",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/modules_backup_20250912_093232/costforge-ai",
+      "language": "rust",
+      "tags": [
+        "ai",
+        "os"
+      ],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.golden-ratio-engine",
+      "name": "golden-ratio-engine",
+      "description": "golden-ratio-engine engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/modules/golden-ratio-engine",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.terrafusiondevelopment",
+      "name": "TerraFusionDevelopment",
+      "description": "TerraFusionDevelopment engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": "TerraFusionDevelopment",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.rust-demo-server",
+      "name": "rust-demo-server",
+      "description": "rust-demo-server engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": "TerraFusionDevelopment/rust-demo-server",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "engine.src",
+      "name": "src",
+      "description": "src engine",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": "TerraFusionDevelopment/rust-demo-server/src",
+      "language": "rust",
+      "tags": [],
+      "ffi_bindings": [],
+      "registry": "engines"
+    },
+    {
+      "id": "env.dev",
+      "name": "Development Environment",
+      "owner": "ops-team",
+      "source_path": ".devcontainer",
+      "tags": [
+        "dev",
+        "local",
+        "k8s"
+      ],
+      "description": "Local and shared development environment",
+      "registry": "environments"
+    },
+    {
+      "id": "env.prod",
+      "name": "Production Environment",
+      "owner": "ops-team",
+      "source_path": "deployment-package",
+      "tags": [
+        "production",
+        "k8s",
+        "critical"
+      ],
+      "description": "Production Kubernetes cluster",
+      "registry": "environments"
+    },
+    {
+      "id": "environments.",
+      "name": ".github",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.environments",
+      "name": "environments",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/environments",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.ai-agent-development-environment",
+      "name": "AI_AGENT_DEVELOPMENT_ENVIRONMENT",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/AI_AGENT_DEVELOPMENT_ENVIRONMENT",
+      "tags": [
+        "ai"
+      ],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.terrafusion-ultimate-standalone-package",
+      "name": "TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.docker",
+      "name": "Docker",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/Docker",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.grfe-rust-workspace",
+      "name": "grfe_rust_workspace",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.ai-swarm-venv",
+      "name": "ai-swarm-venv",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-swarm-venv",
+      "tags": [
+        "ai"
+      ],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.architecture",
+      "name": "architecture",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/architecture",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.terrafusion",
+      "name": "TerraFusion.API",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/TerraFusion.API",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.mcp-servers",
+      "name": "mcp-servers",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/mcp-servers",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.compose",
+      "name": "compose",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/compose",
+      "tags": [
+        "os"
+      ],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.ai-services",
+      "name": "ai-services",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/compose/ai-services",
+      "tags": [
+        "ai",
+        "os"
+      ],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.mock-api",
+      "name": "mock-api",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/compose/mock-api",
+      "tags": [
+        "os"
+      ],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.obs",
+      "name": "obs",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/compose/obs",
+      "tags": [
+        "os"
+      ],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.config",
+      "name": "config",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/config",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "environments.configs",
+      "name": "configs",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/configs",
+      "tags": [],
+      "registry": "environments"
+    },
+    {
+      "id": "frontend.desktop.shell",
+      "name": "Desktop Shell",
+      "owner": "frontend-team",
+      "source_path": "src-tauri",
+      "tags": [
+        "desktop",
+        "tauri",
+        "shell",
+        "ui",
+        "rust"
+      ],
+      "description": "Main desktop application shell (Tauri)",
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontend.web.main",
+      "name": "Web Frontend",
+      "owner": "frontend-team",
+      "source_path": "frontend",
+      "tags": [
+        "web",
+        "react",
+        "ui",
+        "typescript"
+      ],
+      "description": "Main web application frontend",
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "marketplace.frontend",
+      "name": "Marketplace Frontend",
+      "owner": "marketplace-team",
+      "source_path": "marketplace/frontend",
+      "tags": [
+        "marketplace",
+        "web",
+        "react",
+        "ui"
+      ],
+      "description": "Marketplace web interface",
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.claude-flow",
+      "name": "claude-flow",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/.ai/claude-flow",
+      "tags": [
+        "ai"
+      ],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.complete-test-suite",
+      "name": "COMPLETE_TEST_SUITE",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/COMPLETE_TEST_SUITE",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.modules-backup-20250912-093232",
+      "name": "modules_backup_20250912_093232",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.02-marketplace-strategy",
+      "name": "02_MARKETPLACE_STRATEGY",
+      "owner": "marketplace-team",
+      "source_path": ".git-temp-clone/PLATFORM_EMPIRE_PLANNING/02_MARKETPLACE_STRATEGY",
+      "tags": [
+        "marketplace"
+      ],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.pluginmarketplacelauncher",
+      "name": "PluginMarketplaceLauncher",
+      "owner": "marketplace-team",
+      "source_path": ".git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/PluginMarketplaceLauncher",
+      "tags": [
+        "marketplace"
+      ],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.ai-workspace-companion",
+      "name": "ai-workspace-companion",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-workspace-companion",
+      "tags": [
+        "ai"
+      ],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.audit-20250913-185959",
+      "name": "AUDIT_20250913_185959",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-workspace-companion/AUDIT_20250913_185959",
+      "tags": [
+        "ai"
+      ],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.desktop-electron",
+      "name": "desktop-electron",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/apps/desktop-electron",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.gui",
+      "name": "gui",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/apps/gui",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.ui",
+      "name": "ui",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/apps/ui",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.services",
+      "name": "Services",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/Services",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.terrafusion",
+      "name": "TerraFusion.Marketplace",
+      "owner": "marketplace-team",
+      "source_path": ".git-temp-clone/backend/TerraFusion.Marketplace",
+      "tags": [
+        "marketplace"
+      ],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.test-hub",
+      "name": "test-hub",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bcw-uat/test-hub",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.tests",
+      "name": "tests",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bcw-uat/tests",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.suites",
+      "name": "suites",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/bench/suites",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.customer-acquisition",
+      "name": "customer-acquisition",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/business-structure/customer-acquisition",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.implementation-guides",
+      "name": "implementation-guides",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/business-structure/implementation-guides",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.ai-services",
+      "name": "ai-services",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/compose/ai-services",
+      "tags": [
+        "ai",
+        "os"
+      ],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "frontends.consciousness-service",
+      "name": "consciousness-service",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/consciousness-service",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "frontends"
+    },
+    {
+      "id": "module.gis.parcel-tools",
+      "name": "GIS Parcel Tools",
+      "description": "GIS tools for parcel management",
+      "owner": "gis-team",
+      "lifecycle": "active",
+      "source_path": "modules/parcel-tools",
+      "module_type": "core",
+      "tags": [
+        "gis",
+        "parcel",
+        "tools",
+        "plugin"
+      ],
+      "hot_swap_compatible": true,
+      "marketplace_listing": true,
+      "registry": "modules"
+    },
+    {
+      "id": "module.shock-and-awe",
+      "name": "Shock and Awe Module",
+      "description": "Advanced demonstration and showcase module",
+      "owner": "plugins-team",
+      "lifecycle": "active",
+      "source_path": "shock-and-awe-2.0",
+      "module_type": "premium",
+      "tags": [
+        "demo",
+        "showcase",
+        "plugin"
+      ],
+      "hot_swap_compatible": true,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.",
+      "name": ".git-temp-clone",
+      "description": ".git-temp-clone module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.brand-assets",
+      "name": "Brand_Assets",
+      "description": "Brand_Assets module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.brand",
+      "name": "brand",
+      "description": "brand module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets/brand",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.more-brand",
+      "name": "more brand",
+      "description": "more brand module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets/more brand",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.modules-backup-20250912-093232",
+      "name": "modules_backup_20250912_093232",
+      "description": "modules_backup_20250912_093232 module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.pluginmarketplacelauncher",
+      "name": "PluginMarketplaceLauncher",
+      "description": "PluginMarketplaceLauncher module",
+      "owner": "marketplace-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/PluginMarketplaceLauncher",
+      "module_type": "core",
+      "tags": [
+        "marketplace"
+      ],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.grfe-rust-workspace",
+      "name": "grfe_rust_workspace",
+      "description": "grfe_rust_workspace module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.apps",
+      "name": "apps",
+      "description": "apps module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.css",
+      "name": "css",
+      "description": "css module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/css",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.desktop-electron",
+      "name": "desktop-electron",
+      "description": "desktop-electron module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/desktop-electron",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.gui",
+      "name": "gui",
+      "description": "gui module",
+      "owner": "frontend-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/gui",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.tests",
+      "name": "tests",
+      "description": "tests module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/tests",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.ui",
+      "name": "ui",
+      "description": "ui module",
+      "owner": "frontend-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/ui",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.government-approvals",
+      "name": "government-approvals",
+      "description": "government-approvals module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization/government-approvals",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.backend",
+      "name": "backend",
+      "description": "backend module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.publish",
+      "name": "publish",
+      "description": "publish module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/publish",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.core-apps",
+      "name": "core-apps",
+      "description": "core-apps module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/core-apps",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.web-app",
+      "name": "web-app",
+      "description": "web-app module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/demo/web-app",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.deployed-modules",
+      "name": "deployed_modules",
+      "description": "deployed_modules module",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/deployed_modules",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "module.national",
+      "name": "national",
+      "description": "national module",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/deployment/national",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false,
+      "registry": "modules"
+    },
+    {
+      "id": "partner.harris",
+      "name": "Harris County Integration",
+      "owner": "partnerships-team",
+      "source_path": "harris_county_integration",
+      "tags": [
+        "harris",
+        "county",
+        "integration"
+      ],
+      "description": "Harris County partnership integration",
+      "registry": "partners"
+    },
+    {
+      "id": "partner.woolpert",
+      "name": "Woolpert Integration",
+      "owner": "partnerships-team",
+      "source_path": "woolpert",
+      "tags": [
+        "woolpert",
+        "vendor",
+        "gis"
+      ],
+      "description": "Woolpert vendor integration",
+      "registry": "partners"
+    },
+    {
+      "id": "partners.core",
+      "name": "core",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/.ai/core",
+      "tags": [
+        "ai"
+      ],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.scripts",
+      "name": "scripts",
+      "owner": "ai-team",
+      "source_path": ".ai/claude-flow/scripts",
+      "tags": [
+        "ai"
+      ],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.",
+      "name": ".git-temp-clone",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.workflows",
+      "name": "workflows",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/workflows",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.brand-assets",
+      "name": "Brand_Assets",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.brand",
+      "name": "brand",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/brand",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.more-brand",
+      "name": "more brand",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/more brand",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.04-competitive-strategy",
+      "name": "04_COMPETITIVE_STRATEGY",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/PLATFORM_EMPIRE_PLANNING/04_COMPETITIVE_STRATEGY",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.terrafusion-enhanced-ops-integration",
+      "name": "TerraFusion Enhanced Ops Integration",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/TerraFusion Enhanced Ops Integration",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.ai-swarm-supreme-commander",
+      "name": "ai-swarm-supreme-commander",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-swarm-supreme-commander",
+      "tags": [
+        "ai"
+      ],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.backend",
+      "name": "backend",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.ai-swarm",
+      "name": "ai-swarm",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/backend/ai-swarm",
+      "tags": [
+        "ai"
+      ],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.integration",
+      "name": "integration",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/integration",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.mcp-core",
+      "name": "mcp-core",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/mcp-core",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.tests",
+      "name": "tests",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/tests",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.strategic",
+      "name": "strategic",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure/strategic",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.county-data",
+      "name": "county-data",
+      "owner": "data-team",
+      "source_path": ".git-temp-clone/county-data",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "partners.tx-harris",
+      "name": "tx-harris",
+      "owner": "data-team",
+      "source_path": ".git-temp-clone/county-data/tx-harris",
+      "tags": [],
+      "registry": "partners"
+    },
+    {
+      "id": "pipeline.ci.main",
+      "name": "Main CI Pipeline",
+      "owner": "ops-team",
+      "source_path": ".github/workflows",
+      "tags": [
+        "ci",
+        "github-actions",
+        "automation"
+      ],
+      "description": "Primary continuous integration pipeline",
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipeline.deploy.prod",
+      "name": "Production Deployment Pipeline",
+      "owner": "ops-team",
+      "source_path": "deployment-package",
+      "tags": [
+        "cd",
+        "deployment",
+        "production",
+        "k8s"
+      ],
+      "description": "Production deployment automation",
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.scripts",
+      "name": "scripts",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/championship/scripts",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.",
+      "name": ".ci",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.ci",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.workflows",
+      "name": "workflows",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/workflows",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.terrafusion-clean-migration-script---consolidate-everything",
+      "name": "TerraFusion Clean Migration Script - Consolidate Everything",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion Clean Migration Script - Consolidate Everything",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.ci",
+      "name": "ci",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bench/ci",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.deployment-authorization",
+      "name": "deployment-authorization",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/authorization/deployment-authorization",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.consciousness",
+      "name": "consciousness",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/consciousness",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.deploy",
+      "name": "deploy",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/bcw-uat/deploy",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.financial",
+      "name": "financial",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure/financial",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.financial-management",
+      "name": "financial-management",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure/financial-management",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.financial-projections",
+      "name": "financial-projections",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure/financial-projections",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.consciousness-service",
+      "name": "consciousness-service",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/consciousness-service",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "pipelines.types",
+      "name": "types",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/consciousness-service/types",
+      "tags": [],
+      "lifecycle": "active",
+      "registry": "pipelines"
+    },
+    {
+      "id": "releases.claude-flow",
+      "name": "claude-flow",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/.ai/claude-flow",
+      "tags": [
+        "ai"
+      ],
+      "registry": "releases"
+    },
+    {
+      "id": "releases.",
+      "name": ".git-temp-clone",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone",
+      "tags": [],
+      "registry": "releases"
+    },
+    {
+      "id": "releases.workflows",
+      "name": "workflows",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/workflows",
+      "tags": [],
+      "registry": "releases"
+    },
+    {
+      "id": "releases.full-backup-20250915-062012",
+      "name": "FULL_BACKUP_20250915_062012",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012",
+      "tags": [],
+      "registry": "releases"
+    },
+    {
+      "id": "os.kernel.api",
+      "name": "OS Kernel API",
+      "description": "Core operating system kernel API",
+      "owner": "kernel-team",
+      "lifecycle": "active",
+      "source_path": "backend",
+      "tags": [
+        "os",
+        "kernel",
+        "api",
+        "dotnet",
+        "k8s",
+        "critical"
+      ],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "marketplace.gateway",
+      "name": "Marketplace Gateway",
+      "description": "API gateway for marketplace services",
+      "owner": "marketplace-team",
+      "lifecycle": "active",
+      "source_path": "marketplace/backend",
+      "tags": [
+        "marketplace",
+        "gateway",
+        "api",
+        "k8s"
+      ],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "consciousness.orchestrator",
+      "name": "Consciousness Orchestrator",
+      "description": "AI consciousness orchestration service",
+      "owner": "ai-team",
+      "lifecycle": "experimental",
+      "source_path": "consciousness-service",
+      "tags": [
+        "ai",
+        "consciousness",
+        "orchestration",
+        "k8s"
+      ],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.brand-assets",
+      "name": "Brand_Assets",
+      "description": "Brand_Assets service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.brand",
+      "name": "brand",
+      "description": "brand service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets/brand",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.more-brand",
+      "name": "more brand",
+      "description": "more brand service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets/more brand",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.service-overlays",
+      "name": "service_overlays",
+      "description": "service_overlays service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/service_overlays",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.service-redis-quota",
+      "name": "service_redis_quota",
+      "description": "service_redis_quota service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/service_redis_quota",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.backend",
+      "name": "backend",
+      "description": "backend service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.authorization",
+      "name": "authorization",
+      "description": "authorization service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.deployment-authorization",
+      "name": "deployment-authorization",
+      "description": "deployment-authorization service",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization/deployment-authorization",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.government-approvals",
+      "name": "government-approvals",
+      "description": "government-approvals service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization/government-approvals",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.security-clearances",
+      "name": "security-clearances",
+      "description": "security-clearances service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization/security-clearances",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.ai-monitoring",
+      "name": "AI_MONITORING",
+      "description": "AI_MONITORING service",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/AI_MONITORING",
+      "tags": [
+        "ai"
+      ],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.controllers",
+      "name": "Controllers",
+      "description": "Controllers service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/Controllers",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.services",
+      "name": "Services",
+      "description": "Services service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/Services",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.terrafusion",
+      "name": "TerraFusion.Core",
+      "description": "TerraFusion.Core service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/TerraFusion.Core",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    },
+    {
+      "id": "services.terrafusion.api",
+      "name": "TerraFusion.API.Tests",
+      "description": "TerraFusion.API.Tests service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/TerraFusion.API.Tests",
+      "tags": [],
+      "depends_on": [],
+      "registry": "services"
+    }
+  ]
+}

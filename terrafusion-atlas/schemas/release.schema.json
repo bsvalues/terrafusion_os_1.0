@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Release",
+  "description": "Build artifact, package, or versioned release",
+  "type": "object",
+  "required": ["id", "name", "version", "source_path"],
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "version": {"type": "string"},
+    "source_path": {"type": "string"},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "artifact_type": {"type": "string", "enum": ["binary", "container", "package", "archive"]},
+    "released_at": {"type": "string", "format": "date-time"},
+    "release_notes": {"type": "string"}
+  }
+}

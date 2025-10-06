@@ -1,0 +1,87 @@
+version: '3.8'
+name: terrafusion-dev
+
+services:
+  db:
+    image: postgis/postgis:15-3.3
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: terrafusion
+    ports: ["5432:5432"]
+    volumes:
+      - ./.data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d terrafusion"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    volumes: [ "./.data/redis:/data" ]
+
+  nats:
+    image: nats:2-alpine
+    ports: ["4222:4222", "8222:8222"]
+    command: ["-js"]
+    volumes: [ "./.data/nats:/nats" ]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports: ["8080:8080"]
+    volumes:
+      - ./ops/keycloak/realm-export:/opt/keycloak/data/import
+
+  api:
+    image: terrafusion/api:dev
+    build:
+      context: ./backend/api
+    depends_on: [db, redis, nats, keycloak]
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:5046
+      ConnectionStrings__Primary: Host=db;Username=postgres;Password=${POSTGRES_PASSWORD:-postgres};Database=terrafusion
+      Auth__Authority: http://keycloak:8080/realms/terrafusion
+      Messaging__NatsUrl: nats://nats:4222
+    ports: ["5046:5046"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5046/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+
+  valuation-worker:
+    image: terrafusion/valuation-worker:dev
+    build:
+      context: ./backend/services/valuations
+    depends_on: [db, nats]
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/terrafusion
+      NATS_URL: nats://nats:4222
+
+  gis-worker:
+    image: terrafusion/gis-worker:dev
+    build:
+      context: ./backend/services/gis_worker
+    depends_on: [db, nats]
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/terrafusion
+      NATS_URL: nats://nats:4222
+
+  web-shell:
+    image: terrafusion/web-shell:dev
+    build:
+      context: ./apps/web-shell
+    ports:
+      - "3000:3000"
+    environment:
+      TF_API_URL: http://api:5046
+    depends_on: [api]
+
+networks:
+  default:
+    driver: bridge

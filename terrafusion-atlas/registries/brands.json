@@ -1,0 +1,146 @@
+{
+  "registry": "brands",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "brand.terrafusion",
+      "name": "TerraFusion Brand",
+      "owner": "marketing-team",
+      "source_path": "Brand_Assets",
+      "tags": [
+        "terrafusion",
+        "brand",
+        "design"
+      ],
+      "description": "TerraFusion OS brand identity and assets"
+    },
+    {
+      "id": "brand.harris",
+      "name": "Harris Brand Integration",
+      "owner": "marketing-team",
+      "source_path": "harris_brand",
+      "tags": [
+        "harris",
+        "brand",
+        "partner"
+      ],
+      "description": "Harris County brand assets and guidelines"
+    },
+    {
+      "id": "brands.",
+      "name": ".playwright-mcp",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.playwright-mcp",
+      "tags": []
+    },
+    {
+      "id": "brands.brand-assets",
+      "name": "Brand_Assets",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend/Brand_Assets",
+      "tags": []
+    },
+    {
+      "id": "brands.complete-assets",
+      "name": "Complete_Assets",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/Complete_Assets",
+      "tags": []
+    },
+    {
+      "id": "brands.brand",
+      "name": "brand",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/brand",
+      "tags": []
+    },
+    {
+      "id": "brands.more-brand",
+      "name": "more brand",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets/more brand",
+      "tags": []
+    },
+    {
+      "id": "brands.full-backup-20250915-062012",
+      "name": "FULL_BACKUP_20250915_062012",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012",
+      "tags": []
+    },
+    {
+      "id": "brands.audit-20250913-185959",
+      "name": "AUDIT_20250913_185959",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-workspace-companion/AUDIT_20250913_185959",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "brands.apps",
+      "name": "apps",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/apps",
+      "tags": []
+    },
+    {
+      "id": "brands.css",
+      "name": "css",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend/css",
+      "tags": []
+    },
+    {
+      "id": "brands.backend",
+      "name": "backend",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend",
+      "tags": []
+    },
+    {
+      "id": "brands.publish",
+      "name": "publish",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/publish",
+      "tags": []
+    },
+    {
+      "id": "brands.config",
+      "name": "config",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/config",
+      "tags": []
+    },
+    {
+      "id": "brands.devops-handoff-package",
+      "name": "DevOps-Handoff-Package",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment/DevOps-Handoff-Package",
+      "tags": []
+    },
+    {
+      "id": "brands.national",
+      "name": "national",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment/national",
+      "tags": []
+    },
+    {
+      "id": "brands.docs",
+      "name": "docs",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/docs",
+      "tags": []
+    },
+    {
+      "id": "brands.frontend",
+      "name": "frontend",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend",
+      "tags": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:33.334979",
+  "count": 18
+}

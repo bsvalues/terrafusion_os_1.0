@@ -1,0 +1,71 @@
+name: Design Token CI
+
+on:
+  pull_request:
+    paths:
+      - 'design/tokens.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'design/tokens.json'
+
+jobs:
+  validate-and-sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      # === Node CLI Validation ===
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Node CLI
+        working-directory: tools/tf-designctl-node
+        run: npm install
+      
+      - name: Validate Design Tokens
+        run: |
+          cd tools/tf-designctl-node
+          node bin/tf-designctl.js validate -t ../../design/tokens.json
+      
+      - name: Generate Design Sync Artifacts
+        run: |
+          cd tools/tf-designctl-node
+          node bin/tf-designctl.js sync ../../design-sync -t ../../design/tokens.json
+      
+      # === Rust CLI Build ===
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      
+      - name: Build Rust CLI
+        working-directory: tools/tf-designctl-rust
+        run: cargo build --release
+      
+      - name: Test Rust CLI Validation
+        run: |
+          ./tools/tf-designctl-rust/target/release/tf-designctl validate -t design/tokens.json
+      
+      # === Trust Fabric Verification ===
+      # TODO: Implement ledger signature verification
+      # - name: Verify Design Ledger Signature
+      #   run: ./scripts/verify-ledger-signature.sh
+      
+      # === Artifact Publishing ===
+      - name: Upload Design Sync Artifacts
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-sync
+          path: design-sync/
+      
+      - name: Upload Rust CLI Binary
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tf-designctl-rust
+          path: tools/tf-designctl-rust/target/release/tf-designctl

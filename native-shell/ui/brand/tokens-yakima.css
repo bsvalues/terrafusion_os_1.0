@@ -1,0 +1,16 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root {
+  --color-accent-primary: #2FB3FF;
+  --color-accent-hero: #0D1A26;
+  --color-accent-light: #5FC5FF;
+  --color-accent-dark: #1A8ACC;
+  --gradient-county-primary: linear-gradient(135deg, #2FB3FF, #0891b2);
+  --gradient-county-hero: linear-gradient(135deg, #0D1A26, #2FB3FF);
+  --gradient-county-glass: linear-gradient(135deg, rgba(47, 179, 255, 0.1), rgba(8, 145, 178, 0.1));
+  --shadow-county-glow: 0 0 30px rgba(47, 179, 255, 0.3);
+  --shadow-county-button: 0 4px 15px rgba(47, 179, 255, 0.3);
+  --border-county-glass: rgba(47, 179, 255, 0.2);
+}

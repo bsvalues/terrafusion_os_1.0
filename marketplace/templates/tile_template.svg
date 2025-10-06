@@ -1,0 +1,45 @@
+<svg width="320" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- TerraFusion Marketplace Tile Template -->
+  <!-- Auto-branded plugin preview card -->
+  
+  <defs>
+    <linearGradient id="terraGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color: var(--terra-primary, #4A6FDC); stop-opacity: 0.2"/>
+      <stop offset="100%" style="stop-color: var(--terra-primary, #4A6FDC); stop-opacity: 0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="320" height="200" fill="var(--terra-bg, #000000)"/>
+  
+  <!-- Gradient overlay -->
+  <rect width="320" height="200" fill="url(#terraGradient)"/>
+  
+  <!-- Border -->
+  <rect x="2" y="2" width="316" height="196" rx="6" 
+        fill="none" stroke="var(--terra-primary, #4A6FDC)" stroke-width="2"/>
+  
+  <!-- Plugin content area (center circle) -->
+  <circle cx="160" cy="100" r="50" 
+          fill="rgba(74, 111, 220, 0.1)" 
+          stroke="var(--terra-primary, #4A6FDC)" stroke-width="2"/>
+  
+  <!-- Placeholder icon -->
+  <text x="160" y="110" text-anchor="middle" 
+        style="fill: var(--terra-white, #FFF); font-family: 'Inter'; font-size: 40px; font-weight: 300;">
+    🔌
+  </text>
+  
+  <!-- Plugin name placeholder -->
+  <text x="160" y="170" text-anchor="middle" 
+        style="fill: var(--terra-white, #FFF); font-family: 'Inter'; font-size: 16px; font-weight: 600;">
+    Plugin Name
+  </text>
+  
+  <!-- TF brand badge -->
+  <circle cx="290" cy="30" r="15" fill="var(--terra-primary, #4A6FDC)"/>
+  <text x="290" y="35" text-anchor="middle" 
+        style="fill: var(--terra-white, #FFF); font-family: 'Inter'; font-size: 10px; font-weight: 700;">
+    TF
+  </text>
+</svg>

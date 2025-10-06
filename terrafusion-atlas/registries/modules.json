@@ -1,0 +1,283 @@
+{
+  "registry": "modules",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "module.gis.parcel-tools",
+      "name": "GIS Parcel Tools",
+      "description": "GIS tools for parcel management",
+      "owner": "gis-team",
+      "lifecycle": "active",
+      "source_path": "modules/parcel-tools",
+      "module_type": "core",
+      "tags": [
+        "gis",
+        "parcel",
+        "tools",
+        "plugin"
+      ],
+      "hot_swap_compatible": true,
+      "marketplace_listing": true
+    },
+    {
+      "id": "module.shock-and-awe",
+      "name": "Shock and Awe Module",
+      "description": "Advanced demonstration and showcase module",
+      "owner": "plugins-team",
+      "lifecycle": "active",
+      "source_path": "shock-and-awe-2.0",
+      "module_type": "premium",
+      "tags": [
+        "demo",
+        "showcase",
+        "plugin"
+      ],
+      "hot_swap_compatible": true,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.",
+      "name": ".git-temp-clone",
+      "description": ".git-temp-clone module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.brand-assets",
+      "name": "Brand_Assets",
+      "description": "Brand_Assets module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.brand",
+      "name": "brand",
+      "description": "brand module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets/brand",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.more-brand",
+      "name": "more brand",
+      "description": "more brand module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets/more brand",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.modules-backup-20250912-093232",
+      "name": "modules_backup_20250912_093232",
+      "description": "modules_backup_20250912_093232 module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.pluginmarketplacelauncher",
+      "name": "PluginMarketplaceLauncher",
+      "description": "PluginMarketplaceLauncher module",
+      "owner": "marketplace-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/PluginMarketplaceLauncher",
+      "module_type": "core",
+      "tags": [
+        "marketplace"
+      ],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.grfe-rust-workspace",
+      "name": "grfe_rust_workspace",
+      "description": "grfe_rust_workspace module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.apps",
+      "name": "apps",
+      "description": "apps module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.css",
+      "name": "css",
+      "description": "css module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/css",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.desktop-electron",
+      "name": "desktop-electron",
+      "description": "desktop-electron module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/desktop-electron",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.gui",
+      "name": "gui",
+      "description": "gui module",
+      "owner": "frontend-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/gui",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.tests",
+      "name": "tests",
+      "description": "tests module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/tests",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.ui",
+      "name": "ui",
+      "description": "ui module",
+      "owner": "frontend-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/apps/ui",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.government-approvals",
+      "name": "government-approvals",
+      "description": "government-approvals module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization/government-approvals",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.backend",
+      "name": "backend",
+      "description": "backend module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.publish",
+      "name": "publish",
+      "description": "publish module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/publish",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.core-apps",
+      "name": "core-apps",
+      "description": "core-apps module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/core-apps",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.web-app",
+      "name": "web-app",
+      "description": "web-app module",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/demo/web-app",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.deployed-modules",
+      "name": "deployed_modules",
+      "description": "deployed_modules module",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/deployed_modules",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    },
+    {
+      "id": "module.national",
+      "name": "national",
+      "description": "national module",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/deployment/national",
+      "module_type": "core",
+      "tags": [],
+      "hot_swap_compatible": false,
+      "marketplace_listing": false
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:24.171346",
+  "count": 22
+}

@@ -1,0 +1,95 @@
+# TerraFusion CODEOWNERS
+# Atlas-driven code ownership
+# Format: path/pattern @owner
+
+# Root configuration
+/ATLAS.json                    @platform-team
+/terrafusion-atlas/            @platform-team
+
+# Services (Backend APIs)
+/backend/                      @backend-team
+/backend/kernel-api/           @kernel-team
+/backend/gateway/              @platform-team
+/backend/auth/                 @security-team
+/core-os/                      @kernel-team
+
+# Engines (Rust/WASM)
+/engines/                      @kernel-team
+/rust-*/                       @kernel-team
+/costforge/                    @kernel-team
+/*engine*/                     @kernel-team
+
+# Frontends
+/frontend/                     @frontend-team
+/frontend-v2/                  @frontend-team
+/src-tauri/                    @frontend-team
+/marketplace/frontend/         @marketplace-team
+
+# Agents (AI)
+/.ai/                          @ai-team
+/agents/                       @ai-team
+/*agent*/                      @ai-team
+/*swarm*/                      @ai-team
+/*consciousness*/              @ai-team
+
+# Modules (Hot-swap)
+/modules/                      @plugins-team
+/plugins/                      @plugins-team
+/*-plugin*/                    @plugins-team
+/parcel-tools/                 @gis-team
+
+# Data
+/database/                     @data-team
+/data/                         @data-team
+/*-data/                       @data-team
+/county-data/                  @data-team
+
+# Infrastructure
+/helm/                         @ops-team
+/helmfile/                     @ops-team
+/terraform/                    @ops-team
+/terraform-*/                  @ops-team
+/docker/                       @ops-team
+/k8s/                          @ops-team
+/kubernetes/                   @ops-team
+/.devcontainer/                @ops-team
+/deployment-*/                 @ops-team
+
+# CI/CD
+/.github/                      @ops-team
+/.github/workflows/            @ops-team
+/scripts/                      @ops-team
+/*deploy*/                     @ops-team
+
+# Brand Assets
+/Brand_Assets/                 @marketing-team
+/branding/                     @marketing-team
+/design/                       @design-team
+
+# Marketplace
+/marketplace/                  @marketplace-team
+
+# Partners
+/harris_*/                     @partnerships-team
+/woolpert*/                    @partnerships-team
+/*partner*/                    @partnerships-team
+/federal*/                     @partnerships-team
+
+# Compliance & Security
+/compliance/                   @security-team
+/security/                     @security-team
+/trust-fabric/                 @security-team
+/audit_*/                      @compliance-team
+/*AUDIT*                       @compliance-team
+/SECURITY.md                   @security-team
+
+# Documentation
+/*.md                          @docs-team
+/docs/                         @docs-team
+/documentation/                @docs-team
+
+# Configuration
+/*.json                        @platform-team
+/*.yaml                        @platform-team
+/*.yml                         @platform-team
+/*.toml                        @platform-team

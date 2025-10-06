@@ -1,0 +1,66 @@
+/* Transit Page Styles */
+
+.transit-page {
+  width: 100%;
+}
+
+.transit-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--terra-space-4);
+  margin-bottom: var(--terra-space-6);
+}
+
+.routes-card,
+.buses-card,
+.stops-card {
+  margin-bottom: var(--terra-space-6);
+}
+
+.routes-card h2,
+.buses-card h2,
+.stops-card h2 {
+  font-size: var(--terra-font-size-xl);
+  font-weight: var(--terra-font-weight-semibold);
+  margin: 0 0 var(--terra-space-4) 0;
+  color: var(--terra-neutral-900);
+}
+
+.performance-bar {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  background: var(--terra-neutral-100);
+  border-radius: var(--terra-radius-full);
+  overflow: hidden;
+}
+
+.performance-fill {
+  position: absolute;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.performance-bar span {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: var(--terra-font-size-xs);
+  font-weight: var(--terra-font-weight-semibold);
+  color: var(--terra-neutral-900);
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--terra-space-4);
+  }
+  
+  .transit-stats {
+    grid-template-columns: 1fr;
+  }
+}
