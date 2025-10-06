@@ -1,0 +1,50 @@
+/* TerraFusion UI Fix - Disable Infinite Animations */
+/* This file overrides problematic infinite animations that corrupt the UI */
+
+/* Disable all infinite animations */
+.intelligence-pulse {
+    animation: none !important;
+}
+
+.transcendence-flow {
+    animation: none !important;
+}
+
+.sparkle {
+    animation: none !important;
+}
+
+.clarity-progress {
+    animation: none !important;
+}
+
+.float {
+    animation: none !important;
+}
+
+/* Global override for any infinite animations */
+*[class*="pulse"],
+*[class*="glow"],
+*[class*="sparkle"],
+*[class*="flow"] {
+    animation: none !important;
+}
+
+/* Only allow animations on hover/focus/active states */
+*:hover[class*="pulse"],
+*:focus[class*="pulse"],
+*:active[class*="pulse"] {
+    animation: none !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Ensure interactive elements work properly */
+button, a, input, select, textarea {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Stop any background animations that interfere with UI */
+body, #root, .app {
+    animation: none !important;
+}

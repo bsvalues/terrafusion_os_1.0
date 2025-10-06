@@ -1,0 +1,218 @@
+{
+  "registry": "frontends",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "frontend.desktop.shell",
+      "name": "Desktop Shell",
+      "owner": "frontend-team",
+      "source_path": "src-tauri",
+      "tags": [
+        "desktop",
+        "tauri",
+        "shell",
+        "ui",
+        "rust"
+      ],
+      "description": "Main desktop application shell (Tauri)",
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontend.web.main",
+      "name": "Web Frontend",
+      "owner": "frontend-team",
+      "source_path": "frontend",
+      "tags": [
+        "web",
+        "react",
+        "ui",
+        "typescript"
+      ],
+      "description": "Main web application frontend",
+      "lifecycle": "active"
+    },
+    {
+      "id": "marketplace.frontend",
+      "name": "Marketplace Frontend",
+      "owner": "marketplace-team",
+      "source_path": "marketplace/frontend",
+      "tags": [
+        "marketplace",
+        "web",
+        "react",
+        "ui"
+      ],
+      "description": "Marketplace web interface",
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.claude-flow",
+      "name": "claude-flow",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/.ai/claude-flow",
+      "tags": [
+        "ai"
+      ],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.complete-test-suite",
+      "name": "COMPLETE_TEST_SUITE",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/COMPLETE_TEST_SUITE",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.modules-backup-20250912-093232",
+      "name": "modules_backup_20250912_093232",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.02-marketplace-strategy",
+      "name": "02_MARKETPLACE_STRATEGY",
+      "owner": "marketplace-team",
+      "source_path": ".git-temp-clone/PLATFORM_EMPIRE_PLANNING/02_MARKETPLACE_STRATEGY",
+      "tags": [
+        "marketplace"
+      ],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.pluginmarketplacelauncher",
+      "name": "PluginMarketplaceLauncher",
+      "owner": "marketplace-team",
+      "source_path": ".git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/PluginMarketplaceLauncher",
+      "tags": [
+        "marketplace"
+      ],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.ai-workspace-companion",
+      "name": "ai-workspace-companion",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-workspace-companion",
+      "tags": [
+        "ai"
+      ],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.audit-20250913-185959",
+      "name": "AUDIT_20250913_185959",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-workspace-companion/AUDIT_20250913_185959",
+      "tags": [
+        "ai"
+      ],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.desktop-electron",
+      "name": "desktop-electron",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/apps/desktop-electron",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.gui",
+      "name": "gui",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/apps/gui",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.ui",
+      "name": "ui",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/apps/ui",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.services",
+      "name": "Services",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/Services",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.terrafusion",
+      "name": "TerraFusion.Marketplace",
+      "owner": "marketplace-team",
+      "source_path": ".git-temp-clone/backend/TerraFusion.Marketplace",
+      "tags": [
+        "marketplace"
+      ],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.test-hub",
+      "name": "test-hub",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bcw-uat/test-hub",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.tests",
+      "name": "tests",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bcw-uat/tests",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.suites",
+      "name": "suites",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/bench/suites",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.customer-acquisition",
+      "name": "customer-acquisition",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/business-structure/customer-acquisition",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.implementation-guides",
+      "name": "implementation-guides",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/business-structure/implementation-guides",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.ai-services",
+      "name": "ai-services",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/compose/ai-services",
+      "tags": [
+        "ai",
+        "os"
+      ],
+      "lifecycle": "active"
+    },
+    {
+      "id": "frontends.consciousness-service",
+      "name": "consciousness-service",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/consciousness-service",
+      "tags": [],
+      "lifecycle": "active"
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:21.000081",
+  "count": 22
+}

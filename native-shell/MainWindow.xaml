@@ -1,0 +1,84 @@
+<Window x:Class="Terrafusion.Shell.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="Terrafusion OS - Government. Transcended."
+        Height="900" Width="1600"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="#0b1020">
+    
+    <Grid>
+        <!-- Loading Overlay -->
+        <Grid x:Name="LoadingPanel" ZIndex="1000" Background="#0b1020">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="TERRAFUSION OS" 
+                           FontSize="48" 
+                           FontWeight="Bold"
+                           Foreground="#0099ff"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Government. Transcended." 
+                           FontSize="24" 
+                           FontWeight="SemiBold"
+                           Foreground="#00ffaa"
+                           HorizontalAlignment="Center"
+                           Margin="0,10,0,10"/>
+                <TextBlock Text="Turn Complexity into Clarity." 
+                           FontSize="16" 
+                           FontStyle="Italic"
+                           Foreground="#00ffee"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,30"/>
+                <ProgressBar x:Name="LoadingProgress" 
+                             Width="400" 
+                             Height="4"
+                             IsIndeterminate="True"
+                             Foreground="#0099ff"
+                             Background="#1a1f3a"/>
+                <TextBlock x:Name="LoadingStatus" 
+                           Text="Initializing secure environment..." 
+                           FontSize="14" 
+                           Foreground="#888"
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,0"/>
+            </StackPanel>
+        </Grid>
+        
+        <!-- WebView2 Container -->
+        <wv2:WebView2 x:Name="webView" 
+                      Visibility="Collapsed"/>
+        
+        <!-- Error Panel -->
+        <Grid x:Name="ErrorPanel" 
+              Visibility="Collapsed" 
+              Background="#0b1020">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="⚠" 
+                           FontSize="72" 
+                           Foreground="#ff3333"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Connection Error" 
+                           FontSize="24" 
+                           Foreground="#ff3333"
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,10"/>
+                <TextBlock x:Name="ErrorMessage" 
+                           Text="" 
+                           FontSize="14" 
+                           Foreground="#888"
+                           HorizontalAlignment="Center"
+                           TextWrapping="Wrap"
+                           MaxWidth="600"/>
+                <Button x:Name="RetryButton" 
+                        Content="Retry" 
+                        Width="120" 
+                        Height="40"
+                        Margin="0,30,0,0"
+                        Background="#0099ff"
+                        Foreground="White"
+                        FontSize="16"
+                        Click="RetryButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

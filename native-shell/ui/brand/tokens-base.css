@@ -1,0 +1,56 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root {
+  --color-surface-primary: #0b0f14;
+  --color-surface-secondary: #1a2332;
+  --color-surface-glass: rgba(255, 255, 255, 0.05);
+  --color-surface-glass-heavy: rgba(255, 255, 255, 0.08);
+  --color-text-primary: #e6f1ff;
+  --color-text-secondary: #a8b5c7;
+  --color-text-muted: #6b7788;
+  --color-brand-cosmic-blue: #0891b2;
+  --color-brand-quantum-teal: #00d2ff;
+  --color-brand-neural-purple: #667eea;
+  --color-brand-stellar-white: #ffffff;
+  --color-brand-deep-space: #0a0f1c;
+  --color-accent-secondary: #22d3ee;
+  --color-status-success: #00ff88;
+  --color-status-error: #ff3333;
+  --color-status-warning: #ffaa00;
+  --color-status-info: #0099ff;
+  --gradient-clarity: linear-gradient(135deg, #00d2ff, #0891b2);
+  --gradient-transcend: linear-gradient(135deg, #0891b2, #667eea);
+  --gradient-dark: linear-gradient(135deg, #0a0f1c, #1a2332);
+  --gradient-success: linear-gradient(135deg, #00d2ff, #22d3ee);
+  --typography-family-primary: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --typography-family-mono: 'Cascadia Code', 'Fira Code', 'SF Mono', Consolas, monospace;
+  --typography-size-xs: 0.75rem;
+  --typography-size-sm: 0.875rem;
+  --typography-size-base: 1rem;
+  --typography-size-lg: 1.125rem;
+  --typography-size-xl: 1.25rem;
+  --typography-size-2xl: 1.5rem;
+  --typography-size-3xl: 1.875rem;
+  --typography-size-4xl: 2.25rem;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-full: 50px;
+  --shadow-glow: 0 0 30px rgba(0, 210, 255, 0.3);
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: cubic-bezier(0.43, 0.13, 0.23, 0.96);
+  --blur-base: blur(15px);
+  --blur-heavy: blur(30px);
+}

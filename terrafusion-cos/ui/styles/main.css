@@ -50,6 +50,18 @@ body {
     -webkit-app-region: no-drag;
 }
 
+/* WebGL Transcendence Background */
+#transcendence-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
 /* Custom Title Bar */
 .title-bar {
     height: 40px;
@@ -136,6 +148,9 @@ body {
     display: flex;
     height: calc(100vh - 40px);
     background: var(--tf-dark);
+    margin-top: 0; /* Ensure no extra margin */
+    position: relative;
+    z-index: 1;
 }
 
 /* Sidebar Navigation */
@@ -302,7 +317,9 @@ body {
 
 .status-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-glow);
+    box-shadow: 0 0 20px rgba(0, 255, 238, 0.4),
+                0 0 40px rgba(0, 153, 255, 0.3),
+                0 0 60px rgba(0, 255, 170, 0.2);
     border-color: var(--tf-transcend);
 }
 

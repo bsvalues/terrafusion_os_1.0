@@ -3,6 +3,29 @@
 ## 📋 Summary
 Brief description of changes made in this PR.
 
+## 🗺️ Atlas Registration
+
+> ⚠️ **REQUIRED:** All new components must be registered in TerraFusion Atlas.
+
+**Atlas Status:**
+- [ ] New component registered in Atlas
+- [ ] Existing Atlas entry updated
+- [ ] No Atlas changes needed (bug fix/refactor only)
+
+**Atlas Details:**
+- **Registry:** <!-- services, engines, frontends, agents, modules, datasets, pipelines, etc. -->
+- **Atlas ID:** `______________`
+- **Owner Team:** `______________`
+- **Tags:** `______________`
+
+**Verification:**
+```bash
+# Verify your registration
+cd terrafusion-atlas
+python3 scripts/atlas_validate.py
+python3 scripts/atlas_summary.py
+```
+
 ## 🎯 Type of Change
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
 - [ ] ✨ New feature (non-breaking change which adds functionality)
@@ -11,6 +34,7 @@ Brief description of changes made in this PR.
 - [ ] 🔧 Configuration/Infrastructure change
 - [ ] ⚡ Performance improvement
 - [ ] 🔒 Security enhancement
+- [ ] 🗺️ Atlas maintenance
 
 ## 🧪 Testing
 - [ ] Unit tests pass

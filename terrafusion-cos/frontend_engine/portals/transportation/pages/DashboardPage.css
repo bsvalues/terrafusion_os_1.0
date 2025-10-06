@@ -1,0 +1,131 @@
+/* Transportation Dashboard Styles */
+
+.transportation-dashboard {
+  width: 100%;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--terra-space-6);
+}
+
+.dashboard-title {
+  font-size: var(--terra-font-size-3xl);
+  font-weight: var(--terra-font-weight-bold);
+  color: var(--terra-neutral-900);
+  margin: 0;
+}
+
+.dashboard-subtitle {
+  font-size: var(--terra-font-size-base);
+  color: var(--terra-neutral-600);
+  margin: var(--terra-space-2) 0 0 0;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: var(--terra-space-3);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--terra-space-4);
+  margin-bottom: var(--terra-space-6);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--terra-space-6);
+  margin-bottom: var(--terra-space-6);
+}
+
+.traffic-card h2,
+.transit-card h2,
+.parking-card h2 {
+  font-size: var(--terra-font-size-xl);
+  font-weight: var(--terra-font-weight-semibold);
+  margin: 0 0 var(--terra-space-4) 0;
+  color: var(--terra-neutral-900);
+}
+
+.parking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--terra-space-4);
+}
+
+.parking-lot {
+  display: flex;
+  gap: var(--terra-space-3);
+  padding: var(--terra-space-3);
+  border-radius: var(--terra-radius-md);
+  background: var(--terra-neutral-50);
+  transition: all 0.2s ease;
+}
+
+.parking-lot:hover {
+  background: var(--terra-neutral-100);
+  transform: translateY(-2px);
+}
+
+.parking-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.parking-info {
+  flex: 1;
+}
+
+.parking-info h3 {
+  font-size: var(--terra-font-size-sm);
+  font-weight: var(--terra-font-weight-semibold);
+  margin: 0 0 var(--terra-space-2) 0;
+  color: var(--terra-neutral-900);
+}
+
+.parking-bar {
+  height: 6px;
+  background: var(--terra-neutral-200);
+  border-radius: var(--terra-radius-full);
+  overflow: hidden;
+  margin-bottom: var(--terra-space-1);
+}
+
+.parking-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--terra-success-500), var(--terra-success-600));
+  border-radius: var(--terra-radius-full);
+}
+
+.parking-info p {
+  font-size: var(--terra-font-size-xs);
+  color: var(--terra-neutral-600);
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--terra-space-4);
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .parking-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,239 @@
+/* TerraFusion cOS - Component Styles */
+/* "Government. Transcended." */
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--tf-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: opacity 0.5s ease;
+}
+
+.loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(0, 255, 238, 0.3);
+    border-top: 3px solid var(--tf-transcend);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: var(--tf-transcend);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Notification System */
+.notification {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    min-width: 300px;
+    padding: 16px 20px;
+    background: var(--tf-dark-lighter);
+    border-left: 4px solid var(--tf-transcend);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.notification.success {
+    border-left-color: var(--tf-accent);
+}
+
+.notification.warning {
+    border-left-color: var(--warning);
+}
+
+.notification.error {
+    border-left-color: var(--error);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Valuation Results Panel */
+.results-content {
+    min-height: 200px;
+}
+
+.no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+.no-results-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+/* Form Styling */
+.valuation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--tf-glass);
+    border-radius: 8px;
+    color: white;
+    font-family: var(--font-primary);
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--tf-transcend);
+    box-shadow: 0 0 0 2px rgba(0, 255, 238, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Buttons */
+.valuation-btn,
+.analysis-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--tf-primary), var(--tf-transcend));
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.valuation-btn:hover,
+.analysis-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0, 255, 238, 0.4);
+}
+
+.btn-icon {
+    font-size: 16px;
+}
+
+/* Activity Feed */
+.activity-feed {
+    background: var(--tf-dark-lighter);
+    border: 1px solid var(--tf-glass);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.feed-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+.feed-btn {
+    padding: 8px 16px;
+    background: var(--tf-glass);
+    border: 1px solid var(--tf-transcend);
+    border-radius: 6px;
+    color: var(--tf-transcend);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.feed-btn:hover {
+    background: rgba(0, 255, 238, 0.2);
+}
+
+.feed-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--tf-transcend);
+    border-radius: 6px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.activity-time {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 4px;
+}

@@ -1,0 +1,64 @@
+/**
+ * Loading State Styles
+ */
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-state-fullpage {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-message {
+  margin-top: 24px;
+  font-size: 16px;
+  color: var(--neutral-600);
+  font-weight: 500;
+}
+
+/* Loading skeleton for tables */
+.loading-skeleton {
+  animation: skeleton-loading 1.5s infinite ease-in-out;
+  background: linear-gradient(
+    90deg,
+    var(--neutral-100) 0%,
+    var(--neutral-200) 50%,
+    var(--neutral-100) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-text {
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 12px;
+}
+
+.skeleton-card {
+  height: 120px;
+  margin-bottom: 16px;
+}

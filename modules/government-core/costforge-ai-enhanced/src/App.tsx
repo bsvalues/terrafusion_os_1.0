@@ -40,12 +40,9 @@ function App() {
   if (!appInitialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center"><>
-
+        <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <h2
-</>
-className="text-2xl font-bold text-gray-900 mb-2">Initializing CostForge AI</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Initializing CostForge AI</h2>
           <p className="text-gray-600">Loading AI models and cost analysis engines...</p>
         </div>
       </div>
@@ -73,14 +70,11 @@ className="text-2xl font-bold text-gray-900 mb-2">Initializing CostForge AI</h2>
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-4"><>
-
+                <div className="flex items-center space-x-4">
                   <div className="bg-green-900/50 text-green-400 border border-green-500/30 px-3 py-1 rounded-full text-sm font-medium">
                     AI Enhanced
                   </div>
-                  <div
-</>
-className="bg-purple-900/50 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full text-sm font-medium">
+                  <div className="bg-purple-900/50 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full text-sm font-medium">
                     Quantum Ready
                   </div>
                 </div>
@@ -102,12 +96,9 @@ className="bg-purple-900/50 text-purple-400 border border-purple-500/30 px-3 py-
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                   >
-                    <div className="text-center"><>
-
+                    <div className="text-center">
                       <div className="font-semibold">{item.label}</div>
-                      <div
-</>
-className="text-xs text-gray-400 mt-1">{item.description}</div>
+                      <div className="text-xs text-gray-400 mt-1">{item.description}</div>
                     </div>
                   </button>
                 ))}
@@ -131,19 +122,13 @@ className="text-xs text-gray-400 mt-1">{item.description}</div>
           <footer className="bg-gray-900 text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="flex justify-between items-center">
-                <div><>
-
+                <div>
                   <h3 className="text-lg font-semibold">CostForge AI</h3>
-                  <p
-</>
-className="text-gray-400 text-sm">Powered by Terrafusion Technology</p>
+                  <p className="text-gray-400 text-sm">Powered by Terrafusion Technology</p>
                 </div>
-                <div className="flex space-x-6 text-sm text-gray-400"><>
-
+                <div className="flex space-x-6 text-sm text-gray-400">
                   <span>AI Models: Active</span>
-                  <span
-</>
-</>>ML Engine: v3.2</span>
+                  <span>ML Engine: v3.2</span>
                   <span>Quantum: Enabled</span>
                 </div>
               </div>

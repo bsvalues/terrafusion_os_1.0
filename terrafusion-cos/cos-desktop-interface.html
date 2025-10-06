@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion cOS - Government Operating System</title>
+    <style>
+        /* Official TerraFusion Production Design System */
+        /* Copied from modules/government-core/terra-fusion-sync/src/terrafusion-brand.css */
+        
+        :root {
+            --tf-primary-cyan: #00e5ff;
+            --tf-secondary-blue: #00b8d4;
+            --tf-cosmic-blue: #0891b2;
+            --tf-quantum-teal: #00d2ff;
+            --tf-deep-teal: #006064;
+            --tf-dark-bg: #1a2332;
+            --tf-darker-bg: #0f1a2a;
+            --tf-space-black: #0a0f1c;
+            
+            --background: var(--tf-space-black);
+            --foreground: #ffffff;
+            --border: rgba(0, 229, 255, 0.2);
+            
+            --tf-gradient-primary: linear-gradient(135deg, #00e5ff, #00b8d4);
+            --tf-gradient-cosmic: linear-gradient(135deg, #0a0f1c, #1a2332);
+            --tf-shadow-cyan: 0 0 40px rgba(0, 229, 255, 0.4);
+            --tf-shadow-glow: 0 0 60px rgba(0, 229, 255, 0.6);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--tf-gradient-cosmic);
+            color: var(--foreground);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+        }
+        
+        .tf-app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .tf-header {
+            background: rgba(10, 15, 28, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+        
+        .tf-header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tf-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .tf-brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--tf-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+        
+        .tf-tagline {
+            font-size: 0.875rem;
+            color: var(--tf-primary-cyan);
+            font-weight: 500;
+        }
+        
+        .tf-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid var(--tf-primary-cyan);
+            border-radius: 50px;
+        }
+        
+        .tf-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .tf-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .tf-sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+        }
+        
+        .tf-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
+        
+        .tf-nav-item:hover {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: rgba(0, 229, 255, 0.3);
+            color: white;
+        }
+        
+        .tf-nav-item.active {
+            background: var(--tf-gradient-primary);
+            color: var(--tf-space-black);
+            font-weight: 600;
+            box-shadow: var(--tf-shadow-cyan);
+        }
+        
+        .tf-nav-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .tf-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .tf-content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .tf-content-title {
+            font-size: 2.25rem;
+            font-weight: 900;
+            background: var(--tf-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tf-content-subtitle {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .tf-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tf-card {
+            background: linear-gradient(145deg, var(--tf-dark-bg), var(--tf-darker-bg));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tf-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--tf-gradient-primary);
+        }
+        
+        .tf-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--tf-primary-cyan);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.3);
+        }
+        
+        .tf-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .tf-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--tf-primary-cyan);
+            font-family: 'Cascadia Code', 'SF Mono', monospace;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tf-card-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .tf-card-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #00ff88;
+            text-transform: uppercase;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="tf-app">
+        <header class="tf-header">
+            <div class="tf-header-content">
+                <div class="tf-brand">
+                    <!-- Official TerraFusion SVG Logo (from production modules) -->
+                    <svg width="240" height="60" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="tfGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#0891b2;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#667eea;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <text x="20" y="35" font-family="'Segoe UI', sans-serif" font-size="24" font-weight="700" fill="url(#tfGradient)" filter="url(#glow)">TerraFusion cOS</text>
+                        <text x="20" y="52" font-family="'Segoe UI', sans-serif" font-size="10" font-weight="500" fill="#00d2ff" opacity="0.9">Government. Transcended.</text>
+                        <circle cx="200" cy="20" r="8" fill="none" stroke="#00d2ff" stroke-width="2" opacity="0.6">
+                            <animate attributeName="r" values="8;12;8" dur="3s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <polygon points="210,15 220,25 210,35 200,25" fill="none" stroke="#0891b2" stroke-width="2" opacity="0.7">
+                            <animateTransform attributeName="transform" type="rotate" values="0 210 25;360 210 25" dur="8s" repeatCount="indefinite"/>
+                        </polygon>
+                        <rect x="225" y="18" width="10" height="14" fill="none" stroke="#667eea" stroke-width="2" opacity="0.5" rx="2">
+                            <animate attributeName="height" values="14;20;14" dur="4s" repeatCount="indefinite"/>
+                            <animate attributeName="y" values="18;15;18" dur="4s" repeatCount="indefinite"/>
+                        </rect>
+                    </svg>
+                </div>
+                <div class="tf-status-badge">
+                    <div class="tf-status-dot"></div>
+                    <span style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">OPERATIONAL</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="tf-main">
+            <nav class="tf-sidebar">
+                <div class="tf-nav-item active">
+                    <div class="tf-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                    </div>
+                    <span>Dashboard</span>
+                </div>
+                <div class="tf-nav-item">
+                    <div class="tf-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <span>CostForge AI</span>
+                </div>
+                <div class="tf-nav-item">
+                    <div class="tf-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 4v6h-6M1 20v-6h6"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                    </div>
+                    <span>TerraFusion Sync</span>
+                </div>
+                <div class="tf-nav-item">
+                    <div class="tf-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <span>TerraFlow</span>
+                </div>
+                <div class="tf-nav-item">
+                    <div class="tf-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                    </div>
+                    <span>AI Swarm</span>
+                </div>
+                <div class="tf-nav-item">
+                    <div class="tf-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <span>Security Mesh</span>
+                </div>
+                <div class="tf-nav-item">
+                    <div class="tf-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <span>Hybrid LLM</span>
+                </div>
+            </nav>
+            
+            <main class="tf-content">
+                <div class="tf-content-header">
+                    <h2 class="tf-content-title">Government Operations Center</h2>
+                    <p class="tf-content-subtitle">County Operating System - Infrastructure Substrate Platform</p>
+                </div>
+                
+                <div class="tf-card-grid">
+                    <div class="tf-card">
+                        <h3 class="tf-card-title">AI Swarm Coordination</h3>
+                        <div class="tf-card-value">50,000+</div>
+                        <div class="tf-card-label">Active Agents</div>
+                        <div class="tf-card-status">
+                            <div class="tf-status-dot"></div>
+                            <span>Operational</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tf-card">
+                        <h3 class="tf-card-title">Hybrid LLM Service</h3>
+                        <div class="tf-card-value">5 Models</div>
+                        <div class="tf-card-label">Claude, GPT, Local</div>
+                        <div class="tf-card-status">
+                            <div class="tf-status-dot"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tf-card">
+                        <h3 class="tf-card-title">CostForge AI</h3>
+                        <div class="tf-card-value">M&S</div>
+                        <div class="tf-card-label">Replacement Ready</div>
+                        <div class="tf-card-status">
+                            <div class="tf-status-dot"></div>
+                            <span>Active</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tf-card">
+                        <h3 class="tf-card-title">TerraFusion Sync</h3>
+                        <div class="tf-card-value">&lt;2ms</div>
+                        <div class="tf-card-label">Sync Latency</div>
+                        <div class="tf-card-status">
+                            <div class="tf-status-dot"></div>
+                            <span>Real-Time</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tf-card">
+                        <h3 class="tf-card-title">TerraFlow Engine</h3>
+                        <div class="tf-card-value">99.8%</div>
+                        <div class="tf-card-label">Success Rate</div>
+                        <div class="tf-card-status">
+                            <div class="tf-status-dot"></div>
+                            <span>Automated</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tf-card">
+                        <h3 class="tf-card-title">Security Mesh</h3>
+                        <div class="tf-card-value">FISMA</div>
+                        <div class="tf-card-label">Compliance Ready</div>
+                        <div class="tf-card-status">
+                            <div class="tf-status-dot"></div>
+                            <span>Secured</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-top: 2rem;">
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1.5rem;">Core Modules Included</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div style="padding: 1.5rem; background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                            <h4 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.5rem;">TerraFusion Sync</h4>
+                            <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem;">Multi-master replication</p>
+                            <p style="font-size: 0.75rem; color: var(--tf-primary-cyan);">Solves Woolpert mobile sync</p>
+                        </div>
+                        <div style="padding: 1.5rem; background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                            <h4 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.5rem;">TerraFlow</h4>
+                            <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem;">Visual workflow automation</p>
+                            <p style="font-size: 0.75rem; color: var(--tf-primary-cyan);">Government process automation</p>
+                        </div>
+                        <div style="padding: 1.5rem; background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                            <h4 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.5rem;">CostForge AI Enhanced</h4>
+                            <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem;">AI-powered financial intelligence</p>
+                            <p style="font-size: 0.75rem; color: var(--tf-primary-cyan);">Marshall & Swift replacement</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
+

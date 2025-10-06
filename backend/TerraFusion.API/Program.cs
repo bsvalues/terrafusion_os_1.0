@@ -4,6 +4,7 @@ using TerraFusion.API.Services;
 using TerraFusion.API.Hubs;
 using TerraFusion.API.Security;
 using TerraFusion.API.Middleware;
+using Microsoft.Extensions.FileProviders;
 using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
@@ -59,11 +60,11 @@ builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
 // Register TerraFusionSync integration service
 builder.Services.AddScoped<ITerraFusionSyncService, TerraFusionSyncIntegrationService>();
 
-// Register marketplace services
-builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
+// DISABLED: Marketplace is not part of core OS
+// builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
 
-// Register county deployment services
-builder.Services.AddScoped<ICountyDeploymentService, CountyDeploymentService>();
+// DISABLED: County deployment is not part of core OS  
+// builder.Services.AddScoped<ICountyDeploymentService, CountyDeploymentService>();
 
 // Register unified orchestration service
 builder.Services.AddSingleton<IUnifiedOrchestrationService, UnifiedOrchestrationService>();
@@ -72,6 +73,12 @@ builder.Services.AddHostedService<UnifiedOrchestrationService>(provider =>
 
 // Keep plugin hot reload for development
 builder.Services.AddHostedService<PluginHotReloadService>();
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(TerraFusion.Core.Services.ModuleService).Assembly);
+
+// Register Rust FFI Service
+builder.Services.AddSingleton<RustFFIService>();
 
 // Register database context with SQLite fallback
 builder.Services.AddDbContext<TerraFusionDbContext>(options =>
@@ -89,6 +96,10 @@ builder.Services.AddDbContext<TerraFusionDbContext>(options =>
         options.UseSqlite(connectionString);
     }
 });
+
+// Register ITerraFusionDbContext interface
+builder.Services.AddScoped<ITerraFusionDbContext>(provider => 
+    provider.GetRequiredService<TerraFusionDbContext>());
 
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
@@ -131,14 +142,69 @@ app.UseCors();
 app.UseHttpMetrics();
 
 // Authentication & Authorization
+// Serve static files from native-shell/ui BEFORE other middleware
+var uiPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "native-shell", "ui"));
+Console.WriteLine($"[STARTUP] Looking for UI at: {uiPath}");
+Console.WriteLine($"[STARTUP] UI path exists: {Directory.Exists(uiPath)}");
+
+if (Directory.Exists(uiPath))
+{
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(uiPath),
+        RequestPath = ""
+    });
+    Console.WriteLine($"[STARTUP] Static files configured for: {uiPath}");
+}
+else
+{
+    Console.WriteLine($"[ERROR] UI directory not found at {uiPath}");
+}
+
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 // Audit Logging Middleware
 app.UseAuditLogging();
 
-app.UseRouting();
 app.MapControllers();
+
+// Fallback to index.html for SPA routing (MUST be after MapControllers)
+if (Directory.Exists(uiPath))
+{
+    var indexPath = Path.Combine(uiPath, "index.html");
+    Console.WriteLine($"[FALLBACK] Configured with indexPath: {indexPath}, Exists: {File.Exists(indexPath)}");
+    
+    app.MapFallback(async context =>
+    {
+        Console.WriteLine($"[FALLBACK] Serving: {context.Request.Path}, indexPath exists: {File.Exists(indexPath)}");
+        
+        if (File.Exists(indexPath))
+        {
+            try
+            {
+                context.Response.ContentType = "text/html; charset=utf-8";
+                var html = await File.ReadAllTextAsync(indexPath);
+                Console.WriteLine($"[FALLBACK] Read {html.Length} bytes from index.html");
+                await context.Response.WriteAsync(html);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[FALLBACK ERROR] {ex.Message}");
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync($"Error serving index.html: {ex.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[FALLBACK] File not found: {indexPath}");
+            context.Response.StatusCode = 404;
+            await context.Response.WriteAsync($"index.html not found at {indexPath}");
+        }
+    });
+}
 
 // Map Prometheus metrics endpoint
 app.MapMetrics();
@@ -195,21 +261,22 @@ app.MapGet("/health", async (HttpContext context) =>
     }
 });
 
-app.MapGet("/", () => new { 
-    message = "TerraFusion OS 1.0 API - Ready for deployment!",
-    endpoints = new[] { 
-        "/health", 
-        "/api/test", 
-        "/api/modules", 
-        "/api/modules/{name}/status",
-        "/api/database/status",
-        "/api/swarm/status",
-        "/api/swarm/modules",
-        "/api/swarm/mcp-tools",
-        "/hubs/oscore"
-    },
-    timestamp = DateTime.UtcNow
-});
+// REMOVED: Root "/" is now handled by fallback to serve index.html
+// app.MapGet("/", () => new { 
+//     message = "TerraFusion OS 1.0 API - Ready for deployment!",
+//     endpoints = new[] { 
+//         "/health", 
+//         "/api/test", 
+//         "/api/modules", 
+//         "/api/modules/{name}/status",
+//         "/api/database/status",
+//         "/api/swarm/status",
+//         "/api/swarm/modules",
+//         "/api/swarm/mcp-tools",
+//         "/hubs/oscore"
+//     },
+//     timestamp = DateTime.UtcNow
+// });
 
 Console.WriteLine("🚀 TerraFusion OS API starting...");
 Console.WriteLine("📡 Available endpoints: /health, /api/test, /api/modules, /");

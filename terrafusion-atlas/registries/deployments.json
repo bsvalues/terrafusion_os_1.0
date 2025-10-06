@@ -1,0 +1,158 @@
+{
+  "registry": "deployments",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "deploy.helm.main",
+      "name": "Main Helm Charts",
+      "owner": "ops-team",
+      "source_path": "helm",
+      "tags": [
+        "helm",
+        "k8s",
+        "deployment"
+      ],
+      "description": "Primary Helm chart deployments"
+    },
+    {
+      "id": "deploy.terraform.infra",
+      "name": "Infrastructure as Code",
+      "owner": "ops-team",
+      "source_path": "terraform-base",
+      "tags": [
+        "terraform",
+        "iac",
+        "infrastructure"
+      ],
+      "description": "Terraform infrastructure definitions"
+    },
+    {
+      "id": "deployments.",
+      "name": ".git-temp-clone",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone",
+      "tags": []
+    },
+    {
+      "id": "deployments.terrafusion-golden-everything-plus-20250917-181254",
+      "name": "TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254",
+      "tags": []
+    },
+    {
+      "id": "deployments.ci",
+      "name": "ci",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/ci",
+      "tags": []
+    },
+    {
+      "id": "deployments.helm",
+      "name": "helm",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/helm",
+      "tags": []
+    },
+    {
+      "id": "deployments.terrafusion-golden-helmfile-redis-grafana-20250917-181613",
+      "name": "TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613",
+      "tags": []
+    },
+    {
+      "id": "deployments.grafana-dashboards",
+      "name": "grafana_dashboards",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/grafana_dashboards",
+      "tags": []
+    },
+    {
+      "id": "deployments.helmfile",
+      "name": "helmfile",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/helmfile",
+      "tags": []
+    },
+    {
+      "id": "deployments.service-redis-quota",
+      "name": "service_redis_quota",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/service_redis_quota",
+      "tags": []
+    },
+    {
+      "id": "deployments.deployment-authorization",
+      "name": "deployment-authorization",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/authorization/deployment-authorization",
+      "tags": []
+    },
+    {
+      "id": "deployments.bcw-uat",
+      "name": "bcw-uat",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bcw-uat",
+      "tags": []
+    },
+    {
+      "id": "deployments.deploy",
+      "name": "deploy",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deploy",
+      "tags": []
+    },
+    {
+      "id": "deployments.terraform",
+      "name": "terraform",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bcw-uat/terraform",
+      "tags": []
+    },
+    {
+      "id": "deployments.business-structure",
+      "name": "business-structure",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure",
+      "tags": []
+    },
+    {
+      "id": "deployments.deployment",
+      "name": "deployment",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment",
+      "tags": []
+    },
+    {
+      "id": "deployments.k8s",
+      "name": "k8s",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deploy/k8s",
+      "tags": []
+    },
+    {
+      "id": "deployments.deployed-modules",
+      "name": "deployed_modules",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployed_modules",
+      "tags": []
+    },
+    {
+      "id": "deployments.devops-handoff-package",
+      "name": "DevOps-Handoff-Package",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment/DevOps-Handoff-Package",
+      "tags": []
+    },
+    {
+      "id": "deployments.advanced",
+      "name": "advanced",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/deployment/advanced",
+      "tags": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:28.155997",
+  "count": 20
+}

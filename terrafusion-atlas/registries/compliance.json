@@ -1,0 +1,60 @@
+{
+  "registry": "compliance",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "compliance.security.audit",
+      "name": "Security Audit Reports",
+      "owner": "security-team",
+      "source_path": "compliance/security",
+      "tags": [
+        "security",
+        "audit",
+        "compliance"
+      ],
+      "description": "Comprehensive security audit documentation"
+    },
+    {
+      "id": "compliance.trust-fabric",
+      "name": "Trust Fabric Framework",
+      "owner": "security-team",
+      "source_path": "trust-fabric",
+      "tags": [
+        "trust",
+        "security",
+        "framework"
+      ],
+      "description": "Trust and security framework documentation"
+    },
+    {
+      "id": "compliance.",
+      "name": ".github",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github",
+      "tags": []
+    },
+    {
+      "id": "compliance.issue-template",
+      "name": "ISSUE_TEMPLATE",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/ISSUE_TEMPLATE",
+      "tags": []
+    },
+    {
+      "id": "compliance.workflows",
+      "name": "workflows",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/workflows",
+      "tags": []
+    },
+    {
+      "id": "compliance.brand-assets",
+      "name": "Brand_Assets",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/Brand_Assets",
+      "tags": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:31.728399",
+  "count": 6
+}

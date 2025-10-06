@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion cOS - Production Bundle Diagnostic</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        h1 { margin-bottom: 1rem; font-size: 2.5rem; }
+        h2 { margin: 2rem 0 1rem; font-size: 1.5rem; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 0.5rem; }
+        .status { padding: 1rem; margin: 1rem 0; border-radius: 10px; font-family: 'Courier New', monospace; }
+        .success { background: rgba(46, 213, 115, 0.2); border-left: 4px solid #2ed573; }
+        .error { background: rgba(255, 71, 87, 0.2); border-left: 4px solid #ff4757; }
+        .info { background: rgba(52, 172, 224, 0.2); border-left: 4px solid #34ace0; }
+        .loading { background: rgba(255, 234, 167, 0.2); border-left: 4px solid #ffeaa7; }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.05); }
+        pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 0.5rem 0; }
+        a { color: #ffeaa7; text-decoration: none; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+        .test-results { margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 TerraFusion cOS - Production Bundle Diagnostic</h1>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">Testing production bundle loading...</p>
+
+        <h2>📊 Server Information</h2>
+        <div id="serverInfo" class="status info">
+            <strong>Current URL:</strong> <span id="currentUrl"></span><br>
+            <strong>Protocol:</strong> <span id="protocol"></span><br>
+            <strong>Host:</strong> <span id="host"></span><br>
+            <strong>Port:</strong> <span id="port"></span><br>
+            <strong>Pathname:</strong> <span id="pathname"></span>
+        </div>
+
+        <h2>🎯 Bundle File Tests</h2>
+        <div id="bundleTests" class="test-results">
+            <div class="status loading">⏳ Running tests...</div>
+        </div>
+
+        <h2>🔧 Manual Tests</h2>
+        <button onclick="testBundleFile('/dist/runtime.0f021a49.js')">Test Runtime Bundle</button>
+        <button onclick="testBundleFile('/dist/vendor.0fe33d46.js')">Test Vendor Bundle</button>
+        <button onclick="testBundleFile('/dist/main.bea48007.js')">Test Main Bundle</button>
+        <button onclick="testBundleFile('/dist/main.59e2d3c5.css')">Test CSS Bundle</button>
+
+        <h2>📋 Test Results</h2>
+        <div id="testResults"></div>
+
+        <h2>🚀 Actions</h2>
+        <button onclick="window.location.href='/index.html'">Load Production Index</button>
+        <button onclick="window.location.href='/test.html'">Load Development Index</button>
+        <button onclick="location.reload()">Refresh Diagnostic</button>
+
+        <h2>💡 Quick Links</h2>
+        <p>
+            <a href="/dist/main.bea48007.js" target="_blank">View Main Bundle (226 KB)</a> | 
+            <a href="/dist/vendor.0fe33d46.js" target="_blank">View Vendor Bundle (1 MB)</a> | 
+            <a href="/dist/main.59e2d3c5.css" target="_blank">View CSS Bundle (74 KB)</a>
+        </p>
+    </div>
+
+    <script>
+        // Display current URL info
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('protocol').textContent = window.location.protocol;
+        document.getElementById('host').textContent = window.location.hostname;
+        document.getElementById('port').textContent = window.location.port || '(default)';
+        document.getElementById('pathname').textContent = window.location.pathname;
+
+        // Test function for bundle files
+        async function testBundleFile(path) {
+            const resultsDiv = document.getElementById('testResults');
+            const testStart = Date.now();
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'status loading';
+            statusDiv.innerHTML = `⏳ Testing: <code>${path}</code>...`;
+            resultsDiv.appendChild(statusDiv);
+
+            try {
+                const response = await fetch(path, { method: 'HEAD' });
+                const testDuration = Date.now() - testStart;
+                
+                if (response.ok) {
+                    const size = response.headers.get('content-length');
+                    const server = response.headers.get('server') || 'Unknown';
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `
+                        ✅ <strong>SUCCESS:</strong> <code>${path}</code><br>
+                        <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                        <strong>Size:</strong> ${size ? (parseInt(size) / 1024).toFixed(2) + ' KB' : 'Unknown'}<br>
+                        <strong>Server:</strong> ${server}<br>
+                        <strong>Response Time:</strong> ${testDuration}ms
+                    `;
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.innerHTML = `
+                        ❌ <strong>ERROR:</strong> <code>${path}</code><br>
+                        <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                        <strong>Server:</strong> ${response.headers.get('server') || 'Unknown'}
+                    `;
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `
+                    ❌ <strong>FETCH ERROR:</strong> <code>${path}</code><br>
+                    <strong>Error:</strong> ${error.message}
+                `;
+            }
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', async () => {
+            const bundleTestsDiv = document.getElementById('bundleTests');
+            bundleTestsDiv.innerHTML = '<div class="status loading">⏳ Running automated tests...</div>';
+
+            const bundleFiles = [
+                '/dist/runtime.0f021a49.js',
+                '/dist/vendor.0fe33d46.js',
+                '/dist/main.bea48007.js',
+                '/dist/main.59e2d3c5.css',
+                '/dist/webgl.5d6a46a1.js'
+            ];
+
+            let html = '';
+            let allSuccess = true;
+
+            for (const file of bundleFiles) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    const size = response.headers.get('content-length');
+                    const server = response.headers.get('server') || 'Unknown';
+                    
+                    if (response.ok) {
+                        html += `
+                            <div class="status success">
+                                ✅ <code>${file}</code> - ${response.status} ${response.statusText}
+                                (${size ? (parseInt(size) / 1024).toFixed(2) + ' KB' : 'Unknown'})
+                                - Server: ${server}
+                            </div>
+                        `;
+                    } else {
+                        allSuccess = false;
+                        html += `
+                            <div class="status error">
+                                ❌ <code>${file}</code> - ${response.status} ${response.statusText}
+                                - Server: ${server}
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    allSuccess = false;
+                    html += `
+                        <div class="status error">
+                            ❌ <code>${file}</code> - Error: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+
+            if (allSuccess) {
+                html = '<div class="status success"><strong>🎉 All bundle files are accessible!</strong></div>' + html;
+            } else {
+                html = '<div class="status error"><strong>⚠️ Some bundle files failed to load</strong></div>' + html;
+            }
+
+            bundleTestsDiv.innerHTML = html;
+        });
+
+        console.log('%c🔍 TerraFusion cOS Diagnostic Tool', 'font-size: 20px; font-weight: bold; color: #667eea;');
+        console.log('Current URL:', window.location.href);
+        console.log('Server:', window.location.hostname + ':' + (window.location.port || '(default)'));
+        console.log('Protocol:', window.location.protocol);
+    </script>
+</body>
+</html>

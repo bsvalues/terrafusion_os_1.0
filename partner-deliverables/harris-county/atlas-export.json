@@ -1,0 +1,175 @@
+{
+  "partner": "Harris County, Texas",
+  "generated": "2025-10-05T22:35:26.020048",
+  "total_items": 12,
+  "registries": {
+    "agents": [
+      {
+        "id": "agent.valuation.specialist",
+        "name": "Valuation Specialist Agent",
+        "description": "AI specialist for property valuation analysis",
+        "owner": "ai-team",
+        "tags": [
+          "ai",
+          "valuation",
+          "specialist",
+          "analysis"
+        ],
+        "lifecycle": "experimental",
+        "apis": []
+      }
+    ],
+    "brands": [
+      {
+        "id": "brand.harris",
+        "name": "Harris Brand Integration",
+        "description": "Harris County brand assets and guidelines",
+        "owner": "marketing-team",
+        "tags": [
+          "harris",
+          "brand",
+          "partner"
+        ],
+        "lifecycle": null,
+        "apis": []
+      }
+    ],
+    "datasets": [
+      {
+        "id": "data.parcels.main",
+        "name": "Parcel Database",
+        "description": "Primary parcel data database",
+        "owner": "data-team",
+        "tags": [
+          "parcels",
+          "gis",
+          "postgres",
+          "primary",
+          "confidential"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      },
+      {
+        "id": "data.county.benton",
+        "name": "Benton County Data",
+        "description": "Benton County specific datasets",
+        "owner": "data-team",
+        "tags": [
+          "county",
+          "benton",
+          "data"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      },
+      {
+        "id": "data.registry",
+        "name": "registry",
+        "description": "registry dataset",
+        "owner": "platform-team",
+        "tags": [
+          "gis"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      }
+    ],
+    "engines": [
+      {
+        "id": "engine.costforge.rust",
+        "name": "CostForge Rust Engine",
+        "description": "High-performance cost calculation engine in Rust",
+        "owner": "kernel-team",
+        "tags": [
+          "rust",
+          "engine",
+          "ffi",
+          "wasm",
+          "valuation",
+          "critical"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      },
+      {
+        "id": "engine.valuation.core",
+        "name": "Valuation Engine",
+        "description": "Core property valuation computation engine",
+        "owner": "valuation-team",
+        "tags": [
+          "rust",
+          "engine",
+          "valuation",
+          "performance"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      }
+    ],
+    "modules": [
+      {
+        "id": "module.gis.parcel-tools",
+        "name": "GIS Parcel Tools",
+        "description": "GIS tools for parcel management",
+        "owner": "gis-team",
+        "tags": [
+          "gis",
+          "parcel",
+          "tools",
+          "plugin"
+        ],
+        "lifecycle": "active",
+        "apis": []
+      },
+      {
+        "id": "module.government-approvals",
+        "name": "government-approvals",
+        "description": "government-approvals module",
+        "owner": "platform-team",
+        "tags": [],
+        "lifecycle": "active",
+        "apis": []
+      }
+    ],
+    "partners": [
+      {
+        "id": "partner.harris",
+        "name": "Harris County Integration",
+        "description": "Harris County partnership integration",
+        "owner": "partnerships-team",
+        "tags": [
+          "harris",
+          "county",
+          "integration"
+        ],
+        "lifecycle": null,
+        "apis": []
+      },
+      {
+        "id": "partner.woolpert",
+        "name": "Woolpert Integration",
+        "description": "Woolpert vendor integration",
+        "owner": "partnerships-team",
+        "tags": [
+          "woolpert",
+          "vendor",
+          "gis"
+        ],
+        "lifecycle": null,
+        "apis": []
+      }
+    ],
+    "services": [
+      {
+        "id": "services.government-approvals",
+        "name": "government-approvals",
+        "description": "government-approvals service",
+        "owner": "platform-team",
+        "tags": [],
+        "lifecycle": "active",
+        "apis": []
+      }
+    ]
+  }
+}

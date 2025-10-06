@@ -1,0 +1,19 @@
+{
+  "partner": "Harris County, Texas",
+  "package_version": "1.0",
+  "generated": "2025-10-05T22:35:26.084717",
+  "contents": {
+    "README.md": "Main integration guide and component reference",
+    "atlas-export.json": "Machine-readable Atlas data export",
+    "architecture/": "System architecture diagrams (PNG/SVG)",
+    "compliance/SECURITY.md": "Security and compliance documentation",
+    "samples/EXAMPLES.md": "Sample integration code"
+  },
+  "total_items": 12,
+  "focus_areas": [
+    "gis",
+    "valuation",
+    "appraisal",
+    "government-approvals"
+  ]
+}

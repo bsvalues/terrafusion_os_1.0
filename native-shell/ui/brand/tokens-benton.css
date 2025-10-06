@@ -1,0 +1,24 @@
+/**
+ * TerraFusion OS - Government Brand System
+ * Benton County Theme
+ * Generated: 2025-09-16T11:29:00.000Z
+ * 
+ * Government. Transcended.
+ * Infrastructure Intelligence, Infinite Scale
+ */
+
+:root {
+  --color-accent-primary: #00B3A4;
+  --color-accent-hero: #0A1E2E;
+  --color-accent-light: #33C7BB;
+  --color-accent-dark: #008A7D;
+  --gradient-county-primary: linear-gradient(135deg, #00B3A4, #0891b2);
+  --gradient-county-hero: linear-gradient(135deg, #0A1E2E, #00B3A4);
+  --gradient-county-glass: linear-gradient(135deg, rgba(0, 179, 164, 0.1), rgba(8, 145, 178, 0.1));
+  --shadow-county-glow: 0 0 30px rgba(0, 179, 164, 0.3);
+  --shadow-county-button: 0 4px 15px rgba(0, 179, 164, 0.3);
+  --border-county-glass: rgba(0, 179, 164, 0.2);
+}
+
+/* TerraFusion OS Government Compliance */
+/* FISMA, NIST-800-53, Section508, WCAG2.1, SOC2 */

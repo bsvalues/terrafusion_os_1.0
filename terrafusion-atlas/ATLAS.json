@@ -1,0 +1,101 @@
+{
+  "atlas": {
+    "name": "TerraFusion OS Atlas",
+    "version": "1.0.0",
+    "description": "Unified index for the entire TerraFusion ecosystem: OS, Marketplace, engines, agents, modules, datasets, pipelines, brands, environments, deployments, compliance, partners, and releases",
+    "generated_at": "2025-10-05T00:00:00Z",
+    "registries": {
+      "services": {
+        "path": "registries/services.json",
+        "description": "Backend APIs, microservices, daemons, kernel services",
+        "schema": "schemas/service.schema.json",
+        "count": 0
+      },
+      "engines": {
+        "path": "registries/engines.json",
+        "description": "High-performance Rust/WASM engines, FFI bridges, computation cores",
+        "schema": "schemas/engine.schema.json",
+        "count": 0
+      },
+      "frontends": {
+        "path": "registries/frontends.json",
+        "description": "Web UIs, desktop shells, mobile apps, marketplaces",
+        "schema": "schemas/frontend.schema.json",
+        "count": 0
+      },
+      "agents": {
+        "path": "registries/agents.json",
+        "description": "AI agents, swarms, autonomous systems, consciousness layers",
+        "schema": "schemas/agent.schema.json",
+        "count": 0
+      },
+      "modules": {
+        "path": "registries/modules.json",
+        "description": "Hot-swappable apps, plugins, extensions, marketplace modules",
+        "schema": "schemas/module.schema.json",
+        "count": 0
+      },
+      "datasets": {
+        "path": "registries/datasets.json",
+        "description": "Databases, data lakes, county data, exports, backups",
+        "schema": "schemas/dataset.schema.json",
+        "count": 0
+      },
+      "pipelines": {
+        "path": "registries/pipelines.json",
+        "description": "CI/CD workflows, ETL/ELT jobs, training pipelines, batch processes",
+        "schema": "schemas/pipeline.schema.json",
+        "count": 0
+      },
+      "brands": {
+        "path": "registries/brands.json",
+        "description": "Brand identities, logos, color systems, marketing assets",
+        "schema": "schemas/brand.schema.json",
+        "count": 0
+      },
+      "environments": {
+        "path": "registries/environments.json",
+        "description": "Dev, staging, production, partner-specific environments",
+        "schema": "schemas/environment.schema.json",
+        "count": 0
+      },
+      "deployments": {
+        "path": "registries/deployments.json",
+        "description": "Helm charts, Kubernetes manifests, Terraform modules",
+        "schema": "schemas/deployment.schema.json",
+        "count": 0
+      },
+      "compliance": {
+        "path": "registries/compliance.json",
+        "description": "Security audits, certifications, legal docs, trust frameworks",
+        "schema": "schemas/compliance.schema.json",
+        "count": 0
+      },
+      "partners": {
+        "path": "registries/partners.json",
+        "description": "Integration docs, vendor SDKs, partnership assets",
+        "schema": "schemas/partner.schema.json",
+        "count": 0
+      },
+      "releases": {
+        "path": "registries/releases.json",
+        "description": "Build artifacts, packages, archives, versioned releases",
+        "schema": "schemas/release.schema.json",
+        "count": 0
+      },
+      "components": {
+        "path": "registries/components.json",
+        "description": "Shared libraries, utilities, SDKs, common components",
+        "schema": "schemas/component.schema.json",
+        "count": 0
+      }
+    },
+    "tags": {
+      "domains": ["os", "marketplace", "ai", "gis", "valuation", "analytics", "parcel", "admin"],
+      "layers": ["kernel", "api", "engine", "ui", "data", "infra", "ops"],
+      "security": ["public", "internal", "confidential", "restricted"],
+      "languages": ["rust", "csharp", "dotnet", "typescript", "javascript", "python", "go"],
+      "platforms": ["k8s", "docker", "wasm", "tauri", "electron", "web"]
+    }
+  }
+}

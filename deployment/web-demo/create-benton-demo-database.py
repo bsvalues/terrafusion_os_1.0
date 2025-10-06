@@ -8,8 +8,13 @@ import sqlite3
 import json
 import os
 import random
+import sys
 from datetime import datetime, timedelta
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
+
+# Import coordinate generation functions
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+from fix_benton_county_coordinates import generate_property_coordinates, BENTON_COUNTY_COORDINATES
 
 class BentonCountyDemoDatabase:
     def __init__(self, db_path: str):
@@ -30,6 +35,8 @@ class BentonCountyDemoDatabase:
             city TEXT NOT NULL DEFAULT 'Benton County',
             state TEXT NOT NULL DEFAULT 'WA',
             zip_code TEXT,
+            latitude REAL,
+            longitude REAL,
             assessed_value REAL NOT NULL,
             market_value REAL NOT NULL,
             improvement_value REAL NOT NULL,
@@ -199,6 +206,9 @@ class BentonCountyDemoDatabase:
             assessed_value = land_value + improvement_value
             market_value = assessed_value * random.uniform(1.05, 1.25)
             
+            # Generate accurate property coordinates
+            lat, lon = generate_property_coordinates(city)
+            
             property_data = (
                 parcel_id,
                 f"Property Owner {i+1}",
@@ -206,6 +216,8 @@ class BentonCountyDemoDatabase:
                 city,
                 'WA',
                 f"{random.randint(99301, 99399):05d}",
+                lat,
+                lon,
                 round(assessed_value, 2),
                 round(market_value, 2),
                 round(improvement_value, 2),
@@ -229,11 +241,12 @@ class BentonCountyDemoDatabase:
                 self.cursor.executemany('''
                 INSERT INTO Properties (
                     parcel_id, owner_name, property_address, city, state, zip_code,
+                    latitude, longitude,
                     assessed_value, market_value, improvement_value, land_value,
                     building_type, building_description, square_footage, lot_size,
                     year_built, bedrooms, bathrooms, property_class, tax_district,
                     last_assessed
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', properties_to_insert)
                 self.conn.commit()
                 properties_to_insert = []
@@ -246,8 +259,13 @@ class BentonCountyDemoDatabase:
             self.cursor.executemany('''
             INSERT INTO Properties (
                 parcel_id, owner_name, property_address, city, state, zip_code,
+                latitude, longitude,
                 assessed_value, market_value, improvement_value, land_value,
                 building_type, building_description, square_footage, lot_size,
+                year_built, bedrooms, bathrooms, property_class, tax_district,
+                last_assessed
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', properties_to_insert)
                 year_built, bedrooms, bathrooms, property_class, tax_district,
                 last_assessed
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

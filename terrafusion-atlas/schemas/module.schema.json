@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Module",
+  "description": "Hot-swappable app, plugin, or marketplace module",
+  "type": "object",
+  "required": ["id", "name", "owner", "lifecycle", "source_path", "module_type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^module\\.[a-z0-9.-]+$"
+    },
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "owner": {"type": "string"},
+    "lifecycle": {
+      "type": "string",
+      "enum": ["active", "deprecated", "experimental", "archived"]
+    },
+    "source_path": {"type": "string"},
+    "module_type": {
+      "type": "string",
+      "enum": ["core", "premium", "partner", "experimental"]
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "marketplace_listing": {
+      "type": "boolean",
+      "description": "Is this available in marketplace?"
+    },
+    "hot_swap_compatible": {
+      "type": "boolean",
+      "description": "Can be loaded/unloaded without restart?"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Required services or other modules"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Required OS permissions"
+    }
+  }
+}

@@ -1,0 +1,123 @@
+/* Resources Page Styles */
+
+.resources-page {
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--terra-space-6);
+}
+
+.page-title {
+  font-size: var(--terra-font-size-3xl);
+  font-weight: var(--terra-font-weight-bold);
+  color: var(--terra-neutral-900);
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: var(--terra-font-size-base);
+  color: var(--terra-neutral-600);
+  margin: var(--terra-space-2) 0 0 0;
+}
+
+.page-actions {
+  display: flex;
+  gap: var(--terra-space-3);
+}
+
+.resources-card {
+  margin-bottom: var(--terra-space-6);
+}
+
+.resources-card h2 {
+  font-size: var(--terra-font-size-xl);
+  font-weight: var(--terra-font-weight-semibold);
+  margin: 0 0 var(--terra-space-4) 0;
+  color: var(--terra-neutral-900);
+}
+
+.resources-controls {
+  display: flex;
+  gap: var(--terra-space-4);
+  margin-bottom: var(--terra-space-4);
+}
+
+.search-input {
+  flex: 1;
+  min-width: 300px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: var(--terra-space-2);
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--terra-space-6);
+}
+
+.equipment-card h2,
+.personnel-card h2 {
+  font-size: var(--terra-font-size-xl);
+  font-weight: var(--terra-font-weight-semibold);
+  margin: 0 0 var(--terra-space-4) 0;
+  color: var(--terra-neutral-900);
+}
+
+.personnel-summary {
+  display: flex;
+  gap: var(--terra-space-6);
+  margin-top: var(--terra-space-4);
+  padding-top: var(--terra-space-4);
+  border-top: 1px solid var(--terra-neutral-200);
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--terra-space-1);
+}
+
+.summary-label {
+  font-size: var(--terra-font-size-sm);
+  color: var(--terra-neutral-600);
+}
+
+.summary-value {
+  font-size: var(--terra-font-size-2xl);
+  font-weight: var(--terra-font-weight-bold);
+  color: var(--terra-primary-600);
+}
+
+@media (max-width: 1024px) {
+  .resources-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .resources-controls {
+    flex-direction: column;
+  }
+  
+  .filter-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--terra-space-4);
+  }
+  
+  .personnel-summary {
+    flex-direction: column;
+    gap: var(--terra-space-3);
+  }
+}

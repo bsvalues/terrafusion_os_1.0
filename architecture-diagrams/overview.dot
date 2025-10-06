@@ -1,0 +1,74 @@
+digraph TerraFusionOverview {
+  rankdir=TB;
+  node [shape=box, style="rounded,filled", fontname="Arial", fontsize=14];
+  edge [color="#999999", penwidth=2];
+
+  // Core layers
+  TerraFusion [label="TerraFusion OS\n133.60 GB\n18,583 files", shape=ellipse, fillcolor="#2c3e50", fontcolor=white, fontsize=16];
+
+  subgraph cluster_core {
+    label="Core";
+    color="#3498db";
+    style=filled;
+    fillcolor="#3498db20";
+    services [label="Services\n(18 items)", fillcolor="#3498db"];
+    engines [label="Engines\n(17 items)", fillcolor="#3498db"];
+  }
+
+  subgraph cluster_applications {
+    label="Applications";
+    color="#9b59b6";
+    style=filled;
+    fillcolor="#9b59b620";
+    frontends [label="Frontends\n(22 items)", fillcolor="#9b59b6"];
+    modules [label="Modules\n(22 items)", fillcolor="#9b59b6"];
+  }
+
+  subgraph cluster_intelligence {
+    label="Intelligence";
+    color="#f39c12";
+    style=filled;
+    fillcolor="#f39c1220";
+    agents [label="Agents\n(11 items)", fillcolor="#f39c12"];
+  }
+
+  subgraph cluster_data {
+    label="Data";
+    color="#34495e";
+    style=filled;
+    fillcolor="#34495e20";
+    datasets [label="Datasets\n(19 items)", fillcolor="#34495e"];
+  }
+
+  subgraph cluster_operations {
+    label="Operations";
+    color="#16a085";
+    style=filled;
+    fillcolor="#16a08520";
+    pipelines [label="Pipelines\n(15 items)", fillcolor="#16a085"];
+    deployments [label="Deployments\n(20 items)", fillcolor="#16a085"];
+    environments [label="Environments\n(18 items)", fillcolor="#16a085"];
+  }
+
+  subgraph cluster_ecosystem {
+    label="Ecosystem";
+    color="#95a5a6";
+    style=filled;
+    fillcolor="#95a5a620";
+    partners [label="Partners\n(20 items)", fillcolor="#95a5a6"];
+    brands [label="Brands\n(18 items)", fillcolor="#95a5a6"];
+    compliance [label="Compliance\n(6 items)", fillcolor="#95a5a6"];
+    components [label="Components\n(19 items)", fillcolor="#95a5a6"];
+  }
+
+  // Architecture flow
+  TerraFusion -> services;
+  TerraFusion -> engines;
+  services -> frontends;
+  services -> modules;
+  engines -> services;
+  agents -> services;
+  datasets -> services;
+  pipelines -> deployments;
+  deployments -> environments;
+}

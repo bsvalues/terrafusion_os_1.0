@@ -1,0 +1,12 @@
+{
+  "name": "progress-monitor",
+  "version": "1.0.0",
+  "description": "TerraFusion OS Progress Monitor Service",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {},
+  "author": "TerraFusion Team",
+  "license": "MIT"
+}

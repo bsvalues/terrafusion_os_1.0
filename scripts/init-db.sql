@@ -1,15 +1,11 @@
 -- TerraFusion Database Initialization Script
 -- This script sets up the initial database schema and data
-
--- Create database if it doesn't exist
--- (This is typically handled by the POSTGRES_DB environment variable)
-
--- Connect to the database
-\c terrafusion;
+-- Note: This runs AFTER the database is created by POSTGRES_DB env var
 
 -- Create extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "postgis";
+-- PostGIS removed - not needed for core TerraFusion OS
+-- CREATE EXTENSION IF NOT EXISTS "postgis";
 
 -- Create schemas
 CREATE SCHEMA IF NOT EXISTS auth;
@@ -17,8 +13,8 @@ CREATE SCHEMA IF NOT EXISTS core;
 CREATE SCHEMA IF NOT EXISTS analytics;
 CREATE SCHEMA IF NOT EXISTS ai;
 
--- Set default search path
-ALTER DATABASE terrafusion SET search_path TO core, auth, analytics, ai, public;
+-- Set default search path (database name will be whatever POSTGRES_DB is set to)
+-- ALTER DATABASE terrafusion SET search_path TO core, auth, analytics, ai, public;
 
 -- Create basic tables for immediate functionality
 -- Users table
@@ -52,7 +48,9 @@ CREATE TABLE IF NOT EXISTS core.properties (
     assessed_value DECIMAL(15,2),
     market_value DECIMAL(15,2),
     tax_amount DECIMAL(15,2),
-    location GEOMETRY(POINT, 4326),
+    -- location GEOMETRY(POINT, 4326),  -- PostGIS not available
+    latitude DECIMAL(10, 7),
+    longitude DECIMAL(10, 7),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -95,7 +93,8 @@ CREATE INDEX IF NOT EXISTS idx_users_role ON auth.users(role);
 CREATE INDEX IF NOT EXISTS idx_users_created_at ON auth.users(created_at);
 
 CREATE INDEX IF NOT EXISTS idx_properties_owner_id ON core.properties(owner_id);
-CREATE INDEX IF NOT EXISTS idx_properties_location ON core.properties USING GIST(location);
+-- CREATE INDEX IF NOT EXISTS idx_properties_location ON core.properties USING GIST(location);  -- PostGIS not available
+CREATE INDEX IF NOT EXISTS idx_properties_lat_lng ON core.properties(latitude, longitude);
 CREATE INDEX IF NOT EXISTS idx_properties_city_state ON core.properties(city, state);
 CREATE INDEX IF NOT EXISTS idx_properties_created_at ON core.properties(created_at);
 
@@ -151,21 +150,21 @@ VALUES (
     true
 ) ON CONFLICT (email) DO NOTHING;
 
--- Grant permissions
-GRANT USAGE ON SCHEMA auth TO postgres;
-GRANT USAGE ON SCHEMA core TO postgres;
-GRANT USAGE ON SCHEMA analytics TO postgres;
-GRANT USAGE ON SCHEMA ai TO postgres;
+-- Grant permissions (user will be whatever POSTGRES_USER is set to)
+-- GRANT USAGE ON SCHEMA auth TO postgres;
+-- GRANT USAGE ON SCHEMA core TO postgres;
+-- GRANT USAGE ON SCHEMA analytics TO postgres;
+-- GRANT USAGE ON SCHEMA ai TO postgres;
 
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO postgres;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA core TO postgres;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA analytics TO postgres;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA ai TO postgres;
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO postgres;
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA core TO postgres;
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA analytics TO postgres;
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA ai TO postgres;
 
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA auth TO postgres;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA core TO postgres;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA analytics TO postgres;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA ai TO postgres;
+-- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA auth TO postgres;
+-- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA core TO postgres;
+-- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA analytics TO postgres;
+-- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA ai TO postgres;
 
 -- Create database user for application (if different from postgres)
 -- CREATE USER terrafusion_user WITH PASSWORD 'your_password_here';

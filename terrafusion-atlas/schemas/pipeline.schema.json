@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Pipeline",
+  "description": "CI/CD workflow, ETL job, or batch process",
+  "type": "object",
+  "required": ["id", "name", "owner", "lifecycle", "source_path", "pipeline_type"],
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "owner": {"type": "string"},
+    "lifecycle": {"type": "string", "enum": ["active", "deprecated", "experimental", "archived"]},
+    "source_path": {"type": "string"},
+    "pipeline_type": {"type": "string", "enum": ["ci", "cd", "etl", "elt", "training", "batch"]},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "triggers": {"type": "array", "items": {"type": "string"}},
+    "schedule": {"type": "string", "description": "Cron schedule if applicable"}
+  }
+}

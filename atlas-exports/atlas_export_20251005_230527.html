@@ -1,0 +1,2757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Atlas Export</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .summary {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .registry {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .registry h2 {
+            color: #34495e;
+            margin-top: 0;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+        .item {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        .item h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        .item-meta {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+        .tag {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            margin: 2px;
+        }
+        code {
+            background: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .filter {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .filter input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🗺️ TerraFusion Atlas Export</h1>
+    
+    <div class="summary">
+        <p><strong>Generated:</strong> 2025-10-05 23:05:27</p>
+        <p><strong>Total Items:</strong> 229</p>
+        <p><strong>Registries:</strong> 14</p>
+    </div>
+    
+    <div class="filter">
+        <input type="text" id="searchBox" placeholder="🔍 Search items by name, description, tags..." onkeyup="filterItems()">
+    </div>
+
+    <div class="registry">
+        <h2>Agents (11 items)</h2>
+
+        <div class="item" data-searchable=".devcontainer .devcontainer AI agent ai">
+            <h3>.devcontainer</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.</code></p>
+                <p><strong>Description:</strong> .devcontainer AI agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.devcontainer</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="AI Swarm Supreme Commander Autonomous AI swarm coordination agent ai swarm commander autonomous">
+            <h3>AI Swarm Supreme Commander</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.swarm.commander</code></p>
+                <p><strong>Description:</strong> Autonomous AI swarm coordination agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>ai-swarm-supreme-commander</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span> <span class="tag">swarm</span> <span class="tag">commander</span> <span class="tag">autonomous</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Consciousness Core Agent Core consciousness processing agent ai consciousness core">
+            <h3>Consciousness Core Agent</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.consciousness.core</code></p>
+                <p><strong>Description:</strong> Core consciousness processing agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> experimental</p>
+                <p><strong>Path:</strong> <code>.ai</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span> <span class="tag">consciousness</span> <span class="tag">core</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Valuation Specialist Agent AI specialist for property valuation analysis ai valuation specialist analysis">
+            <h3>Valuation Specialist Agent</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.valuation.specialist</code></p>
+                <p><strong>Description:</strong> AI specialist for property valuation analysis</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> experimental</p>
+                <p><strong>Path:</strong> <code>agents/valuation-specialist</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span> <span class="tag">valuation</span> <span class="tag">specialist</span> <span class="tag">analysis</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="claude-flow claude-flow AI agent ai">
+            <h3>claude-flow</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.claude-flow</code></p>
+                <p><strong>Description:</strong> claude-flow AI agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.ai/claude-flow</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="config config AI agent ai">
+            <h3>config</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.config</code></p>
+                <p><strong>Description:</strong> config AI agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.ai/claude-flow/config</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="core core AI agent ai">
+            <h3>core</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.core</code></p>
+                <p><strong>Description:</strong> core AI agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.ai/core</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="devops devops AI agent ai">
+            <h3>devops</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.devops</code></p>
+                <p><strong>Description:</strong> devops AI agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.ai/claude-flow/devops</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="mcp mcp AI agent ai">
+            <h3>mcp</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.mcp</code></p>
+                <p><strong>Description:</strong> mcp AI agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.ai/mcp</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="scripts scripts AI agent ai">
+            <h3>scripts</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.scripts</code></p>
+                <p><strong>Description:</strong> scripts AI agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.ai/claude-flow/scripts</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="src src AI agent ai">
+            <h3>src</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>agent.src</code></p>
+                <p><strong>Description:</strong> src AI agent</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.ai/claude-flow/src</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Brands (18 items)</h2>
+
+        <div class="item" data-searchable=".playwright-mcp  ">
+            <h3>.playwright-mcp</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.playwright-mcp</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="AUDIT_20250913_185959  ai">
+            <h3>AUDIT_20250913_185959</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.audit-20250913-185959</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/ai-workspace-companion/AUDIT_20250913_185959</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Brand_Assets  ">
+            <h3>Brand_Assets</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.brand-assets</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/frontend/Brand_Assets</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Complete_Assets  ">
+            <h3>Complete_Assets</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.complete-assets</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/Complete_Assets</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="DevOps-Handoff-Package  ">
+            <h3>DevOps-Handoff-Package</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.devops-handoff-package</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deployment/DevOps-Handoff-Package</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="FULL_BACKUP_20250915_062012  ">
+            <h3>FULL_BACKUP_20250915_062012</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.full-backup-20250915-062012</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Harris Brand Integration Harris County brand assets and guidelines harris brand partner">
+            <h3>Harris Brand Integration</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brand.harris</code></p>
+                <p><strong>Description:</strong> Harris County brand assets and guidelines</p>
+                <p><strong>Owner:</strong> marketing-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>harris_brand</code></p>
+                <p><strong>Tags:</strong> <span class="tag">harris</span> <span class="tag">brand</span> <span class="tag">partner</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion Brand TerraFusion OS brand identity and assets terrafusion brand design">
+            <h3>TerraFusion Brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brand.terrafusion</code></p>
+                <p><strong>Description:</strong> TerraFusion OS brand identity and assets</p>
+                <p><strong>Owner:</strong> marketing-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>Brand_Assets</code></p>
+                <p><strong>Tags:</strong> <span class="tag">terrafusion</span> <span class="tag">brand</span> <span class="tag">design</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="apps  ">
+            <h3>apps</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.apps</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="backend  ">
+            <h3>backend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.backend</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="brand  ">
+            <h3>brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.brand</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/brand</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="config  ">
+            <h3>config</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.config</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/config</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="css  ">
+            <h3>css</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.css</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/frontend/css</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="docs  ">
+            <h3>docs</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.docs</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/docs</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="frontend  ">
+            <h3>frontend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.frontend</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/frontend</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="more brand  ">
+            <h3>more brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.more-brand</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/more brand</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="national  ">
+            <h3>national</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.national</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deployment/national</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="publish  ">
+            <h3>publish</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>brands.publish</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/publish</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Compliance (6 items)</h2>
+
+        <div class="item" data-searchable=".github  ">
+            <h3>.github</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>compliance.</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.github</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Brand_Assets  ">
+            <h3>Brand_Assets</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>compliance.brand-assets</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ISSUE_TEMPLATE  ">
+            <h3>ISSUE_TEMPLATE</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>compliance.issue-template</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.github/ISSUE_TEMPLATE</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Security Audit Reports Comprehensive security audit documentation security audit compliance">
+            <h3>Security Audit Reports</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>compliance.security.audit</code></p>
+                <p><strong>Description:</strong> Comprehensive security audit documentation</p>
+                <p><strong>Owner:</strong> security-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>compliance/security</code></p>
+                <p><strong>Tags:</strong> <span class="tag">security</span> <span class="tag">audit</span> <span class="tag">compliance</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Trust Fabric Framework Trust and security framework documentation trust security framework">
+            <h3>Trust Fabric Framework</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>compliance.trust-fabric</code></p>
+                <p><strong>Description:</strong> Trust and security framework documentation</p>
+                <p><strong>Owner:</strong> security-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>trust-fabric</code></p>
+                <p><strong>Tags:</strong> <span class="tag">trust</span> <span class="tag">security</span> <span class="tag">framework</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="workflows  ">
+            <h3>workflows</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>compliance.workflows</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.github/workflows</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Components (19 items)</h2>
+
+        <div class="item" data-searchable=".git-temp-clone  ">
+            <h3>.git-temp-clone</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="FULL_BACKUP_20250915_062012  ">
+            <h3>FULL_BACKUP_20250915_062012</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.full-backup-20250915-062012</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>FULL_BACKUP_20250915_062012</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="SDK  ">
+            <h3>SDK</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.sdk</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/SDK</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254  ">
+            <h3>TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.terrafusion-golden-everything-plus-20250917-181254</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Vendor SDK Shared vendor integration SDK sdk integration shared">
+            <h3>Vendor SDK</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>component.sdk.vendor</code></p>
+                <p><strong>Description:</strong> Shared vendor integration SDK</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>vendor-sdk</code></p>
+                <p><strong>Tags:</strong> <span class="tag">sdk</span> <span class="tag">integration</span> <span class="tag">shared</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ai-swarm  ai">
+            <h3>ai-swarm</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.ai-swarm</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/ai-swarm</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ai-swarm-venv  ai">
+            <h3>ai-swarm-venv</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.ai-swarm-venv</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/ai-swarm-venv</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="backend  ">
+            <h3>backend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.backend</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="config  ">
+            <h3>config</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.config</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/config</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="marketplace-enhanced  marketplace">
+            <h3>marketplace-enhanced</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.marketplace-enhanced</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> marketplace-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/infrastructure/marketplace-enhanced</code></p>
+                <p><strong>Tags:</strong> <span class="tag">marketplace</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="packages  ">
+            <h3>packages</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.packages</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/frontend-v2/packages</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="reports  ">
+            <h3>reports</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.reports</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/docs/reports</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="scripts  ">
+            <h3>scripts</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.scripts</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/SDK/scripts</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="sdks  ">
+            <h3>sdks</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.sdks</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/sdks</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="shock-and-awe  ">
+            <h3>shock-and-awe</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.shock-and-awe</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/modules_backup_20250912_093232/shock-and-awe</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="src  ">
+            <h3>src</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.src</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/frontend-vite-backup/src</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="utils  ">
+            <h3>utils</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.utils</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/utils</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="vendor-ecosystem  os">
+            <h3>vendor-ecosystem</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.vendor-ecosystem</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/docs/vendor-ecosystem</code></p>
+                <p><strong>Tags:</strong> <span class="tag">os</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="vendor-integrations  ">
+            <h3>vendor-integrations</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>components.vendor-integrations</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/demo/vendor-integrations</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Datasets (19 items)</h2>
+
+        <div class="item" data-searchable=".schemas .schemas dataset ">
+            <h3>.schemas</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.</code></p>
+                <p><strong>Description:</strong> .schemas dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.schemas</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Benton County Data Benton County specific datasets county benton data">
+            <h3>Benton County Data</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.county.benton</code></p>
+                <p><strong>Description:</strong> Benton County specific datasets</p>
+                <p><strong>Owner:</strong> data-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>county-data/benton</code></p>
+                <p><strong>Tags:</strong> <span class="tag">county</span> <span class="tag">benton</span> <span class="tag">data</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="FULL_BACKUP_20250915_062012 FULL_BACKUP_20250915_062012 dataset ">
+            <h3>FULL_BACKUP_20250915_062012</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.full-backup-20250915-062012</code></p>
+                <p><strong>Description:</strong> FULL_BACKUP_20250915_062012 dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="PLATFORM_EMPIRE_PLANNING PLATFORM_EMPIRE_PLANNING dataset ">
+            <h3>PLATFORM_EMPIRE_PLANNING</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.platform-empire-planning</code></p>
+                <p><strong>Description:</strong> PLATFORM_EMPIRE_PLANNING dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012/PLATFORM_EMPIRE_PLANNING</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Parcel Database Primary parcel data database parcels gis postgres primary confidential">
+            <h3>Parcel Database</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.parcels.main</code></p>
+                <p><strong>Description:</strong> Primary parcel data database</p>
+                <p><strong>Owner:</strong> data-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>database</code></p>
+                <p><strong>Tags:</strong> <span class="tag">parcels</span> <span class="tag">gis</span> <span class="tag">postgres</span> <span class="tag">primary</span> <span class="tag">confidential</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion.Data TerraFusion.Data dataset ">
+            <h3>TerraFusion.Data</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.terrafusion</code></p>
+                <p><strong>Description:</strong> TerraFusion.Data dataset</p>
+                <p><strong>Owner:</strong> data-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/TerraFusion.Data</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="backend backend dataset ">
+            <h3>backend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.backend</code></p>
+                <p><strong>Description:</strong> backend dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="backup backup dataset ">
+            <h3>backup</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.backup</code></p>
+                <p><strong>Description:</strong> backup dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backup</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="before-ai-changes before-ai-changes dataset ai">
+            <h3>before-ai-changes</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.before-ai-changes</code></p>
+                <p><strong>Description:</strong> before-ai-changes dataset</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backup/before-ai-changes</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="mcp-core mcp-core dataset ">
+            <h3>mcp-core</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.mcp-core</code></p>
+                <p><strong>Description:</strong> mcp-core dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/mcp-core</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="modules_backup_20250912_093232 modules_backup_20250912_093232 dataset ">
+            <h3>modules_backup_20250912_093232</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.modules-backup-20250912-093232</code></p>
+                <p><strong>Description:</strong> modules_backup_20250912_093232 dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="nats nats dataset ">
+            <h3>nats</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.nats</code></p>
+                <p><strong>Description:</strong> nats dataset</p>
+                <p><strong>Owner:</strong> data-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.data/nats</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="postgres postgres dataset os">
+            <h3>postgres</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.postgres</code></p>
+                <p><strong>Description:</strong> postgres dataset</p>
+                <p><strong>Owner:</strong> data-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.data/postgres</code></p>
+                <p><strong>Tags:</strong> <span class="tag">os</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="redis redis dataset ">
+            <h3>redis</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.redis</code></p>
+                <p><strong>Description:</strong> redis dataset</p>
+                <p><strong>Owner:</strong> data-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.data/redis</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="registry registry dataset gis">
+            <h3>registry</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.registry</code></p>
+                <p><strong>Description:</strong> registry dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012/registry</code></p>
+                <p><strong>Tags:</strong> <span class="tag">gis</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="schemas schemas dataset ">
+            <h3>schemas</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.schemas</code></p>
+                <p><strong>Description:</strong> schemas dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/schemas</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="terrafusion-ops terrafusion-ops dataset ">
+            <h3>terrafusion-ops</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.terrafusion-ops</code></p>
+                <p><strong>Description:</strong> terrafusion-ops dataset</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012/terrafusion-ops</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="terrafusion-swarm terrafusion-swarm dataset ">
+            <h3>terrafusion-swarm</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.terrafusion-swarm</code></p>
+                <p><strong>Description:</strong> terrafusion-swarm dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012/terrafusion-swarm</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="workspace workspace dataset ">
+            <h3>workspace</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>data.workspace</code></p>
+                <p><strong>Description:</strong> workspace dataset</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012/workspace</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Deployments (20 items)</h2>
+
+        <div class="item" data-searchable=".git-temp-clone  ">
+            <h3>.git-temp-clone</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="DevOps-Handoff-Package  ">
+            <h3>DevOps-Handoff-Package</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.devops-handoff-package</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deployment/DevOps-Handoff-Package</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Infrastructure as Code Terraform infrastructure definitions terraform iac infrastructure">
+            <h3>Infrastructure as Code</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deploy.terraform.infra</code></p>
+                <p><strong>Description:</strong> Terraform infrastructure definitions</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>terraform-base</code></p>
+                <p><strong>Tags:</strong> <span class="tag">terraform</span> <span class="tag">iac</span> <span class="tag">infrastructure</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Main Helm Charts Primary Helm chart deployments helm k8s deployment">
+            <h3>Main Helm Charts</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deploy.helm.main</code></p>
+                <p><strong>Description:</strong> Primary Helm chart deployments</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>helm</code></p>
+                <p><strong>Tags:</strong> <span class="tag">helm</span> <span class="tag">k8s</span> <span class="tag">deployment</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254  ">
+            <h3>TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.terrafusion-golden-everything-plus-20250917-181254</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613  ">
+            <h3>TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.terrafusion-golden-helmfile-redis-grafana-20250917-181613</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="advanced  ">
+            <h3>advanced</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.advanced</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deployment/advanced</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="bcw-uat  ">
+            <h3>bcw-uat</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.bcw-uat</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/bcw-uat</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="business-structure  ">
+            <h3>business-structure</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.business-structure</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/business-structure</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ci  ">
+            <h3>ci</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.ci</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/ci</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deploy  ">
+            <h3>deploy</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.deploy</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deploy</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deployed_modules  ">
+            <h3>deployed_modules</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.deployed-modules</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deployed_modules</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deployment  ">
+            <h3>deployment</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.deployment</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deployment</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deployment-authorization  ">
+            <h3>deployment-authorization</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.deployment-authorization</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/authorization/deployment-authorization</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="grafana_dashboards  ">
+            <h3>grafana_dashboards</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.grafana-dashboards</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/grafana_dashboards</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="helm  ">
+            <h3>helm</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.helm</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/helm</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="helmfile  ">
+            <h3>helmfile</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.helmfile</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/helmfile</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="k8s  ">
+            <h3>k8s</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.k8s</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deploy/k8s</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="service_redis_quota  ">
+            <h3>service_redis_quota</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.service-redis-quota</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/service_redis_quota</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="terraform  ">
+            <h3>terraform</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>deployments.terraform</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/bcw-uat/terraform</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Engines (17 items)</h2>
+
+        <div class="item" data-searchable=".github .github engine ">
+            <h3>.github</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.</code></p>
+                <p><strong>Description:</strong> .github engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/grfe_rust_workspace_production_plus/.github</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="CostForge Rust Engine High-performance cost calculation engine in Rust rust engine ffi wasm valuation critical">
+            <h3>CostForge Rust Engine</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.costforge.rust</code></p>
+                <p><strong>Description:</strong> High-performance cost calculation engine in Rust</p>
+                <p><strong>Owner:</strong> kernel-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>rust-performance-engine</code></p>
+                <p><strong>Tags:</strong> <span class="tag">rust</span> <span class="tag">engine</span> <span class="tag">ffi</span> <span class="tag">wasm</span> <span class="tag">valuation</span> <span class="tag">critical</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusionDevelopment TerraFusionDevelopment engine ">
+            <h3>TerraFusionDevelopment</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.terrafusiondevelopment</code></p>
+                <p><strong>Description:</strong> TerraFusionDevelopment engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>TerraFusionDevelopment</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Valuation Engine Core property valuation computation engine rust engine valuation performance">
+            <h3>Valuation Engine</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.valuation.core</code></p>
+                <p><strong>Description:</strong> Core property valuation computation engine</p>
+                <p><strong>Owner:</strong> valuation-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>valuation-engine</code></p>
+                <p><strong>Tags:</strong> <span class="tag">rust</span> <span class="tag">engine</span> <span class="tag">valuation</span> <span class="tag">performance</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="autonomous-research-engine autonomous-research-engine engine ">
+            <h3>autonomous-research-engine</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.autonomous-research-engine</code></p>
+                <p><strong>Description:</strong> autonomous-research-engine engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/modules_backup_20250912_093232/autonomous-research-engine</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="costforge-ai costforge-ai engine ai os">
+            <h3>costforge-ai</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.costforge-ai</code></p>
+                <p><strong>Description:</strong> costforge-ai engine</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/modules_backup_20250912_093232/costforge-ai</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span> <span class="tag">os</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="crates crates engine ">
+            <h3>crates</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.crates</code></p>
+                <p><strong>Description:</strong> crates engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/grfe_rust_workspace_production_plus/crates</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deploy deploy engine ">
+            <h3>deploy</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.deploy</code></p>
+                <p><strong>Description:</strong> deploy engine</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/grfe_rust_workspace_production_plus/deploy</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="examples examples engine ">
+            <h3>examples</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.examples</code></p>
+                <p><strong>Description:</strong> examples engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/grfe_rust_workspace_production_plus/examples</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="golden-ratio-engine golden-ratio-engine engine ">
+            <h3>golden-ratio-engine</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.golden-ratio-engine</code></p>
+                <p><strong>Description:</strong> golden-ratio-engine engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/modules/golden-ratio-engine</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="grfe_rust_workspace grfe_rust_workspace engine ">
+            <h3>grfe_rust_workspace</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.grfe-rust-workspace</code></p>
+                <p><strong>Description:</strong> grfe_rust_workspace engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="grfe_rust_workspace_production_plus grfe_rust_workspace_production_plus engine ">
+            <h3>grfe_rust_workspace_production_plus</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.grfe-rust-workspace-production-plus</code></p>
+                <p><strong>Description:</strong> grfe_rust_workspace_production_plus engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/grfe_rust_workspace_production_plus</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="performance performance engine ">
+            <h3>performance</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.performance</code></p>
+                <p><strong>Description:</strong> performance engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/module-analysis/performance</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="quantum-performance quantum-performance engine ">
+            <h3>quantum-performance</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.quantum-performance</code></p>
+                <p><strong>Description:</strong> quantum-performance engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/quantum-performance</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="rust-demo-server rust-demo-server engine ">
+            <h3>rust-demo-server</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.rust-demo-server</code></p>
+                <p><strong>Description:</strong> rust-demo-server engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>TerraFusionDevelopment/rust-demo-server</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="src src engine ">
+            <h3>src</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.src</code></p>
+                <p><strong>Description:</strong> src engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>TerraFusionDevelopment/rust-demo-server/src</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="trust-fabric trust-fabric engine ">
+            <h3>trust-fabric</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>engine.trust-fabric</code></p>
+                <p><strong>Description:</strong> trust-fabric engine</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>architecture/trust-fabric</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Environments (18 items)</h2>
+
+        <div class="item" data-searchable=".github  ">
+            <h3>.github</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.github</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="AI_AGENT_DEVELOPMENT_ENVIRONMENT  ai">
+            <h3>AI_AGENT_DEVELOPMENT_ENVIRONMENT</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.ai-agent-development-environment</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/AI_AGENT_DEVELOPMENT_ENVIRONMENT</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Development Environment Local and shared development environment dev local k8s">
+            <h3>Development Environment</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>env.dev</code></p>
+                <p><strong>Description:</strong> Local and shared development environment</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.devcontainer</code></p>
+                <p><strong>Tags:</strong> <span class="tag">dev</span> <span class="tag">local</span> <span class="tag">k8s</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Docker  ">
+            <h3>Docker</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.docker</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/Docker</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Production Environment Production Kubernetes cluster production k8s critical">
+            <h3>Production Environment</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>env.prod</code></p>
+                <p><strong>Description:</strong> Production Kubernetes cluster</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>deployment-package</code></p>
+                <p><strong>Tags:</strong> <span class="tag">production</span> <span class="tag">k8s</span> <span class="tag">critical</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE  ">
+            <h3>TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.terrafusion-ultimate-standalone-package</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion.API  ">
+            <h3>TerraFusion.API</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.terrafusion</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/TerraFusion.API</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ai-services  ai os">
+            <h3>ai-services</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.ai-services</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/compose/ai-services</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span> <span class="tag">os</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ai-swarm-venv  ai">
+            <h3>ai-swarm-venv</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.ai-swarm-venv</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/ai-swarm-venv</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="architecture  ">
+            <h3>architecture</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.architecture</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/architecture</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="compose  os">
+            <h3>compose</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.compose</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/compose</code></p>
+                <p><strong>Tags:</strong> <span class="tag">os</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="config  ">
+            <h3>config</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.config</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/config</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="configs  ">
+            <h3>configs</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.configs</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/configs</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="environments  ">
+            <h3>environments</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.environments</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.github/environments</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="grfe_rust_workspace  ">
+            <h3>grfe_rust_workspace</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.grfe-rust-workspace</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="mcp-servers  ">
+            <h3>mcp-servers</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.mcp-servers</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/mcp-servers</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="mock-api  os">
+            <h3>mock-api</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.mock-api</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/compose/mock-api</code></p>
+                <p><strong>Tags:</strong> <span class="tag">os</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="obs  os">
+            <h3>obs</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>environments.obs</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/compose/obs</code></p>
+                <p><strong>Tags:</strong> <span class="tag">os</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Frontends (22 items)</h2>
+
+        <div class="item" data-searchable="02_MARKETPLACE_STRATEGY  marketplace">
+            <h3>02_MARKETPLACE_STRATEGY</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.02-marketplace-strategy</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> marketplace-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/PLATFORM_EMPIRE_PLANNING/02_MARKETPLACE_STRATEGY</code></p>
+                <p><strong>Tags:</strong> <span class="tag">marketplace</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="AUDIT_20250913_185959  ai">
+            <h3>AUDIT_20250913_185959</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.audit-20250913-185959</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/ai-workspace-companion/AUDIT_20250913_185959</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="COMPLETE_TEST_SUITE  ">
+            <h3>COMPLETE_TEST_SUITE</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.complete-test-suite</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/COMPLETE_TEST_SUITE</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Desktop Shell Main desktop application shell (Tauri) desktop tauri shell ui rust">
+            <h3>Desktop Shell</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontend.desktop.shell</code></p>
+                <p><strong>Description:</strong> Main desktop application shell (Tauri)</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>src-tauri</code></p>
+                <p><strong>Tags:</strong> <span class="tag">desktop</span> <span class="tag">tauri</span> <span class="tag">shell</span> <span class="tag">ui</span> <span class="tag">rust</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Marketplace Frontend Marketplace web interface marketplace web react ui">
+            <h3>Marketplace Frontend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>marketplace.frontend</code></p>
+                <p><strong>Description:</strong> Marketplace web interface</p>
+                <p><strong>Owner:</strong> marketplace-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>marketplace/frontend</code></p>
+                <p><strong>Tags:</strong> <span class="tag">marketplace</span> <span class="tag">web</span> <span class="tag">react</span> <span class="tag">ui</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="PluginMarketplaceLauncher  marketplace">
+            <h3>PluginMarketplaceLauncher</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.pluginmarketplacelauncher</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> marketplace-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/PluginMarketplaceLauncher</code></p>
+                <p><strong>Tags:</strong> <span class="tag">marketplace</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Services  ">
+            <h3>Services</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.services</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/Services</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion.Marketplace  marketplace">
+            <h3>TerraFusion.Marketplace</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.terrafusion</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> marketplace-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/TerraFusion.Marketplace</code></p>
+                <p><strong>Tags:</strong> <span class="tag">marketplace</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Web Frontend Main web application frontend web react ui typescript">
+            <h3>Web Frontend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontend.web.main</code></p>
+                <p><strong>Description:</strong> Main web application frontend</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>frontend</code></p>
+                <p><strong>Tags:</strong> <span class="tag">web</span> <span class="tag">react</span> <span class="tag">ui</span> <span class="tag">typescript</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ai-services  ai os">
+            <h3>ai-services</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.ai-services</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/compose/ai-services</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span> <span class="tag">os</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ai-workspace-companion  ai">
+            <h3>ai-workspace-companion</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.ai-workspace-companion</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/ai-workspace-companion</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="claude-flow  ai">
+            <h3>claude-flow</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.claude-flow</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.ai/claude-flow</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="consciousness-service  ">
+            <h3>consciousness-service</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.consciousness-service</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/consciousness-service</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="customer-acquisition  ">
+            <h3>customer-acquisition</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.customer-acquisition</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/business-structure/customer-acquisition</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="desktop-electron  ">
+            <h3>desktop-electron</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.desktop-electron</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps/desktop-electron</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="gui  ">
+            <h3>gui</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.gui</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps/gui</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="implementation-guides  ">
+            <h3>implementation-guides</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.implementation-guides</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/business-structure/implementation-guides</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="modules_backup_20250912_093232  ">
+            <h3>modules_backup_20250912_093232</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.modules-backup-20250912-093232</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="suites  ">
+            <h3>suites</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.suites</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/bench/suites</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="test-hub  ">
+            <h3>test-hub</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.test-hub</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/bcw-uat/test-hub</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="tests  ">
+            <h3>tests</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.tests</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/bcw-uat/tests</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ui  ">
+            <h3>ui</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>frontends.ui</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps/ui</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Modules (22 items)</h2>
+
+        <div class="item" data-searchable=".git-temp-clone .git-temp-clone module ">
+            <h3>.git-temp-clone</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.</code></p>
+                <p><strong>Description:</strong> .git-temp-clone module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Brand_Assets Brand_Assets module ">
+            <h3>Brand_Assets</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.brand-assets</code></p>
+                <p><strong>Description:</strong> Brand_Assets module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="GIS Parcel Tools GIS tools for parcel management gis parcel tools plugin">
+            <h3>GIS Parcel Tools</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.gis.parcel-tools</code></p>
+                <p><strong>Description:</strong> GIS tools for parcel management</p>
+                <p><strong>Owner:</strong> gis-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>modules/parcel-tools</code></p>
+                <p><strong>Tags:</strong> <span class="tag">gis</span> <span class="tag">parcel</span> <span class="tag">tools</span> <span class="tag">plugin</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="PluginMarketplaceLauncher PluginMarketplaceLauncher module marketplace">
+            <h3>PluginMarketplaceLauncher</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.pluginmarketplacelauncher</code></p>
+                <p><strong>Description:</strong> PluginMarketplaceLauncher module</p>
+                <p><strong>Owner:</strong> marketplace-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/PluginMarketplaceLauncher</code></p>
+                <p><strong>Tags:</strong> <span class="tag">marketplace</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Shock and Awe Module Advanced demonstration and showcase module demo showcase plugin">
+            <h3>Shock and Awe Module</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.shock-and-awe</code></p>
+                <p><strong>Description:</strong> Advanced demonstration and showcase module</p>
+                <p><strong>Owner:</strong> plugins-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>shock-and-awe-2.0</code></p>
+                <p><strong>Tags:</strong> <span class="tag">demo</span> <span class="tag">showcase</span> <span class="tag">plugin</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="apps apps module ">
+            <h3>apps</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.apps</code></p>
+                <p><strong>Description:</strong> apps module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="backend backend module ">
+            <h3>backend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.backend</code></p>
+                <p><strong>Description:</strong> backend module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="brand brand module ">
+            <h3>brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.brand</code></p>
+                <p><strong>Description:</strong> brand module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/brand</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="core-apps core-apps module ">
+            <h3>core-apps</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.core-apps</code></p>
+                <p><strong>Description:</strong> core-apps module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/core-apps</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="css css module ">
+            <h3>css</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.css</code></p>
+                <p><strong>Description:</strong> css module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps/css</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deployed_modules deployed_modules module ">
+            <h3>deployed_modules</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.deployed-modules</code></p>
+                <p><strong>Description:</strong> deployed_modules module</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deployed_modules</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="desktop-electron desktop-electron module ">
+            <h3>desktop-electron</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.desktop-electron</code></p>
+                <p><strong>Description:</strong> desktop-electron module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps/desktop-electron</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="government-approvals government-approvals module ">
+            <h3>government-approvals</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.government-approvals</code></p>
+                <p><strong>Description:</strong> government-approvals module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/authorization/government-approvals</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="grfe_rust_workspace grfe_rust_workspace module ">
+            <h3>grfe_rust_workspace</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.grfe-rust-workspace</code></p>
+                <p><strong>Description:</strong> grfe_rust_workspace module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="gui gui module ">
+            <h3>gui</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.gui</code></p>
+                <p><strong>Description:</strong> gui module</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps/gui</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="modules_backup_20250912_093232 modules_backup_20250912_093232 module ">
+            <h3>modules_backup_20250912_093232</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.modules-backup-20250912-093232</code></p>
+                <p><strong>Description:</strong> modules_backup_20250912_093232 module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="more brand more brand module ">
+            <h3>more brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.more-brand</code></p>
+                <p><strong>Description:</strong> more brand module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/more brand</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="national national module ">
+            <h3>national</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.national</code></p>
+                <p><strong>Description:</strong> national module</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/deployment/national</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="publish publish module ">
+            <h3>publish</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.publish</code></p>
+                <p><strong>Description:</strong> publish module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/publish</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="tests tests module ">
+            <h3>tests</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.tests</code></p>
+                <p><strong>Description:</strong> tests module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps/tests</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ui ui module ">
+            <h3>ui</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.ui</code></p>
+                <p><strong>Description:</strong> ui module</p>
+                <p><strong>Owner:</strong> frontend-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/apps/ui</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="web-app web-app module ">
+            <h3>web-app</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>module.web-app</code></p>
+                <p><strong>Description:</strong> web-app module</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/demo/web-app</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Partners (20 items)</h2>
+
+        <div class="item" data-searchable=".git-temp-clone  ">
+            <h3>.git-temp-clone</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="04_COMPETITIVE_STRATEGY  ">
+            <h3>04_COMPETITIVE_STRATEGY</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.04-competitive-strategy</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/PLATFORM_EMPIRE_PLANNING/04_COMPETITIVE_STRATEGY</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Brand_Assets  ">
+            <h3>Brand_Assets</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.brand-assets</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Harris County Integration Harris County partnership integration harris county integration">
+            <h3>Harris County Integration</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partner.harris</code></p>
+                <p><strong>Description:</strong> Harris County partnership integration</p>
+                <p><strong>Owner:</strong> partnerships-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>harris_county_integration</code></p>
+                <p><strong>Tags:</strong> <span class="tag">harris</span> <span class="tag">county</span> <span class="tag">integration</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion Enhanced Ops Integration  ">
+            <h3>TerraFusion Enhanced Ops Integration</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.terrafusion-enhanced-ops-integration</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion Enhanced Ops Integration</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Woolpert Integration Woolpert vendor integration woolpert vendor gis">
+            <h3>Woolpert Integration</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partner.woolpert</code></p>
+                <p><strong>Description:</strong> Woolpert vendor integration</p>
+                <p><strong>Owner:</strong> partnerships-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>woolpert</code></p>
+                <p><strong>Tags:</strong> <span class="tag">woolpert</span> <span class="tag">vendor</span> <span class="tag">gis</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ai-swarm  ai">
+            <h3>ai-swarm</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.ai-swarm</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/ai-swarm</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ai-swarm-supreme-commander  ai">
+            <h3>ai-swarm-supreme-commander</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.ai-swarm-supreme-commander</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/ai-swarm-supreme-commander</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="backend  ">
+            <h3>backend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.backend</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="brand  ">
+            <h3>brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.brand</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/brand</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="core  ai">
+            <h3>core</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.core</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.ai/core</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="county-data  ">
+            <h3>county-data</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.county-data</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> data-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/county-data</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="integration  ">
+            <h3>integration</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.integration</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/integration</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="mcp-core  ">
+            <h3>mcp-core</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.mcp-core</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/mcp-core</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="more brand  ">
+            <h3>more brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.more-brand</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/more brand</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="scripts  ai">
+            <h3>scripts</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.scripts</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.ai/claude-flow/scripts</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="strategic  ">
+            <h3>strategic</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.strategic</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/business-structure/strategic</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="tests  ">
+            <h3>tests</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.tests</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/tests</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="tx-harris  ">
+            <h3>tx-harris</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.tx-harris</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> data-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/county-data/tx-harris</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="workflows  ">
+            <h3>workflows</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>partners.workflows</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.github/workflows</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Pipelines (15 items)</h2>
+
+        <div class="item" data-searchable=".ci  ">
+            <h3>.ci</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.ci</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Main CI Pipeline Primary continuous integration pipeline ci github-actions automation">
+            <h3>Main CI Pipeline</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipeline.ci.main</code></p>
+                <p><strong>Description:</strong> Primary continuous integration pipeline</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.github/workflows</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ci</span> <span class="tag">github-actions</span> <span class="tag">automation</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Production Deployment Pipeline Production deployment automation cd deployment production k8s">
+            <h3>Production Deployment Pipeline</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipeline.deploy.prod</code></p>
+                <p><strong>Description:</strong> Production deployment automation</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>deployment-package</code></p>
+                <p><strong>Tags:</strong> <span class="tag">cd</span> <span class="tag">deployment</span> <span class="tag">production</span> <span class="tag">k8s</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion Clean Migration Script - Consolidate Everything  ">
+            <h3>TerraFusion Clean Migration Script - Consolidate Everything</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.terrafusion-clean-migration-script---consolidate-everything</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion Clean Migration Script - Consolidate Everything</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="ci  ">
+            <h3>ci</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.ci</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/bench/ci</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="consciousness  ">
+            <h3>consciousness</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.consciousness</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/consciousness</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="consciousness-service  ">
+            <h3>consciousness-service</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.consciousness-service</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/consciousness-service</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deploy  ">
+            <h3>deploy</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.deploy</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/bcw-uat/deploy</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deployment-authorization  ">
+            <h3>deployment-authorization</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.deployment-authorization</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/authorization/deployment-authorization</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="financial  ">
+            <h3>financial</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.financial</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/business-structure/financial</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="financial-management  ">
+            <h3>financial-management</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.financial-management</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/business-structure/financial-management</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="financial-projections  ">
+            <h3>financial-projections</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.financial-projections</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/business-structure/financial-projections</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="scripts  ">
+            <h3>scripts</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.scripts</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/championship/scripts</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="types  ">
+            <h3>types</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.types</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/consciousness-service/types</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="workflows  ">
+            <h3>workflows</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>pipelines.workflows</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.github/workflows</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Releases (4 items)</h2>
+
+        <div class="item" data-searchable=".git-temp-clone  ">
+            <h3>.git-temp-clone</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>releases.</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="FULL_BACKUP_20250915_062012  ">
+            <h3>FULL_BACKUP_20250915_062012</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>releases.full-backup-20250915-062012</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/FULL_BACKUP_20250915_062012</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="claude-flow  ai">
+            <h3>claude-flow</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>releases.claude-flow</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.ai/claude-flow</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="workflows  ">
+            <h3>workflows</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>releases.workflows</code></p>
+                <p><strong>Description:</strong> N/A</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> unknown</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/.github/workflows</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="registry">
+        <h2>Services (18 items)</h2>
+
+        <div class="item" data-searchable="AI_MONITORING AI_MONITORING service ai">
+            <h3>AI_MONITORING</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.ai-monitoring</code></p>
+                <p><strong>Description:</strong> AI_MONITORING service</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/AI_MONITORING</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Brand_Assets Brand_Assets service ">
+            <h3>Brand_Assets</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.brand-assets</code></p>
+                <p><strong>Description:</strong> Brand_Assets service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Consciousness Orchestrator AI consciousness orchestration service ai consciousness orchestration k8s">
+            <h3>Consciousness Orchestrator</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>consciousness.orchestrator</code></p>
+                <p><strong>Description:</strong> AI consciousness orchestration service</p>
+                <p><strong>Owner:</strong> ai-team</p>
+                <p><strong>Lifecycle:</strong> experimental</p>
+                <p><strong>Path:</strong> <code>consciousness-service</code></p>
+                <p><strong>Tags:</strong> <span class="tag">ai</span> <span class="tag">consciousness</span> <span class="tag">orchestration</span> <span class="tag">k8s</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Controllers Controllers service ">
+            <h3>Controllers</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.controllers</code></p>
+                <p><strong>Description:</strong> Controllers service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/Controllers</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Marketplace Gateway API gateway for marketplace services marketplace gateway api k8s">
+            <h3>Marketplace Gateway</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>marketplace.gateway</code></p>
+                <p><strong>Description:</strong> API gateway for marketplace services</p>
+                <p><strong>Owner:</strong> marketplace-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>marketplace/backend</code></p>
+                <p><strong>Tags:</strong> <span class="tag">marketplace</span> <span class="tag">gateway</span> <span class="tag">api</span> <span class="tag">k8s</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="OS Kernel API Core operating system kernel API os kernel api dotnet k8s critical">
+            <h3>OS Kernel API</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>os.kernel.api</code></p>
+                <p><strong>Description:</strong> Core operating system kernel API</p>
+                <p><strong>Owner:</strong> kernel-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>backend</code></p>
+                <p><strong>Tags:</strong> <span class="tag">os</span> <span class="tag">kernel</span> <span class="tag">api</span> <span class="tag">dotnet</span> <span class="tag">k8s</span> <span class="tag">critical</span></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="Services Services service ">
+            <h3>Services</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.services</code></p>
+                <p><strong>Description:</strong> Services service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/Services</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion.API.Tests TerraFusion.API.Tests service ">
+            <h3>TerraFusion.API.Tests</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.terrafusion.api</code></p>
+                <p><strong>Description:</strong> TerraFusion.API.Tests service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/TerraFusion.API.Tests</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="TerraFusion.Core TerraFusion.Core service ">
+            <h3>TerraFusion.Core</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.terrafusion</code></p>
+                <p><strong>Description:</strong> TerraFusion.Core service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend/TerraFusion.Core</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="authorization authorization service ">
+            <h3>authorization</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.authorization</code></p>
+                <p><strong>Description:</strong> authorization service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/authorization</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="backend backend service ">
+            <h3>backend</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.backend</code></p>
+                <p><strong>Description:</strong> backend service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/backend</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="brand brand service ">
+            <h3>brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.brand</code></p>
+                <p><strong>Description:</strong> brand service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/brand</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="deployment-authorization deployment-authorization service ">
+            <h3>deployment-authorization</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.deployment-authorization</code></p>
+                <p><strong>Description:</strong> deployment-authorization service</p>
+                <p><strong>Owner:</strong> ops-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/authorization/deployment-authorization</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="government-approvals government-approvals service ">
+            <h3>government-approvals</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.government-approvals</code></p>
+                <p><strong>Description:</strong> government-approvals service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/authorization/government-approvals</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="more brand more brand service ">
+            <h3>more brand</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.more-brand</code></p>
+                <p><strong>Description:</strong> more brand service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/Brand_Assets/more brand</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="security-clearances security-clearances service ">
+            <h3>security-clearances</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.security-clearances</code></p>
+                <p><strong>Description:</strong> security-clearances service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/authorization/security-clearances</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="service_overlays service_overlays service ">
+            <h3>service_overlays</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.service-overlays</code></p>
+                <p><strong>Description:</strong> service_overlays service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/service_overlays</code></p>
+            </div>
+        </div>
+
+        <div class="item" data-searchable="service_redis_quota service_redis_quota service ">
+            <h3>service_redis_quota</h3>
+            <div class="item-meta">
+                <p><strong>ID:</strong> <code>services.service-redis-quota</code></p>
+                <p><strong>Description:</strong> service_redis_quota service</p>
+                <p><strong>Owner:</strong> platform-team</p>
+                <p><strong>Lifecycle:</strong> active</p>
+                <p><strong>Path:</strong> <code>.git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/service_redis_quota</code></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterItems() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const items = document.querySelectorAll('.item');
+            
+            items.forEach(item => {
+                const searchable = item.getAttribute('data-searchable').toLowerCase();
+                if (searchable.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Engine",
+  "description": "High-performance computation engine (Rust, WASM, FFI)",
+  "type": "object",
+  "required": ["id", "name", "owner", "lifecycle", "source_path", "language"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^engine\\.[a-z0-9.-]+$"
+    },
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "owner": {"type": "string"},
+    "lifecycle": {
+      "type": "string",
+      "enum": ["active", "deprecated", "experimental", "archived"]
+    },
+    "source_path": {"type": "string"},
+    "language": {
+      "type": "string",
+      "enum": ["rust", "c", "cpp", "go", "wasm"]
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "ffi_bindings": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Languages with FFI bindings (e.g., dotnet, node, python)"
+    },
+    "performance_tier": {
+      "type": "string",
+      "enum": ["critical", "high", "standard"],
+      "description": "Performance requirements"
+    },
+    "used_by": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Service IDs that consume this engine"
+    }
+  }
+}

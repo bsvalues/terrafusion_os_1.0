@@ -1,0 +1,126 @@
+ping	Set up job	﻿2025-10-01T04:22:54.2485931Z Current runner version: '2.328.0'
+ping	Set up job	2025-10-01T04:22:54.2511767Z ##[group]Runner Image Provisioner
+ping	Set up job	2025-10-01T04:22:54.2512577Z Hosted Compute Agent
+ping	Set up job	2025-10-01T04:22:54.2513116Z Version: 20250912.392
+ping	Set up job	2025-10-01T04:22:54.2513793Z Commit: d921fda672a98b64f4f82364647e2f10b2267d0b
+ping	Set up job	2025-10-01T04:22:54.2514446Z Build Date: 2025-09-12T15:23:14Z
+ping	Set up job	2025-10-01T04:22:54.2515030Z ##[endgroup]
+ping	Set up job	2025-10-01T04:22:54.2515583Z ##[group]Operating System
+ping	Set up job	2025-10-01T04:22:54.2516152Z Ubuntu
+ping	Set up job	2025-10-01T04:22:54.2516590Z 24.04.3
+ping	Set up job	2025-10-01T04:22:54.2517073Z LTS
+ping	Set up job	2025-10-01T04:22:54.2517506Z ##[endgroup]
+ping	Set up job	2025-10-01T04:22:54.2517989Z ##[group]Runner Image
+ping	Set up job	2025-10-01T04:22:54.2518587Z Image: ubuntu-24.04
+ping	Set up job	2025-10-01T04:22:54.2519431Z Version: 20250922.53.1
+ping	Set up job	2025-10-01T04:22:54.2520441Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250922.53/images/ubuntu/Ubuntu2404-Readme.md
+ping	Set up job	2025-10-01T04:22:54.2521736Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250922.53
+ping	Set up job	2025-10-01T04:22:54.2522962Z ##[endgroup]
+ping	Set up job	2025-10-01T04:22:54.2524079Z ##[group]GITHUB_TOKEN Permissions
+ping	Set up job	2025-10-01T04:22:54.2525859Z Contents: read
+ping	Set up job	2025-10-01T04:22:54.2526395Z Metadata: read
+ping	Set up job	2025-10-01T04:22:54.2526964Z Packages: read
+ping	Set up job	2025-10-01T04:22:54.2527456Z ##[endgroup]
+ping	Set up job	2025-10-01T04:22:54.2530000Z Secret source: Actions
+ping	Set up job	2025-10-01T04:22:54.2531007Z Prepare workflow directory
+ping	Set up job	2025-10-01T04:22:54.2885462Z Prepare all required actions
+ping	Set up job	2025-10-01T04:22:54.2943338Z Getting action download info
+ping	Set up job	2025-10-01T04:22:54.6938378Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+ping	Set up job	2025-10-01T04:22:54.9225317Z Complete job name: ping
+ping	Run actions/checkout@v4	﻿2025-10-01T04:22:55.0003610Z ##[group]Run actions/checkout@v4
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0004427Z with:
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0004806Z   fetch-depth: 0
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0005250Z   repository: bsvalues/terrafusion_os_1.0
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0005918Z   token: ***
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0006282Z   ssh-strict: true
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0006667Z   ssh-user: git
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0007074Z   persist-credentials: true
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0007503Z   clean: true
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0007883Z   sparse-checkout-cone-mode: true
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0008349Z   fetch-tags: false
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0008906Z   show-progress: true
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0009300Z   lfs: false
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0009648Z   submodules: false
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0010030Z   set-safe-directory: true
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.0010692Z ##[endgroup]
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1106594Z Syncing repository: bsvalues/terrafusion_os_1.0
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1109487Z ##[group]Getting Git version info
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1110818Z Working directory is '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1112711Z [command]/usr/bin/git version
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1177767Z git version 2.51.0
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1204519Z ##[endgroup]
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1220238Z Temporarily overriding HOME='/home/runner/work/_temp/a8409a56-e4bd-4e56-bb5d-069a7ca38f13' before making global git config changes
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1222625Z Adding repository directory to the temporary git global config as a safe directory
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1235141Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1272518Z Deleting the contents of '/home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0'
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1276162Z ##[group]Initializing the repository
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1281095Z [command]/usr/bin/git init /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1380125Z hint: Using 'master' as the name for the initial branch. This default branch name
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1381783Z hint: is subject to change. To configure the initial branch name to use in all
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1383163Z hint: of your new repositories, which will suppress this warning, call:
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1384201Z hint:
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1384856Z hint: 	git config --global init.defaultBranch <name>
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1386004Z hint:
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1387163Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1389812Z hint: 'development'. The just-created branch can be renamed via this command:
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1391222Z hint:
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1392055Z hint: 	git branch -m <name>
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1392985Z hint:
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1394151Z hint: Disable this message with "git config set advice.defaultBranchName false"
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1396099Z Initialized empty Git repository in /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0/.git/
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1399330Z [command]/usr/bin/git remote add origin https://github.com/bsvalues/terrafusion_os_1.0
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1434283Z ##[endgroup]
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1435488Z ##[group]Disabling automatic garbage collection
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1439241Z [command]/usr/bin/git config --local gc.auto 0
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1467048Z ##[endgroup]
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1468223Z ##[group]Setting up auth
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1474693Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1505136Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1836139Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.1865684Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.2080141Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.2112783Z ##[endgroup]
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.2120983Z ##[group]Fetching the repository
+ping	Run actions/checkout@v4	2025-10-01T04:22:55.2122154Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.6975872Z From https://github.com/bsvalues/terrafusion_os_1.0
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.6977352Z  * [new branch]        feature/disable-marketplace-default -> origin/feature/disable-marketplace-default
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.6978421Z  * [new branch]        feature/e2e-ci-strict -> origin/feature/e2e-ci-strict
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.6979531Z  * [new branch]        main                  -> origin/main
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.6980215Z  * [new branch]        master                -> origin/master
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.6980843Z  * [new tag]           v0.1.0                -> v0.1.0
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7024286Z [command]/usr/bin/git branch --list --remote origin/main
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7048521Z   origin/main
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7059144Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7081086Z 74229bde826e54f2a0e4cc9e4b62fefeeb7d483c
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7088399Z ##[endgroup]
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7091199Z ##[group]Determining the checkout info
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7092578Z ##[endgroup]
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7093432Z [command]/usr/bin/git sparse-checkout disable
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7136249Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7163008Z ##[group]Checking out the ref
+ping	Run actions/checkout@v4	2025-10-01T04:22:58.7168101Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+ping	Run actions/checkout@v4	2025-10-01T04:22:59.6910686Z Switched to a new branch 'main'
+ping	Run actions/checkout@v4	2025-10-01T04:22:59.6912220Z branch 'main' set up to track 'origin/main'.
+ping	Run actions/checkout@v4	2025-10-01T04:22:59.6950989Z ##[endgroup]
+ping	Run actions/checkout@v4	2025-10-01T04:22:59.6988510Z [command]/usr/bin/git log -1 --format=%H
+ping	Run actions/checkout@v4	2025-10-01T04:22:59.7010453Z 74229bde826e54f2a0e4cc9e4b62fefeeb7d483c
+ping	Hello	﻿2025-10-01T04:22:59.7198309Z ##[group]Run echo "Workflow parsed. Runner is alive."
+ping	Hello	2025-10-01T04:22:59.7199696Z [36;1mecho "Workflow parsed. Runner is alive."[0m
+ping	Hello	2025-10-01T04:22:59.7200743Z [36;1mnode -v || true[0m
+ping	Hello	2025-10-01T04:22:59.7201664Z [36;1mnpm -v || true[0m
+ping	Hello	2025-10-01T04:22:59.7239399Z shell: /usr/bin/bash -e {0}
+ping	Hello	2025-10-01T04:22:59.7240626Z ##[endgroup]
+ping	Hello	2025-10-01T04:22:59.7317468Z Workflow parsed. Runner is alive.
+ping	Hello	2025-10-01T04:22:59.7827606Z v20.19.5
+ping	Hello	2025-10-01T04:23:00.0761490Z 10.8.2
+ping	Post Run actions/checkout@v4	﻿2025-10-01T04:23:00.0900468Z Post job cleanup.
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.1832310Z [command]/usr/bin/git version
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.1872481Z git version 2.51.0
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.1916126Z Temporarily overriding HOME='/home/runner/work/_temp/f0ef6461-9fa0-4ce5-b1ab-854dbbf97a46' before making global git config changes
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.1917539Z Adding repository directory to the temporary git global config as a safe directory
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.1923185Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/terrafusion_os_1.0/terrafusion_os_1.0
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.1958148Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.1991672Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.2217344Z fatal: No url found for submodule path 'modules/specialized/web-audit-tracker' in .gitmodules
+ping	Post Run actions/checkout@v4	2025-10-01T04:23:00.2269638Z ##[warning]The process '/usr/bin/git' failed with exit code 128
+ping	Complete job	﻿2025-10-01T04:23:00.2347873Z Cleaning up orphan processes

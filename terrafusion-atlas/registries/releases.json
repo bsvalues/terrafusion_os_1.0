@@ -1,0 +1,38 @@
+{
+  "registry": "releases",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "releases.claude-flow",
+      "name": "claude-flow",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/.ai/claude-flow",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "releases.",
+      "name": ".git-temp-clone",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone",
+      "tags": []
+    },
+    {
+      "id": "releases.workflows",
+      "name": "workflows",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/workflows",
+      "tags": []
+    },
+    {
+      "id": "releases.full-backup-20250915-062012",
+      "name": "FULL_BACKUP_20250915_062012",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012",
+      "tags": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:33.735617",
+  "count": 4
+}

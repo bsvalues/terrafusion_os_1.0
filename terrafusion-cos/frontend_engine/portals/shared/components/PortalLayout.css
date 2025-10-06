@@ -1,0 +1,70 @@
+/* Portal Layout Styles */
+
+.portal-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--terra-neutral-50);
+}
+
+.portal-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+}
+
+.portal-layout.sidebar-collapsed .portal-main {
+  margin-left: 80px;
+}
+
+.portal-content {
+  flex: 1;
+  padding: var(--terra-space-6);
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Loading State */
+.portal-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--terra-neutral-50);
+  color: var(--terra-neutral-700);
+}
+
+.portal-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--terra-primary-200);
+  border-top-color: var(--terra-primary-600);
+  border-radius: 50%;
+  animation: portal-spin 1s linear infinite;
+}
+
+@keyframes portal-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.portal-loading p {
+  margin-top: var(--terra-space-4);
+  font-size: var(--terra-font-size-lg);
+  font-weight: var(--terra-font-weight-medium);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .portal-main {
+    margin-left: 0;
+  }
+  
+  .portal-content {
+    padding: var(--terra-space-4);
+  }
+}

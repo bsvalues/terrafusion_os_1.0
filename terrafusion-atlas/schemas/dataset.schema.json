@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Dataset",
+  "description": "Database, data lake, export, or backup",
+  "type": "object",
+  "required": ["id", "name", "owner", "lifecycle", "source_path", "data_type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^data\\.[a-z0-9.-]+$"
+    },
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "owner": {"type": "string"},
+    "lifecycle": {
+      "type": "string",
+      "enum": ["active", "deprecated", "experimental", "archived"]
+    },
+    "source_path": {"type": "string"},
+    "data_type": {
+      "type": "string",
+      "enum": ["database", "lake", "export", "backup", "cache"]
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "technology": {
+      "type": "string",
+      "description": "e.g., PostgreSQL, MongoDB, Parquet, S3"
+    },
+    "security_classification": {
+      "type": "string",
+      "enum": ["public", "internal", "confidential", "restricted"]
+    },
+    "retention_policy": {
+      "type": "string",
+      "description": "Data retention policy"
+    }
+  }
+}

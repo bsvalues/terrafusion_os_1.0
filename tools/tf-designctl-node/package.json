@@ -1,0 +1,22 @@
+{
+  "name": "tf-designctl",
+  "version": "1.0.0",
+  "description": "TerraFusion Design Token CLI - Immediate-use Node.js tooling",
+  "type": "module",
+  "bin": {
+    "tf-designctl": "./bin/tf-designctl.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["terrafusion", "design-tokens", "design-system", "cli"],
+  "author": "TerraFusion Team",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "chokidar": "^3.5.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

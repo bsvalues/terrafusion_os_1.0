@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Compliance",
+  "description": "Security audit, certification, or compliance documentation",
+  "type": "object",
+  "required": ["id", "name", "owner", "source_path", "compliance_type"],
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "owner": {"type": "string"},
+    "source_path": {"type": "string"},
+    "compliance_type": {"type": "string", "enum": ["security-audit", "certification", "legal", "privacy", "trust"]},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "status": {"type": "string", "enum": ["draft", "in-review", "approved", "expired"]},
+    "expires_at": {"type": "string", "format": "date"}
+  }
+}

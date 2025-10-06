@@ -1,0 +1,233 @@
+{
+  "registry": "datasets",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "data.parcels.main",
+      "name": "Parcel Database",
+      "description": "Primary parcel data database",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": "database",
+      "data_type": "database",
+      "tags": [
+        "parcels",
+        "gis",
+        "postgres",
+        "primary",
+        "confidential"
+      ],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.county.benton",
+      "name": "Benton County Data",
+      "description": "Benton County specific datasets",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": "county-data/benton",
+      "data_type": "export",
+      "tags": [
+        "county",
+        "benton",
+        "data"
+      ],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.",
+      "name": ".schemas",
+      "description": ".schemas dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/.schemas",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.nats",
+      "name": "nats",
+      "description": "nats dataset",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": ".data/nats",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.postgres",
+      "name": "postgres",
+      "description": "postgres dataset",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": ".data/postgres",
+      "data_type": "database",
+      "tags": [
+        "os"
+      ],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.redis",
+      "name": "redis",
+      "description": "redis dataset",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": ".data/redis",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.full-backup-20250915-062012",
+      "name": "FULL_BACKUP_20250915_062012",
+      "description": "FULL_BACKUP_20250915_062012 dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.platform-empire-planning",
+      "name": "PLATFORM_EMPIRE_PLANNING",
+      "description": "PLATFORM_EMPIRE_PLANNING dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/PLATFORM_EMPIRE_PLANNING",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.modules-backup-20250912-093232",
+      "name": "modules_backup_20250912_093232",
+      "description": "modules_backup_20250912_093232 dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/modules_backup_20250912_093232",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.registry",
+      "name": "registry",
+      "description": "registry dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/registry",
+      "data_type": "database",
+      "tags": [
+        "gis"
+      ],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.terrafusion-ops",
+      "name": "terrafusion-ops",
+      "description": "terrafusion-ops dataset",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/terrafusion-ops",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.terrafusion-swarm",
+      "name": "terrafusion-swarm",
+      "description": "terrafusion-swarm dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/terrafusion-swarm",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.workspace",
+      "name": "workspace",
+      "description": "workspace dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/FULL_BACKUP_20250915_062012/workspace",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.backend",
+      "name": "backend",
+      "description": "backend dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.terrafusion",
+      "name": "TerraFusion.Data",
+      "description": "TerraFusion.Data dataset",
+      "owner": "data-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/TerraFusion.Data",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.mcp-core",
+      "name": "mcp-core",
+      "description": "mcp-core dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/mcp-core",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.schemas",
+      "name": "schemas",
+      "description": "schemas dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/schemas",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.backup",
+      "name": "backup",
+      "description": "backup dataset",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backup",
+      "data_type": "database",
+      "tags": [],
+      "technology": "PostgreSQL"
+    },
+    {
+      "id": "data.before-ai-changes",
+      "name": "before-ai-changes",
+      "description": "before-ai-changes dataset",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backup/before-ai-changes",
+      "data_type": "database",
+      "tags": [
+        "ai"
+      ],
+      "technology": "PostgreSQL"
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:24.946576",
+  "count": 19
+}

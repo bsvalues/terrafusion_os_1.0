@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Component",
+  "description": "Shared library, utility, or SDK",
+  "type": "object",
+  "required": ["id", "name", "owner", "source_path"],
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "owner": {"type": "string"},
+    "source_path": {"type": "string"},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "language": {"type": "string"},
+    "used_by": {"type": "array", "items": {"type": "string"}}
+  }
+}

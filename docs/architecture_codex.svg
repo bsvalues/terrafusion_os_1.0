@@ -1,0 +1,60 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- TerraFusion OS Architecture Codex -->
+  <!-- 7-Layer Constitutional Operating System -->
+  
+  <defs>
+    <style>
+      .layer { fill: rgba(74, 111, 220, 0.1); stroke: #4A6FDC; stroke-width: 2; }
+      .label { fill: #FFFFFF; font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 600; }
+      .sublabel { fill: #FFFFFF; font-family: 'Inter', sans-serif; font-size: 12px; opacity: 0.7; }
+      .axis { stroke: #4A6FDC; stroke-width: 1; stroke-dasharray: 5,5; }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="#000000"/>
+  
+  <!-- φ-Axis (Golden Ratio Vertical Alignment) -->
+  <line class="axis" x1="400" y1="50" x2="400" y2="550"/>
+  <text x="410" y="40" class="sublabel">φ-axis (1.618)</text>
+  
+  <!-- Layer VII: Trust Fabric -->
+  <rect class="layer" x="50" y="60" width="700" height="60" rx="6"/>
+  <text class="label" x="70" y="95">VII. Trust Fabric</text>
+  <text class="sublabel" x="250" y="95">Cryptographic ledger · Design sovereignty · Audit log</text>
+  
+  <!-- Layer VI: AI Swarm Orchestration -->
+  <rect class="layer" x="50" y="140" width="700" height="60" rx="6"/>
+  <text class="label" x="70" y="175">VI. AI Swarm Orchestration</text>
+  <text class="sublabel" x="300" y="175">Multi-agent coordination · LLM routing</text>
+  
+  <!-- Layer V: WASM Runtime -->
+  <rect class="layer" x="50" y="220" width="700" height="60" rx="6"/>
+  <text class="label" x="70" y="255">V. WASM Runtime</text>
+  <text class="sublabel" x="250" y="255">Sandboxed plugin execution · WebAssembly components</text>
+  
+  <!-- Layer IV: Sovereign Shell -->
+  <rect class="layer" x="50" y="300" width="700" height="60" rx="6"/>
+  <text class="label" x="70" y="335">IV. Sovereign Shell</text>
+  <text class="sublabel" x="250" y="335">WGPU compositor · Glass morphism · Design tokens</text>
+  
+  <!-- Layer III: Quantum-Inspired Core -->
+  <rect class="layer" x="50" y="380" width="700" height="60" rx="6"/>
+  <text class="label" x="70" y="415">III. Quantum-Inspired Core</text>
+  <text class="sublabel" x="300" y="415">State management · Reactive primitives</text>
+  
+  <!-- Layer II: Hardware Substrate -->
+  <rect class="layer" x="50" y="460" width="700" height="40" rx="6"/>
+  <text class="label" x="70" y="485">II. Hardware Substrate</text>
+  <text class="sublabel" x="270" y="485">GPU acceleration · Kubernetes orchestration</text>
+  
+  <!-- Layer I: OS Primitives -->
+  <rect class="layer" x="50" y="520" width="700" height="30" rx="6"/>
+  <text class="label" x="70" y="540">I. OS Primitives</text>
+  <text class="sublabel" x="210" y="540">Linux kernel · Docker · Network stack</text>
+  
+  <!-- Title -->
+  <text x="400" y="30" text-anchor="middle" style="fill: #4A6FDC; font-family: 'Inter'; font-size: 24px; font-weight: 700;">
+    TerraFusion OS Architecture Codex
+  </text>
+</svg>

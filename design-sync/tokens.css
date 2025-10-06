@@ -1,0 +1,32 @@
+:root {
+  --trust-blue: #0099ff;
+  --transcend-cyan: #00ffee;
+  --success-green: #00ffaa;
+  --deep-space: #0b1020;
+  --midnight: #1a1f3a;
+  --alert-red: #ff4444;
+  --caution-amber: #ffaa00;
+  --clarity-light: #e0f7ff;
+  --white: #ffffff;
+  --font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+  --font-size-overline: 12px;
+  --font-size-caption: 14px;
+  --font-size-body: 16px;
+  --font-size-body-large: 18px;
+  --font-size-h3: 24px;
+  --font-size-h2: 28px;
+  --font-size-h1: 36px;
+  --font-size-display: 48px;
+  --font-size-display-large: 72px;
+  --border-radius-sm: 6px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 24px;
+  --border-radius-full: 50px;
+  --phi: undefined;
+  --ease-harmonic: undefined;
+  --duration-micro: 150ms;
+  --duration-quick: 300ms;
+  --duration-normal: 500ms;
+  --duration-slow: 800ms;
+  --duration-page: 1200ms;
+}

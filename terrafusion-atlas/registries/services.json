@@ -1,0 +1,207 @@
+{
+  "registry": "services",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "os.kernel.api",
+      "name": "OS Kernel API",
+      "description": "Core operating system kernel API",
+      "owner": "kernel-team",
+      "lifecycle": "active",
+      "source_path": "backend",
+      "tags": [
+        "os",
+        "kernel",
+        "api",
+        "dotnet",
+        "k8s",
+        "critical"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "marketplace.gateway",
+      "name": "Marketplace Gateway",
+      "description": "API gateway for marketplace services",
+      "owner": "marketplace-team",
+      "lifecycle": "active",
+      "source_path": "marketplace/backend",
+      "tags": [
+        "marketplace",
+        "gateway",
+        "api",
+        "k8s"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "consciousness.orchestrator",
+      "name": "Consciousness Orchestrator",
+      "description": "AI consciousness orchestration service",
+      "owner": "ai-team",
+      "lifecycle": "experimental",
+      "source_path": "consciousness-service",
+      "tags": [
+        "ai",
+        "consciousness",
+        "orchestration",
+        "k8s"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "services.brand-assets",
+      "name": "Brand_Assets",
+      "description": "Brand_Assets service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.brand",
+      "name": "brand",
+      "description": "brand service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets/brand",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.more-brand",
+      "name": "more brand",
+      "description": "more brand service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/Brand_Assets/more brand",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.service-overlays",
+      "name": "service_overlays",
+      "description": "service_overlays service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/service_overlays",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.service-redis-quota",
+      "name": "service_redis_quota",
+      "description": "service_redis_quota service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613/service_redis_quota",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.backend",
+      "name": "backend",
+      "description": "backend service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.authorization",
+      "name": "authorization",
+      "description": "authorization service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.deployment-authorization",
+      "name": "deployment-authorization",
+      "description": "deployment-authorization service",
+      "owner": "ops-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization/deployment-authorization",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.government-approvals",
+      "name": "government-approvals",
+      "description": "government-approvals service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization/government-approvals",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.security-clearances",
+      "name": "security-clearances",
+      "description": "security-clearances service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/authorization/security-clearances",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.ai-monitoring",
+      "name": "AI_MONITORING",
+      "description": "AI_MONITORING service",
+      "owner": "ai-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/AI_MONITORING",
+      "tags": [
+        "ai"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "services.controllers",
+      "name": "Controllers",
+      "description": "Controllers service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/Controllers",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.services",
+      "name": "Services",
+      "description": "Services service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/Services",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.terrafusion",
+      "name": "TerraFusion.Core",
+      "description": "TerraFusion.Core service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/TerraFusion.Core",
+      "tags": [],
+      "depends_on": []
+    },
+    {
+      "id": "services.terrafusion.api",
+      "name": "TerraFusion.API.Tests",
+      "description": "TerraFusion.API.Tests service",
+      "owner": "platform-team",
+      "lifecycle": "active",
+      "source_path": ".git-temp-clone/backend/TerraFusion.API.Tests",
+      "tags": [],
+      "depends_on": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:17.653961",
+  "count": 18
+}

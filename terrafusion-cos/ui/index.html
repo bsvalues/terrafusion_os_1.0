@@ -3,23 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TerraFusion cOS - Government Operating System</title>
+    <title>TerraFusion cOS - Government. Transcended.</title>
+    
+    <!-- Brand Assets First -->
+    <link rel="stylesheet" href="../../Brand_Assets/tf-brand-css.css">
+    
+    <!-- System Styles -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/components.css">
     <link rel="stylesheet" href="styles/animations.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Transcendence Override - Government. Transcended. */
+        :root {
+            --tf-primary: #0099ff;
+            --tf-transcend: #00ffee;
+            --tf-accent: #00ffaa;
+            --tf-dark: #0b1020;
+            --tf-dark-lighter: #1a1f3a;
+        }
+        
+        body {
+            background: linear-gradient(180deg, var(--tf-dark) 0%, #0a0f1c 100%);
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+        }
+        
+        /* Hero Section - Positioned at top, doesn't push content */
+        .transcendence-hero {
+            position: fixed;
+            top: 40px; /* Below title bar */
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 2rem;
+            text-align: center;
+            z-index: 5;
+            background: linear-gradient(180deg, rgba(11, 16, 32, 0.95) 0%, transparent 100%);
+            pointer-events: none; /* Allow clicks through to content below */
+        }
+        
+        .transcendence-hero > * {
+            pointer-events: auto; /* But allow clicks on hero content itself */
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.75rem;
+            background: linear-gradient(135deg, rgba(0,153,255,0.2), rgba(0,255,238,0.2));
+            border: 1px solid rgba(0,255,238,0.5);
+            border-radius: 50px;
+            margin-bottom: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--tf-transcend);
+            animation: intelligencePulse 2s ease-in-out infinite;
+        }
+        
+        .hero-title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--tf-primary), var(--tf-transcend), var(--tf-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            filter: drop-shadow(0 0 20px rgba(0,255,238,0.4));
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+            font-weight: 300;
+            color: rgba(255,255,255,0.7);
+            max-width: 600px;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+    </style>
 </head>
 <body>
+    <!-- WebGL Transcendence Background -->
+    <canvas id="transcendence-canvas"></canvas>
+    
+    <!-- Hero Section -->
+    <div class="transcendence-hero">
+        <div class="hero-badge">
+            <span>✨</span>
+            <span id="swarm-status">AI SWARM OPERATIONAL • 50,000+ AGENTS</span>
+        </div>
+        <h1 class="hero-title">Government. Transcended.</h1>
+        <p class="hero-subtitle">
+            <span id="service-count">7</span> core services operational. 
+            <span id="module-count">16</span> modules loaded.
+            Experience clarity at scale.
+        </p>
+    </div>
+    
     <!-- Custom Title Bar -->
     <div class="title-bar">
         <div class="title-bar-content">
             <div class="title-bar-left">
-                <img src="../assets/terrafusion-logo.png" alt="TerraFusion" class="logo">
                 <span class="title">TerraFusion cOS</span>
+                <span style="color: var(--tf-transcend); font-size: 12px; margin-left: 8px;">v1.0.0</span>
             </div>
             <div class="title-bar-center">
-                <span class="tagline">Government. Transcended.</span>
+                <span class="tagline" style="color: var(--tf-transcend); font-weight: 500;">Government. Transcended.</span>
             </div>
             <div class="title-bar-right">
                 <div class="window-controls">
@@ -43,7 +138,7 @@
             </div>
             
             <div class="nav-menu">
-                <div class="nav-item active" data-section="dashboard">
+                <div class="nav-item active clarity-gradient" data-section="dashboard">
                     <div class="nav-icon">🏛️</div>
                     <span class="nav-label">Dashboard</span>
                 </div>
@@ -85,7 +180,7 @@
 
                 <!-- Status Cards Grid -->
                 <div class="status-grid">
-                    <div class="status-card ai-swarm">
+                    <div class="status-card ai-swarm transcend-glow">
                         <div class="card-header">
                             <div class="card-icon">🤖</div>
                             <div class="card-title">AI Swarm</div>
@@ -101,12 +196,12 @@
                             </div>
                         </div>
                         <div class="card-status">
-                            <div class="status-dot active"></div>
+                            <div class="status-dot active intelligence-pulse"></div>
                             <span>OPERATIONAL</span>
                         </div>
                     </div>
 
-                    <div class="status-card costforge">
+                    <div class="status-card costforge transcend-glow">
                         <div class="card-header">
                             <div class="card-icon">💰</div>
                             <div class="card-title">CostForge AI</div>
@@ -122,12 +217,12 @@
                             </div>
                         </div>
                         <div class="card-status">
-                            <div class="status-dot active"></div>
+                            <div class="status-dot active intelligence-pulse"></div>
                             <span>ACTIVE</span>
                         </div>
                     </div>
 
-                    <div class="status-card security">
+                    <div class="status-card security transcend-glow">
                         <div class="card-header">
                             <div class="card-icon">🛡️</div>
                             <div class="card-title">Security Mesh</div>
@@ -143,12 +238,12 @@
                             </div>
                         </div>
                         <div class="card-status">
-                            <div class="status-dot active"></div>
+                            <div class="status-dot active intelligence-pulse"></div>
                             <span>SECURED</span>
                         </div>
                     </div>
 
-                    <div class="status-card sync">
+                    <div class="status-card sync transcend-glow">
                         <div class="card-header">
                             <div class="card-icon">🔄</div>
                             <div class="card-title">TerraFusion Sync</div>
@@ -164,7 +259,7 @@
                             </div>
                         </div>
                         <div class="card-status">
-                            <div class="status-dot active"></div>
+                            <div class="status-dot active intelligence-pulse"></div>
                             <span>REAL-TIME</span>
                         </div>
                     </div>
@@ -467,8 +562,8 @@
         </main>
     </div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
+    <!-- Loading Overlay (hidden by default) -->
+    <div id="loadingOverlay" class="loading-overlay hidden" style="display: none;">
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <div class="loading-text">Initializing TerraFusion cOS...</div>
@@ -477,8 +572,20 @@
 
     <!-- Scripts -->
     <script src="js/main.js"></script>
-    <script src="js/charts.js"></script>
-    <script src="js/costforge.js"></script>
-    <script src="js/ai-swarm.js"></script>
+    
+    <!-- WebGL Transcendence Background Initialization -->
+    <script type="module">
+        import { initTranscendenceBackground } from './js/transcendence-webgl.js';
+        
+        // Initialize WebGL background on load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('✨ Initializing Transcendence...');
+            try {
+                initTranscendenceBackground('transcendence-canvas');
+            } catch (error) {
+                console.warn('WebGL transcendence not available:', error.message);
+            }
+        });
+    </script>
 </body>
 </html>

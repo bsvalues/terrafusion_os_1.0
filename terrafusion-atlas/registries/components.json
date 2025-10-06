@@ -1,0 +1,154 @@
+{
+  "registry": "components",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "component.sdk.vendor",
+      "name": "Vendor SDK",
+      "owner": "platform-team",
+      "source_path": "vendor-sdk",
+      "tags": [
+        "sdk",
+        "integration",
+        "shared"
+      ],
+      "description": "Shared vendor integration SDK"
+    },
+    {
+      "id": "components.",
+      "name": ".git-temp-clone",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone",
+      "tags": []
+    },
+    {
+      "id": "components.sdk",
+      "name": "SDK",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/SDK",
+      "tags": []
+    },
+    {
+      "id": "components.scripts",
+      "name": "scripts",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/SDK/scripts",
+      "tags": []
+    },
+    {
+      "id": "components.terrafusion-golden-everything-plus-20250917-181254",
+      "name": "TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254",
+      "tags": []
+    },
+    {
+      "id": "components.sdks",
+      "name": "sdks",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254/sdks",
+      "tags": []
+    },
+    {
+      "id": "components.ai-swarm-venv",
+      "name": "ai-swarm-venv",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-swarm-venv",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "components.backend",
+      "name": "backend",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend",
+      "tags": []
+    },
+    {
+      "id": "components.ai-swarm",
+      "name": "ai-swarm",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/backend/ai-swarm",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "components.utils",
+      "name": "utils",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/utils",
+      "tags": []
+    },
+    {
+      "id": "components.config",
+      "name": "config",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/config",
+      "tags": []
+    },
+    {
+      "id": "components.vendor-integrations",
+      "name": "vendor-integrations",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/demo/vendor-integrations",
+      "tags": []
+    },
+    {
+      "id": "components.reports",
+      "name": "reports",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/docs/reports",
+      "tags": []
+    },
+    {
+      "id": "components.vendor-ecosystem",
+      "name": "vendor-ecosystem",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/docs/vendor-ecosystem",
+      "tags": [
+        "os"
+      ]
+    },
+    {
+      "id": "components.src",
+      "name": "src",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend-vite-backup/src",
+      "tags": []
+    },
+    {
+      "id": "components.packages",
+      "name": "packages",
+      "owner": "frontend-team",
+      "source_path": ".git-temp-clone/frontend-v2/packages",
+      "tags": []
+    },
+    {
+      "id": "components.marketplace-enhanced",
+      "name": "marketplace-enhanced",
+      "owner": "marketplace-team",
+      "source_path": ".git-temp-clone/infrastructure/marketplace-enhanced",
+      "tags": [
+        "marketplace"
+      ]
+    },
+    {
+      "id": "components.shock-and-awe",
+      "name": "shock-and-awe",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/modules_backup_20250912_093232/shock-and-awe",
+      "tags": []
+    },
+    {
+      "id": "components.full-backup-20250915-062012",
+      "name": "FULL_BACKUP_20250915_062012",
+      "owner": "platform-team",
+      "source_path": "FULL_BACKUP_20250915_062012",
+      "tags": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:35.255024",
+  "count": 19
+}

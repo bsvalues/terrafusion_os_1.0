@@ -1,0 +1,39 @@
+<svg width="640" height="360" xmlns="http://www.w3.org/2000/svg">
+  <!-- TerraFusion Marketplace Overlay Frame -->
+  <!-- Wire-frame that overlays plugin screenshots -->
+  
+  <defs>
+    <style>
+      .frame { fill: none; stroke: var(--terra-primary, #4A6FDC); stroke-width: 3; }
+      .corner { fill: var(--terra-primary, #4A6FDC); }
+      .glow { fill: var(--terra-primary, #4A6FDC); filter: blur(12px); opacity: 0.3; }
+    </style>
+  </defs>
+  
+  <!-- Outer border -->
+  <rect class="frame" x="10" y="10" width="620" height="340" rx="12"/>
+  
+  <!-- Corner accents (phi-proportioned) -->
+  <circle class="glow" cx="25" cy="25" r="8"/>
+  <circle class="corner" cx="25" cy="25" r="4"/>
+  
+  <circle class="glow" cx="615" cy="25" r="8"/>
+  <circle class="corner" cx="615" cy="25" r="4"/>
+  
+  <circle class="glow" cx="25" cy="335" r="8"/>
+  <circle class="corner" cx="25" cy="335" r="4"/>
+  
+  <circle class="glow" cx="615" cy="335" r="8"/>
+  <circle class="corner" cx="615" cy="335" r="4"/>
+  
+  <!-- Center focus ring -->
+  <circle class="frame" cx="320" cy="180" r="60" stroke-dasharray="10,5"/>
+  
+  <!-- Brand compliance indicator (bottom-right) -->
+  <g transform="translate(560, 310)">
+    <circle fill="rgba(74, 111, 220, 0.1)" r="20"/>
+    <text x="0" y="6" text-anchor="middle" style="fill: var(--terra-white, #FFF); font-family: 'Inter'; font-size: 14px; font-weight: 700;">
+      TF
+    </text>
+  </g>
+</svg>

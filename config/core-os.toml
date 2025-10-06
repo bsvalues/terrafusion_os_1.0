@@ -1,0 +1,293 @@
+# TerraFusion OS - Core Services Configuration
+# Version: 1.0.0
+# Environment: Production
+
+[core_os]
+# Enable comprehensive health monitoring
+enable_health_monitoring = true
+
+# Health check interval (seconds)
+health_check_interval_seconds = 30
+
+# Log level: trace, debug, info, warn, error
+log_level = "info"
+
+# Enable performance metrics collection
+enable_metrics = true
+
+# Metrics collection interval (seconds)
+metrics_interval_seconds = 60
+
+# ============================================================================
+# TERRAFUSION SYNC SERVICE CONFIGURATION
+# ============================================================================
+[terra_sync]
+# Database connection (PostgreSQL)
+# Format: postgresql://user:password@host:port/database
+database_url = "${DATABASE_URL}"
+
+# Redis connection for caching and coordination
+# Format: redis://host:port
+redis_url = "${REDIS_URL}"
+
+# Harris PACS v12.4.7 Integration
+harris_pacs_endpoint = "${HARRIS_PACS_ENDPOINT}"
+harris_pacs_api_key = "${HARRIS_PACS_API_KEY}"
+harris_pacs_version = "12.4.7"
+
+# Tyler Technologies Vision Integration
+tyler_endpoint = "${TYLER_ENDPOINT}"
+tyler_api_key = "${TYLER_API_KEY}"
+
+# Aumentum Systems Integration
+aumentum_endpoint = "${AUMENTUM_ENDPOINT}"
+aumentum_api_key = "${AUMENTUM_API_KEY}"
+
+# Sync Configuration
+sync_interval_seconds = 60
+max_retry_attempts = 3
+retry_backoff_seconds = 5
+batch_size = 1000
+
+# Performance Tuning
+max_concurrent_syncs = 10
+connection_pool_size = 20
+query_timeout_seconds = 30
+
+# Benton County Specific
+benton_county_parcel_count = 89247
+enable_benton_optimizations = true
+
+# ============================================================================
+# TERRAFLOW SERVICE CONFIGURATION
+# ============================================================================
+[terra_flow]
+# Workflow Configuration
+max_concurrent_workflows = 100
+workflow_timeout_seconds = 300
+enable_workflow_persistence = true
+
+# State Storage
+state_storage_backend = "redis"
+state_retention_days = 90
+
+# Performance
+max_workflow_queue_size = 1000
+worker_thread_count = 4
+
+# Government Workflows
+enable_property_assessment_workflow = true
+enable_tax_levy_workflow = true
+enable_compliance_workflow = true
+enable_appeal_workflow = true
+
+# Audit Configuration
+enable_workflow_audit_trail = true
+audit_retention_days = 365
+
+# ============================================================================
+# COSTFORGE AI ENGINE CONFIGURATION
+# ============================================================================
+[costforge]
+# Quantum Optimization
+quantum_enabled = true
+optimization_factor = 949
+
+# ML Models Configuration
+ml_model_path = "./models"
+enable_model_caching = true
+model_cache_size_gb = 2
+
+# Property Valuation
+enable_property_valuation = true
+valuation_confidence_threshold = 0.90
+min_comparables_required = 3
+max_comparables_used = 12
+
+# Budget Optimization
+enable_budget_optimization = true
+target_savings_percent = 10.0
+min_savings_confidence = 0.85
+
+# Revenue Forecasting
+enable_revenue_forecasting = true
+default_forecast_years = 5
+forecast_confidence_threshold = 0.85
+
+# AI/ML Performance
+max_concurrent_inferences = 50
+inference_timeout_seconds = 30
+enable_gpu_acceleration = true
+
+# Model Versions
+property_valuation_model = "property_valuation_v2.pt"
+budget_optimization_model = "budget_optimizer_v1.pt"
+revenue_forecasting_model = "revenue_forecaster_v1.pt"
+
+# ============================================================================
+# IPC ROUTER CONFIGURATION
+# ============================================================================
+[ipc]
+# Enable comprehensive audit logging
+enable_audit_logging = true
+audit_log_path = "./logs/ipc-audit.log"
+audit_retention_days = 365
+
+# Capability Security
+enforce_capabilities = true
+default_deny = true
+
+# Performance
+max_concurrent_requests = 1000
+request_timeout_seconds = 60
+
+# Rate Limiting
+enable_rate_limiting = true
+max_requests_per_second = 100
+
+# ============================================================================
+# SERVICE MANAGER CONFIGURATION
+# ============================================================================
+[service_manager]
+# Restart Policy: "never", "on_failure", "always"
+restart_policy = "on_failure"
+
+# Maximum restart attempts before giving up
+max_restart_attempts = 3
+
+# Delay between restart attempts (seconds)
+restart_delay_seconds = 5
+
+# Health Check Configuration
+health_check_interval_seconds = 30
+health_check_timeout_seconds = 10
+
+# Failure Detection
+consecutive_failures_before_alert = 2
+enable_failure_notifications = true
+
+# ============================================================================
+# LOGGING CONFIGURATION
+# ============================================================================
+[logging]
+# Log level: trace, debug, info, warn, error
+level = "info"
+
+# Log format: "json", "pretty", "compact"
+format = "json"
+
+# Log destinations
+enable_console = true
+enable_file = true
+log_directory = "./logs"
+
+# Log rotation
+max_log_size_mb = 100
+max_log_files = 10
+
+# Structured logging fields
+include_timestamp = true
+include_service_name = true
+include_request_id = true
+include_performance_metrics = true
+
+# ============================================================================
+# MONITORING & METRICS CONFIGURATION
+# ============================================================================
+[monitoring]
+# Prometheus metrics endpoint
+enable_prometheus = true
+prometheus_port = "${PROMETHEUS_PORT}"
+
+# Grafana dashboard
+enable_grafana = false
+grafana_url = "${GRAFANA_URL}"
+
+# Custom metrics
+enable_custom_metrics = true
+metrics_prefix = "terrafusion_core_os"
+
+# Performance tracking
+track_startup_time = true
+track_request_latency = true
+track_throughput = true
+track_error_rates = true
+track_resource_usage = true
+
+# ============================================================================
+# SECURITY CONFIGURATION
+# ============================================================================
+[security]
+# Encryption
+encryption_algorithm = "AES-256-GCM"
+key_rotation_days = 30
+
+# Access Control
+enable_rbac = true
+enable_mfa = false  # To be enabled in production
+
+# Audit Requirements
+enable_security_audit_trail = true
+audit_all_core_service_calls = true
+audit_retention_days = 365
+
+# FISMA Compliance
+fisma_mode = "MODERATE"
+nist_800_53_controls = true
+section_508_compliance = true
+
+# ============================================================================
+# PERFORMANCE TUNING
+# ============================================================================
+[performance]
+# Service Performance Targets
+terra_sync_max_latency_ms = 50
+terra_flow_max_latency_ms = 100
+costforge_max_latency_ms = 150
+
+# Resource Limits
+max_memory_mb = 700
+max_cpu_percent = 80
+
+# Optimization
+enable_connection_pooling = true
+enable_query_caching = true
+enable_result_caching = true
+
+# ============================================================================
+# DEVELOPMENT OVERRIDES (Only active in development mode)
+# ============================================================================
+[development]
+# Enable when running in development environment
+enabled = false
+
+# Mock external services for testing
+mock_harris_pacs = false
+mock_tyler = false
+mock_aumentum = false
+
+# Reduce timeouts for faster testing
+reduced_timeouts = false
+
+# Enable verbose debugging
+verbose_logging = false
+
+# ============================================================================
+# COUNTY-SPECIFIC CONFIGURATIONS
+# ============================================================================
+[counties.benton]
+name = "Benton County, WA"
+parcel_count = 89247
+harris_pacs_version = "12.4.7"
+enable_specialized_sync = true
+
+[counties.yakima]
+name = "Yakima County, WA"
+parcel_count = 0  # To be configured
+enable_specialized_sync = false
+
+[counties.clark]
+name = "Clark County, WA"
+parcel_count = 0  # To be configured
+enable_specialized_sync = false
+

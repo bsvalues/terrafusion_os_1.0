@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-10-02T14:30:00Z",
+  "actor": "alice@terrafusion.dev",
+  "commit": "a3f2c8d",
+  "change": {
+    "path": "colors.terra-primary",
+    "before": "#4A6FDC",
+    "after": "#5A7FEC",
+    "reason": "Increase contrast for WCAG AAA compliance"
+  },
+  "fingerprint": "sha256:3a4f9c8d7b2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6",
+  "signature": "ed25519:9f8a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1"
+}

@@ -1,0 +1,56 @@
+<!doctype html><meta charset="utf-8">
+<title>TerraFusion Dev Kit Demo</title>
+<link rel="stylesheet" href="../../design-sync/tokens.css">
+<link rel="stylesheet" href="./demo.css">
+<body>
+  <header class="hero">
+    <img src="../../assets/brand/terrafusion-logo-animated.svg" alt="TerraFusion Logo" class="logo">
+    <h1 class="headline">TerraFusion — Transcendence Demo</h1>
+  </header>
+  <main class="stage">
+    <canvas id="vis"></canvas>
+    <div class="glass panel">
+      <div class="grid">
+        <label>CPU <input id="cpu" type="range" min="0" max="1" step="0.01" value="0.15"></label>
+        <label>NET <input id="net" type="range" min="0" max="1" step="0.01" value="0.12"></label>
+        <label>FOCUS <input id="focus" type="range" min="0" max="1" step="0.01" value="0.2"></label>
+      </div>
+      <div class="row">
+        <button id="stress">Stress</button>
+        <button id="calm">Calm</button>
+        <button id="boot">Boot Sound</button>
+        <button id="export">Export Boot WAV</button>
+      </div>
+    </div>
+  </main>
+  <script type="module">
+    import { TerraVisualGPU } from '../../packages/tf-visual/src/engine-webgpu.ts';
+    import { MetricsBridge } from '../../packages/tf-visual/src/metrics.ts';
+    import { TerraAudio } from '../../packages/tf-audio/src/codex.ts';
+    import { renderBoot, wavLink } from '../../packages/tf-audio/src/render.ts';
+
+    const visualTok = await (await fetch('../../design-sync/visual.json')).json();
+    const audioTok  = await (await fetch('../../design-sync/audio.json')).json();
+
+    const canvas = document.getElementById('vis');
+    const gpu = new TerraVisualGPU(); await gpu.init(canvas); gpu.resize(canvas);
+    const bridge = MetricsBridge();
+    const audio = new TerraAudio(); await audio.load(audioTok); audio.heartbeat(true);
+
+    function loop(ts){
+      gpu.metrics = bridge.get();
+      gpu.frame(16);
+      requestAnimationFrame(loop);
+    } requestAnimationFrame(loop);
+    window.addEventListener('resize', ()=>gpu.resize(canvas));
+
+    // Controls
+    const bind = (id,k)=> document.getElementById(id).addEventListener('input', e=>bridge.set(k, +e.target.value));
+    bind('cpu','cpu'); bind('net','net'); bind('focus','focus');
+    document.getElementById('stress').onclick = ()=>{ bridge.set('cpu',0.9); bridge.set('net',0.85); bridge.set('focus',0.75); };
+    document.getElementById('calm').onclick = ()=>{ bridge.set('cpu',0.15); bridge.set('net',0.12); bridge.set('focus',0.2); };
+    document.getElementById('boot').onclick = ()=>audio.boot();
+    document.getElementById('export').onclick = async ()=> wavLink(await renderBoot(audioTok));
+  </script>
+</body>
+

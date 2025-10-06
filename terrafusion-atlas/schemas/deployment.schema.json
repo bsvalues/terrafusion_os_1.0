@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Deployment",
+  "description": "Helm chart, K8s manifest, or Terraform module",
+  "type": "object",
+  "required": ["id", "name", "owner", "source_path", "deploy_type"],
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "owner": {"type": "string"},
+    "source_path": {"type": "string"},
+    "deploy_type": {"type": "string", "enum": ["helm", "kubernetes", "terraform", "docker-compose"]},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "targets": {"type": "array", "items": {"type": "string"}, "description": "Environment IDs"}
+  }
+}

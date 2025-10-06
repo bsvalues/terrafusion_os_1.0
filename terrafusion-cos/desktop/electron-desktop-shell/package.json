@@ -1,0 +1,37 @@
+{
+  "name": "terrafusion-cos-desktop-shell",
+  "version": "1.0.0",
+  "description": "TerraFusion cOS Native Desktop Shell",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "dev": "electron . --dev"
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.0"
+  },
+  "build": {
+    "appId": "com.terrafusion.cos.desktop",
+    "productName": "TerraFusion cOS",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    }
+  }
+}
+
+
+
+
+
+
+

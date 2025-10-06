@@ -1,0 +1,109 @@
+/* Facilities Page Styles */
+
+.facilities-page {
+  width: 100%;
+}
+
+.facilities-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--terra-space-4);
+  margin-bottom: var(--terra-space-6);
+}
+
+.facilities-card {
+  margin-bottom: var(--terra-space-6);
+}
+
+.facilities-card h2 {
+  font-size: var(--terra-font-size-xl);
+  font-weight: var(--terra-font-weight-semibold);
+  margin: 0 0 var(--terra-space-4) 0;
+  color: var(--terra-neutral-900);
+}
+
+.facilities-controls {
+  display: flex;
+  gap: var(--terra-space-4);
+  margin-bottom: var(--terra-space-4);
+}
+
+.search-input {
+  flex: 1;
+  min-width: 300px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: var(--terra-space-2);
+  flex-wrap: wrap;
+}
+
+.amenities-section h2 {
+  font-size: var(--terra-font-size-xl);
+  font-weight: var(--terra-font-weight-semibold);
+  margin: 0 0 var(--terra-space-4) 0;
+  color: var(--terra-neutral-900);
+}
+
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--terra-space-3);
+}
+
+.amenity-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--terra-space-2);
+  padding: var(--terra-space-4);
+  background: var(--terra-neutral-50);
+  border-radius: var(--terra-radius-lg);
+  border: 1px solid var(--terra-neutral-200);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.amenity-card:hover {
+  background: var(--terra-neutral-100);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.amenity-icon {
+  font-size: 32px;
+}
+
+.amenity-name {
+  font-size: var(--terra-font-size-sm);
+  font-weight: var(--terra-font-weight-semibold);
+  color: var(--terra-neutral-700);
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .facilities-controls {
+    flex-direction: column;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--terra-space-4);
+  }
+  
+  .facilities-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .amenities-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}

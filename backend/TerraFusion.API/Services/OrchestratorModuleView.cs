@@ -10,11 +10,11 @@ namespace TerraFusion.API.Services;
 
 public sealed class OrchestratorModuleView : IOrchestratorView
 {
-    private readonly UnifiedOrchestrationService _orchestrationService;
+    private readonly IUnifiedOrchestrationService _orchestrationService;
     private readonly ILogger<OrchestratorModuleView> _logger;
 
     public OrchestratorModuleView(
-        UnifiedOrchestrationService orchestrationService,
+        IUnifiedOrchestrationService orchestrationService,
         ILogger<OrchestratorModuleView> logger)
     {
         _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));

@@ -1,13 +1,12 @@
 services:
   # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
+    image: postgres:15
     container_name: terrafusion-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-terrafusion}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql

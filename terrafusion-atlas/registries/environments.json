@@ -1,0 +1,157 @@
+{
+  "registry": "environments",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "env.dev",
+      "name": "Development Environment",
+      "owner": "ops-team",
+      "source_path": ".devcontainer",
+      "tags": [
+        "dev",
+        "local",
+        "k8s"
+      ],
+      "description": "Local and shared development environment"
+    },
+    {
+      "id": "env.prod",
+      "name": "Production Environment",
+      "owner": "ops-team",
+      "source_path": "deployment-package",
+      "tags": [
+        "production",
+        "k8s",
+        "critical"
+      ],
+      "description": "Production Kubernetes cluster"
+    },
+    {
+      "id": "environments.",
+      "name": ".github",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github",
+      "tags": []
+    },
+    {
+      "id": "environments.environments",
+      "name": "environments",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/environments",
+      "tags": []
+    },
+    {
+      "id": "environments.ai-agent-development-environment",
+      "name": "AI_AGENT_DEVELOPMENT_ENVIRONMENT",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/AI_AGENT_DEVELOPMENT_ENVIRONMENT",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "environments.terrafusion-ultimate-standalone-package",
+      "name": "TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE",
+      "tags": []
+    },
+    {
+      "id": "environments.docker",
+      "name": "Docker",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE/Docker",
+      "tags": []
+    },
+    {
+      "id": "environments.grfe-rust-workspace",
+      "name": "grfe_rust_workspace",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion_Golden_Full_Stack_20250917_180937/grfe_rust_workspace",
+      "tags": []
+    },
+    {
+      "id": "environments.ai-swarm-venv",
+      "name": "ai-swarm-venv",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/ai-swarm-venv",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "environments.architecture",
+      "name": "architecture",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/architecture",
+      "tags": []
+    },
+    {
+      "id": "environments.terrafusion",
+      "name": "TerraFusion.API",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/TerraFusion.API",
+      "tags": []
+    },
+    {
+      "id": "environments.mcp-servers",
+      "name": "mcp-servers",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/backend/mcp-servers",
+      "tags": []
+    },
+    {
+      "id": "environments.compose",
+      "name": "compose",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/compose",
+      "tags": [
+        "os"
+      ]
+    },
+    {
+      "id": "environments.ai-services",
+      "name": "ai-services",
+      "owner": "ai-team",
+      "source_path": ".git-temp-clone/compose/ai-services",
+      "tags": [
+        "ai",
+        "os"
+      ]
+    },
+    {
+      "id": "environments.mock-api",
+      "name": "mock-api",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/compose/mock-api",
+      "tags": [
+        "os"
+      ]
+    },
+    {
+      "id": "environments.obs",
+      "name": "obs",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/compose/obs",
+      "tags": [
+        "os"
+      ]
+    },
+    {
+      "id": "environments.config",
+      "name": "config",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/config",
+      "tags": []
+    },
+    {
+      "id": "environments.configs",
+      "name": "configs",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/configs",
+      "tags": []
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:29.794345",
+  "count": 18
+}

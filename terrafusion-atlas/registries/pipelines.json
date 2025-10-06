@@ -1,0 +1,139 @@
+{
+  "registry": "pipelines",
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "pipeline.ci.main",
+      "name": "Main CI Pipeline",
+      "owner": "ops-team",
+      "source_path": ".github/workflows",
+      "tags": [
+        "ci",
+        "github-actions",
+        "automation"
+      ],
+      "description": "Primary continuous integration pipeline",
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipeline.deploy.prod",
+      "name": "Production Deployment Pipeline",
+      "owner": "ops-team",
+      "source_path": "deployment-package",
+      "tags": [
+        "cd",
+        "deployment",
+        "production",
+        "k8s"
+      ],
+      "description": "Production deployment automation",
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.scripts",
+      "name": "scripts",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/championship/scripts",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.",
+      "name": ".ci",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.ci",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.workflows",
+      "name": "workflows",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/.github/workflows",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.terrafusion-clean-migration-script---consolidate-everything",
+      "name": "TerraFusion Clean Migration Script - Consolidate Everything",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/TerraFusion Clean Migration Script - Consolidate Everything",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.ci",
+      "name": "ci",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/bench/ci",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.deployment-authorization",
+      "name": "deployment-authorization",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/authorization/deployment-authorization",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.consciousness",
+      "name": "consciousness",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/consciousness",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.deploy",
+      "name": "deploy",
+      "owner": "ops-team",
+      "source_path": ".git-temp-clone/bcw-uat/deploy",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.financial",
+      "name": "financial",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure/financial",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.financial-management",
+      "name": "financial-management",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure/financial-management",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.financial-projections",
+      "name": "financial-projections",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/business-structure/financial-projections",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.consciousness-service",
+      "name": "consciousness-service",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/consciousness-service",
+      "tags": [],
+      "lifecycle": "active"
+    },
+    {
+      "id": "pipelines.types",
+      "name": "types",
+      "owner": "platform-team",
+      "source_path": ".git-temp-clone/consciousness-service/types",
+      "tags": [],
+      "lifecycle": "active"
+    }
+  ],
+  "updated_at": "2025-10-05T22:30:26.578790",
+  "count": 15
+}

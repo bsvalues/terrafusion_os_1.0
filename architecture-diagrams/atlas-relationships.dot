@@ -1,0 +1,236 @@
+digraph TerraFusionAtlas {
+  rankdir=LR;
+  node [shape=box, style="rounded,filled", fontname="Arial"];
+  edge [color="#666666"];
+
+  // Subgraphs by registry
+  subgraph cluster_agents {
+    label="Agents";
+    color="#f39c12";
+    style=filled;
+    fillcolor="#f39c1220";
+    "agent_swarm_commander" [label="AI Swarm Supreme Commander", fillcolor="#f39c12"];
+    "agent_valuation_specialist" [label="Valuation Specialist Agent", fillcolor="#f39c12"];
+    "agent_consciousness_core" [label="Consciousness Core Agent", fillcolor="#f39c12"];
+    "agent_" [label=".devcontainer", fillcolor="#f39c12"];
+    "agent_claude-flow" [label="claude-flow", fillcolor="#f39c12"];
+    "agent_config" [label="config", fillcolor="#f39c12"];
+    "agent_core" [label="core", fillcolor="#f39c12"];
+    "agent_devops" [label="devops", fillcolor="#f39c12"];
+    "agent_scripts" [label="scripts", fillcolor="#f39c12"];
+    "agent_src" [label="src", fillcolor="#f39c12"];
+  }
+
+  subgraph cluster_brands {
+    label="Brands";
+    color="#95a5a6";
+    style=filled;
+    fillcolor="#95a5a620";
+    "brand_terrafusion" [label="TerraFusion Brand", fillcolor="#95a5a6"];
+    "brand_harris" [label="Harris Brand Integration", fillcolor="#95a5a6"];
+    "brands_" [label=".playwright-mcp", fillcolor="#95a5a6"];
+    "brands_brand-assets" [label="Brand_Assets", fillcolor="#95a5a6"];
+    "brands_complete-assets" [label="Complete_Assets", fillcolor="#95a5a6"];
+    "brands_brand" [label="brand", fillcolor="#95a5a6"];
+    "brands_more-brand" [label="more brand", fillcolor="#95a5a6"];
+    "brands_full-backup-20250915-062012" [label="FULL_BACKUP_20250915_062012", fillcolor="#95a5a6"];
+    "brands_audit-20250913-185959" [label="AUDIT_20250913_185959", fillcolor="#95a5a6"];
+    "brands_apps" [label="apps", fillcolor="#95a5a6"];
+  }
+
+  subgraph cluster_compliance {
+    label="Compliance";
+    color="#95a5a6";
+    style=filled;
+    fillcolor="#95a5a620";
+    "compliance_security_audit" [label="Security Audit Reports", fillcolor="#95a5a6"];
+    "compliance_trust-fabric" [label="Trust Fabric Framework", fillcolor="#95a5a6"];
+    "compliance_" [label=".github", fillcolor="#95a5a6"];
+    "compliance_issue-template" [label="ISSUE_TEMPLATE", fillcolor="#95a5a6"];
+    "compliance_workflows" [label="workflows", fillcolor="#95a5a6"];
+    "compliance_brand-assets" [label="Brand_Assets", fillcolor="#95a5a6"];
+  }
+
+  subgraph cluster_components {
+    label="Components";
+    color="#95a5a6";
+    style=filled;
+    fillcolor="#95a5a620";
+    "component_sdk_vendor" [label="Vendor SDK", fillcolor="#95a5a6"];
+    "components_" [label=".git-temp-clone", fillcolor="#95a5a6"];
+    "components_sdk" [label="SDK", fillcolor="#95a5a6"];
+    "components_scripts" [label="scripts", fillcolor="#95a5a6"];
+    "components_terrafusion-golden-everything-plus-20250917-181254" [label="TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254", fillcolor="#95a5a6"];
+    "components_sdks" [label="sdks", fillcolor="#95a5a6"];
+    "components_ai-swarm-venv" [label="ai-swarm-venv", fillcolor="#95a5a6"];
+    "components_backend" [label="backend", fillcolor="#95a5a6"];
+    "components_ai-swarm" [label="ai-swarm", fillcolor="#95a5a6"];
+    "components_utils" [label="utils", fillcolor="#95a5a6"];
+  }
+
+  subgraph cluster_datasets {
+    label="Datasets";
+    color="#34495e";
+    style=filled;
+    fillcolor="#34495e20";
+    "data_parcels_main" [label="Parcel Database", fillcolor="#34495e"];
+    "data_county_benton" [label="Benton County Data", fillcolor="#34495e"];
+    "data_" [label=".schemas", fillcolor="#34495e"];
+    "data_nats" [label="nats", fillcolor="#34495e"];
+    "data_postgres" [label="postgres", fillcolor="#34495e"];
+    "data_redis" [label="redis", fillcolor="#34495e"];
+    "data_full-backup-20250915-062012" [label="FULL_BACKUP_20250915_062012", fillcolor="#34495e"];
+    "data_platform-empire-planning" [label="PLATFORM_EMPIRE_PLANNING", fillcolor="#34495e"];
+    "data_modules-backup-20250912-093232" [label="modules_backup_20250912_093232", fillcolor="#34495e"];
+    "data_registry" [label="registry", fillcolor="#34495e"];
+  }
+
+  subgraph cluster_deployments {
+    label="Deployments";
+    color="#2c3e50";
+    style=filled;
+    fillcolor="#2c3e5020";
+    "deploy_helm_main" [label="Main Helm Charts", fillcolor="#2c3e50"];
+    "deploy_terraform_infra" [label="Infrastructure as Code", fillcolor="#2c3e50"];
+    "deployments_" [label=".git-temp-clone", fillcolor="#2c3e50"];
+    "deployments_terrafusion-golden-everything-plus-20250917-181254" [label="TerraFusion_Golden_EVERYTHING_PLUS_20250917_181254", fillcolor="#2c3e50"];
+    "deployments_ci" [label="ci", fillcolor="#2c3e50"];
+    "deployments_helm" [label="helm", fillcolor="#2c3e50"];
+    "deployments_terrafusion-golden-helmfile-redis-grafana-20250917-181613" [label="TerraFusion_Golden_Helmfile_Redis_Grafana_20250917_181613", fillcolor="#2c3e50"];
+    "deployments_grafana-dashboards" [label="grafana_dashboards", fillcolor="#2c3e50"];
+    "deployments_helmfile" [label="helmfile", fillcolor="#2c3e50"];
+    "deployments_service-redis-quota" [label="service_redis_quota", fillcolor="#2c3e50"];
+  }
+
+  subgraph cluster_engines {
+    label="Engines";
+    color="#e74c3c";
+    style=filled;
+    fillcolor="#e74c3c20";
+    "engine_costforge_rust" [label="CostForge Rust Engine", fillcolor="#e74c3c"];
+    "engine_valuation_core" [label="Valuation Engine", fillcolor="#e74c3c"];
+    "engine_grfe-rust-workspace" [label="grfe_rust_workspace", fillcolor="#e74c3c"];
+    "engine_trust-fabric" [label="trust-fabric", fillcolor="#e74c3c"];
+    "engine_performance" [label="performance", fillcolor="#e74c3c"];
+    "engine_quantum-performance" [label="quantum-performance", fillcolor="#e74c3c"];
+    "engine_grfe-rust-workspace-production-plus" [label="grfe_rust_workspace_production_plus", fillcolor="#e74c3c"];
+    "engine_" [label=".github", fillcolor="#e74c3c"];
+    "engine_crates" [label="crates", fillcolor="#e74c3c"];
+    "engine_deploy" [label="deploy", fillcolor="#e74c3c"];
+  }
+
+  subgraph cluster_environments {
+    label="Environments";
+    color="#95a5a6";
+    style=filled;
+    fillcolor="#95a5a620";
+    "env_dev" [label="Development Environment", fillcolor="#95a5a6"];
+    "env_prod" [label="Production Environment", fillcolor="#95a5a6"];
+    "environments_" [label=".github", fillcolor="#95a5a6"];
+    "environments_environments" [label="environments", fillcolor="#95a5a6"];
+    "environments_ai-agent-development-environment" [label="AI_AGENT_DEVELOPMENT_ENVIRONMENT", fillcolor="#95a5a6"];
+    "environments_terrafusion-ultimate-standalone-package" [label="TERRAFUSION_ULTIMATE_STANDALONE_PACKAGE", fillcolor="#95a5a6"];
+    "environments_docker" [label="Docker", fillcolor="#95a5a6"];
+    "environments_grfe-rust-workspace" [label="grfe_rust_workspace", fillcolor="#95a5a6"];
+    "environments_ai-swarm-venv" [label="ai-swarm-venv", fillcolor="#95a5a6"];
+    "environments_architecture" [label="architecture", fillcolor="#95a5a6"];
+  }
+
+  subgraph cluster_frontends {
+    label="Frontends";
+    color="#9b59b6";
+    style=filled;
+    fillcolor="#9b59b620";
+    "frontend_desktop_shell" [label="Desktop Shell", fillcolor="#9b59b6"];
+    "frontend_web_main" [label="Web Frontend", fillcolor="#9b59b6"];
+    "marketplace_frontend" [label="Marketplace Frontend", fillcolor="#9b59b6"];
+    "frontends_claude-flow" [label="claude-flow", fillcolor="#9b59b6"];
+    "frontends_complete-test-suite" [label="COMPLETE_TEST_SUITE", fillcolor="#9b59b6"];
+    "frontends_modules-backup-20250912-093232" [label="modules_backup_20250912_093232", fillcolor="#9b59b6"];
+    "frontends_02-marketplace-strategy" [label="02_MARKETPLACE_STRATEGY", fillcolor="#9b59b6"];
+    "frontends_pluginmarketplacelauncher" [label="PluginMarketplaceLauncher", fillcolor="#9b59b6"];
+    "frontends_ai-workspace-companion" [label="ai-workspace-companion", fillcolor="#9b59b6"];
+    "frontends_audit-20250913-185959" [label="AUDIT_20250913_185959", fillcolor="#9b59b6"];
+  }
+
+  subgraph cluster_modules {
+    label="Modules";
+    color="#1abc9c";
+    style=filled;
+    fillcolor="#1abc9c20";
+    "module_gis_parcel-tools" [label="GIS Parcel Tools", fillcolor="#1abc9c"];
+    "module_shock-and-awe" [label="Shock and Awe Module", fillcolor="#1abc9c"];
+    "module_" [label=".git-temp-clone", fillcolor="#1abc9c"];
+    "module_brand-assets" [label="Brand_Assets", fillcolor="#1abc9c"];
+    "module_brand" [label="brand", fillcolor="#1abc9c"];
+    "module_more-brand" [label="more brand", fillcolor="#1abc9c"];
+    "module_modules-backup-20250912-093232" [label="modules_backup_20250912_093232", fillcolor="#1abc9c"];
+    "module_pluginmarketplacelauncher" [label="PluginMarketplaceLauncher", fillcolor="#1abc9c"];
+    "module_grfe-rust-workspace" [label="grfe_rust_workspace", fillcolor="#1abc9c"];
+    "module_apps" [label="apps", fillcolor="#1abc9c"];
+  }
+
+  subgraph cluster_partners {
+    label="Partners";
+    color="#95a5a6";
+    style=filled;
+    fillcolor="#95a5a620";
+    "partner_harris" [label="Harris County Integration", fillcolor="#95a5a6"];
+    "partner_woolpert" [label="Woolpert Integration", fillcolor="#95a5a6"];
+    "partners_core" [label="core", fillcolor="#95a5a6"];
+    "partners_scripts" [label="scripts", fillcolor="#95a5a6"];
+    "partners_" [label=".git-temp-clone", fillcolor="#95a5a6"];
+    "partners_workflows" [label="workflows", fillcolor="#95a5a6"];
+    "partners_brand-assets" [label="Brand_Assets", fillcolor="#95a5a6"];
+    "partners_brand" [label="brand", fillcolor="#95a5a6"];
+    "partners_more-brand" [label="more brand", fillcolor="#95a5a6"];
+    "partners_04-competitive-strategy" [label="04_COMPETITIVE_STRATEGY", fillcolor="#95a5a6"];
+  }
+
+  subgraph cluster_pipelines {
+    label="Pipelines";
+    color="#16a085";
+    style=filled;
+    fillcolor="#16a08520";
+    "pipeline_ci_main" [label="Main CI Pipeline", fillcolor="#16a085"];
+    "pipeline_deploy_prod" [label="Production Deployment Pipeline", fillcolor="#16a085"];
+    "pipelines_scripts" [label="scripts", fillcolor="#16a085"];
+    "pipelines_" [label=".ci", fillcolor="#16a085"];
+    "pipelines_workflows" [label="workflows", fillcolor="#16a085"];
+    "pipelines_terrafusion-clean-migration-script---consolidate-everything" [label="TerraFusion Clean Migration Script - Consolidate Everything", fillcolor="#16a085"];
+    "pipelines_ci" [label="ci", fillcolor="#16a085"];
+    "pipelines_deployment-authorization" [label="deployment-authorization", fillcolor="#16a085"];
+    "pipelines_consciousness" [label="consciousness", fillcolor="#16a085"];
+    "pipelines_deploy" [label="deploy", fillcolor="#16a085"];
+  }
+
+  subgraph cluster_releases {
+    label="Releases";
+    color="#95a5a6";
+    style=filled;
+    fillcolor="#95a5a620";
+    "releases_claude-flow" [label="claude-flow", fillcolor="#95a5a6"];
+    "releases_" [label=".git-temp-clone", fillcolor="#95a5a6"];
+    "releases_workflows" [label="workflows", fillcolor="#95a5a6"];
+    "releases_full-backup-20250915-062012" [label="FULL_BACKUP_20250915_062012", fillcolor="#95a5a6"];
+  }
+
+  subgraph cluster_services {
+    label="Services";
+    color="#3498db";
+    style=filled;
+    fillcolor="#3498db20";
+    "os_kernel_api" [label="OS Kernel API", fillcolor="#3498db"];
+    "marketplace_gateway" [label="Marketplace Gateway", fillcolor="#3498db"];
+    "consciousness_orchestrator" [label="Consciousness Orchestrator", fillcolor="#3498db"];
+    "services_brand-assets" [label="Brand_Assets", fillcolor="#3498db"];
+    "services_brand" [label="brand", fillcolor="#3498db"];
+    "services_more-brand" [label="more brand", fillcolor="#3498db"];
+    "services_service-overlays" [label="service_overlays", fillcolor="#3498db"];
+    "services_service-redis-quota" [label="service_redis_quota", fillcolor="#3498db"];
+    "services_backend" [label="backend", fillcolor="#3498db"];
+    "services_authorization" [label="authorization", fillcolor="#3498db"];
+  }
+
+  // Dependencies
+}
