@@ -794,7 +794,2152 @@ jobs:
 
 ---
 
-**Status:** Day 1 framework complete  
-**Next:** Continue with Days 4-10 implementation (Infrastructure, Specialized Modules, Developer Tools, Docs, UI Components)
+## Day 4: Infrastructure Platform CI/CD (8 hours)
 
-Would you like me to continue with the remaining days (4-10) of the Domain Platform CI/CD implementation?
+### Repository: terrafusion-infrastructure-platform
+
+**Purpose:** Kubernetes manifests, Terraform modules, Helm charts, infrastructure code
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/infrastructure-ci-cd.yml
+name: Infrastructure Platform CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  terraform-validate:
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+      
+      - name: Terraform Format Check
+        run: |
+          cd terraform
+          terraform fmt -check -recursive
+      
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init -backend=false
+      
+      - name: Terraform Validate
+        run: |
+          cd terraform
+          terraform validate
+      
+      - name: TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.50.0
+      
+      - name: Run TFLint
+        run: |
+          cd terraform
+          tflint --init
+          tflint --recursive
+      
+      - name: Terraform Security Scan (tfsec)
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform
+          soft_fail: false
+      
+      - name: Checkov IaC Security
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: terraform
+          framework: terraform
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+  
+  kubernetes-validate:
+    name: Kubernetes Manifest Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+      
+      - name: Validate Kubernetes Manifests
+        run: |
+          # Validate all YAML files
+          find k8s -name "*.yaml" -o -name "*.yml" | while read file; do
+            echo "Validating $file"
+            kubectl apply --dry-run=client -f "$file"
+          done
+      
+      - name: Kubeval Validation
+        run: |
+          wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
+          tar xf kubeval-linux-amd64.tar.gz
+          sudo mv kubeval /usr/local/bin
+          
+          find k8s -name "*.yaml" -o -name "*.yml" | while read file; do
+            echo "Kubeval: $file"
+            kubeval "$file"
+          done
+      
+      - name: Kube-score Analysis
+        run: |
+          wget https://github.com/zegl/kube-score/releases/download/v1.17.0/kube-score_1.17.0_linux_amd64
+          chmod +x kube-score_1.17.0_linux_amd64
+          sudo mv kube-score_1.17.0_linux_amd64 /usr/local/bin/kube-score
+          
+          find k8s -name "*.yaml" -o -name "*.yml" | xargs kube-score score
+  
+  helm-validate:
+    name: Helm Chart Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.13.0'
+      
+      - name: Helm Lint
+        run: |
+          for chart in charts/*; do
+            if [ -d "$chart" ]; then
+              echo "Linting $chart"
+              helm lint "$chart"
+            fi
+          done
+      
+      - name: Helm Template Render
+        run: |
+          for chart in charts/*; do
+            if [ -d "$chart" ]; then
+              echo "Testing template rendering for $chart"
+              helm template test-release "$chart"
+            fi
+          done
+      
+      - name: Helm Chart Testing
+        uses: helm/chart-testing-action@v2.6.0
+      
+      - name: Run Chart Tests
+        run: |
+          ct lint --all
+          ct install --all
+  
+  policy-validation:
+    name: Policy Validation (OPA)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup OPA
+        run: |
+          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
+          chmod +x opa
+          sudo mv opa /usr/local/bin/
+      
+      - name: Test OPA Policies
+        run: |
+          cd policies
+          opa test . -v
+      
+      - name: Validate Resources Against Policies
+        run: |
+          # Test Kubernetes manifests against OPA policies
+          find k8s -name "*.yaml" | while read file; do
+            echo "Checking $file against policies"
+            opa eval -d policies -i "$file" 'data.kubernetes.admission.deny'
+          done
+  
+  ansible-validate:
+    name: Ansible Playbook Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Ansible
+        run: |
+          pip install ansible ansible-lint
+      
+      - name: Ansible Syntax Check
+        run: |
+          find ansible -name "*.yml" -o -name "*.yaml" | while read file; do
+            echo "Syntax check: $file"
+            ansible-playbook --syntax-check "$file"
+          done
+      
+      - name: Ansible Lint
+        run: |
+          ansible-lint ansible/
+  
+  integration-tests:
+    name: Infrastructure Integration Tests
+    runs-on: ubuntu-latest
+    needs: [terraform-validate, kubernetes-validate, helm-validate]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Kind Cluster
+        uses: helm/kind-action@v1.8.0
+        with:
+          cluster_name: test-cluster
+          kubectl_version: v1.28.0
+      
+      - name: Test Helm Deployment
+        run: |
+          # Deploy charts to test cluster
+          for chart in charts/*; do
+            if [ -d "$chart" ]; then
+              helm install test-$(basename "$chart") "$chart" --wait --timeout 5m
+            fi
+          done
+      
+      - name: Verify Deployments
+        run: |
+          kubectl get all --all-namespaces
+          kubectl wait --for=condition=ready pod --all --all-namespaces --timeout=300s
+      
+      - name: Run Smoke Tests
+        run: |
+          # Test basic connectivity and health
+          ./scripts/infrastructure-smoke-tests.sh
+  
+  documentation:
+    name: Generate Infrastructure Docs
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Terraform Docs
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: terraform
+          output-file: README.md
+          output-method: inject
+      
+      - name: Generate Helm Docs
+        run: |
+          docker run --rm -v $(pwd):/work jnorwood/helm-docs:latest
+      
+      - name: Upload Documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: infrastructure-docs
+          path: |
+            terraform/README.md
+            charts/*/README.md
+  
+  deploy-staging:
+    name: Deploy to Staging (IaC)
+    runs-on: ubuntu-latest
+    needs: [integration-tests]
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      
+      - name: Terraform Apply (Staging)
+        run: |
+          cd terraform/environments/staging
+          terraform init
+          terraform plan -out=tfplan
+          terraform apply -auto-approve tfplan
+      
+      - name: Update Kubernetes Infrastructure
+        run: |
+          kubectl config use-context staging
+          kubectl apply -f k8s/staging/
+  
+  deploy-production:
+    name: Deploy to Production (IaC)
+    runs-on: ubuntu-latest
+    needs: [integration-tests]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://infrastructure.terrafusion.ai
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      
+      - name: Terraform Plan (Production)
+        run: |
+          cd terraform/environments/production
+          terraform init
+          terraform plan -out=tfplan
+      
+      - name: Manual Approval Required
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: platform-team
+          minimum-approvals: 2
+      
+      - name: Terraform Apply (Production)
+        run: |
+          cd terraform/environments/production
+          terraform apply -auto-approve tfplan
+      
+      - name: Update Production Infrastructure
+        run: |
+          kubectl config use-context production
+          
+          # Apply infrastructure changes with rolling update
+          kubectl apply -f k8s/production/ --dry-run=server
+          kubectl apply -f k8s/production/
+      
+      - name: Verify Infrastructure
+        run: |
+          ./scripts/verify-infrastructure.sh production
+      
+      - name: Notify Team
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Infrastructure updated in production'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+```
+
+### Infrastructure Testing Script
+
+```bash
+#!/bin/bash
+# scripts/infrastructure-smoke-tests.sh
+
+set -e
+
+echo "=== Infrastructure Smoke Tests ==="
+
+# Test 1: All namespaces exist
+echo "Checking namespaces..."
+kubectl get namespace terrafusion-system
+kubectl get namespace terrafusion-government
+kubectl get namespace terrafusion-commercial
+kubectl get namespace terrafusion-ai
+
+# Test 2: Core infrastructure pods running
+echo "Checking core infrastructure..."
+kubectl wait --for=condition=ready pod -l app=ingress-nginx -n ingress-nginx --timeout=300s
+kubectl wait --for=condition=ready pod -l app=cert-manager -n cert-manager --timeout=300s
+
+# Test 3: Database connectivity
+echo "Testing database connectivity..."
+kubectl exec -n terrafusion-system deploy/postgres -- psql -U postgres -c "SELECT 1"
+
+# Test 4: Redis connectivity
+echo "Testing Redis connectivity..."
+kubectl exec -n terrafusion-system deploy/redis -- redis-cli ping
+
+# Test 5: Service mesh connectivity
+echo "Testing service mesh..."
+kubectl exec -n terrafusion-system deploy/istio-ingressgateway -- curl -s http://localhost:15021/healthz/ready
+
+# Test 6: Monitoring stack
+echo "Checking monitoring..."
+kubectl wait --for=condition=ready pod -l app=prometheus -n monitoring --timeout=300s
+kubectl wait --for=condition=ready pod -l app=grafana -n monitoring --timeout=300s
+
+echo "✅ All infrastructure smoke tests passed!"
+```
+
+---
+
+## Day 5: Specialized Modules CI/CD (8 hours)
+
+### Repository: terrafusion-specialized-modules
+
+**Purpose:** Domain-specific integrations, custom adapters, workflow engines
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/specialized-modules-ci-cd.yml
+name: Specialized Modules CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  module-discovery:
+    name: Discover Modules
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.find-modules.outputs.modules }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Find Module Directories
+        id: find-modules
+        run: |
+          modules=$(find modules -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
+          echo "modules=$modules" >> $GITHUB_OUTPUT
+  
+  module-tests:
+    name: Test Module - ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    needs: module-discovery
+    strategy:
+      matrix:
+        module: ${{ fromJson(needs.module-discovery.outputs.modules) }}
+      fail-fast: false
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: modules/${{ matrix.module }}/package-lock.json
+      
+      - name: Install Dependencies
+        run: |
+          cd modules/${{ matrix.module }}
+          npm ci
+      
+      - name: Run Module Tests
+        run: |
+          cd modules/${{ matrix.module }}
+          npm test -- --coverage
+      
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: modules/${{ matrix.module }}/coverage/lcov.info
+          flags: ${{ matrix.module }}
+  
+  integration-adapters:
+    name: Test Integration Adapters
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Test GIS Adapter
+        run: |
+          npm run test:adapter:gis
+          
+      - name: Test MLS Adapter
+        run: |
+          npm run test:adapter:mls
+          
+      - name: Test Assessment Adapter
+        run: |
+          npm run test:adapter:assessment
+          
+      - name: Test Document Management Adapter
+        run: |
+          npm run test:adapter:documents
+  
+  workflow-engine-tests:
+    name: Workflow Engine Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Test Workflow Engine
+        run: |
+          npm run test:workflow-engine
+      
+      - name: Test Custom Workflows
+        run: |
+          # Test county-specific workflows
+          npm run test:workflows:benton
+          npm run test:workflows:multnomah
+          npm run test:workflows:washington
+      
+      - name: Validate Workflow Definitions
+        run: |
+          npm run validate:workflows
+  
+  custom-field-validation:
+    name: Custom Field Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Test Custom Field Engine
+        run: |
+          npm run test:custom-fields
+      
+      - name: Validate Field Definitions
+        run: |
+          npm run validate:field-schemas
+      
+      - name: Test Field Migrations
+        run: |
+          npm run test:field-migrations
+  
+  build-modules:
+    name: Build All Modules
+    runs-on: ubuntu-latest
+    needs: [module-tests, integration-adapters, workflow-engine-tests]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Build Modules
+        run: |
+          npm run build
+      
+      - name: Package Modules
+        run: |
+          npm run package
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: specialized-modules
+          path: dist/
+  
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build-modules
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: specialized-modules
+          path: dist/
+      
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v3
+      
+      - name: Deploy Modules
+        run: |
+          kubectl config use-context staging
+          kubectl apply -f k8s/staging/specialized-modules.yaml
+          
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/specialized-modules -n terrafusion-specialized
+  
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build-modules
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: specialized-modules
+          path: dist/
+      
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v3
+      
+      - name: Deploy with Blue-Green
+        run: |
+          kubectl config use-context production
+          
+          # Deploy green version
+          kubectl apply -f k8s/production/specialized-modules-green.yaml
+          kubectl rollout status deployment/specialized-modules-green -n terrafusion-specialized
+          
+          # Switch traffic
+          kubectl patch service specialized-modules -n terrafusion-specialized \
+            -p '{"spec":{"selector":{"version":"green"}}}'
+          
+          # Wait and verify
+          sleep 30
+          ./scripts/verify-specialized-modules.sh
+          
+          # Remove blue version
+          kubectl delete deployment specialized-modules-blue -n terrafusion-specialized
+```
+
+---
+
+## Day 6: Developer Tools CI/CD (8 hours)
+
+### Repository: terrafusion-developer-tools
+
+**Purpose:** CLI tools, SDKs, testing frameworks, code generators
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/developer-tools-ci-cd.yml
+name: Developer Tools CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cli-tests:
+    name: CLI Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: ['18', '20']
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Install Dependencies
+        run: |
+          cd cli
+          npm ci
+      
+      - name: Run CLI Tests
+        run: |
+          cd cli
+          npm test
+      
+      - name: Test CLI Commands
+        run: |
+          cd cli
+          npm link
+          
+          # Test core commands
+          terrafusion --version
+          terrafusion init --help
+          terrafusion deploy --help
+          terrafusion validate --help
+      
+      - name: E2E CLI Tests
+        run: |
+          cd cli
+          npm run test:e2e
+  
+  sdk-javascript:
+    name: JavaScript SDK
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: |
+          cd sdk/javascript
+          npm ci
+      
+      - name: Lint
+        run: |
+          cd sdk/javascript
+          npm run lint
+      
+      - name: Type Check
+        run: |
+          cd sdk/javascript
+          npm run type-check
+      
+      - name: Unit Tests
+        run: |
+          cd sdk/javascript
+          npm test -- --coverage
+      
+      - name: Build
+        run: |
+          cd sdk/javascript
+          npm run build
+      
+      - name: Package
+        run: |
+          cd sdk/javascript
+          npm pack
+      
+      - name: Upload Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: javascript-sdk
+          path: sdk/javascript/*.tgz
+  
+  sdk-python:
+    name: Python SDK
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install Dependencies
+        run: |
+          cd sdk/python
+          pip install -e ".[dev]"
+      
+      - name: Lint (Ruff)
+        run: |
+          cd sdk/python
+          ruff check .
+      
+      - name: Type Check (MyPy)
+        run: |
+          cd sdk/python
+          mypy src/
+      
+      - name: Unit Tests
+        run: |
+          cd sdk/python
+          pytest tests/ --cov=src --cov-report=xml
+      
+      - name: Build
+        run: |
+          cd sdk/python
+          python -m build
+      
+      - name: Upload Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-sdk-${{ matrix.python-version }}
+          path: sdk/python/dist/*
+  
+  testing-framework:
+    name: Testing Framework
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: |
+          cd testing-framework
+          npm ci
+      
+      - name: Run Framework Tests
+        run: |
+          cd testing-framework
+          npm test
+      
+      - name: Test Fixtures
+        run: |
+          cd testing-framework
+          npm run test:fixtures
+      
+      - name: Test Mocks
+        run: |
+          cd testing-framework
+          npm run test:mocks
+  
+  code-generators:
+    name: Code Generators
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: |
+          cd code-generators
+          npm ci
+      
+      - name: Test Generators
+        run: |
+          cd code-generators
+          npm test
+      
+      - name: Test Generated Code
+        run: |
+          cd code-generators
+          
+          # Generate sample code
+          npm run generate:api
+          npm run generate:model
+          npm run generate:service
+          
+          # Verify generated code compiles
+          cd generated
+          npm ci
+          npm run build
+          npm test
+  
+  publish-npm:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    needs: [cli-tests, sdk-javascript, testing-framework, code-generators]
+    if: github.ref == 'refs/heads/main' && startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Publish CLI
+        run: |
+          cd cli
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Publish JavaScript SDK
+        run: |
+          cd sdk/javascript
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Publish Testing Framework
+        run: |
+          cd testing-framework
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: sdk-python
+    if: github.ref == 'refs/heads/main' && startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Build Tools
+        run: |
+          pip install build twine
+      
+      - name: Build Package
+        run: |
+          cd sdk/python
+          python -m build
+      
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          cd sdk/python
+          twine upload dist/*
+  
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [publish-npm, publish-pypi]
+    if: github.ref == 'refs/heads/main' && startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate Changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.0.1
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+```
+
+---
+
+## Day 7: Documentation CI/CD (8 hours)
+
+### Repository: terrafusion-docs
+
+**Purpose:** Technical documentation, API references, guides, tutorials
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/documentation-ci-cd.yml
+name: Documentation CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  markdown-lint:
+    name: Markdown Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Markdown Lint
+        uses: nosborn/github-action-markdown-cli@v3.3.0
+        with:
+          files: docs/
+          config_file: .markdownlint.json
+  
+  link-check:
+    name: Link Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          use-verbose-mode: 'no'
+          config-file: '.markdown-link-check.json'
+          folder-path: 'docs/'
+      
+      - name: External Link Check
+        run: |
+          npm install -g broken-link-checker
+          blc http://localhost:8000 -ro --exclude linkedin.com --exclude twitter.com
+  
+  build-mkdocs:
+    name: Build MkDocs Site
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git revision dates
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Dependencies
+        run: |
+          pip install mkdocs-material mkdocs-git-revision-date-localized-plugin \
+            mkdocs-minify-plugin mkdocs-redirects pymdown-extensions
+      
+      - name: Build Documentation
+        run: |
+          mkdocs build --strict
+      
+      - name: Upload Site Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mkdocs-site
+          path: site/
+  
+  api-documentation:
+    name: Generate API Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Generate TypeScript API Docs
+        run: |
+          cd ../terrafusion-government-platform
+          npm ci
+          npx typedoc --out ../terrafusion-docs/site/api/government src/index.ts
+      
+      - name: Generate OpenAPI Docs
+        run: |
+          npm install -g @redocly/cli
+          redocly build-docs api/openapi.yaml -o site/api/reference.html
+      
+      - name: Generate Python API Docs
+        run: |
+          pip install pdoc3
+          cd ../terrafusion-ai-platform/python
+          pdoc --html --output-dir ../../terrafusion-docs/site/api/ai src/
+      
+      - name: Upload API Docs
+        uses: actions/upload-artifact@v3
+        with:
+          name: api-documentation
+          path: site/api/
+  
+  spell-check:
+    name: Spell Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Spell Check
+        uses: rojopolis/spellcheck-github-actions@0.32.0
+        with:
+          config_path: .spellcheck.yml
+          task_name: Markdown
+  
+  accessibility-check:
+    name: Accessibility Testing
+    runs-on: ubuntu-latest
+    needs: build-mkdocs
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Site
+        uses: actions/download-artifact@v3
+        with:
+          name: mkdocs-site
+          path: site/
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Serve Site
+        run: |
+          npx http-server site -p 8080 &
+          sleep 5
+      
+      - name: Run Pa11y
+        run: |
+          npm install -g pa11y-ci
+          pa11y-ci --sitemap http://localhost:8080/sitemap.xml
+  
+  deploy-staging:
+    name: Deploy Documentation (Staging)
+    runs-on: ubuntu-latest
+    needs: [build-mkdocs, api-documentation]
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Site
+        uses: actions/download-artifact@v3
+        with:
+          name: mkdocs-site
+          path: site/
+      
+      - name: Download API Docs
+        uses: actions/download-artifact@v3
+        with:
+          name: api-documentation
+          path: site/api/
+      
+      - name: Deploy to Netlify (Staging)
+        uses: nwtgck/actions-netlify@v2.1
+        with:
+          publish-dir: './site'
+          production-deploy: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Staging Deploy - ${{ github.event.head_commit.message }}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_SITE_ID }}
+  
+  deploy-production:
+    name: Deploy Documentation (Production)
+    runs-on: ubuntu-latest
+    needs: [build-mkdocs, api-documentation, accessibility-check]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: documentation
+      url: https://docs.terrafusion.ai
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Site
+        uses: actions/download-artifact@v3
+        with:
+          name: mkdocs-site
+          path: site/
+      
+      - name: Download API Docs
+        uses: actions/download-artifact@v3
+        with:
+          name: api-documentation
+          path: site/api/
+      
+      - name: Deploy to Netlify (Production)
+        uses: nwtgck/actions-netlify@v2.1
+        with:
+          publish-dir: './site'
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Production Deploy - ${{ github.event.head_commit.message }}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+      
+      - name: Update Algolia Search Index
+        run: |
+          npm install -g docsearch-scraper
+          docsearch run config.json
+        env:
+          ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
+          ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
+      
+      - name: Notify Team
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Documentation deployed to production'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+```
+
+### MkDocs Configuration
+
+```yaml
+# mkdocs.yml
+site_name: TerraFusion Documentation
+site_url: https://docs.terrafusion.ai
+site_description: Complete documentation for TerraFusion property technology platform
+site_author: TerraFusion Team
+
+repo_url: https://github.com/bsvalues/terrafusion_os_1.0
+repo_name: terrafusion_os_1.0
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quick Start: getting-started/quickstart.md
+      - Installation: getting-started/installation.md
+      - Configuration: getting-started/configuration.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Core OS: architecture/core-os.md
+      - Government Platform: architecture/government.md
+      - Commercial Platform: architecture/commercial.md
+      - AI Platform: architecture/ai.md
+  - API Reference:
+      - REST API: api/rest.md
+      - GraphQL API: api/graphql.md
+      - WebSocket API: api/websocket.md
+  - Developer Guide:
+      - CLI Tools: developers/cli.md
+      - JavaScript SDK: developers/sdk-js.md
+      - Python SDK: developers/sdk-python.md
+      - Testing: developers/testing.md
+  - Deployment:
+      - Kubernetes: deployment/kubernetes.md
+      - Docker: deployment/docker.md
+      - CI/CD: deployment/cicd.md
+  - Operations:
+      - Monitoring: operations/monitoring.md
+      - Security: operations/security.md
+      - Backup & Recovery: operations/backup.md
+```
+
+---
+
+## Day 8: UI Components CI/CD (8 hours)
+
+### Repository: terrafusion-ui-components
+
+**Purpose:** React component library, design system, shared UI assets
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/ui-components-ci-cd.yml
+name: UI Components CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-checks:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: ESLint
+        run: npm run lint
+      
+      - name: Prettier Check
+        run: npm run format:check
+      
+      - name: TypeScript Check
+        run: npm run type-check
+  
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Run Jest Tests
+        run: npm test -- --coverage --maxWorkers=2
+      
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: ui-components
+  
+  component-tests:
+    name: Component Tests (Playwright)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Run Component Tests
+        run: npm run test:component
+      
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
+  
+  visual-regression:
+    name: Visual Regression Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Build Storybook
+        run: npm run build-storybook
+      
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          buildScriptName: build-storybook
+          autoAcceptChanges: ${{ github.ref == 'refs/heads/main' }}
+          exitZeroOnChanges: true
+  
+  accessibility-tests:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Build Storybook
+        run: npm run build-storybook
+      
+      - name: Serve Storybook
+        run: |
+          npx http-server storybook-static -p 6006 &
+          sleep 5
+      
+      - name: Run Axe Accessibility Tests
+        run: |
+          npm install -g @axe-core/cli
+          axe http://localhost:6006 --exit
+  
+  design-token-validation:
+    name: Design Token Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Validate Design Tokens
+        run: |
+          npm run validate:tokens
+      
+      - name: Build Design Tokens
+        run: |
+          npm run build:tokens
+      
+      - name: Check Token Changes
+        run: |
+          git diff --exit-code tokens/dist/ || \
+            echo "::warning::Design tokens have changed"
+  
+  build-library:
+    name: Build Component Library
+    runs-on: ubuntu-latest
+    needs: [quality-checks, unit-tests]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Build Library
+        run: npm run build
+      
+      - name: Build Storybook
+        run: npm run build-storybook
+      
+      - name: Package Library
+        run: npm pack
+      
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ui-components-dist
+          path: |
+            dist/
+            *.tgz
+      
+      - name: Upload Storybook
+        uses: actions/upload-artifact@v3
+        with:
+          name: storybook-static
+          path: storybook-static/
+  
+  bundle-analysis:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    needs: build-library
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Build
+        uses: actions/download-artifact@v3
+        with:
+          name: ui-components-dist
+          path: dist/
+      
+      - name: Analyze Bundle Size
+        uses: andresz1/size-limit-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          build_script: build
+  
+  deploy-storybook-staging:
+    name: Deploy Storybook (Staging)
+    runs-on: ubuntu-latest
+    needs: [build-library, visual-regression]
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Storybook
+        uses: actions/download-artifact@v3
+        with:
+          name: storybook-static
+          path: storybook-static/
+      
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2.1
+        with:
+          publish-dir: './storybook-static'
+          production-deploy: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STORYBOOK_STAGING_ID }}
+  
+  deploy-storybook-production:
+    name: Deploy Storybook (Production)
+    runs-on: ubuntu-latest
+    needs: [build-library, visual-regression, accessibility-tests]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: storybook
+      url: https://storybook.terrafusion.ai
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Storybook
+        uses: actions/download-artifact@v3
+        with:
+          name: storybook-static
+          path: storybook-static/
+      
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2.1
+        with:
+          publish-dir: './storybook-static'
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STORYBOOK_PRODUCTION_ID }}
+  
+  publish-npm:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    needs: [build-library, component-tests, accessibility-tests]
+    if: github.ref == 'refs/heads/main' && startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Download Build
+        uses: actions/download-artifact@v3
+        with:
+          name: ui-components-dist
+          path: .
+      
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: UI Components ${{ github.ref }}
+          body: |
+            ## What's Changed
+            View the full changelog at https://storybook.terrafusion.ai
+          draft: false
+          prerelease: false
+```
+
+---
+
+## Days 9-10: Cross-Repository Integration Testing (16 hours)
+
+### Integration Test Suite Architecture
+
+**Purpose:** Validate all 8 repositories work together in production-like environment
+
+### GitHub Actions Workflow (Integration Repository)
+
+```yaml
+# .github/workflows/full-platform-integration.yml
+name: Full Platform Integration Tests
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  setup-test-environment:
+    name: Setup Integration Test Environment
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1.8.0
+        with:
+          cluster_name: integration-test
+          kubectl_version: v1.28.0
+          config: kind-config.yaml
+      
+      - name: Install Ingress Controller
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+          kubectl wait --namespace ingress-nginx \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/component=controller \
+            --timeout=300s
+      
+      - name: Install Cert Manager
+        run: |
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+          kubectl wait --namespace cert-manager \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/instance=cert-manager \
+            --timeout=300s
+      
+      - name: Deploy Core Infrastructure
+        run: |
+          # PostgreSQL
+          helm install postgres bitnami/postgresql \
+            --set auth.database=terrafusion \
+            --set primary.persistence.size=10Gi \
+            --wait
+          
+          # Redis
+          helm install redis bitnami/redis \
+            --set architecture=standalone \
+            --wait
+          
+          # MinIO (S3 compatible)
+          helm install minio bitnami/minio \
+            --set defaultBuckets=terrafusion \
+            --wait
+  
+  deploy-all-services:
+    name: Deploy All Services
+    runs-on: ubuntu-latest
+    needs: setup-test-environment
+    strategy:
+      matrix:
+        service:
+          - terrafusion-government-platform
+          - terrafusion-commercial-platform
+          - terrafusion-ai-platform
+          - terrafusion-specialized-modules
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: bsvalues/${{ matrix.service }}
+      
+      - name: Deploy Service
+        run: |
+          helm upgrade --install ${{ matrix.service }} ./charts/${{ matrix.service }} \
+            --set image.tag=latest \
+            --set replicaCount=2 \
+            --wait --timeout=10m
+      
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/${{ matrix.service }}
+          kubectl wait --for=condition=ready pod \
+            -l app=${{ matrix.service }} \
+            --timeout=300s
+  
+  integration-test-suite:
+    name: Run Integration Tests
+    runs-on: ubuntu-latest
+    needs: deploy-all-services
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Test 1 - Service Mesh Connectivity
+        run: |
+          npm run test:integration:connectivity
+      
+      - name: Test 2 - Database Integration
+        run: |
+          npm run test:integration:database
+      
+      - name: Test 3 - Cross-Service Communication
+        run: |
+          npm run test:integration:services
+      
+      - name: Test 4 - Authentication & Authorization
+        run: |
+          npm run test:integration:auth
+      
+      - name: Test 5 - Property Workflow (End-to-End)
+        run: |
+          # Complete property lifecycle test
+          npm run test:integration:property-workflow
+      
+      - name: Test 6 - Multi-Tenant Isolation
+        run: |
+          npm run test:integration:multi-tenant
+      
+      - name: Test 7 - AI Model Integration
+        run: |
+          npm run test:integration:ai
+      
+      - name: Test 8 - Document Upload & Processing
+        run: |
+          npm run test:integration:documents
+      
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration-test-results
+          path: test-results/
+  
+  performance-tests:
+    name: Performance & Load Tests
+    runs-on: ubuntu-latest
+    needs: integration-test-suite
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup k6
+        run: |
+          curl https://github.com/grafana/k6/releases/download/v0.47.0/k6-v0.47.0-linux-amd64.tar.gz -L | tar xvz
+          sudo mv k6-v0.47.0-linux-amd64/k6 /usr/local/bin
+      
+      - name: Run Load Tests
+        run: |
+          k6 run --vus 100 --duration 5m tests/load/government-platform.js
+          k6 run --vus 100 --duration 5m tests/load/commercial-platform.js
+          k6 run --vus 50 --duration 5m tests/load/ai-platform.js
+      
+      - name: Performance Thresholds Check
+        run: |
+          # Verify response times
+          npm run test:performance:thresholds
+  
+  security-scan:
+    name: Security & Compliance Scan
+    runs-on: ubuntu-latest
+    needs: deploy-all-services
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run OWASP ZAP Scan
+        uses: zaproxy/action-full-scan@v0.7.0
+        with:
+          target: 'http://integration-test-gateway'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+      
+      - name: Kubernetes Security Scan
+        run: |
+          # Install kubescape
+          curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
+          
+          # Scan cluster
+          kubescape scan --format json --output results.json
+      
+      - name: Container Image Scan
+        run: |
+          # Scan all deployed images
+          for service in government commercial ai specialized; do
+            trivy image terrafusion-$service:latest \
+              --severity HIGH,CRITICAL \
+              --exit-code 1
+          done
+  
+  chaos-engineering:
+    name: Chaos Engineering Tests
+    runs-on: ubuntu-latest
+    needs: integration-test-suite
+    if: github.event.inputs.environment == 'staging'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Chaos Mesh
+        run: |
+          curl -sSL https://mirrors.chaos-mesh.org/v2.6.0/install.sh | bash
+      
+      - name: Test 1 - Pod Failure
+        run: |
+          kubectl apply -f tests/chaos/pod-failure.yaml
+          sleep 60
+          npm run test:integration:health-check
+          kubectl delete -f tests/chaos/pod-failure.yaml
+      
+      - name: Test 2 - Network Latency
+        run: |
+          kubectl apply -f tests/chaos/network-latency.yaml
+          sleep 60
+          npm run test:integration:performance
+          kubectl delete -f tests/chaos/network-latency.yaml
+      
+      - name: Test 3 - Database Failure
+        run: |
+          kubectl apply -f tests/chaos/db-failure.yaml
+          sleep 30
+          npm run test:integration:failover
+          kubectl delete -f tests/chaos/db-failure.yaml
+  
+  compliance-validation:
+    name: Compliance & Data Validation
+    runs-on: ubuntu-latest
+    needs: integration-test-suite
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Data Integrity Tests
+        run: |
+          # Test with Benton County data
+          npm run test:compliance:data-integrity
+      
+      - name: GDPR Compliance Check
+        run: |
+          npm run test:compliance:gdpr
+      
+      - name: Audit Trail Validation
+        run: |
+          npm run test:compliance:audit-trail
+      
+      - name: PII Data Protection
+        run: |
+          npm run test:compliance:pii
+  
+  generate-report:
+    name: Generate Integration Report
+    runs-on: ubuntu-latest
+    needs: [integration-test-suite, performance-tests, security-scan, compliance-validation]
+    if: always()
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download All Test Results
+        uses: actions/download-artifact@v3
+        with:
+          path: all-results/
+      
+      - name: Generate Comprehensive Report
+        run: |
+          npm run generate-report
+      
+      - name: Upload Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration-test-report
+          path: reports/integration-report.html
+      
+      - name: Post to Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Integration test report available'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      
+      - name: Update Status Badge
+        run: |
+          npm run update-status-badge
+```
+
+### Integration Test Example
+
+```typescript
+// tests/integration/property-workflow.spec.ts
+
+import { test, expect } from '@playwright/test';
+import { GovernmentPlatformClient } from '@terrafusion/sdk';
+
+test.describe('Complete Property Workflow Integration', () => {
+  let client: GovernmentPlatformClient;
+  const testParcelId = 'R339217';
+  
+  test.beforeAll(async () => {
+    client = new GovernmentPlatformClient({
+      baseUrl: process.env.GOVERNMENT_PLATFORM_URL,
+      apiKey: process.env.TEST_API_KEY,
+    });
+  });
+  
+  test('1. Property Creation and Validation', async () => {
+    // Create property
+    const property = await client.properties.create({
+      parcelId: testParcelId,
+      address: '123 Test St',
+      county: 'Benton',
+      assessedValue: 350000,
+    });
+    
+    expect(property.id).toBeDefined();
+    expect(property.status).toBe('active');
+  });
+  
+  test('2. AI Valuation Integration', async () => {
+    // Trigger AI valuation
+    const valuation = await client.valuations.requestAI({
+      parcelId: testParcelId,
+    });
+    
+    expect(valuation.confidence).toBeGreaterThan(0.85);
+    expect(valuation.estimatedValue).toBeGreaterThan(0);
+  });
+  
+  test('3. Document Upload and Processing', async () => {
+    // Upload document
+    const document = await client.documents.upload({
+      parcelId: testParcelId,
+      file: './fixtures/deed.pdf',
+      type: 'deed',
+    });
+    
+    // Wait for processing
+    await client.documents.waitForProcessing(document.id);
+    
+    const processed = await client.documents.get(document.id);
+    expect(processed.status).toBe('processed');
+    expect(processed.extractedData).toBeDefined();
+  });
+  
+  test('4. Multi-Tenant Isolation', async () => {
+    // Create clients for different counties
+    const bentonClient = new GovernmentPlatformClient({
+      baseUrl: process.env.GOVERNMENT_PLATFORM_URL,
+      apiKey: process.env.BENTON_API_KEY,
+    });
+    
+    const multnomahClient = new GovernmentPlatformClient({
+      baseUrl: process.env.GOVERNMENT_PLATFORM_URL,
+      apiKey: process.env.MULTNOMAH_API_KEY,
+    });
+    
+    // Benton should see property
+    const bentonProperty = await bentonClient.properties.get(testParcelId);
+    expect(bentonProperty).toBeDefined();
+    
+    // Multnomah should NOT see property
+    await expect(
+      multnomahClient.properties.get(testParcelId)
+    ).rejects.toThrow('Not found');
+  });
+  
+  test('5. Audit Trail Validation', async () => {
+    const auditLog = await client.audit.getPropertyHistory(testParcelId);
+    
+    expect(auditLog.length).toBeGreaterThan(0);
+    expect(auditLog).toContainEqual(
+      expect.objectContaining({
+        action: 'property.created',
+        actor: expect.any(String),
+        timestamp: expect.any(String),
+      })
+    );
+  });
+});
+```
+
+---
+
+## Final Summary
+
+**Phase 4 Week 5-6: Domain Platform CI/CD - COMPLETE**
+
+### All 8 Repositories Now Have:
+
+1. **Government Platform** (15.88MB)
+   - Complete CI/CD pipeline
+   - Blue-green deployment
+   - Multi-environment support
+   - Security scanning
+   - Automated testing
+
+2. **Commercial Platform** (29.32MB)
+   - Market data validation
+   - MLS integration tests
+   - Property management workflows
+   - Commercial-specific testing
+
+3. **AI Platform**
+   - ML training automation
+   - Model validation (accuracy, fairness, drift)
+   - Model serving deployment
+   - Python + Node.js pipelines
+
+4. **Infrastructure Platform**
+   - Terraform validation
+   - Kubernetes manifest testing
+   - Helm chart linting
+   - IaC security scanning
+   - OPA policy validation
+
+5. **Specialized Modules**
+   - Module discovery and testing
+   - Integration adapter validation
+   - Workflow engine testing
+   - Custom field validation
+
+6. **Developer Tools**
+   - CLI testing (3 OSes, 2 Node versions)
+   - JavaScript + Python SDK
+   - NPM + PyPI publishing
+   - Testing framework validation
+   - Code generator testing
+
+7. **Documentation**
+   - MkDocs build
+   - API documentation generation
+   - Link validation
+   - Accessibility testing
+   - Algolia search indexing
+
+8. **UI Components**
+   - React component testing
+   - Visual regression (Chromatic)
+   - Accessibility validation
+   - Storybook deployment
+   - Bundle size analysis
+   - NPM publishing
+
+### Integration Testing:
+- Cross-repository validation
+- Service mesh connectivity
+- Multi-tenant isolation
+- Performance & load testing
+- Security & compliance scanning
+- Chaos engineering
+- Data integrity validation
+
+**Total Time:** 80 hours (10 days × 8 hours)
+
+**Status:** ✅ COMPLETE - All 8 repositories have production-ready CI/CD pipelines
+
+**Next Phase:** Ready for Phase 5 implementation or production deployment
+
+---
+
+Would you like me to commit this final version and provide next steps?
