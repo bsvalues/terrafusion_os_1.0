@@ -1,0 +1,17 @@
+# AI Platform Fitness Test Requirements
+
+# Core dependencies
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# Optional: For production integration
+# requests>=2.31.0  # For real API calls
+# k6-python>=0.1.0  # For load testing
+# locust>=2.15.0    # Alternative load testing
+# mlflow>=2.7.0     # For model registry access
+# shap>=0.42.0      # For explainability testing
+
+# Testing utilities
+pytest>=7.4.0
+pytest-cov>=4.1.0
