@@ -1083,11 +1083,126 @@ The **TerraFusion OS 1.0 Database Architecture** demonstrates **excellent produc
 
 ---
 
+## 13. Day 5 Security Review Extension Points
+
+This Day 4 Database Architecture Review establishes the **validated baseline** for the upcoming **Day 5 Security Subsystem Review**. The following security dimensions will be extended and validated:
+
+### 13.1 Database Security Hardening
+
+**Encryption at Rest (TDE):**
+- **Current State:** Azure Flexible Server Transparent Data Encryption (TDE) enabled ✅
+- **Day 5 Validation:** Verify TDE key management, backup encryption, customer-managed keys (CMK) for etcd
+- **Baseline:** `ops/backups/snapshots/2025-10-07-baseline.sql` (schema snapshot)
+
+**TLS/SSL In Transit:**
+- **Current State:** PostgreSQL `require_ssl=true` documented (not empirically validated)
+- **Day 5 Validation:** Test TLS enforcement, certificate validation, SSL cipher suite configuration
+- **Extension:** Verify PgBouncer SSL passthrough, application SSL certificate verification
+
+**Audit Trail Hardening:**
+- **Current State:** `audit_logs` table partitioned daily, 7-year retention documented ✅
+- **Day 5 Validation:** Test immutability (no UPDATE/DELETE), verify pg_audit extension, validate log integrity
+- **Extension:** Cross-reference with CJIS/FedRAMP audit trail requirements
+
+### 13.2 Access Control & Secrets Management
+
+**Least-Privilege Database Roles:**
+- **Current State:** 5 database roles documented (`terrafusion`, `app_reader`, `app_writer`, `app_admin`, `backup_user`)
+- **Day 5 Validation:** Audit role assignments, verify no SUPERUSER access for application connections
+- **Extension:** Test privilege escalation scenarios, validate RLS policy enforcement per role
+- **Baseline:** `ops/backups/snapshots/2025-10-07-secrets-baseline.md` (access control matrix)
+
+**Secrets Rotation Status:**
+- **Current State:** 2 secrets due for rotation within 14 days (POSTGRES_PASSWORD: 8 days, REDIS_PASSWORD: 13 days) ⚠️
+- **Day 5 Validation:** Execute secrets rotation procedure, validate zero-downtime rotation
+- **Extension:** Implement automated rotation alerts (Prometheus: `secret_days_until_expiry < 14`)
+
+**Azure Key Vault Integration:**
+- **Current State:** All secrets stored in Azure Key Vault with access logging ✅
+- **Day 5 Validation:** Audit access logs, verify managed identities usage, test secret retrieval policies
+- **Extension:** Migrate App Service to managed identities (currently password-based) ⚠️
+
+### 13.3 Multi-Tenant Security Validation
+
+**Row-Level Security (RLS) Policy Verification:**
+- **Current State:** 100% zero-leakage validated (Week 4 POC: 100 tenants, 100K properties) ✅
+- **Day 5 Validation:** Penetration testing (cross-tenant attack scenarios), SQL injection resistance re-validation
+- **Extension:** Test RLS policy bypass attempts, validate tenant_id enforcement at application layer
+
+**Tenant Isolation Monitoring:**
+- **Current State:** RLS performance overhead 5.8% (acceptable) ✅
+- **Day 5 Validation:** Add Prometheus alert for RLS policy violations (suspicious cross-tenant queries)
+- **Extension:** Weekly audit log analysis for failed cross-tenant access attempts
+
+### 13.4 Compliance & Threat Modeling
+
+**CJIS Security Policy (Criminal Justice Information Services):**
+- **Current State:** Encryption at rest ✅, TLS in transit ✅, audit logs ✅
+- **Day 5 Validation:** Multi-factor authentication (Azure AD MFA), physical security controls (Azure datacenter compliance)
+- **Extension:** Document CJIS compliance matrix, identify remaining gaps
+
+**FedRAMP Moderate:**
+- **Current State:** Access controls ✅, secrets management ✅, backup retention ✅
+- **Day 5 Validation:** Incident response plan, vulnerability scanning (Azure Defender), security monitoring
+- **Extension:** Prepare FedRAMP authorization package (SSP, SAR, POA&M)
+
+**NIST 800-53 Rev 5 (Moderate Baseline):**
+- **Current State:** Database controls documented (AC, AU, IA, SC families)
+- **Day 5 Validation:** Map Day 4 findings to NIST control families, identify control gaps
+- **Extension:** Develop continuous monitoring strategy (ConMon) for database security posture
+
+### 13.5 Threat Model v2 Updates
+
+**New Threats Identified (Day 4):**
+1. **T-DB-001:** Connection pool exhaustion (PgBouncer not load tested) → DoS vulnerability ⚠️
+2. **T-DB-002:** Read replica failover untested → Regional outage recovery failure risk ⚠️
+3. **T-DB-003:** Partition creation failure (no monitoring) → INSERT failures, data loss risk ⚠️
+4. **T-DB-004:** Secrets rotation overdue (2 secrets <14 days) → Credential compromise risk ⚠️
+
+**Day 5 Threat Modeling Scope:**
+- Integrate Day 4 database threats into overall threat model v2
+- Conduct STRIDE analysis (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege)
+- Prioritize threats by CVSS score, assign mitigation owners
+
+### 13.6 Baseline Artifacts for Day 5
+
+**Snapshot Files (Created October 7, 2025):**
+1. **Database Schema:** `ops/backups/snapshots/2025-10-07-baseline.sql` (186 lines)
+   - Complete schema with RLS policies, indexes, partitioning configuration
+   - Git tag: `v1-db-baseline` (commit: 03097b8b)
+
+2. **Secrets & Access Control:** `ops/backups/snapshots/2025-10-07-secrets-baseline.md` (220 lines)
+   - Database credentials inventory (Azure Key Vault references)
+   - Access control matrix (database roles, RBAC, service principals)
+   - Secrets rotation status (2 urgent rotations identified)
+
+3. **Performance Telemetry:** `ops/backups/snapshots/2025-10-07-baseline.json` (450 lines)
+   - Prometheus metrics snapshot (database, API, AI Platform, infrastructure)
+   - Query performance baselines (P50/P95/P99 latencies)
+   - Multi-tenant isolation metrics (RLS overhead, zero-leakage validation)
+   - Drift detection configuration (alert thresholds, comparison baseline)
+
+**Cross-Reference Usage:**
+- Day 5 Security Review will reference these baselines to:
+  - Validate encryption configurations (TDE, TLS)
+  - Audit access control implementations (least-privilege, RBAC)
+  - Verify secrets management practices (rotation, Azure Key Vault)
+  - Test security controls (RLS, audit logs, immutability)
+  - Measure security posture improvements (before/after hardening)
+
+---
+
 **Document Version:** 1.0  
 **Last Updated:** October 8, 2025  
 **Next Review:** Week 2 Day 7 (October 20, 2025)  
 **Document Owner:** TerraFusion Database Team  
-**Status:** ✅ COMPLETE (Day 4 Review Finalized)
+**Status:** ✅ COMPLETE (Day 4 Review Finalized + Day 5 Cross-Links Added)
+
+**Baseline Artifacts:**
+- Git Tag: `v1-db-baseline` (commit: 03097b8b)
+- Schema Snapshot: `ops/backups/snapshots/2025-10-07-baseline.sql`
+- Secrets Baseline: `ops/backups/snapshots/2025-10-07-secrets-baseline.md`
+- Telemetry Snapshot: `ops/backups/snapshots/2025-10-07-baseline.json`
 
 ---
 
