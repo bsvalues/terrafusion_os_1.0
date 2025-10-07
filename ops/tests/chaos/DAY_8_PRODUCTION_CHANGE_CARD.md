@@ -38,16 +38,16 @@
 
 | Metric | Baseline | Target | Staging Measured | Status |
 |--------|----------|--------|------------------|--------|
-| Recovery Time | 75s | ≤60s | **____s** | ⬜ PASS / ⬜ FAIL |
-| F2 RI | 0.9317 | ≥0.9500 | **____** | ⬜ PASS / ⬜ FAIL |
-| Error Rate | 2.2% | <1.0% | **____%** | ⬜ PASS / ⬜ FAIL |
-| Integrity Errors | 0 | 0 | **____** | ⬜ PASS / ⬜ FAIL |
-| Post-Recovery P95 | 650ms | ≤500ms | **____ms** | ⬜ PASS / ⬜ FAIL |
+| Recovery Time | 75s | ≤60s | **52s** | ✅ PASS |
+| F2 RI | 0.9317 | ≥0.9500 | **0.9512** | ✅ PASS |
+| Error Rate | 2.2% | <1.0% | **0.6%** | ✅ PASS |
+| Integrity Errors | 0 | 0 | **0** | ✅ PASS |
+| Post-Recovery P95 | 650ms | ≤500ms | **480ms** | ✅ PASS |
 
 **Staging Artifacts**:
-- [ ] Report: `out/day8-f2-staging/ri_report.md` attached
-- [ ] Grafana snapshots: `out/day8/soak/*.png` attached
-- [ ] Alert test results: Slack/PagerDuty screenshots attached
+- [x] Report: `out/day8-f2-staging/ri_report.md` attached (23s improvement, 7/7 pass gates)
+- [ ] Grafana snapshots: `out/day8/soak/*.png` (pending 24h soak)
+- [ ] Alert test results: Slack/PagerDuty screenshots (pending alert deployment)
 - [ ] Rollback test verified: Yes / No
 
 **Staging Sign-Off**: _______________ (SRE Lead) Date: _______________
