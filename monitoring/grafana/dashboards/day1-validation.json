@@ -1,0 +1,525 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "phase49-day1-validation",
+    "title": "Phase 4.9 Day 1 - AI Platform Fitness Validation",
+    "tags": ["phase4.9", "ai-platform", "fitness-tests", "validation"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Fitness Test Pass Rate",
+        "type": "gauge",
+        "gridPos": {"x": 0, "y": 0, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "(sum(ai_platform_fitness_test_passed) / sum(ai_platform_fitness_test_total)) * 100",
+            "legendFormat": "Pass Rate %",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 75, "color": "yellow"},
+                {"value": 90, "color": "light-green"},
+                {"value": 97, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Performance Latency (p95)",
+        "type": "graph",
+        "gridPos": {"x": 8, "y": 0, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "ai_platform_latency_p95_ms{environment=\"staging\"}",
+            "legendFormat": "p95 Latency",
+            "refId": "A"
+          },
+          {
+            "expr": "200",
+            "legendFormat": "Target (200ms)",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "showPoints": "auto"
+            }
+          }
+        },
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Batch Throughput",
+        "type": "stat",
+        "gridPos": {"x": 16, "y": 0, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "ai_platform_throughput_rps{environment=\"staging\"}",
+            "legendFormat": "Requests/sec",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 1000, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Model Accuracy",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 8, "w": 6, "h": 6},
+        "targets": [
+          {
+            "expr": "ai_platform_model_accuracy{environment=\"staging\"} * 100",
+            "legendFormat": "Accuracy",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 85, "color": "yellow"},
+                {"value": 90, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "none",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Calibration Error",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 8, "w": 6, "h": 6},
+        "targets": [
+          {
+            "expr": "ai_platform_calibration_error{environment=\"staging\"} * 100",
+            "legendFormat": "Calibration Error",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 5, "color": "yellow"},
+                {"value": 7, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "none",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        }
+      },
+      {
+        "id": 6,
+        "title": "Demographic Parity",
+        "type": "stat",
+        "gridPos": {"x": 12, "y": 8, "w": 6, "h": 6},
+        "targets": [
+          {
+            "expr": "ai_platform_demographic_parity{environment=\"staging\"} * 100",
+            "legendFormat": "Max Parity Difference",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 5, "color": "yellow"},
+                {"value": 7, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "none",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        }
+      },
+      {
+        "id": 7,
+        "title": "Equalized Odds",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 8, "w": 6, "h": 6},
+        "targets": [
+          {
+            "expr": "ai_platform_equalized_odds{environment=\"staging\"} * 100",
+            "legendFormat": "Max Odds Difference",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 5, "color": "yellow"},
+                {"value": 7, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "none",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        }
+      },
+      {
+        "id": 8,
+        "title": "Feature Drift Detection",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 14, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "ai_platform_feature_ks_statistic{environment=\"staging\"}",
+            "legendFormat": "{{feature}}",
+            "refId": "A"
+          },
+          {
+            "expr": "0.1",
+            "legendFormat": "Drift Threshold",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 1,
+              "fillOpacity": 0,
+              "showPoints": "auto"
+            }
+          }
+        },
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "showLegend": true,
+            "calcs": ["lastNotNull", "max"]
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Error Rate",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 14, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "ai_platform_error_rate{environment=\"staging\"} * 100",
+            "legendFormat": "Error Rate",
+            "refId": "A"
+          },
+          {
+            "expr": "1.0",
+            "legendFormat": "Target (1%)",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "showPoints": "auto"
+            }
+          }
+        },
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "Test Results Summary",
+        "type": "table",
+        "gridPos": {"x": 0, "y": 22, "w": 24, "h": 8},
+        "targets": [
+          {
+            "expr": "ai_platform_fitness_test_result",
+            "legendFormat": "",
+            "refId": "A",
+            "instant": true
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "result"},
+              "properties": [
+                {
+                  "id": "custom.displayMode",
+                  "value": "color-background"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "red"},
+                      {"value": 1, "color": "green"}
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {},
+              "indexByName": {
+                "category": 0,
+                "test_name": 1,
+                "measured": 2,
+                "target": 3,
+                "result": 4
+              },
+              "renameByName": {
+                "category": "Category",
+                "test_name": "Test Name",
+                "measured": "Measured",
+                "target": "Target",
+                "result": "Result"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Fairness by Zip Code (Demographic Parity)",
+        "type": "heatmap",
+        "gridPos": {"x": 0, "y": 30, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "ai_platform_positive_rate_by_zipcode{environment=\"staging\"}",
+            "legendFormat": "{{zipcode}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "custom": {
+              "hideFrom": {
+                "tooltip": false,
+                "viz": false,
+                "legend": false
+              }
+            }
+          }
+        },
+        "options": {
+          "calculate": false,
+          "cellGap": 2,
+          "color": {
+            "mode": "scheme",
+            "scheme": "Spectral",
+            "steps": 128
+          },
+          "exemplars": {
+            "color": "rgba(255,0,255,0.7)"
+          },
+          "legend": {
+            "show": true
+          },
+          "tooltip": {
+            "show": true,
+            "yHistogram": false
+          },
+          "yAxis": {
+            "axisPlacement": "left",
+            "reverse": false
+          }
+        }
+      },
+      {
+        "id": 12,
+        "title": "Action Items Status",
+        "type": "stat",
+        "gridPos": {"x": 12, "y": 30, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "count(ai_platform_action_item{status=\"pending\"})",
+            "legendFormat": "Pending",
+            "refId": "A"
+          },
+          {
+            "expr": "count(ai_platform_action_item{status=\"in_progress\"})",
+            "legendFormat": "In Progress",
+            "refId": "B"
+          },
+          {
+            "expr": "count(ai_platform_action_item{status=\"completed\"})",
+            "legendFormat": "Completed",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "yellow"},
+                {"value": 5, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "orientation": "horizontal",
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "environment",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(ai_platform_latency_p95_ms, environment)",
+          "multi": false,
+          "includeAll": false,
+          "current": {
+            "text": "staging",
+            "value": "staging"
+          }
+        },
+        {
+          "name": "time_range",
+          "type": "interval",
+          "query": "1h,6h,12h,24h,7d",
+          "auto": false,
+          "current": {
+            "text": "24h",
+            "value": "24h"
+          }
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(ai_platform_deployment_version[5m]) > 0",
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Deployments",
+          "tagKeys": "version"
+        },
+        {
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "ai_platform_fitness_test_run == 1",
+          "iconColor": "rgba(255, 96, 96, 1)",
+          "name": "Fitness Test Runs",
+          "tagKeys": "test_id"
+        }
+      ]
+    }
+  },
+  "overwrite": true,
+  "message": "Phase 4.9 Week 1 Day 1 - AI Platform Fitness Validation Dashboard",
+  "folderId": 0,
+  "folderUid": "phase49"
+}

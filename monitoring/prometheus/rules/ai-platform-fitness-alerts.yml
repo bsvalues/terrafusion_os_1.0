@@ -1,0 +1,305 @@
+# Phase 4.9 AI Platform Fitness Test Alert Rules
+# Generated: October 7, 2025
+# Environment: Staging → Production
+
+groups:
+  - name: ai_platform_fitness_tests
+    interval: 60s
+    rules:
+      # Performance Alerts
+      - alert: AILatencyWarning
+        expr: ai_platform_latency_p95_ms{environment="staging"} > 250
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform latency approaching SLA limit"
+          description: "p95 latency is {{ $value }}ms (target: <200ms, critical: 300ms)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/high-latency"
+
+      - alert: AILatencyCritical
+        expr: ai_platform_latency_p95_ms{environment="staging"} > 300
+        for: 5m
+        labels:
+          severity: critical
+          category: performance
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform latency exceeds SLA"
+          description: "p95 latency is {{ $value }}ms (target: <200ms, critical breach)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/high-latency"
+
+      - alert: AIThroughputLow
+        expr: ai_platform_throughput_rps{environment="staging"} < 800
+        for: 10m
+        labels:
+          severity: warning
+          category: performance
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform batch throughput below target"
+          description: "Throughput is {{ $value }} props/sec (target: >1000/sec)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/low-throughput"
+
+      - alert: AIErrorRateHigh
+        expr: ai_platform_error_rate{environment="staging"} > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform error rate exceeds 1%"
+          description: "Error rate is {{ $value | humanizePercentage }} (target: <1%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/high-error-rate"
+
+      - alert: AIErrorRateCritical
+        expr: ai_platform_error_rate{environment="staging"} > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          category: performance
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform error rate critical"
+          description: "Error rate is {{ $value | humanizePercentage }} (critical: >5%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/high-error-rate"
+
+      # Accuracy Alerts
+      - alert: AIModelAccuracyLow
+        expr: ai_platform_model_accuracy{environment="staging"} < 0.85
+        for: 15m
+        labels:
+          severity: warning
+          category: accuracy
+          subsystem: ai_platform
+        annotations:
+          summary: "AI model accuracy below warning threshold"
+          description: "Model accuracy is {{ $value | humanizePercentage }} (target: >90%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/low-accuracy"
+
+      - alert: AIModelAccuracyCritical
+        expr: ai_platform_model_accuracy{environment="staging"} < 0.80
+        for: 15m
+        labels:
+          severity: critical
+          category: accuracy
+          subsystem: ai_platform
+        annotations:
+          summary: "AI model accuracy critically low"
+          description: "Model accuracy is {{ $value | humanizePercentage }} (critical: <80%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/low-accuracy"
+
+      - alert: AICalibrationError
+        expr: ai_platform_calibration_error{environment="staging"} > 0.07
+        for: 15m
+        labels:
+          severity: warning
+          category: accuracy
+          subsystem: ai_platform
+        annotations:
+          summary: "AI model calibration error exceeds threshold"
+          description: "Calibration error is {{ $value | humanizePercentage }} (target: <5%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/calibration-error"
+
+      - alert: AICalibrationErrorHigh
+        expr: ai_platform_calibration_error{environment="staging"} > 0.10
+        for: 15m
+        labels:
+          severity: critical
+          category: accuracy
+          subsystem: ai_platform
+        annotations:
+          summary: "AI model calibration error critically high"
+          description: "Calibration error is {{ $value | humanizePercentage }} (critical: >10%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/calibration-error"
+
+      # Fairness Alerts
+      - alert: AIFairnessParityWarning
+        expr: ai_platform_demographic_parity{environment="staging"} > 0.07
+        for: 15m
+        labels:
+          severity: warning
+          category: fairness
+          subsystem: ai_platform
+          compliance: fair_housing_act
+        annotations:
+          summary: "AI Platform demographic parity exceeds warning threshold"
+          description: "Max parity difference is {{ $value | humanizePercentage }} (target: <5%, warning: 7%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/fairness-violation"
+
+      - alert: AIFairnessParityViolation
+        expr: ai_platform_demographic_parity{environment="staging"} > 0.10
+        for: 15m
+        labels:
+          severity: critical
+          category: fairness
+          subsystem: ai_platform
+          compliance: fair_housing_act
+        annotations:
+          summary: "AI Platform demographic parity violation"
+          description: "Max parity difference is {{ $value | humanizePercentage }} (critical: >10%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/fairness-violation"
+
+      - alert: AIFairnessOddsWarning
+        expr: ai_platform_equalized_odds{environment="staging"} > 0.07
+        for: 15m
+        labels:
+          severity: warning
+          category: fairness
+          subsystem: ai_platform
+          compliance: fair_housing_act
+        annotations:
+          summary: "AI Platform equalized odds exceeds warning threshold"
+          description: "Max odds difference is {{ $value | humanizePercentage }} (target: <5%, warning: 7%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/fairness-violation"
+
+      - alert: AIFairnessOddsViolation
+        expr: ai_platform_equalized_odds{environment="staging"} > 0.10
+        for: 15m
+        labels:
+          severity: critical
+          category: fairness
+          subsystem: ai_platform
+          compliance: fair_housing_act
+        annotations:
+          summary: "AI Platform equalized odds violation"
+          description: "Max odds difference is {{ $value | humanizePercentage }} (critical: >10%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/fairness-violation"
+
+      # Drift Detection Alerts
+      - alert: AIFeatureDriftDetected
+        expr: ai_platform_max_ks_statistic{environment="staging"} > 0.15
+        for: 30m
+        labels:
+          severity: warning
+          category: drift
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform feature drift detected"
+          description: "Max KS statistic is {{ $value }} (target: <0.1, warning: 0.15)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/feature-drift"
+
+      - alert: AIFeatureDriftCritical
+        expr: ai_platform_max_ks_statistic{environment="staging"} > 0.20
+        for: 30m
+        labels:
+          severity: critical
+          category: drift
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform feature drift critical"
+          description: "Max KS statistic is {{ $value }} (critical: >0.2)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/feature-drift"
+
+      - alert: AIMultipleFeaturesDrifted
+        expr: ai_platform_drifted_features{environment="staging"} > 2
+        for: 30m
+        labels:
+          severity: warning
+          category: drift
+          subsystem: ai_platform
+        annotations:
+          summary: "Multiple AI Platform features drifted"
+          description: "{{ $value }} features have drifted (critical: >2)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/feature-drift"
+
+      # Fitness Test Pass Rate Alerts
+      - alert: AIFitnessTestsFailingWarning
+        expr: (sum(ai_platform_fitness_test_passed) / sum(ai_platform_fitness_test_total)) < 0.90
+        for: 10m
+        labels:
+          severity: warning
+          category: validation
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform fitness test pass rate below 90%"
+          description: "Pass rate is {{ $value | humanizePercentage }} (target: >97%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/fitness-tests-failing"
+
+      - alert: AIFitnessTestsFailingCritical
+        expr: (sum(ai_platform_fitness_test_passed) / sum(ai_platform_fitness_test_total)) < 0.75
+        for: 10m
+        labels:
+          severity: critical
+          category: validation
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform fitness test pass rate critically low"
+          description: "Pass rate is {{ $value | humanizePercentage }} (critical: <75%)"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/fitness-tests-failing"
+
+      # Composite Health Alert
+      - alert: AISubsystemDegraded
+        expr: |
+          (
+            (ai_platform_latency_p95_ms{environment="staging"} > 250) OR
+            (ai_platform_error_rate{environment="staging"} > 0.01) OR
+            (ai_platform_model_accuracy{environment="staging"} < 0.85) OR
+            (ai_platform_calibration_error{environment="staging"} > 0.07) OR
+            (ai_platform_demographic_parity{environment="staging"} > 0.07) OR
+            (ai_platform_equalized_odds{environment="staging"} > 0.07) OR
+            (ai_platform_max_ks_statistic{environment="staging"} > 0.15)
+          )
+        for: 15m
+        labels:
+          severity: warning
+          category: health
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform subsystem health degraded"
+          description: "Multiple metrics exceeding warning thresholds"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/health-degraded"
+
+      # Week 2 CVI Integration Alert (Planned)
+      - alert: AICVINightlyRunFailed
+        expr: ai_platform_cvi_run_success{environment="staging"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          category: validation
+          subsystem: ai_platform
+        annotations:
+          summary: "AI Platform CVI nightly run failed"
+          description: "Continuous validation infrastructure failed to complete"
+          runbook_url: "https://runbooks.terrafusion.io/ai-platform/cvi-failed"
+
+  - name: ai_platform_fitness_recording_rules
+    interval: 60s
+    rules:
+      # Recording rules for dashboards and aggregations
+      - record: ai_platform:fitness_pass_rate:1h
+        expr: |
+          (
+            sum(rate(ai_platform_fitness_test_passed[1h])) /
+            sum(rate(ai_platform_fitness_test_total[1h]))
+          ) * 100
+
+      - record: ai_platform:latency_p95:1h
+        expr: histogram_quantile(0.95, rate(ai_platform_latency_bucket[1h]))
+
+      - record: ai_platform:latency_p99:1h
+        expr: histogram_quantile(0.99, rate(ai_platform_latency_bucket[1h]))
+
+      - record: ai_platform:throughput_avg:1h
+        expr: avg_over_time(ai_platform_throughput_rps[1h])
+
+      - record: ai_platform:error_rate:1h
+        expr: avg_over_time(ai_platform_error_rate[1h])
+
+      - record: ai_platform:accuracy:1h
+        expr: avg_over_time(ai_platform_model_accuracy[1h])
+
+      - record: ai_platform:calibration_error:1h
+        expr: avg_over_time(ai_platform_calibration_error[1h])
+
+      - record: ai_platform:demographic_parity:1h
+        expr: max_over_time(ai_platform_demographic_parity[1h])
+
+      - record: ai_platform:equalized_odds:1h
+        expr: max_over_time(ai_platform_equalized_odds[1h])
+
+      - record: ai_platform:max_ks:1h
+        expr: max_over_time(ai_platform_max_ks_statistic[1h])
