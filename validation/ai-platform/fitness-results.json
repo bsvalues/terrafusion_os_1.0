@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-07T10:42:29.928111",
+    "environment": "staging",
+    "duration_seconds": 60,
+    "version": "1.0.0"
+  },
+  "performance": {
+    "latency": {
+      "p50": 82.75384973872835,
+      "p95": 148.06998312932694,
+      "p99": 208.7269524559483,
+      "mean": 88.96465822302804,
+      "std": 32.53011180050171,
+      "min": 28.061672307920723,
+      "max": 324.99031213053377,
+      "target_p95": 200,
+      "target_p99": 300,
+      "pass": true
+    },
+    "throughput": {
+      "throughput_per_sec": 1283.0425253520082,
+      "batch_size": 10000,
+      "duration_seconds": 0.0,
+      "target_throughput": 1000,
+      "pass": true
+    },
+    "error_rate": {
+      "error_rate": 0.002916666666666667,
+      "total_requests": 12000,
+      "errors": 35,
+      "target_error_rate": 0.01,
+      "pass": true
+    }
+  },
+  "accuracy": {
+    "model_accuracy": {
+      "accuracy": 0.958,
+      "rmse": 17032.30662624368,
+      "mae": 12005.976837476568,
+      "r2": 0.9896633705523661,
+      "target_accuracy": 0.9,
+      "target_rmse": 25000,
+      "num_samples": 1000,
+      "pass": true
+    },
+    "calibration": {
+      "calibration_error": 0.0771323288455337,
+      "target_calibration_error": 0.05,
+      "num_samples": 1000,
+      "pass": false
+    }
+  },
+  "fairness": {
+    "demographic_parity": {
+      "max_parity_difference": 0.031338590040837055,
+      "group_metrics": {
+        "98001": {
+          "positive_rate": 0.9644444444444444,
+          "count": 225,
+          "difference": 0.0007830344852814974
+        },
+        "98002": {
+          "positive_rate": 0.9382022471910112,
+          "count": 178,
+          "difference": 0.025459162768151744
+        },
+        "98003": {
+          "positive_rate": 0.9735449735449735,
+          "count": 189,
+          "difference": 0.00988356358581055
+        },
+        "98004": {
+          "positive_rate": 0.995,
+          "count": 200,
+          "difference": 0.031338590040837055
+        },
+        "98005": {
+          "positive_rate": 0.9471153846153846,
+          "count": 208,
+          "difference": 0.01654602534377836
+        }
+      },
+      "target_parity": 0.05,
+      "num_samples": 1000,
+      "pass": true
+    },
+    "equalized_odds": {
+      "max_odds_difference": 0.051294807677201404,
+      "group_metrics": {
+        "98001": {
+          "tpr": 0.9641025641025641,
+          "fpr": 0.03589743589743588,
+          "count": 195
+        },
+        "98002": {
+          "tpr": 0.9392265193370166,
+          "fpr": 0.06077348066298338,
+          "count": 181
+        },
+        "98003": {
+          "tpr": 0.9658536585365853,
+          "fpr": 0.034146341463414664,
+          "count": 205
+        },
+        "98004": {
+          "tpr": 0.990521327014218,
+          "fpr": 0.009478672985781977,
+          "count": 211
+        },
+        "98005": {
+          "tpr": 0.9711538461538461,
+          "fpr": 0.028846153846153855,
+          "count": 208
+        }
+      },
+      "target_odds": 0.05,
+      "num_samples": 1000,
+      "pass": false
+    }
+  },
+  "drift": {
+    "feature_drift": {
+      "max_ks_statistic": 0.08184285714285715,
+      "feature_drift": {
+        "square_footage": {
+          "ks_statistic": 0.024885714285714285,
+          "p_value": 0.8025942472809969,
+          "drift_detected": false
+        },
+        "year_built": {
+          "ks_statistic": 0.08184285714285715,
+          "p_value": 0.0002925922344067457,
+          "drift_detected": false
+        },
+        "bedrooms": {
+          "ks_statistic": 0.0313,
+          "p_value": 0.5324385746242438,
+          "drift_detected": false
+        },
+        "bathrooms": {
+          "ks_statistic": 0.011614285714285714,
+          "p_value": 0.9999874161354545,
+          "drift_detected": false
+        },
+        "lot_size": {
+          "ks_statistic": 0.06581428571428571,
+          "p_value": 0.006585449881389925,
+          "drift_detected": false
+        }
+      },
+      "target_ks": 0.1,
+      "num_features": 5,
+      "drifted_features": 0,
+      "pass": true
+    }
+  },
+  "summary": {
+    "total_tests": 8,
+    "passed_tests": 6,
+    "failed_tests": 2,
+    "pass_rate": 0.75,
+    "overall_pass": false
+  }
+}
