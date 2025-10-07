@@ -1,0 +1,65 @@
+# TerraFusion OS — Istio Fault Injection: API Latency +150ms
+# Phase 4.9 Week 1 Day 7 — Fault F1
+# Apply: kubectl apply -f fault-injection-150ms.yaml
+# Cleanup: kubectl delete virtualservice api-brownout-150ms
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: api-brownout-150ms
+  namespace: terrafusion
+  labels:
+    test: chaos
+    fault: f1-latency
+spec:
+  hosts:
+    - api.terrafusion.local
+    - api.terrafusion.svc.cluster.local
+  http:
+  - match:
+    - uri:
+        prefix: /v1/properties
+    route:
+    - destination:
+        host: api.terrafusion.svc.cluster.local
+        port:
+          number: 80
+    fault:
+      delay:
+        fixedDelay: 150ms
+        percentage:
+          value: 100.0
+    retries:
+      attempts: 2
+      perTryTimeout: 300ms
+      retryOn: 5xx,connect-failure,reset
+    timeout: 5s
+  - route:
+    - destination:
+        host: api.terrafusion.svc.cluster.local
+        port:
+          number: 80
+    retries:
+      attempts: 2
+      perTryTimeout: 300ms
+      retryOn: 5xx,connect-failure,reset
+    timeout: 5s
+---
+# Observability: Ensure Istio telemetry captures fault injection
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: chaos-f1-telemetry
+  namespace: terrafusion
+spec:
+  accessLogging:
+    - providers:
+      - name: envoy
+  tracing:
+    - providers:
+      - name: jaeger
+      randomSamplingPercentage: 100.0
+      customTags:
+        chaos_fault:
+          literal:
+            value: "f1-latency-150ms"

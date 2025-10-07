@@ -1,0 +1,23 @@
+# TerraFusion OS — Chaos Mesh: API Pod Kill (1 of 3 pods)
+# Phase 4.9 Week 1 Day 7 — Fault F7
+# Apply: kubectl apply -f pod-kill-api.yaml
+# Cleanup: Auto-recovered by Kubernetes HPA
+
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: api-pod-kill
+  namespace: terrafusion
+  labels:
+    test: chaos
+    fault: f7-api-kill
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - terrafusion
+    labelSelectors:
+      app: api
+  scheduler:
+    cron: "@once"

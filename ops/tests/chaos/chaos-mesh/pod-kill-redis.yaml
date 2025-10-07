@@ -1,0 +1,23 @@
+# TerraFusion OS — Chaos Mesh: Redis Pod Kill
+# Phase 4.9 Week 1 Day 7 — Fault F4
+# Apply: kubectl apply -f pod-kill-redis.yaml
+# Cleanup: Auto-recovered by Kubernetes
+
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: redis-pod-kill
+  namespace: terrafusion
+  labels:
+    test: chaos
+    fault: f4-redis-kill
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - terrafusion
+    labelSelectors:
+      app: redis
+  scheduler:
+    cron: "@once"

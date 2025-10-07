@@ -1,0 +1,161 @@
+# TerraFusion OS — Resilience Scoring Rubric
+# Phase 4.9 Week 1 Day 7
+
+# Weighted scoring formula for resilience index
+weights:
+  p95_under_load: 0.35      # P95 latency during fault injection
+  error_rate: 0.25          # 5xx error rate during fault
+  recovery_time: 0.25       # Time to recover to baseline post-fault
+  data_integrity: 0.15      # Zero data errors (stale reads, message loss)
+
+# Threshold values for PASS/FAIL
+thresholds:
+  p95_ms: 500               # Target: P95 <500ms during F1 (+150ms fault)
+  error_rate: 0.01          # Target: Error rate <1%
+  recovery_seconds: 60      # Target: Recovery <60s post-fault
+  data_integrity_errors: 0  # Target: Zero data errors
+
+# Resilience Index (RI) calculation formula
+formula: |
+  RI = 0.35 × P95_score + 0.25 × ErrorRate_score + 0.25 × Recovery_score + 0.15 × DataIntegrity_score
+  
+  Where:
+    P95_score        = min(1.0, 500ms / actual_p95_ms)
+    ErrorRate_score  = 1.0 - min(1.0, actual_error_rate / 0.01)
+    Recovery_score   = min(1.0, 60s / actual_recovery_seconds)
+    DataIntegrity_score = (data_integrity_errors == 0 ? 1.0 : 0.0)
+
+# Fault-specific success criteria
+faults:
+  f1_api_latency:
+    id: F1
+    name: "API Latency Injection +150ms"
+    duration: 15min
+    success_criteria:
+      - "P95 endpoint ≤500ms (baseline 350ms + fault 150ms)"
+      - "Error rate <1%"
+      - "Backlog drains <2min post-fault"
+    scoring:
+      p95_target: 500
+      error_rate_target: 0.01
+      recovery_target: 120
+
+  f2_packet_loss:
+    id: F2
+    name: "Network Packet Loss 30%"
+    duration: 10min
+    success_criteria:
+      - "Retries cap ≤2 per request"
+      - "Circuit breaker opens ≤2s after 5 failures"
+      - "P95 recovers ≤60s post-fault"
+    scoring:
+      p95_target: 2000      # Relaxed during fault
+      error_rate_target: 0.30  # Expect some failures
+      recovery_target: 60
+
+  f3_redis_brownout:
+    id: F3
+    name: "Redis Brownout +200ms RTT"
+    duration: 10min
+    success_criteria:
+      - "Cache hit rate falls but 0 data errors"
+      - "Fallback path keeps P95 ≤800ms"
+      - "No stale reads"
+    scoring:
+      p95_target: 800
+      error_rate_target: 0.01
+      recovery_target: 60
+
+  f4_redis_kill:
+    id: F4
+    name: "Redis Pod Kill"
+    duration: one-shot
+    success_criteria:
+      - "Pod replacement <10s"
+      - "5xx spike window <1%"
+      - "Connection pool recovers gracefully"
+    scoring:
+      p95_target: 1000      # Spike during failover
+      error_rate_target: 0.01
+      recovery_target: 10
+
+  f5_kafka_throttle:
+    id: F5
+    name: "Kafka Bandwidth Throttle 50%"
+    duration: 15min
+    success_criteria:
+      - "Producer backpressure activates"
+      - "Consumer lag clears <5min post-fault"
+      - "No message loss (at-least-once delivery)"
+    scoring:
+      p95_target: 1000
+      error_rate_target: 0.01
+      recovery_target: 300
+
+  f6_db_read_replica_stall:
+    id: F6
+    name: "DB Read-Replica Stall +250ms"
+    duration: 10min
+    success_criteria:
+      - "Read routing degrades gracefully"
+      - "Write P95 steady (primary unaffected)"
+      - "Fallback to primary or cached data"
+    scoring:
+      p95_target: 800
+      error_rate_target: 0.01
+      recovery_target: 60
+
+  f7_api_pod_kill:
+    id: F7
+    name: "API Pod Kill (1 of 3)"
+    duration: one-shot
+    success_criteria:
+      - "HPA replaces pod <60s"
+      - "SLOs preserved (P95, error rate)"
+      - "Load balancer routes around failed pod"
+    scoring:
+      p95_target: 600
+      error_rate_target: 0.01
+      recovery_target: 60
+
+# Aggregation: Overall Resilience Index
+aggregation:
+  method: weighted_average
+  description: |
+    Calculate RI for each fault (F1-F7), then compute weighted average.
+    Weight by fault criticality and coverage.
+  
+  fault_weights:
+    f1_api_latency: 0.20          # High criticality (API layer)
+    f2_packet_loss: 0.20          # High criticality (network layer)
+    f3_redis_brownout: 0.15       # Medium criticality (cache layer)
+    f4_redis_kill: 0.10           # Medium criticality (failover)
+    f5_kafka_throttle: 0.10       # Medium criticality (message queue)
+    f6_db_read_replica_stall: 0.15  # Medium criticality (database)
+    f7_api_pod_kill: 0.10         # Low criticality (pod replacement)
+  
+  overall_formula: |
+    Overall_RI = Σ (fault_weight_i × fault_RI_i)
+
+# Pass gate for PROD-0 readiness
+pass_gate: 0.90
+
+# Decision matrix (see decision-matrix.md)
+decision_rules:
+  - condition: "Overall_RI >= 0.95"
+    decision: "GO"
+    description: "Resilient, vendor-demo ready, proceed to PROD-0"
+  
+  - condition: "0.90 <= Overall_RI < 0.95"
+    decision: "CONDITIONAL GO"
+    description: "Fix listed items in Week 2, re-test before PROD-0"
+  
+  - condition: "Overall_RI < 0.90"
+    decision: "NO-GO"
+    description: "Run Week 2 remediations first, defer PROD-0 to Week 3"
+
+# Output formats
+output:
+  json: "ops/tests/chaos/results/resilience_scorecard.json"
+  markdown: "ops/tests/chaos/results/resilience_scorecard.md"
+  prometheus: "job:chaos:resilience_index"  # Export as Prometheus metric

@@ -1,0 +1,59 @@
+# TerraFusion OS — Prometheus Recording Rules (Chaos Test)
+# Phase 4.9 Week 1 Day 7
+# Apply: kubectl apply -f recording-rules.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-chaos-recording-rules
+  namespace: observability
+  labels:
+    app: prometheus
+    test: chaos
+data:
+  chaos-recordings.yml: |
+    groups:
+    - name: chaos-recordings
+      interval: 15s
+      rules:
+      # P95 HTTP request duration by job and route
+      - record: job:http_request_duration_seconds:p95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, job, route))
+        labels:
+          aggregation: p95
+      
+      # P99 HTTP request duration
+      - record: job:http_request_duration_seconds:p99
+        expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, job, route))
+        labels:
+          aggregation: p99
+      
+      # API error rate (5xx responses)
+      - record: api:error_rate
+        expr: sum(rate(http_requests_total{code=~"5.."}[5m])) by (job) / sum(rate(http_requests_total[5m])) by (job)
+        labels:
+          metric_type: error_rate
+      
+      # Kafka consumer lag by topic and group
+      - record: kafka:consumer_lag
+        expr: max(kafka_consumergroup_lag_sum) by (topic, group)
+        labels:
+          metric_type: consumer_lag
+      
+      # Redis cache hit rate
+      - record: redis:cache_hit_rate
+        expr: rate(redis_keyspace_hits_total[5m]) / (rate(redis_keyspace_hits_total[5m]) + rate(redis_keyspace_misses_total[5m]))
+        labels:
+          metric_type: cache_hit_rate
+      
+      # Circuit breaker open state (percentage)
+      - record: circuit_breaker:open_percentage
+        expr: sum(rate(circuit_breaker_state{state="OPEN"}[5m])) by (service) / sum(rate(circuit_breaker_state[5m])) by (service)
+        labels:
+          metric_type: circuit_breaker
+      
+      # Request retry rate
+      - record: api:retry_rate
+        expr: sum(rate(http_request_retries_total[5m])) by (job) / sum(rate(http_requests_total[5m])) by (job)
+        labels:
+          metric_type: retry_rate
