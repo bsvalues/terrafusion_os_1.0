@@ -1,0 +1,340 @@
+# TerraFusion OS Authentication Configuration
+# RS256 JWT Configuration with HS256 Grace Period
+
+version: "2.0.0"
+updated_at: "2025-10-07T00:00:00Z"
+
+# JWT Configuration
+jwt:
+  # Algorithm Configuration
+  algorithms:
+    primary: "RS256"           # Primary signing algorithm (active)
+    fallback: "HS256"          # Fallback for grace period (deprecated)
+    supported: ["RS256", "HS256"]  # Client verification algorithms
+  
+  # Issuer Configuration
+  issuer: "https://auth.terrafusion.ai"
+  audiences:
+    - "https://api.terrafusion.ai"
+    - "https://app.terrafusion.ai"
+    - "https://government.terrafusion.ai"
+    - "https://commercial.terrafusion.ai"
+  
+  # Token Lifetime
+  expiry:
+    access_token: 3600        # 1 hour (seconds)
+    refresh_token: 604800     # 7 days (seconds)
+    id_token: 3600            # 1 hour (seconds)
+  
+  # Key Configuration (RS256)
+  keys:
+    default_kid: "tfos_2025_kid1"  # Default signing key ID
+    jwks_endpoint: "/.well-known/jwks.json"
+    jwks_cache_ttl: 3600      # 1 hour cache (seconds)
+    
+    # Signing Keys (private keys - DO NOT COMMIT)
+    # Mount from secrets manager: /var/secrets/jwt/signing_keys
+    signing_keys_path: "/var/secrets/jwt/signing_keys"
+    
+    # Key Rotation
+    rotation:
+      enabled: true
+      auto_rotate_days: 30    # Auto-rotate 30 days before expiry
+      grace_period_days: 30   # Accept both old + new keys
+      
+  # HS256 Grace Period (Migration)
+  hs256_grace_period:
+    enabled: true
+    end_date: "2025-11-07T00:00:00Z"  # 30 days from now
+    warning_after: "2025-10-22T00:00:00Z"  # Warn clients after 15 days
+    reject_after: "2025-11-07T00:00:00Z"  # Hard reject HS256 after 30 days
+    shared_secret_path: "/var/secrets/jwt/hs256_secret"  # Legacy secret
+  
+  # Claims Configuration
+  claims:
+    required: ["iss", "sub", "aud", "exp", "iat"]
+    optional: ["jti", "nbf", "kid"]
+    custom:
+      - "tenant_id"           # Multi-tenant isolation
+      - "org_id"              # Organization ID
+      - "roles"               # RBAC roles
+      - "permissions"         # Fine-grained permissions
+      - "scope"               # OAuth2 scopes
+
+# Authentication Providers
+providers:
+  # OAuth2/OIDC
+  oidc:
+    enabled: true
+    discovery_url: "https://auth.terrafusion.ai/.well-known/openid-configuration"
+    client_id: "terrafusion_web_app"
+    client_secret_path: "/var/secrets/oauth2/client_secret"
+    redirect_uri: "https://app.terrafusion.ai/auth/callback"
+    scopes: ["openid", "profile", "email", "offline_access"]
+  
+  # SAML 2.0 (Government/Enterprise)
+  saml:
+    enabled: true
+    idp_metadata_url: "https://idp.terrafusion.ai/metadata"
+    sp_entity_id: "https://auth.terrafusion.ai/saml"
+    acs_url: "https://auth.terrafusion.ai/saml/acs"
+    slo_url: "https://auth.terrafusion.ai/saml/logout"
+  
+  # LDAP/Active Directory
+  ldap:
+    enabled: false
+    host: "ldap.internal.terrafusion.ai"
+    port: 636
+    use_ssl: true
+    base_dn: "ou=users,dc=terrafusion,dc=ai"
+  
+  # API Keys (Service-to-Service)
+  apikey:
+    enabled: true
+    header_name: "X-TerraFusion-API-Key"
+    prefix: "tfos_"
+    hash_algorithm: "sha256"
+
+# Multi-Tenant Configuration
+tenants:
+  isolation_level: "strict"   # strict | shared | hybrid
+  tenant_claim: "tenant_id"
+  org_claim: "org_id"
+  
+  # Tenant-Specific Key Isolation
+  per_tenant_keys:
+    enabled: true
+    kid_format: "tfos_{tenant}_{year}_kid{n}"
+    
+  # Tenant Allowlist (Government)
+  allowlist:
+    enabled: true
+    source: "database"        # database | config | remote
+    cache_ttl: 300            # 5 minutes
+
+# Security Policies
+security:
+  # Token Validation
+  validation:
+    strict_aud: true          # Require exact audience match
+    reject_expired: true
+    reject_not_before: true
+    clock_skew_seconds: 60    # Allow 60s clock skew
+    
+  # Rate Limiting
+  rate_limit:
+    enabled: true
+    token_requests_per_minute: 100
+    validation_requests_per_second: 1000
+    
+  # Audit Logging
+  audit:
+    enabled: true
+    log_level: "info"         # debug | info | warn | error
+    log_destination: "stdout"  # stdout | file | remote
+    include_claims: ["sub", "tenant_id", "org_id", "aud"]
+    
+  # Anomaly Detection
+  anomaly_detection:
+    enabled: true
+    suspicious_patterns:
+      - "multiple_failed_validations"  # >5 failures in 1 minute
+      - "expired_token_flood"          # >10 expired tokens in 1 minute
+      - "unknown_kid_requests"         # Requests for non-existent kid
+
+# Monitoring & Observability
+monitoring:
+  # Prometheus Metrics
+  metrics:
+    enabled: true
+    port: 9090
+    path: "/metrics"
+    labels:
+      environment: "production"
+      service: "auth"
+      
+  # Health Checks
+  health:
+    enabled: true
+    port: 8080
+    path: "/health"
+    liveness_path: "/health/liveness"
+    readiness_path: "/health/readiness"
+    
+  # Distributed Tracing
+  tracing:
+    enabled: true
+    provider: "opentelemetry"
+    sampling_rate: 0.1        # Sample 10% of requests
+    
+  # Alerts
+  alerts:
+    - name: "JWT_Validation_Failure_Rate_High"
+      condition: "rate(jwt_validation_failures_total[5m]) > 0.05"
+      severity: "warning"
+      
+    - name: "JWKS_Endpoint_Unreachable"
+      condition: "probe_success{job='jwks'} < 1"
+      severity: "critical"
+      
+    - name: "HS256_Grace_Period_Ending"
+      condition: "time() > timestamp('2025-10-22T00:00:00Z')"
+      severity: "warning"
+
+# Database (Token Audit Trail)
+database:
+  type: "postgresql"          # postgresql | mysql | sqlite
+  host: "postgres.internal.terrafusion.ai"
+  port: 5432
+  database: "terrafusion_auth"
+  username: "auth_service"
+  password_path: "/var/secrets/db/password"
+  ssl_mode: "require"
+  
+  # Connection Pool
+  pool:
+    max_connections: 50
+    min_connections: 10
+    connection_lifetime: 3600  # 1 hour
+    
+  # Token Audit Table
+  audit_table:
+    enabled: true
+    table_name: "token_audit"
+    columns:
+      - "jti"                 # JWT ID
+      - "kid"                 # Key ID
+      - "sub"                 # Subject
+      - "iss"                 # Issuer
+      - "aud"                 # Audience
+      - "iat"                 # Issued at
+      - "exp"                 # Expiry
+      - "algorithm"           # RS256 | HS256
+      - "ip_address"          # Client IP
+      - "user_agent"          # Client user agent
+      - "revoked"             # Revocation flag
+      - "revoked_at"          # Revocation timestamp
+
+# Cache Configuration
+cache:
+  type: "redis"               # redis | memcached | inmemory
+  host: "redis.internal.terrafusion.ai"
+  port: 6379
+  password_path: "/var/secrets/redis/password"
+  database: 0
+  
+  # Cache Keys
+  keys:
+    jwks: "jwks:cache"
+    token_blacklist: "tokens:blacklist:{jti}"
+    validation_cache: "validation:{token_hash}"
+  
+  # TTLs
+  ttls:
+    jwks: 3600                # 1 hour
+    token_blacklist: 604800   # 7 days (until expiry)
+    validation_cache: 300     # 5 minutes
+
+# Feature Flags
+features:
+  dual_sign_tokens: true      # Sign with both RS256 + HS256 (migration)
+  log_hs256_usage: true       # Log all HS256 token validations
+  enforce_kid_header: true    # Require kid in JWT header
+  validate_x5c_chain: false   # Validate X.509 certificate chain
+  
+# Development/Testing Overrides
+development:
+  enabled: false              # NEVER enable in production
+  skip_signature_validation: false
+  allow_insecure_http: false
+  log_tokens: false           # NEVER log tokens in production
+
+# Compliance
+compliance:
+  gdpr:
+    enabled: true
+    data_retention_days: 90   # Audit logs retention
+    right_to_erasure: true
+    
+  hipaa:
+    enabled: false
+    audit_all_access: true
+    
+  soc2:
+    enabled: true
+    change_approval_required: true
+    separation_of_duties: true
+    
+  fedramp:
+    enabled: true
+    fips_140_2: true
+    encryption_at_rest: true
+
+# Secrets Management
+secrets:
+  provider: "kubernetes"      # kubernetes | aws | azure | vault
+  refresh_interval: 300       # 5 minutes
+  
+  # Kubernetes Secrets (mounted as files)
+  kubernetes:
+    namespace: "terrafusion"
+    signing_key_secret: "jwt-signing-key"
+    hs256_secret: "jwt-hs256-secret"
+    
+  # AWS Secrets Manager
+  aws:
+    region: "us-west-2"
+    signing_key_arn: "arn:aws:secretsmanager:us-west-2:123456789012:secret:jwt-signing-key"
+    
+  # Azure Key Vault
+  azure:
+    vault_url: "https://terrafusion-keyvault.vault.azure.net"
+    signing_key_name: "jwt-signing-key"
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8080
+  base_path: "/auth/v1"
+  
+  endpoints:
+    token: "/token"           # POST - Issue token
+    introspect: "/introspect" # POST - Validate token
+    revoke: "/revoke"         # POST - Revoke token
+    jwks: "/.well-known/jwks.json"  # GET - Public keys
+    openid_config: "/.well-known/openid-configuration"
+  
+  cors:
+    enabled: true
+    allowed_origins:
+      - "https://app.terrafusion.ai"
+      - "https://government.terrafusion.ai"
+      - "https://commercial.terrafusion.ai"
+    allowed_methods: ["GET", "POST", "OPTIONS"]
+    allowed_headers: ["Authorization", "Content-Type"]
+    max_age: 3600
+
+# Deployment Configuration
+deployment:
+  environment: "production"   # production | staging | development
+  replica_count: 3
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
+  
+  # Kubernetes Probes
+  probes:
+    liveness:
+      initial_delay: 30
+      period: 10
+      timeout: 5
+      failure_threshold: 3
+    readiness:
+      initial_delay: 10
+      period: 5
+      timeout: 3
+      failure_threshold: 2

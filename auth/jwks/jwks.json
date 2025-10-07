@@ -1,0 +1,60 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "use": "sig",
+      "alg": "RS256",
+      "kid": "tfos_2025_kid1",
+      "n": "xGOr-H7A-wq3Qx5wQ8lC7YjXkF6Px8oQ_RzTgEv2bPvU3K1M8XpN9ZwY5HfQzJ8kL6mT2vX7W4sY9nK0bU3eR6wV5pL8qN4hY7jM2tZ6kP9wR3sF1nK4vL7oP8tY6mW3nZ9rQ5sL2jM4kN6pY8vW1rT5oL3nZ7mP4sQ9kY2jM6pN8rL5wT3vZ1oY7nP4sM9kL6qN2jT8pY5vW3rL1nZ7oM4sP9kQ6jY2tN8rL5vW3pZ1oY7nM4sQ9kL6jT2pN8rY5vW3nZ1oL7mP4sQ9kY6jM2tN8rL5vW3pZ1oY7nM4sQ9kL6jT2pN8rY5vW3nZ1oL7mP4sQ9kY6jM2tN8r",
+      "e": "AQAB",
+      "x5c": [],
+      "x5t": "",
+      "x5t#S256": "",
+      "created_at": "2025-10-07T00:00:00Z",
+      "expires_at": "2026-10-07T00:00:00Z",
+      "status": "active",
+      "issuer": "https://auth.terrafusion.ai",
+      "description": "Primary RS256 signing key for TerraFusion OS authentication"
+    },
+    {
+      "kty": "RSA",
+      "use": "sig",
+      "alg": "RS256",
+      "kid": "tfos_2024_kid0",
+      "n": "yH1s-K8B-xr4Ry6xR9mD8ZkYlG7Qy9pR0S1UhFw3cQwV4L2N9YqZ6I8gRa0wO5kM7nU3wY8X5oT0sZ7nL1bV4fS7xW6qM9rO5iZ8kR2tG4yL7pQ9wS4tG2oM6wP9uY7nX4oZ0rR6tM3jO5kQ8wL1nT7pY9vX2rZ5oM4sP9kL6qN2jU8pY5wX3rM1oZ7nP4tQ9lL6jV2pO8rY5wX3nZ1pL7mQ4sR9kY6jN2uO8rM5wX3pZ1oY7nN4sQ9lM6jU2pO8rY5wX3nZ1pM7mQ4sR9kY6jN2uO8rM5wX3pZ1oY7nN4sQ9lM6jU2pO8r",
+      "e": "AQAB",
+      "x5c": [],
+      "x5t": "",
+      "x5t#S256": "",
+      "created_at": "2024-10-01T00:00:00Z",
+      "expires_at": "2025-10-01T00:00:00Z",
+      "status": "deprecated",
+      "issuer": "https://auth.terrafusion.ai",
+      "description": "Legacy HS256 key - deprecated, use tfos_2025_kid1 for new tokens"
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "updated_at": "2025-10-07T00:00:00Z",
+    "cache_max_age": 3600,
+    "rotation_policy": {
+      "active_key_lifetime_days": 365,
+      "grace_period_days": 30,
+      "emergency_rotation_hours": 4
+    },
+    "endpoints": {
+      "primary": "https://auth.terrafusion.ai/.well-known/jwks.json",
+      "cdn": "https://cdn.terrafusion.ai/auth/jwks.json",
+      "fallback": "https://auth-backup.terrafusion.ai/.well-known/jwks.json"
+    },
+    "monitoring": {
+      "prometheus": "https://prometheus.terrafusion.ai",
+      "metrics_endpoint": "/metrics/jwks",
+      "alerts": [
+        "JWT_Key_Expiring_Soon",
+        "JWKS_Endpoint_Down",
+        "JWT_Signing_Error_Rate_High"
+      ]
+    }
+  }
+}
