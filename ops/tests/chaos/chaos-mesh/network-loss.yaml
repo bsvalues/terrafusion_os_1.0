@@ -1,0 +1,27 @@
+# TerraFusion OS — Chaos Mesh: Network Packet Loss (Alternative to Istio)
+# Phase 4.9 Week 1 Day 7
+# Apply: kubectl apply -f network-loss.yaml
+# Cleanup: kubectl delete networkchaos network-packet-loss
+
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-packet-loss
+  namespace: terrafusion
+  labels:
+    test: chaos
+    fault: network-loss
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+      - terrafusion
+    labelSelectors:
+      app: api
+  loss:
+    loss: "30"
+    correlation: "0"
+  duration: "10m"
+  scheduler:
+    cron: "@once"

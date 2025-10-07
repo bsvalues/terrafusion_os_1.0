@@ -1,0 +1,28 @@
+# TerraFusion OS — Chaos Mesh: Redis Network Latency +200ms
+# Phase 4.9 Week 1 Day 7 — Fault F3
+# Apply: kubectl apply -f network-latency.yaml
+# Cleanup: kubectl delete networkchaos rediscache-latency
+
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: rediscache-latency
+  namespace: terrafusion
+  labels:
+    test: chaos
+    fault: f3-redis-brownout
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+      - terrafusion
+    labelSelectors:
+      app: redis
+  delay:
+    latency: "200ms"
+    correlation: "0"
+    jitter: "50ms"
+  duration: "10m"
+  scheduler:
+    cron: "@once"
