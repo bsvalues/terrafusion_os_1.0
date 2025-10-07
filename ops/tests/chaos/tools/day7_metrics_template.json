@@ -1,0 +1,98 @@
+{
+  "test_date": "2025-10-07",
+  "test_duration_hours": 4.5,
+  "environment": "staging",
+  "faults": {
+    "F1": {
+      "name": "API Latency +150ms",
+      "description": "Istio fault injection: +150ms fixed delay on /v1/properties",
+      "duration_min": 15,
+      "p95_ms": 0,
+      "error_rate": 0.0,
+      "recovery_sec": 0,
+      "data_integrity_errors": 0,
+      "notes": "Measured during 15min Istio VirtualService fault injection + k6 brownout test (100 VUs)"
+    },
+    "F2": {
+      "name": "Packet Loss 30%",
+      "description": "Istio fault injection: 30% HTTP 503 abort",
+      "duration_min": 10,
+      "p95_ms": 0,
+      "error_rate": 0.0,
+      "recovery_sec": 0,
+      "data_integrity_errors": 0,
+      "notes": "Measured during 10min Istio packet loss + k6 spike test (0→500 VUs). Track circuit breaker state transitions."
+    },
+    "F3": {
+      "name": "Redis Brownout +200ms",
+      "description": "Chaos Mesh NetworkChaos: +200ms latency ±50ms jitter on Redis pods",
+      "duration_min": 10,
+      "p95_ms": 0,
+      "error_rate": 0.0,
+      "recovery_sec": 0,
+      "data_integrity_errors": 0,
+      "notes": "Measured during 10min Chaos Mesh network latency experiment. Verify cache hit rate degradation but 0 data errors."
+    },
+    "F4": {
+      "name": "Redis Pod Kill",
+      "description": "Chaos Mesh PodChaos: One-shot pod termination (Redis primary)",
+      "duration_min": 1,
+      "p95_ms": 0,
+      "error_rate": 0.0,
+      "recovery_sec": 0,
+      "data_integrity_errors": 0,
+      "notes": "Measured failover time from pod kill to Redis sentinel promotion. Expected recovery <10s."
+    },
+    "F5": {
+      "name": "Kafka Throttle 50%",
+      "description": "Manual Kafka quota: 50% bandwidth reduction on consumer group",
+      "duration_min": 15,
+      "p95_ms": 0,
+      "error_rate": 0.0,
+      "recovery_sec": 0,
+      "data_integrity_errors": 0,
+      "notes": "Measured backpressure handling. Verify consumer lag clears <5min after throttle removed, no message loss."
+    },
+    "F6": {
+      "name": "DB Read-Replica Stall +250ms",
+      "description": "Manual ToxiProxy latency: +250ms on PostgreSQL read replica",
+      "duration_min": 10,
+      "p95_ms": 0,
+      "error_rate": 0.0,
+      "recovery_sec": 0,
+      "data_integrity_errors": 0,
+      "notes": "Measured read routing degradation. Verify write P95 remains steady, reads degrade gracefully."
+    },
+    "F7": {
+      "name": "API Pod Kill",
+      "description": "Chaos Mesh PodChaos: One-shot pod termination (1 of 3 API pods)",
+      "duration_min": 1,
+      "p95_ms": 0,
+      "error_rate": 0.0,
+      "recovery_sec": 0,
+      "data_integrity_errors": 0,
+      "notes": "Measured HPA replacement time. Expected <60s pod replacement, SLOs preserved during failover."
+    }
+  },
+  "infrastructure": {
+    "kubernetes_version": "1.28",
+    "istio_version": "1.19",
+    "chaos_mesh_version": "2.6",
+    "k6_version": "0.47",
+    "prometheus_version": "2.47",
+    "jaeger_version": "1.50"
+  },
+  "baseline": {
+    "p95_ms_normal": 120,
+    "error_rate_normal": 0.001,
+    "rps_normal": 500,
+    "cache_hit_rate_normal": 0.85
+  },
+  "notes": [
+    "Fill in actual measured values for each fault after test execution",
+    "p95_ms: Extract from Prometheus recording rule 'job:http_request_duration_seconds:p95' during fault window",
+    "error_rate: Calculate from 'api:error_rate' recording rule (5xx rate) during fault window",
+    "recovery_sec: Manual calculation from fault removal timestamp to SLO restoration (p95 ≤500ms AND error <1%)",
+    "data_integrity_errors: Manual count from sanity checks (queue replays, cache fallbacks, idempotent writes)"
+  ]
+}
