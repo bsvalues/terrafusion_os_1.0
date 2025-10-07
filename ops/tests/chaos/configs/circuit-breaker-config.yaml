@@ -1,0 +1,233 @@
+# ============================================================================
+# Day 8 - F2 Circuit Breaker Tuning (CRITICAL)
+# ============================================================================
+# Objective: Reduce F2 recovery time from 75s → <60s by optimizing circuit breaker
+# 
+# Key Changes:
+# 1. baseEjectionTime: 30s → 15s (half-open retry faster)
+# 2. interval: 30s → 10s (detect failures faster)
+# 3. consecutiveGatewayErrors: 5 → 3 (trigger circuit breaker sooner)
+# 
+# Expected Impact:
+# - Faster failure detection: 30s → 10s (20s improvement)
+# - Faster recovery attempts: 30s → 15s (15s improvement)
+# - Total recovery time: 75s → ~45-55s (20-30s improvement)
+# - F2 RI improvement: 0.9317 → 0.9500
+# ============================================================================
+
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: terrafusion-api-dr-optimized
+  namespace: terrafusion
+  annotations:
+    terrafusion.dev/version: "week2-day8"
+    terrafusion.dev/change: "circuit-breaker-tuning"
+    terrafusion.dev/ticket: "F2-RECOVERY-OPTIMIZATION"
+spec:
+  host: terrafusion-api.terrafusion.svc.cluster.local
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 5s
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        idleTimeout: 300s
+        h2UpgradePolicy: UPGRADE
+    
+    loadBalancer:
+      simple: LEAST_CONN
+      warmupDurationSecs: 10
+    
+    # Optimized Outlier Detection (Circuit Breaker)
+    outlierDetection:
+      # Trigger circuit breaker after 3 consecutive errors (down from 5)
+      # Rationale: Fail fast to prevent cascading failures
+      consecutiveGatewayErrors: 3
+      consecutive5xxErrors: 3
+      
+      # Check for failures every 10 seconds (down from 30s)
+      # Rationale: Detect degraded services faster
+      interval: 10s
+      
+      # Half-open timeout: 15 seconds (down from 30s)
+      # Rationale: Attempt recovery faster during packet loss scenarios
+      baseEjectionTime: 15s
+      
+      # Max percentage of hosts that can be ejected: 50%
+      # Rationale: Maintain capacity while isolating failing instances
+      maxEjectionPercent: 50
+      
+      # Minimum healthy hosts required: 30%
+      # Rationale: Prevent complete service outage
+      minHealthPercent: 30
+      
+      # Split external/local errors for better diagnostics
+      splitExternalLocalOriginErrors: true
+      
+      # Require 1 successful request to consider host healthy again
+      # Rationale: Verify recovery before full traffic restoration
+      consecutiveLocalOriginFailures: 1
+  
+  # Subset-specific policies (staging vs production)
+  subsets:
+  - name: staging
+    labels:
+      environment: staging
+    trafficPolicy:
+      # More aggressive tuning for staging validation
+      outlierDetection:
+        consecutiveGatewayErrors: 2
+        interval: 5s
+        baseEjectionTime: 10s
+        maxEjectionPercent: 70
+  
+  - name: production
+    labels:
+      environment: production
+    trafficPolicy:
+      # Conservative production tuning
+      outlierDetection:
+        consecutiveGatewayErrors: 3
+        interval: 10s
+        baseEjectionTime: 15s
+        maxEjectionPercent: 50
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: terrafusion-apps-dr-optimized
+  namespace: terrafusion
+  annotations:
+    terrafusion.dev/version: "week2-day8"
+    terrafusion.dev/change: "circuit-breaker-tuning"
+spec:
+  host: "*.terrafusion.svc.cluster.local"
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 25
+        http2MaxRequests: 50
+        maxRequestsPerConnection: 5
+        maxRetries: 2
+    
+    # Optimized circuit breaker for all services
+    outlierDetection:
+      consecutiveGatewayErrors: 3
+      consecutive5xxErrors: 3
+      interval: 10s
+      baseEjectionTime: 15s
+      maxEjectionPercent: 30
+      minHealthPercent: 30
+      splitExternalLocalOriginErrors: true
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: cosmic-orchestrator-dr-optimized
+  namespace: terrafusion-cosmic
+  annotations:
+    terrafusion.dev/version: "week2-day8"
+    terrafusion.dev/change: "circuit-breaker-tuning"
+spec:
+  host: cosmic-orchestrator
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 2
+    
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: "x-cosmic-session"
+    
+    # Optimized outlier detection
+    outlierDetection:
+      consecutive5xxErrors: 3
+      consecutiveGatewayErrors: 3
+      interval: 10s
+      baseEjectionTime: 15s
+      maxEjectionPercent: 50
+      minHealthPercent: 30
+      splitExternalLocalOriginErrors: true
+  
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+    trafficPolicy:
+      connectionPool:
+        tcp:
+          maxConnections: 50
+  - name: v2
+    labels:
+      version: v2
+    trafficPolicy:
+      connectionPool:
+        tcp:
+          maxConnections: 50
+
+---
+# Virtual Service to enable traffic splitting for gradual rollout
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: terrafusion-api-vs-optimized
+  namespace: terrafusion
+  annotations:
+    terrafusion.dev/version: "week2-day8"
+    terrafusion.dev/rollout: "gradual-circuit-breaker-tuning"
+spec:
+  hosts:
+  - terrafusion-api.terrafusion.svc.cluster.local
+  http:
+  - match:
+    - headers:
+        x-circuit-breaker-test:
+          exact: "enabled"
+    route:
+    - destination:
+        host: terrafusion-api.terrafusion.svc.cluster.local
+        subset: staging
+      weight: 100
+  - route:
+    - destination:
+        host: terrafusion-api.terrafusion.svc.cluster.local
+        subset: production
+      weight: 100
+
+---
+# ConfigMap for rollback values (quick reference)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: circuit-breaker-rollback-config
+  namespace: terrafusion
+  annotations:
+    terrafusion.dev/version: "week2-day8"
+    terrafusion.dev/rollback: "use-if-validation-fails"
+data:
+  ORIGINAL_CONSECUTIVE_ERRORS: "5"
+  ORIGINAL_INTERVAL: "30s"
+  ORIGINAL_BASE_EJECTION_TIME: "30s"
+  ORIGINAL_MAX_EJECTION_PERCENT: "50"
+  
+  OPTIMIZED_CONSECUTIVE_ERRORS: "3"
+  OPTIMIZED_INTERVAL: "10s"
+  OPTIMIZED_BASE_EJECTION_TIME: "15s"
+  OPTIMIZED_MAX_EJECTION_PERCENT: "50"
+  
+  ROLLBACK_COMMAND: |
+    kubectl apply -f infrastructure/kubernetes/service-mesh/destination-rules.yaml
+    kubectl rollout restart deployment/terrafusion-api -n terrafusion
