@@ -1,0 +1,463 @@
+# ============================================================================
+# F2 Recovery-Specific Alert Rules
+# ============================================================================
+# Purpose: Monitor F2 circuit breaker behavior and recovery time
+# Owner: Week 2 Day 8 Team
+# Deployment: After staging validation confirms baseline behavior
+# ============================================================================
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: f2-recovery-alerts
+  namespace: terrafusion-monitoring
+  labels:
+    app: prometheus
+    release: prometheus
+    terrafusion.dev/alert-group: "f2-recovery"
+    terrafusion.dev/severity: "critical"
+spec:
+  groups:
+  - name: f2_recovery_monitoring
+    interval: 30s
+    rules:
+    
+    # ========================================================================
+    # Alert: F2 Recovery Time Exceeds Target
+    # ========================================================================
+    - alert: F2_Recovery_Slow
+      annotations:
+        summary: "F2 recovery time exceeded 60s target"
+        description: |
+          F2 packet loss recovery took {{ $value }}s, exceeding 60s target.
+          
+          Circuit breaker tuning may need further adjustment:
+          - Current baseEjectionTime: 15s
+          - Target recovery: ≤60s
+          - Actual recovery: {{ $value }}s
+          
+          Investigation steps:
+          1. Check circuit breaker state: kubectl get destinationrule -n terrafusion
+          2. Review Istio pilot logs for ejection events
+          3. Verify network conditions during packet loss
+          4. Consider reducing baseEjectionTime to 10s
+          
+          Runbook: https://terrafusion.local/runbooks/f2-recovery-slow
+        runbook_url: "https://terrafusion.local/runbooks/f2-recovery-slow"
+        dashboard_url: "https://grafana.terrafusion.local/d/chaos-f2/f2-packet-loss"
+      expr: |
+        (
+          time() - (
+            last_over_time(
+              circuit_breaker_state{service="terrafusion-api",state="OPEN"}[5m]
+            ) 
+            or 
+            vector(0)
+          )
+        ) > 60
+        and
+        circuit_breaker_state{service="terrafusion-api",state="OPEN"} == 0
+      for: 2m
+      labels:
+        severity: warning
+        fault: F2
+        component: circuit-breaker
+        alert_type: performance
+        pagerduty_severity: low
+        slack_channel: "#terrafusion-chaos-alerts"
+    
+    # ========================================================================
+    # Alert: Circuit Breaker Flapping
+    # ========================================================================
+    - alert: CB_Flap
+      annotations:
+        summary: "Circuit breaker flapping detected (>3 state changes/10min)"
+        description: |
+          Circuit breaker for {{ $labels.service }} is flapping.
+          State changes in last 10 minutes: {{ $value }}
+          
+          This indicates:
+          - Circuit breaker threshold may be too aggressive (consecutiveGatewayErrors: 3)
+          - Intermittent failures causing rapid open/close cycles
+          - Potential downstream service instability
+          
+          Investigation steps:
+          1. Check error rate: {{ $labels.service }} may be borderline healthy
+          2. Review recent deployments for regressions
+          3. Examine load patterns - spiky traffic can cause flapping
+          4. Consider increasing consecutiveGatewayErrors to 4
+          
+          Impact:
+          - Increased P99 latency during half-open periods
+          - Potential request failures during state transitions
+          - SLO risk if flapping persists >15 minutes
+          
+          Runbook: https://terrafusion.local/runbooks/circuit-breaker-flapping
+        runbook_url: "https://terrafusion.local/runbooks/circuit-breaker-flapping"
+        dashboard_url: "https://grafana.terrafusion.local/d/circuit-breaker/cb-health"
+      expr: |
+        (
+          rate(circuit_breaker_state_changes_total{service="terrafusion-api"}[10m]) * 600
+        ) > 3
+      for: 5m
+      labels:
+        severity: warning
+        component: circuit-breaker
+        alert_type: stability
+        pagerduty_severity: low
+        slack_channel: "#terrafusion-sre-alerts"
+    
+    # ========================================================================
+    # Alert: F2 Error Rate During Packet Loss
+    # ========================================================================
+    - alert: F2_Error_Rate_High
+      annotations:
+        summary: "F2 error rate >1% during packet loss test"
+        description: |
+          Error rate for {{ $labels.service }} is {{ $value | humanizePercentage }}.
+          
+          Expected behavior during F2 packet loss:
+          - Error rate: <1.0% (currently: {{ $value | humanizePercentage }})
+          - Circuit breaker should be absorbing failures
+          - Retry budget should handle transient errors
+          
+          Root causes to investigate:
+          1. Circuit breaker not opening fast enough (check consecutiveGatewayErrors)
+          2. Retry budget exhausted (check rate limiter metrics)
+          3. Packet loss rate higher than expected 30%
+          4. Upstream service not recovering properly
+          
+          Current circuit breaker config:
+          - consecutiveGatewayErrors: 3
+          - interval: 10s
+          - baseEjectionTime: 15s
+          
+          Action required if sustained >5 minutes:
+          - Investigate root cause
+          - Consider emergency rollback if error rate >5%
+          - Review F2 chaos test configuration
+          
+          Runbook: https://terrafusion.local/runbooks/f2-error-rate-high
+        runbook_url: "https://terrafusion.local/runbooks/f2-error-rate-high"
+        dashboard_url: "https://grafana.terrafusion.local/d/errors/error-rate-analysis"
+      expr: |
+        (
+          sum(rate(http_requests_total{status=~"5..",service="terrafusion-api"}[2m]))
+          /
+          sum(rate(http_requests_total{service="terrafusion-api"}[2m]))
+        ) > 0.01
+      for: 2m
+      labels:
+        severity: warning
+        fault: F2
+        component: error-rate
+        alert_type: reliability
+        pagerduty_severity: low
+        slack_channel: "#terrafusion-chaos-alerts"
+    
+    # ========================================================================
+    # Alert: Circuit Breaker Stuck Open
+    # ========================================================================
+    - alert: CB_Stuck_Open
+      annotations:
+        summary: "Circuit breaker stuck OPEN for >5min"
+        description: |
+          Circuit breaker for {{ $labels.service }} has been OPEN for >5 minutes.
+          
+          Expected behavior:
+          - Circuit should attempt half-open after 15s (baseEjectionTime)
+          - If still failing, should retry every 15s
+          - Should close after 1 successful request
+          
+          Stuck OPEN indicates:
+          - Downstream service is completely unavailable
+          - Health checks are failing consistently
+          - Potential configuration issue with outlierDetection
+          
+          Investigation steps:
+          1. Check downstream service health: kubectl get pods -n {{ $labels.namespace }}
+          2. Review Istio DestinationRule config for {{ $labels.service }}
+          3. Check if baseEjectionTime is being honored
+          4. Verify consecutiveLocalOriginFailures threshold
+          
+          Impact:
+          - All requests to {{ $labels.service }} are failing
+          - SLO violation likely in progress
+          - User-facing errors if no fallback configured
+          
+          Emergency action:
+          - If downstream is healthy but CB stuck, restart Istio sidecar
+          - Consider manual circuit breaker reset
+          
+          Runbook: https://terrafusion.local/runbooks/circuit-breaker-stuck
+        runbook_url: "https://terrafusion.local/runbooks/circuit-breaker-stuck"
+        dashboard_url: "https://grafana.terrafusion.local/d/circuit-breaker/cb-health"
+      expr: |
+        circuit_breaker_state{state="OPEN"} > 0
+      for: 5m
+      labels:
+        severity: critical
+        component: circuit-breaker
+        alert_type: availability
+        pagerduty_severity: high
+        slack_channel: "#terrafusion-incidents"
+    
+    # ========================================================================
+    # Alert: F2 Data Integrity Errors
+    # ========================================================================
+    - alert: F2_Data_Integrity_Error
+      annotations:
+        summary: "Data integrity errors detected during F2 test"
+        description: |
+          Data integrity errors detected: {{ $value }} errors in last 5 minutes.
+          
+          CRITICAL: This should NEVER happen during F2 packet loss.
+          - Expected: 0 data integrity errors
+          - Actual: {{ $value }} errors
+          
+          Potential causes:
+          1. Database write failures during network partition
+          2. Cache inconsistency due to packet loss
+          3. Message queue data loss (Kafka/Redis)
+          4. Incomplete transaction rollback
+          
+          IMMEDIATE ACTION REQUIRED:
+          1. STOP all chaos testing immediately
+          2. Investigate data layer for corruption
+          3. Check transaction logs for incomplete commits
+          4. Verify backup/restore procedures
+          5. DO NOT proceed to production until resolved
+          
+          This is a GO/NO-GO blocker.
+          
+          Runbook: https://terrafusion.local/runbooks/data-integrity-error
+        runbook_url: "https://terrafusion.local/runbooks/data-integrity-error"
+        dashboard_url: "https://grafana.terrafusion.local/d/data/data-integrity"
+      expr: |
+        sum(rate(data_integrity_errors_total{fault="F2"}[5m])) > 0
+      for: 1m
+      labels:
+        severity: critical
+        fault: F2
+        component: data-integrity
+        alert_type: correctness
+        pagerduty_severity: critical
+        slack_channel: "#terrafusion-incidents"
+        requires_immediate_action: "true"
+    
+    # ========================================================================
+    # Alert: P95 Latency Spike During Recovery
+    # ========================================================================
+    - alert: F2_Recovery_Latency_Spike
+      annotations:
+        summary: "P95 latency >500ms during F2 recovery"
+        description: |
+          P95 latency is {{ $value }}ms during F2 recovery phase.
+          
+          Expected during recovery:
+          - P95 should return to baseline (≤500ms) within 60s
+          - Current P95: {{ $value }}ms
+          - Baseline P95: 480ms (Day 7)
+          
+          Possible causes:
+          1. Circuit breaker half-open period causing slow requests
+          2. Connection pool warming up after ejection
+          3. Downstream service still under stress
+          4. Cache miss rate high after recovery
+          
+          If sustained >2 minutes:
+          - May indicate incomplete recovery
+          - Could affect user experience
+          - Consider extending recovery observation period
+          
+          This is informational during active chaos testing.
+          Only actionable if persists after fault removal.
+          
+          Runbook: https://terrafusion.local/runbooks/f2-recovery-latency
+        runbook_url: "https://terrafusion.local/runbooks/f2-recovery-latency"
+        dashboard_url: "https://grafana.terrafusion.local/d/latency/p95-analysis"
+      expr: |
+        histogram_quantile(
+          0.95,
+          sum(rate(http_request_duration_seconds_bucket{service="terrafusion-api"}[1m])) by (le)
+        ) > 0.5
+        and
+        (
+          time() - (
+            last_over_time(
+              circuit_breaker_state{service="terrafusion-api",state="OPEN"}[5m]
+            )
+            or
+            vector(0)
+          )
+        ) < 120
+      for: 2m
+      labels:
+        severity: info
+        fault: F2
+        component: latency
+        alert_type: performance
+        pagerduty_severity: none
+        slack_channel: "#terrafusion-chaos-alerts"
+    
+    # ========================================================================
+    # Recording Rules for F2 Recovery Metrics
+    # ========================================================================
+    - record: f2:recovery_time_seconds
+      expr: |
+        time() - (
+          last_over_time(
+            circuit_breaker_state{service="terrafusion-api",state="OPEN"}[5m]
+          )
+          or
+          vector(0)
+        )
+    
+    - record: f2:circuit_breaker_open_count
+      expr: |
+        count(circuit_breaker_state{service="terrafusion-api",state="OPEN"}) or vector(0)
+    
+    - record: f2:error_rate_during_fault
+      expr: |
+        sum(rate(http_requests_total{status=~"5..",service="terrafusion-api"}[5m]))
+        /
+        sum(rate(http_requests_total{service="terrafusion-api"}[5m]))
+    
+    - record: f2:p95_latency_seconds
+      expr: |
+        histogram_quantile(
+          0.95,
+          sum(rate(http_request_duration_seconds_bucket{service="terrafusion-api"}[5m])) by (le)
+        )
+
+---
+# ============================================================================
+# PagerDuty Integration Configuration
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pagerduty-config
+  namespace: terrafusion-monitoring
+  labels:
+    terrafusion.dev/component: "alerting"
+data:
+  pagerduty_routing_key: "REPLACE_WITH_PAGERDUTY_INTEGRATION_KEY"
+  pagerduty_url: "https://events.pagerduty.com/v2/enqueue"
+  
+  # Severity mapping
+  severity_map: |
+    {
+      "critical": "critical",
+      "warning": "warning",
+      "info": "info"
+    }
+  
+  # Alert routing rules
+  routing_rules: |
+    {
+      "F2_Recovery_Slow": {
+        "severity": "low",
+        "escalation_policy": "sre-business-hours",
+        "auto_resolve": true,
+        "resolve_timeout": "30m"
+      },
+      "CB_Flap": {
+        "severity": "low",
+        "escalation_policy": "sre-business-hours",
+        "auto_resolve": true,
+        "resolve_timeout": "15m"
+      },
+      "F2_Error_Rate_High": {
+        "severity": "low",
+        "escalation_policy": "sre-business-hours",
+        "auto_resolve": true,
+        "resolve_timeout": "10m"
+      },
+      "CB_Stuck_Open": {
+        "severity": "high",
+        "escalation_policy": "sre-on-call",
+        "auto_resolve": false,
+        "page_immediately": true
+      },
+      "F2_Data_Integrity_Error": {
+        "severity": "critical",
+        "escalation_policy": "engineering-leadership",
+        "auto_resolve": false,
+        "page_immediately": true,
+        "requires_ack": true
+      }
+    }
+
+---
+# ============================================================================
+# Slack Notification Configuration
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slack-config
+  namespace: terrafusion-monitoring
+  labels:
+    terrafusion.dev/component: "alerting"
+data:
+  slack_webhook_url: "https://hooks.slack.com/services/REPLACE_WITH_WEBHOOK"
+  
+  # Channel routing
+  channel_map: |
+    {
+      "critical": "#terrafusion-incidents",
+      "warning": "#terrafusion-chaos-alerts",
+      "info": "#terrafusion-chaos-alerts",
+      "sre": "#terrafusion-sre-alerts"
+    }
+  
+  # Message templates
+  alert_template: |
+    {
+      "username": "Chaos Engineering Bot",
+      "icon_emoji": ":fire:",
+      "attachments": [
+        {
+          "color": "{{if eq .Labels.severity \"critical\"}}danger{{else if eq .Labels.severity \"warning\"}}warning{{else}}good{{end}}",
+          "title": "{{ .CommonAnnotations.summary }}",
+          "text": "{{ .CommonAnnotations.description }}",
+          "fields": [
+            {
+              "title": "Severity",
+              "value": "{{ .Labels.severity }}",
+              "short": true
+            },
+            {
+              "title": "Fault",
+              "value": "{{ .Labels.fault }}",
+              "short": true
+            },
+            {
+              "title": "Service",
+              "value": "{{ .Labels.service }}",
+              "short": true
+            },
+            {
+              "title": "Component",
+              "value": "{{ .Labels.component }}",
+              "short": true
+            }
+          ],
+          "actions": [
+            {
+              "type": "button",
+              "text": "View Runbook",
+              "url": "{{ .CommonAnnotations.runbook_url }}"
+            },
+            {
+              "type": "button",
+              "text": "View Dashboard",
+              "url": "{{ .CommonAnnotations.dashboard_url }}"
+            }
+          ],
+          "footer": "TerraFusion Chaos Engineering",
+          "ts": {{ .StartsAt.Unix }}
+        }
+      ]
+    }
