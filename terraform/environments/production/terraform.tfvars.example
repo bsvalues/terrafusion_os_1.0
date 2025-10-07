@@ -1,0 +1,12 @@
+# Production Environment Configuration
+# Copy this file to terraform.tfvars and update with actual values
+
+# Azure AD Group IDs for AKS admin access
+aks_admin_group_ids = [
+  # "12345678-1234-1234-1234-123456789abc"
+]
+
+# Allowed IP ranges for management access
+allowed_ip_ranges = [
+  # "1.2.3.4/32"  # Office IP
+]
