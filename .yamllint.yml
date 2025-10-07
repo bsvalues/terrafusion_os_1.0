@@ -1,0 +1,38 @@
+# YAML Lint Configuration for Kubernetes Infrastructure
+# Used by: .github/workflows/kubernetes-infrastructure-ci.yml
+
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+  
+  indentation:
+    spaces: 2
+    indent-sequences: true
+  
+  comments:
+    min-spaces-from-content: 1
+  
+  document-start: disable
+  
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']
+  
+  braces:
+    max-spaces-inside: 1
+  
+  brackets:
+    max-spaces-inside: 1
+  
+  comments-indentation: disable
+  
+  empty-lines:
+    max: 2
+  
+  key-duplicates: enable
+  
+  new-line-at-end-of-file: enable
+  
+  trailing-spaces: enable
