@@ -829,10 +829,29 @@ def run_all_fitness_tests(args: argparse.Namespace) -> Dict[str, Any]:
     output_dir = Path("validation/ai-platform")
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    # Export JSON summary
+    # Export JSON summary (convert numpy types)
     results_path = output_dir / "fitness-results.json"
-    with open(results_path, 'w') as f:
-        json.dump(all_results, f, indent=2)
+    
+    def convert_numpy(obj):
+        """Convert numpy types to native Python types for JSON serialization"""
+        if isinstance(obj, np.bool_):
+            return bool(obj)
+        if isinstance(obj, (np.integer, np.int64, np.int32)):
+            return int(obj)
+        if isinstance(obj, (np.floating, np.float64, np.float32)):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, dict):
+            return {k: convert_numpy(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [convert_numpy(item) for item in obj]
+        return obj
+    
+    serializable_results = convert_numpy(all_results)
+    
+    with open(results_path, 'w', encoding='utf-8') as f:
+        json.dump(serializable_results, f, indent=2, ensure_ascii=False)
     print(f"\n✅ Results exported to {results_path}")
     
     # Export drift metrics CSV
@@ -842,7 +861,7 @@ def run_all_fitness_tests(args: argparse.Namespace) -> Dict[str, Any]:
     # Export fairness report
     fairness_report_path = output_dir / "fairness-report.md"
     fairness_report = fairness.generate_fairness_report()
-    with open(fairness_report_path, 'w') as f:
+    with open(fairness_report_path, 'w', encoding='utf-8') as f:
         f.write(fairness_report)
     print(f"✅ Fairness report exported to {fairness_report_path}")
     

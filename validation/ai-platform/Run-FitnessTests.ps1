@@ -49,8 +49,8 @@ Write-Host "=" -ForegroundColor Cyan
 Write-Host ""
 
 # Configuration
-$ProjectRoot = $PSScriptRoot
-$ValidationDir = Join-Path $ProjectRoot "validation" "ai-platform"
+$ValidationDir = $PSScriptRoot
+$ProjectRoot = Split-Path -Parent (Split-Path -Parent $ValidationDir)
 $VenvDir = Join-Path $ProjectRoot ".venv"
 $PythonExe = if ($IsWindows) { Join-Path $VenvDir "Scripts" "python.exe" } else { Join-Path $VenvDir "bin" "python" }
 
