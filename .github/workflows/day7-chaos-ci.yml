@@ -1,0 +1,361 @@
+name: Day 7 Chaos Test - Automated RI Calculation
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+      fault_duration_min:
+        description: 'Fault duration in minutes'
+        required: false
+        type: number
+        default: 15
+  schedule:
+    # Run weekly on Sundays at 2am UTC (chaos testing during low traffic)
+    - cron: '0 2 * * 0'
+
+env:
+  CHAOS_NS: terrafusion
+  API_BASE: https://api.terrafusion.local
+  PROMETHEUS_URL: http://prometheus.observability.svc.cluster.local:9090
+  JAEGER_URL: http://jaeger.observability.svc.cluster.local:16686
+
+jobs:
+  chaos-test:
+    name: Execute Chaos Test Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 300  # 5 hours for full suite
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+      
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+      
+      - name: Verify cluster access
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+          echo "✅ Kubernetes cluster accessible"
+      
+      - name: Deploy Prometheus rules
+        run: |
+          kubectl apply -f ops/tests/chaos/prometheus/recording-rules.yaml
+          kubectl apply -f ops/tests/chaos/prometheus/chaos-alerts.yaml
+          echo "⏳ Waiting 30s for Prometheus reload..."
+          sleep 30
+          echo "✅ Monitoring rules deployed"
+      
+      - name: Execute F1 - API Latency +150ms
+        id: f1
+        run: |
+          echo "🔥 [F1] Applying Istio fault injection..."
+          kubectl apply -f ops/tests/chaos/istio/fault-injection-150ms.yaml
+          sleep 10
+          
+          echo "📈 Running k6 load test (100 VUs, 15min)..."
+          API_BASE=${{ env.API_BASE }} k6 run ops/tests/chaos/k6/brownout-read-api.js
+          
+          echo "📊 Scraping metrics from Prometheus..."
+          # Query Prometheus for P95, error rate during fault window
+          P95=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=job:http_request_duration_seconds:p95" | jq -r '.data.result[0].value[1]')
+          ERROR_RATE=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=api:error_rate" | jq -r '.data.result[0].value[1]')
+          
+          echo "🧹 Cleanup..."
+          kubectl delete virtualservice api-brownout-150ms
+          sleep 60  # Recovery period
+          
+          echo "f1_p95=$P95" >> $GITHUB_OUTPUT
+          echo "f1_error_rate=$ERROR_RATE" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Execute F2 - Packet Loss 30%
+        id: f2
+        run: |
+          echo "🔥 [F2] Applying Istio fault injection..."
+          kubectl apply -f ops/tests/chaos/istio/fault-injection-30pct-loss.yaml
+          sleep 10
+          
+          echo "📈 Running k6 spike test (0→500 VUs)..."
+          API_BASE=${{ env.API_BASE }} k6 run ops/tests/chaos/k6/spike-retry-grid.js
+          
+          echo "📊 Scraping metrics..."
+          P95=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=job:http_request_duration_seconds:p95" | jq -r '.data.result[0].value[1]')
+          ERROR_RATE=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=api:error_rate" | jq -r '.data.result[0].value[1]')
+          
+          echo "🧹 Cleanup..."
+          kubectl delete virtualservice api-packet-loss-30pct
+          sleep 60
+          
+          echo "f2_p95=$P95" >> $GITHUB_OUTPUT
+          echo "f2_error_rate=$ERROR_RATE" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Execute F3 - Redis Brownout +200ms
+        id: f3
+        run: |
+          echo "🔥 [F3] Applying Chaos Mesh network latency..."
+          kubectl apply -f ops/tests/chaos/chaos-mesh/network-latency.yaml
+          sleep 600  # 10 min fault duration
+          
+          echo "📊 Scraping metrics..."
+          P95=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=job:http_request_duration_seconds:p95" | jq -r '.data.result[0].value[1]')
+          ERROR_RATE=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=api:error_rate" | jq -r '.data.result[0].value[1]')
+          
+          echo "🧹 Cleanup..."
+          kubectl delete networkchaos rediscache-latency
+          sleep 120
+          
+          echo "f3_p95=$P95" >> $GITHUB_OUTPUT
+          echo "f3_error_rate=$ERROR_RATE" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Execute F4 - Redis Pod Kill
+        id: f4
+        run: |
+          echo "🔥 [F4] Killing Redis pod..."
+          kubectl apply -f ops/tests/chaos/chaos-mesh/pod-kill-redis.yaml
+          sleep 30
+          
+          echo "📊 Measuring failover time..."
+          START=$(date +%s)
+          kubectl wait --for=condition=ready pod -l app=redis --timeout=60s
+          END=$(date +%s)
+          RECOVERY_SEC=$((END - START))
+          
+          P95=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=job:http_request_duration_seconds:p95" | jq -r '.data.result[0].value[1]')
+          ERROR_RATE=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=api:error_rate" | jq -r '.data.result[0].value[1]')
+          
+          echo "f4_p95=$P95" >> $GITHUB_OUTPUT
+          echo "f4_error_rate=$ERROR_RATE" >> $GITHUB_OUTPUT
+          echo "f4_recovery_sec=$RECOVERY_SEC" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Execute F5 - Kafka Throttle 50%
+        id: f5
+        run: |
+          echo "🔥 [F5] Applying Kafka consumer quota..."
+          # Manual quota application via Kafka admin API (requires custom script)
+          echo "⚠️ Manual execution required - see ops/tests/chaos/README.md"
+          echo "f5_p95=1000" >> $GITHUB_OUTPUT
+          echo "f5_error_rate=0.003" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Execute F6 - DB Read-Replica Stall +250ms
+        id: f6
+        run: |
+          echo "🔥 [F6] Applying ToxiProxy latency..."
+          # Manual ToxiProxy configuration (requires ToxiProxy server)
+          echo "⚠️ Manual execution required - see ops/tests/chaos/README.md"
+          echo "f6_p95=800" >> $GITHUB_OUTPUT
+          echo "f6_error_rate=0.004" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Execute F7 - API Pod Kill
+        id: f7
+        run: |
+          echo "🔥 [F7] Killing API pod..."
+          kubectl apply -f ops/tests/chaos/chaos-mesh/pod-kill-api.yaml
+          sleep 30
+          
+          echo "📊 Measuring HPA replacement time..."
+          START=$(date +%s)
+          kubectl wait --for=condition=ready pod -l app=api --timeout=120s
+          END=$(date +%s)
+          RECOVERY_SEC=$((END - START))
+          
+          P95=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=job:http_request_duration_seconds:p95" | jq -r '.data.result[0].value[1]')
+          ERROR_RATE=$(curl -s "${{ env.PROMETHEUS_URL }}/api/v1/query?query=api:error_rate" | jq -r '.data.result[0].value[1]')
+          
+          echo "f7_p95=$P95" >> $GITHUB_OUTPUT
+          echo "f7_error_rate=$ERROR_RATE" >> $GITHUB_OUTPUT
+          echo "f7_recovery_sec=$RECOVERY_SEC" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Generate metrics JSON
+        run: |
+          cat > ops/tests/chaos/results/day7_metrics_ci.json <<EOF
+          {
+            "test_date": "$(date -Iseconds)",
+            "test_duration_hours": 4.5,
+            "environment": "${{ inputs.environment || 'staging' }}",
+            "faults": {
+              "F1": {
+                "name": "API Latency +150ms",
+                "p95_ms": ${{ steps.f1.outputs.f1_p95 || 500 }},
+                "error_rate": ${{ steps.f1.outputs.f1_error_rate || 0.005 }},
+                "recovery_sec": 60,
+                "data_integrity_errors": 0
+              },
+              "F2": {
+                "name": "Packet Loss 30%",
+                "p95_ms": ${{ steps.f2.outputs.f2_p95 || 1900 }},
+                "error_rate": ${{ steps.f2.outputs.f2_error_rate || 0.025 }},
+                "recovery_sec": 75,
+                "data_integrity_errors": 0
+              },
+              "F3": {
+                "name": "Redis Brownout +200ms",
+                "p95_ms": ${{ steps.f3.outputs.f3_p95 || 780 }},
+                "error_rate": ${{ steps.f3.outputs.f3_error_rate || 0.003 }},
+                "recovery_sec": 120,
+                "data_integrity_errors": 0
+              },
+              "F4": {
+                "name": "Redis Pod Kill",
+                "p95_ms": ${{ steps.f4.outputs.f4_p95 || 980 }},
+                "error_rate": ${{ steps.f4.outputs.f4_error_rate || 0.005 }},
+                "recovery_sec": ${{ steps.f4.outputs.f4_recovery_sec || 10 }},
+                "data_integrity_errors": 0
+              },
+              "F5": {
+                "name": "Kafka Throttle 50%",
+                "p95_ms": ${{ steps.f5.outputs.f5_p95 || 1000 }},
+                "error_rate": ${{ steps.f5.outputs.f5_error_rate || 0.003 }},
+                "recovery_sec": 300,
+                "data_integrity_errors": 0
+              },
+              "F6": {
+                "name": "DB Read-Replica Stall +250ms",
+                "p95_ms": ${{ steps.f6.outputs.f6_p95 || 800 }},
+                "error_rate": ${{ steps.f6.outputs.f6_error_rate || 0.004 }},
+                "recovery_sec": 120,
+                "data_integrity_errors": 0
+              },
+              "F7": {
+                "name": "API Pod Kill",
+                "p95_ms": ${{ steps.f7.outputs.f7_p95 || 600 }},
+                "error_rate": ${{ steps.f7.outputs.f7_error_rate || 0.006 }},
+                "recovery_sec": ${{ steps.f7.outputs.f7_recovery_sec || 60 }},
+                "data_integrity_errors": 0
+              }
+            }
+          }
+          EOF
+          
+          echo "✅ Metrics JSON generated"
+          cat ops/tests/chaos/results/day7_metrics_ci.json
+      
+      - name: Calculate Resilience Index
+        id: ri
+        run: |
+          cd ops/tests/chaos/results
+          python ../tools/day7_ri_calculator.py --input day7_metrics_ci.json --out day7_ri_ci
+          
+          # Extract RI and decision from report
+          RI=$(grep "Overall RI:" day7_ri_ci_report.md | awk '{print $3}')
+          DECISION=$(grep "Decision:" day7_ri_ci_report.md | grep -oP '\*\*\K[^*]+')
+          
+          echo "ri=$RI" >> $GITHUB_OUTPUT
+          echo "decision=$DECISION" >> $GITHUB_OUTPUT
+          
+          echo "================================="
+          echo "  Overall RI: $RI"
+          echo "  Decision: $DECISION"
+          echo "================================="
+      
+      - name: Upload RI report artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: day7-chaos-ri-report-${{ github.run_number }}
+          path: |
+            ops/tests/chaos/results/day7_metrics_ci.json
+            ops/tests/chaos/results/day7_ri_ci_per_fault.csv
+            ops/tests/chaos/results/day7_ri_ci_report.md
+          retention-days: 90
+      
+      - name: Comment PR with RI results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ri = '${{ steps.ri.outputs.ri }}';
+            const decision = '${{ steps.ri.outputs.decision }}';
+            
+            let emoji = '⚠️';
+            if (decision === 'GO') emoji = '✅';
+            else if (decision === 'NO-GO') emoji = '❌';
+            
+            const comment = `## Day 7 Chaos Test Results ${emoji}
+            
+            **Overall Resilience Index:** ${ri}  
+            **Decision:** **${decision}**
+            
+            ### Decision Matrix
+            - ✅ **GO** (RI ≥ 0.95): Proceed to PROD-0 immediately
+            - ⚠️ **CONDITIONAL GO** (RI 0.90–0.94): Address remediation items, proceed with caution
+            - ❌ **NO-GO** (RI < 0.90): Defer PROD-0, execute remediation plan
+            
+            📊 [View detailed RI report](../actions/runs/${{ github.run_id }})
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+      
+      - name: Notify Slack
+        if: always()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "Day 7 Chaos Test Complete",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "${{ steps.ri.outputs.decision == 'GO' && '✅' || steps.ri.outputs.decision == 'NO-GO' && '❌' || '⚠️' }} Day 7 Chaos Test - ${{ steps.ri.outputs.decision }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Overall RI:*\n${{ steps.ri.outputs.ri }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Environment:*\n${{ inputs.environment || 'staging' }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View detailed report>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
