@@ -1,0 +1,436 @@
+{
+  "dashboard": {
+    "title": "Confidence Gradient — RS256 Migration",
+    "tags": ["migration", "rs256", "confidence", "adoption"],
+    "timezone": "utc",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "1m",
+    "time": {
+      "from": "now-48h",
+      "to": "now+48h"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "RS256 Adoption Curve (Actual + Projected)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 0, "w": 24, "h": 10 },
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "rs256_adoption_rate",
+            "legendFormat": "Actual Adoption (%)",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          },
+          {
+            "refId": "B",
+            "expr": "predict_linear(rs256_adoption_rate[6h], 3600*4)",
+            "legendFormat": "Projected (T+4h, p50)",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          },
+          {
+            "refId": "C",
+            "expr": "predict_linear(rs256_adoption_rate[6h], 3600*12)",
+            "legendFormat": "Projected (T+12h, p50)",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          },
+          {
+            "refId": "D",
+            "expr": "predict_linear(rs256_adoption_rate[6h], 3600*24)",
+            "legendFormat": "Projected (T+24h, p50)",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 90, "color": "yellow" },
+                { "value": 95, "color": "green" }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": { "id": "byName", "options": "Actual Adoption (%)" },
+              "properties": [
+                { "id": "custom.lineWidth", "value": 3 },
+                { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }
+              ]
+            },
+            {
+              "matcher": { "id": "byRegexp", "options": "Projected.*" },
+              "properties": [
+                { "id": "custom.lineStyle", "value": { "dash": [10, 10], "fill": "dash" } },
+                { "id": "custom.lineWidth", "value": 2 },
+                { "id": "color", "value": { "mode": "fixed", "fixedColor": "semi-dark-blue" } }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "displayMode": "table",
+            "placement": "bottom",
+            "calcs": ["lastNotNull", "mean"]
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Adoption Slope (Rate of Change)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 10, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "deriv(rs256_adoption_rate[1h]) * 3600",
+            "legendFormat": "Adoption Slope (%/hour)",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": -1,
+            "max": 5,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": -1, "color": "red" },
+                { "value": 0, "color": "orange" },
+                { "value": 1.0, "color": "yellow" },
+                { "value": 1.5, "color": "green" }
+              ]
+            }
+          }
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Gate Countdown Timer",
+        "type": "stat",
+        "gridPos": { "x": 12, "y": 10, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "(1728370920 - time()) / 3600",
+            "legendFormat": "Hours Until T+48h",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "h",
+            "decimals": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 1, "color": "orange" },
+                { "value": 6, "color": "yellow" },
+                { "value": 12, "color": "green" }
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background",
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Current Adoption (%)",
+        "type": "stat",
+        "gridPos": { "x": 18, "y": 10, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "rs256_adoption_rate",
+            "legendFormat": "RS256 Adoption",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 90, "color": "yellow" },
+                { "value": 95, "color": "green" }
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "colorMode": "background",
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 5,
+        "title": "GO/NO-GO Decision Matrix",
+        "type": "table",
+        "gridPos": { "x": 12, "y": 14, "w": 12, "h": 4 },
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "rs256_adoption_rate",
+            "format": "table",
+            "instant": true,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          },
+          {
+            "refId": "B",
+            "expr": "deriv(rs256_adoption_rate[1h]) * 3600",
+            "format": "table",
+            "instant": true,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          },
+          {
+            "refId": "C",
+            "expr": "predict_linear(rs256_adoption_rate[6h], 3600*12)",
+            "format": "table",
+            "instant": true,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "transformations": [
+          {
+            "id": "merge",
+            "options": {}
+          },
+          {
+            "id": "organize",
+            "options": {
+              "renameByName": {
+                "Value #A": "Current Adoption (%)",
+                "Value #B": "Slope (%/h)",
+                "Value #C": "Projected T+12h (%)"
+              }
+            }
+          },
+          {
+            "id": "calculateField",
+            "options": {
+              "mode": "binary",
+              "reduce": {
+                "reducer": "last"
+              },
+              "binary": {
+                "left": "Current Adoption (%)",
+                "operator": ">=",
+                "right": "95"
+              },
+              "replaceFields": false,
+              "alias": "Adoption GO?"
+            }
+          },
+          {
+            "id": "calculateField",
+            "options": {
+              "mode": "binary",
+              "reduce": {
+                "reducer": "last"
+              },
+              "binary": {
+                "left": "Slope (%/h)",
+                "operator": ">=",
+                "right": "1.5"
+              },
+              "replaceFields": false,
+              "alias": "Slope GO?"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": { "id": "byName", "options": "Adoption GO?" },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    { "type": "value", "value": "1", "text": "✅ GO" },
+                    { "type": "value", "value": "0", "text": "❌ NO-GO" }
+                  ]
+                }
+              ]
+            },
+            {
+              "matcher": { "id": "byName", "options": "Slope GO?" },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    { "type": "value", "value": "1", "text": "✅ GO" },
+                    { "type": "value", "value": "0", "text": "❌ NO-GO" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 6,
+        "title": "Confidence Bands (p10, p50, p90)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 18, "w": 24, "h": 8 },
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "rs256_adoption_rate",
+            "legendFormat": "Actual",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          },
+          {
+            "refId": "B",
+            "expr": "predict_linear(rs256_adoption_rate[6h], 3600*12) - 2",
+            "legendFormat": "p10 (pessimistic)",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          },
+          {
+            "refId": "C",
+            "expr": "predict_linear(rs256_adoption_rate[6h], 3600*12)",
+            "legendFormat": "p50 (median)",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          },
+          {
+            "refId": "D",
+            "expr": "predict_linear(rs256_adoption_rate[6h], 3600*12) + 2",
+            "legendFormat": "p90 (optimistic)",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          },
+          "overrides": [
+            {
+              "matcher": { "id": "byName", "options": "Actual" },
+              "properties": [
+                { "id": "custom.lineWidth", "value": 3 },
+                { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }
+              ]
+            },
+            {
+              "matcher": { "id": "byName", "options": "p50 (median)" },
+              "properties": [
+                { "id": "custom.lineWidth", "value": 2 },
+                { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } },
+                { "id": "custom.lineStyle", "value": { "dash": [10, 5], "fill": "dash" } }
+              ]
+            },
+            {
+              "matcher": { "id": "byRegexp", "options": "p10|p90" },
+              "properties": [
+                { "id": "custom.lineWidth", "value": 1 },
+                { "id": "color", "value": { "mode": "fixed", "fixedColor": "semi-dark-green" } },
+                { "id": "custom.lineStyle", "value": { "dash": [5, 5], "fill": "dash" } },
+                { "id": "custom.fillOpacity", "value": 10 }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "displayMode": "table",
+            "placement": "bottom",
+            "calcs": ["lastNotNull"]
+          }
+        }
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "enable": true,
+          "expr": "changes(rs256_phase[5m]) > 0",
+          "name": "Phase Changes",
+          "tagKeys": "phase",
+          "textFormat": "Phase: {{phase}}",
+          "titleFormat": "Migration Phase",
+          "iconColor": "blue"
+        }
+      ]
+    }
+  }
+}
