@@ -1,0 +1,313 @@
+# TerraFusion RI Recording Rules
+# Prometheus recording rules for pre-computed RI metrics
+#
+# Integration:
+# - Consumed by ri-calculator.py for real-time calculations
+# - Displayed in Grafana dashboards (ops/monitoring/dashboards/*)
+# - Fed into AI Swarm monitoring (swarm-master-control.js)
+#
+# Deployment:
+# kubectl apply -f ops/monitoring/ri-recording-rules.yaml
+#
+# Architecture Alignment:
+# - Telemetry layer (ARCHITECTURE.md § Telemetry Architecture)
+# - Day 9 acceptance gates (DAY_9_F1F4_README.md § Acceptance Criteria)
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: terrafusion-ri-recording-rules
+  namespace: terrafusion-monitoring
+  labels:
+    app: terrafusion
+    component: ri-calculator
+    prometheus: kube-prometheus
+spec:
+  groups:
+    # ==========================================================================
+    # F1 API Gateway - RI Components
+    # ==========================================================================
+    - name: f1_gateway_ri
+      interval: 30s
+      rules:
+        # Request rate (req/s)
+        - record: terrafusion:f1:request_rate
+          expr: |
+            rate(envoy_cluster_upstream_rq_total{cluster_name="f1-api-gateway"}[5m])
+        
+        # Error rate (req/s)
+        - record: terrafusion:f1:error_rate
+          expr: |
+            rate(envoy_cluster_upstream_rq_xx{cluster_name="f1-api-gateway",response_code_class="5"}[5m])
+        
+        # Error rate (percentage)
+        - record: terrafusion:f1:error_rate_pct
+          expr: |
+            100 * (
+              rate(envoy_cluster_upstream_rq_xx{cluster_name="f1-api-gateway",response_code_class="5"}[5m])
+              / rate(envoy_cluster_upstream_rq_total{cluster_name="f1-api-gateway"}[5m])
+            )
+        
+        # p95 latency (seconds)
+        - record: terrafusion:f1:latency_p95
+          expr: |
+            histogram_quantile(0.95, rate(envoy_cluster_upstream_rq_time_bucket{cluster_name="f1-api-gateway"}[5m]))
+        
+        # Retry rate (percentage of requests that were retried)
+        - record: terrafusion:f1:retry_rate_pct
+          expr: |
+            100 * (
+              rate(envoy_cluster_upstream_rq_retry{cluster_name="f1-api-gateway"}[5m])
+              / rate(envoy_cluster_upstream_rq_total{cluster_name="f1-api-gateway"}[5m])
+            )
+        
+        # Circuit breaker state (0 = CLOSED, 1 = OPEN, 0.5 = HALF-OPEN)
+        - record: terrafusion:f1:circuit_breaker_state
+          expr: |
+            envoy_cluster_circuit_breakers_default_open{cluster_name="f1-api-gateway"}
+        
+        # RI Error Factor: (1 - error_rate_pct / 100)
+        - record: terrafusion:f1:ri_error_factor
+          expr: |
+            clamp_min(
+              1 - (terrafusion:f1:error_rate_pct / 100),
+              0
+            )
+        
+        # RI Latency Factor: exponential decay if p95 > 0.5s
+        # Formula: max(0, 1 - sqrt((p95 - 0.5) / 0.5)) if p95 > 0.5, else 1.0
+        - record: terrafusion:f1:ri_latency_factor
+          expr: |
+            clamp_min(
+              1 - sqrt(
+                clamp_min(terrafusion:f1:latency_p95 - 0.5, 0) / 0.5
+              ),
+              0
+            )
+        
+        # RI Availability Factor: 1.0 if service is up, 0.0 if down
+        - record: terrafusion:f1:ri_availability_factor
+          expr: |
+            up{job="f1-gateway"}
+        
+        # Final RI (0.0 - 1.0)
+        - record: terrafusion:f1:ri
+          expr: |
+            terrafusion:f1:ri_error_factor
+            * terrafusion:f1:ri_latency_factor
+            * terrafusion:f1:ri_availability_factor
+        
+        # RI Delta from target (target = 0.9500)
+        - record: terrafusion:f1:ri_delta
+          expr: |
+            terrafusion:f1:ri - 0.9500
+    
+    # ==========================================================================
+    # F2 Processor - RI Components
+    # ==========================================================================
+    - name: f2_processor_ri
+      interval: 30s
+      rules:
+        # Request rate (req/s)
+        - record: terrafusion:f2:request_rate
+          expr: |
+            rate(f2_requests_total[5m])
+        
+        # Error rate (req/s)
+        - record: terrafusion:f2:error_rate
+          expr: |
+            rate(f2_errors_total[5m])
+        
+        # Error rate (percentage)
+        - record: terrafusion:f2:error_rate_pct
+          expr: |
+            100 * (
+              rate(f2_errors_total[5m])
+              / rate(f2_requests_total[5m])
+            )
+        
+        # Recovery time (seconds) - from circuit breaker open → closed
+        - record: terrafusion:f2:recovery_time
+          expr: |
+            f2_circuit_breaker_recovery_seconds
+        
+        # p95 recovery time (seconds)
+        - record: terrafusion:f2:recovery_time_p95
+          expr: |
+            histogram_quantile(0.95, rate(f2_circuit_breaker_recovery_seconds_bucket[5m]))
+        
+        # Circuit breaker flap rate (state changes per minute)
+        - record: terrafusion:f2:circuit_breaker_flap_rate
+          expr: |
+            rate(f2_circuit_breaker_state_changes_total[5m]) * 60
+        
+        # RI Error Factor
+        - record: terrafusion:f2:ri_error_factor
+          expr: |
+            clamp_min(
+              1 - (terrafusion:f2:error_rate_pct / 100),
+              0
+            )
+        
+        # RI Recovery Factor: exponential decay if recovery > 60s
+        # Formula: max(0, 1 - sqrt((recovery - 60) / 60)) if recovery > 60, else 1.0
+        - record: terrafusion:f2:ri_recovery_factor
+          expr: |
+            clamp_min(
+              1 - sqrt(
+                clamp_min(terrafusion:f2:recovery_time_p95 - 60, 0) / 60
+              ),
+              0
+            )
+        
+        # RI Availability Factor
+        - record: terrafusion:f2:ri_availability_factor
+          expr: |
+            up{job="f2-processor"}
+        
+        # Final RI (0.0 - 1.0)
+        - record: terrafusion:f2:ri
+          expr: |
+            terrafusion:f2:ri_error_factor
+            * terrafusion:f2:ri_recovery_factor
+            * terrafusion:f2:ri_availability_factor
+        
+        # RI Delta from target (target = 0.9500)
+        - record: terrafusion:f2:ri_delta
+          expr: |
+            terrafusion:f2:ri - 0.9500
+    
+    # ==========================================================================
+    # F4 Cache Service - RI Components
+    # ==========================================================================
+    - name: f4_cache_ri
+      interval: 30s
+      rules:
+        # Request rate (req/s)
+        - record: terrafusion:f4:request_rate
+          expr: |
+            rate(f4_requests_total[5m])
+        
+        # Error rate (req/s)
+        - record: terrafusion:f4:error_rate
+          expr: |
+            rate(f4_errors_total[5m])
+        
+        # Error rate (percentage)
+        - record: terrafusion:f4:error_rate_pct
+          expr: |
+            100 * (
+              rate(f4_errors_total[5m])
+              / rate(f4_requests_total[5m])
+            )
+        
+        # p95 latency (seconds)
+        - record: terrafusion:f4:latency_p95
+          expr: |
+            histogram_quantile(0.95, rate(f4_latency_bucket[5m]))
+        
+        # Redis pool saturation (percentage)
+        - record: terrafusion:f4:pool_saturation_pct
+          expr: |
+            100 * (
+              lettuce_pool_active{app="f4-cache"}
+              / 64  # max-active from f4-redis-pool.yaml
+            )
+        
+        # Redis pool wait time p95 (seconds)
+        - record: terrafusion:f4:pool_wait_p95
+          expr: |
+            histogram_quantile(0.95, rate(lettuce_pool_wait_duration_bucket{app="f4-cache"}[5m]))
+        
+        # Cache hit rate (percentage)
+        - record: terrafusion:f4:cache_hit_rate_pct
+          expr: |
+            100 * (
+              rate(cache_gets_total{result="hit",app="f4-cache"}[5m])
+              / rate(cache_gets_total{app="f4-cache"}[5m])
+            )
+        
+        # Data integrity errors (count)
+        - record: terrafusion:f4:integrity_errors
+          expr: |
+            rate(f4_cache_integrity_errors_total[5m])
+        
+        # RI Error Factor
+        - record: terrafusion:f4:ri_error_factor
+          expr: |
+            clamp_min(
+              1 - (terrafusion:f4:error_rate_pct / 100),
+              0
+            )
+        
+        # RI Latency Factor: exponential decay if p95 > 0.8s
+        # Formula: max(0, 1 - sqrt((p95 - 0.8) / 0.8)) if p95 > 0.8, else 1.0
+        - record: terrafusion:f4:ri_latency_factor
+          expr: |
+            clamp_min(
+              1 - sqrt(
+                clamp_min(terrafusion:f4:latency_p95 - 0.8, 0) / 0.8
+              ),
+              0
+            )
+        
+        # RI Pool Factor: linear penalty if saturation > 70%
+        # Formula: max(0, 1 - (saturation_pct - 70) / 30) if saturation > 70%, else 1.0
+        - record: terrafusion:f4:ri_pool_factor
+          expr: |
+            clamp_min(
+              1 - (
+                clamp_min(terrafusion:f4:pool_saturation_pct - 70, 0) / 30
+              ),
+              0
+            )
+        
+        # RI Integrity Factor: 0.0 if any integrity errors, else 1.0
+        - record: terrafusion:f4:ri_integrity_factor
+          expr: |
+            (terrafusion:f4:integrity_errors == 0) * 1
+        
+        # RI Availability Factor
+        - record: terrafusion:f4:ri_availability_factor
+          expr: |
+            up{job="f4-cache"}
+        
+        # Final RI (0.0 - 1.0)
+        - record: terrafusion:f4:ri
+          expr: |
+            terrafusion:f4:ri_error_factor
+            * terrafusion:f4:ri_latency_factor
+            * terrafusion:f4:ri_pool_factor
+            * terrafusion:f4:ri_integrity_factor
+            * terrafusion:f4:ri_availability_factor
+        
+        # RI Delta from target (target = 0.9300)
+        - record: terrafusion:f4:ri_delta
+          expr: |
+            terrafusion:f4:ri - 0.9300
+    
+    # ==========================================================================
+    # System-Wide RI (Aggregate)
+    # ==========================================================================
+    - name: system_ri
+      interval: 30s
+      rules:
+        # Weighted average RI across all services
+        # Weights: F1=0.3, F2=0.4, F4=0.3 (based on criticality)
+        - record: terrafusion:system:ri
+          expr: |
+            (
+              terrafusion:f1:ri * 0.3
+              + terrafusion:f2:ri * 0.4
+              + terrafusion:f4:ri * 0.3
+            )
+        
+        # System RI delta from target (target = 0.9390 from DAY_9_F1F4_README.md)
+        - record: terrafusion:system:ri_delta
+          expr: |
+            terrafusion:system:ri - 0.9390
+        
+        # System RI meets target (1 = yes, 0 = no)
+        - record: terrafusion:system:ri_meets_target
+          expr: |
+            (terrafusion:system:ri >= 0.9390) * 1

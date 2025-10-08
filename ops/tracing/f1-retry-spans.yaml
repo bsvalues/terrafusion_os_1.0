@@ -1,0 +1,406 @@
+# TerraFusion F1 API Gateway - Distributed Tracing Configuration
+# Jaeger span tags for retry pattern correlation
+#
+# Integration:
+# - Istio EnvoyFilter to inject retry metadata into trace spans
+# - Queried by Jaeger UI for retry pattern analysis
+# - Consumed by AI Swarm for anomaly detection (swarm-master-control.js)
+#
+# Deployment:
+# kubectl apply -f ops/tracing/f1-retry-spans.yaml
+#
+# Architecture Alignment:
+# - IPC EventBus for cross-service tracing (ARCHITECTURE.md § IPC Core)
+# - Day 9 acceptance gates (DAY_9_F1F4_README.md § Monitoring Dashboards)
+
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: f1-retry-tracing
+  namespace: terrafusion-staging
+  labels:
+    app: f1-gateway
+    optimization: day9-retry-budget
+    component: distributed-tracing
+spec:
+  workloadSelector:
+    labels:
+      app: f1-gateway
+  
+  configPatches:
+    # =========================================================================
+    # Patch 1: Add retry metadata to trace spans
+    # =========================================================================
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_OUTBOUND
+        listener:
+          filterChain:
+            filter:
+              name: "envoy.filters.network.http_connection_manager"
+              subFilter:
+                name: "envoy.filters.http.router"
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.wasm
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+            config:
+              vm_config:
+                runtime: "envoy.wasm.runtime.v8"
+                code:
+                  local:
+                    inline_string: |
+                      // Wasm filter to inject retry metadata into trace spans
+                      // This runs on every request and adds custom tags to active spans
+                      
+                      function onRequest(context, config) {
+                        // Get retry attempt from Envoy internal header
+                        var retryAttempt = context.getRequestHeader("x-envoy-retry-on");
+                        var retryCount = context.getRequestHeader("x-envoy-attempt-count") || "1";
+                        
+                        // Inject into trace span as tags
+                        context.setTraceTag("retry_attempt", retryCount);
+                        context.setTraceTag("retry_enabled", retryAttempt ? "true" : "false");
+                        
+                        // If this is a retry (attempt > 1), add retry reason
+                        if (parseInt(retryCount) > 1) {
+                          var lastResponseFlags = context.getRequestHeader("x-envoy-response-flags") || "";
+                          var retryReason = parseRetryReason(lastResponseFlags);
+                          context.setTraceTag("retry_reason", retryReason);
+                        }
+                        
+                        return 0;  // Continue processing
+                      }
+                      
+                      function parseRetryReason(responseFlags) {
+                        // Map Envoy response flags to human-readable retry reasons
+                        if (responseFlags.includes("UH")) return "upstream-unavailable";
+                        if (responseFlags.includes("UF")) return "upstream-connection-failure";
+                        if (responseFlags.includes("UT")) return "upstream-timeout";
+                        if (responseFlags.includes("UR")) return "upstream-reset";
+                        if (responseFlags.includes("URX")) return "upstream-max-retries";
+                        if (responseFlags.includes("5xx")) return "upstream-5xx-error";
+                        return "unknown";
+                      }
+
+---
+# Alternative: Use Istio telemetry API (simpler, but less flexible)
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: f1-retry-tracing-simple
+  namespace: terrafusion-staging
+  labels:
+    app: f1-gateway
+    optimization: day9-retry-budget
+    component: distributed-tracing
+spec:
+  selector:
+    matchLabels:
+      app: f1-gateway
+  
+  tracing:
+    - providers:
+        - name: jaeger
+      randomSamplingPercentage: 100.0  # Sample all requests during Day 9 soak
+      customTags:
+        # Tag 1: Retry attempt count
+        retry_attempt:
+          header:
+            name: x-envoy-attempt-count
+            defaultValue: "1"
+        
+        # Tag 2: Retry enabled flag
+        retry_enabled:
+          header:
+            name: x-envoy-retry-on
+            defaultValue: "false"
+        
+        # Tag 3: Response flags (for retry reason parsing)
+        response_flags:
+          header:
+            name: x-envoy-response-flags
+            defaultValue: "none"
+        
+        # Tag 4: Upstream cluster (to identify which downstream service)
+        upstream_cluster:
+          header:
+            name: x-envoy-upstream-service-time
+            defaultValue: "unknown"
+        
+        # Tag 5: Service RI (from ri-calculator.py)
+        service_ri:
+          literal:
+            value: "f1-gateway"
+
+---
+# Jaeger query templates for retry pattern analysis
+# These are saved searches in Jaeger UI for quick access
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-f1-retry-queries
+  namespace: terrafusion-monitoring
+  labels:
+    app: jaeger
+    component: query-templates
+data:
+  # Query 1: All requests that were retried
+  query_retried_requests.json: |
+    {
+      "service": "f1-gateway",
+      "operation": "*",
+      "tags": {
+        "retry_attempt": "2|3"
+      },
+      "minDuration": "",
+      "maxDuration": "",
+      "limit": 100
+    }
+  
+  # Query 2: Retry storms (>10 retries in 1 minute)
+  query_retry_storms.json: |
+    {
+      "service": "f1-gateway",
+      "operation": "*",
+      "tags": {
+        "retry_attempt": "2|3"
+      },
+      "lookback": "1m",
+      "limit": 1000,
+      "aggregation": "count"
+    }
+  
+  # Query 3: Retries by reason (5xx, connect-failure, timeout)
+  query_retries_by_reason.json: |
+    {
+      "service": "f1-gateway",
+      "operation": "*",
+      "tags": {
+        "retry_reason": "upstream-5xx-error|upstream-connection-failure|upstream-timeout"
+      },
+      "groupBy": "retry_reason",
+      "limit": 100
+    }
+  
+  # Query 4: Retries to specific downstream service (e.g., F4 cache)
+  query_retries_to_f4.json: |
+    {
+      "service": "f1-gateway",
+      "operation": "*",
+      "tags": {
+        "retry_attempt": "2|3",
+        "upstream_cluster": "f4-cache"
+      },
+      "limit": 100
+    }
+  
+  # Query 5: Failed requests after retry exhaustion
+  query_failed_after_retries.json: |
+    {
+      "service": "f1-gateway",
+      "operation": "*",
+      "tags": {
+        "retry_attempt": "3",
+        "http.status_code": "5xx",
+        "error": "true"
+      },
+      "limit": 100
+    }
+  
+  # Query 6: Successful requests after 1 retry (transient errors absorbed)
+  query_successful_after_retry.json: |
+    {
+      "service": "f1-gateway",
+      "operation": "*",
+      "tags": {
+        "retry_attempt": "2",
+        "http.status_code": "200",
+        "error": "false"
+      },
+      "limit": 100
+    }
+
+---
+# Grafana dashboard JSON for Jaeger retry visualization
+# This creates a dashboard panel showing retry patterns over time
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-f1-retry-dashboard
+  namespace: terrafusion-monitoring
+  labels:
+    app: grafana
+    component: dashboards
+    grafana_dashboard: "true"
+data:
+  f1-retry-patterns.json: |
+    {
+      "dashboard": {
+        "title": "F1 API Gateway - Retry Patterns (Jaeger Traces)",
+        "uid": "f1-retry-jaeger",
+        "tags": ["terrafusion", "f1", "retry", "distributed-tracing", "day9"],
+        "panels": [
+          {
+            "id": 1,
+            "title": "Retry Rate Over Time",
+            "type": "timeseries",
+            "targets": [
+              {
+                "datasource": "Jaeger",
+                "query": "service=f1-gateway AND retry_attempt:2|3",
+                "refId": "A"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "custom": {
+                  "lineWidth": 2
+                },
+                "unit": "ops"
+              }
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "id": 2,
+            "title": "Retry Reasons (Breakdown)",
+            "type": "piechart",
+            "targets": [
+              {
+                "datasource": "Jaeger",
+                "query": "service=f1-gateway AND retry_reason:*",
+                "groupBy": "retry_reason",
+                "refId": "A"
+              }
+            ],
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 0
+            }
+          },
+          {
+            "id": 3,
+            "title": "Retry Latency Distribution",
+            "type": "heatmap",
+            "targets": [
+              {
+                "datasource": "Jaeger",
+                "query": "service=f1-gateway AND retry_attempt:2|3",
+                "metric": "duration",
+                "refId": "A"
+              }
+            ],
+            "gridPos": {
+              "h": 8,
+              "w": 24,
+              "x": 0,
+              "y": 8
+            }
+          },
+          {
+            "id": 4,
+            "title": "Top 10 Operations with Retries",
+            "type": "table",
+            "targets": [
+              {
+                "datasource": "Jaeger",
+                "query": "service=f1-gateway AND retry_attempt:2|3",
+                "groupBy": "operation",
+                "sortBy": "count",
+                "limit": 10,
+                "refId": "A"
+              }
+            ],
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 16
+            }
+          },
+          {
+            "id": 5,
+            "title": "Retry Success vs Failure Rate",
+            "type": "stat",
+            "targets": [
+              {
+                "datasource": "Jaeger",
+                "query": "service=f1-gateway AND retry_attempt:2 AND error:false",
+                "refId": "A",
+                "alias": "Successful Retries"
+              },
+              {
+                "datasource": "Jaeger",
+                "query": "service=f1-gateway AND retry_attempt:3 AND error:true",
+                "refId": "B",
+                "alias": "Failed After Retries"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "short",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"value": 0, "color": "green"},
+                    {"value": 100, "color": "yellow"},
+                    {"value": 500, "color": "red"}
+                  ]
+                }
+              }
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 16
+            }
+          }
+        ]
+      }
+    }
+
+---
+# Example Jaeger query CLI commands (for automation)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-cli-examples
+  namespace: terrafusion-monitoring
+  labels:
+    app: jaeger
+    component: query-examples
+data:
+  query_retries.sh: |
+    #!/bin/bash
+    # Query Jaeger for F1 retry patterns using REST API
+    
+    JAEGER_URL="${JAEGER_URL:-http://jaeger-query.terrafusion-monitoring:16686}"
+    SERVICE="f1-gateway"
+    LOOKBACK="1h"
+    
+    # Query 1: Get all traces with retries in last hour
+    echo "Fetching traces with retries..."
+    curl -s "${JAEGER_URL}/api/traces?service=${SERVICE}&tags={\"retry_attempt\":\"2|3\"}&lookback=${LOOKBACK}" \
+      | jq '.data[].spans[] | select(.tags[] | select(.key == "retry_attempt" and (.value.stringValue == "2" or .value.stringValue == "3"))) | {traceID, operationName, duration, tags}'
+    
+    # Query 2: Count retries by reason
+    echo -e "\nRetry reasons (last hour):"
+    curl -s "${JAEGER_URL}/api/traces?service=${SERVICE}&tags={\"retry_reason\":\"*\"}&lookback=${LOOKBACK}" \
+      | jq -r '.data[].spans[].tags[] | select(.key == "retry_reason") | .value.stringValue' \
+      | sort | uniq -c | sort -rn
+    
+    # Query 3: Identify retry storms (>10 retries/min)
+    echo -e "\nRetry rate (traces per minute):"
+    curl -s "${JAEGER_URL}/api/traces?service=${SERVICE}&tags={\"retry_attempt\":\"2|3\"}&lookback=10m" \
+      | jq '.data | length'

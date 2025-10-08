@@ -1,0 +1,355 @@
+# TerraFusion RI Alert Rules
+# Prometheus alerts for RI degradation and target misses
+#
+# Integration:
+# - Triggered by ri-recording-rules.yaml metrics
+# - Routed to AlertManager → PagerDuty / Slack
+# - Monitored by AI Swarm (swarm-master-control.js)
+#
+# Deployment:
+# kubectl apply -f ops/monitoring/ri-alerts.yaml
+#
+# Architecture Alignment:
+# - Telemetry layer (ARCHITECTURE.md § Telemetry Architecture)
+# - Day 9 acceptance gates (DAY_9_F1F4_README.md § Acceptance Criteria)
+# - CAMA migration validation (CAMA_MIGRATION_PLAYBOOK.md § GO/NO-GO Gates)
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: terrafusion-ri-alerts
+  namespace: terrafusion-monitoring
+  labels:
+    app: terrafusion
+    component: ri-calculator
+    prometheus: kube-prometheus
+spec:
+  groups:
+    # ==========================================================================
+    # F1 API Gateway - RI Alerts
+    # ==========================================================================
+    - name: f1_gateway_ri_alerts
+      interval: 30s
+      rules:
+        - alert: F1_RI_Below_Target
+          expr: |
+            terrafusion:f1:ri < 0.9500
+          for: 5m
+          labels:
+            severity: warning
+            service: f1-gateway
+            component: ri-calculator
+            deployment: day9-f1f4
+          annotations:
+            summary: "F1 API Gateway RI below target ({{ $value | humanize }})"
+            description: |
+              F1 RI has been below target (0.9500) for 5 minutes.
+              Current RI: {{ $value | humanize }}
+              Delta: {{ query "terrafusion:f1:ri_delta" | first | value | humanize }}
+              
+              Possible causes:
+              - Error rate above 1% (check terrafusion:f1:error_rate_pct)
+              - p95 latency above 500ms (check terrafusion:f1:latency_p95)
+              - Retry storms (check terrafusion:f1:retry_rate_pct)
+              - Circuit breaker flapping (check terrafusion:f1:circuit_breaker_state)
+              
+              Remediation:
+              1. Check F1 error logs for failure patterns
+              2. Review retry metrics (may need to adjust retry budget)
+              3. Check downstream service health (F4 cache saturation?)
+              4. Consider rollback if RI drops >0.02 from baseline
+            
+            runbook_url: "https://wiki.terrafusion.com/runbooks/f1-ri-degradation"
+            dashboard_url: "https://grafana.terrafusion.com/d/f1-retry-budget"
+        
+        - alert: F1_RI_Critical_Drop
+          expr: |
+            terrafusion:f1:ri < 0.9250  # Baseline before Day 9 optimization
+          for: 2m
+          labels:
+            severity: critical
+            service: f1-gateway
+            component: ri-calculator
+            deployment: day9-f1f4
+            pagerduty: "true"
+          annotations:
+            summary: "🚨 F1 RI dropped below baseline ({{ $value | humanize }})"
+            description: |
+              F1 RI has dropped below pre-optimization baseline (0.9250).
+              Current RI: {{ $value | humanize }}
+              Delta from baseline: {{ query "terrafusion:f1:ri - 0.9250" | first | value | humanize }}
+              
+              This indicates the Day 9 retry budget optimization is NOT working.
+              
+              IMMEDIATE ACTION REQUIRED:
+              1. Check for retry storms (retry_rate_pct > 50%)
+              2. Verify circuit breaker not stuck OPEN
+              3. Check for downstream cascading failures
+              4. **Prepare for rollback** (ops/traffic/f1-retry-budget.yaml)
+              
+              Rollback command:
+              kubectl delete virtualservice,destinationrule -n terrafusion-staging -l optimization=day9-retry-budget
+            
+            runbook_url: "https://wiki.terrafusion.com/runbooks/f1-rollback-procedure"
+            dashboard_url: "https://grafana.terrafusion.com/d/f1-retry-budget"
+        
+        - alert: F1_RI_Sustained_Improvement
+          expr: |
+            terrafusion:f1:ri >= 0.9500
+          for: 30m
+          labels:
+            severity: info
+            service: f1-gateway
+            component: ri-calculator
+            deployment: day9-f1f4
+          annotations:
+            summary: "✅ F1 RI target sustained ({{ $value | humanize }})"
+            description: |
+              F1 RI has met or exceeded target (0.9500) for 30 minutes.
+              Current RI: {{ $value | humanize }}
+              Delta: {{ query "terrafusion:f1:ri_delta" | first | value | humanize }}
+              
+              Day 9 retry budget optimization is WORKING as expected.
+              Proceed with 24h soak validation.
+            
+            dashboard_url: "https://grafana.terrafusion.com/d/f1-retry-budget"
+    
+    # ==========================================================================
+    # F2 Processor - RI Alerts
+    # ==========================================================================
+    - name: f2_processor_ri_alerts
+      interval: 30s
+      rules:
+        - alert: F2_RI_Below_Target
+          expr: |
+            terrafusion:f2:ri < 0.9500
+          for: 5m
+          labels:
+            severity: warning
+            service: f2-processor
+            component: ri-calculator
+            deployment: day8-f2-circuit-breaker
+          annotations:
+            summary: "F2 Processor RI below target ({{ $value | humanize }})"
+            description: |
+              F2 RI has been below target (0.9500) for 5 minutes.
+              Current RI: {{ $value | humanize }}
+              Delta: {{ query "terrafusion:f2:ri_delta" | first | value | humanize }}
+              
+              Possible causes:
+              - Error rate above 0.5% (check terrafusion:f2:error_rate_pct)
+              - Recovery time above 60s (check terrafusion:f2:recovery_time_p95)
+              - Circuit breaker flapping (check terrafusion:f2:circuit_breaker_flap_rate)
+              
+              Remediation:
+              1. Check F2 recovery time histogram (should be <60s p95)
+              2. Review circuit breaker state changes (flapping = instability)
+              3. Verify packet loss simulation not running in staging
+              4. Check if Day 8 circuit breaker tuning needs adjustment
+            
+            runbook_url: "https://wiki.terrafusion.com/runbooks/f2-ri-degradation"
+            dashboard_url: "https://grafana.terrafusion.com/d/f2-circuit-breaker"
+        
+        - alert: F2_RI_Critical_Drop
+          expr: |
+            terrafusion:f2:ri < 0.9080  # Baseline before Day 8 optimization
+          for: 2m
+          labels:
+            severity: critical
+            service: f2-processor
+            component: ri-calculator
+            deployment: day8-f2-circuit-breaker
+            pagerduty: "true"
+          annotations:
+            summary: "🚨 F2 RI dropped below baseline ({{ $value | humanize }})"
+            description: |
+              F2 RI has dropped below pre-optimization baseline (0.9080).
+              Current RI: {{ $value | humanize }}
+              Delta from baseline: {{ query "terrafusion:f2:ri - 0.9080" | first | value | humanize }}
+              
+              This indicates the Day 8 circuit breaker tuning is NOT working.
+              
+              IMMEDIATE ACTION REQUIRED:
+              1. Check circuit breaker recovery time (should be ~52s, not >75s)
+              2. Verify DestinationRule applied (baseEjectionTime should be 15s, not 30s)
+              3. Check for cascading failures (F2 → F4 cache?)
+              4. **Prepare for rollback** (ops/tests/chaos/f2-circuit-breaker-rollback.yaml)
+            
+            runbook_url: "https://wiki.terrafusion.com/runbooks/f2-rollback-procedure"
+            dashboard_url: "https://grafana.terrafusion.com/d/f2-circuit-breaker"
+    
+    # ==========================================================================
+    # F4 Cache Service - RI Alerts
+    # ==========================================================================
+    - name: f4_cache_ri_alerts
+      interval: 30s
+      rules:
+        - alert: F4_RI_Below_Target
+          expr: |
+            terrafusion:f4:ri < 0.9300
+          for: 5m
+          labels:
+            severity: warning
+            service: f4-cache
+            component: ri-calculator
+            deployment: day9-f1f4
+          annotations:
+            summary: "F4 Cache Service RI below target ({{ $value | humanize }})"
+            description: |
+              F4 RI has been below target (0.9300) for 5 minutes.
+              Current RI: {{ $value | humanize }}
+              Delta: {{ query "terrafusion:f4:ri_delta" | first | value | humanize }}
+              
+              Possible causes:
+              - Error rate above 1.5% (check terrafusion:f4:error_rate_pct)
+              - p95 latency above 800ms (check terrafusion:f4:latency_p95)
+              - Pool saturation above 85% (check terrafusion:f4:pool_saturation_pct)
+              - Data integrity errors (check terrafusion:f4:integrity_errors)
+              
+              Remediation:
+              1. Check Redis pool saturation (should be <70%, HPA should scale)
+              2. Review pool wait time (should be <50ms p95)
+              3. Verify Redis Sentinel quorum (3/3 healthy)
+              4. Check cache hit rate (should be >80%)
+            
+            runbook_url: "https://wiki.terrafusion.com/runbooks/f4-ri-degradation"
+            dashboard_url: "https://grafana.terrafusion.com/d/f4-redis-pool"
+        
+        - alert: F4_RI_Critical_Drop
+          expr: |
+            terrafusion:f4:ri < 0.9000  # Baseline before Day 9 optimization
+          for: 2m
+          labels:
+            severity: critical
+            service: f4-cache
+            component: ri-calculator
+            deployment: day9-f1f4
+            pagerduty: "true"
+          annotations:
+            summary: "🚨 F4 RI dropped below baseline ({{ $value | humanize }})"
+            description: |
+              F4 RI has dropped below pre-optimization baseline (0.9000).
+              Current RI: {{ $value | humanize }}
+              Delta from baseline: {{ query "terrafusion:f4:ri - 0.9000" | first | value | humanize }}
+              
+              This indicates the Day 9 Redis pool tuning is NOT working.
+              
+              IMMEDIATE ACTION REQUIRED:
+              1. Check for pool exhaustion (saturation >95%)
+              2. Verify ConfigMap applied (max-active should be 64, not 8)
+              3. Check for Redis master overload or network issues
+              4. **Prepare for rollback** (kubectl rollout undo deployment/f4-cache-service)
+              
+              If data integrity errors detected: ROLLBACK IMMEDIATELY + FLUSH CACHE
+            
+            runbook_url: "https://wiki.terrafusion.com/runbooks/f4-rollback-procedure"
+            dashboard_url: "https://grafana.terrafusion.com/d/f4-redis-pool"
+        
+        - alert: F4_RI_Sustained_Improvement
+          expr: |
+            terrafusion:f4:ri >= 0.9300
+          for: 30m
+          labels:
+            severity: info
+            service: f4-cache
+            component: ri-calculator
+            deployment: day9-f1f4
+          annotations:
+            summary: "✅ F4 RI target sustained ({{ $value | humanize }})"
+            description: |
+              F4 RI has met or exceeded target (0.9300) for 30 minutes.
+              Current RI: {{ $value | humanize }}
+              Delta: {{ query "terrafusion:f4:ri_delta" | first | value | humanize }}
+              
+              Day 9 Redis pool optimization is WORKING as expected.
+              Proceed with 24h soak validation.
+            
+            dashboard_url: "https://grafana.terrafusion.com/d/f4-redis-pool"
+    
+    # ==========================================================================
+    # System-Wide RI Alerts
+    # ==========================================================================
+    - name: system_ri_alerts
+      interval: 30s
+      rules:
+        - alert: System_RI_Below_Target
+          expr: |
+            terrafusion:system:ri < 0.9390
+          for: 10m
+          labels:
+            severity: warning
+            component: ri-calculator
+            deployment: system-wide
+          annotations:
+            summary: "System RI below target ({{ $value | humanize }})"
+            description: |
+              Overall system RI has been below target (0.9390) for 10 minutes.
+              Current RI: {{ $value | humanize }}
+              Delta: {{ query "terrafusion:system:ri_delta" | first | value | humanize }}
+              
+              Component breakdown:
+              - F1 RI: {{ query "terrafusion:f1:ri" | first | value | humanize }} (target: 0.9500)
+              - F2 RI: {{ query "terrafusion:f2:ri" | first | value | humanize }} (target: 0.9500)
+              - F4 RI: {{ query "terrafusion:f4:ri" | first | value | humanize }} (target: 0.9300)
+              
+              Review individual service alerts to identify root cause.
+            
+            runbook_url: "https://wiki.terrafusion.com/runbooks/system-ri-degradation"
+            dashboard_url: "https://grafana.terrafusion.com/d/system-overview"
+        
+        - alert: System_RI_Critical_Drop
+          expr: |
+            terrafusion:system:ri < 0.9125  # Baseline before Day 8/9 optimizations
+          for: 5m
+          labels:
+            severity: critical
+            component: ri-calculator
+            deployment: system-wide
+            pagerduty: "true"
+          annotations:
+            summary: "🚨 System RI dropped below baseline ({{ $value | humanize }})"
+            description: |
+              Overall system RI has dropped below pre-optimization baseline (0.9125).
+              Current RI: {{ $value | humanize }}
+              Delta from baseline: {{ query "terrafusion:system:ri - 0.9125" | first | value | humanize }}
+              
+              This indicates Day 8/9 optimizations are NOT working system-wide.
+              
+              Component breakdown:
+              - F1 RI: {{ query "terrafusion:f1:ri" | first | value | humanize }} (baseline: 0.9250)
+              - F2 RI: {{ query "terrafusion:f2:ri" | first | value | humanize }} (baseline: 0.9080)
+              - F4 RI: {{ query "terrafusion:f4:ri" | first | value | humanize }} (baseline: 0.9000)
+              
+              EMERGENCY ROLLBACK PROCEDURE:
+              1. Identify failing service(s) from component alerts
+              2. Execute service-specific rollback procedures
+              3. Verify baseline RI restored within 5 minutes
+              4. Post-mortem analysis required before retry
+            
+            runbook_url: "https://wiki.terrafusion.com/runbooks/emergency-rollback"
+            dashboard_url: "https://grafana.terrafusion.com/d/system-overview"
+        
+        - alert: System_RI_Target_Met
+          expr: |
+            terrafusion:system:ri >= 0.9390
+          for: 1h
+          labels:
+            severity: info
+            component: ri-calculator
+            deployment: system-wide
+          annotations:
+            summary: "✅ System RI target sustained ({{ $value | humanize }})"
+            description: |
+              Overall system RI has met or exceeded target (0.9390) for 1 hour.
+              Current RI: {{ $value | humanize }}
+              Delta: {{ query "terrafusion:system:ri_delta" | first | value | humanize }}
+              
+              Component breakdown:
+              - F1 RI: {{ query "terrafusion:f1:ri" | first | value | humanize }} (target: 0.9500)
+              - F2 RI: {{ query "terrafusion:f2:ri" | first | value | humanize }} (target: 0.9500)
+              - F4 RI: {{ query "terrafusion:f4:ri" | first | value | humanize }} (target: 0.9300)
+              
+              Day 8/9 optimizations are WORKING system-wide.
+              Proceed with 24h soak validation before production deployment.
+            
+            dashboard_url: "https://grafana.terrafusion.com/d/system-overview"
