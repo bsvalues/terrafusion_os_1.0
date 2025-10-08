@@ -1,0 +1,474 @@
+# Alert Traceability Map
+# Purpose: Cross-reference every alert to its data source, visualization, and remediation
+# Principle: Every alert must prove its own correctness
+# Generated: 2025-10-07 T+36h
+# Owner: SRE Team
+
+version: "1.0"
+metadata:
+  generated_at: "2025-10-07T19:05:00Z"
+  purpose: "Close observability verification loop"
+  principle: "Every alert must trace to source → metric → visualization → remediation"
+  validation_script: "ops/tests/pre-flight/f1-f4-validation.sh --mode=check-integrity"
+
+# =============================================================================
+# F2 CIRCUIT BREAKER ALERTS
+# =============================================================================
+
+alerts:
+  - name: "F2_Recovery_Slow"
+    severity: "warning"
+    description: "F2 recovery time exceeds 60s target"
+    
+    # Data Source Chain
+    data_source:
+      type: "prometheus"
+      metric: "f2_recovery_seconds"
+      query: "histogram_quantile(0.95, f2_recovery_seconds_bucket)"
+      scrape_interval: "15s"
+      evaluation_interval: "30s"
+      
+    # Alert Definition
+    alert_definition:
+      file: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      line_range: "10-25"
+      threshold: ">60"
+      duration: "2m"
+      labels:
+        service: "f2-processor"
+        component: "circuit-breaker"
+        severity: "warning"
+      annotations:
+        summary: "F2 recovery time {{ $value }}s exceeds 60s target"
+        description: "Circuit breaker recovery degraded"
+        
+    # Visualization
+    visualization:
+      dashboard: "TerraFusion F2 Circuit Breaker Health"
+      panel: "F2 Recovery Time (p95)"
+      grafana_url: "http://grafana:3000/d/f2-circuit-breaker/f2-recovery-time"
+      query: "histogram_quantile(0.95, rate(f2_recovery_seconds_bucket[5m]))"
+      
+    # RI Impact
+    ri_calculation:
+      component: "f2"
+      formula: "(1 - error_rate) * availability_factor * latency_factor"
+      recovery_weight: "latency_factor = min(1.0, 60s / recovery_time_p95)"
+      target_ri: "0.9500"
+      current_ri: "0.9520"
+      
+    # Remediation
+    remediation:
+      runbook: "ops/tests/chaos/ROLLBACK_RUNBOOK.md"
+      section: "3. F2 Circuit Breaker Rollback"
+      command: |
+        kubectl apply -f ops/traffic/f2-circuit-breaker.backup.yaml
+        kubectl get destinationrule f2-processor -o yaml | grep -A 5 outlierDetection
+      expected_recovery_time: "60s"
+      validation: |
+        curl -s http://localhost:9091/metrics | grep terrafusion_ri_f2
+        # Expected: ≥0.9450 (baseline RI)
+        
+    # Traceability
+    trace:
+      source_code: "services/f2-processor/src/circuit_breaker.rs"
+      metric_exporter: "services/f2-processor/src/metrics.rs"
+      prometheus_rule: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      grafana_dashboard: "dashboards/f2-circuit-breaker.json"
+      
+  # ---------------------------------------------------------------------------
+  
+  - name: "CB_Flap"
+    severity: "critical"
+    description: "Circuit breaker opening/closing >3 times per 10min"
+    
+    data_source:
+      type: "prometheus"
+      metric: "f2_circuit_breaker_opens"
+      query: "rate(f2_circuit_breaker_opens[10m])"
+      scrape_interval: "15s"
+      evaluation_interval: "30s"
+      
+    alert_definition:
+      file: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      line_range: "27-42"
+      threshold: ">3"
+      duration: "10m"
+      labels:
+        service: "f2-processor"
+        component: "circuit-breaker"
+        severity: "critical"
+      annotations:
+        summary: "Circuit breaker flapping {{ $value }} times per 10min"
+        description: "Instability detected in circuit breaker state machine"
+        
+    visualization:
+      dashboard: "TerraFusion F2 Circuit Breaker Health"
+      panel: "Circuit Breaker State Transitions"
+      grafana_url: "http://grafana:3000/d/f2-circuit-breaker/cb-state"
+      query: "rate(f2_circuit_breaker_opens[10m]) + rate(f2_circuit_breaker_closes[10m])"
+      
+    ri_calculation:
+      component: "f2"
+      formula: "(1 - error_rate) * availability_factor * latency_factor"
+      availability_impact: "availability_factor = 0.95 if flapping else 1.0"
+      target_ri: "0.9500"
+      degraded_ri: "0.9025"
+      
+    remediation:
+      runbook: "ops/tests/chaos/ROLLBACK_RUNBOOK.md"
+      section: "3. F2 Circuit Breaker Rollback"
+      command: |
+        # Immediate rollback - CB tuning too aggressive
+        kubectl apply -f ops/traffic/f2-circuit-breaker.backup.yaml
+        kubectl rollout restart deployment/f2-processor
+      expected_recovery_time: "60s"
+      validation: |
+        curl -s http://localhost:9090/api/v1/query?query=rate(f2_circuit_breaker_opens[10m])
+        # Expected: <2 per hour (baseline)
+        
+    trace:
+      source_code: "services/f2-processor/src/circuit_breaker.rs"
+      metric_exporter: "services/f2-processor/src/metrics.rs"
+      prometheus_rule: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      grafana_dashboard: "dashboards/f2-circuit-breaker.json"
+      
+  # ---------------------------------------------------------------------------
+  
+  - name: "F2_Error_Rate_High"
+    severity: "critical"
+    description: "F2 5xx error rate >1% for 2 minutes"
+    
+    data_source:
+      type: "prometheus"
+      metric: "f2_http_5xx_rate"
+      query: "rate(f2_http_requests_total{status=~'5..'}[5m]) * 100"
+      scrape_interval: "15s"
+      evaluation_interval: "30s"
+      
+    alert_definition:
+      file: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      line_range: "44-59"
+      threshold: ">1"
+      duration: "2m"
+      labels:
+        service: "f2-processor"
+        component: "http-server"
+        severity: "critical"
+      annotations:
+        summary: "F2 error rate {{ $value }}% exceeds 1% threshold"
+        description: "High 5xx error rate detected"
+        
+    visualization:
+      dashboard: "TerraFusion Resilience Index (RI) - System View"
+      panel: "F2 Error Rate"
+      grafana_url: "http://grafana:3000/d/ri-system/f2-error-rate"
+      query: "rate(f2_http_requests_total{status=~'5..'}[5m]) / rate(f2_http_requests_total[5m]) * 100"
+      
+    ri_calculation:
+      component: "f2"
+      formula: "(1 - error_rate) * availability_factor * latency_factor"
+      error_rate_weight: "error_rate = 5xx_count / total_requests"
+      target_ri: "0.9500"
+      target_error_rate: "<0.5%"
+      
+    remediation:
+      runbook: "ops/tests/chaos/ROLLBACK_RUNBOOK.md"
+      section: "Multi-Component Rollback"
+      command: |
+        # Check if recent deployment caused spike
+        kubectl rollout history deployment/f2-processor
+        # If recent change, rollback
+        kubectl rollout undo deployment/f2-processor
+      expected_recovery_time: "120s"
+      validation: |
+        curl -s http://localhost:9090/api/v1/query?query=rate(f2_http_5xx[5m])*100
+        # Expected: <1%
+        
+    trace:
+      source_code: "services/f2-processor/src/handlers/*.rs"
+      metric_exporter: "services/f2-processor/src/middleware/metrics.rs"
+      prometheus_rule: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      grafana_dashboard: "dashboards/ri-system.json"
+      
+  # ---------------------------------------------------------------------------
+  
+  - name: "CB_Stuck_Open"
+    severity: "critical"
+    description: "Circuit breaker stuck open >5 minutes"
+    
+    data_source:
+      type: "prometheus"
+      metric: "f2_circuit_breaker_state"
+      query: "f2_circuit_breaker_state == 1"
+      scrape_interval: "15s"
+      evaluation_interval: "30s"
+      
+    alert_definition:
+      file: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      line_range: "61-76"
+      threshold: "==1"
+      duration: "5m"
+      labels:
+        service: "f2-processor"
+        component: "circuit-breaker"
+        severity: "critical"
+      annotations:
+        summary: "Circuit breaker stuck open for >5min"
+        description: "Circuit breaker not recovering from open state"
+        
+    visualization:
+      dashboard: "TerraFusion F2 Circuit Breaker Health"
+      panel: "Circuit Breaker State"
+      grafana_url: "http://grafana:3000/d/f2-circuit-breaker/cb-state"
+      query: "f2_circuit_breaker_state"
+      legend: "0=closed, 1=open, 2=half-open"
+      
+    ri_calculation:
+      component: "f2"
+      formula: "(1 - error_rate) * availability_factor * latency_factor"
+      availability_impact: "availability_factor = 0.0 (service unavailable)"
+      target_ri: "0.9500"
+      degraded_ri: "0.0000"
+      
+    remediation:
+      runbook: "ops/tests/chaos/ROLLBACK_RUNBOOK.md"
+      section: "3. F2 Circuit Breaker Rollback"
+      command: |
+        # Force circuit breaker reset
+        kubectl delete pod -l app=f2-processor
+        # Apply baseline circuit breaker config
+        kubectl apply -f ops/traffic/f2-circuit-breaker.backup.yaml
+      expected_recovery_time: "90s"
+      validation: |
+        curl -s http://localhost:9090/api/v1/query?query=f2_circuit_breaker_state
+        # Expected: 0 (closed) or 2 (half-open)
+        
+    trace:
+      source_code: "services/f2-processor/src/circuit_breaker.rs"
+      metric_exporter: "services/f2-processor/src/metrics.rs"
+      prometheus_rule: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      grafana_dashboard: "dashboards/f2-circuit-breaker.json"
+      
+  # ---------------------------------------------------------------------------
+  
+  - name: "F2_Data_Integrity_Error"
+    severity: "critical"
+    description: "Data corruption detected (GO/NO-GO blocker)"
+    
+    data_source:
+      type: "prometheus"
+      metric: "f2_data_integrity_errors_total"
+      query: "f2_data_integrity_errors_total"
+      scrape_interval: "15s"
+      evaluation_interval: "30s"
+      
+    alert_definition:
+      file: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      line_range: "78-93"
+      threshold: ">0"
+      duration: "instant"
+      labels:
+        service: "f2-processor"
+        component: "data-validation"
+        severity: "critical"
+        pagerduty: "true"
+      annotations:
+        summary: "Data integrity error detected"
+        description: "IMMEDIATE ROLLBACK REQUIRED"
+        
+    visualization:
+      dashboard: "TerraFusion Data Integrity Monitor"
+      panel: "F2 Data Validation Errors"
+      grafana_url: "http://grafana:3000/d/data-integrity/f2-validation"
+      query: "increase(f2_data_integrity_errors_total[5m])"
+      
+    ri_calculation:
+      component: "system"
+      formula: "N/A (hard failure)"
+      impact: "IMMEDIATE ROLLBACK - data corruption unacceptable"
+      target_ri: "0.9390"
+      actual_ri: "0.0000"
+      
+    remediation:
+      runbook: "ops/tests/chaos/ROLLBACK_RUNBOOK.md"
+      section: "Multi-Component Rollback (Parallel)"
+      command: |
+        # IMMEDIATE ROLLBACK - no validation
+        bash ops/tests/chaos/rollback-latest.sh --component=f2 --no-confirm
+        # Quarantine corrupted data
+        psql terrafusion_db -c "UPDATE properties SET corrupted=true WHERE updated_at > NOW() - INTERVAL '1 hour'"
+      expected_recovery_time: "60s"
+      validation: |
+        # No validation - rollback first, investigate later
+        echo "ROLLBACK EXECUTED"
+        
+    trace:
+      source_code: "services/f2-processor/src/validation/*.rs"
+      metric_exporter: "services/f2-processor/src/metrics.rs"
+      prometheus_rule: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      grafana_dashboard: "dashboards/data-integrity.json"
+      
+  # ---------------------------------------------------------------------------
+  
+  - name: "F2_Recovery_Latency_Spike"
+    severity: "warning"
+    description: "p95 recovery latency spikes during circuit breaker recovery"
+    
+    data_source:
+      type: "prometheus"
+      metric: "f2_recovery_latency_p95"
+      query: "histogram_quantile(0.95, f2_recovery_latency_seconds_bucket)"
+      scrape_interval: "15s"
+      evaluation_interval: "30s"
+      
+    alert_definition:
+      file: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      line_range: "95-110"
+      threshold: ">150ms"
+      duration: "2m"
+      labels:
+        service: "f2-processor"
+        component: "circuit-breaker"
+        severity: "warning"
+      annotations:
+        summary: "F2 recovery latency {{ $value }}ms exceeds 150ms"
+        description: "Recovery path slower than expected"
+        
+    visualization:
+      dashboard: "TerraFusion F2 Circuit Breaker Health"
+      panel: "Recovery Latency Distribution"
+      grafana_url: "http://grafana:3000/d/f2-circuit-breaker/recovery-latency"
+      query: "histogram_quantile(0.95, rate(f2_recovery_latency_seconds_bucket[5m])) * 1000"
+      
+    ri_calculation:
+      component: "f2"
+      formula: "(1 - error_rate) * availability_factor * latency_factor"
+      latency_weight: "latency_factor = min(1.0, 150ms / recovery_latency_p95)"
+      target_ri: "0.9500"
+      degraded_ri: "0.9350"
+      
+    remediation:
+      runbook: "ops/tests/chaos/ALERT_HEALTH_REPORT.md"
+      section: "5. 36-Hour Soak Telemetry Summary"
+      command: |
+        # Not an immediate rollback - monitor trend
+        curl -s http://localhost:9090/api/v1/query?query=histogram_quantile(0.95,f2_recovery_latency_seconds)*1000
+        # If trending up, consider rollback
+      expected_recovery_time: "N/A (monitoring only)"
+      validation: |
+        # Check if spike is transient or sustained
+        echo "Monitor for next 15min, rollback if sustained >200ms"
+        
+    trace:
+      source_code: "services/f2-processor/src/circuit_breaker.rs"
+      metric_exporter: "services/f2-processor/src/metrics.rs"
+      prometheus_rule: "ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      grafana_dashboard: "dashboards/f2-circuit-breaker.json"
+
+# =============================================================================
+# RI DEGRADATION ALERTS (System-Wide)
+# =============================================================================
+
+  - name: "RI_System_Degradation"
+    severity: "critical"
+    description: "System-wide RI drops below 0.9390 target"
+    
+    data_source:
+      type: "prometheus"
+      metric: "terrafusion_ri_system"
+      query: "terrafusion_ri_system"
+      scrape_interval: "15s"
+      evaluation_interval: "30s"
+      source_script: "ops/monitoring/ri-calculator.py"
+      
+    alert_definition:
+      file: "ops/monitoring/ri-alerts.yaml"
+      line_range: "10-25"
+      threshold: "<0.9390"
+      duration: "5m"
+      labels:
+        severity: "critical"
+        component: "system-wide"
+      annotations:
+        summary: "System RI {{ $value }} below 0.9390 target"
+        description: "System-wide resilience degradation"
+        
+    visualization:
+      dashboard: "TerraFusion Resilience Index (RI) - System View"
+      panel: "System RI (Weighted Average)"
+      grafana_url: "http://grafana:3000/d/ri-system/system-ri"
+      query: "terrafusion_ri_system"
+      
+    ri_calculation:
+      component: "system"
+      formula: "F1_RI*0.3 + F2_RI*0.4 + F4_RI*0.3"
+      target_ri: "0.9390"
+      current_ri: "0.9410"
+      
+    remediation:
+      runbook: "ops/tests/chaos/PHASE_4_VALIDATION_MATRIX.md"
+      section: "Rollback Trigger Conditions"
+      command: |
+        # Identify which service is dragging down system RI
+        curl -s http://localhost:9091/metrics | grep terrafusion_ri
+        # Rollback lowest-performing service
+      expected_recovery_time: "120s"
+      validation: |
+        curl -s http://localhost:9091/metrics | grep terrafusion_ri_system
+        # Expected: ≥0.9390
+        
+    trace:
+      source_code: "ops/monitoring/ri-calculator.py"
+      metric_exporter: "ops/monitoring/ri-calculator.py (port 9091)"
+      prometheus_rule: "ops/monitoring/ri-alerts.yaml"
+      grafana_dashboard: "dashboards/ri-system.json"
+
+# =============================================================================
+# VALIDATION MATRIX
+# =============================================================================
+
+validation:
+  script: "ops/tests/pre-flight/f1-f4-validation.sh"
+  mode: "--mode=check-integrity"
+  schedule: "*/60 * * * *"  # Every hour
+  
+  checks:
+    - name: "Alert registration"
+      command: "grep -c 'alert:' ops/tests/chaos/monitoring/f2-recovery.alerts.yaml"
+      expected: "6"
+      
+    - name: "Prometheus rules loaded"
+      command: "curl -s http://localhost:9090/api/v1/rules | jq '.data.groups[].rules[].alert' | grep -c F2_"
+      expected: "6"
+      
+    - name: "Grafana dashboards"
+      command: "curl -s http://grafana:3000/api/search?type=dash-db | jq -r '.[].title' | grep -c 'F2'"
+      expected: ">=1"
+      
+    - name: "RI calculator running"
+      command: "curl -s http://localhost:9091/metrics | grep -c terrafusion_ri"
+      expected: ">=4"
+      
+    - name: "Backup manifests exist"
+      command: "ls ops/traffic/*.backup.yaml ops/cache/*.backup.yaml | wc -l"
+      expected: "3"
+
+# =============================================================================
+# METADATA
+# =============================================================================
+
+ownership:
+  owner: "SRE Team"
+  maintainer: "Platform Engineering"
+  reviewers:
+    - "SRE Lead"
+    - "Platform Lead"
+  last_updated: "2025-10-07T19:05:00Z"
+  next_review: "2025-10-08T06:42:00Z"  # T+48h gate
+
+changelog:
+  - version: "1.0"
+    date: "2025-10-07"
+    changes: "Initial alert trace map created during T+36h smart idle period"
+    commit: "TBD"
