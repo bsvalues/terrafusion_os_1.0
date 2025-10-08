@@ -1,0 +1,29 @@
+# F2 Circuit Breaker Baseline Configuration (Backup)
+# Purpose: Rollback target for F2 circuit breaker optimization
+# Baseline RI: 0.9450
+# Created: October 7, 2025
+
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: f2-processor
+  namespace: terrafusion-production
+  labels:
+    app: f2-processor
+    version: baseline
+spec:
+  host: f2-processor
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+      tcp:
+        maxConnections: 100
+    outlierDetection:
+      consecutiveErrors: 5         # Baseline: 5 consecutive errors
+      interval: 30s                # Baseline: 30s check interval
+      baseEjectionTime: 30s        # Baseline: 30s ejection time
+      maxEjectionPercent: 50       # Baseline: 50% max ejection
+      minHealthPercent: 40         # Baseline: 40% min healthy
