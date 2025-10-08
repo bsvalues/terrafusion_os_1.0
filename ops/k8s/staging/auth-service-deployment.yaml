@@ -1,0 +1,175 @@
+---
+# ============================================================================
+# Auth Service Deployment - Staging Environment
+# ============================================================================
+# Purpose: Minimal auth service for RS256 migration rehearsal
+# Environment: terrafusion-staging (Docker Desktop Kubernetes)
+# ============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: terrafusion-staging
+  labels:
+    app: auth-service
+    tier: backend
+    environment: staging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+        tier: backend
+        environment: staging
+    spec:
+      containers:
+      - name: auth-service
+        image: nginx:alpine  # Placeholder - replace with actual auth service image
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        # JWT Configuration (Initial: HS256-only, will migrate to RS256)
+        - name: JWT_ALGORITHM
+          value: "HS256"
+        - name: JWT_ACCEPT_ALGORITHMS
+          value: "HS256"
+        - name: JWT_KID
+          value: "tfos_2024_kid0"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-signing-keys
+              key: hs256_secret
+        # JWKS Configuration
+        - name: JWKS_ENDPOINT
+          value: "/.well-known/jwks.json"
+        - name: JWT_ISSUER
+          value: "https://auth.terrafusion.ai"
+        # Database Configuration
+        - name: DATABASE_URL
+          value: "postgresql://terrafusion:terrafusion@postgres:5432/terrafusion"
+        # Observability
+        - name: LOG_LEVEL
+          value: "info"
+        - name: ENABLE_TRACING
+          value: "true"
+        - name: JAEGER_ENDPOINT
+          value: "http://jaeger-collector:14268/api/traces"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        # Health checks disabled for rehearsal (using nginx placeholder)
+        # In production, uncomment and point to actual auth service health endpoints
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 8080
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /ready
+        #     port: 8080
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 5
+        volumeMounts:
+        - name: jwt-keys
+          mountPath: /var/secrets/jwt/signing_keys
+          readOnly: true
+        - name: jwks-config
+          mountPath: /app/jwks
+          readOnly: true
+      volumes:
+      - name: jwt-keys
+        secret:
+          secretName: jwt-signing-keys
+          items:
+          - key: hs256_secret
+            path: hs256_secret.txt
+          - key: rs256_private_key
+            path: tfos_2025_kid1_private.pem
+          - key: rs256_public_key
+            path: tfos_2025_kid1_public.pem
+      - name: jwks-config
+        configMap:
+          name: jwks
+          items:
+          - key: jwks.json
+            path: jwks.json
+---
+# ============================================================================
+# Auth Service - Service Resource
+# ============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: terrafusion-staging
+  labels:
+    app: auth-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: auth-service
+---
+# ============================================================================
+# Auth Config - ConfigMap (auth-config that migration script expects)
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+  namespace: terrafusion-staging
+  labels:
+    app: auth-service
+data:
+  config.yaml: |
+    # Auth Service Configuration
+    server:
+      port: 8080
+      host: 0.0.0.0
+    
+    jwt:
+      algorithm: HS256
+      accept_algorithms:
+        - HS256
+      kid: tfos_2024_kid0
+      issuer: https://auth.terrafusion.ai
+      audience: terrafusion-api
+      expiration_minutes: 60
+      refresh_expiration_days: 30
+    
+    jwks:
+      endpoint: /.well-known/jwks.json
+      cache_ttl_seconds: 3600
+    
+    database:
+      url: postgresql://terrafusion:terrafusion@postgres:5432/terrafusion
+      pool_size: 10
+      connection_timeout: 30
+    
+    observability:
+      log_level: info
+      tracing_enabled: true
+      jaeger_endpoint: http://jaeger-collector:14268/api/traces
+      metrics_port: 9090
+    
+    migration:
+      phase: "0"  # 0=HS256-only, 1=dual-sign, 2=monitor, 3=RS256-only
+      started_at: null
+      completed_at: null
