@@ -1,0 +1,12 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "use": "sig",
+      "kid": "tfos_2025_kid1",
+      "alg": "RS256",
+      "n": "paEpOUHV4OoK6ByssX_Wjw4MSBY0JJr_-RdJMLePhT_-L7oPUCGGMouQ8XpjwCBIDNEXn3AxwIKg_nn6rNL5R1IOdAFPmOYVAn2h5qtMMjf-kfcE-5wBfyGiZ-2LYneHb0y4rxbqNQuBr28K869fAWWysV5O91j0uzGwyQ0ANIxFgXzRj3telk2PhNG_LSrvSdH-K8Mb4yB88sUqQifO1JfdA5uK3_t1TM75Q9uHmdGtLMEyOotC4MeHP-IIJXDrQNS_4cZzVYpyFBYuCQblVQErMOxXmaq0Dg7ha4POawLIpUjznaeb5-FBWa3bqd2sp-nYFO3xbiA4FD8d6hvPPw",
+      "e": "AQAB"
+    }
+  ]
+}

@@ -554,7 +554,7 @@
     <!-- Demo JavaScript -->
     <script>
         // API Base URL
-        const API_BASE = window.location.origin + '/api';
+        const API_BASE = '/api';
         
         // Global variables
         let realtimeInterval;
@@ -572,7 +572,7 @@
         // Load demo statistics
         async function loadDemoStats() {
             try {
-                const response = await fetch(`${API_BASE}/?request=demo/stats`);
+                const response = await fetch(`${API_BASE}/demo/stats`);
                 const data = await response.json();
                 
                 if (data.success && data.stats) {
@@ -615,7 +615,7 @@
             resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Searching 89,247 properties...</div>';
             
             try {
-                const response = await fetch(`${API_BASE}/?request=properties&search=${encodeURIComponent(searchTerm)}&limit=10`);
+                const response = await fetch(`${API_BASE}/properties?search=${encodeURIComponent(searchTerm)}&limit=10`);
                 const data = await response.json();
                 
                 if (data.success && data.data.length > 0) {
@@ -711,7 +711,7 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE}/?request=properties/${parcelId}/assess`, {
+                const response = await fetch(`${API_BASE}/properties/${parcelId}/assess`, {
                     method: 'POST'
                 });
                 const data = await response.json();
@@ -729,7 +729,7 @@
         function displayAssessmentResults(assessment, demoNote) {
             const resultsDiv = document.getElementById('assessment-results');
             
-            let html = `
+            const html = `
                 <div class="assessment-demo">
                     <h3 style="color: var(--success-green); margin-bottom: 1rem;">
                         <i class="fas fa-check-circle"></i> AI Assessment Complete
@@ -810,7 +810,7 @@
             statusDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Loading AI agent status...</div>';
             
             try {
-                const response = await fetch(`${API_BASE}/?request=ai-agents`);
+                const response = await fetch(`${API_BASE}/ai-agents`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -896,7 +896,7 @@
             statusDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Loading government modules...</div>';
             
             try {
-                const response = await fetch(`${API_BASE}/?request=modules`);
+                const response = await fetch(`${API_BASE}/modules`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -977,7 +977,7 @@
             metricsDiv.innerHTML = '<div class="loading"><div class="spinner"></div> Loading quantum performance metrics...</div>';
             
             try {
-                const response = await fetch(`${API_BASE}/?request=quantum/metrics`);
+                const response = await fetch(`${API_BASE}/quantum/metrics`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -1090,7 +1090,7 @@
         // Update real-time data
         async function updateRealtimeData() {
             try {
-                const response = await fetch(`${API_BASE}/?request=demo/realtime`);
+                const response = await fetch(`${API_BASE}/demo/realtime`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -1105,7 +1105,7 @@
         function displayRealtimeData(realtimeData, demoNote) {
             const dashboardDiv = document.getElementById('realtime-dashboard');
             
-            let html = `
+            const html = `
                 <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 2px solid var(--success-green);">
                     <h3 style="color: var(--dark-gray); margin-bottom: 1rem;">
                         <span class="realtime-indicator">

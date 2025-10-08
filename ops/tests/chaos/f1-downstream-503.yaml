@@ -1,0 +1,193 @@
+# F1 Downstream 503 Injection — Chaos Test
+# Tests F1 (adaptive retry) behavior when downstream service returns 503
+# Duration: 10 minutes
+# Impact: Tests circuit breaker, retry tiers, error handling
+
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: f1-downstream-503
+  namespace: terrafusion-staging
+  labels:
+    chaos-type: http
+    component: auth-service
+    impact: moderate
+spec:
+  action: abort
+  mode: fixed-percent
+  value: "30"  # 30% of requests return 503
+  
+  selector:
+    namespaces:
+      - terrafusion-staging
+    labelSelectors:
+      app: auth-service  # Inject failures into auth service
+  
+  abort:
+    statusCode: 503  # Service Unavailable
+  
+  duration: "10m"
+  
+  # Only affect specific endpoints
+  target: Request
+  port: 8080
+  path: "/api/v1/validate"
+  method: "POST"
+
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: f1-retry-test
+  namespace: terrafusion-staging
+spec:
+  entry: f1-retry-workflow
+  templates:
+    - name: f1-retry-workflow
+      templateType: Serial
+      children:
+        - baseline-metrics
+        - inject-503
+        - observe
+        - remove-503
+        - validate-recovery
+    
+    # Step 1: Capture baseline
+    - name: baseline-metrics
+      templateType: Task
+      task:
+        container:
+          name: baseline
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Capturing baseline..."
+              curl -s http://prometheus:9090/api/v1/query?query=tfos:http_error_rate > /tmp/baseline_error.json
+              curl -s http://prometheus:9090/api/v1/query?query=tfos:retry_rate > /tmp/baseline_retry.json
+              echo "Baseline captured"
+    
+    # Step 2: Inject 30% 503 errors
+    - name: inject-503
+      templateType: HTTPChaos
+      httpChaos:
+        action: abort
+        mode: fixed-percent
+        value: "30"
+        selector:
+          namespaces:
+            - terrafusion-staging
+          labelSelectors:
+            app: auth-service
+        abort:
+          statusCode: 503
+        target: Request
+        port: 8080
+        path: "/api/v1/validate"
+        duration: "10m"
+    
+    # Step 3: Observe retry behavior
+    - name: observe
+      templateType: Suspend
+      suspend:
+        duration: "10m"
+    
+    # Step 4: Remove chaos
+    - name: remove-503
+      templateType: Suspend
+      suspend:
+        duration: "30s"
+    
+    # Step 5: Validate recovery
+    - name: validate-recovery
+      templateType: Task
+      task:
+        container:
+          name: validate
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Validating recovery..."
+              ERROR_RATE=$(curl -s http://prometheus:9090/api/v1/query?query=tfos:http_error_rate | jq -r '.data.result[0].value[1]')
+              RETRY_RATE=$(curl -s http://prometheus:9090/api/v1/query?query=tfos:retry_rate | jq -r '.data.result[0].value[1]')
+              
+              # Error rate should return to <2%
+              if (( $(echo "$ERROR_RATE < 0.02" | bc -l) )); then
+                echo "✅ Error rate recovered: ${ERROR_RATE}"
+              else
+                echo "❌ Error rate elevated: ${ERROR_RATE}"
+                exit 1
+              fi
+              
+              # Retry rate should drop to near-zero
+              if (( $(echo "$RETRY_RATE < 0.5" | bc -l) )); then
+                echo "✅ Retry rate normalized: ${RETRY_RATE}"
+              else
+                echo "⚠️  Retry rate still elevated: ${RETRY_RATE}"
+              fi
+              
+              exit 0
+
+---
+# Expected Behavior Under 30% 503 Errors
+
+# Before Chaos (Baseline):
+# - HTTP error rate: ~0.5-1.0%
+# - Retry rate: ~5-10 retries/sec
+# - Circuit breaker: CLOSED
+# - Most requests: tier-1 (no retry)
+
+# During Chaos (30% 503 injection):
+# - HTTP error rate: ~10-15% (30% * 0.5 retry success = 15% remaining errors)
+# - Retry rate: ~50-100 retries/sec (30% of traffic × 1-2 retries)
+# - Circuit breaker: May transition to HALF-OPEN (depends on threshold)
+# - Request distribution:
+#   - Tier-1 (0 retries): ~70% (success on first attempt)
+#   - Tier-2 (1-2 retries): ~25% (success after retry)
+#   - Tier-3 (3 retries): ~5% (exhausted retries)
+
+# After Chaos (Recovery):
+# - HTTP error rate: return to ~0.5-1.0% within 2 minutes
+# - Retry rate: return to ~5-10 retries/sec
+# - Circuit breaker: CLOSED
+# - Request distribution: return to baseline (85%+ tier-1)
+
+# Success Criteria:
+# ✅ HTTP error rate stays <20% during chaos (retry mitigation working)
+# ✅ Circuit breaker does NOT stay OPEN >3 minutes
+# ✅ Retry success rate >60% (retries are effective)
+# ✅ Recovery within 2 minutes after chaos ends
+# ✅ No cascading failures (other services maintain RI >0.90)
+
+# Failure Triggers (rollback F1):
+# ❌ HTTP error rate >30% (retry not mitigating)
+# ❌ Circuit breaker stuck OPEN >5 minutes
+# ❌ Retry success rate <40% (retries ineffective)
+# ❌ Recovery takes >5 minutes
+# ❌ Cascading failures (other services RI drops <0.85)
+
+---
+# Validation Queries (Prometheus)
+
+# Check retry effectiveness
+# promql 'tfos:retry_success_rate{service="gateway"}'
+# Expected during chaos: >0.60 (60%+ retries succeed)
+
+# Check circuit breaker state
+# promql 'circuit_breaker_state{service="gateway",downstream="auth-service"}'
+# Expected: 0 (CLOSED) or 2 (HALF-OPEN), NOT 1 (OPEN) for >3min
+
+# Check tier distribution
+# promql 'sum(rate(http_retry_attempts_total[5m])) by (tier)'
+# Expected during chaos:
+#   tier-1: ~70-75%
+#   tier-2: ~20-25%
+#   tier-3: ~5%
+
+# Check error rate impact
+# promql 'tfos:http_error_rate{route="/api"}'
+# Expected during chaos: ~0.10-0.15 (10-15%)
+# Expected baseline: ~0.005-0.010 (0.5-1%)

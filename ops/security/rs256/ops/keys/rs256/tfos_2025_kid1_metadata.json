@@ -1,0 +1,19 @@
+{
+  "kid": "tfos_2025_kid1",
+  "algorithm": "RS256",
+  "key_size": 2048,
+  "created_at": "2025-10-08T00:42:50Z",
+  "status": "active",
+  "usage": "JWT signing for TerraFusion OS 1.0",
+  "private_key": "ops/keys/rs256/tfos_2025_kid1_private.pem",
+  "public_key": "ops/keys/rs256/tfos_2025_kid1_public.pem",
+  "jwks_file": "ops/keys/rs256/tfos_2025_kid1_jwks.json",
+  "rotation_schedule": "annual",
+  "next_rotation": "2026-10-08T00:42:50Z",
+  "security_notes": [
+    "Private key stored with 600 permissions (owner-only access)",
+    "Public key exported in JWKS format for verifiers",
+    "Rotate keys annually or on compromise",
+    "Keep at least 2 keys active during rotation (dual-sign window)"
+  ]
+}

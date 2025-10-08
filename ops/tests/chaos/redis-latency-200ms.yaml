@@ -1,0 +1,150 @@
+# Redis Latency Injection — 200ms Chaos Test
+# Tests F4 (Redis pooling) behavior under network latency
+# Duration: 10 minutes
+# Impact: Cache operations delayed, pool wait times increase
+
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: redis-latency-200ms
+  namespace: terrafusion-staging
+  labels:
+    chaos-type: network
+    component: redis
+    impact: moderate
+spec:
+  action: delay
+  mode: all  # Affect all Redis pods
+  
+  selector:
+    namespaces:
+      - terrafusion-staging
+    labelSelectors:
+      app: redis
+  
+  delay:
+    latency: "200ms"
+    correlation: "0"  # No correlation between packets
+    jitter: "50ms"    # ±50ms variance
+  
+  duration: "10m"
+  
+  # Schedule: Run during soak period
+  scheduler:
+    cron: "@every 4h"  # Run every 4 hours during observation
+
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: redis-latency-test
+  namespace: terrafusion-staging
+spec:
+  entry: redis-latency-workflow
+  templates:
+    - name: redis-latency-workflow
+      templateType: Serial
+      children:
+        - baseline-metrics
+        - inject-latency
+        - observe
+        - remove-latency
+        - validate-recovery
+    
+    # Step 1: Capture baseline metrics
+    - name: baseline-metrics
+      templateType: Task
+      task:
+        container:
+          name: baseline
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Capturing baseline metrics..."
+              curl -s http://prometheus:9090/api/v1/query?query=tfos:redis_pool_wait_p95 > /tmp/baseline.json
+              echo "Baseline captured"
+    
+    # Step 2: Inject 200ms latency
+    - name: inject-latency
+      templateType: NetworkChaos
+      networkChaos:
+        action: delay
+        mode: all
+        selector:
+          namespaces:
+            - terrafusion-staging
+          labelSelectors:
+            app: redis
+        delay:
+          latency: "200ms"
+          jitter: "50ms"
+        duration: "10m"
+    
+    # Step 3: Observe for 10 minutes
+    - name: observe
+      templateType: Suspend
+      suspend:
+        duration: "10m"
+    
+    # Step 4: Remove latency (automatic via duration)
+    - name: remove-latency
+      templateType: Suspend
+      suspend:
+        duration: "30s"  # Wait for latency to clear
+    
+    # Step 5: Validate recovery
+    - name: validate-recovery
+      templateType: Task
+      task:
+        container:
+          name: validate
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Validating recovery..."
+              CURRENT=$(curl -s http://prometheus:9090/api/v1/query?query=tfos:redis_pool_wait_p95 | jq -r '.data.result[0].value[1]')
+              BASELINE=$(cat /tmp/baseline.json | jq -r '.data.result[0].value[1]')
+              
+              if (( $(echo "$CURRENT < $BASELINE * 1.2" | bc -l) )); then
+                echo "✅ Recovery validated: ${CURRENT}ms (baseline ${BASELINE}ms)"
+                exit 0
+              else
+                echo "❌ Recovery failed: ${CURRENT}ms (baseline ${BASELINE}ms)"
+                exit 1
+              fi
+
+---
+# Expected Behavior Under 200ms Redis Latency
+
+# Before Chaos (Baseline):
+# - redis.pool.wait_ms p95: ~10-20ms
+# - redis.pool.saturation: ~60-70%
+# - cache hit latency: ~5-10ms
+
+# During Chaos (200ms latency):
+# - redis.pool.wait_ms p95: ~250-300ms (200ms + jitter + pool contention)
+# - redis.pool.saturation: ~85-95% (pool exhaustion due to longer operation times)
+# - cache hit latency: ~200-250ms (dominated by network delay)
+# - F4 optimization impact: Pool should NOT timeout (max_wait 5000ms)
+
+# After Chaos (Recovery):
+# - redis.pool.wait_ms p95: return to ~10-20ms within 2 minutes
+# - redis.pool.saturation: return to ~60-70%
+# - No connection leaks (active connections = baseline)
+
+# Success Criteria:
+# ✅ No Redis pool wait timeouts during chaos
+# ✅ Pool saturation stays <95% (no complete exhaustion)
+# ✅ HTTP error rate <5% (degraded but functional)
+# ✅ Recovery within 2 minutes after chaos ends
+# ✅ No connection leaks (pool returns to baseline size)
+
+# Failure Triggers (rollback F4):
+# ❌ Redis pool wait timeouts >5 during chaos
+# ❌ HTTP error rate >10%
+# ❌ Recovery takes >5 minutes
+# ❌ Connection leaks detected (pool size keeps growing)
