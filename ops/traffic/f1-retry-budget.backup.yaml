@@ -1,0 +1,45 @@
+# F1 Retry Budget Baseline Configuration (Backup)
+# Purpose: Rollback target for F1 retry optimization
+# Baseline RI: 0.9250
+# Created: October 7, 2025
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: f1-gateway
+  namespace: terrafusion-production
+  labels:
+    app: f1-gateway
+    version: baseline
+spec:
+  hosts:
+  - f1-gateway
+  - f1-gateway.terrafusion-production.svc.cluster.local
+  http:
+  - match:
+    - uri:
+        prefix: /api/properties
+    route:
+    - destination:
+        host: f1-gateway
+        port:
+          number: 8080
+    retries:
+      attempts: 2                  # Baseline: 2 attempts
+      perTryTimeout: 200ms         # Baseline: 200ms timeout
+      retryOn: "5xx,reset,connect-failure,refused-stream"
+    timeout: 1s
+    
+  - match:
+    - uri:
+        prefix: /api/
+    route:
+    - destination:
+        host: f1-gateway
+        port:
+          number: 8080
+    retries:
+      attempts: 2
+      perTryTimeout: 200ms
+      retryOn: "5xx,reset,connect-failure,refused-stream"
+    timeout: 1s

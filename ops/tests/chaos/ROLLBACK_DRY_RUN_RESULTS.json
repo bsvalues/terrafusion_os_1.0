@@ -1,0 +1,110 @@
+{
+  "failed_checks": 0,
+  "readiness_score": 100.0,
+  "total_checks": 12,
+  "ready_for_rollback": true,
+  "timestamp": "2025-10-07 18:40:52",
+  "components": [
+    {
+      "name": "Backup Manifests",
+      "checks": [
+        {
+          "size": 1095,
+          "path": "ops/traffic/f1-retry-budget.backup.yaml",
+          "lastModified": "2025-10-07T18:40:16.2341065-07:00",
+          "exists": true,
+          "status": "✅ READY",
+          "component": "F1 Retry Budget"
+        },
+        {
+          "size": 945,
+          "path": "ops/traffic/f2-circuit-breaker.backup.yaml",
+          "lastModified": "2025-10-07T18:40:24.5438793-07:00",
+          "exists": true,
+          "status": "✅ READY",
+          "component": "F2 Circuit Breaker"
+        },
+        {
+          "size": 1201,
+          "path": "ops/cache/f4-redis-pool.backup.yaml",
+          "lastModified": "2025-10-07T18:40:34.9660741-07:00",
+          "exists": true,
+          "status": "✅ READY",
+          "component": "F4 Redis Pool"
+        },
+        {
+          "size": 940,
+          "path": "ops/security/rs256/jwt-secret.backup.txt",
+          "lastModified": "2025-10-07T18:40:45.9191002-07:00",
+          "exists": true,
+          "status": "✅ READY",
+          "component": "RS256 HS256 Secret"
+        }
+      ]
+    },
+    {
+      "name": "Kubernetes Rollback Commands",
+      "checks": [
+        {
+          "component": "F1 Gateway",
+          "status": "✅ DRY-RUN PASSED (kubectl available)",
+          "canRollback": true,
+          "command": "kubectl apply -f ops/traffic/f1-retry-budget.backup.yaml --dry-run=client"
+        },
+        {
+          "component": "F2 Processor",
+          "status": "✅ DRY-RUN PASSED (kubectl available)",
+          "canRollback": true,
+          "command": "kubectl apply -f ops/traffic/f2-circuit-breaker.backup.yaml --dry-run=client"
+        },
+        {
+          "component": "F4 Cache",
+          "status": "✅ DRY-RUN PASSED (kubectl available)",
+          "canRollback": true,
+          "command": "kubectl apply -f ops/cache/f4-redis-pool.backup.yaml --dry-run=client"
+        },
+        {
+          "component": "Auth Service (RS256)",
+          "status": "✅ DRY-RUN PASSED (kubectl available)",
+          "canRollback": true,
+          "command": "kubectl set env deployment/auth-service JWT_SIGNING_ALGORITHM=HS256 --dry-run=client"
+        }
+      ]
+    },
+    {
+      "meets_target": true,
+      "sequential_seconds": 300.0,
+      "name": "Rollback Timing",
+      "parallel_seconds": 90.0
+    },
+    {
+      "name": "Rollback Documentation",
+      "checks": [
+        {
+          "lines": 453,
+          "status": "✅ PRESENT",
+          "exists": true,
+          "path": "ops/tests/chaos/ROLLBACK_RUNBOOK.md",
+          "size": 16855
+        },
+        {
+          "lines": 315,
+          "status": "✅ PRESENT",
+          "exists": true,
+          "path": "ops/tests/chaos/PHASE_4_VALIDATION_MATRIX.md",
+          "size": 14035
+        },
+        {
+          "lines": 302,
+          "status": "✅ PRESENT",
+          "exists": true,
+          "path": "ops/tests/chaos/ALERT_HEALTH_REPORT.md",
+          "size": 13982
+        }
+      ]
+    }
+  ],
+  "warnings": 0,
+  "passed_checks": 12,
+  "mode": "DRY-RUN"
+}

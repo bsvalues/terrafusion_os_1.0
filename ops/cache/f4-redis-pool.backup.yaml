@@ -1,0 +1,46 @@
+# F4 Redis Pool Baseline Configuration (Backup)
+# Purpose: Rollback target for F4 Redis connection pooling optimization
+# Baseline RI: 0.9000
+# Created: October 7, 2025
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: f4-redis-config
+  namespace: terrafusion-production
+  labels:
+    app: f4-cache
+    version: baseline
+data:
+  redis.conf: |
+    # Baseline F4 Redis Configuration (No Connection Pooling)
+    
+    # Connection settings
+    maxclients 10000
+    timeout 0
+    tcp-keepalive 300
+    
+    # Memory settings
+    maxmemory 2gb
+    maxmemory-policy allkeys-lru
+    
+    # Persistence (disabled for cache)
+    save ""
+    appendonly no
+    
+    # Replication settings
+    replica-read-only yes
+    replica-serve-stale-data yes
+    
+    # Performance tuning
+    slowlog-log-slower-than 10000
+    slowlog-max-len 128
+    
+    # Client output buffer limits (baseline)
+    client-output-buffer-limit normal 0 0 0
+    client-output-buffer-limit replica 256mb 64mb 60
+    client-output-buffer-limit pubsub 32mb 8mb 60
+    
+    # No connection pooling enabled (baseline)
+    # Connection timeout: default (no override)
+    # Pool size: N/A (no pooling)
