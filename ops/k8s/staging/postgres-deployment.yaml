@@ -1,0 +1,156 @@
+---
+# ============================================================================
+# PostgreSQL Database - Staging Environment
+# ============================================================================
+# Purpose: Minimal database for auth_audit tracking in RS256 migration
+# Environment: terrafusion-staging (Docker Desktop Kubernetes)
+# ============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: terrafusion-staging
+  labels:
+    app: postgres
+    tier: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        tier: database
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_USER
+          value: "terrafusion"
+        - name: POSTGRES_PASSWORD
+          value: "terrafusion"
+        - name: POSTGRES_DB
+          value: "terrafusion"
+        - name: PGDATA
+          value: "/var/lib/postgresql/data/pgdata"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: postgres-data
+        emptyDir: {}  # Ephemeral for rehearsal
+      - name: init-scripts
+        configMap:
+          name: postgres-init
+---
+# ============================================================================
+# PostgreSQL Service
+# ============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: terrafusion-staging
+  labels:
+    app: postgres
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: postgres
+---
+# ============================================================================
+# PostgreSQL Init Scripts - Create auth_audit table
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: terrafusion-staging
+  labels:
+    app: postgres
+data:
+  01-init-schema.sql: |
+    -- TerraFusion Auth Audit Table
+    -- Purpose: Track JWT algorithm adoption during RS256 migration
+    
+    CREATE TABLE IF NOT EXISTS auth_audit (
+      id BIGSERIAL PRIMARY KEY,
+      
+      -- Token Information
+      jti VARCHAR(255) NOT NULL,          -- JWT ID (unique token identifier)
+      kid VARCHAR(255) NOT NULL,          -- Key ID used to sign token
+      algorithm VARCHAR(10) NOT NULL,     -- HS256 or RS256
+      
+      -- Claims
+      sub VARCHAR(255) NOT NULL,          -- Subject (user ID)
+      iss VARCHAR(255) NOT NULL,          -- Issuer
+      aud VARCHAR(255),                   -- Audience
+      
+      -- Timestamps
+      iat TIMESTAMP NOT NULL,             -- Issued At
+      exp TIMESTAMP NOT NULL,             -- Expiration
+      created_at TIMESTAMP DEFAULT NOW(), -- Audit record creation
+      
+      -- Context
+      ip_address INET,                    -- Client IP
+      user_agent TEXT,                    -- Client user agent
+      service VARCHAR(100),               -- Requesting service
+      endpoint VARCHAR(255),              -- API endpoint called
+      
+      -- Status
+      status VARCHAR(20) NOT NULL DEFAULT 'issued', -- issued|validated|revoked|expired
+      error_message TEXT                  -- Error details if validation failed
+    );
+    
+    -- Indexes for performance
+    CREATE INDEX IF NOT EXISTS idx_auth_audit_kid ON auth_audit(kid);
+    CREATE INDEX IF NOT EXISTS idx_auth_audit_algorithm ON auth_audit(algorithm);
+    CREATE INDEX IF NOT EXISTS idx_auth_audit_iat ON auth_audit(iat);
+    CREATE INDEX IF NOT EXISTS idx_auth_audit_created_at ON auth_audit(created_at);
+    CREATE INDEX IF NOT EXISTS idx_auth_audit_sub ON auth_audit(sub);
+    CREATE INDEX IF NOT EXISTS idx_auth_audit_status ON auth_audit(status);
+    
+    -- Grant permissions
+    GRANT ALL PRIVILEGES ON TABLE auth_audit TO terrafusion;
+    GRANT USAGE, SELECT ON SEQUENCE auth_audit_id_seq TO terrafusion;
+    
+    -- Insert sample data for testing (simulates pre-migration HS256 traffic)
+    INSERT INTO auth_audit (jti, kid, algorithm, sub, iss, aud, iat, exp, status) VALUES
+    ('test-token-001', 'tfos_2024_kid0', 'HS256', 'user-001', 'https://auth.terrafusion.ai', 'terrafusion-api', NOW() - INTERVAL '1 hour', NOW() + INTERVAL '23 hours', 'validated'),
+    ('test-token-002', 'tfos_2024_kid0', 'HS256', 'user-002', 'https://auth.terrafusion.ai', 'terrafusion-api', NOW() - INTERVAL '30 minutes', NOW() + INTERVAL '23.5 hours', 'validated'),
+    ('test-token-003', 'tfos_2024_kid0', 'HS256', 'user-003', 'https://auth.terrafusion.ai', 'terrafusion-api', NOW() - INTERVAL '15 minutes', NOW() + INTERVAL '23.75 hours', 'validated');
+    
+    -- Migration metrics view
+    CREATE OR REPLACE VIEW v_algorithm_adoption AS
+    SELECT 
+      algorithm,
+      COUNT(*) as count,
+      ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) as percentage,
+      MIN(created_at) as first_seen,
+      MAX(created_at) as last_seen
+    FROM auth_audit
+    WHERE created_at > NOW() - INTERVAL '1 hour'
+    GROUP BY algorithm
+    ORDER BY count DESC;
+    
+    GRANT SELECT ON v_algorithm_adoption TO terrafusion;
