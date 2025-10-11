@@ -49,6 +49,9 @@ yarn-error.log*
 # Note: Actual extraction scripts archived in archive/phase-3-extraction/
 # Keep Phase 3 documentation files (PHASE_3*.md) for reference
 
+# Legacy Code Archives (October 2025)
+LEGACY_CODE_ARCHIVE/
+
 # Runtime data
 pids/
 *.pid
@@ -388,3 +391,42 @@ temp/
 .data/
 data/postgres*/
 data/redis*/
+
+# ===== TerraFusion Security - Added 2025-10-09 =====
+# CRITICAL: Never commit secrets, credentials, or private keys!
+
+# Environment files with secrets
+.env
+.env.*
+!.env.example
+*.env
+!*.env.example
+
+# Private keys and certificates
+*.key
+*.pem
+!*-public.pem
+*-private.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+ca_private.key
+*password*
+*secret*
+*.keystore
+
+# Certificate and key directories
+certs/
+keys/
+trust-fabric/ca/
+trust-fabric/keys/
+trust-fabric/keystore/
+ops/security/rs256/
+
+# Security backups
+security-backup-*/
+*.backup
+
+# Azure Key Vault config (if storing connection details)
+keyvault-config.json
