@@ -1,3 +1,0 @@
-/mnt/c/Users/bsval/terrafusion_os_1.0/apps/ui/src/components/valuation/__tests__/PropertyValuationForm.test.tsx
-/mnt/c/Users/bsval/terrafusion_os_1.0/apps/ui/src/features/compGrid/__tests__/ComparableGridWorkflow.int.test.tsx
-/mnt/c/Users/bsval/terrafusion_os_1.0/apps/ui/src/store/compGrid/__tests__/compGrid.store.test.ts

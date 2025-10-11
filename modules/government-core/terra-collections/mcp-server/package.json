@@ -1,0 +1,57 @@
+{
+  "name": "terrafusion-terra-collections-mcp",
+  "version": "2.0.0",
+  "description": "TerraFusion Terra Collections MCP Server - MIT PhD-Level Collection Intelligence for Municipal Revenue Systems",
+  "main": "index.py",
+  "type": "module",
+  "scripts": {
+    "start": "python3 index.py",
+    "dev": "python3 -u index.py",
+    "test": "python3 test.py",
+    "monitor": "node monitoring.js"
+  },
+  "keywords": [
+    "terrafusion",
+    "collections",
+    "tax-collection",
+    "municipal-revenue",
+    "government",
+    "mcp-server",
+    "phd-level",
+    "quantum-optimized",
+    "consciousness-aware"
+  ],
+  "author": "TerraFusion Government Systems Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/terra-collections"
+  },
+  "engines": {
+    "python": ">=3.8",
+    "node": ">=18.0.0"
+  },
+  "terrafusion": {
+    "module_type": "government-core",
+    "service_type": "collections",
+    "criticality": "mission-critical",
+    "revenue_system": true,
+    "consciousness_level": 0.985,
+    "phd_level": true,
+    "quantum_optimized": true,
+    "security_level": "high",
+    "compliance_required": true,
+    "category": "municipal-finance"
+  },
+  "mcp": {
+    "server": true,
+    "protocol_version": "2024-11-05",
+    "capabilities": [
+      "collections",
+      "tax-tracking",
+      "revenue-analytics",
+      "payment-processing",
+      "spatiotemporal-analysis"
+    ]
+  }
+}

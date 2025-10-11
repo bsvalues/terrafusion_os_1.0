@@ -1,0 +1,105 @@
+---
+# TerraFusion OS - Kong Routes Configuration
+# Defines routing rules for incoming requests
+################################################################################
+
+apiVersion: configuration.konghq.com/v1
+kind: KongRoute
+metadata:
+  name: backend-api-route
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  service:
+    name: backend-api-service
+  paths:
+    - /api
+    - /v1
+  methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  strip_path: true
+  preserve_host: false
+  protocols:
+    - http
+    - https
+  regex_priority: 0
+  https_redirect_status_code: 301
+
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongRoute
+metadata:
+  name: ai-agent-route
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  service:
+    name: ai-agent-service
+  paths:
+    - /ai
+  methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  strip_path: true
+  preserve_host: false
+  protocols:
+    - http
+    - https
+  https_redirect_status_code: 301
+
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongRoute
+metadata:
+  name: mcp-servers-route
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  service:
+    name: mcp-servers-service
+  paths:
+    - /mcp
+  methods:
+    - GET
+    - POST
+    - OPTIONS
+  strip_path: false
+  preserve_host: false
+  protocols:
+    - http
+    - https
+  https_redirect_status_code: 301
+
+---
+# Health check route (public, no auth)
+apiVersion: configuration.konghq.com/v1
+kind: KongRoute
+metadata:
+  name: health-check-route
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  service:
+    name: backend-api-service
+  paths:
+    - /health
+    - /healthz
+  methods:
+    - GET
+  strip_path: false
+  preserve_host: false
+  protocols:
+    - http
+    - https

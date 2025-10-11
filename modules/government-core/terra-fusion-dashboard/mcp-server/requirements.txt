@@ -1,0 +1,15 @@
+# TerraFusion Dashboard MCP Server - Python Dependencies
+# Government Core Dashboard Analytics Platform
+
+# Core MCP Server Dependencies
+mcp>=1.0.0
+pydantic>=2.5.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Essential Data Processing & Visualization
+numpy>=1.24.0
+python-dateutil>=2.8.0
+
+# Standard Library Extensions
+asyncio-mqtt>=0.11.0

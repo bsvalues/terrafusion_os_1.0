@@ -1,0 +1,41 @@
+{
+  "name": "terra-insight-mcp-server",
+  "version": "1.0.0",
+  "description": "TerraFusion Insight MCP Server - MIT PhD Intelligence & Analytics Platform",
+  "main": "index.py",
+  "scripts": {
+    "start": "python index.py",
+    "test": "python test.py"
+  },
+  "mcp": {
+    "serverType": "python",
+    "protocol": "stdio",
+    "consciousness_level": 0.990,
+    "intelligence_category": "quantum_optimized",
+    "capabilities": [
+      "intelligence_analytics",
+      "predictive_insights",
+      "quantum_analytics",
+      "spatiotemporal_intelligence",
+      "consciousness_aware_insights"
+    ],
+    "criticality": "high",
+    "government_operations": true,
+    "analytics": true
+  },
+  "dependencies": {
+    "python": ">=3.9"
+  },
+  "pythonDependencies": {
+    "python-dateutil": ">=2.8.0"
+  },
+  "keywords": [
+    "mcp-server",
+    "insight",
+    "intelligence",
+    "analytics",
+    "government-operations"
+  ],
+  "author": "TerraFusion Development Team",
+  "license": "PROPRIETARY"
+}

@@ -1,0 +1,13 @@
+---
+# TerraFusion OS Production Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-prod
+  labels:
+    name: terrafusion-prod
+    istio-injection: enabled  # Automatic Istio sidecar injection
+    environment: production
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: kubectl

@@ -1,0 +1,555 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/workspace-map.schema.json",
+  "version": "1.0.0",
+  "updated": "2025-10-10",
+  "workspace": {
+    "name": "TerraFusion OS",
+    "version": "1.0.0",
+    "description": "Government AI Operating System with hot-swappable modules",
+    "root": "c:\\Users\\bsval\\terrafusion_os_1.0"
+  },
+  "structure": {
+    "ai-systems": {
+      "description": "18 AI systems powering the development ecosystem",
+      "primary": {
+        ".ai": {
+          "description": "Core AI suite with Claude Flow integration",
+          "path": ".ai",
+          "files": 22,
+          "size_mb": 0.55,
+          "contains": [
+            "claude-flow/ - Claude Flow MCP integration",
+            "core/ - AI Agent Manager, AI Model Hub, Claude Flow Integration",
+            "mcp/ - MCP server configurations"
+          ]
+        },
+        "ai-workspace-companion": {
+          "description": "AI development companion with complete tooling",
+          "path": "ai-workspace-companion",
+          "files": 21,
+          "size_mb": 0.77,
+          "contains": [
+            "terrafusion-ai-arsenal/ - Agents, knowledge, prompts, tools, workflows",
+            "terrafusion-codex/ - Complete documentation system (architecture, procurement, migration, marketplace)",
+            "terrafusion-ops/ - DevOps infrastructure (Docker, K8s, monitoring, pipelines, Terraform)",
+            "terrafusion-swarm/ - AI swarm orchestration",
+            "core-os/ - Core OS services (costforge-ai, terra-flow, terra-sync)",
+            "backup/ - Emergency backup systems"
+          ],
+          "key_files": [
+            "WorkspaceCompanionAgent.ts - Main AI companion",
+            "TerrafusionAIService.ts - AI service layer",
+            "launch-companion.ts - Quick start launcher"
+          ]
+        },
+        "ai-swarm-supreme-commander": {
+          "description": "Supreme Commander Claude - orchestrates 50,000+ AI agents",
+          "path": "ai-swarm-supreme-commander",
+          "files": 52,
+          "size_mb": 0.41
+        }
+      },
+      "backend": {
+        "ai-models": {
+          "path": "backend/ai-models",
+          "files": 113,
+          "size_mb": 1.73,
+          "contains": [
+            "BENTON_COUNTY_AI_CHAMPIONSHIP/ - Benton County production models",
+            "TERRAFUSION_COUNTY_TEMPLATE_SYSTEM/ - County template system",
+            "WASHINGTON_STATE_COUNTIES/ - Washington State county models",
+            "TERRAFUSION_SECURE_DATA_SHARING/ - Secure data sharing protocols"
+          ]
+        },
+        "ai-swarm": {
+          "path": "backend/ai-swarm",
+          "files": 27,
+          "size_mb": 0.26,
+          "contains": [
+            "AISwarmVirtualMachine.ts - Virtual machine for AI swarm",
+            "OptimizedAgentPool.ts - Agent pool management",
+            "orchestrators/ - Swarm orchestration",
+            "coordinators/ - Coordination services"
+          ]
+        },
+        "ai-swarm-service": {
+          "path": "backend/ai-swarm-service",
+          "description": "AI swarm service layer"
+        }
+      },
+      "tools": [
+        "explain-mode-api/ - Explain mode API (30 files, 0.35 MB)",
+        "ai-swarm-venv/ - Python virtual environment for AI",
+        "terrafusion-swarm/ - Additional swarm tools (5 files, 0.84 MB)"
+      ],
+      "config": [
+        ".claude/ - Claude AI configuration",
+        ".claudecode/ - Claude Code configuration",
+        ".playwright-mcp/ - Playwright MCP integration",
+        ".devcontainer/ - Development container setup"
+      ],
+      "monitoring": [
+        "AI_MONITORING/ - AI system monitoring (9 files)",
+        "AI_AGENT_CHECKPOINTS/ - Agent checkpoint system",
+        "AI_AGENT_DEVELOPMENT_ENVIRONMENT/ - AI development environment"
+      ]
+    },
+    "modules": {
+      "description": "189 hot-swappable government modules organized by tier",
+      "location": "modules/",
+      "total_count": 189,
+      "architecture": "Hot-swappable - each module is BOTH standalone application AND pluggable module",
+      "single_source_of_truth": "backend/ - All modules connect to shared backend",
+      "tiers": {
+        "TIER-1-ai-systems": {
+          "path": "modules/ai-systems",
+          "count": 23,
+          "description": "AI & Intelligence modules",
+          "examples": [
+            "ai-advanced - Advanced AI capabilities",
+            "ai-agent-quantum-coordinator - Quantum agent coordination",
+            "ai-command-brain - AI command and control",
+            "ai-superintelligence-orchestrator-enhanced - Enhanced superintelligence",
+            "ai-swarm - AI swarm module",
+            "compliance-automation-ai - AI-powered compliance",
+            "consciousness-evolution-engine - Consciousness evolution",
+            "consciousness-field - Consciousness field module",
+            "emergent-intelligence-evolution - Emergent intelligence",
+            "spatiotemporal-intelligence - Spatiotemporal AI"
+          ],
+          "mcp_servers": 10
+        },
+        "TIER-2-government-core": {
+          "path": "modules/government-core",
+          "count": 27,
+          "description": "Core government operations modules",
+          "examples": [
+            "terra-fusion-dashboard - Main county operations dashboard",
+            "terra-fusion-assessor - Property assessment module",
+            "terra-collections - Tax collection module",
+            "terra-levy - Levy calculation module",
+            "terra-insight - Analytics and insights",
+            "terra-flow - Workflow automation",
+            "terra-fusion-sync - Data synchronization",
+            "terra-legislative-pulse - Legislative tracking",
+            "terra-miner - Data mining module",
+            "TerraFusion-PublicRecords - Public records management",
+            "TerraFusionPermit - Permit management",
+            "TerraFusion_Record - Record keeping",
+            "costforge-ai-enhanced - AI cost forecasting",
+            "geospatial - Geospatial services",
+            "gispro - GIS professional tools",
+            "terra-agent - Agent management"
+          ],
+          "mcp_servers": 11
+        },
+        "TIER-3-commercial": {
+          "path": "modules/commercial",
+          "count": 59,
+          "description": "Commercial & marketplace modules",
+          "examples": [
+            "backend - Commercial backend",
+            "commercial-suite - Complete commercial suite",
+            "marketplace-champion - Marketplace module"
+          ],
+          "mcp_servers": 3
+        },
+        "TIER-4-infrastructure": {
+          "path": "modules/infrastructure",
+          "count": 13,
+          "description": "Development & testing infrastructure",
+          "examples": [
+            "development - Development tools",
+            "plugins-beyond-plugins - Advanced plugin system",
+            "testing-suite - Comprehensive testing"
+          ],
+          "mcp_servers": 3
+        },
+        "TIER-5-specialized": {
+          "path": "modules/specialized",
+          "count": 32,
+          "description": "Experimental & specialized modules",
+          "examples": [
+            "autonomous-research-engine - Autonomous research",
+            "citizen-avatars - Citizen avatar system",
+            "emergent-capability-detector - Capability detection",
+            "next-generation-security - Next-gen security",
+            "operations_dashboard - Operations dashboard",
+            "performance-optimizer-quantum - Quantum performance",
+            "quantum-computing-integration - Quantum computing",
+            "resilience-engineering-quantum - Quantum resilience",
+            "singularity-preparation-framework - Singularity prep",
+            "unified-system - Unified system module",
+            "web-audit-tracker - Web audit tracking"
+          ],
+          "mcp_servers": 12
+        },
+        "other": {
+          "count": 35,
+          "description": "Uncategorized modules"
+        }
+      },
+      "mcp_servers": {
+        "total": 50,
+        "description": "Model Context Protocol servers for AI integration",
+        "with_package_json": 39,
+        "without_package_json": 11
+      }
+    },
+    "backend": {
+      "description": "Single source of truth - C# .NET backend",
+      "location": "backend/",
+      "type": "C# .NET Core",
+      "solution": "TerraFusion.sln",
+      "architecture": "All hot-swappable modules connect to this shared backend",
+      "projects": {
+        "TerraFusion.API": {
+          "path": "backend/api-unified",
+          "description": "Unified API gateway",
+          "type": "ASP.NET Core Web API"
+        },
+        "TerraFusion.Core": {
+          "path": "backend/TerraFusion.Core",
+          "description": "Core business logic"
+        },
+        "TerraFusion.Data": {
+          "path": "backend/TerraFusion.Data",
+          "description": "Data access layer"
+        },
+        "TerraFusion.Marketplace": {
+          "path": "backend/TerraFusion.Marketplace",
+          "description": "Module marketplace and distribution system",
+          "services": [
+            "MarketplaceEngine.cs - Module publishing, installation, validation, revenue sharing"
+          ]
+        },
+        "TerraFusion.Security": {
+          "path": "backend/TerraFusion.Security",
+          "description": "Security and authentication"
+        },
+        "TerraFusion.Abstractions": {
+          "description": "Shared abstractions and interfaces"
+        },
+        "TerraFusion.AI": {
+          "description": "AI integration layer"
+        },
+        "TerraFusion.IDE.Gateway": {
+          "description": "IDE integration gateway"
+        }
+      },
+      "additional": {
+        "mcp-core": {
+          "path": "backend/mcp-core",
+          "description": "MCP core services",
+          "files": [
+            "ai_coordination_activator.py",
+            "claude_flow_integration.py",
+            "functionRegistry.ts"
+          ]
+        },
+        "mcp-servers": {
+          "path": "backend/mcp-servers",
+          "description": "Backend MCP servers"
+        }
+      }
+    },
+    "src": {
+      "description": "Hot-swappable application modules (to be moved to modules/) and shared libraries",
+      "location": "src/",
+      "total_packages": 23,
+      "hot_swappable_modules": {
+        "count": 6,
+        "ready_to_run": true,
+        "modules": {
+          "terrafusion-dashboard": {
+            "path": "src/terrafusion-dashboard/TerraFusionDashboard",
+            "name": "TerraFusion Dashboard",
+            "version": "1.0.0",
+            "framework": "Vite + React + Express",
+            "port": 3001,
+            "scripts": {
+              "start": "NODE_ENV=production node dist/index.js",
+              "dev": "NODE_ENV=development tsx server/index.ts",
+              "build": "vite build && esbuild server/index.ts..."
+            },
+            "status": "✅ Ready to run"
+          },
+          "terrafusion-gis": {
+            "path": "src/terrafusion-gis",
+            "name": "TerraFusion GIS",
+            "version": "1.0.0",
+            "framework": "Vite + React + Express",
+            "port": 3002,
+            "scripts": {
+              "start": "NODE_ENV=production node dist/index.js",
+              "dev": "tsx server/index.ts",
+              "build": "vite build && esbuild server/index.ts..."
+            },
+            "status": "✅ Ready to run"
+          },
+          "terrafusion-prime-view": {
+            "path": "src/terrafusion-prime-view",
+            "name": "TerraFusion Prime View",
+            "version": "0.0.0",
+            "framework": "Vite + React + shadcn/ui",
+            "port": 3003,
+            "scripts": {
+              "dev": "vite",
+              "build": "vite build"
+            },
+            "status": "⚠️ No start script (dev/build only)"
+          },
+          "terrafusion-pro-plus": {
+            "path": "src/terrafusion-pro-plus",
+            "name": "TerraFusion Pro Plus",
+            "version": "1.0.0",
+            "framework": "Workspace (monorepo)",
+            "scripts": {
+              "dev": "node server/index.js"
+            },
+            "status": "⚠️ No start script (dev only)"
+          },
+          "terrafusion-v0-demo": {
+            "path": "src/terrafusion-v0-demo",
+            "name": "TerraFusion v0 Demo",
+            "version": "0.1.0",
+            "framework": "Next.js",
+            "port": 3000,
+            "scripts": {
+              "start": "next start",
+              "dev": "next dev",
+              "build": "next build"
+            },
+            "status": "✅ Ready to run"
+          },
+          "ai-command-brain": {
+            "path": "src/modules/ai-command-brain",
+            "name": "AI Command Brain Module",
+            "version": "4.1.0",
+            "framework": "Node.js + Next.js app",
+            "scripts": {
+              "start": "node index.js",
+              "dev": "cd app && npm run dev",
+              "build": "cd app && npm run build"
+            },
+            "status": "✅ Ready to run"
+          }
+        }
+      },
+      "other_packages": {
+        "count": 17,
+        "description": "MCP servers, libraries, and supporting packages",
+        "examples": [
+          "mcp-servers-production/ - Production MCP servers",
+          "core/competition-engine/ - Competition engine",
+          "terrafusion-gis/tf-assistant/backend/ - GIS assistant backend",
+          "terrafusion-pro-plus/* - Pro Plus subpackages",
+          "customer-service-pwa/ - Customer service PWA",
+          "terrafusion-brand-vault/ - Brand assets"
+        ]
+      }
+    },
+    "shared": {
+      "description": "Shared libraries and components",
+      "location": "terrafusion-shared/",
+      "packages": {
+        "count": 6,
+        "root": {
+          "name": "terrafusion-shared",
+          "description": "Root shared package"
+        },
+        "api-client": {
+          "path": "terrafusion-shared/packages/api-client",
+          "description": "Shared API client library"
+        },
+        "config": {
+          "path": "terrafusion-shared/packages/config",
+          "description": "Shared configuration"
+        },
+        "ui-components": {
+          "path": "terrafusion-shared/packages/ui-components",
+          "description": "Shared UI component library"
+        },
+        "cli": {
+          "path": "terrafusion-shared/packages/ui-components/tools/cli",
+          "description": "TerraFusion CLI tool"
+        },
+        "vscode-extension": {
+          "path": "terrafusion-shared/packages/ui-components/tools/vscode-extension",
+          "description": "VS Code extension for TerraFusion"
+        }
+      }
+    },
+    "documentation": {
+      "description": "Comprehensive documentation systems",
+      "systems": {
+        "main_docs": {
+          "path": "docs/",
+          "markdown_files": 279,
+          "size_gb": 0.62,
+          "contains": [
+            "api/ - API documentation",
+            "architecture/ - Architecture documentation",
+            "user-guides/ - User manuals (USER_MANUAL_COUNTY_OFFICIALS.md)",
+            "developer/ - Developer documentation",
+            "enhancement-plans/ - System enhancement plans",
+            "src-tauri/ - Tauri application docs"
+          ]
+        },
+        "ai_codex": {
+          "path": "ai-workspace-companion/terrafusion-codex",
+          "description": "AI-accessible documentation",
+          "contains": [
+            "01_ARCHITECTURE/ - Architecture decisions",
+            "02_PROCUREMENT/ - Procurement documentation",
+            "03_MIGRATION/ - Migration guides",
+            "04_MARKETPLACE/ - Marketplace documentation",
+            "05_OS_PITCH/ - OS pitch materials",
+            "06_PLUGIN_DEV/ - Plugin development",
+            "07_AI_ARSENAL/ - AI arsenal documentation",
+            "08_SALES_STRATEGY/ - Sales strategy",
+            "99_ADRS/ - Architecture Decision Records"
+          ]
+        },
+        "hive_mind": {
+          "path": "hive-mind-knowledge-pools/",
+          "description": "Hive mind knowledge base (empty - future use)"
+        }
+      }
+    },
+    "devops": {
+      "description": "Complete DevOps infrastructure",
+      "directories": {
+        "count": 12,
+        "items": [
+          "docker/ - Docker configurations",
+          "kubernetes/ - K8s manifests",
+          "terraform/ - Infrastructure as code",
+          "ops/ - Operations tools",
+          "terrafusion-ops/ - TerraFusion ops tools",
+          "terrafusion-ops-tools/ - Additional ops tools",
+          ".ci_artifacts_local/ - CI artifacts (local)",
+          ".ci_test_results/ - CI test results",
+          "ci-artifacts/ - CI artifacts",
+          "consciousness-service/ - Consciousness service",
+          "policies/ - Policy configurations",
+          "TerraFusion Enhanced Ops Integration/ - Enhanced ops integration"
+        ]
+      },
+      "dockerfiles": {
+        "count": 67,
+        "locations": "Across workspace (backend, modules, src, tools)"
+      }
+    },
+    "backups": {
+      "description": "Comprehensive backup systems",
+      "count": 32,
+      "total_size_gb": 6.46,
+      "strategy": "Multiple backup points for safety",
+      "locations": [
+        "ai-workspace-companion/backup/ - AI workspace backups",
+        "ai-workspace-companion/BACKUP_*/ - Timestamped backups",
+        "Various backup/ directories across workspace"
+      ]
+    },
+    "automation": {
+      "description": "Extensive automation script library",
+      "total_scripts": 3633,
+      "by_type": {
+        "python": 2968,
+        "bash": 494,
+        "powershell": 118,
+        "batch": 53
+      },
+      "categories": [
+        "Deployment automation",
+        "Build processes",
+        "Testing frameworks",
+        "Migration scripts",
+        "Backup/restore operations",
+        "Workflow orchestration",
+        "CI/CD pipelines"
+      ]
+    },
+    "configuration": {
+      "description": "Configuration files across workspace",
+      "total_files": 441,
+      "by_type": {
+        "json": 324,
+        "yaml": 26,
+        "yml": 8,
+        "env": 16,
+        "other": 67
+      },
+      "county_configs": [
+        "benton-county-config.json",
+        "appsettings.BentonCounty.json",
+        ".benton",
+        ".asotin",
+        ".cowlitz",
+        ".franklin",
+        ".yakima"
+      ]
+    }
+  },
+  "quick_start": {
+    "main_dashboard": {
+      "command": "cd src/terrafusion-dashboard/TerraFusionDashboard && npm install && npm run dev",
+      "port": 3001,
+      "description": "Main county operations dashboard"
+    },
+    "gis_system": {
+      "command": "cd src/terrafusion-gis && npm install && npm run dev",
+      "port": 3002,
+      "description": "GIS mapping system"
+    },
+    "backend_api": {
+      "command": "cd backend/api-unified && dotnet run",
+      "port": 5000,
+      "description": "Backend API server"
+    },
+    "ai_command_brain": {
+      "command": "cd src/modules/ai-command-brain && npm install && npm run dev",
+      "port": 3003,
+      "description": "AI Command and Control"
+    },
+    "workspace_companion": {
+      "command": "cd ai-workspace-companion && npm install && npm run launch",
+      "description": "AI Workspace Companion (development assistant)"
+    }
+  },
+  "warnings": {
+    "hardcoded_paths": {
+      "count": 812,
+      "severity": "HIGH",
+      "message": "812 files contain hardcoded paths. Do NOT move directories without updating these paths first!",
+      "affected_paths": [
+        "src/ - Referenced in 400+ files",
+        "modules/ - Referenced in 300+ files",
+        "backend/ - Referenced in 200+ files",
+        "terrafusion_os_1.0 - Full workspace path in 100+ files"
+      ],
+      "solution": "Use environment variables (.workspace.env) before any reorganization"
+    }
+  },
+  "statistics": {
+    "total_packages": 318,
+    "ai_systems": 18,
+    "mcp_servers": 50,
+    "modules_in_tiers": 189,
+    "hot_swappable_modules_src": 6,
+    "automation_scripts": 3633,
+    "config_files": 441,
+    "dockerfiles": 67,
+    "backup_systems": 32,
+    "markdown_files": 279,
+    "hardcoded_path_files": 812
+  },
+  "metadata": {
+    "generated_by": "TerraFusion Workspace Audit System",
+    "audit_phase_0": "WORKSPACE_AUDIT_20251010_075747",
+    "audit_phase_0_5": "AI_ECOSYSTEM_AUDIT_20251010_081135",
+    "analysis": "WORKSPACE_OF_DREAMS_MIT_PHD_ANALYSIS.md",
+    "last_updated": "2025-10-10T08:15:00Z"
+  }
+}

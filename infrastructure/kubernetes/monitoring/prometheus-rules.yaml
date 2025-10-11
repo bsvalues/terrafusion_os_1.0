@@ -1,0 +1,459 @@
+# TerraFusion OS 1.0 - Prometheus Alert Rules
+# MIT/PhD-Level Alerting Configuration
+# Comprehensive alerts for 99.99% uptime with <5-minute MTTR
+
+groups:
+  # ============================================================================
+  # CRITICAL ALERTS - Immediate PagerDuty notification
+  # ============================================================================
+  
+  - name: critical-alerts
+    interval: 30s
+    rules:
+      # Service Down
+      - alert: ServiceDown
+        expr: up{job=~"terrafusion-.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: availability
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute."
+          runbook: "https://docs.terrafusion.ai/runbooks/service-down"
+          dashboard: "https://grafana.terrafusion.ai/d/service-overview"
+      
+      # Database Connection Failure
+      - alert: DatabaseConnectionFailure
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "PostgreSQL database is unreachable"
+          description: "Cannot connect to PostgreSQL database. All database operations will fail."
+          runbook: "https://docs.terrafusion.ai/runbooks/database-down"
+      
+      # Redis Cache Down
+      - alert: RedisCacheDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: cache
+        annotations:
+          summary: "Redis cache is unreachable"
+          description: "Cannot connect to Redis. Session management and caching will fail."
+          runbook: "https://docs.terrafusion.ai/runbooks/redis-down"
+      
+      # High Error Rate
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+            /
+            sum(rate(http_requests_total[5m])) by (service)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "High error rate detected on {{ $labels.service }}"
+          description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
+          runbook: "https://docs.terrafusion.ai/runbooks/high-error-rate"
+      
+      # API Latency Critical
+      - alert: APILatencyCritical
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
+          ) > 2
+        for: 10m
+        labels:
+          severity: critical
+          component: performance
+        annotations:
+          summary: "Critical API latency on {{ $labels.service }}"
+          description: "P99 latency is {{ $value | humanizeDuration }} which is above 2 seconds threshold."
+          runbook: "https://docs.terrafusion.ai/runbooks/high-latency"
+      
+      # Out of Memory
+      - alert: PodOutOfMemory
+        expr: |
+          (
+            container_memory_working_set_bytes{pod=~"terrafusion-.*"}
+            /
+            container_spec_memory_limit_bytes{pod=~"terrafusion-.*"}
+          ) > 0.95
+        for: 5m
+        labels:
+          severity: critical
+          component: resources
+        annotations:
+          summary: "Pod {{ $labels.pod }} is running out of memory"
+          description: "Memory usage is {{ $value | humanizePercentage }} of limit."
+          runbook: "https://docs.terrafusion.ai/runbooks/oom"
+      
+      # Disk Space Critical
+      - alert: DiskSpaceCritical
+        expr: |
+          (
+            node_filesystem_avail_bytes{mountpoint="/"}
+            /
+            node_filesystem_size_bytes{mountpoint="/"}
+          ) < 0.10
+        for: 5m
+        labels:
+          severity: critical
+          component: storage
+        annotations:
+          summary: "Critical disk space on {{ $labels.instance }}"
+          description: "Only {{ $value | humanizePercentage }} disk space remaining."
+          runbook: "https://docs.terrafusion.ai/runbooks/disk-full"
+      
+      # SSL Certificate Expiring Soon
+      - alert: SSLCertificateExpiringSoon
+        expr: |
+          ssl_certificate_expiry_seconds < 86400 * 7
+        for: 1h
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "SSL certificate expiring in less than 7 days"
+          description: "SSL certificate for {{ $labels.domain }} expires in {{ $value | humanizeDuration }}."
+          runbook: "https://docs.terrafusion.ai/runbooks/ssl-renewal"
+      
+      # Payment Processing Failure
+      - alert: PaymentProcessingFailure
+        expr: |
+          (
+            sum(rate(payment_transactions_total{status="failed"}[5m]))
+            /
+            sum(rate(payment_transactions_total[5m]))
+          ) > 0.01
+        for: 5m
+        labels:
+          severity: critical
+          component: payments
+        annotations:
+          summary: "High payment failure rate"
+          description: "Payment failure rate is {{ $value | humanizePercentage }}."
+          runbook: "https://docs.terrafusion.ai/runbooks/payment-failures"
+      
+      # Blockchain Sync Failure
+      - alert: BlockchainSyncFailure
+        expr: |
+          blockchain_sync_behind_blocks > 100
+        for: 10m
+        labels:
+          severity: critical
+          component: blockchain
+        annotations:
+          summary: "Blockchain node is out of sync"
+          description: "Blockchain node is {{ $value }} blocks behind."
+          runbook: "https://docs.terrafusion.ai/runbooks/blockchain-sync"
+  
+  # ============================================================================
+  # HIGH PRIORITY ALERTS - Slack + Email (15-minute response)
+  # ============================================================================
+  
+  - name: high-priority-alerts
+    interval: 1m
+    rules:
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            container_memory_working_set_bytes{pod=~"terrafusion-.*"}
+            /
+            container_spec_memory_limit_bytes{pod=~"terrafusion-.*"}
+          ) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          component: resources
+        annotations:
+          summary: "High memory usage on {{ $labels.pod }}"
+          description: "Memory usage is {{ $value | humanizePercentage }}."
+          runbook: "https://docs.terrafusion.ai/runbooks/high-memory"
+      
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: |
+          (
+            rate(container_cpu_usage_seconds_total{pod=~"terrafusion-.*"}[5m])
+            /
+            container_spec_cpu_quota{pod=~"terrafusion-.*"}
+          ) > 0.90
+        for: 10m
+        labels:
+          severity: warning
+          component: resources
+        annotations:
+          summary: "High CPU usage on {{ $labels.pod }}"
+          description: "CPU usage is {{ $value | humanizePercentage }}."
+          runbook: "https://docs.terrafusion.ai/runbooks/high-cpu"
+      
+      # Slow Database Queries
+      - alert: SlowDatabaseQueries
+        expr: |
+          rate(pg_stat_statements_mean_exec_time_seconds[5m]) > 1
+        for: 10m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database queries detected"
+          description: "Average query execution time is {{ $value | humanizeDuration }}."
+          runbook: "https://docs.terrafusion.ai/runbooks/slow-queries"
+      
+      # High Cache Miss Rate
+      - alert: HighCacheMissRate
+        expr: |
+          (
+            rate(redis_cache_misses_total[5m])
+            /
+            rate(redis_cache_requests_total[5m])
+          ) > 0.20
+        for: 15m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "High cache miss rate"
+          description: "Cache miss rate is {{ $value | humanizePercentage }}."
+          runbook: "https://docs.terrafusion.ai/runbooks/cache-misses"
+      
+      # Pod Restart Loop
+      - alert: PodRestartLoop
+        expr: |
+          rate(kube_pod_container_status_restarts_total{pod=~"terrafusion-.*"}[15m]) > 0
+        for: 15m
+        labels:
+          severity: warning
+          component: stability
+        annotations:
+          summary: "Pod {{ $labels.pod }} is restarting frequently"
+          description: "Pod has restarted {{ $value }} times in the last 15 minutes."
+          runbook: "https://docs.terrafusion.ai/runbooks/pod-restarts"
+      
+      # High Network Errors
+      - alert: HighNetworkErrors
+        expr: |
+          rate(node_network_receive_errs_total[5m]) > 10
+        for: 10m
+        labels:
+          severity: warning
+          component: network
+        annotations:
+          summary: "High network errors on {{ $labels.instance }}"
+          description: "Network receive errors: {{ $value }} errors/second."
+          runbook: "https://docs.terrafusion.ai/runbooks/network-errors"
+      
+      # API Rate Limiting Active
+      - alert: APIRateLimitingActive
+        expr: |
+          sum(rate(http_requests_rate_limited_total[5m])) by (service) > 100
+        for: 10m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High rate limiting on {{ $labels.service }}"
+          description: "{{ $value }} requests/second are being rate limited."
+          runbook: "https://docs.terrafusion.ai/runbooks/rate-limiting"
+      
+      # Failed Deployments
+      - alert: FailedDeployment
+        expr: |
+          kube_deployment_status_condition{condition="Available",status="false"} == 1
+        for: 5m
+        labels:
+          severity: warning
+          component: deployment
+        annotations:
+          summary: "Deployment {{ $labels.deployment }} has failed"
+          description: "Deployment is not available."
+          runbook: "https://docs.terrafusion.ai/runbooks/failed-deployment"
+  
+  # ============================================================================
+  # MEDIUM PRIORITY ALERTS - Email only (1-hour response)
+  # ============================================================================
+  
+  - name: medium-priority-alerts
+    interval: 5m
+    rules:
+      # Disk Space Warning
+      - alert: DiskSpaceWarning
+        expr: |
+          (
+            node_filesystem_avail_bytes{mountpoint="/"}
+            /
+            node_filesystem_size_bytes{mountpoint="/"}
+          ) < 0.20
+        for: 30m
+        labels:
+          severity: info
+          component: storage
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Only {{ $value | humanizePercentage }} disk space remaining."
+          runbook: "https://docs.terrafusion.ai/runbooks/low-disk-space"
+      
+      # Backup Failure
+      - alert: BackupFailure
+        expr: |
+          time() - backup_last_success_timestamp > 86400
+        for: 1h
+        labels:
+          severity: info
+          component: backup
+        annotations:
+          summary: "Backup has not completed successfully in 24 hours"
+          description: "Last successful backup was {{ $value | humanizeDuration }} ago."
+          runbook: "https://docs.terrafusion.ai/runbooks/backup-failure"
+      
+      # High Database Connections
+      - alert: HighDatabaseConnections
+        expr: |
+          (
+            pg_stat_database_numbackends
+            /
+            pg_settings_max_connections
+          ) > 0.80
+        for: 15m
+        labels:
+          severity: info
+          component: database
+        annotations:
+          summary: "High database connection usage"
+          description: "Using {{ $value | humanizePercentage }} of available connections."
+          runbook: "https://docs.terrafusion.ai/runbooks/db-connections"
+      
+      # Redis Memory Warning
+      - alert: RedisMemoryWarning
+        expr: |
+          (
+            redis_memory_used_bytes
+            /
+            redis_memory_max_bytes
+          ) > 0.80
+        for: 30m
+        labels:
+          severity: info
+          component: cache
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis is using {{ $value | humanizePercentage }} of max memory."
+          runbook: "https://docs.terrafusion.ai/runbooks/redis-memory"
+  
+  # ============================================================================
+  # SLO ALERTS - Service Level Objective monitoring
+  # ============================================================================
+  
+  - name: slo-alerts
+    interval: 1m
+    rules:
+      # SLO: 99.99% Uptime (4.38 minutes/month downtime)
+      - alert: SLOUptimeViolation
+        expr: |
+          (
+            sum(rate(http_requests_total{status!~"5.."}[30d]))
+            /
+            sum(rate(http_requests_total[30d]))
+          ) < 0.9999
+        for: 5m
+        labels:
+          severity: critical
+          component: slo
+        annotations:
+          summary: "SLO uptime violation"
+          description: "Uptime is {{ $value | humanizePercentage }}, below 99.99% SLO."
+          runbook: "https://docs.terrafusion.ai/runbooks/slo-uptime"
+      
+      # SLO: P95 Latency < 500ms
+      - alert: SLOLatencyViolation
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[1h])) by (le)
+          ) > 0.5
+        for: 15m
+        labels:
+          severity: warning
+          component: slo
+        annotations:
+          summary: "SLO latency violation"
+          description: "P95 latency is {{ $value | humanizeDuration }}, above 500ms SLO."
+          runbook: "https://docs.terrafusion.ai/runbooks/slo-latency"
+      
+      # SLO: Error Rate < 1%
+      - alert: SLOErrorRateViolation
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[1h]))
+            /
+            sum(rate(http_requests_total[1h]))
+          ) > 0.01
+        for: 15m
+        labels:
+          severity: warning
+          component: slo
+        annotations:
+          summary: "SLO error rate violation"
+          description: "Error rate is {{ $value | humanizePercentage }}, above 1% SLO."
+          runbook: "https://docs.terrafusion.ai/runbooks/slo-error-rate"
+  
+  # ============================================================================
+  # BUSINESS METRICS ALERTS
+  # ============================================================================
+  
+  - name: business-metrics-alerts
+    interval: 5m
+    rules:
+      # Low User Registrations
+      - alert: LowUserRegistrations
+        expr: |
+          sum(rate(user_registrations_total[1h])) < 10
+        for: 2h
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "Low user registration rate"
+          description: "Only {{ $value }} registrations per hour."
+          dashboard: "https://grafana.terrafusion.ai/d/business-metrics"
+      
+      # High Property Listing Failures
+      - alert: HighPropertyListingFailures
+        expr: |
+          (
+            sum(rate(property_listings_total{status="failed"}[15m]))
+            /
+            sum(rate(property_listings_total[15m]))
+          ) > 0.05
+        for: 30m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "High property listing failure rate"
+          description: "{{ $value | humanizePercentage }} of listings are failing."
+          dashboard: "https://grafana.terrafusion.ai/d/property-metrics"
+      
+      # AI Valuation Service Slow
+      - alert: AIValuationServiceSlow
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(ai_valuation_duration_seconds_bucket[10m])) by (le)
+          ) > 5
+        for: 20m
+        labels:
+          severity: warning
+          component: ai
+        annotations:
+          summary: "AI valuation service is slow"
+          description: "P95 valuation time is {{ $value | humanizeDuration }}."
+          runbook: "https://docs.terrafusion.ai/runbooks/slow-ai-valuation"

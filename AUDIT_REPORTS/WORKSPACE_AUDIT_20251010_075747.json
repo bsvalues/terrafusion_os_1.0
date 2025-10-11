@@ -1,0 +1,280 @@
+{
+  "Timestamp": "20251010_075747",
+  "TotalPackages": 318,
+  "WorkingDirectory": "C:\\Users\\bsval\\terrafusion_os_1.0",
+  "TierBreakdown": {
+    "infrastructure": 13,
+    "TIER-5": 0,
+    "TIER-3": 0,
+    "TIER-4": 0,
+    "government-core": 27,
+    "specialized": 32,
+    "ai-systems": 23,
+    "other": 35,
+    "TIER-2": 0,
+    "commercial": 59,
+    "TIER-1": 0
+  },
+  "Categories": {
+    "Shared": 6,
+    "Other": 98,
+    "Modules": 189,
+    "Src": 23,
+    "Backend": 0
+  },
+  "SrcModules": [
+    {
+      "Name": "terrafusion-customer-service-pwa",
+      "Version": "1.0.0",
+      "Path": "deployment\\advanced\\packages\\BentonCounty_COMPLETE_WhiteGlove_Package\\Championship_Modules\\Core_Modules\\15-customer-service\\src",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": "vite",
+      "BuildCommand": "tsc && vite build"
+    },
+    {
+      "Name": "vite_react_shadcn_ts",
+      "Version": "0.0.0",
+      "Path": "docs\\src-tauri\\TerraFusion_Hybrid_Championship\\src\\terrafusion-brand-vault",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": "vite",
+      "BuildCommand": "vite build"
+    },
+    {
+      "Name": null,
+      "Version": null,
+      "Path": "modules\\commercial\\src",
+      "HasStartScript": false,
+      "HasDevScript": false,
+      "HasBuildScript": false,
+      "StartCommand": null,
+      "DevCommand": null,
+      "BuildCommand": null
+    },
+    {
+      "Name": "terrafusion-customer-service-pwa",
+      "Version": "1.0.0",
+      "Path": "packages\\government-edition\\Modules\\migrated\\15-customer-service\\src",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": "vite",
+      "BuildCommand": "tsc && vite build"
+    },
+    {
+      "Name": "terrafusion-os",
+      "Version": "1.0.0",
+      "Path": "src\\core\\competition-engine",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+      "BuildCommand": "npm run build:shared && npm run build:frontend && npm run build:backend"
+    },
+    {
+      "Name": "@modelcontextprotocol/servers",
+      "Version": "0.6.2",
+      "Path": "src\\mcp-servers-production",
+      "HasStartScript": false,
+      "HasDevScript": false,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": null,
+      "BuildCommand": "npm run build --workspaces"
+    },
+    {
+      "Name": "@modelcontextprotocol/server-everything",
+      "Version": "0.6.2",
+      "Path": "src\\mcp-servers-production\\src\\everything",
+      "HasStartScript": true,
+      "HasDevScript": false,
+      "HasBuildScript": true,
+      "StartCommand": "node dist/index.js",
+      "DevCommand": null,
+      "BuildCommand": "tsc && shx cp instructions.md dist/ && shx chmod +x dist/*.js"
+    },
+    {
+      "Name": "@modelcontextprotocol/server-filesystem",
+      "Version": "0.6.2",
+      "Path": "src\\mcp-servers-production\\src\\filesystem",
+      "HasStartScript": false,
+      "HasDevScript": false,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": null,
+      "BuildCommand": "tsc && shx chmod +x dist/*.js"
+    },
+    {
+      "Name": "@modelcontextprotocol/server-memory",
+      "Version": "0.6.3",
+      "Path": "src\\mcp-servers-production\\src\\memory",
+      "HasStartScript": false,
+      "HasDevScript": false,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": null,
+      "BuildCommand": "tsc && shx chmod +x dist/*.js"
+    },
+    {
+      "Name": "@modelcontextprotocol/server-sequential-thinking",
+      "Version": "0.6.2",
+      "Path": "src\\mcp-servers-production\\src\\sequentialthinking",
+      "HasStartScript": false,
+      "HasDevScript": false,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": null,
+      "BuildCommand": "tsc && shx chmod +x dist/*.js"
+    },
+    {
+      "Name": "@terrafusion/ai-command-brain-module",
+      "Version": "4.1.0",
+      "Path": "src\\modules\\ai-command-brain",
+      "HasStartScript": true,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": "node index.js",
+      "DevCommand": "cd app && npm run dev",
+      "BuildCommand": "cd app && npm run build"
+    },
+    {
+      "Name": "@terrafusion/ai-command-brain",
+      "Version": "1.0.0",
+      "Path": "src\\modules\\ai-command-brain\\app",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": "vite --port 3600",
+      "BuildCommand": "tsc && vite build"
+    },
+    {
+      "Name": "rest-express",
+      "Version": "1.0.0",
+      "Path": "src\\terrafusion-dashboard\\TerraFusionDashboard",
+      "HasStartScript": true,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": "NODE_ENV=production node dist/index.js",
+      "DevCommand": "NODE_ENV=development tsx server/index.ts",
+      "BuildCommand": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist"
+    },
+    {
+      "Name": "rest-express",
+      "Version": "1.0.0",
+      "Path": "src\\terrafusion-gis",
+      "HasStartScript": true,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": "NODE_ENV=production node dist/index.js",
+      "DevCommand": "tsx server/index.ts",
+      "BuildCommand": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist"
+    },
+    {
+      "Name": "terrafusion-gis-workflow-assistant",
+      "Version": "1.0.0",
+      "Path": "src\\terrafusion-gis\\tf-assistant\\backend",
+      "HasStartScript": true,
+      "HasDevScript": true,
+      "HasBuildScript": false,
+      "StartCommand": "node server.js",
+      "DevCommand": "node server.js",
+      "BuildCommand": null
+    },
+    {
+      "Name": "vite_react_shadcn_ts",
+      "Version": "0.0.0",
+      "Path": "src\\terrafusion-prime-view",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": "vite",
+      "BuildCommand": "vite build"
+    },
+    {
+      "Name": "workspace",
+      "Version": "1.0.0",
+      "Path": "src\\terrafusion-pro-plus",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": false,
+      "StartCommand": null,
+      "DevCommand": "node server/index.js",
+      "BuildCommand": null
+    },
+    {
+      "Name": "terrafusion-client",
+      "Version": "1.0.0",
+      "Path": "src\\terrafusion-pro-plus\\client",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": "vite",
+      "BuildCommand": "vite build"
+    },
+    {
+      "Name": "terrafusion-copilot-ui",
+      "Version": "0.1.0",
+      "Path": "src\\terrafusion-pro-plus\\copilot-ui",
+      "HasStartScript": true,
+      "HasDevScript": false,
+      "HasBuildScript": true,
+      "StartCommand": "react-scripts start",
+      "DevCommand": null,
+      "BuildCommand": "react-scripts build"
+    },
+    {
+      "Name": "client",
+      "Version": "0.1.0",
+      "Path": "src\\terrafusion-pro-plus\\packages\\client",
+      "HasStartScript": false,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": null,
+      "DevCommand": "vite",
+      "BuildCommand": "tsc && vite build"
+    },
+    {
+      "Name": "server",
+      "Version": "0.1.0",
+      "Path": "src\\terrafusion-pro-plus\\packages\\server",
+      "HasStartScript": true,
+      "HasDevScript": true,
+      "HasBuildScript": false,
+      "StartCommand": "node src/index.js",
+      "DevCommand": "nodemon src/index.js",
+      "BuildCommand": null
+    },
+    {
+      "Name": "terrafusion-pro-shared",
+      "Version": "1.0.0",
+      "Path": "src\\terrafusion-pro-plus\\packages\\shared",
+      "HasStartScript": false,
+      "HasDevScript": false,
+      "HasBuildScript": false,
+      "StartCommand": null,
+      "DevCommand": null,
+      "BuildCommand": null
+    },
+    {
+      "Name": "my-v0-project",
+      "Version": "0.1.0",
+      "Path": "src\\terrafusion-v0-demo",
+      "HasStartScript": true,
+      "HasDevScript": true,
+      "HasBuildScript": true,
+      "StartCommand": "next start",
+      "DevCommand": "next dev",
+      "BuildCommand": "next build"
+    }
+  ]
+}

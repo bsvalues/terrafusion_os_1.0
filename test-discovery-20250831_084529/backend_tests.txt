@@ -1,6 +1,0 @@
-/mnt/c/Users/bsval/terrafusion_os_1.0/backend/mcp-core/tests/functionRegistry.test.ts
-/mnt/c/Users/bsval/terrafusion_os_1.0/backend/mcp-core/tests/schemaRegistry.test.ts
-/mnt/c/Users/bsval/terrafusion_os_1.0/backend/mcp-core/tests/workflow.test.ts
-/mnt/c/Users/bsval/terrafusion_os_1.0/backend/quantum-performance/quantum_test.py
-/mnt/c/Users/bsval/terrafusion_os_1.0/backend/quantum-performance/realistic_performance_test.py
-/mnt/c/Users/bsval/terrafusion_os_1.0/backend/Terrafusion.API.Tests/PemVerifyTest.cs

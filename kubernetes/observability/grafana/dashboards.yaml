@@ -1,0 +1,602 @@
+---
+# TerraFusion OS - Grafana Dashboards ConfigMap
+# Contains JSON definitions for all system dashboards
+################################################################################
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-dashboards
+  namespace: observability
+  labels:
+    grafana_dashboard: "1"
+data:
+  # Dashboard 1: TerraFusion System Overview
+  terrafusion-overview.json: |
+    {
+      "dashboard": {
+        "title": "TerraFusion System Overview",
+        "uid": "terrafusion-overview",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Overall Request Rate",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(http_requests_total[5m]))",
+              "legendFormat": "Requests/sec"
+            }]
+          },
+          {
+            "id": 2,
+            "title": "Overall Error Rate",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m])) * 100",
+              "legendFormat": "Error %"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "P95 Latency",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+              "legendFormat": "P95 Latency"
+            }]
+          },
+          {
+            "id": 4,
+            "title": "Service Health",
+            "type": "stat",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "up{job=~\"backend-api|ai-agent|mcp-servers\"}",
+              "legendFormat": "{{job}}"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 2: Backend API
+  backend-api.json: |
+    {
+      "dashboard": {
+        "title": "Backend API Dashboard",
+        "uid": "backend-api",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Request Rate by Endpoint",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(http_requests_total{service=\"backend-api\"}[5m])) by (endpoint)",
+              "legendFormat": "{{endpoint}}"
+            }]
+          },
+          {
+            "id": 2,
+            "title": "Error Rate by Status Code",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(http_requests_total{service=\"backend-api\",status=~\"[45]..\"}[5m])) by (status)",
+              "legendFormat": "{{status}}"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "Response Time Percentiles",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{service=\"backend-api\"}[5m])) by (le))",
+                "legendFormat": "P50"
+              },
+              {
+                "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{service=\"backend-api\"}[5m])) by (le))",
+                "legendFormat": "P95"
+              },
+              {
+                "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{service=\"backend-api\"}[5m])) by (le))",
+                "legendFormat": "P99"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Database Connection Pool",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "backend_database_connections_active",
+              "legendFormat": "Active Connections"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 3: AI Agent
+  ai-agent.json: |
+    {
+      "dashboard": {
+        "title": "AI Agent Dashboard",
+        "uid": "ai-agent",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "AI Request Rate",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(ai_requests_total[5m]))",
+              "legendFormat": "Requests/sec"
+            }]
+          },
+          {
+            "id": 2,
+            "title": "AI Processing Time",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "histogram_quantile(0.95, sum(rate(ai_processing_duration_seconds_bucket[5m])) by (le))",
+              "legendFormat": "P95 Processing Time"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "AI Model Inference Count",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(ai_model_inferences_total[5m])) by (model)",
+              "legendFormat": "{{model}}"
+            }]
+          },
+          {
+            "id": 4,
+            "title": "AI Queue Depth",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "ai_queue_depth",
+              "legendFormat": "Queue Depth"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 4: PostgreSQL
+  postgresql.json: |
+    {
+      "dashboard": {
+        "title": "PostgreSQL Dashboard",
+        "uid": "postgresql",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Database Connections",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "pg_stat_activity_count",
+                "legendFormat": "Active"
+              },
+              {
+                "expr": "pg_settings_max_connections",
+                "legendFormat": "Max"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "title": "Query Performance",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "rate(pg_stat_statements_mean_exec_time_seconds[5m])",
+              "legendFormat": "Avg Query Time"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "Cache Hit Ratio",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "pg_stat_database_blks_hit / (pg_stat_database_blks_hit + pg_stat_database_blks_read) * 100",
+              "legendFormat": "Cache Hit %"
+            }]
+          },
+          {
+            "id": 4,
+            "title": "Database Size",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "pg_database_size_bytes",
+              "legendFormat": "{{datname}}"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 5: Redis
+  redis.json: |
+    {
+      "dashboard": {
+        "title": "Redis Dashboard",
+        "uid": "redis",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Operations per Second",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "rate(redis_commands_processed_total[5m])",
+              "legendFormat": "Commands/sec"
+            }]
+          },
+          {
+            "id": 2,
+            "title": "Cache Hit Ratio",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "redis_keyspace_hits_total / (redis_keyspace_hits_total + redis_keyspace_misses_total) * 100",
+              "legendFormat": "Hit Ratio %"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "Memory Usage",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "redis_memory_used_bytes",
+                "legendFormat": "Used"
+              },
+              {
+                "expr": "redis_memory_max_bytes",
+                "legendFormat": "Max"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Connected Clients",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "redis_connected_clients",
+              "legendFormat": "Clients"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 6: Kong API Gateway
+  kong.json: |
+    {
+      "dashboard": {
+        "title": "Kong API Gateway Dashboard",
+        "uid": "kong",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Request Rate by Service",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(kong_http_requests_total[5m])) by (service)",
+              "legendFormat": "{{service}}"
+            }]
+          },
+          {
+            "id": 2,
+            "title": "Status Codes",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(kong_http_requests_total[5m])) by (code)",
+              "legendFormat": "{{code}}"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "Latency Distribution",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.50, sum(rate(kong_latency_bucket[5m])) by (le))",
+                "legendFormat": "P50"
+              },
+              {
+                "expr": "histogram_quantile(0.95, sum(rate(kong_latency_bucket[5m])) by (le))",
+                "legendFormat": "P95"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Plugin Activity",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(kong_plugin_executions_total[5m])) by (plugin)",
+              "legendFormat": "{{plugin}}"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 7: Istio Service Mesh
+  istio.json: |
+    {
+      "dashboard": {
+        "title": "Istio Service Mesh Dashboard",
+        "uid": "istio",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Request Volume by Service",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(istio_requests_total[5m])) by (destination_service)",
+              "legendFormat": "{{destination_service}}"
+            }]
+          },
+          {
+            "id": 2,
+            "title": "Success Rate by Service",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(istio_requests_total{response_code!~\"5..\"}[5m])) by (destination_service) / sum(rate(istio_requests_total[5m])) by (destination_service) * 100",
+              "legendFormat": "{{destination_service}}"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "mTLS Connection Status",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(istio_tcp_connections_opened_total) by (connection_security_policy)",
+              "legendFormat": "{{connection_security_policy}}"
+            }]
+          },
+          {
+            "id": 4,
+            "title": "Circuit Breaker Status",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "envoy_cluster_circuit_breakers_default_cx_open",
+              "legendFormat": "Open Breakers"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 8: Kubernetes Cluster
+  kubernetes-cluster.json: |
+    {
+      "dashboard": {
+        "title": "Kubernetes Cluster Dashboard",
+        "uid": "k8s-cluster",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Node CPU Usage",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "100 - (avg by (node) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+              "legendFormat": "{{node}}"
+            }]
+          },
+          {
+            "id": 2,
+            "title": "Node Memory Usage",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes) * 100",
+              "legendFormat": "{{node}}"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "Pod Count by Namespace",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(kube_pod_info) by (namespace)",
+              "legendFormat": "{{namespace}}"
+            }]
+          },
+          {
+            "id": 4,
+            "title": "Pod Status",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(kube_pod_status_phase) by (phase)",
+              "legendFormat": "{{phase}}"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 9: Network Traffic
+  network.json: |
+    {
+      "dashboard": {
+        "title": "Network Traffic Dashboard",
+        "uid": "network",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Network Throughput",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(container_network_receive_bytes_total{namespace=\"terrafusion-prod\"}[5m]))",
+                "legendFormat": "Ingress"
+              },
+              {
+                "expr": "sum(rate(container_network_transmit_bytes_total{namespace=\"terrafusion-prod\"}[5m]))",
+                "legendFormat": "Egress"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "title": "Packets per Second",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(container_network_receive_packets_total{namespace=\"terrafusion-prod\"}[5m]))",
+                "legendFormat": "RX Packets"
+              },
+              {
+                "expr": "sum(rate(container_network_transmit_packets_total{namespace=\"terrafusion-prod\"}[5m]))",
+                "legendFormat": "TX Packets"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Network Errors",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(container_network_receive_errors_total{namespace=\"terrafusion-prod\"}[5m]))",
+              "legendFormat": "RX Errors"
+            }]
+          },
+          {
+            "id": 4,
+            "title": "Active Connections",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(envoy_cluster_upstream_cx_active)",
+              "legendFormat": "Active Connections"
+            }]
+          }
+        ]
+      }
+    }
+
+  # Dashboard 10: MCP Servers
+  mcp-servers.json: |
+    {
+      "dashboard": {
+        "title": "MCP Servers Dashboard",
+        "uid": "mcp-servers",
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "MCP Request Rate",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(mcp_requests_total[5m])) by (server)",
+              "legendFormat": "{{server}}"
+            }]
+          },
+          {
+            "id": 2,
+            "title": "MCP Protocol Errors",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "sum(rate(mcp_protocol_errors_total[5m])) by (server)",
+              "legendFormat": "{{server}}"
+            }]
+          },
+          {
+            "id": 3,
+            "title": "Active MCP Connections",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "mcp_active_connections",
+              "legendFormat": "Connections"
+            }]
+          },
+          {
+            "id": 4,
+            "title": "MCP Message Queue Depth",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [{
+              "expr": "mcp_message_queue_depth",
+              "legendFormat": "Queue Depth"
+            }]
+          }
+        ]
+      }
+    }

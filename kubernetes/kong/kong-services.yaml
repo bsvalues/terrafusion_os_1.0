@@ -1,0 +1,142 @@
+---
+# TerraFusion OS - Kong Services Configuration
+# Defines upstream services that Kong will proxy to
+################################################################################
+
+apiVersion: configuration.konghq.com/v1
+kind: KongService
+metadata:
+  name: backend-api-service
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  host: backend-api.terrafusion-prod.svc.cluster.local
+  port: 8080
+  protocol: http
+  path: /
+  retries: 3
+  connect_timeout: 60000
+  write_timeout: 60000
+  read_timeout: 60000
+
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongService
+metadata:
+  name: ai-agent-service
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  host: ai-agent.terrafusion-prod.svc.cluster.local
+  port: 3001
+  protocol: http
+  path: /
+  retries: 2
+  connect_timeout: 90000
+  write_timeout: 90000
+  read_timeout: 90000
+
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongService
+metadata:
+  name: mcp-servers-service
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  host: mcp-servers.terrafusion-prod.svc.cluster.local
+  port: 8080
+  protocol: http
+  path: /
+  retries: 3
+  connect_timeout: 60000
+  write_timeout: 60000
+  read_timeout: 60000
+
+---
+# Ingress resource for backend API
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend-api-ingress
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+    konghq.com/strip-path: "true"
+    konghq.com/preserve-host: "true"
+    konghq.com/protocols: https,http
+spec:
+  rules:
+    - host: api.terrafusion.io
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: kong-kong-proxy
+                port:
+                  number: 80
+    - host: api.terrafusion.io
+      http:
+        paths:
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: kong-kong-proxy
+                port:
+                  number: 80
+
+---
+# Ingress resource for AI agent
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-agent-ingress
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+    konghq.com/strip-path: "true"
+    konghq.com/preserve-host: "true"
+    konghq.com/protocols: https,http
+spec:
+  rules:
+    - host: api.terrafusion.io
+      http:
+        paths:
+          - path: /ai
+            pathType: Prefix
+            backend:
+              service:
+                name: kong-kong-proxy
+                port:
+                  number: 80
+
+---
+# Ingress resource for MCP servers
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mcp-servers-ingress
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+    konghq.com/strip-path: "false"
+    konghq.com/preserve-host: "true"
+    konghq.com/protocols: https,http
+spec:
+  rules:
+    - host: api.terrafusion.io
+      http:
+        paths:
+          - path: /mcp
+            pathType: Prefix
+            backend:
+              service:
+                name: kong-kong-proxy
+                port:
+                  number: 80

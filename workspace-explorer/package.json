@@ -1,0 +1,51 @@
+{
+  "name": "terrafusion-workspace-explorer",
+  "version": "1.0.0",
+  "description": "AI-Powered Interactive Navigation Tool for TerraFusion OS 1.0 - Navigate 318 packages with intelligent search, quick actions, and beautiful terminal UI",
+  "main": "src/index.js",
+  "bin": {
+    "tf-explore": "./src/index.js",
+    "tfx": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/",
+    "format": "prettier --write 'src/**/*.js'"
+  },
+  "keywords": [
+    "terrafusion",
+    "workspace",
+    "explorer",
+    "navigation",
+    "ai",
+    "cli",
+    "interactive",
+    "search",
+    "monorepo"
+  ],
+  "author": "TerraFusion OS Team",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "inquirer": "^8.2.6",
+    "ora": "^5.4.1",
+    "boxen": "^5.1.2",
+    "fuse.js": "^7.0.0",
+    "figlet": "^1.7.0",
+    "cli-table3": "^0.6.3",
+    "open": "^8.4.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.1.1",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -1,8 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardHeader, CardBody, Badge, Button } from "@terrafusion/shared"
 import { useModuleRegistry } from "@/components/modules/module-registry"
 import { ModuleCard } from "@/components/modules/module-card"
 import { ArrowRight, Grid3X3  } from '@mui/icons-material'
@@ -25,13 +23,13 @@ export function ModuleGrid() {
     <Card className="transcend-glow">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <h3 className="flex items-center gap-2">
             <Grid3X3 className="w-5 h-5 text-tf-primary" />
             Active Modules
             <Badge variant="secondary" className="bg-tf-primary/10 text-tf-primary border-tf-primary/20">
               {activeModules.length} Running
             </Badge>
-          </CardTitle>
+          </h3>
           <Button
             variant="outline"
             size="sm"
@@ -42,7 +40,7 @@ export function ModuleGrid() {
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardBody>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {displayModules.map((module) => (
             <ModuleCard
@@ -60,7 +58,7 @@ export function ModuleGrid() {
             <p className="text-sm text-muted-foreground">Showing 8 of {activeModules.length} active modules</p>
           </div>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   )
 }

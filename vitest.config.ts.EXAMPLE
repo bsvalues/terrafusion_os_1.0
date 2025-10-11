@@ -1,0 +1,105 @@
+/**
+ * Vitest Configuration for TerraFusion OS 1.0
+ * 
+ * Updated with Path Resolution System - Week 3
+ * Uses environment variables from .workspace.env for path-resilient testing
+ * 
+ * @updated October 10, 2025
+ */
+
+/// <reference types="vitest" />
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+// Load environment variables (fallback to defaults if not set)
+const WORKSPACE_ROOT = process.env.TERRAFUSION_ROOT || process.cwd();
+const TESTS_DIR = process.env.TERRAFUSION_TESTS || path.join(WORKSPACE_ROOT, 'tests');
+const MODULES_DIR = process.env.TERRAFUSION_MODULES || path.join(WORKSPACE_ROOT, 'modules');
+const COVERAGE_DIR = process.env.TERRAFUSION_COVERAGE || path.join(WORKSPACE_ROOT, 'coverage');
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    include: [`${TESTS_DIR}/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}`],
+    exclude: [
+      'node_modules/**',
+      '**/data/**',
+      '**/postgres/**',
+      '**/from D/**',
+      '**/.git/**',
+      '**/dist/**',
+      '**/build/**',
+      `${MODULES_DIR}/*/node_modules/**`,
+      '**/.ai/**',
+      '**/ULTIMATE_*/**',
+      `${TESTS_DIR}/e2e/**/*.spec.ts`,
+      `${TESTS_DIR}/**/*.spec.ts`
+    ],
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: path.join(TESTS_DIR, 'setupTests.ts'),
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html'],
+      reportsDirectory: COVERAGE_DIR,
+      thresholds: {
+        global: {
+          branches: 90,
+          functions: 90,
+          lines: 90,
+          statements: 90
+        }
+      },
+      exclude: [
+        'node_modules/',
+        `${TESTS_DIR}/`,
+        '**/*.test.{ts,tsx}',
+        '**/*.spec.{ts,tsx}',
+        '**/electron/**',
+        '**/dist/**',
+        '**/.next/**',
+        '**/data/**',
+        '**/postgres/**',
+        '**/from D/**'
+      ]
+    },
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: false,
+        maxThreads: 4,
+        minThreads: 1
+      }
+    },
+    testTimeout: 30000,
+    hookTimeout: 30000,
+    teardownTimeout: 10000,
+    isolate: true,
+    watch: false,
+    reporters: ['default', 'html'],
+    outputFile: {
+      html: path.join(COVERAGE_DIR, 'vitest-report.html')
+    }
+  },
+  resolve: {
+    alias: {
+      '@': path.join(WORKSPACE_ROOT, 'src'),
+      '@backend': process.env.TERRAFUSION_BACKEND || path.join(WORKSPACE_ROOT, 'backend'),
+      '@modules': MODULES_DIR,
+      '@tests': TESTS_DIR,
+      '@shared': process.env.TERRAFUSION_SHARED || path.join(WORKSPACE_ROOT, 'terrafusion-shared'),
+      '@ai': process.env.TERRAFUSION_AI_CORE || path.join(WORKSPACE_ROOT, '.ai'),
+    }
+  }
+});
+
+// Log configuration in debug mode
+if (process.env.TERRAFUSION_DEBUG === 'true') {
+  console.log('\n⚡ Vitest Configuration Loaded:');
+  console.log(`   WORKSPACE_ROOT: ${WORKSPACE_ROOT}`);
+  console.log(`   TESTS_DIR: ${TESTS_DIR}`);
+  console.log(`   MODULES_DIR: ${MODULES_DIR}`);
+  console.log(`   COVERAGE_DIR: ${COVERAGE_DIR}`);
+  console.log('');
+}

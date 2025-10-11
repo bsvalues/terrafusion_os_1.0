@@ -1,0 +1,150 @@
+/**
+ * Playwright Configuration for Terrafusion OS
+ * 
+ * Updated with Path Resolution System - Week 3
+ * Uses environment variables from .workspace.env for path-resilient testing
+ * 
+ * Supreme Claude Code Testing Orchestrator
+ * Government-grade E2E testing with comprehensive browser matrix
+ * 
+ * @updated October 10, 2025
+ */
+
+import { defineConfig, devices } from '@playwright/test';
+import * as path from 'path';
+
+// Load environment variables (fallback to defaults if not set)
+const WORKSPACE_ROOT = process.env.TERRAFUSION_ROOT || process.cwd();
+const TEST_DIR = process.env.TERRAFUSION_E2E_TESTS || path.join(WORKSPACE_ROOT, 'tests', 'e2e');
+const TEST_RESULTS_DIR = process.env.TERRAFUSION_TEST_RESULTS || path.join(WORKSPACE_ROOT, 'tests', 'test-results');
+const PLAYWRIGHT_STATES_DIR = process.env.TERRAFUSION_PLAYWRIGHT_STATES || path.join(TEST_DIR, 'states');
+
+// Port configuration from environment variables
+const DEMO_PORT = process.env.TERRAFUSION_DEMO_PORT || '3000';
+const DASHBOARD_PORT = process.env.TERRAFUSION_DASHBOARD_PORT || '3001';
+const GIS_PORT = process.env.TERRAFUSION_GIS_PORT || '3002';
+const API_PORT = process.env.TERRAFUSION_API_PORT || '5000';
+
+export default defineConfig({
+  testDir: TEST_DIR,
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: 1, // minimal flakes tolerated
+  workers: process.env.CI ? 3 : undefined,
+  
+  reporter: [
+    ['html', { outputFolder: path.join(TEST_RESULTS_DIR, 'playwright-report') }],
+    ['json', { outputFile: path.join(TEST_RESULTS_DIR, 'playwright-results.json') }],
+    ['junit', { outputFile: path.join(TEST_RESULTS_DIR, 'playwright-junit.xml') }]
+  ],
+  
+  use: {
+    baseURL: `http://localhost:${DEMO_PORT}`,
+    trace: 'on-first-retry',
+    video: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
+    
+    // Government security headers
+    extraHTTPHeaders: {
+      'X-Test-Environment': 'e2e',
+      'X-Government-Compliance': 'FISMA-High',
+      'X-Security-Level': 'maximum'
+    }
+  },
+
+  projects: [
+    // Setup project for authentication
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+      use: { ...devices['Desktop Chrome'] }
+    },
+
+    // Desktop browsers
+    {
+      name: 'Desktop Chrome',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: path.join(PLAYWRIGHT_STATES_DIR, 'admin.json')
+      },
+      dependencies: ['setup']
+    },
+    
+    {
+      name: 'Desktop Firefox',
+      use: { 
+        ...devices['Desktop Firefox'],
+        storageState: path.join(PLAYWRIGHT_STATES_DIR, 'admin.json')
+      },
+      dependencies: ['setup']
+    },
+    
+    {
+      name: 'Desktop Safari',
+      use: { 
+        ...devices['Desktop Safari'],
+        storageState: path.join(PLAYWRIGHT_STATES_DIR, 'admin.json')
+      },
+      dependencies: ['setup']
+    },
+
+    // Mobile browsers
+    {
+      name: 'Mobile Chrome',
+      use: { 
+        ...devices['Pixel 5'],
+        storageState: path.join(PLAYWRIGHT_STATES_DIR, 'admin.json')
+      },
+      dependencies: ['setup']
+    },
+    
+    {
+      name: 'Mobile Safari',
+      use: { 
+        ...devices['iPhone 12'],
+        storageState: path.join(PLAYWRIGHT_STATES_DIR, 'admin.json')
+      },
+      dependencies: ['setup']
+    },
+
+    // Microsoft Edge
+    {
+      name: 'Microsoft Edge',
+      use: { 
+        ...devices['Desktop Edge'],
+        channel: 'msedge',
+        storageState: path.join(PLAYWRIGHT_STATES_DIR, 'admin.json')
+      },
+      dependencies: ['setup']
+    },
+  ],
+
+  // Web server configuration
+  webServer: [
+    {
+      command: `cd ${WORKSPACE_ROOT} && npm run dev:demo`,
+      url: `http://localhost:${DEMO_PORT}`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    },
+    {
+      command: `cd ${WORKSPACE_ROOT} && npm run dev:api`,
+      url: `http://localhost:${API_PORT}/health`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    }
+  ],
+});
+
+// Log configuration in debug mode
+if (process.env.TERRAFUSION_DEBUG === 'true') {
+  console.log('\n🎭 Playwright Configuration Loaded:');
+  console.log(`   TEST_DIR: ${TEST_DIR}`);
+  console.log(`   TEST_RESULTS_DIR: ${TEST_RESULTS_DIR}`);
+  console.log(`   PLAYWRIGHT_STATES_DIR: ${PLAYWRIGHT_STATES_DIR}`);
+  console.log(`   Base URL: http://localhost:${DEMO_PORT}`);
+  console.log(`   API URL: http://localhost:${API_PORT}`);
+  console.log('');
+}

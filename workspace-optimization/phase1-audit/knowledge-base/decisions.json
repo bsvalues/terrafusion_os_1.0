@@ -1,0 +1,512 @@
+[
+  {
+    "Source": "🌟_WORKSPACE_OF_DREAMS_MASTER_PLAN.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "We Actually Have)\r\n\r\n### 1.1 The Polyrepo Architecture Decision\r\n\r\n**Date:** October 5-6, 2025  \r\n**Decision:** ADR-001 Polyrepo Architecture (ACCEPTED)  \r\n**Score:** Polyrepo 87/100 vs Monorepo 13/100  \r\n**Mi"
+  },
+  {
+    "Source": "🎊_SESSION_COMPLETE_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "a loss risk\r\n- No architectural concerns\r\n- No missing dependencies\r\n- No unclear requirements\r\n\r\n**Decision:** PROCEED when disk space available\r\n\r\n---\r\n\r\n## 🎯 SUCCESS METRICS\r\n\r\n### Achieved\r\n- ✅ 90% size r"
+  },
+  {
+    "Source": "🎊_WEEK_1_2_COMPLETION_CELEBRATION.md",
+    "Type": "Decision",
+    "Keyword": "decision:",
+    "Context": "des, 2 hours, 18 attendees)\r\n- ✅ Stakeholder satisfaction: **4.7/5.0 average rating**\r\n- ✅ Sign-off decision: **PROCEED to Week 3** (94% approval rate) ✅\r\n\r\n### 💾 Git Activity (15 commits)\r\n\r\n**All Work Commi"
+  },
+  {
+    "Source": "🎨_FRONTEND_COMPONENTS_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "selected",
+    "Context": "- ARIA labels for icon-only buttons\r\n   - ARIA live regions for dynamic content\r\n   - ARIA expanded/selected states\r\n\r\n3. **Focus Management**\r\n   - Visible focus indicators (ring-2 ring-ring)\r\n   - Focus tra"
+  },
+  {
+    "Source": "🎯_ARCHITECTURE_EVOLUTION_TIMELINE_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "po |\r\n| Third-Party Integration | ❌ | ✅ | Polyrepo |\r\n| Scalability | ❌ | ✅ | Polyrepo |\r\n\r\n**Final Decision:** Polyrepo wins 8/8 criteria\r\n\r\n---\r\n\r\n#### **ADR-001: Polyrepo Architecture (ACCEPTED)**\r\n\r\n**Stat"
+  },
+  {
+    "Source": "🎯_ARCHITECTURE_EVOLUTION_TIMELINE_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "RAFUSION_SYSTEM_ARCHITECTURE_V1.md` (809 lines)  \r\n**Template:** `ADR_TEMPLATE.md` (299 lines)\r\n\r\n**Decision:**\r\n> Adopt polyrepo architecture with 12 repositories aligned to bounded contexts (Government, Comm"
+  },
+  {
+    "Source": "🎯_ARCHITECTURE_EVOLUTION_TIMELINE_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "*ACCEPTED**  \r\n**Date:** October 2025  \r\n**Document:** `TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md`\r\n\r\n**Decision:** 12 repositories aligned to bounded contexts\r\n\r\n---\r\n\r\n### **ADR-002: Message Bus Selection (DRAFT"
+  },
+  {
+    "Source": "🎯_ARCHITECTURE_EVOLUTION_TIMELINE_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "Management\r\n\r\n---\r\n\r\n### **ADR-005: Database Strategy (ACCEPTED)**\r\n**Status:** ✅ **ACCEPTED**  \r\n**Decision:** PostgreSQL primary, Redis cache, MongoDB for unstructured\r\n\r\n---\r\n\r\n## 🧠 KEY INSIGHTS & LESSONS"
+  },
+  {
+    "Source": "🎯_SESSION_3_CI_CD_AUTOMATION_EVOLUTION.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "ive open-sourcing\r\n5. ✅ Independent versioning\r\n6. ✅ 133GB proves monolith doesn't scale\r\n\r\n**Final Decision:** **POLYREPO** (87/100 score vs Monorepo 13/100)\r\n\r\n#### Phase 3: The Polyrepo Migration (October 6"
+  },
+  {
+    "Source": "🎯_SESSION_3_CI_CD_AUTOMATION_EVOLUTION.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "ecosystem\r\n- Selective open-sourcing\r\n- Team autonomy across government/commercial/AI domains\r\n\r\n**Decision:**\r\nAdopt polyrepo architecture with 12 domain-bounded repositories using Domain-Driven Design (DDD)"
+  },
+  {
+    "Source": "🎯_SESSION_3_CI_CD_AUTOMATION_EVOLUTION.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "itecture Evolution** (Complete timeline)\r\n   - Monorepo Era: 133 GB, single repo, slow builds\r\n   - Decision: October 5, 2025 - Polyrepo chosen (87/100 vs 13/100)\r\n   - Migration: October 6, 2025 - 18 minutes,"
+  },
+  {
+    "Source": "🎯_SESSION_3_CI_CD_AUTOMATION_EVOLUTION.md",
+    "Type": "Decision",
+    "Keyword": "chose",
+    "Context": "ne)\r\n   - Monorepo Era: 133 GB, single repo, slow builds\r\n   - Decision: October 5, 2025 - Polyrepo chosen (87/100 vs 13/100)\r\n   - Migration: October 6, 2025 - 18 minutes, 12 repos, 800x faster\r\n   - ADR-"
+  },
+  {
+    "Source": "🎯_SESSION_3_COMPLETE_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "ilized\r\n\r\n### ADR-001: Polyrepo Architecture\r\n\r\n**Status:** ACCEPTED  \r\n**Date:** October 2025  \r\n**Decision:** Migrate from monorepo to polyrepo architecture\r\n\r\n**Context:**\r\n- Monorepo build times unacceptab"
+  },
+  {
+    "Source": "🎯_SESSION_3_COMPLETE_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "- Deployment coupling blocking releases\r\n- Team scaling issues\r\n- Module independence needed\r\n\r\n**Decision:**\r\nExtract 12+ independent repositories:\r\n1. `terrafusion-core` - Core services\r\n2. `terrafusion-go"
+  },
+  {
+    "Source": "🎯_SESSION_3_COMPLETE_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Migrated to",
+    "Context": "rney:**\r\n- Started with monorepo (simple, single CI/CD)\r\n- Hit scaling issues (30-45 min builds)\r\n- Migrated to polyrepo (12+ repos)\r\n- Result: 2-5 min builds, independent deployments\r\n\r\n**Key Learning:** They r"
+  },
+  {
+    "Source": "📊_WEEK_1_DAY_3_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "25%**)\r\n\r\n---\r\n\r\n## 📝 Day 3 Achievements\r\n\r\n### 1. ADR-004: API Gateway Selection (ACCEPTED)\r\n\r\n**Decision:** Azure API Management (APIM) - Premium Tier\r\n\r\n**Key Factors:**\r\n- ✅ **FISMA Moderate/High certifi"
+  },
+  {
+    "Source": "📊_WEEK_1_DAY_3_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "chose",
+    "Context": "### Quality Indicators\r\n\r\n**Evidence of Rigor:**\r\n- ✅ **ADRs include alternatives** (not just \"we chose X\")\r\n- ✅ **Fitness functions have implementation code** (not just \"we should test X\")\r\n- ✅ **Risks"
+  },
+  {
+    "Source": "📊_WEEK_1_DAY_3_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "selected",
+    "Context": "-------|---------|\r\n| Finalize ADR-004: API Gateway Selection | ✅ **COMPLETE** | Azure APIM Premium selected, ACCEPTED status |\r\n| Define 5 Additional Fitness Functions | ✅ **COMPLETE** | 10 total fitness fun"
+  },
+  {
+    "Source": "📊_WEEK_1_DAYS_6_7_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "workshops × 15 participants)  \r\n**Stakeholder Satisfaction:** 4.7/5.0 average rating  \r\n**Sign-Off Decision:** PROCEED ✅ (94% approval rate)  \r\n\r\n### Velocity Indicators\r\n\r\n**Lines/Day:** 1,044 average (7 day"
+  },
+  {
+    "Source": "📊_WEEK_1_PROGRESS_REPORT.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "#### Architecture Decision Records (5 ADRs) ✅\r\n\r\n**ADR-001: Polyrepo Architecture** (ACCEPTED)\r\n- Decision: 12 repositories aligned to bounded contexts\r\n- Rationale: Clear ownership, independent deployment,"
+  },
+  {
+    "Source": "📊_WEEK_1_PROGRESS_REPORT.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "- Decision by: Week 5 (Security Architecture phase)\r\n\r\n**ADR-005: Database Strategy** (ACCEPTED)\r\n- Decision: Multi-database approach\r\n  - Government: PostgreSQL (tenant-per-DB, FISMA)\r\n  - Commercial: Cosmos"
+  },
+  {
+    "Source": "📦_MODULE_CODE_DEEP_DIVE_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "selected",
+    "Context": "useState('overview');\r\n   const [taxRecords, setTaxRecords] = useState<TaxRecord[]>([]);\r\n   const [selectedRecord, setSelectedRecord] = useState<TaxRecord | null>(null);\r\n   const [collectionStats, setCollec"
+  },
+  {
+    "Source": "📦_MODULE_CODE_DEEP_DIVE_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Selected",
+    "Context": ");\r\n   const [taxRecords, setTaxRecords] = useState<TaxRecord[]>([]);\r\n   const [selectedRecord, setSelectedRecord] = useState<TaxRecord | null>(null);\r\n   const [collectionStats, setCollectionStats] = useSta"
+  },
+  {
+    "Source": "🔧_BUILD_SYSTEM_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "migrated to",
+    "Context": "packages/shock-and-awe/webpack.config.js\r\n└── legacy modules (< 10 total)\r\n\r\nStatus: LEGACY (being migrated to Vite)\r\n```\r\n\r\n### Example Webpack Usage\r\n\r\n**Package.json**:\r\n```json\r\n{\r\n  \"scripts\": {\r\n    \"buil"
+  },
+  {
+    "Source": "🚀_RUST_PERFORMANCE_ENGINE_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "decision:",
+    "Context": "ith web UI\r\n\r\n### 4. Golden Ratio Mathematical Foundation\r\n\r\n**GRFE represents unique architectural decision:**\r\n- Mathematical optimization using φ (golden ratio)\r\n- Fast Fibonacci (O(log n)) for scheduling"
+  },
+  {
+    "Source": "ADR_TEMPLATE.md",
+    "Type": "Decision",
+    "Keyword": "chose",
+    "Context": "tate changes frequently, 1-minute TTL provides performance boost with minimal staleness\r\n> 4. Redis chosen for simplicity (single technology), high performance, and Azure managed service availability\r\n\r\n--"
+  },
+  {
+    "Source": "ADR_TEMPLATE.md",
+    "Type": "Decision",
+    "Keyword": "chose",
+    "Context": "- [List advantages]\r\n- **Cons:**\r\n  - [List disadvantages]\r\n- **Reason for rejection:** [Why not chosen]\r\n\r\n#### Alternative 2: [Name]\r\n- **Description:** [Brief description]\r\n- **Pros:**\r\n  - [List adv"
+  },
+  {
+    "Source": "ADR_TEMPLATE.md",
+    "Type": "Decision",
+    "Keyword": "chose",
+    "Context": "- [List advantages]\r\n- **Cons:**\r\n  - [List disadvantages]\r\n- **Reason for rejection:** [Why not chosen]\r\n\r\n---\r\n\r\n### Implementation Plan\r\n\r\n**How will this decision be implemented?**\r\n\r\nProvide a high"
+  },
+  {
+    "Source": "ADR_TEMPLATE.md",
+    "Type": "Decision",
+    "Keyword": "chose",
+    "Context": "**ACCEPTED:** Decision approved and implemented\r\n- **REJECTED:** Decision not approved, alternative chosen\r\n- **DEPRECATED:** Decision no longer best practice but still in use\r\n- **SUPERSEDED:** Decision r"
+  },
+  {
+    "Source": "AI_SWARM_FIX_SUCCESS.md",
+    "Type": "Decision",
+    "Keyword": "SELECTED",
+    "Context": "`\r\nRefactoring Specialist Swarm (5,000 agents):\r\n  ├─ Solution 1: Remove interface implementation ✅ SELECTED\r\n  ├─ Solution 2: Create shared DTO project (more work)\r\n  ├─ Solution 3: Duplicate types (anti-pat"
+  },
+  {
+    "Source": "ARCHITECTURE_REFACTORING_PLAN.md",
+    "Type": "Decision",
+    "Keyword": "selected",
+    "Context": "ement GitOps with ArgoCD**\n3. 🔮 **Establish marketplace publication workflow**\n4. 🔮 **Open-source selected modules**\n\n---\n\n## 💡 CONCLUSION\n\n**Current State:** 133GB monolithic blob (unsustainable)  \n**Root"
+  },
+  {
+    "Source": "CI_COMPLETION_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Switched to",
+    "Context": "true` to just `&`\r\n6. **Missing Source Code** → Used pre-built UI instead\r\n7. **npm ci Failure** → Switched to npm install (no package-lock)\r\n8. **Missing terrafusion-cos/** → Added County OS code to repository"
+  },
+  {
+    "Source": "DAY_6_INTEGRATION_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": ":**\r\n- Integration Score: 0.73 ≥ 0.70 ✅\r\n- HIGH Priority Remediations: 30.5 hours < 40 hours ✅\r\n- **Decision:** ⚠️ **PROD-0 CONDITIONAL GO**\r\n\r\n### Final Recommendation\r\n\r\n**RECOMMENDATION:** ⚠️ **CONDITIONAL"
+  },
+  {
+    "Source": "DAY_7_CHAOS_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "`[X.XX]` / 1.00 (`[Excellent ≥0.95 | Good 0.90-0.94 | Needs Work <0.90]`)\r\n\r\n**Production Readiness Decision:** `[GO | CONDITIONAL GO | NO-GO]`\r\n\r\n**PROD-0 Target Date:** `[October 14 | October 16 | October 21"
+  },
+  {
+    "Source": "DAY_7_CHAOS_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "ication\r\n\r\n**Condition:** `[Overall_RI ≥ 0.95 | 0.90 ≤ Overall_RI < 0.95 | Overall_RI < 0.90]`\r\n\r\n**Decision:** `[GO | CONDITIONAL GO | NO-GO]`\r\n\r\n### Justification\r\n\r\n`[Detailed explanation of decision]`\r\n\r\n*"
+  },
+  {
+    "Source": "DAY_7_CHAOS_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "hase 4.9 Week 1 Day 7\r\nDate: October 7, 2025\r\nEngineer: [Name]\r\n\r\nOverall Resilience Index: [X.XX]\r\nDecision: [GO | CONDITIONAL GO | NO-GO]\r\n\r\nProduction Readiness: [✅ Ready | ⚠️ Ready with conditions | ❌ Not"
+  },
+  {
+    "Source": "DAY_7_CHAOS_RESULTS_FINAL.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "4.5 hours  \r\n**Environment:** Staging (Simulated)  \r\n**Overall Resilience Index:** **0.9276**  \r\n**Decision:** **CONDITIONAL GO** ⚠️\r\n\r\n---\r\n\r\n## Executive Summary\r\n\r\nTerraFusion OS has successfully completed"
+  },
+  {
+    "Source": "DAY_7_CHAOS_RESULTS_FINAL.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "76 is sufficient for PROD-0 with enhanced monitoring.\r\n\r\n---\r\n\r\n## PROD-0 Readiness Decision\r\n\r\n### Decision: CONDITIONAL GO ⚠️\r\n\r\n**Proceed to PROD-0 simulation on October 14-16, 2025** with the following con"
+  },
+  {
+    "Source": "DAY_7_COMPLETE_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "║\r\n║   Overall Resilience Index:  0.9276                      ║\r\n║   Decision:                  CONDITIONAL GO ⚠️           ║\r\n║   PROD-0 Date:               October 14-16, 2025"
+  },
+  {
+    "Source": "DAY_7_QUICK_START.md",
+    "Type": "Decision",
+    "Keyword": "DECISION:",
+    "Context": "============================================================\r\n  OVERALL RESILIENCE INDEX: 0.9276\r\n  DECISION: CONDITIONAL GO\r\n============================================================\r\n\r\n✅ CSV report writte"
+  },
+  {
+    "Source": "DAY_7_QUICK_START.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "pen:** `day7_ri_report.md`\r\n\r\n```markdown\r\n## Overall Resilience Index\r\n\r\n**Overall RI:** 0.9276\r\n**Decision:** **CONDITIONAL GO**\r\n\r\n### Decision Matrix\r\n\r\n- ⚠️ **CONDITIONAL GO** (RI 0.90–0.95)\r\n  - System s"
+  },
+  {
+    "Source": "DAY_7_QUICK_START.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "---\r\n\r\n## ✅ Day 7 Actual Results\r\n\r\n**Test Date:** October 7, 2025  \r\n**Overall RI:** 0.9276  \r\n**Decision:** CONDITIONAL GO ⚠️\r\n\r\n### Per-Fault Scores\r\n\r\n| Fault | RI | Status | Notes |\r\n|-------|-----|----"
+  },
+  {
+    "Source": "day5-security-review.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "✅ Threat model v2 published\r\n8. ✅ 0 open HIGH/CRITICAL Dependabot alerts\r\n\r\n**Production Readiness Decision:**\r\n\r\n- **Current State (Day 5):** ⚠️ **CONDITIONAL** - 5 critical issues block PROD-0\r\n- **Week 2 T"
+  },
+  {
+    "Source": "HARRIS_DEMO_DEEP_DIVE_ANALYSIS.md",
+    "Type": "Decision",
+    "Keyword": "Selected",
+    "Context": "onal\r\n- [x] Module system working\r\n- [x] AI swarm integrated\r\n- [ ] Desktop shell demo-ready\r\n- [ ] Selected modules tested\r\n- [ ] Demo data loaded\r\n\r\n### Documentation ✅\r\n- [x] Architecture docs comprehensiv"
+  },
+  {
+    "Source": "MONOREPO_VS_POLYREPO_DECISION.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "y: Easy to adapt\n\n**ROI:** 10:1 (benefits far outweigh costs)\n\n---\n\n## 🎯 FINAL RECOMMENDATION\n\n### Decision: POLYREPO\n\n**Reasoning:**\n1. TerraFusion is an **ecosystem**, not a single product\n2. Marketplace mo"
+  },
+  {
+    "Source": "PHASE_2_STRUCTURE_ANALYSIS.md",
+    "Type": "Decision",
+    "Keyword": "DECISION:",
+    "Context": "t Size:** 26 GB → **Target:** 8-11 GB\n\n---\n\n## 📊 ANALYSIS RESULTS\n\n### 1. Core OS Directories\n\n```\nDECISION: Keep terrafusion-cos/, Remove core-os/\n\nterrafusion-cos/ (2.0 GB)                    core-os/ (1.5"
+  },
+  {
+    "Source": "PHASE_2_STRUCTURE_ANALYSIS.md",
+    "Type": "Decision",
+    "Keyword": "DECISION:",
+    "Context": "EASON: terrafusion-cos is the active, maintained version\n```\n\n---\n\n### 2. Frontend Directories\n\n```\nDECISION: Keep frontend/, Archive frontend-v2 & terrafusion-frontend\n\nfrontend/ (4.4 MB)"
+  },
+  {
+    "Source": "PHASE_2_STRUCTURE_ANALYSIS.md",
+    "Type": "Decision",
+    "Keyword": "DECISION:",
+    "Context": "(saves ~2 MB)\nREASON: frontend/ is the current active version\n```\n\n---\n\n### 3. Src Directories\n\n```\nDECISION: Keep src-enhanced/ (no regular src/ exists)\n\nsrc-enhanced/ (2.5 GB)\n├─ ✅ Contains core/, modules/,"
+  },
+  {
+    "Source": "PHASE_3_FINAL_DECISION.md",
+    "Type": "Decision",
+    "Keyword": "DECISION:",
+    "Context": "# ✅ FINAL DECISION: TerraFusion OS 1.0 Polyrepo Architecture\r\n\r\n**Date:** October 6, 2025, 3:15 PM  \r\n**Status:** 🟢 ARCHITECTURE APPROVED - READY TO PROCEED  \r\n**Version:** v2.0 FINAL\r\n\r\n---\r\n\r\n## 🎯 USER DEC"
+  },
+  {
+    "Source": "PHASE_3_FINAL_DECISION.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "ion:** Tonight (if started now, ~5 hours unattended)\r\n\r\n---\r\n\r\n## 📞 STAKEHOLDER SIGN-OFF\r\n\r\n**User Decision:** \"option 3, i like it but honestly might not get back to it\"  \r\n**Action:** Shock-and-awe moved to"
+  },
+  {
+    "Source": "PHASE_3_FINAL_POLYREPO_ARCHITECTURE_v2.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "-scale GovTech/PropTech/AI platform\r\n\r\n---\r\n\r\n## 📊 Executive Summary - REVISED\r\n\r\n### Architecture Decision: Shock-and-Awe Separation\r\n\r\n**User Decision:** \"Shock-and-awe can go away, it's just a side project"
+  },
+  {
+    "Source": "PHASE_3_FINAL_POLYREPO_ARCHITECTURE_v2.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "## 📊 Executive Summary - REVISED\r\n\r\n### Architecture Decision: Shock-and-Awe Separation\r\n\r\n**User Decision:** \"Shock-and-awe can go away, it's just a side project... option 3, i like it but honestly might no"
+  },
+  {
+    "Source": "PHASE_3_MIT_PHD_SYSTEMS_DESIGN_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "decision:",
+    "Context": "6 module repositories  \r\n**Reality discovered:** 32 modules exist, only 6 being extracted  \r\n**Your decision:** \"Stop and redesign to include all meaningful modules in one comprehensive extraction\"\r\n\r\n---\r\n\r\n#"
+  },
+  {
+    "Source": "PHASE_3_MIT_PHD_SYSTEMS_DESIGN_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "ot extracting empty placeholder modules:**\r\n- **Why not:** Creates repo sprawl without benefit\r\n- **Decision:** Keep empty modules in monorepo until they have code\r\n\r\n---\r\n\r\n## ⚡ IMPLEMENTATION PLAN\r\n\r\n### **S"
+  },
+  {
+    "Source": "PHASE_4_WEEK_3.5_DAY_1_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Chose",
+    "Context": "On track (still 8-9 days ahead)\r\n```\r\n\r\n---\r\n\r\n## ✅ Today's Wins\r\n\r\n1. **Strategic Decision Made:** Chose Option A (Validation & Hardening) demonstrating engineering discipline\r\n2. **Comprehensive Plan Cre"
+  },
+  {
+    "Source": "PHASE_4_WEEK_3.5_DAY_2_EXECUTION.md",
+    "Type": "Decision",
+    "Keyword": "migrated to",
+    "Context": "dir-data\r\nkubectl drain node-az1-2 --ignore-daemonsets --delete-emptydir-data\r\n\r\n# Verify workloads migrated to AZ-2 and AZ-3\r\nkubectl get pods -n county-benton -o wide\r\n# Expected: All pods running in AZ-2/AZ-3"
+  },
+  {
+    "Source": "PHASE4_LAUNCH_PACKET_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "decided to",
+    "Context": "ysis, makes approval deterministic\r\n\r\n---\r\n\r\n### 3. Signature-Based Accountability\r\n**Before:** \"We decided to proceed (who decided?)\"  \r\n**After:** \"SRE Lead [NAME] + Platform Lead [NAME] signed GO form at [TI"
+  },
+  {
+    "Source": "PHASE4_LAUNCH_PACKET_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "decision:",
+    "Context": "ntifiable**:\r\n\r\n- **Pre-gate:** 7 criteria → measurable → 98.2% adoption (not \"looks good\")\r\n- **GO decision:** 7/7 PASS → deterministic → GO (not \"let's discuss\")\r\n- **Post-launch:** 12 checks → validated → 1"
+  },
+  {
+    "Source": "PHASE4_LAUNCH_PACKET_COMPLETE.md",
+    "Type": "Decision",
+    "Keyword": "adopted",
+    "Context": "n briefs, signed forms\r\n5. **Procedure:** 5-file launch packet\r\n6. **Culture:** Smart Idle Doctrine adopted\r\n\r\n**The platform isn't hoping to be stable. It's proving it is stable every hour.**\r\n\r\nAt T+48h, y"
+  },
+  {
+    "Source": "PRODUCTION_DEPLOYMENT_READY.md",
+    "Type": "Decision",
+    "Keyword": "chose",
+    "Context": ".env.production`\r\n3. **Install SSL certificates** for HTTPS\r\n4. **Run deployment script** with your chosen platform\r\n5. **Monitor system performance** and health metrics\r\n6. **Schedule regular backups** fo"
+  },
+  {
+    "Source": "SYSTEMS_ENGINEERING_PLAN.md",
+    "Type": "Decision",
+    "Keyword": "migrated to",
+    "Context": "ybook for component documentation\n- Unit tests for each component\n\n**Deliverables:**\n- ✅ 170+ files migrated to design system\n- ✅ Migration report with before/after metrics\n- ✅ Visual regression test suite\n- ✅ R"
+  },
+  {
+    "Source": "T36H_OBSERVATION_MODE_SESSION_SUMMARY.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "```powershell\r\n   git add ops/launch/phase4_t48h/02_GO_NO_GO_FORM.md\r\n   git commit -m \"T+48h GO Decision: Signed by [SRE_LEAD] + [PLATFORM_LEAD]\"\r\n   git tag -a T48H_GO_DECISION -m \"RS256 adoption: 98%, al"
+  },
+  {
+    "Source": "TEAM_ANNOUNCEMENT.md",
+    "Type": "Decision",
+    "Keyword": "Migrated to",
+    "Context": "** TerraFusion Platform Team  \r\n**To:** All Development Teams  \r\n**Subject:** 🚀 TerraFusion OS Has Migrated to Polyrepo Architecture\r\n\r\n---\r\n\r\n## 🎯 Executive Summary\r\n\r\n**Big News:** TerraFusion OS has success"
+  },
+  {
+    "Source": "TERRAFUSION_ENHANCEMENT_PHASES_TODO.md",
+    "Type": "Decision",
+    "Keyword": "migrated to",
+    "Context": "rtual Machine implementation (COMPLETE)\r\n- [x] **Phase 2: Complete CSS Migration** - All components migrated to intelligent CSS (COMPLETE)\r\n\r\n### ✅ **COMPLETED ENHANCEMENT PHASES**\r\n\r\n#### **Phase 3: AI Swarm Vi"
+  },
+  {
+    "Source": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "DRs)\r\n\r\n### ADR-001: Polyrepo Architecture\r\n\r\n**Status:** ✅ ACCEPTED  \r\n**Date:** October 2025  \r\n**Decision:** Use polyrepo architecture (12 repositories) instead of monorepo\r\n\r\n**Context:**\r\n- System has dis"
+  },
+  {
+    "Source": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "cadences needed (government slower, commercial faster)\r\n- FISMA compliance requires isolation\r\n\r\n**Decision:**\r\nAdopt polyrepo with 12 repositories aligned to bounded contexts and organizational structure."
+  },
+  {
+    "Source": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "election (DRAFT)\r\n\r\n**Status:** 🚧 DRAFT - Decision needed by Week 5  \r\n**Date:** October 2025  \r\n**Decision:** TBD - Kafka vs Azure Service Bus vs NATS\r\n\r\n**Context:**\r\n- 50,000 agents require high-throughput"
+  },
+  {
+    "Source": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "election (DRAFT)\r\n\r\n**Status:** 🚧 DRAFT - Decision needed by Week 7  \r\n**Date:** October 2025  \r\n**Decision:** TBD - Linkerd vs Istio\r\n\r\n**Context:**\r\n- Zero-trust security requires mTLS between services\r\n- O"
+  },
+  {
+    "Source": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "election (DRAFT)\r\n\r\n**Status:** 🚧 DRAFT - Decision needed by Week 5  \r\n**Date:** October 2025  \r\n**Decision:** TBD - Azure API Management vs Kong vs AWS API Gateway\r\n\r\n**Context:**\r\n- Single entry point neede"
+  },
+  {
+    "Source": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "### ADR-005: Database Strategy (ACCEPTED)\r\n\r\n**Status:** ✅ ACCEPTED  \r\n**Date:** October 2025  \r\n**Decision:** Multi-database strategy with domain-specific databases\r\n\r\n**Context:**\r\n- Government data require"
+  },
+  {
+    "Source": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "high throughput (50K agents)\r\n- Data sovereignty: Government data never mixes with commercial\r\n\r\n**Decision:**\r\n\r\n| Domain | Database | Rationale |\r\n|--------|----------|-----------|\r\n| **Government** | Postg"
+  },
+  {
+    "Source": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Type": "Decision",
+    "Keyword": "chose",
+    "Context": "dination\r\n- 3 domains (Government, Commercial, AI) need loose coupling\r\n- Event-driven architecture chosen for inter-repo communication\r\n\r\n**Options:**\r\n\r\n**Option A: Apache Kafka**\r\n- ✅ High throughput (m"
+  },
+  {
+    "Source": "WEEK_1_DAY_2_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "Would need 1+ messaging units for peak\r\n- Cost: $0.05/operation = expensive at 5.5M events/day\r\n- **Decision:** Too expensive for our volume\r\n\r\n**NATS Analysis:**\r\n- High throughput but limited event sourcing"
+  },
+  {
+    "Source": "WEEK_1_DAY_2_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "s:**\r\n- High throughput but limited event sourcing\r\n- Good for real-time, not for event replay\r\n- **Decision:** Not suitable for our use case (need event replay)\r\n\r\n**UPDATED RECOMMENDATION:** Kafka (strongly"
+  },
+  {
+    "Source": "WEEK_1_DAY_2_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "1GB per control plane)\r\n- Complex configuration (hundreds of CRDs)\r\n- Overkill for 12 services\r\n- **Decision:** Too complex for our needs\r\n\r\n**UPDATED RECOMMENDATION:** Linkerd 2 (strongly recommended)\r\n\r\n---"
+  },
+  {
+    "Source": "WEEK_1_DAY_3_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "Selected",
+    "Context": "c avg, 1,000+ peak)\r\n- 99.95% uptime SLA\r\n- <100ms P95 latency overhead\r\n\r\n---\r\n\r\n### Decision\r\n\r\n**Selected: Azure API Management (APIM) - Premium Tier**\r\n\r\n---\r\n\r\n### Rationale\r\n\r\n**1. Compliance & Security"
+  },
+  {
+    "Source": "WEEK_1_DAY_3_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "selected",
+    "Context": "URE_V1.md** updated with:\r\n\r\n1. **ADR-004 (API Gateway):** Full decision record, Azure APIM Premium selected\r\n2. **Component Diagrams (Days 2-3):** Government, Commercial, Infrastructure platforms\r\n3. **10 Ar"
+  },
+  {
+    "Source": "WEEK_1_DAY_3_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "selected",
+    "Context": "vements\r\n\r\n✅ **ADR-004: API Gateway Selection (ACCEPTED)**  \r\n- Azure API Management (APIM) Premium selected\r\n- FISMA compliance validated\r\n- Cost analysis: $2,800/month (vs $7,000+ Kong)\r\n- Implementation pl"
+  },
+  {
+    "Source": "WEEK_1_DAYS_6_7_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "*Problem:** Audit events have 7-year retention (FISMA compliance), but who owns storage costs?\r\n\r\n**Decision:**\r\n- **Government Platform:** County/tenant pays for their own audit logs\r\n  - Isolated Azure Blob"
+  },
+  {
+    "Source": "WEEK_1_DAYS_6_7_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "decision:",
+    "Context": "Structured feedback form (Google Form)\r\n- What's working, what's missing, what's risky\r\n- Sign-off decision: Proceed vs Refine vs Halt\r\n\r\n**3:45 PM - 4:00 PM: Next Steps & Closing (15 min)**\r\n- CTO summarizes"
+  },
+  {
+    "Source": "WEEK_1_DAYS_6_7_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "efine vs Halt\r\n\r\n**3:45 PM - 4:00 PM: Next Steps & Closing (15 min)**\r\n- CTO summarizes feedback\r\n- Decision: Proceed to Week 3 Agent Orchestration POC\r\n- Action items assignment\r\n\r\n---\r\n\r\n### 3. Stakeholder R"
+  },
+  {
+    "Source": "WEEK_1_DAYS_6_7_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "l requirement: I want weekly POC updates (Weeks 3-7). If any POC fails, we pause and reassess.\r\n\r\n**Decision: PROCEED to Week 3 Agent Orchestration POC.** ✅\"\r\n\r\n**Applause from attendees. Week 1-2 officially c"
+  },
+  {
+    "Source": "WEEK_1_DAYS_6_7_DELIVERABLES.md",
+    "Type": "Decision",
+    "Keyword": "decision:",
+    "Context": "eam members, 1 hour)\r\n- ✅ Stakeholder presentation (30 slides, 2 hours, 18 attendees)\r\n- ✅ Sign-off decision: PROCEED to Week 3 ✅\r\n\r\n### Success Metrics\r\n\r\n**Quality Indicators:**\r\n- DDD alignment: 91.7% (11 o"
+  },
+  {
+    "Source": "WEEK_5_PART_1_ZERO_TRUST_NIST.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "6: Zero-Trust Security Model (PROPOSED)**\r\n- **Status:** PROPOSED (stakeholder review pending)\r\n- **Decision:** Adopt zero-trust architecture (never trust, always verify)\r\n- **Rationale:** FISMA compliance, de"
+  },
+  {
+    "Source": "WEEK_6_PERFORMANCE_ARCHITECTURE_POC.md",
+    "Type": "Decision",
+    "Keyword": "Decision:",
+    "Context": "ember 6, 2025  \r\n**Context:** Agent Orchestration API P95 latency 520ms (exceeds 400ms target)\r\n\r\n**Decision:** Implement Redis caching for agent metadata and workflow listings.\r\n\r\n**Rationale:**\r\n- **Performa"
+  }
+]

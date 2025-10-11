@@ -1,0 +1,99 @@
+# TerraFusion OS - Pod Disruption Budgets (PDB)
+# Ensures minimum availability during voluntary disruptions (node drains, updates)
+################################################################################
+
+---
+# Backend API PDB - Ensure at least 1 pod is always available
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: backend-api-pdb
+  namespace: terrafusion-prod
+  labels:
+    app: backend-api
+spec:
+  minAvailable: 1                   # At least 1 pod must be available
+  selector:
+    matchLabels:
+      app: backend-api
+  unhealthyPodEvictionPolicy: AlwaysAllow
+
+---
+# AI Agent PDB - Ensure at least 1 pod is always available
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ai-agent-pdb
+  namespace: terrafusion-prod
+  labels:
+    app: ai-agent
+spec:
+  minAvailable: 1                   # At least 1 pod must be available
+  selector:
+    matchLabels:
+      app: ai-agent
+  unhealthyPodEvictionPolicy: AlwaysAllow
+
+---
+# MCP Servers PDB - Ensure at least 1 pod is always available
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mcp-servers-pdb
+  namespace: terrafusion-prod
+  labels:
+    app: mcp-servers
+spec:
+  minAvailable: 1                   # At least 1 pod must be available
+  selector:
+    matchLabels:
+      app: mcp-servers
+  unhealthyPodEvictionPolicy: AlwaysAllow
+
+---
+# Kong API Gateway PDB - Ensure at least 1 pod is always available
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: kong-pdb
+  namespace: kong
+  labels:
+    app.kubernetes.io/name: kong
+spec:
+  minAvailable: 1                   # At least 1 pod must be available
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kong
+  unhealthyPodEvictionPolicy: AlwaysAllow
+
+---
+# PostgreSQL PDB - Prevent disruption of database (stateful)
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: postgres-pdb
+  namespace: terrafusion-prod
+  labels:
+    app: postgres
+spec:
+  maxUnavailable: 0                 # Never disrupt database pods (manual intervention required)
+  selector:
+    matchLabels:
+      app: postgres
+  unhealthyPodEvictionPolicy: IfHealthyBudget
+
+---
+# Redis PDB - Prevent disruption of cache (stateful)
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: redis-pdb
+  namespace: terrafusion-prod
+  labels:
+    app: redis
+spec:
+  maxUnavailable: 0                 # Never disrupt cache pods (manual intervention required)
+  selector:
+    matchLabels:
+      app: redis
+  unhealthyPodEvictionPolicy: IfHealthyBudget

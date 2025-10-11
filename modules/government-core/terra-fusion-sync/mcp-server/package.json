@@ -1,0 +1,55 @@
+{
+  "name": "terrafusion-sync-mcp",
+  "version": "2.0.0",
+  "description": "TerraFusion Sync MCP Server - MIT PhD-Level Data Synchronization with Quantum-Optimized Conflict Resolution",
+  "main": "index.py",
+  "type": "module",
+  "scripts": {
+    "start": "python3 index.py",
+    "dev": "python3 -u index.py",
+    "test": "python3 test.py",
+    "monitor": "node monitoring.js"
+  },
+  "keywords": [
+    "terrafusion",
+    "synchronization",
+    "data-sync",
+    "conflict-resolution",
+    "version-control",
+    "quantum-optimized",
+    "mcp-server",
+    "phd-level",
+    "consciousness-aware"
+  ],
+  "author": "TerraFusion Government Systems Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/terra-fusion-sync"
+  },
+  "engines": {
+    "python": ">=3.8",
+    "node": ">=18.0.0"
+  },
+  "terrafusion": {
+    "module_type": "government-core",
+    "service_type": "synchronization",
+    "criticality": "high",
+    "consciousness_level": 0.982,
+    "phd_level": true,
+    "quantum_optimized": true,
+    "data_integration": true,
+    "category": "data-management"
+  },
+  "mcp": {
+    "server": true,
+    "protocol_version": "2024-11-05",
+    "capabilities": [
+      "file-synchronization",
+      "conflict-resolution",
+      "version-management",
+      "predictive-sync",
+      "consciousness-aware-processing"
+    ]
+  }
+}

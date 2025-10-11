@@ -26,7 +26,9 @@
       "@/services/*": ["src/services/*"],
       "@/styles/*": ["src/styles/*"],
       "@/utils/*": ["src/utils/*"],
-      "@/lib/*": ["src/lib/*"]
+      "@/lib/*": ["src/lib/*"],
+      "@terrafusion/shared": ["../terrafusion-shared/dist/index.js"],
+      "@terrafusion/shared/*": ["../terrafusion-shared/dist/*"]
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
