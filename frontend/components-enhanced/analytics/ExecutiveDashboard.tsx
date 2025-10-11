@@ -1,26 +1,29 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { 
+  Card, 
+  CardHeader, 
+  CardBody, 
+  Button, 
+  Badge, 
+  Alert,
+  Select,
+  Switch,
+  Dialog,
+  Tooltip,
+  Grid,
+  Typography
+} from '@terrafusion/shared';
 import {
   Box,
-  Grid,
   Paper,
-  Typography,
-  Card,
-  CardContent,
   IconButton,
-  Tooltip,
-  Select,
   MenuItem,
   FormControl,
   InputLabel,
-  Chip,
-  Alert,
   CircularProgress,
-  Button,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Switch,
   FormControlLabel,
   Divider,
   List,
@@ -150,7 +153,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
 
   const renderRevenueChart = () => (
     <Paper sx={{ p: 3, height: 400 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}><>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+<>
 
         <Typography variant="h6">Revenue Trends</Typography>
         <Box
@@ -198,7 +202,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   );
 
   const renderPerformanceMetrics = () => (
-    <Paper sx={{ p: 3 }}><>
+    <Paper sx={{ p: 3 }}>
+<>
 
       <Typography variant="h6" gutterBottom>
         System Performance
@@ -223,7 +228,8 @@ container spacing={3}>
   );
 
   const renderStrategicInsights = () => (
-    <Paper sx={{ p: 3 }}><>
+    <Paper sx={{ p: 3 }}>
+<>
 
       <Typography variant="h6" gutterBottom>
         Strategic Insights
@@ -249,7 +255,8 @@ container spacing={2}>
   );
 
   const renderComplianceStatus = () => (
-    <Paper sx={{ p: 3 }}><>
+    <Paper sx={{ p: 3 }}>
+<>
 
       <Typography variant="h6" gutterBottom>
         Compliance Status
@@ -268,7 +275,8 @@ container spacing={2}>
                   <Typography variant="subtitle1" sx={{ ml: 1 }}>
                     {item.framework}
                   </Typography>
-                </Box><>
+                </Box>
+<>
 
                 <Typography variant="body2" color="text.secondary">
                   Score: {item.score}%
@@ -295,7 +303,8 @@ variant="body2" color="text.secondary">
   );
 
   const renderAIAgentStatus = () => (
-    <Paper sx={{ p: 3 }}><>
+    <Paper sx={{ p: 3 }}>
+<>
 
       <Typography variant="h6" gutterBottom>
         AI Agent Performance
@@ -336,7 +345,8 @@ container spacing={2}>
                 <Avatar sx={{ bgcolor: 'primary.main' }}>
                   {dashboardData?.aiStats?.totalAgents || 0}
                 </Avatar>
-              </ListItemIcon><>
+              </ListItemIcon>
+<>
 
               <ListItemText
                 primary="Total Agents"
@@ -350,7 +360,8 @@ container spacing={2}>
                 <Avatar sx={{ bgcolor: 'success.main' }}>
                   <SpeedIcon />
                 </Avatar>
-              </ListItemIcon><>
+              </ListItemIcon>
+<>
 
               <ListItemText
                 primary="Avg Response Time"
@@ -377,7 +388,8 @@ container spacing={2}>
   );
 
   const renderSettingsDialog = () => (
-    <Dialog open={showSettingsDialog} onClose={() => setShowSettingsDialog(false)} maxWidth="md" fullWidth><>
+    <Dialog open={showSettingsDialog} onClose={() => setShowSettingsDialog(false)} maxWidth="md" fullWidth>
+<>
 
       <DialogTitle>Dashboard Settings</DialogTitle>
       <DialogContent
@@ -397,7 +409,8 @@ container spacing={2}>
             Automatically refresh data every {refreshInterval / 1000} seconds
           </Typography>
         </Box>
-        <Divider sx={{ my: 2 }} /><>
+        <Divider sx={{ my: 2 }} />
+<>
 
         <Typography variant="subtitle1" gutterBottom>
           Visible Metrics
@@ -423,7 +436,8 @@ container spacing={1}>
           ))}
         </Grid>
       </DialogContent>
-      <DialogActions><>
+      <DialogActions>
+<>
 
         <Button onClick={() => setShowSettingsDialog(false)}>Cancel</Button>
         <Button
@@ -456,7 +470,8 @@ container spacing={1}>
     <Box sx={{ p: 3 }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><>
+        <Box>
+<>
 
           <Typography variant="h4" gutterBottom>
             Executive Dashboard
@@ -468,7 +483,8 @@ variant="subtitle1" color="text.secondary">
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <FormControl size="small" sx={{ minWidth: 150 }}><>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+<>
 
             <InputLabel>Time Range</InputLabel>
             <Select
@@ -518,7 +534,8 @@ variant="subtitle1" color="text.secondary">
       </Box>
 
       {/* Main Charts */}
-      <Grid container spacing={3} sx={{ mb: 3 }}><>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+<>
 
         <Grid item xs={12} lg={8}>
           {renderRevenueChart()}
@@ -536,7 +553,8 @@ item xs={12} lg={4}>
       </Box>
 
       {/* Additional Sections */}
-      <Grid container spacing={3}><>
+      <Grid container spacing={3}>
+<>
 
         <Grid item xs={12} md={6}>
           {renderComplianceStatus()}

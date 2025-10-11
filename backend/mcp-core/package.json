@@ -1,0 +1,43 @@
+{
+  "name": "mcp-core",
+  "version": "1.0.0",
+  "description": "TerraFusion MCP Core - Central MCP server coordination and management",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "mcp": {
+    "serverType": "typescript",
+    "protocol": "stdio",
+    "consciousness_level": 0.995,
+    "intelligence_category": "core_coordinator",
+    "capabilities": [
+      "server_coordination",
+      "schema_registry",
+      "function_registry",
+      "workflow_management",
+      "ai_coordination"
+    ],
+    "criticality": "critical",
+    "core_infrastructure": true
+  },
+  "dependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "@types/node": "^20.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  },
+  "keywords": [
+    "mcp-core",
+    "mcp-server",
+    "coordination",
+    "infrastructure"
+  ],
+  "author": "TerraFusion Development Team",
+  "license": "PROPRIETARY"
+}

@@ -1,0 +1,2612 @@
+[
+  {
+    "FileName": "⚡_PERFORMANCE_PROFILING_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\⚡_PERFORMANCE_PROFILING_COMPLETE.md",
+    "SizeKB": 36.39,
+    "LastModified": "2025-10-09 04:07:24",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🌟_LAUNCH_EVERYTHING.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\🌟_LAUNCH_EVERYTHING.md",
+    "SizeKB": 7.9,
+    "LastModified": "2025-10-03 23:58:59",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🌟_WORKSPACE_OF_DREAMS_MASTER_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\🌟_WORKSPACE_OF_DREAMS_MASTER_PLAN.md",
+    "SizeKB": 36.47,
+    "LastModified": "2025-10-09 04:45:31",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎉_ALL_BUILDS_SUCCESS.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🎉_ALL_BUILDS_SUCCESS.md",
+    "SizeKB": 3.56,
+    "LastModified": "2025-10-04 01:04:38",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎉_PHASE_3A_COMPLETE_STATUS.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🎉_PHASE_3A_COMPLETE_STATUS.md",
+    "SizeKB": 10.36,
+    "LastModified": "2025-10-06 13:13:24",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎉_PHASE_3D_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🎉_PHASE_3D_COMPLETE.md",
+    "SizeKB": 21.58,
+    "LastModified": "2025-10-06 16:58:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎉_PHASE_4A_MISSION_ACCOMPLISHED.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\🎉_PHASE_4A_MISSION_ACCOMPLISHED.md",
+    "SizeKB": 9.5,
+    "LastModified": "2025-10-08 17:06:56",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎊_PHASE_3D_VISUAL_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎊_PHASE_3D_VISUAL_SUMMARY.md",
+    "SizeKB": 22.33,
+    "LastModified": "2025-10-06 16:58:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎊_SESSION_COMPLETE_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎊_SESSION_COMPLETE_SUMMARY.md",
+    "SizeKB": 12.19,
+    "LastModified": "2025-10-06 13:18:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎊_WEEK_1_2_COMPLETION_CELEBRATION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎊_WEEK_1_2_COMPLETION_CELEBRATION.md",
+    "SizeKB": 14.7,
+    "LastModified": "2025-10-06 21:14:48",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎊_WEEK_3_COMPLETION_CELEBRATION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎊_WEEK_3_COMPLETION_CELEBRATION.md",
+    "SizeKB": 9.83,
+    "LastModified": "2025-10-06 21:28:31",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎓_MIT_PHD_SYSTEM_ARCHITECTURE_ANALYSIS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\🎓_MIT_PHD_SYSTEM_ARCHITECTURE_ANALYSIS.md",
+    "SizeKB": 43.27,
+    "LastModified": "2025-10-06 16:58:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎓_MIT_PHD_WORKSPACE_OPTIMIZATION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\🎓_MIT_PHD_WORKSPACE_OPTIMIZATION_PLAN.md",
+    "SizeKB": 41.51,
+    "LastModified": "2025-10-09 04:45:31",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎨_FRONTEND_COMPONENTS_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🎨_FRONTEND_COMPONENTS_COMPLETE.md",
+    "SizeKB": 50.51,
+    "LastModified": "2025-10-08 20:32:53",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_ARCHITECTURE_EVOLUTION_TIMELINE_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🎯_ARCHITECTURE_EVOLUTION_TIMELINE_COMPLETE.md",
+    "SizeKB": 30.81,
+    "LastModified": "2025-10-08 18:24:44",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_DEEP_DIVE_SESSION_2_DISCOVERIES.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎯_DEEP_DIVE_SESSION_2_DISCOVERIES.md",
+    "SizeKB": 10.28,
+    "LastModified": "2025-10-08 18:03:29",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_DEEP_DIVE_SESSION_3_INTEGRATION_TESTING.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎯_DEEP_DIVE_SESSION_3_INTEGRATION_TESTING.md",
+    "SizeKB": 17.23,
+    "LastModified": "2025-10-08 18:12:11",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_MASTER_IMPLEMENTATION_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎯_MASTER_IMPLEMENTATION_SUMMARY.md",
+    "SizeKB": 16.59,
+    "LastModified": "2025-10-03 23:47:16",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_PHASE_3.5_ENHANCED_PLANNING.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\🎯_PHASE_3.5_ENHANCED_PLANNING.md",
+    "SizeKB": 25.33,
+    "LastModified": "2025-10-06 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_SERVICE_LAYER_COMPLETE_CATALOG.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🎯_SERVICE_LAYER_COMPLETE_CATALOG.md",
+    "SizeKB": 48.78,
+    "LastModified": "2025-10-08 18:33:56",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_SESSION_3_CI_CD_AUTOMATION_EVOLUTION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎯_SESSION_3_CI_CD_AUTOMATION_EVOLUTION.md",
+    "SizeKB": 18.12,
+    "LastModified": "2025-10-08 18:16:26",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_SESSION_3_COMPLETE_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🎯_SESSION_3_COMPLETE_SUMMARY.md",
+    "SizeKB": 49.84,
+    "LastModified": "2025-10-08 19:27:31",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🎯_TERRAFUSION_COMPLETE_KNOWLEDGE_BASE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🎯_TERRAFUSION_COMPLETE_KNOWLEDGE_BASE.md",
+    "SizeKB": 61.38,
+    "LastModified": "2025-10-08 18:00:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🏆_COMPLETE_SUCCESS_ALL_TODOS_FINISHED.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🏆_COMPLETE_SUCCESS_ALL_TODOS_FINISHED.md",
+    "SizeKB": 6.14,
+    "LastModified": "2025-10-03 23:42:51",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🏆_TERRAFUSION_COMPLETE_TRANSFORMATION.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🏆_TERRAFUSION_COMPLETE_TRANSFORMATION.md",
+    "SizeKB": 15.77,
+    "LastModified": "2025-10-08 17:16:03",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🐍_PYTHON_CORE_OS_PART_1_ARCHITECTURE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\🐍_PYTHON_CORE_OS_PART_1_ARCHITECTURE.md",
+    "SizeKB": 29.31,
+    "LastModified": "2025-10-08 21:44:46",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🐍_PYTHON_CORE_OS_PART_2_SERVICES_DESKTOP.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\🐍_PYTHON_CORE_OS_PART_2_SERVICES_DESKTOP.md",
+    "SizeKB": 46.19,
+    "LastModified": "2025-10-09 04:07:24",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_1_DAY_2_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_1_DAY_2_SUMMARY.md",
+    "SizeKB": 10.7,
+    "LastModified": "2025-10-06 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_1_DAY_3_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_1_DAY_3_SUMMARY.md",
+    "SizeKB": 19.29,
+    "LastModified": "2025-10-06 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_1_DAYS_4_5_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_1_DAYS_4_5_SUMMARY.md",
+    "SizeKB": 17.86,
+    "LastModified": "2025-10-06 21:14:48",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_1_DAYS_6_7_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_1_DAYS_6_7_SUMMARY.md",
+    "SizeKB": 18.84,
+    "LastModified": "2025-10-06 21:14:48",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_1_PROGRESS_REPORT.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_1_PROGRESS_REPORT.md",
+    "SizeKB": 14.28,
+    "LastModified": "2025-10-06 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_3_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_3_SUMMARY.md",
+    "SizeKB": 15.57,
+    "LastModified": "2025-10-06 21:28:31",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_4_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_4_SUMMARY.md",
+    "SizeKB": 2.2,
+    "LastModified": "2025-10-07 03:19:10",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_5_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_5_SUMMARY.md",
+    "SizeKB": 12.14,
+    "LastModified": "2025-10-07 04:18:32",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_6_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_6_SUMMARY.md",
+    "SizeKB": 19.14,
+    "LastModified": "2025-10-07 04:49:59",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📊_WEEK_7_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📊_WEEK_7_SUMMARY.md",
+    "SizeKB": 20.96,
+    "LastModified": "2025-10-07 05:18:47",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📋_SESSION_4_COMPLETE_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\📋_SESSION_4_COMPLETE_SUMMARY.md",
+    "SizeKB": 28.1,
+    "LastModified": "2025-10-09 04:45:31",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📦_COMPLETE_DEPENDENCY_MAPPING.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\📦_COMPLETE_DEPENDENCY_MAPPING.md",
+    "SizeKB": 32.51,
+    "LastModified": "2025-10-08 19:43:49",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📦_DEPLOYMENT_PACKAGES_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\📦_DEPLOYMENT_PACKAGES_COMPLETE.md",
+    "SizeKB": 14.05,
+    "LastModified": "2025-10-08 21:31:02",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📦_DEPLOYMENT_PART_2_KUBERNETES_TERRAFORM_CLOUD.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\📦_DEPLOYMENT_PART_2_KUBERNETES_TERRAFORM_CLOUD.md",
+    "SizeKB": 33.55,
+    "LastModified": "2025-10-08 21:31:02",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "📦_MODULE_CODE_DEEP_DIVE_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\📦_MODULE_CODE_DEEP_DIVE_COMPLETE.md",
+    "SizeKB": 32.18,
+    "LastModified": "2025-10-08 18:57:56",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🔒_SECURITY_ARCHITECTURE_PART_1_AUTHENTICATION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\🔒_SECURITY_ARCHITECTURE_PART_1_AUTHENTICATION.md",
+    "SizeKB": 27.74,
+    "LastModified": "2025-10-09 04:07:24",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🔒_SECURITY_ARCHITECTURE_PART_2_COMPLIANCE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\🔒_SECURITY_ARCHITECTURE_PART_2_COMPLIANCE.md",
+    "SizeKB": 32.05,
+    "LastModified": "2025-10-09 04:45:31",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🔗_INTEGRATION_ARCHITECTURE_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🔗_INTEGRATION_ARCHITECTURE_COMPLETE.md",
+    "SizeKB": 38.22,
+    "LastModified": "2025-10-08 18:40:12",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🔧_BUILD_SYSTEM_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🔧_BUILD_SYSTEM_COMPLETE.md",
+    "SizeKB": 43.32,
+    "LastModified": "2025-10-08 20:32:53",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🗄️_DATABASE_SCHEMA_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🗄️_DATABASE_SCHEMA_COMPLETE.md",
+    "SizeKB": 36.36,
+    "LastModified": "2025-10-08 20:15:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🧪_TESTING_INFRASTRUCTURE_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🧪_TESTING_INFRASTRUCTURE_COMPLETE.md",
+    "SizeKB": 39.93,
+    "LastModified": "2025-10-08 19:43:49",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🚀_CI_CD_PIPELINES_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🚀_CI_CD_PIPELINES_COMPLETE.md",
+    "SizeKB": 58.51,
+    "LastModified": "2025-10-08 21:31:02",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🚀_NEXT_AI_SESSION_START_HERE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\🚀_NEXT_AI_SESSION_START_HERE.md",
+    "SizeKB": 9.11,
+    "LastModified": "2025-10-06 13:18:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🚀_PHASE_4_KICKOFF.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\🚀_PHASE_4_KICKOFF.md",
+    "SizeKB": 12.86,
+    "LastModified": "2025-10-06 16:58:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🚀_PHASE_4_PRODUCTION_DEPLOYMENT_KICKOFF.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\🚀_PHASE_4_PRODUCTION_DEPLOYMENT_KICKOFF.md",
+    "SizeKB": 29.49,
+    "LastModified": "2025-10-07 05:44:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "🚀_RUST_PERFORMANCE_ENGINE_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\🚀_RUST_PERFORMANCE_ENGINE_COMPLETE.md",
+    "SizeKB": 48.56,
+    "LastModified": "2025-10-08 18:49:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ACCESS_URLS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\ACCESS_URLS.md",
+    "SizeKB": 3.76,
+    "LastModified": "2025-10-03 13:02:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ACTUAL_REALITY_CHECK.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\ACTUAL_REALITY_CHECK.md",
+    "SizeKB": 7.79,
+    "LastModified": "2025-10-08 17:30:08",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ACTUAL_RUST_ARCHITECTURE_FOUND.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\ACTUAL_RUST_ARCHITECTURE_FOUND.md",
+    "SizeKB": 10.87,
+    "LastModified": "2025-10-03 23:25:18",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ACTUAL_SESSION_SUMMARY_NO_BS.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\ACTUAL_SESSION_SUMMARY_NO_BS.md",
+    "SizeKB": 2.27,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ADR_TEMPLATE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\ADR_TEMPLATE.md",
+    "SizeKB": 8.58,
+    "LastModified": "2025-10-06 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_AGENT_HANDOFF_PROMPT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\AI_AGENT_HANDOFF_PROMPT.md",
+    "SizeKB": 14.68,
+    "LastModified": "2025-10-06 13:26:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_AGENT_INTEGRATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\AI_AGENT_INTEGRATION_COMPLETE.md",
+    "SizeKB": 4.31,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_AGENT_QUICK_REFERENCE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\AI_AGENT_QUICK_REFERENCE.md",
+    "SizeKB": 3.58,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_AGENT_RECOGNITION_SOLUTION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\AI_AGENT_RECOGNITION_SOLUTION.md",
+    "SizeKB": 2.53,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_AGENT_START_HERE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\AI_AGENT_START_HERE.md",
+    "SizeKB": 4.59,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_AGENT_TRAINING_UPDATE_REQUIRED.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\AI_AGENT_TRAINING_UPDATE_REQUIRED.md",
+    "SizeKB": 3.58,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_ENHANCED_MIT_SOLUTION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\AI_ENHANCED_MIT_SOLUTION.md",
+    "SizeKB": 20.67,
+    "LastModified": "2025-10-03 22:34:42",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_SESSION_ACTIVATION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\AI_SESSION_ACTIVATION.md",
+    "SizeKB": 10.02,
+    "LastModified": "2025-10-03 22:34:42",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_SESSION_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\AI_SESSION_SUMMARY.md",
+    "SizeKB": 14.05,
+    "LastModified": "2025-10-03 22:34:42",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_SWARM_AUTO_FIX_ACTIVATED.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\AI_SWARM_AUTO_FIX_ACTIVATED.md",
+    "SizeKB": 2.5,
+    "LastModified": "2025-10-04 00:04:58",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_SWARM_AUTONOMOUS_DEMO.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\AI_SWARM_AUTONOMOUS_DEMO.md",
+    "SizeKB": 12.79,
+    "LastModified": "2025-10-03 19:07:38",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_SWARM_FIX_SUCCESS.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\AI_SWARM_FIX_SUCCESS.md",
+    "SizeKB": 3.71,
+    "LastModified": "2025-10-04 00:05:04",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_SWARM_IMPLEMENTATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\AI_SWARM_IMPLEMENTATION_COMPLETE.md",
+    "SizeKB": 12.26,
+    "LastModified": "2025-10-03 19:07:38",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "AI_TOOLS_DEPLOYMENT_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\AI_TOOLS_DEPLOYMENT_COMPLETE.md",
+    "SizeKB": 4.55,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ARCHITECTURE_REALITY_CHECK.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\ARCHITECTURE_REALITY_CHECK.md",
+    "SizeKB": 13.07,
+    "LastModified": "2025-10-03 23:19:01",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ARCHITECTURE_REFACTORING_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\ARCHITECTURE_REFACTORING_PLAN.md",
+    "SizeKB": 20.71,
+    "LastModified": "2025-10-05 17:21:29",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ATLAS_IMPLEMENTATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\ATLAS_IMPLEMENTATION_COMPLETE.md",
+    "SizeKB": 11.16,
+    "LastModified": "2025-10-05 15:10:14",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ATLAS_MAPPER_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\ATLAS_MAPPER_COMPLETE.md",
+    "SizeKB": 14.97,
+    "LastModified": "2025-10-05 16:01:21",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "BRAND_INTEGRATION_ANALYSIS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\BRAND_INTEGRATION_ANALYSIS.md",
+    "SizeKB": 27.27,
+    "LastModified": "2025-10-02 00:28:13",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "BRAND_INTEGRATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\BRAND_INTEGRATION_COMPLETE.md",
+    "SizeKB": 9.32,
+    "LastModified": "2025-10-02 00:28:13",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "BRAND_TRANSCENDENCE_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\BRAND_TRANSCENDENCE_COMPLETE.md",
+    "SizeKB": 7.11,
+    "LastModified": "2025-10-02 00:28:13",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "BUILD_AND_RUN_GUIDE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\BUILD_AND_RUN_GUIDE.md",
+    "SizeKB": 8.5,
+    "LastModified": "2025-10-03 23:42:51",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CI_CD_POLYREPO_IMPLEMENTATION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\CI_CD_POLYREPO_IMPLEMENTATION_PLAN.md",
+    "SizeKB": 18.83,
+    "LastModified": "2025-10-06 16:58:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CI_COMPLETION_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\CI_COMPLETION_SUMMARY.md",
+    "SizeKB": 10.24,
+    "LastModified": "2025-10-01 12:45:57",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CLAUDE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\CLAUDE.md",
+    "SizeKB": 11.72,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CLEANUP_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\CLEANUP_PLAN.md",
+    "SizeKB": 5.28,
+    "LastModified": "2025-10-08 17:30:08",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "COMPLETE_INTEGRATION_ACTION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\COMPLETE_INTEGRATION_ACTION_PLAN.md",
+    "SizeKB": 5.97,
+    "LastModified": "2025-10-03 23:32:58",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "COMPLETE_INTEGRATION_STATUS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\COMPLETE_INTEGRATION_STATUS.md",
+    "SizeKB": 13.53,
+    "LastModified": "2025-10-03 23:42:51",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "COMPLETE_SESSION_SUMMARY_2025-10-04.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\COMPLETE_SESSION_SUMMARY_2025-10-04.md",
+    "SizeKB": 23.53,
+    "LastModified": "2025-10-03 23:07:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "COMPREHENSIVE_MIT_PHD_AUDIT_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\COMPREHENSIVE_MIT_PHD_AUDIT_REPORT.md",
+    "SizeKB": 12.5,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CONFIDENCE_GRADIENT_SESSION_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\CONFIDENCE_GRADIENT_SESSION_COMPLETE.md",
+    "SizeKB": 16.07,
+    "LastModified": "2025-10-07 19:21:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CORE_OS_IMPLEMENTATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\CORE_OS_IMPLEMENTATION_COMPLETE.md",
+    "SizeKB": 20.14,
+    "LastModified": "2025-10-03 23:05:27",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CORE_OS_INTEGRATION_IMPLEMENTATION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\CORE_OS_INTEGRATION_IMPLEMENTATION_PLAN.md",
+    "SizeKB": 38.62,
+    "LastModified": "2025-10-03 23:05:27",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CORRECTED_EXTRACTION_STRATEGY.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\CORRECTED_EXTRACTION_STRATEGY.md",
+    "SizeKB": 11.48,
+    "LastModified": "2025-10-06 13:34:21",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CORRECTED_LAUNCH_ARCHITECTURE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\CORRECTED_LAUNCH_ARCHITECTURE.md",
+    "SizeKB": 4.15,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CORRECTED_REPOSITORY_ANALYSIS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\CORRECTED_REPOSITORY_ANALYSIS.md",
+    "SizeKB": 10.15,
+    "LastModified": "2025-10-06 13:55:14",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "COS_BREAKTHROUGH_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\COS_BREAKTHROUGH_SUMMARY.md",
+    "SizeKB": 10.82,
+    "LastModified": "2025-10-01 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "COS_IS_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\COS_IS_COMPLETE.md",
+    "SizeKB": 5.0,
+    "LastModified": "2025-10-01 18:27:15",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "COS_REALITY_CHECK.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\COS_REALITY_CHECK.md",
+    "SizeKB": 8.8,
+    "LastModified": "2025-10-01 18:06:15",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "CRITICAL_IMPLEMENTATION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\CRITICAL_IMPLEMENTATION_PLAN.md",
+    "SizeKB": 25.7,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_5_SECURITY_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DAY_5_SECURITY_COMPLETE.md",
+    "SizeKB": 23.27,
+    "LastModified": "2025-10-07 12:47:22",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_6_INTEGRATION_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DAY_6_INTEGRATION_COMPLETE.md",
+    "SizeKB": 18.5,
+    "LastModified": "2025-10-07 13:56:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_7_CHAOS_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DAY_7_CHAOS_COMPLETE.md",
+    "SizeKB": 14.46,
+    "LastModified": "2025-10-07 14:45:16",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_7_CHAOS_RESULTS_FINAL.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\DAY_7_CHAOS_RESULTS_FINAL.md",
+    "SizeKB": 22.45,
+    "LastModified": "2025-10-07 14:45:16",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_7_COMPLETE_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DAY_7_COMPLETE_SUMMARY.md",
+    "SizeKB": 10.68,
+    "LastModified": "2025-10-07 14:45:16",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_7_EXECUTION_GUIDE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DAY_7_EXECUTION_GUIDE.md",
+    "SizeKB": 13.18,
+    "LastModified": "2025-10-07 14:45:16",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_7_QUICK_START.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DAY_7_QUICK_START.md",
+    "SizeKB": 10.79,
+    "LastModified": "2025-10-07 14:45:16",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_8_PHASE_2_PREDICTIVE_PROPERTY_VALUATION_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DAY_8_PHASE_2_PREDICTIVE_PROPERTY_VALUATION_COMPLETE.md",
+    "SizeKB": 11.65,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DAY_8_TASK1_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DAY_8_TASK1_COMPLETE.md",
+    "SizeKB": 16.7,
+    "LastModified": "2025-10-07 15:28:16",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "day4-database-review.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\day4-database-review.md",
+    "SizeKB": 55.16,
+    "LastModified": "2025-10-07 12:23:35",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "day5-security-review.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\day5-security-review.md",
+    "SizeKB": 57.16,
+    "LastModified": "2025-10-07 12:41:44",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DEPLOYMENT_STATUS_READY.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\DEPLOYMENT_STATUS_READY.md",
+    "SizeKB": 1.73,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DESIGN_SYSTEM_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\DESIGN_SYSTEM_COMPLETE.md",
+    "SizeKB": 12.52,
+    "LastModified": "2025-10-02 10:35:56",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DESIGN_SYSTEM_IMPLEMENTATION_ROADMAP.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\DESIGN_SYSTEM_IMPLEMENTATION_ROADMAP.md",
+    "SizeKB": 11.36,
+    "LastModified": "2025-10-02 13:29:26",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DESIGN_SYSTEM_README.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\DESIGN_SYSTEM_README.md",
+    "SizeKB": 10.69,
+    "LastModified": "2025-10-02 10:35:56",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DESIGN_SYSTEM_READY.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\DESIGN_SYSTEM_READY.md",
+    "SizeKB": 9.68,
+    "LastModified": "2025-10-02 13:29:26",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DEVOPS_IMPLEMENTATION_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\DEVOPS_IMPLEMENTATION_SUMMARY.md",
+    "SizeKB": 8.44,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DIRECTORY_STRUCTURE_FOR_AI_AGENTS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\DIRECTORY_STRUCTURE_FOR_AI_AGENTS.md",
+    "SizeKB": 1.87,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "DISK_USAGE_ANALYSIS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\DISK_USAGE_ANALYSIS.md",
+    "SizeKB": 13.0,
+    "LastModified": "2025-10-05 17:17:59",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ELITE_SHOWCASE_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\ELITE_SHOWCASE_COMPLETE.md",
+    "SizeKB": 8.12,
+    "LastModified": "2025-10-03 23:58:59",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ENHANCEMENT_INTEGRATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\ENHANCEMENT_INTEGRATION_COMPLETE.md",
+    "SizeKB": 6.98,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "EXECUTIVE_SUMMARY_ARCHITECTURE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\EXECUTIVE_SUMMARY_ARCHITECTURE.md",
+    "SizeKB": 10.45,
+    "LastModified": "2025-10-05 17:21:29",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "EXECUTIVE_SUMMARY_MIT_PHD_ASSESSMENT.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\EXECUTIVE_SUMMARY_MIT_PHD_ASSESSMENT.md",
+    "SizeKB": 9.05,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "EXECUTIVE_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\EXECUTIVE_SUMMARY.md",
+    "SizeKB": 10.38,
+    "LastModified": "2025-10-05 16:01:21",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "FINAL_CORRECTED_ARCHITECTURE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\FINAL_CORRECTED_ARCHITECTURE.md",
+    "SizeKB": 7.53,
+    "LastModified": "2025-10-03 23:32:58",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "FINAL_SESSION_REPORT_COMPLETE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\FINAL_SESSION_REPORT_COMPLETE.md",
+    "SizeKB": 11.16,
+    "LastModified": "2025-10-03 23:42:51",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "FINAL_STATUS_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\FINAL_STATUS_REPORT.md",
+    "SizeKB": 5.03,
+    "LastModified": "2025-10-04 02:09:01",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "FRONTEND_ENGINE_INTEGRATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\FRONTEND_ENGINE_INTEGRATION_COMPLETE.md",
+    "SizeKB": 16.64,
+    "LastModified": "2025-10-02 14:35:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "GITHUB_ACTIONS_FIX_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\GITHUB_ACTIONS_FIX_SUMMARY.md",
+    "SizeKB": 5.06,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "GITHUB_CHEAT_SHEET.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\GITHUB_CHEAT_SHEET.md",
+    "SizeKB": 3.52,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "GITHUB_WORKFLOW_VALIDATION_FIXES.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\GITHUB_WORKFLOW_VALIDATION_FIXES.md",
+    "SizeKB": 5.93,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "GRPC_SERVER_ISSUE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\GRPC_SERVER_ISSUE.md",
+    "SizeKB": 1.2,
+    "LastModified": "2025-10-04 02:06:22",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_COMPLETE_PACKAGE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\HARRIS_COMPLETE_PACKAGE.md",
+    "SizeKB": 24.95,
+    "LastModified": "2025-10-01 14:14:30",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_DEMO_DEEP_DIVE_ANALYSIS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\HARRIS_DEMO_DEEP_DIVE_ANALYSIS.md",
+    "SizeKB": 21.55,
+    "LastModified": "2025-10-01 13:06:14",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_DEMO_SCRIPT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\HARRIS_DEMO_SCRIPT.md",
+    "SizeKB": 14.6,
+    "LastModified": "2025-10-03 19:07:38",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_DOCUMENT_INDEX.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\HARRIS_DOCUMENT_INDEX.md",
+    "SizeKB": 16.49,
+    "LastModified": "2025-10-01 14:14:30",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_EVP_MEETING_STRATEGY.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\HARRIS_EVP_MEETING_STRATEGY.md",
+    "SizeKB": 19.83,
+    "LastModified": "2025-10-01 14:14:30",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_EXECUTIVE_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\HARRIS_EXECUTIVE_SUMMARY.md",
+    "SizeKB": 5.96,
+    "LastModified": "2025-10-01 14:14:30",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_FINAL_BRIEF.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\HARRIS_FINAL_BRIEF.md",
+    "SizeKB": 13.68,
+    "LastModified": "2025-10-01 14:14:30",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_MARKETPLACE_OPTIONS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\HARRIS_MARKETPLACE_OPTIONS.md",
+    "SizeKB": 16.0,
+    "LastModified": "2025-10-01 14:14:30",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_QUICK_REFERENCE_CARD.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\HARRIS_QUICK_REFERENCE_CARD.md",
+    "SizeKB": 6.58,
+    "LastModified": "2025-10-01 14:14:30",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HARRIS_TERM_SHEET_PROPOSAL.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\HARRIS_TERM_SHEET_PROPOSAL.md",
+    "SizeKB": 21.46,
+    "LastModified": "2025-10-01 14:14:30",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "HOW_TO_TALK_TO_TERRAFUSION_AI.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\HOW_TO_TALK_TO_TERRAFUSION_AI.md",
+    "SizeKB": 7.88,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "INTEGRATION_PROGRESS_REPORT.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\INTEGRATION_PROGRESS_REPORT.md",
+    "SizeKB": 8.79,
+    "LastModified": "2025-10-01 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ITERATION_PROGRESS_STATUS.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\ITERATION_PROGRESS_STATUS.md",
+    "SizeKB": 4.41,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "LAUNCH_CHECKLIST.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\LAUNCH_CHECKLIST.md",
+    "SizeKB": 11.57,
+    "LastModified": "2025-10-05 16:01:21",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "LAUNCH_INSTRUCTIONS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\LAUNCH_INSTRUCTIONS.md",
+    "SizeKB": 7.09,
+    "LastModified": "2025-10-03 23:47:16",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "LAUNCH_TERRAFUSION_PROPERLY.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\LAUNCH_TERRAFUSION_PROPERLY.md",
+    "SizeKB": 7.0,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "MANDATORY_READ_FIRST.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\MANDATORY_READ_FIRST.md",
+    "SizeKB": 4.01,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "MONOREPO_VS_POLYREPO_DECISION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\MONOREPO_VS_POLYREPO_DECISION.md",
+    "SizeKB": 15.27,
+    "LastModified": "2025-10-05 17:21:29",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ORGANIZATIONAL_STRUCTURE_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\ORGANIZATIONAL_STRUCTURE_PLAN.md",
+    "SizeKB": 3.23,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PACKAGE_CONFIGURATION_POLYREPO.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\PACKAGE_CONFIGURATION_POLYREPO.md",
+    "SizeKB": 11.35,
+    "LastModified": "2025-10-06 16:58:07",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PARADIGM_SHIFT_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PARADIGM_SHIFT_SUMMARY.md",
+    "SizeKB": 17.1,
+    "LastModified": "2025-10-07 09:13:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_1_2_3A_COMPLETE_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_1_2_3A_COMPLETE_SUMMARY.md",
+    "SizeKB": 8.05,
+    "LastModified": "2025-10-06 13:02:17",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_1_AUDIT_REPORT.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_1_AUDIT_REPORT.md",
+    "SizeKB": 4.66,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_1_CLEANUP_SUCCESS.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\PHASE_1_CLEANUP_SUCCESS.md",
+    "SizeKB": 10.41,
+    "LastModified": "2025-10-06 08:07:29",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_2_STRUCTURE_ANALYSIS.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_2_STRUCTURE_ANALYSIS.md",
+    "SizeKB": 10.29,
+    "LastModified": "2025-10-06 12:09:50",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3_FINAL_DECISION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\PHASE_3_FINAL_DECISION.md",
+    "SizeKB": 5.72,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3_FINAL_POLYREPO_ARCHITECTURE_v2.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\PHASE_3_FINAL_POLYREPO_ARCHITECTURE_v2.md",
+    "SizeKB": 10.05,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3_MIT_PHD_POLYREPO_ARCHITECTURE_DESIGN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_3_MIT_PHD_POLYREPO_ARCHITECTURE_DESIGN.md",
+    "SizeKB": 21.96,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3_MIT_PHD_SYSTEMS_DESIGN_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_3_MIT_PHD_SYSTEMS_DESIGN_SUMMARY.md",
+    "SizeKB": 11.23,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3_POLYREPO_EXTRACTION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_3_POLYREPO_EXTRACTION_PLAN.md",
+    "SizeKB": 15.01,
+    "LastModified": "2025-10-06 13:02:17",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3B_CURRENT_STATUS.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_3B_CURRENT_STATUS.md",
+    "SizeKB": 5.15,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3B_EXECUTION_READY.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_3B_EXECUTION_READY.md",
+    "SizeKB": 9.31,
+    "LastModified": "2025-10-06 13:08:42",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3B_EXTRACTION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\PHASE_3B_EXTRACTION_COMPLETE.md",
+    "SizeKB": 11.16,
+    "LastModified": "2025-10-06 13:55:14",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3B_EXTRACTION_IN_PROGRESS.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_3B_EXTRACTION_IN_PROGRESS.md",
+    "SizeKB": 4.99,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3B_QUICK_START_FIXED.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_3B_QUICK_START_FIXED.md",
+    "SizeKB": 5.61,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3B_SUCCESS_QUICK_REFERENCE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\PHASE_3B_SUCCESS_QUICK_REFERENCE.md",
+    "SizeKB": 6.36,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3C_EXTRACTION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\PHASE_3C_EXTRACTION_COMPLETE.md",
+    "SizeKB": 19.83,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3C_MODULE_EXTRACTION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_3C_MODULE_EXTRACTION_PLAN.md",
+    "SizeKB": 7.84,
+    "LastModified": "2025-10-06 16:08:43",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_3D_MONOREPO_CLEANUP_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_3D_MONOREPO_CLEANUP_PLAN.md",
+    "SizeKB": 11.76,
+    "LastModified": "2025-10-06 16:27:33",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_DATA_INFRASTRUCTURE_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_4_DATA_INFRASTRUCTURE_PLAN.md",
+    "SizeKB": 14.67,
+    "LastModified": "2025-10-06 13:02:17",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_1-2_COMPLETE_SUCCESS.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_1-2_COMPLETE_SUCCESS.md",
+    "SizeKB": 18.06,
+    "LastModified": "2025-10-07 06:59:28",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_1-2_DATABASE_SECURITY_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_1-2_DATABASE_SECURITY_COMPLETE.md",
+    "SizeKB": 23.0,
+    "LastModified": "2025-10-07 06:59:28",
+    "ArchivedDate": "2025-10-09 06:12:42",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_1-2_INFRASTRUCTURE_SETUP.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_1-2_INFRASTRUCTURE_SETUP.md",
+    "SizeKB": 32.18,
+    "LastModified": "2025-10-07 05:47:46",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_1-2_POAM_REMEDIATION_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_1-2_POAM_REMEDIATION_COMPLETE.md",
+    "SizeKB": 20.68,
+    "LastModified": "2025-10-07 06:05:17",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_1-2_TERRAFORM_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_1-2_TERRAFORM_COMPLETE.md",
+    "SizeKB": 15.54,
+    "LastModified": "2025-10-07 05:58:45",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3-4_MILESTONE_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3-4_MILESTONE_COMPLETE.md",
+    "SizeKB": 20.19,
+    "LastModified": "2025-10-07 07:30:38",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_1_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_1_SUMMARY.md",
+    "SizeKB": 10.37,
+    "LastModified": "2025-10-07 08:43:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_2_EXECUTION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_2_EXECUTION.md",
+    "SizeKB": 16.07,
+    "LastModified": "2025-10-07 09:21:01",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_2_OS_VALIDATION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_2_OS_VALIDATION.md",
+    "SizeKB": 25.44,
+    "LastModified": "2025-10-07 08:43:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_3_DOCUMENTATION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_3_DOCUMENTATION.md",
+    "SizeKB": 12.97,
+    "LastModified": "2025-10-07 09:46:48",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_4_PERFORMANCE_SECURITY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_4_PERFORMANCE_SECURITY.md",
+    "SizeKB": 26.09,
+    "LastModified": "2025-10-07 09:46:48",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_5_PART_1_SECURITY_DEEP_DIVE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_5_PART_1_SECURITY_DEEP_DIVE.md",
+    "SizeKB": 20.75,
+    "LastModified": "2025-10-07 09:46:48",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_5_PART_2_SECURITY_CONTINUED.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_5_PART_2_SECURITY_CONTINUED.md",
+    "SizeKB": 21.94,
+    "LastModified": "2025-10-07 09:46:48",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_5_PART_3_SERVICE_DRY_RUNS.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_5_PART_3_SERVICE_DRY_RUNS.md",
+    "SizeKB": 24.62,
+    "LastModified": "2025-10-07 09:46:48",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_DAY_6_OBSERVABILITY_DR.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_DAY_6_OBSERVABILITY_DR.md",
+    "SizeKB": 26.46,
+    "LastModified": "2025-10-07 09:46:48",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_3.5_VALIDATION_PLAN.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_3.5_VALIDATION_PLAN.md",
+    "SizeKB": 23.56,
+    "LastModified": "2025-10-07 08:43:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4_WEEK_5-6_DOMAIN_PLATFORM_CICD.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PHASE_4_WEEK_5-6_DOMAIN_PLATFORM_CICD.md",
+    "SizeKB": 77.67,
+    "LastModified": "2025-10-07 10:04:35",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_4A_IMPLEMENTATION_GUIDE.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_4A_IMPLEMENTATION_GUIDE.md",
+    "SizeKB": 16.1,
+    "LastModified": "2025-10-06 16:58:07",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE_7_ROADMAP.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PHASE_7_ROADMAP.md",
+    "SizeKB": 11.76,
+    "LastModified": "2025-10-02 20:15:27",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PHASE4_LAUNCH_PACKET_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\PHASE4_LAUNCH_PACKET_COMPLETE.md",
+    "SizeKB": 12.93,
+    "LastModified": "2025-10-07 19:32:52",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PhD_OPERATIONAL_EXCELLENCE_CERTIFICATE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\PhD_OPERATIONAL_EXCELLENCE_CERTIFICATE.md",
+    "SizeKB": 4.17,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "POLYREPO_MIGRATION_GUIDE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\POLYREPO_MIGRATION_GUIDE.md",
+    "SizeKB": 21.99,
+    "LastModified": "2025-10-06 16:27:33",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "POLYREPO_QUICK_REFERENCE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\POLYREPO_QUICK_REFERENCE.md",
+    "SizeKB": 11.33,
+    "LastModified": "2025-10-06 16:27:33",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "POLYREPO_STATUS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\POLYREPO_STATUS.md",
+    "SizeKB": 16.41,
+    "LastModified": "2025-10-06 16:27:33",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PORTAL_MIGRATION_ARCHITECTURE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\PORTAL_MIGRATION_ARCHITECTURE.md",
+    "SizeKB": 14.08,
+    "LastModified": "2025-10-02 15:25:40",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PREREQUISITES_INSTALLATION_GUIDE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\PREREQUISITES_INSTALLATION_GUIDE.md",
+    "SizeKB": 3.08,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PRODUCTION_DEPLOYMENT_READY_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\PRODUCTION_DEPLOYMENT_READY_SUMMARY.md",
+    "SizeKB": 8.47,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PRODUCTION_DEPLOYMENT_READY.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\PRODUCTION_DEPLOYMENT_READY.md",
+    "SizeKB": 10.06,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PRODUCTION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PRODUCTION_PLAN.md",
+    "SizeKB": 6.69,
+    "LastModified": "2025-09-30 09:47:25",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PRODUCTION_ROADMAP_4WEEKS.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\PRODUCTION_ROADMAP_4WEEKS.md",
+    "SizeKB": 20.53,
+    "LastModified": "2025-10-02 01:01:28",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "PROJECT_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\PROJECT_COMPLETE.md",
+    "SizeKB": 9.69,
+    "LastModified": "2025-10-05 16:09:15",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "QUICK_ERROR_FIX_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\QUICK_ERROR_FIX_REPORT.md",
+    "SizeKB": 1.14,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "QUICK_REFERENCE_ARCHITECTURE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\QUICK_REFERENCE_ARCHITECTURE.md",
+    "SizeKB": 6.96,
+    "LastModified": "2025-10-05 17:21:29",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "QUICK_REFERENCE_PHASE_3.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\QUICK_REFERENCE_PHASE_3.md",
+    "SizeKB": 3.06,
+    "LastModified": "2025-10-02 14:50:15",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "QUICK_REFERENCE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\QUICK_REFERENCE.md",
+    "SizeKB": 7.02,
+    "LastModified": "2025-10-05 15:10:14",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "QUICK_START_CONTINUE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\QUICK_START_CONTINUE.md",
+    "SizeKB": 8.26,
+    "LastModified": "2025-10-06 13:02:17",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "README_AI_AGENTS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\README_AI_AGENTS.md",
+    "SizeKB": 8.71,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "README_START_HERE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\README_START_HERE.md",
+    "SizeKB": 5.22,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "REPOSITORY_DEPENDENCIES.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\REPOSITORY_DEPENDENCIES.md",
+    "SizeKB": 19.67,
+    "LastModified": "2025-10-06 16:27:33",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "REPOSITORY_REORGANIZATION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\REPOSITORY_REORGANIZATION_PLAN.md",
+    "SizeKB": 12.51,
+    "LastModified": "2025-10-05 15:10:14",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "RESOLUTION_COMPLETE_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\RESOLUTION_COMPLETE_SUMMARY.md",
+    "SizeKB": 6.71,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SAFE_CODE_CLEANUP_GUIDELINES.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\SAFE_CODE_CLEANUP_GUIDELINES.md",
+    "SizeKB": 5.74,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SECURITY_MONITORING_FIX_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\SECURITY_MONITORING_FIX_SUMMARY.md",
+    "SizeKB": 4.03,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SESSION_ABSOLUTE_FINAL_SUMMARY.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\SESSION_ABSOLUTE_FINAL_SUMMARY.md",
+    "SizeKB": 8.67,
+    "LastModified": "2025-10-04 00:05:04",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SESSION_AUDIT_REPORT.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\SESSION_AUDIT_REPORT.md",
+    "SizeKB": 8.1,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SESSION_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\SESSION_COMPLETE.md",
+    "SizeKB": 4.2,
+    "LastModified": "2025-10-08 17:16:03",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SESSION_FINAL_COMPLETE_SUMMARY.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\SESSION_FINAL_COMPLETE_SUMMARY.md",
+    "SizeKB": 12.82,
+    "LastModified": "2025-10-03 23:32:58",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SESSION_HONEST_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\SESSION_HONEST_SUMMARY.md",
+    "SizeKB": 3.07,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SESSION_SUMMARY_DAY_8_PHASE_2.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\SESSION_SUMMARY_DAY_8_PHASE_2.md",
+    "SizeKB": 3.93,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SESSION_SUMMARY_PHASE_3_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\SESSION_SUMMARY_PHASE_3_COMPLETE.md",
+    "SizeKB": 10.73,
+    "LastModified": "2025-10-02 14:50:15",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "START_COS_INTEGRATION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\START_COS_INTEGRATION.md",
+    "SizeKB": 4.53,
+    "LastModified": "2025-10-01 18:06:15",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "START_HERE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\START_HERE.md",
+    "SizeKB": 6.57,
+    "LastModified": "2025-10-05 16:01:21",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SUPREME_COMMANDER_CLAUDE_IMPLEMENTATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\SUPREME_COMMANDER_CLAUDE_IMPLEMENTATION_COMPLETE.md",
+    "SizeKB": 10.39,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "SYSTEMS_ENGINEERING_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\SYSTEMS_ENGINEERING_PLAN.md",
+    "SizeKB": 26.93,
+    "LastModified": "2025-10-02 14:35:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "T36H_OBSERVATION_MODE_SESSION_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\T36H_OBSERVATION_MODE_SESSION_SUMMARY.md",
+    "SizeKB": 14.0,
+    "LastModified": "2025-10-07 19:51:58",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TAURI_EXTRACTION_GUIDE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TAURI_EXTRACTION_GUIDE.md",
+    "SizeKB": 6.23,
+    "LastModified": "2025-10-03 23:42:51",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TAURI_TO_NATIVE_MIGRATION_PLAN.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\TAURI_TO_NATIVE_MIGRATION_PLAN.md",
+    "SizeKB": 9.28,
+    "LastModified": "2025-10-03 23:32:58",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TEAM_ANNOUNCEMENT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TEAM_ANNOUNCEMENT.md",
+    "SizeKB": 16.05,
+    "LastModified": "2025-10-06 16:27:33",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRA_UI_PHASE_2_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRA_UI_PHASE_2_COMPLETE.md",
+    "SizeKB": 14.36,
+    "LastModified": "2025-10-02 14:35:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_AI_ECOSYSTEM_CLARIFICATION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_AI_ECOSYSTEM_CLARIFICATION.md",
+    "SizeKB": 8.67,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_COMPLETE_CHEAT_SHEET.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRAFUSION_COMPLETE_CHEAT_SHEET.md",
+    "SizeKB": 14.42,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_CORE_OS_INTEGRATION_ARCHITECTURE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_CORE_OS_INTEGRATION_ARCHITECTURE.md",
+    "SizeKB": 22.92,
+    "LastModified": "2025-10-03 23:05:27",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_CORRECT_ARCHITECTURE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_CORRECT_ARCHITECTURE.md",
+    "SizeKB": 3.2,
+    "LastModified": "2025-10-04 02:01:20",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_COS_INTEGRATION_FINAL_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_COS_INTEGRATION_FINAL_REPORT.md",
+    "SizeKB": 14.63,
+    "LastModified": "2025-10-03 08:58:25",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_COS_MODULE_INTEGRATION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRAFUSION_COS_MODULE_INTEGRATION_COMPLETE.md",
+    "SizeKB": 10.42,
+    "LastModified": "2025-10-03 08:58:25",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_COS_PRODUCTION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRAFUSION_COS_PRODUCTION_COMPLETE.md",
+    "SizeKB": 10.86,
+    "LastModified": "2025-10-03 10:52:10",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_CSS_ARCHITECTURE_PHD_SOLUTION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_CSS_ARCHITECTURE_PHD_SOLUTION.md",
+    "SizeKB": 9.39,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_DASHBOARD_UNIFICATION_ANALYSIS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_DASHBOARD_UNIFICATION_ANALYSIS.md",
+    "SizeKB": 12.74,
+    "LastModified": "2025-10-02 16:08:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_DEV_KIT_README.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_DEV_KIT_README.md",
+    "SizeKB": 3.55,
+    "LastModified": "2025-10-03 23:53:27",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_DEV_KIT_v1.0_COMPLETE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_DEV_KIT_v1.0_COMPLETE.md",
+    "SizeKB": 9.27,
+    "LastModified": "2025-10-03 23:53:27",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_ENHANCEMENT_COMPLETION_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_ENHANCEMENT_COMPLETION_REPORT.md",
+    "SizeKB": 9.49,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_ENHANCEMENT_PHASES_TODO.md",
+    "Category": "planning-archive",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\planning-archive\\TERRAFUSION_ENHANCEMENT_PHASES_TODO.md",
+    "SizeKB": 5.46,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_FRONTEND_ENGINE_PHASE_3_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRAFUSION_FRONTEND_ENGINE_PHASE_3_COMPLETE.md",
+    "SizeKB": 14.85,
+    "LastModified": "2025-10-02 14:50:15",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_GOSPEL.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_GOSPEL.md",
+    "SizeKB": 36.34,
+    "LastModified": "2025-10-02 00:56:35",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_IMPLEMENTATION_STATUS_SUMMARY.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\TERRAFUSION_IMPLEMENTATION_STATUS_SUMMARY.md",
+    "SizeKB": 9.45,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_INTEGRATION_AUDIT_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_INTEGRATION_AUDIT_REPORT.md",
+    "SizeKB": 31.39,
+    "LastModified": "2025-10-03 23:05:27",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_LIGHTHOUSE_PERFORMANCE_AUDIT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_LIGHTHOUSE_PERFORMANCE_AUDIT.md",
+    "SizeKB": 7.8,
+    "LastModified": "2025-10-02 16:08:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_NATIVE_ARCHITECTURE_FINAL.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_NATIVE_ARCHITECTURE_FINAL.md",
+    "SizeKB": 10.18,
+    "LastModified": "2025-10-03 23:32:58",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_OS_CURRENT_STATUS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_OS_CURRENT_STATUS.md",
+    "SizeKB": 4.25,
+    "LastModified": "2025-10-04 01:51:07",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_OS_FINAL_LAUNCH.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_OS_FINAL_LAUNCH.md",
+    "SizeKB": 2.02,
+    "LastModified": "2025-10-04 02:24:43",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_OS_FINAL_STATUS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_OS_FINAL_STATUS.md",
+    "SizeKB": 4.34,
+    "LastModified": "2025-10-04 01:52:34",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_OS_FIXED_AND_RUNNING.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_OS_FIXED_AND_RUNNING.md",
+    "SizeKB": 1.76,
+    "LastModified": "2025-10-04 02:14:10",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_OS_LAUNCHED.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_OS_LAUNCHED.md",
+    "SizeKB": 2.29,
+    "LastModified": "2025-10-04 02:22:32",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_OS_RUNNING_STATUS.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_OS_RUNNING_STATUS.md",
+    "SizeKB": 2.15,
+    "LastModified": "2025-10-04 02:06:22",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_OS_VISION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_OS_VISION.md",
+    "SizeKB": 15.21,
+    "LastModified": "2025-10-07 09:13:43",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_PHASE_4_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRAFUSION_PHASE_4_COMPLETE.md",
+    "SizeKB": 16.56,
+    "LastModified": "2025-10-02 16:08:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_PHASE_5_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRAFUSION_PHASE_5_COMPLETE.md",
+    "SizeKB": 18.99,
+    "LastModified": "2025-10-02 16:55:13",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_PHASE_6_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRAFUSION_PHASE_6_COMPLETE.md",
+    "SizeKB": 20.75,
+    "LastModified": "2025-10-02 19:16:15",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_PHASE_7_WEEK_1_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\TERRAFUSION_PHASE_7_WEEK_1_COMPLETE.md",
+    "SizeKB": 11.34,
+    "LastModified": "2025-10-02 23:55:47",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_PHASE_7_WEEK_1_PROGRESS.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\TERRAFUSION_PHASE_7_WEEK_1_PROGRESS.md",
+    "SizeKB": 9.48,
+    "LastModified": "2025-10-02 23:55:47",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_PHD_AUDIT_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_PHD_AUDIT_REPORT.md",
+    "SizeKB": 21.43,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_PRODUCTION_AUDIT_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_PRODUCTION_AUDIT_REPORT.md",
+    "SizeKB": 22.24,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_PRODUCTION_BUILD_SUCCESS.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\TERRAFUSION_PRODUCTION_BUILD_SUCCESS.md",
+    "SizeKB": 9.63,
+    "LastModified": "2025-10-02 15:25:40",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_SYSTEM_ARCHITECTURE_V1.md",
+    "SizeKB": 49.12,
+    "LastModified": "2025-10-06 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TERRAFUSION_ULTIMATE_GUIDE.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TERRAFUSION_ULTIMATE_GUIDE.md",
+    "SizeKB": 12.68,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TEST_REGISTRY.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TEST_REGISTRY.md",
+    "SizeKB": 8.44,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "TRANSFORMATION_COMPLETE_FINAL_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\TRANSFORMATION_COMPLETE_FINAL_REPORT.md",
+    "SizeKB": 21.51,
+    "LastModified": "2025-10-06 13:02:17",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ULTIMATE_AI_AGENT_SOLUTION_COMPLETE.md",
+    "Category": "implementation-logs",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\implementation-logs\\ULTIMATE_AI_AGENT_SOLUTION_COMPLETE.md",
+    "SizeKB": 4.69,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "ULTIMATE_SESSION_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\ULTIMATE_SESSION_COMPLETE.md",
+    "SizeKB": 11.28,
+    "LastModified": "2025-10-03 23:53:27",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "VALIDATION_FIXES_SUMMARY_COMPLETE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\VALIDATION_FIXES_SUMMARY_COMPLETE.md",
+    "SizeKB": 6.6,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "VISUAL_INSPECTION_CHECKLIST.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\VISUAL_INSPECTION_CHECKLIST.md",
+    "SizeKB": 4.97,
+    "LastModified": "2025-10-02 00:28:13",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_1_DAY_2_DELIVERABLES.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_1_DAY_2_DELIVERABLES.md",
+    "SizeKB": 36.21,
+    "LastModified": "2025-10-06 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_1_DAY_3_DELIVERABLES.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_1_DAY_3_DELIVERABLES.md",
+    "SizeKB": 37.95,
+    "LastModified": "2025-10-06 18:12:36",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_1_DAYS_4_5_DELIVERABLES.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_1_DAYS_4_5_DELIVERABLES.md",
+    "SizeKB": 48.61,
+    "LastModified": "2025-10-06 21:14:48",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_1_DAYS_6_7_DELIVERABLES.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_1_DAYS_6_7_DELIVERABLES.md",
+    "SizeKB": 48.01,
+    "LastModified": "2025-10-06 21:14:48",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_3_AGENT_ORCHESTRATION_POC.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_3_AGENT_ORCHESTRATION_POC.md",
+    "SizeKB": 39.52,
+    "LastModified": "2025-10-06 21:28:31",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_4_DATA_ARCHITECTURE_POC.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_4_DATA_ARCHITECTURE_POC.md",
+    "SizeKB": 46.8,
+    "LastModified": "2025-10-07 03:19:10",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_5_PART_1_ZERO_TRUST_NIST.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_5_PART_1_ZERO_TRUST_NIST.md",
+    "SizeKB": 39.6,
+    "LastModified": "2025-10-07 04:18:32",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_5_PART_2_MTLS_POC.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_5_PART_2_MTLS_POC.md",
+    "SizeKB": 40.39,
+    "LastModified": "2025-10-07 04:18:32",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_5_PART_3_STRIDE_R003_VALIDATION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_5_PART_3_STRIDE_R003_VALIDATION.md",
+    "SizeKB": 34.76,
+    "LastModified": "2025-10-07 04:18:32",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_6_PERFORMANCE_ARCHITECTURE_POC.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_6_PERFORMANCE_ARCHITECTURE_POC.md",
+    "SizeKB": 44.57,
+    "LastModified": "2025-10-07 04:47:00",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_7_PART_1_CIRCUIT_BREAKERS.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_7_PART_1_CIRCUIT_BREAKERS.md",
+    "SizeKB": 31.88,
+    "LastModified": "2025-10-07 05:18:47",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_7_PART_2_EVENT_SCHEMAS_CHAOS.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_7_PART_2_EVENT_SCHEMAS_CHAOS.md",
+    "SizeKB": 31.37,
+    "LastModified": "2025-10-07 05:18:47",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_7_PART_3_R005_VALIDATION.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_7_PART_3_R005_VALIDATION.md",
+    "SizeKB": 27.99,
+    "LastModified": "2025-10-07 05:14:38",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_8_PART_1_EXTERNAL_PEER_REVIEW.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_8_PART_1_EXTERNAL_PEER_REVIEW.md",
+    "SizeKB": 33.46,
+    "LastModified": "2025-10-07 05:24:01",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_8_PART_2_FISMA_ATO_PACKAGE.md",
+    "Category": "session-notes",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\session-notes\\WEEK_8_PART_2_FISMA_ATO_PACKAGE.md",
+    "SizeKB": 31.28,
+    "LastModified": "2025-10-07 05:31:03",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WEEK_8_PART_3_PHASE_3.5_FINAL_REPORT.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\WEEK_8_PART_3_PHASE_3.5_FINAL_REPORT.md",
+    "SizeKB": 32.03,
+    "LastModified": "2025-10-07 18:17:23",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WHAT_ACTUALLY_WORKS_RIGHT_NOW.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\WHAT_ACTUALLY_WORKS_RIGHT_NOW.md",
+    "SizeKB": 2.48,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WHAT_TO_DO_NEXT_SESSION.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\WHAT_TO_DO_NEXT_SESSION.md",
+    "SizeKB": 2.02,
+    "LastModified": "2025-10-04 01:04:39",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  },
+  {
+    "FileName": "WORKSPACE_COMPANION_WORKING.md",
+    "Category": "historical",
+    "ArchivePath": "C:\\Users\\bsval\\terrafusion_os_1.0\\workspace-optimization\\knowledge-seed\\historical\\WORKSPACE_COMPANION_WORKING.md",
+    "SizeKB": 2.52,
+    "LastModified": "2025-10-01 12:32:19",
+    "ArchivedDate": "2025-10-09 06:12:43",
+    "Status": "Moved"
+  }
+]

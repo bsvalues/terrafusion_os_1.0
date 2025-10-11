@@ -1,0 +1,186 @@
+---
+# TerraFusion OS - Prometheus ServiceMonitors
+# Configures Prometheus to scrape metrics from all services
+################################################################################
+
+# ServiceMonitor for Backend API
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend-api-monitor
+  namespace: observability
+  labels:
+    app: backend-api
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: backend-api
+  namespaceSelector:
+    matchNames:
+      - terrafusion-prod
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+
+---
+# ServiceMonitor for AI Agent
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ai-agent-monitor
+  namespace: observability
+  labels:
+    app: ai-agent
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: ai-agent
+  namespaceSelector:
+    matchNames:
+      - terrafusion-prod
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+
+---
+# ServiceMonitor for MCP Servers
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mcp-servers-monitor
+  namespace: observability
+  labels:
+    app: mcp-servers
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: mcp-servers
+  namespaceSelector:
+    matchNames:
+      - terrafusion-prod
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+
+---
+# ServiceMonitor for PostgreSQL
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: postgres-monitor
+  namespace: observability
+  labels:
+    app: postgres
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  namespaceSelector:
+    matchNames:
+      - terrafusion-prod
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+
+---
+# ServiceMonitor for Redis
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: redis-monitor
+  namespace: observability
+  labels:
+    app: redis
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  namespaceSelector:
+    matchNames:
+      - terrafusion-prod
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+
+---
+# ServiceMonitor for Kong API Gateway
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kong-monitor
+  namespace: observability
+  labels:
+    app: kong
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kong
+  namespaceSelector:
+    matchNames:
+      - kong
+  endpoints:
+    - port: admin
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+
+---
+# ServiceMonitor for Istio (Envoy sidecars)
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-envoy-monitor
+  namespace: observability
+  labels:
+    app: istio
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      istio: envoy
+  namespaceSelector:
+    any: true
+  endpoints:
+    - port: http-envoy-prom
+      path: /stats/prometheus
+      interval: 15s
+      scrapeTimeout: 10s
+
+---
+# PodMonitor for Istio control plane
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-control-plane-monitor
+  namespace: observability
+  labels:
+    app: istiod
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: istiod
+  namespaceSelector:
+    matchNames:
+      - istio-system
+  podMetricsEndpoints:
+    - port: http-monitoring
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s

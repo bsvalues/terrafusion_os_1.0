@@ -1,0 +1,121 @@
+---
+# TerraFusion OS - Istio Gateway
+# External ingress point for production traffic
+################################################################################
+
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: terrafusion-gateway
+  namespace: terrafusion-prod
+  labels:
+    app: terrafusion-gateway
+spec:
+  selector:
+    istio: ingress  # Use Istio ingress gateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "terrafusion.io"
+        - "*.terrafusion.io"
+      tls:
+        httpsRedirect: true  # Redirect HTTP to HTTPS
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "terrafusion.io"
+        - "*.terrafusion.io"
+      tls:
+        mode: SIMPLE
+        credentialName: terrafusion-tls-cert  # Reference to TLS secret
+
+---
+# VirtualService for routing external traffic through gateway
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: terrafusion-external
+  namespace: terrafusion-prod
+spec:
+  hosts:
+    - "api.terrafusion.io"
+  gateways:
+    - terrafusion-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/api"
+      route:
+        - destination:
+            host: backend-api
+            port:
+              number: 8080
+      corsPolicy:
+        allowOrigins:
+          - prefix: "https://terrafusion.io"
+          - prefix: "https://*.terrafusion.io"
+        allowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+        allowHeaders:
+          - authorization
+          - content-type
+          - x-request-id
+        maxAge: 24h
+    - match:
+        - uri:
+            prefix: "/ai"
+      route:
+        - destination:
+            host: ai-agent
+            port:
+              number: 3001
+      timeout: 30s
+
+---
+# Rate limiting for external traffic
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: rate-limit-filter
+  namespace: terrafusion-prod
+spec:
+  workloadSelector:
+    labels:
+      istio: ingress
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: GATEWAY
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            value:
+              stat_prefix: http_local_rate_limiter
+              token_bucket:
+                max_tokens: 1000
+                tokens_per_fill: 1000
+                fill_interval: 60s  # 1000 requests per minute per IP
+              filter_enabled:
+                runtime_key: local_rate_limit_enabled
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                runtime_key: local_rate_limit_enforced
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED

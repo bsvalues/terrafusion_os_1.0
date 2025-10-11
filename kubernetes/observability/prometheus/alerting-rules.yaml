@@ -1,0 +1,251 @@
+---
+# TerraFusion OS - Prometheus Alerting Rules
+# Defines alerts for critical system conditions
+################################################################################
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: terrafusion-alerts
+  namespace: observability
+  labels:
+    app: prometheus
+    release: prometheus
+spec:
+  groups:
+    # High-level system alerts
+    - name: terrafusion.system
+      interval: 30s
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            (sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+            /
+            sum(rate(http_requests_total[5m])) by (service)) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+            component: api
+          annotations:
+            summary: "High error rate detected on {{ $labels.service }}"
+            description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
+        - alert: HighLatency
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
+            ) > 1
+          for: 10m
+          labels:
+            severity: warning
+            component: api
+          annotations:
+            summary: "High latency on {{ $labels.service }}"
+            description: "P95 latency is {{ $value }}s (threshold: 1s)"
+
+        - alert: ServiceDown
+          expr: up{job=~"backend-api|ai-agent|mcp-servers"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            component: service
+          annotations:
+            summary: "Service {{ $labels.job }} is down"
+            description: "Service has been down for more than 2 minutes"
+
+    # Resource alerts
+    - name: terrafusion.resources
+      interval: 30s
+      rules:
+        - alert: HighCPUUsage
+          expr: |
+            100 - (avg by (pod) (rate(container_cpu_usage_seconds_total{namespace="terrafusion-prod"}[5m])) * 100) < 10
+          for: 10m
+          labels:
+            severity: warning
+            component: resources
+          annotations:
+            summary: "High CPU usage on {{ $labels.pod }}"
+            description: "CPU usage is {{ $value }}% (less than 10% free)"
+
+        - alert: HighMemoryUsage
+          expr: |
+            (container_memory_working_set_bytes{namespace="terrafusion-prod"} 
+            / 
+            container_spec_memory_limit_bytes{namespace="terrafusion-prod"}) > 0.9
+          for: 10m
+          labels:
+            severity: warning
+            component: resources
+          annotations:
+            summary: "High memory usage on {{ $labels.pod }}"
+            description: "Memory usage is {{ $value | humanizePercentage }} (threshold: 90%)"
+
+        - alert: PodRestartingFrequently
+          expr: |
+            rate(kube_pod_container_status_restarts_total{namespace="terrafusion-prod"}[15m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+            component: pods
+          annotations:
+            summary: "Pod {{ $labels.pod }} is restarting frequently"
+            description: "Pod has restarted {{ $value }} times in the last 15 minutes"
+
+    # Database alerts
+    - name: terrafusion.database
+      interval: 30s
+      rules:
+        - alert: PostgreSQLDown
+          expr: pg_up == 0
+          for: 2m
+          labels:
+            severity: critical
+            component: database
+          annotations:
+            summary: "PostgreSQL is down"
+            description: "PostgreSQL has been unreachable for more than 2 minutes"
+
+        - alert: HighDatabaseConnections
+          expr: |
+            (sum(pg_stat_activity_count) by (instance)
+            /
+            sum(pg_settings_max_connections) by (instance)) > 0.8
+          for: 5m
+          labels:
+            severity: warning
+            component: database
+          annotations:
+            summary: "High database connection usage"
+            description: "Connection usage is {{ $value | humanizePercentage }} (threshold: 80%)"
+
+        - alert: SlowDatabaseQueries
+          expr: |
+            rate(pg_stat_statements_mean_exec_time_seconds[5m]) > 1
+          for: 10m
+          labels:
+            severity: warning
+            component: database
+          annotations:
+            summary: "Slow database queries detected"
+            description: "Average query time is {{ $value }}s (threshold: 1s)"
+
+    # Redis alerts
+    - name: terrafusion.redis
+      interval: 30s
+      rules:
+        - alert: RedisDown
+          expr: redis_up == 0
+          for: 2m
+          labels:
+            severity: critical
+            component: cache
+          annotations:
+            summary: "Redis is down"
+            description: "Redis has been unreachable for more than 2 minutes"
+
+        - alert: HighRedisMemoryUsage
+          expr: |
+            (redis_memory_used_bytes / redis_memory_max_bytes) > 0.9
+          for: 5m
+          labels:
+            severity: warning
+            component: cache
+          annotations:
+            summary: "High Redis memory usage"
+            description: "Memory usage is {{ $value | humanizePercentage }} (threshold: 90%)"
+
+        - alert: RedisRejectedConnections
+          expr: |
+            rate(redis_rejected_connections_total[5m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+            component: cache
+          annotations:
+            summary: "Redis is rejecting connections"
+            description: "{{ $value }} connections rejected per second"
+
+    # Kong API Gateway alerts
+    - name: terrafusion.kong
+      interval: 30s
+      rules:
+        - alert: KongHighErrorRate
+          expr: |
+            (sum(rate(kong_http_requests_total{code=~"5.."}[5m]))
+            /
+            sum(rate(kong_http_requests_total[5m]))) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+            component: gateway
+          annotations:
+            summary: "High error rate on Kong API Gateway"
+            description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
+        - alert: KongHighLatency
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(kong_latency_bucket[5m])) by (le)
+            ) > 1000
+          for: 10m
+          labels:
+            severity: warning
+            component: gateway
+          annotations:
+            summary: "High latency on Kong API Gateway"
+            description: "P95 latency is {{ $value }}ms (threshold: 1000ms)"
+
+    # Istio service mesh alerts
+    - name: terrafusion.istio
+      interval: 30s
+      rules:
+        - alert: IstioHighErrorRate
+          expr: |
+            (sum(rate(istio_requests_total{response_code=~"5.."}[5m])) by (destination_service)
+            /
+            sum(rate(istio_requests_total[5m])) by (destination_service)) > 0.05
+          for: 5m
+          labels:
+            severity: warning
+            component: service-mesh
+          annotations:
+            summary: "High error rate on {{ $labels.destination_service }}"
+            description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
+        - alert: IstioCertificateExpiringSoon
+          expr: |
+            (istio_agent_cert_expiry_timestamp - time()) < 604800
+          for: 1h
+          labels:
+            severity: warning
+            component: service-mesh
+          annotations:
+            summary: "Istio certificate expiring soon"
+            description: "Certificate expires in {{ $value | humanizeDuration }} (threshold: 7 days)"
+
+    # Storage alerts
+    - name: terrafusion.storage
+      interval: 30s
+      rules:
+        - alert: PersistentVolumeAlmostFull
+          expr: |
+            (1 - (kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes)) > 0.9
+          for: 10m
+          labels:
+            severity: warning
+            component: storage
+          annotations:
+            summary: "PersistentVolume {{ $labels.persistentvolumeclaim }} is almost full"
+            description: "Volume usage is {{ $value | humanizePercentage }} (threshold: 90%)"
+
+        - alert: PersistentVolumeFull
+          expr: |
+            (1 - (kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes)) > 0.95
+          for: 5m
+          labels:
+            severity: critical
+            component: storage
+          annotations:
+            summary: "PersistentVolume {{ $labels.persistentvolumeclaim }} is almost completely full"
+            description: "Volume usage is {{ $value | humanizePercentage }} (threshold: 95%)"

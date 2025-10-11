@@ -1,0 +1,255 @@
+{
+  "HotSwappableModules": {
+    "Warnings": [
+      {
+        "HasBuildScript": true,
+        "HasTestScript": false,
+        "HasStartScript": true,
+        "Name": "TerraFusion Dashboard",
+        "HasNodeModules": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-dashboard\\TerraFusionDashboard",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "HasPackageJson": true,
+        "Status": "WARN"
+      },
+      {
+        "HasBuildScript": true,
+        "HasTestScript": false,
+        "HasStartScript": true,
+        "Name": "TerraFusion GIS",
+        "HasNodeModules": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-gis",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "HasPackageJson": true,
+        "Status": "WARN"
+      },
+      {
+        "HasBuildScript": true,
+        "HasTestScript": false,
+        "HasStartScript": true,
+        "Name": "TerraFusion v0 Demo",
+        "HasNodeModules": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-v0-demo",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "HasPackageJson": true,
+        "Status": "WARN"
+      },
+      {
+        "HasBuildScript": true,
+        "HasTestScript": false,
+        "HasStartScript": true,
+        "Name": "TerraFusion Prime View",
+        "HasNodeModules": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-prime-view",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "HasPackageJson": true,
+        "Status": "WARN"
+      },
+      {
+        "HasBuildScript": false,
+        "HasTestScript": true,
+        "HasStartScript": true,
+        "Name": "TerraFusion Pro Plus",
+        "HasNodeModules": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-pro-plus",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "HasPackageJson": true,
+        "Status": "WARN"
+      }
+    ],
+    "Total": 6,
+    "Validated": 5,
+    "Failed": [
+      {
+        "Name": "AI Command Brain",
+        "Path": "src\\ai-command-brain",
+        "Issues": [
+          "Module directory not found"
+        ],
+        "Status": "FAIL"
+      }
+    ],
+    "Passed": []
+  },
+  "MCPServers": {
+    "Warnings": [],
+    "Total": 0,
+    "Validated": 0,
+    "Failed": [],
+    "Passed": []
+  },
+  "Timestamp": "2025-10-10 10:09:26",
+  "WorkspaceRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
+  "Packages": {
+    "Validated": 0,
+    "Failed": [],
+    "Passed": [],
+    "Total": 0,
+    "Warnings": []
+  },
+  "Summary": {
+    "Failed": 3,
+    "TotalTests": 33,
+    "Passed": 23,
+    "Warnings": 7
+  },
+  "Configuration": {
+    "ConfigFiles": [
+      {
+        "Name": "package.json",
+        "Path": "package.json",
+        "Status": "PASS"
+      },
+      {
+        "Name": "benton-county-config.json",
+        "Path": "benton-county-config.json",
+        "Status": "PASS"
+      },
+      {
+        "Name": ".gitignore",
+        "Path": ".gitignore",
+        "Status": "PASS"
+      },
+      {
+        "Name": "README.md",
+        "Path": "README.md",
+        "Status": "PASS"
+      },
+      {
+        "Name": ".workspace-map.json",
+        "Path": ".workspace-map.json",
+        "Status": "PASS"
+      }
+    ],
+    "EnvFiles": [],
+    "Issues": []
+  },
+  "Backend": {
+    "Issues": [],
+    "BuildStatus": [],
+    "Projects": [
+      {
+        "Name": "TerraFusion.sln",
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.sln",
+        "Status": "PASS"
+      },
+      {
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\api-unified",
+        "HasProjectFile": true,
+        "Issues": [
+          "Build may have issues (run 'dotnet build' for details)"
+        ],
+        "CanBuild": false,
+        "Name": "api-unified",
+        "Status": "WARN"
+      },
+      {
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.API",
+        "HasProjectFile": true,
+        "Issues": [],
+        "CanBuild": true,
+        "Name": "TerraFusion.API",
+        "Status": "PASS"
+      },
+      {
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.Marketplace",
+        "HasProjectFile": false,
+        "Issues": [
+          "No .csproj or .sln file found"
+        ],
+        "CanBuild": false,
+        "Name": "TerraFusion.Marketplace",
+        "Status": "FAIL"
+      },
+      {
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\mcp-core",
+        "HasProjectFile": false,
+        "Issues": [
+          "No .csproj or .sln file found"
+        ],
+        "CanBuild": false,
+        "Name": "mcp-core",
+        "Status": "FAIL"
+      }
+    ]
+  },
+  "AISystems": {
+    "Warnings": [],
+    "Total": 8,
+    "Validated": 8,
+    "Failed": [],
+    "Passed": [
+      {
+        "Name": ".ai (Core AI Development)",
+        "Path": ".ai",
+        "FileCount": 22,
+        "Status": "PASS"
+      },
+      {
+        "Name": "AI Workspace Companion",
+        "Path": "ai-workspace-companion",
+        "FileCount": 21,
+        "Status": "PASS"
+      },
+      {
+        "Name": "AI Swarm Supreme Commander",
+        "Path": "ai-swarm-supreme-commander",
+        "FileCount": 52,
+        "Status": "PASS"
+      },
+      {
+        "Name": "Backend AI Models",
+        "Path": "backend\\ai-models",
+        "FileCount": 113,
+        "Status": "PASS"
+      },
+      {
+        "Name": "Backend AI Swarm",
+        "Path": "backend\\ai-swarm",
+        "FileCount": 27,
+        "Status": "PASS"
+      },
+      {
+        "Name": "Backend AI Swarm Service",
+        "Path": "backend\\ai-swarm-service",
+        "FileCount": 2,
+        "Status": "PASS"
+      },
+      {
+        "Name": "AI Agent Training Config v2",
+        "Path": "ai-agent-training-config-v2.json",
+        "Status": "PASS"
+      },
+      {
+        "Name": "AI Swarm Config",
+        "Path": "ai-swarm-config.json",
+        "Status": "PASS"
+      }
+    ]
+  },
+  "Recommendations": [
+    {
+      "Issue": "1 module(s) failed validation",
+      "Action": "Review failed modules and run 'npm install' in their directories",
+      "Modules": "AI Command Brain",
+      "Priority": "HIGH",
+      "Category": "Hot-Swappable Modules"
+    },
+    {
+      "Issue": "5 module(s) missing node_modules",
+      "Action": "Run 'npm install' in the following directories: TerraFusion Dashboard, TerraFusion GIS, TerraFusion v0 Demo, TerraFusion Prime View, TerraFusion Pro Plus",
+      "Priority": "MEDIUM",
+      "Category": "Dependencies"
+    }
+  ]
+}

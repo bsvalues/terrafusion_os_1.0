@@ -3,10 +3,7 @@
 import { useState } from "react"
 import { useModuleRegistry } from "./module-registry"
 import { ModuleCard } from "./module-card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+import { Button, Input, Select, Badge } from "@terrafusion/shared"
 import { Search, Filter, Grid, List  } from '@mui/icons-material'
 import type { ModuleCategory } from "@/lib/modules"
 
@@ -51,7 +48,8 @@ export function ModuleLauncher() {
       {/* Header */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <div><>
+          <div>
+<>
 
             <h1 className="text-3xl font-heading font-bold">Module Launcher</h1>
             <p
@@ -68,7 +66,8 @@ className="text-muted-foreground">
         {/* Controls */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" /><>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+<>
 
             <Input
               placeholder="Search modules..."
@@ -85,7 +84,8 @@ className="text-muted-foreground">
             onValueChange={(value) => setSelectedCategory(value as ModuleCategory | "all")}
           >
             <SelectTrigger className="w-48">
-              <Filter className="w-4 h-4 mr-2" /><>
+              <Filter className="w-4 h-4 mr-2" />
+<>
 
               <SelectValue />
             </SelectTrigger>
@@ -101,7 +101,8 @@ className="text-muted-foreground">
           </Select>
 
           <div className="flex gap-2">
-            <Button variant={viewMode === "grid" ? "default" : "outline"} size="sm" onClick={() => setViewMode("grid")}><>
+            <Button variant={viewMode === "grid" ? "default" : "outline"} size="sm" onClick={() => setViewMode("grid")}>
+<>
 
               <Grid className="w-4 h-4" />
             </Button>
@@ -133,7 +134,8 @@ variant={viewMode === "list" ? "default" : "outline"} size="sm" onClick={() => s
       </div>
 
       {filteredModules.length === 0 && (
-        <div className="text-center py-12"><>
+        <div className="text-center py-12">
+<>
 
           <p className="text-muted-foreground">No modules found matching your criteria.</p>
           <Button

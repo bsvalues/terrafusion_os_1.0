@@ -1,0 +1,195 @@
+---
+# TerraFusion OS - Istio Authorization Policies
+# Implements zero-trust security between services
+################################################################################
+
+# Default deny-all policy (start secure, then open up)
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-all
+  namespace: terrafusion-prod
+spec:
+  {}  # Empty spec = deny all by default
+
+---
+# Allow backend API to access database
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-backend-to-postgres
+  namespace: terrafusion-prod
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/terrafusion-prod/sa/backend-api"
+      to:
+        - operation:
+            ports:
+              - "5432"
+
+---
+# Allow backend API to access Redis
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-backend-to-redis
+  namespace: terrafusion-prod
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/terrafusion-prod/sa/backend-api"
+      to:
+        - operation:
+            ports:
+              - "6379"
+
+---
+# Allow AI agent to access backend API
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ai-agent-to-backend
+  namespace: terrafusion-prod
+spec:
+  selector:
+    matchLabels:
+      app: backend-api
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/terrafusion-prod/sa/ai-agent"
+      to:
+        - operation:
+            ports:
+              - "8080"
+            methods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "PATCH"
+
+---
+# Allow AI agent to access Redis
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ai-agent-to-redis
+  namespace: terrafusion-prod
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/terrafusion-prod/sa/ai-agent"
+      to:
+        - operation:
+            ports:
+              - "6379"
+
+---
+# Allow MCP servers to access backend API
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-mcp-to-backend
+  namespace: terrafusion-prod
+spec:
+  selector:
+    matchLabels:
+      app: backend-api
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/terrafusion-prod/sa/mcp-servers"
+      to:
+        - operation:
+            ports:
+              - "8080"
+            methods:
+              - "GET"
+              - "POST"
+
+---
+# Allow ingress gateway to access backend API
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-backend
+  namespace: terrafusion-prod
+spec:
+  selector:
+    matchLabels:
+      app: backend-api
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces:
+              - "istio-system"
+      to:
+        - operation:
+            ports:
+              - "8080"
+
+---
+# Allow ingress gateway to access AI agent
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-ai-agent
+  namespace: terrafusion-prod
+spec:
+  selector:
+    matchLabels:
+      app: ai-agent
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces:
+              - "istio-system"
+      to:
+        - operation:
+            ports:
+              - "3001"
+
+---
+# Allow health check probes from Kubernetes
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-health-checks
+  namespace: terrafusion-prod
+spec:
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            paths:
+              - "/health"
+              - "/healthz"
+              - "/ready"
+              - "/readyz"
+            methods:
+              - "GET"

@@ -1,0 +1,344 @@
+# TerraFusion OS - Resource Requests and Limits
+# Defines CPU/memory resources for all services (required for HPA)
+################################################################################
+
+---
+# Backend API - ASP.NET Core API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: terrafusion-prod
+  labels:
+    app: backend-api
+    version: v1
+spec:
+  replicas: 2  # Initial replicas (HPA will adjust)
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api
+        version: v1
+    spec:
+      containers:
+        - name: backend-api
+          image: terrafusion/backend-api:latest
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m        # 0.5 CPU cores minimum
+              memory: 512Mi    # 512 MB minimum
+            limits:
+              cpu: 2000m       # 2 CPU cores maximum
+              memory: 2Gi      # 2 GB maximum
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: DATABASE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: database-credentials
+                  key: connection-string
+            - name: REDIS_HOST
+              value: "redis-service.terrafusion-prod.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+---
+# AI Agent - Node.js AI Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-agent
+  namespace: terrafusion-prod
+  labels:
+    app: ai-agent
+    version: v1
+spec:
+  replicas: 2  # Initial replicas (HPA will adjust)
+  selector:
+    matchLabels:
+      app: ai-agent
+  template:
+    metadata:
+      labels:
+        app: ai-agent
+        version: v1
+    spec:
+      containers:
+        - name: ai-agent
+          image: terrafusion/ai-agent:latest
+          ports:
+            - containerPort: 3001
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 1000m       # 1 CPU core minimum (AI workloads are CPU-intensive)
+              memory: 1Gi      # 1 GB minimum
+            limits:
+              cpu: 4000m       # 4 CPU cores maximum
+              memory: 4Gi      # 4 GB maximum
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: BACKEND_API_URL
+              value: "http://backend-api.terrafusion-prod.svc.cluster.local:8080"
+            - name: REDIS_HOST
+              value: "redis-service.terrafusion-prod.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: MAX_QUEUE_SIZE
+              value: "100"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+---
+# MCP Servers - Model Context Protocol Servers
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-servers
+  namespace: terrafusion-prod
+  labels:
+    app: mcp-servers
+    version: v1
+spec:
+  replicas: 2  # Initial replicas (HPA will adjust)
+  selector:
+    matchLabels:
+      app: mcp-servers
+  template:
+    metadata:
+      labels:
+        app: mcp-servers
+        version: v1
+    spec:
+      containers:
+        - name: mcp-servers
+          image: terrafusion/mcp-servers:latest
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m        # 0.5 CPU cores minimum
+              memory: 512Mi    # 512 MB minimum
+            limits:
+              cpu: 2000m       # 2 CPU cores maximum
+              memory: 2Gi      # 2 GB maximum
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: BACKEND_API_URL
+              value: "http://backend-api.terrafusion-prod.svc.cluster.local:8080"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+---
+# PostgreSQL - Database (Stateful - no HPA, but resource limits needed)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: terrafusion-prod
+  labels:
+    app: postgres
+spec:
+  serviceName: postgres-service
+  replicas: 1  # Single replica (stateful, use replication for HA)
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 1000m       # 1 CPU core minimum
+              memory: 2Gi      # 2 GB minimum
+            limits:
+              cpu: 4000m       # 4 CPU cores maximum
+              memory: 8Gi      # 8 GB maximum
+          env:
+            - name: POSTGRES_DB
+              value: "terrafusion"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: database-credentials
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-credentials
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - terrafusion
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - terrafusion
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Gi
+
+---
+# Redis - Cache (Stateful - no HPA, but resource limits needed)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: terrafusion-prod
+  labels:
+    app: redis
+spec:
+  serviceName: redis-service
+  replicas: 1  # Single replica (use Redis Sentinel/Cluster for HA)
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m        # 0.5 CPU cores minimum
+              memory: 1Gi      # 1 GB minimum
+            limits:
+              cpu: 2000m       # 2 CPU cores maximum
+              memory: 4Gi      # 4 GB maximum
+          command:
+            - redis-server
+            - --maxmemory
+            - 3gb
+            - --maxmemory-policy
+            - allkeys-lru
+            - --save
+            - "900 1"          # Save after 900 seconds if 1 key changed
+            - --save
+            - "300 10"         # Save after 300 seconds if 10 keys changed
+            - --save
+            - "60 10000"       # Save after 60 seconds if 10000 keys changed
+          volumeMounts:
+            - name: redis-storage
+              mountPath: /data
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi

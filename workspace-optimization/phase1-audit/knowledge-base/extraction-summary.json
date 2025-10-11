@@ -1,0 +1,15 @@
+{
+  "ProcessedFiles": 293,
+  "KnowledgeBase": {
+    "Timeline": 4478,
+    "Components": 2076,
+    "Decisions": 85,
+    "Facts": 12494,
+    "Duplicates": 0,
+    "Metrics": 12344,
+    "Relationships": 731
+  },
+  "TotalFiles": 314,
+  "ExtractionDate": "2025-10-09 05:41:01",
+  "SkippedFiles": 21
+}

@@ -1,0 +1,227 @@
+# TerraFusion OS - Horizontal Pod Autoscalers (HPA)
+# Enables automatic scaling based on CPU, memory, and custom metrics
+################################################################################
+
+---
+# Backend API HPA - Scale based on CPU utilization
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-api-hpa
+  namespace: terrafusion-prod
+  labels:
+    app: backend-api
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-api
+  minReplicas: 2                    # Minimum 2 pods (high availability)
+  maxReplicas: 10                   # Maximum 10 pods (cost control)
+  metrics:
+    # Scale based on CPU utilization
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # Scale up when CPU > 70%
+    # Scale based on memory utilization
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80  # Scale up when memory > 80%
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60    # Wait 60s before scaling up (avoid flapping)
+      policies:
+        - type: Percent
+          value: 50                      # Scale up by 50% of current pods
+          periodSeconds: 60              # Every 60 seconds
+        - type: Pods
+          value: 2                       # Or scale up by 2 pods
+          periodSeconds: 60              # Every 60 seconds
+      selectPolicy: Max                  # Use the policy that adds more pods
+    scaleDown:
+      stabilizationWindowSeconds: 300   # Wait 5 minutes before scaling down (avoid flapping)
+      policies:
+        - type: Percent
+          value: 25                      # Scale down by 25% of current pods
+          periodSeconds: 60              # Every 60 seconds
+        - type: Pods
+          value: 1                       # Or scale down by 1 pod
+          periodSeconds: 60              # Every 60 seconds
+      selectPolicy: Min                  # Use the policy that removes fewer pods
+
+---
+# AI Agent HPA - Scale based on CPU and custom metrics (queue depth)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ai-agent-hpa
+  namespace: terrafusion-prod
+  labels:
+    app: ai-agent
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ai-agent
+  minReplicas: 2                    # Minimum 2 pods (high availability)
+  maxReplicas: 5                    # Maximum 5 pods (AI workloads are expensive)
+  metrics:
+    # Scale based on CPU utilization
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # Scale up when CPU > 70%
+    # Scale based on memory utilization
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80  # Scale up when memory > 80%
+    # Scale based on custom metric: queue depth
+    # Note: Requires custom metrics API (e.g., Prometheus Adapter)
+    - type: Pods
+      pods:
+        metric:
+          name: ai_queue_depth
+        target:
+          type: AverageValue
+          averageValue: "10"      # Scale up when queue depth > 10 per pod
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 30    # Scale up faster for AI workloads (30s)
+      policies:
+        - type: Percent
+          value: 100                     # Double the pods (aggressive scaling)
+          periodSeconds: 30              # Every 30 seconds
+        - type: Pods
+          value: 2                       # Or add 2 pods
+          periodSeconds: 30              # Every 30 seconds
+      selectPolicy: Max                  # Use the policy that adds more pods
+    scaleDown:
+      stabilizationWindowSeconds: 600   # Wait 10 minutes before scaling down (AI startup is slow)
+      policies:
+        - type: Pods
+          value: 1                       # Scale down by 1 pod at a time
+          periodSeconds: 180             # Every 3 minutes
+      selectPolicy: Min                  # Conservative scale-down
+
+---
+# MCP Servers HPA - Scale based on CPU utilization
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mcp-servers-hpa
+  namespace: terrafusion-prod
+  labels:
+    app: mcp-servers
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mcp-servers
+  minReplicas: 2                    # Minimum 2 pods (high availability)
+  maxReplicas: 8                    # Maximum 8 pods (moderate cost)
+  metrics:
+    # Scale based on CPU utilization
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # Scale up when CPU > 70%
+    # Scale based on memory utilization
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80  # Scale up when memory > 80%
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60    # Wait 60s before scaling up
+      policies:
+        - type: Percent
+          value: 50                      # Scale up by 50%
+          periodSeconds: 60              # Every 60 seconds
+        - type: Pods
+          value: 2                       # Or add 2 pods
+          periodSeconds: 60              # Every 60 seconds
+      selectPolicy: Max                  # Use the policy that adds more pods
+    scaleDown:
+      stabilizationWindowSeconds: 300   # Wait 5 minutes before scaling down
+      policies:
+        - type: Percent
+          value: 25                      # Scale down by 25%
+          periodSeconds: 60              # Every 60 seconds
+        - type: Pods
+          value: 1                       # Or remove 1 pod
+          periodSeconds: 60              # Every 60 seconds
+      selectPolicy: Min                  # Use the policy that removes fewer pods
+
+---
+# Kong API Gateway HPA - Scale based on requests per second
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kong-hpa
+  namespace: kong
+  labels:
+    app.kubernetes.io/name: kong
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kong
+  minReplicas: 2                    # Minimum 2 pods (high availability)
+  maxReplicas: 6                    # Maximum 6 pods (gateway is critical)
+  metrics:
+    # Scale based on CPU utilization
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # Scale up when CPU > 70%
+    # Scale based on memory utilization
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80  # Scale up when memory > 80%
+    # Scale based on custom metric: requests per second
+    # Note: Requires custom metrics API (e.g., Prometheus Adapter)
+    - type: Pods
+      pods:
+        metric:
+          name: kong_http_requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "1000"    # Scale up when > 1000 RPS per pod
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 30    # Scale up quickly for gateway (30s)
+      policies:
+        - type: Percent
+          value: 50                      # Scale up by 50%
+          periodSeconds: 30              # Every 30 seconds
+        - type: Pods
+          value: 2                       # Or add 2 pods
+          periodSeconds: 30              # Every 30 seconds
+      selectPolicy: Max                  # Use the policy that adds more pods
+    scaleDown:
+      stabilizationWindowSeconds: 300   # Wait 5 minutes before scaling down
+      policies:
+        - type: Pods
+          value: 1                       # Scale down by 1 pod at a time
+          periodSeconds: 120             # Every 2 minutes
+      selectPolicy: Min                  # Conservative scale-down

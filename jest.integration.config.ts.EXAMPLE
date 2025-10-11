@@ -1,0 +1,135 @@
+/**
+ * Jest Configuration for TerraFusion OS 1.0 Integration Tests
+ * 
+ * MIT/PhD-Level Testing Configuration with Path Resolution System
+ * 
+ * This configuration has been updated to use environment variables from
+ * .workspace.env for path-resilient testing. Run set-workspace-env.ps1
+ * before running tests to ensure variables are loaded.
+ * 
+ * @author TerraFusion Systems Engineering Team
+ * @updated October 10, 2025 - Week 3: Path Resolution System
+ */
+
+import type { Config } from '@jest/types';
+import * as path from 'path';
+
+// Load environment variables if not already loaded
+// This ensures the config works even if set-workspace-env.ps1 wasn't run
+const WORKSPACE_ROOT = process.env.TERRAFUSION_ROOT || process.cwd();
+const BACKEND_ROOT = process.env.TERRAFUSION_BACKEND || path.join(WORKSPACE_ROOT, 'backend');
+const COVERAGE_DIR = process.env.TERRAFUSION_COVERAGE || path.join(WORKSPACE_ROOT, 'coverage');
+
+const config: Config.InitialOptions = {
+  // Use ts-jest for TypeScript support
+  preset: 'ts-jest',
+  
+  // Test environment
+  testEnvironment: 'node',
+  
+  // Root directory for tests - now uses environment variable!
+  roots: [path.join(BACKEND_ROOT, 'tests')],
+  
+  // Test match patterns
+  testMatch: [
+    '**/__tests__/**/*.+(ts|tsx|js)',
+    '**/?(*.)+(spec|test).+(ts|tsx|js)',
+  ],
+  
+  // Transform files with ts-jest
+  transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest',
+  },
+  
+  // Module file extensions
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  
+  // Coverage configuration - now uses environment variable!
+  collectCoverage: true,
+  coverageDirectory: COVERAGE_DIR,
+  collectCoverageFrom: [
+    `${BACKEND_ROOT}/src/**/*.{ts,tsx}`,
+    `!${BACKEND_ROOT}/src/**/*.d.ts`,
+    `!${BACKEND_ROOT}/src/**/*.interface.ts`,
+    `!${BACKEND_ROOT}/src/**/*.type.ts`,
+    `!${BACKEND_ROOT}/src/**/index.ts`,
+  ],
+  
+  // Coverage thresholds (MIT/PhD standards)
+  coverageThresholds: {
+    global: {
+      branches: 90,
+      functions: 95,
+      lines: 95,
+      statements: 95,
+    },
+  },
+  
+  // Coverage reporters
+  coverageReporters: ['text', 'text-summary', 'html', 'lcov', 'json'],
+  
+  // Setup files - now uses environment variable!
+  setupFilesAfterEnv: [path.join(BACKEND_ROOT, 'tests', 'setup.ts')],
+  
+  // Global timeout for all tests
+  testTimeout: 60000, // 60 seconds for integration tests
+  
+  // Retry failed tests
+  retry: 3,
+  
+  // Verbose output
+  verbose: true,
+  
+  // Detect open handles (memory leaks)
+  detectOpenHandles: true,
+  
+  // Force exit after tests complete
+  forceExit: true,
+  
+  // Clear mocks between tests
+  clearMocks: true,
+  
+  // Reset mocks between tests
+  resetMocks: true,
+  
+  // Restore mocks between tests
+  restoreMocks: true,
+  
+  // Maximum workers for parallel execution
+  maxWorkers: '50%',
+  
+  // Test environment options
+  testEnvironmentOptions: {
+    url: 'http://localhost',
+  },
+  
+  // Module name mapper for path aliases
+  moduleNameMapper: {
+    // Map @ to backend src directory
+    '^@/(.*)$': `${BACKEND_ROOT}/src/$1`,
+    '^@backend/(.*)$': `${BACKEND_ROOT}/$1`,
+    '^@tests/(.*)$': `${BACKEND_ROOT}/tests/$1`,
+    '^@shared/(.*)$': `${WORKSPACE_ROOT}/terrafusion-shared/$1`,
+  },
+  
+  // Global setup and teardown
+  globalSetup: path.join(BACKEND_ROOT, 'tests', 'globalSetup.ts'),
+  globalTeardown: path.join(BACKEND_ROOT, 'tests', 'globalTeardown.ts'),
+  
+  // Display diagnostic information
+  displayName: {
+    name: 'TerraFusion Backend Integration Tests',
+    color: 'cyan',
+  },
+};
+
+// Log configuration for debugging (only in verbose mode)
+if (process.env.TERRAFUSION_DEBUG === 'true') {
+  console.log('\n🎯 Jest Configuration Loaded:');
+  console.log(`   WORKSPACE_ROOT: ${WORKSPACE_ROOT}`);
+  console.log(`   BACKEND_ROOT: ${BACKEND_ROOT}`);
+  console.log(`   COVERAGE_DIR: ${COVERAGE_DIR}`);
+  console.log('');
+}
+
+export default config;

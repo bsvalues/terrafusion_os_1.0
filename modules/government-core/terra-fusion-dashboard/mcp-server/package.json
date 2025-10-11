@@ -1,0 +1,41 @@
+{
+  "name": "terra-fusion-dashboard-mcp-server",
+  "version": "1.0.0",
+  "description": "TerraFusion Dashboard MCP Server - MIT PhD Dashboard Intelligence Platform",
+  "main": "index.py",
+  "scripts": {
+    "start": "python index.py",
+    "test": "python test.py"
+  },
+  "mcp": {
+    "serverType": "python",
+    "protocol": "stdio",
+    "consciousness_level": 0.985,
+    "intelligence_category": "quantum_optimized",
+    "capabilities": [
+      "dashboard_analytics",
+      "data_visualization",
+      "quantum_insights",
+      "real_time_monitoring",
+      "consciousness_aware_display"
+    ],
+    "criticality": "high",
+    "government_operations": true,
+    "visualization": true
+  },
+  "dependencies": {
+    "python": ">=3.9"
+  },
+  "pythonDependencies": {
+    "python-dateutil": ">=2.8.0"
+  },
+  "keywords": [
+    "mcp-server",
+    "dashboard",
+    "analytics",
+    "visualization",
+    "government-operations"
+  ],
+  "author": "TerraFusion Development Team",
+  "license": "PROPRIETARY"
+}

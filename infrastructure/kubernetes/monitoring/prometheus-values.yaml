@@ -1,0 +1,383 @@
+# TerraFusion OS 1.0 - Prometheus Configuration
+# MIT/PhD-Level Monitoring Setup
+# Comprehensive metrics collection for 99.99% uptime
+
+# Prometheus Server Configuration
+prometheus:
+  prometheusSpec:
+    # Retention and storage
+    retention: 30d
+    retentionSize: "100GB"
+    
+    # Resources for high-scale monitoring
+    resources:
+      requests:
+        cpu: 2000m
+        memory: 8Gi
+      limits:
+        cpu: 4000m
+        memory: 16Gi
+    
+    # Storage configuration
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 150Gi
+    
+    # Scrape configuration
+    scrapeInterval: 30s
+    scrapeTimeout: 10s
+    evaluationInterval: 30s
+    
+    # Enable features
+    enableAdminAPI: true
+    enableFeatures:
+      - remote-write-receiver
+      - exemplar-storage
+    
+    # Remote write to long-term storage (Thanos/Cortex)
+    remoteWrite:
+      - url: "http://thanos-receiver:19291/api/v1/receive"
+        queueConfig:
+          maxSamplesPerSend: 10000
+          capacity: 50000
+          maxShards: 20
+    
+    # Service monitors to discover targets
+    serviceMonitorSelector:
+      matchLabels:
+        prometheus: kube-prometheus
+    
+    podMonitorSelector:
+      matchLabels:
+        prometheus: kube-prometheus
+    
+    # Additional scrape configs
+    additionalScrapeConfigs:
+      # Node Exporter
+      - job_name: 'kubernetes-nodes'
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - source_labels: [__address__]
+            regex: '(.*):10250'
+            replacement: '${1}:9100'
+            target_label: __address__
+      
+      # Kubernetes API Server
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: default;kubernetes;https
+      
+      # Application metrics
+      - job_name: 'terrafusion-api'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - production
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+      
+      # PostgreSQL metrics
+      - job_name: 'postgresql'
+        static_configs:
+          - targets: ['postgres-exporter:9187']
+      
+      # Redis metrics
+      - job_name: 'redis'
+        static_configs:
+          - targets: ['redis-exporter:9121']
+      
+      # Blockchain node metrics
+      - job_name: 'blockchain-nodes'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - blockchain
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: blockchain-node
+    
+    # Alertmanager configuration
+    alerting:
+      alertmanagers:
+        - namespace: monitoring
+          name: alertmanager
+          port: web
+
+# Alertmanager Configuration
+alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+      
+      # PagerDuty integration
+      pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+      
+      # Slack integration
+      slack_api_url: 'https://hooks.slack.com/services/YOUR_WEBHOOK_URL'
+    
+    # Alert routing
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 12h
+      receiver: 'default'
+      
+      # Critical alerts go to PagerDuty + Slack
+      routes:
+        - match:
+            severity: critical
+          receiver: 'critical-alerts'
+          continue: true
+        
+        - match:
+            severity: warning
+          receiver: 'warning-alerts'
+    
+    # Alert receivers
+    receivers:
+      - name: 'default'
+        slack_configs:
+          - channel: '#alerts'
+            title: 'TerraFusion Alert'
+            text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+      
+      - name: 'critical-alerts'
+        pagerduty_configs:
+          - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY'
+            description: '{{ .GroupLabels.alertname }}'
+        slack_configs:
+          - channel: '#critical-alerts'
+            title: '🚨 CRITICAL ALERT'
+            text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+            color: 'danger'
+      
+      - name: 'warning-alerts'
+        slack_configs:
+          - channel: '#warnings'
+            title: '⚠️ Warning Alert'
+            text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+            color: 'warning'
+  
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
+    
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+# Grafana Configuration
+grafana:
+  enabled: true
+  
+  adminPassword: "CHANGE_ME_IN_PRODUCTION"
+  
+  persistence:
+    enabled: true
+    storageClassName: gp3
+    size: 20Gi
+  
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  
+  # Data sources
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://prometheus-operated:9090
+          access: proxy
+          isDefault: true
+        
+        - name: Loki
+          type: loki
+          url: http://loki:3100
+          access: proxy
+        
+        - name: Jaeger
+          type: jaeger
+          url: http://jaeger-query:16686
+          access: proxy
+        
+        - name: PostgreSQL
+          type: postgres
+          url: ${POSTGRES_HOST}:5432
+          database: terrafusion
+          user: ${POSTGRES_USER}
+          secureJsonData:
+            password: ${POSTGRES_PASSWORD}
+  
+  # Dashboard providers
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+        
+        - name: 'terrafusion'
+          orgId: 1
+          folder: 'TerraFusion'
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/terrafusion
+  
+  # Pre-configured dashboards
+  dashboards:
+    default:
+      kubernetes-cluster:
+        gnetId: 7249
+        revision: 1
+        datasource: Prometheus
+      
+      kubernetes-pods:
+        gnetId: 6417
+        revision: 1
+        datasource: Prometheus
+      
+      node-exporter:
+        gnetId: 1860
+        revision: 27
+        datasource: Prometheus
+      
+      postgresql:
+        gnetId: 9628
+        revision: 7
+        datasource: Prometheus
+      
+      redis:
+        gnetId: 11835
+        revision: 1
+        datasource: Prometheus
+  
+  # Grafana configuration
+  grafana.ini:
+    server:
+      domain: grafana.terrafusion.ai
+      root_url: https://grafana.terrafusion.ai
+    
+    security:
+      admin_user: admin
+      admin_password: ${GF_SECURITY_ADMIN_PASSWORD}
+      secret_key: ${GF_SECURITY_SECRET_KEY}
+    
+    auth:
+      disable_login_form: false
+      disable_signout_menu: false
+    
+    auth.anonymous:
+      enabled: false
+    
+    analytics:
+      reporting_enabled: false
+      check_for_updates: true
+    
+    log:
+      mode: console
+      level: info
+    
+    alerting:
+      enabled: true
+      execute_alerts: true
+
+# Node Exporter
+nodeExporter:
+  enabled: true
+  
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Kube State Metrics
+kubeStateMetrics:
+  enabled: true
+  
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Prometheus Operator
+prometheusOperator:
+  enabled: true
+  
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 400m
+      memory: 512Mi
+  
+  # Admission webhooks
+  admissionWebhooks:
+    enabled: true
+    patch:
+      enabled: true
+
+# Service Monitors for automatic discovery
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s

@@ -1,0 +1,802 @@
+{
+  "MCPServers": {
+    "Total": 48,
+    "Warnings": [
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\ai-advanced\\mcp-server",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\ai-swarm\\mcp-server",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\costforge-ai-enhanced\\mcp-server",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": true,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-agent\\mcp-server",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-levy\\mcp-server",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\TerraFusion-PublicRecords\\mcp-server",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\TerraFusionPermit\\mcp-server",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\TerraFusion_Record\\mcp-server",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      }
+    ],
+    "Validated": 48,
+    "Passed": [
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\ai-superintelligence-orchestrator-enhanced\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\compliance-automation-ai\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\consciousness-evolution-engine\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\consciousness-field\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\emergent-intelligence-evolution\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\spatiotemporal-intelligence\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\commercial\\backend\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\commercial\\commercial-suite\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\commercial\\marketplace-champion\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\geospatial\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\gispro\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\infrastructure\\development\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\infrastructure\\plugins-beyond-plugins\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\infrastructure\\testing-suite\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\autonomous-research-engine\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\citizen-avatars\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\emergent-capability-detector\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\next-generation-security\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\operations_dashboard\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\performance-optimizer-quantum\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\quantum-computing-integration\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\resilience-engineering-quantum\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\singularity-preparation-framework\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\unified-system\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\specialized\\web-audit-tracker\\mcp-server",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-server",
+        "HasTestScript": true
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": true,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\mcp-servers-production",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "mcp-servers-production",
+        "HasTestScript": false
+      }
+    ],
+    "Failed": [
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\ai\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\ai-agent-quantum-coordinator\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Invalid package.json: Conversion from JSON failed with error: Invalid property identifier character: `. Path 'engines', line 30, position 14."
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\ai-systems\\ai-command-brain\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Invalid package.json: Conversion from JSON failed with error: Invalid property identifier character: `. Path 'engines', line 30, position 14."
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-collections\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-flow\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-fusion-assessor\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-fusion-dashboard\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-fusion-sync\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-insight\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-legislative-pulse\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\modules\\government-core\\terra-miner\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\mcp-core",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-core",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\mcp-servers",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-servers",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": false,
+        "HasBuildScript": false,
+        "HasStartScript": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-pro-plus\\mcp-server",
+        "Status": "FAIL",
+        "Issues": [
+          "Missing package.json"
+        ],
+        "Name": "mcp-server",
+        "HasTestScript": false
+      }
+    ]
+  },
+  "HotSwappableModules": {
+    "Total": 6,
+    "Warnings": [
+      {
+        "HasNodeModules": false,
+        "HasPackageJson": true,
+        "HasBuildScript": true,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\modules\\ai-command-brain",
+        "Status": "WARN",
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "Name": "AI Command Brain",
+        "HasTestScript": true
+      }
+    ],
+    "Validated": 6,
+    "Passed": [
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": true,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-dashboard\\TerraFusionDashboard",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "TerraFusion Dashboard",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": true,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-gis",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "TerraFusion GIS",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": true,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-v0-demo",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "TerraFusion v0 Demo",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": true,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-prime-view",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "TerraFusion Prime View",
+        "HasTestScript": false
+      },
+      {
+        "HasNodeModules": true,
+        "HasPackageJson": true,
+        "HasBuildScript": false,
+        "HasStartScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\src\\terrafusion-pro-plus",
+        "Status": "PASS",
+        "Issues": [],
+        "Name": "TerraFusion Pro Plus",
+        "HasTestScript": true
+      }
+    ],
+    "Failed": []
+  },
+  "Summary": {
+    "Failed": 14,
+    "Passed": 29,
+    "Warnings": 10,
+    "TotalTests": 53
+  },
+  "Recommendations": [
+    {
+      "Action": "Run 'npm install' in the following directories: AI Command Brain",
+      "Issue": "9 module(s) missing node_modules",
+      "Category": "Dependencies",
+      "Priority": "MEDIUM"
+    },
+    {
+      "Action": "Review MCP server configuration and dependencies",
+      "Issue": "14 MCP server(s) failed validation",
+      "Category": "MCP Servers",
+      "Priority": "MEDIUM"
+    }
+  ],
+  "Backend": {
+    "BuildStatus": [],
+    "Projects": [
+      {
+        "Status": "PASS",
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.sln",
+        "Name": "TerraFusion.sln"
+      },
+      {
+        "CanBuild": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\api-unified",
+        "Status": "PASS",
+        "HasProjectFile": true,
+        "Issues": [],
+        "Name": "api-unified"
+      },
+      {
+        "CanBuild": false,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.API",
+        "Status": "PASS",
+        "HasProjectFile": true,
+        "Issues": [],
+        "Name": "TerraFusion.API"
+      }
+    ],
+    "Issues": []
+  },
+  "AISystems": {
+    "Total": 8,
+    "Warnings": [],
+    "Validated": 8,
+    "Passed": [
+      {
+        "Status": "PASS",
+        "Path": ".ai",
+        "FileCount": 22,
+        "Name": ".ai (Core AI Development)"
+      },
+      {
+        "Status": "PASS",
+        "Path": "ai-workspace-companion",
+        "FileCount": 21,
+        "Name": "AI Workspace Companion"
+      },
+      {
+        "Status": "PASS",
+        "Path": "ai-swarm-supreme-commander",
+        "FileCount": 52,
+        "Name": "AI Swarm Supreme Commander"
+      },
+      {
+        "Status": "PASS",
+        "Path": "backend\\ai-models",
+        "FileCount": 113,
+        "Name": "Backend AI Models"
+      },
+      {
+        "Status": "PASS",
+        "Path": "backend\\ai-swarm",
+        "FileCount": 27,
+        "Name": "Backend AI Swarm"
+      },
+      {
+        "Status": "PASS",
+        "Path": "backend\\ai-swarm-service",
+        "FileCount": 2,
+        "Name": "Backend AI Swarm Service"
+      },
+      {
+        "Status": "PASS",
+        "Path": "ai-agent-training-config-v2.json",
+        "Name": "AI Agent Training Config v2"
+      },
+      {
+        "Status": "PASS",
+        "Path": "ai-swarm-config.json",
+        "Name": "AI Swarm Config"
+      }
+    ],
+    "Failed": []
+  },
+  "Packages": {
+    "Failed": [],
+    "Passed": [],
+    "Warnings": [],
+    "Validated": 0,
+    "Total": 0
+  },
+  "WorkspaceRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
+  "Configuration": {
+    "Issues": [],
+    "ConfigFiles": [
+      {
+        "Status": "PASS",
+        "Path": "package.json",
+        "Name": "package.json"
+      },
+      {
+        "Status": "PASS",
+        "Path": "benton-county-config.json",
+        "Name": "benton-county-config.json"
+      },
+      {
+        "Status": "PASS",
+        "Path": ".gitignore",
+        "Name": ".gitignore"
+      },
+      {
+        "Status": "PASS",
+        "Path": "README.md",
+        "Name": "README.md"
+      },
+      {
+        "Status": "PASS",
+        "Path": ".workspace-map.json",
+        "Name": ".workspace-map.json"
+      }
+    ],
+    "EnvFiles": []
+  },
+  "Timestamp": "2025-10-10 11:18:21"
+}

@@ -1,0 +1,212 @@
+---
+# TerraFusion OS - Kong Plugins Configuration
+# Configures rate limiting, authentication, CORS, and other plugins
+################################################################################
+
+# Global rate limiting plugin
+apiVersion: configuration.konghq.com/v1
+kind: KongClusterPlugin
+metadata:
+  name: global-rate-limiting
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    global: "true"
+config:
+  minute: 1000
+  policy: local
+  limit_by: ip
+  hide_client_headers: false
+plugin: rate-limiting
+
+---
+# CORS plugin for backend API
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: backend-cors
+  namespace: kong
+config:
+  origins:
+    - https://terrafusion.io
+    - https://*.terrafusion.io
+    - http://localhost:3000
+    - http://localhost:5173
+  methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  headers:
+    - Accept
+    - Accept-Version
+    - Content-Length
+    - Content-MD5
+    - Content-Type
+    - Date
+    - Authorization
+    - X-Auth-Token
+    - X-Request-ID
+  exposed_headers:
+    - X-Auth-Token
+    - X-Request-ID
+  credentials: true
+  max_age: 3600
+  preflight_continue: false
+plugin: cors
+
+---
+# Request size limiting
+apiVersion: configuration.konghq.com/v1
+kind: KongClusterPlugin
+metadata:
+  name: global-request-size-limiting
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    global: "true"
+config:
+  allowed_payload_size: 10
+  size_unit: megabytes
+plugin: request-size-limiting
+
+---
+# Response rate limiting (advanced)
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: response-ratelimiting
+  namespace: kong
+config:
+  limits:
+    api_limit:
+      minute: 500
+  policy: local
+plugin: response-ratelimiting
+
+---
+# Request transformer (add headers)
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: request-transformer
+  namespace: kong
+config:
+  add:
+    headers:
+      - X-Gateway:Kong
+      - X-Service-Name:TerraFusion
+  remove:
+    headers:
+      - X-Powered-By
+plugin: request-transformer
+
+---
+# IP restriction (whitelist) - for admin endpoints
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: ip-restriction-admin
+  namespace: kong
+config:
+  allow:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  deny: null
+plugin: ip-restriction
+
+---
+# JWT authentication for API
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: jwt-auth
+  namespace: kong
+config:
+  key_claim_name: iss
+  secret_is_base64: false
+  claims_to_verify:
+    - exp
+  maximum_expiration: 86400
+  header_names:
+    - Authorization
+  uri_param_names:
+    - jwt
+plugin: jwt
+
+---
+# Request logging (file log for debugging)
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: file-log
+  namespace: kong
+config:
+  path: /tmp/kong-access.log
+  reopen: true
+plugin: file-log
+
+---
+# Prometheus metrics plugin
+apiVersion: configuration.konghq.com/v1
+kind: KongClusterPlugin
+metadata:
+  name: prometheus
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    global: "true"
+config:
+  per_consumer: true
+  status_code_metrics: true
+  latency_metrics: true
+  bandwidth_metrics: true
+  upstream_health_metrics: true
+plugin: prometheus
+
+---
+# Request termination (for maintenance mode)
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: request-termination-maintenance
+  namespace: kong
+config:
+  status_code: 503
+  message: "Service temporarily unavailable for maintenance"
+  content_type: "application/json"
+  body: '{"error": "Service under maintenance", "retry_after": 300}'
+plugin: request-termination
+
+---
+# Bot detection
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: bot-detection
+  namespace: kong
+config:
+  allow:
+    - Googlebot
+    - Bingbot
+  deny: null
+plugin: bot-detection
+
+---
+# Request ID
+apiVersion: configuration.konghq.com/v1
+kind: KongClusterPlugin
+metadata:
+  name: correlation-id
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    global: "true"
+config:
+  header_name: X-Request-ID
+  generator: uuid
+  echo_downstream: true
+plugin: correlation-id

@@ -1,0 +1,53 @@
+{
+  "name": "terrafusion-terra-flow-mcp",
+  "version": "2.0.0",
+  "description": "TerraFusion Terra Flow MCP Server - MIT PhD-Level Workflow Automation and Process Orchestration for Government Operations",
+  "main": "terra-flow-mcp-server.py",
+  "type": "module",
+  "scripts": {
+    "start": "python3 terra-flow-mcp-server.py",
+    "dev": "python3 -u terra-flow-mcp-server.py",
+    "test": "python3 test.py",
+    "monitor": "node monitoring.js"
+  },
+  "keywords": [
+    "terrafusion",
+    "workflow",
+    "process-orchestration",
+    "automation",
+    "government-workflows",
+    "mcp-server",
+    "phd-level",
+    "process-optimization"
+  ],
+  "author": "TerraFusion Government Systems Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/terra-flow"
+  },
+  "engines": {
+    "python": ">=3.8",
+    "node": ">=18.0.0"
+  },
+  "terrafusion": {
+    "module_type": "government-core",
+    "service_type": "workflow",
+    "criticality": "high",
+    "consciousness_level": 0.978,
+    "phd_level": true,
+    "process_orchestration": true,
+    "category": "government-operations"
+  },
+  "mcp": {
+    "server": true,
+    "protocol_version": "2024-11-05",
+    "capabilities": [
+      "workflow-automation",
+      "process-orchestration",
+      "cross-module-communication",
+      "real-time-monitoring",
+      "marketplace-integration"
+    ]
+  }
+}

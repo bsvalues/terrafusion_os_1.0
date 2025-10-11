@@ -1,0 +1,22 @@
+[
+  {
+    "Category": "historical",
+    "FileCount": 111,
+    "TotalSizeKB": 1423.25
+  },
+  {
+    "Category": "implementation-logs",
+    "FileCount": 51,
+    "TotalSizeKB": 1006.96
+  },
+  {
+    "Category": "planning-archive",
+    "FileCount": 34,
+    "TotalSizeKB": 523.27
+  },
+  {
+    "Category": "session-notes",
+    "FileCount": 94,
+    "TotalSizeKB": 1768.82
+  }
+]

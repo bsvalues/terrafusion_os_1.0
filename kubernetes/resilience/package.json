@@ -1,0 +1,30 @@
+{
+  "name": "@terrafusion/resilience",
+  "version": "1.0.0",
+  "description": "TerraFusion OS - Application-level resilience libraries",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.6.0",
+    "opossum": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "install-dotnet": "echo 'Installing Polly for .NET...' && dotnet add package Polly.Extensions.Http",
+    "test": "echo 'Run chaos tests: .\\chaos-tests.ps1'"
+  },
+  "keywords": [
+    "resilience",
+    "circuit-breaker",
+    "retry",
+    "timeout",
+    "fallback",
+    "polly",
+    "opossum"
+  ],
+  "author": "TerraFusion Team",
+  "license": "MIT"
+}

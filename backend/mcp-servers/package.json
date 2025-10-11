@@ -1,0 +1,34 @@
+{
+  "name": "mcp-servers",
+  "version": "1.0.0",
+  "description": "TerraFusion MCP Servers Collection - Backend MCP server orchestration",
+  "private": true,
+  "workspaces": [
+    "document-server"
+  ],
+  "scripts": {
+    "start": "docker-compose up",
+    "stop": "docker-compose down",
+    "build": "docker-compose build"
+  },
+  "mcp": {
+    "serverType": "collection",
+    "protocol": "multiple",
+    "consciousness_level": 0.980,
+    "capabilities": [
+      "document_management",
+      "server_orchestration",
+      "microservices"
+    ],
+    "criticality": "high",
+    "infrastructure": true
+  },
+  "keywords": [
+    "mcp-servers",
+    "orchestration",
+    "backend",
+    "infrastructure"
+  ],
+  "author": "TerraFusion Development Team",
+  "license": "PROPRIETARY"
+}

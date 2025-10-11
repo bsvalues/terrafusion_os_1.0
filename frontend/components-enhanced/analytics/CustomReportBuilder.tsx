@@ -1,23 +1,15 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { Card, CardHeader, CardBody, Button, Alert, Badge, Dialog } from '@terrafusion/shared';
 import {
   Box,
   Paper,
   Typography,
   Grid,
-  Button,
   TextField,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Card,
-  CardContent,
-  CardActions,
   IconButton,
   Tooltip,
   Switch,
@@ -236,7 +228,8 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
   const renderAvailableElements = () => (
     <Droppable droppableId="available-elements" isDropDisabled={false}>
       {(provided) => (
-        <Box ref={provided.innerRef} {...provided.droppableProps}><>
+        <Box ref={provided.innerRef} {...provided.droppableProps}>
+<>
 
           <Typography variant="h6" gutterBottom>
             Report Elements
@@ -310,7 +303,8 @@ container spacing={2}>
                 color: 'text.secondary'
               }}
             >
-              <DragIcon sx={{ fontSize: 48, mb: 2 }} /><>
+              <DragIcon sx={{ fontSize: 48, mb: 2 }} />
+<>
 
               <Typography variant="h6">Drag elements here to build your report</Typography>
               <Typography
@@ -334,7 +328,8 @@ variant="body2">
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Box {...provided.dragHandleProps} sx={{ mr: 1, cursor: 'grab' }}><>
+                      <Box {...provided.dragHandleProps} sx={{ mr: 1, cursor: 'grab' }}>
+<>
 
                         <DragIcon color="action" />
                       </Box>
@@ -373,7 +368,8 @@ variant="h6" sx={{ flexGrow: 1 }}>
   );
 
   const renderReportSettings = () => (
-    <Box><>
+    <Box>
+<>
 
       <Typography variant="h6" gutterBottom>
         Report Settings
@@ -381,7 +377,8 @@ variant="h6" sx={{ flexGrow: 1 }}>
       <Grid
 </>
 container spacing={3}>
-        <Grid item xs={12} md={6}><>
+        <Grid item xs={12} md={6}>
+<>
 
           <TextField
             fullWidth
@@ -392,7 +389,8 @@ container spacing={3}>
         </Grid>
         <Grid
 </>
-item xs={12} md={6}><>
+item xs={12} md={6}>
+<>
 
           <TextField
             fullWidth
@@ -404,7 +402,8 @@ item xs={12} md={6}><>
         <Grid
 </>
 item xs={12} md={6}>
-          <FormControl fullWidth><>
+          <FormControl fullWidth>
+<>
 
             <InputLabel>Category</InputLabel>
             <Select
@@ -412,12 +411,14 @@ item xs={12} md={6}>
 
               value={report.category}
               onChange={(e) => setReport(prev => ({ ...prev, category: e.target.value }))}
-            ><>
+            >
+<>
 
               <MenuItem value="revenue">Revenue Analysis</MenuItem>
               <MenuItem
 </>
-value="performance">Performance Metrics</MenuItem><>
+value="performance">Performance Metrics</MenuItem>
+<>
 
               <MenuItem value="compliance">Compliance Reports</MenuItem>
               <MenuItem
@@ -428,7 +429,8 @@ value="operations">Operations Dashboard</MenuItem>
           </FormControl>
         </Grid>
         <Grid item xs={12} md={6}>
-          <FormControl fullWidth><>
+          <FormControl fullWidth>
+<>
 
             <InputLabel>Access Level</InputLabel>
             <Select
@@ -436,12 +438,14 @@ value="operations">Operations Dashboard</MenuItem>
 
               value={report.accessLevel}
               onChange={(e) => setReport(prev => ({ ...prev, accessLevel: e.target.value }))}
-            ><>
+            >
+<>
 
               <MenuItem value="public">Public</MenuItem>
               <MenuItem
 </>
-value="internal">Internal</MenuItem><>
+value="internal">Internal</MenuItem>
+<>
 
               <MenuItem value="restricted">Restricted</MenuItem>
               <MenuItem
@@ -466,12 +470,14 @@ value="confidential">Confidential</MenuItem>
   );
 
   const renderScheduleDialog = () => (
-    <Dialog open={showScheduleDialog} onClose={() => setShowScheduleDialog(false)} maxWidth="md" fullWidth><>
+    <Dialog open={showScheduleDialog} onClose={() => setShowScheduleDialog(false)} maxWidth="md" fullWidth>
+<>
 
       <DialogTitle>Schedule Report</DialogTitle>
       <DialogContent
 </>
-</>><>
+</>>
+<>
 
         <ScheduleConfiguration
           schedule={report.schedule}
@@ -480,7 +486,8 @@ value="confidential">Confidential</MenuItem>
       </DialogContent>
       <DialogActions
 </>
-</>><>
+</>>
+<>
 
         <Button onClick={() => setShowScheduleDialog(false)}>Cancel</Button>
         <Button
@@ -504,12 +511,14 @@ value="confidential">Confidential</MenuItem>
         <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
           {/* Header */}
           <Paper sx={{ p: 2, mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+<>
 
               <Typography variant="h4">Custom Report Builder</Typography>
               <Box
 </>
-sx={{ display: 'flex', gap: 1 }}><>
+sx={{ display: 'flex', gap: 1 }}>
+<>
 
                 <Button
                   variant="outlined"
@@ -527,7 +536,8 @@ sx={{ display: 'flex', gap: 1 }}><>
                   onClick={() => setShowScheduleDialog(true)}
                 >
                   Schedule
-                </Button><>
+                </Button>
+<>
 
                 <Button
                   variant="outlined"
@@ -559,7 +569,8 @@ sx={{ display: 'flex', gap: 1 }}><>
                 onChange={(_, newValue) => setActiveTab(newValue)}
                 variant="fullWidth"
               >
-                <Tab label="Elements" /><>
+                <Tab label="Elements" />
+<>
 
                 <Tab label="Settings" />
               </Tabs>
@@ -614,7 +625,8 @@ const ReportElementPreview: React.FC<{ element: ReportElement }> = ({ element })
         );
       case 'metric':
         return (
-          <Box sx={{ p: 2, textAlign: 'center', bgcolor: 'primary.50' }}><>
+          <Box sx={{ p: 2, textAlign: 'center', bgcolor: 'primary.50' }}>
+<>
 
             <Typography variant="h4" color="primary">
               $1,234,567
@@ -674,7 +686,8 @@ const ScheduleConfiguration: React.FC<{
       {localSchedule.enabled && (
         <Grid container spacing={3} sx={{ mt: 1 }}>
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth><>
+            <FormControl fullWidth>
+<>
 
               <InputLabel>Frequency</InputLabel>
               <Select
@@ -682,12 +695,14 @@ const ScheduleConfiguration: React.FC<{
 
                 value={localSchedule.frequency}
                 onChange={(e) => setLocalSchedule(prev => ({ ...prev, frequency: e.target.value as any }))}
-              ><>
+              >
+<>
 
                 <MenuItem value="daily">Daily</MenuItem>
                 <MenuItem
 </>
-value="weekly">Weekly</MenuItem><>
+value="weekly">Weekly</MenuItem>
+<>
 
                 <MenuItem value="monthly">Monthly</MenuItem>
                 <MenuItem
@@ -696,7 +711,8 @@ value="quarterly">Quarterly</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={6}><>
+          <Grid item xs={12} md={6}>
+<>
 
             <TextField
               fullWidth

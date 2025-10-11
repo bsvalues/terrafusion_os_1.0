@@ -1,0 +1,528 @@
+# TerraFusion OS 1.0 - Centralized Logging Configuration
+# ELK Stack (Elasticsearch, Logstash, Kibana) + Fluentd
+# MIT/PhD-Level Log Management
+
+# Elasticsearch Configuration
+elasticsearch:
+  clusterName: "terrafusion-logs"
+  nodeGroup: "master"
+  
+  # Master nodes
+  masterService: "elasticsearch-master"
+  
+  replicas: 3
+  minimumMasterNodes: 2
+  
+  # Resources
+  resources:
+    requests:
+      cpu: "2000m"
+      memory: "4Gi"
+    limits:
+      cpu: "4000m"
+      memory: "8Gi"
+  
+  # JVM heap size (50% of memory)
+  esJavaOpts: "-Xmx4g -Xms4g"
+  
+  # Volume
+  volumeClaimTemplate:
+    accessModes: ["ReadWriteOnce"]
+    storageClassName: "gp3"
+    resources:
+      requests:
+        storage: 500Gi
+  
+  # Elasticsearch configuration
+  esConfig:
+    elasticsearch.yml: |
+      cluster.name: terrafusion-logs
+      
+      # Network
+      network.host: 0.0.0.0
+      
+      # Discovery
+      discovery.seed_hosts: elasticsearch-master-headless
+      cluster.initial_master_nodes: elasticsearch-master-0,elasticsearch-master-1,elasticsearch-master-2
+      
+      # Security (X-Pack)
+      xpack.security.enabled: true
+      xpack.security.transport.ssl.enabled: true
+      xpack.security.transport.ssl.verification_mode: certificate
+      xpack.security.transport.ssl.keystore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+      xpack.security.transport.ssl.truststore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+      
+      # Monitoring
+      xpack.monitoring.enabled: true
+      xpack.monitoring.collection.enabled: true
+      
+      # Performance
+      thread_pool.search.queue_size: 10000
+      thread_pool.write.queue_size: 10000
+      
+      # Index management
+      action.auto_create_index: true
+      action.destructive_requires_name: true
+      
+      # Data retention
+      indices.lifecycle.poll_interval: 10m
+
+  # Index lifecycle management
+  lifecycle:
+    policies:
+      terrafusion-logs-policy:
+        phases:
+          hot:
+            min_age: 0ms
+            actions:
+              rollover:
+                max_size: 50gb
+                max_age: 1d
+              set_priority:
+                priority: 100
+          warm:
+            min_age: 7d
+            actions:
+              allocate:
+                require:
+                  data: warm
+              set_priority:
+                priority: 50
+          cold:
+            min_age: 30d
+            actions:
+              allocate:
+                require:
+                  data: cold
+              freeze: {}
+              set_priority:
+                priority: 0
+          delete:
+            min_age: 90d
+            actions:
+              delete: {}
+
+---
+# Kibana Configuration
+kibana:
+  elasticsearchHosts: "http://elasticsearch-master:9200"
+  
+  replicas: 2
+  
+  # Resources
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+  
+  # Kibana configuration
+  kibanaConfig:
+    kibana.yml: |
+      server.name: terrafusion-kibana
+      server.host: "0.0.0.0"
+      
+      # Elasticsearch
+      elasticsearch.hosts: ["http://elasticsearch-master:9200"]
+      elasticsearch.username: "kibana_system"
+      elasticsearch.password: "${ELASTICSEARCH_PASSWORD}"
+      
+      # Security
+      xpack.security.enabled: true
+      xpack.security.encryptionKey: "${KIBANA_ENCRYPTION_KEY}"
+      
+      # Monitoring
+      monitoring.ui.enabled: true
+      
+      # Alerting
+      xpack.alerting.enabled: true
+      
+      # Reporting
+      xpack.reporting.enabled: true
+      
+      # Session
+      xpack.security.session.idleTimeout: "1h"
+      xpack.security.session.lifespan: "8h"
+      
+      # Logging
+      logging.dest: stdout
+      logging.json: true
+      logging.quiet: false
+  
+  # Service
+  service:
+    type: ClusterIP
+    port: 5601
+  
+  # Ingress
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    hosts:
+      - host: kibana.terrafusion.ai
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: kibana-tls
+        hosts:
+          - kibana.terrafusion.ai
+
+---
+# Logstash Configuration
+logstash:
+  replicas: 3
+  
+  # Resources
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+  
+  # Logstash configuration
+  logstashConfig:
+    logstash.yml: |
+      http.host: "0.0.0.0"
+      
+      # Pipeline
+      pipeline.workers: 4
+      pipeline.batch.size: 125
+      pipeline.batch.delay: 50
+      
+      # Monitoring
+      xpack.monitoring.enabled: true
+      xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch-master:9200"]
+      xpack.monitoring.elasticsearch.username: "logstash_system"
+      xpack.monitoring.elasticsearch.password: "${ELASTICSEARCH_PASSWORD}"
+  
+  # Pipeline configuration
+  logstashPipeline:
+    logstash.conf: |
+      input {
+        # Beats input (from Filebeat, Metricbeat)
+        beats {
+          port => 5044
+          ssl => false
+        }
+        
+        # HTTP input (for application logs)
+        http {
+          port => 8080
+          codec => json
+        }
+        
+        # Syslog input
+        syslog {
+          port => 5000
+          type => syslog
+        }
+      }
+      
+      filter {
+        # Parse JSON logs
+        if [message] =~ /^\{.*\}$/ {
+          json {
+            source => "message"
+            target => "parsed"
+          }
+        }
+        
+        # Extract fields
+        if [parsed] {
+          mutate {
+            add_field => {
+              "log_level" => "%{[parsed][level]}"
+              "service_name" => "%{[parsed][service]}"
+              "trace_id" => "%{[parsed][trace_id]}"
+              "span_id" => "%{[parsed][span_id]}"
+            }
+          }
+        }
+        
+        # Parse timestamps
+        date {
+          match => [ "timestamp", "ISO8601", "yyyy-MM-dd HH:mm:ss" ]
+          target => "@timestamp"
+        }
+        
+        # GeoIP enrichment
+        if [client_ip] {
+          geoip {
+            source => "client_ip"
+            target => "geoip"
+          }
+        }
+        
+        # User agent parsing
+        if [user_agent] {
+          useragent {
+            source => "user_agent"
+            target => "ua"
+          }
+        }
+        
+        # Add tags based on log level
+        if [log_level] == "ERROR" or [log_level] == "FATAL" {
+          mutate {
+            add_tag => ["error"]
+          }
+        }
+        
+        if [log_level] == "WARN" {
+          mutate {
+            add_tag => ["warning"]
+          }
+        }
+        
+        # Drop debug logs in production (optional)
+        if [log_level] == "DEBUG" and [environment] == "production" {
+          drop { }
+        }
+        
+        # Remove sensitive data
+        mutate {
+          remove_field => ["password", "token", "api_key", "secret"]
+        }
+      }
+      
+      output {
+        # Elasticsearch output
+        elasticsearch {
+          hosts => ["elasticsearch-master:9200"]
+          user => "logstash_writer"
+          password => "${ELASTICSEARCH_PASSWORD}"
+          
+          # Index pattern
+          index => "terrafusion-logs-%{[service_name]}-%{+YYYY.MM.dd}"
+          
+          # ILM
+          ilm_enabled => true
+          ilm_rollover_alias => "terrafusion-logs"
+          ilm_policy => "terrafusion-logs-policy"
+          
+          # Performance
+          bulk_size => 1000
+          flush_size => 500
+        }
+        
+        # Error output for debugging
+        if "_grokparsefailure" in [tags] or "_jsonparsefailure" in [tags] {
+          elasticsearch {
+            hosts => ["elasticsearch-master:9200"]
+            user => "logstash_writer"
+            password => "${ELASTICSEARCH_PASSWORD}"
+            index => "terrafusion-logs-parsing-errors-%{+YYYY.MM.dd}"
+          }
+        }
+        
+        # Send critical errors to alerting
+        if "error" in [tags] {
+          http {
+            url => "http://alertmanager:9093/api/v2/alerts"
+            http_method => "post"
+            format => "json"
+            mapping => {
+              "labels" => {
+                "alertname" => "ApplicationError"
+                "severity" => "warning"
+                "service" => "%{[service_name]}"
+              }
+              "annotations" => {
+                "summary" => "Application error detected"
+                "description" => "%{[message]}"
+              }
+            }
+          }
+        }
+      }
+  
+  # Service
+  service:
+    type: ClusterIP
+    ports:
+      - name: beats
+        port: 5044
+        targetPort: 5044
+      - name: http
+        port: 8080
+        targetPort: 8080
+      - name: syslog
+        port: 5000
+        targetPort: 5000
+
+---
+# Fluentd DaemonSet (runs on every node)
+fluentd:
+  kind: DaemonSet
+  
+  image:
+    repository: fluent/fluentd-kubernetes-daemonset
+    tag: v1.16-debian-elasticsearch8-1
+  
+  # Resources
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+  
+  # Fluentd configuration
+  fileConfigs:
+    01_sources.conf: |-
+      # Container logs
+      <source>
+        @type tail
+        @id in_tail_container_logs
+        path /var/log/containers/*.log
+        pos_file /var/log/fluentd-containers.log.pos
+        tag kubernetes.*
+        read_from_head true
+        <parse>
+          @type json
+          time_format %Y-%m-%dT%H:%M:%S.%NZ
+        </parse>
+      </source>
+      
+      # System logs
+      <source>
+        @type systemd
+        @id in_systemd
+        path /var/log/journal
+        matches [{ "_SYSTEMD_UNIT": "docker.service" }, { "_SYSTEMD_UNIT": "kubelet.service" }]
+        read_from_head true
+        tag systemd
+      </source>
+    
+    02_filters.conf: |-
+      # Kubernetes metadata filter
+      <filter kubernetes.**>
+        @type kubernetes_metadata
+        @id filter_kube_metadata
+        kubernetes_url "#{ENV['FLUENT_FILTER_KUBERNETES_URL'] || 'https://' + ENV.fetch('KUBERNETES_SERVICE_HOST') + ':' + ENV.fetch('KUBERNETES_SERVICE_PORT') + '/api'}"
+        verify_ssl "#{ENV['KUBERNETES_VERIFY_SSL'] || true}"
+        ca_file "#{ENV['KUBERNETES_CA_FILE']}"
+        skip_labels "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_LABELS'] || 'false'}"
+        skip_container_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_CONTAINER_METADATA'] || 'false'}"
+        skip_master_url "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_MASTER_URL'] || 'false'}"
+        skip_namespace_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_NAMESPACE_METADATA'] || 'false'}"
+      </filter>
+      
+      # Parse JSON logs
+      <filter kubernetes.**>
+        @type parser
+        key_name log
+        reserve_data true
+        remove_key_name_field true
+        <parse>
+          @type json
+        </parse>
+      </filter>
+      
+      # Add environment tag
+      <filter kubernetes.**>
+        @type record_transformer
+        <record>
+          environment production
+          cluster_name terrafusion-eks
+        </record>
+      </filter>
+      
+      # Remove sensitive data
+      <filter kubernetes.**>
+        @type record_modifier
+        remove_keys password,token,api_key,secret,authorization
+      </filter>
+    
+    03_outputs.conf: |-
+      # Send to Logstash
+      <match kubernetes.**>
+        @type forward
+        @id out_forward_logstash
+        
+        <server>
+          host logstash
+          port 5044
+        </server>
+        
+        <buffer>
+          @type file
+          path /var/log/fluentd-buffers/kubernetes.buffer
+          flush_mode interval
+          retry_type exponential_backoff
+          flush_interval 5s
+          retry_forever false
+          retry_max_interval 30
+          chunk_limit_size 2M
+          queue_limit_length 8
+          overflow_action block
+        </buffer>
+      </match>
+      
+      # Send system logs to Logstash
+      <match systemd>
+        @type forward
+        @id out_forward_systemd
+        
+        <server>
+          host logstash
+          port 5044
+        </server>
+        
+        <buffer>
+          @type file
+          path /var/log/fluentd-buffers/systemd.buffer
+          flush_mode interval
+          flush_interval 5s
+        </buffer>
+      </match>
+  
+  # Volume mounts
+  volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+    - name: varlibdockercontainers
+      mountPath: /var/lib/docker/containers
+      readOnly: true
+    - name: systemd
+      mountPath: /var/log/journal
+      readOnly: true
+  
+  volumes:
+    - name: varlog
+      hostPath:
+        path: /var/log
+    - name: varlibdockercontainers
+      hostPath:
+        path: /var/lib/docker/containers
+    - name: systemd
+      hostPath:
+        path: /var/log/journal
+
+---
+# ServiceMonitor for Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: elasticsearch
+  namespace: monitoring
+  labels:
+    app: elasticsearch
+    prometheus: kube-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: elasticsearch
+  endpoints:
+    - port: http
+      interval: 30s
+      path: /_prometheus/metrics

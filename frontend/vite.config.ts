@@ -39,6 +39,7 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@types': path.resolve(__dirname, './src/types'),
+      '@terrafusion/shared': path.resolve(__dirname, '../terrafusion-shared/dist/index.js'),
     }
   },
   

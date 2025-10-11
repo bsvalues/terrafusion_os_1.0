@@ -380,152 +380,75 @@ export interface DepartmentMetrics {
   crossTeamCollaboration: number;
 }
 
-// Enums
-export enum UserRole {
-  ADMINISTRATOR = 'administrator',
-  DEPARTMENT_HEAD = 'department_head',
-  TEAM_LEAD = 'team_lead',
-  PROJECT_MANAGER = 'project_manager',
-  SENIOR_ANALYST = 'senior_analyst',
-  ANALYST = 'analyst',
-  TECHNICIAN = 'technician',
-  GUEST = 'guest'
-}
+// Import enums from @terrafusion/shared (replacing duplicate definitions)
+import { 
+  UserRole,
+  SecurityClearance,
+  ProjectType,
+  ProjectStatus,
+  ProjectPriority,
+  ProjectRole,
+  TaskType,
+  TaskStatus,
+  TaskPriority,
+  CommentType,
+  MilestoneStatus,
+  PhaseStatus,
+  SessionType,
+  SessionStatus,
+  SessionRole,
+  MessageType,
+  CanvasElementType,
+  PermissionCategory,
+  PermissionLevel,
+  PermissionScope,
+  ProjectPermissionScope,
+  ConditionType,
+  ConditionOperator,
+  DocumentType,
+  DocumentStatus,
+  DocumentPermissionLevel,
+  AuditEventType,
+  NotificationType,
+  NotificationPriority
+} from '@terrafusion/shared';
 
-export enum SecurityClearance {
-  PUBLIC = 'public',
-  INTERNAL = 'internal',
-  CONFIDENTIAL = 'confidential',
-  SECRET = 'secret',
-  TOP_SECRET = 'top_secret'
-}
+// Re-export for compatibility with existing code
+export { 
+  UserRole,
+  SecurityClearance,
+  ProjectType,
+  ProjectStatus,
+  ProjectPriority,
+  ProjectRole,
+  TaskType,
+  TaskStatus,
+  TaskPriority,
+  CommentType,
+  MilestoneStatus,
+  PhaseStatus,
+  SessionType,
+  SessionStatus,
+  SessionRole,
+  MessageType,
+  CanvasElementType,
+  PermissionCategory,
+  PermissionLevel,
+  PermissionScope,
+  ProjectPermissionScope,
+  ConditionType,
+  ConditionOperator,
+  DocumentType,
+  DocumentStatus,
+  DocumentPermissionLevel,
+  AuditEventType,
+  NotificationType,
+  NotificationPriority
+};
 
-export enum ProjectType {
-  ASSESSMENT = 'assessment',
-  VALUATION = 'valuation',
-  COMPLIANCE = 'compliance',
-  SYSTEM_INTEGRATION = 'system_integration',
-  DATA_MIGRATION = 'data_migration',
-  REPORTING = 'reporting',
-  AUDIT = 'audit',
-  TRAINING = 'training'
-}
+// All shared enum definitions imported from @terrafusion/shared above
 
-export enum ProjectStatus {
-  DRAFT = 'draft',
-  PLANNING = 'planning',
-  ACTIVE = 'active',
-  ON_HOLD = 'on_hold',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-  ARCHIVED = 'archived'
-}
-
-export enum ProjectPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  CRITICAL = 'critical',
-  EMERGENCY = 'emergency'
-}
-
-export enum ProjectRole {
-  OWNER = 'owner',
-  MANAGER = 'manager',
-  CONTRIBUTOR = 'contributor',
-  REVIEWER = 'reviewer',
-  OBSERVER = 'observer'
-}
-
-export enum TaskType {
-  FEATURE = 'feature',
-  BUG = 'bug',
-  IMPROVEMENT = 'improvement',
-  DOCUMENTATION = 'documentation',
-  TESTING = 'testing',
-  DEPLOYMENT = 'deployment',
-  MAINTENANCE = 'maintenance'
-}
-
-export enum TaskStatus {
-  BACKLOG = 'backlog',
-  TO_DO = 'to_do',
-  IN_PROGRESS = 'in_progress',
-  IN_REVIEW = 'in_review',
-  TESTING = 'testing',
-  DONE = 'done',
-  BLOCKED = 'blocked'
-}
-
-export enum TaskPriority {
-  LOWEST = 'lowest',
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  HIGHEST = 'highest'
-}
-
-export enum CommentType {
-  COMMENT = 'comment',
-  SYSTEM = 'system',
-  MENTION = 'mention',
-  STATUS_CHANGE = 'status_change'
-}
-
-export enum MilestoneStatus {
-  PLANNED = 'planned',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  DELAYED = 'delayed',
-  CANCELLED = 'cancelled'
-}
-
-export enum PhaseStatus {
-  NOT_STARTED = 'not_started',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  DELAYED = 'delayed'
-}
-
-export enum SessionType {
-  MEETING = 'meeting',
-  BRAINSTORM = 'brainstorm',
-  REVIEW = 'review',
-  TRAINING = 'training',
-  PRESENTATION = 'presentation'
-}
-
-export enum SessionStatus {
-  SCHEDULED = 'scheduled',
-  ACTIVE = 'active',
-  PAUSED = 'paused',
-  ENDED = 'ended',
-  CANCELLED = 'cancelled'
-}
-
-export enum SessionRole {
-  HOST = 'host',
-  PRESENTER = 'presenter',
-  PARTICIPANT = 'participant',
-  OBSERVER = 'observer'
-}
-
-export enum MessageType {
-  TEXT = 'text',
-  FILE = 'file',
-  IMAGE = 'image',
-  SYSTEM = 'system',
-  MENTION = 'mention'
-}
-
-export enum CanvasElementType {
-  TEXT = 'text',
-  SHAPE = 'shape',
-  LINE = 'line',
-  IMAGE = 'image',
-  STICKY_NOTE = 'sticky_note'
-}
-
+// Collaboration-specific enums not in shared package (kept local)
 export enum WhiteboardTool {
   PEN = 'pen',
   HIGHLIGHTER = 'highlighter',
@@ -533,92 +456,6 @@ export enum WhiteboardTool {
   TEXT = 'text',
   SHAPE = 'shape',
   SELECT = 'select'
-}
-
-export enum PermissionCategory {
-  SYSTEM = 'system',
-  PROJECT = 'project',
-  TEAM = 'team',
-  DOCUMENT = 'document',
-  COLLABORATION = 'collaboration'
-}
-
-export enum PermissionLevel {
-  NONE = 'none',
-  READ = 'read',
-  WRITE = 'write',
-  ADMIN = 'admin',
-  OWNER = 'owner'
-}
-
-export enum PermissionScope {
-  GLOBAL = 'global',
-  DEPARTMENT = 'department',
-  TEAM = 'team',
-  PROJECT = 'project',
-  DOCUMENT = 'document'
-}
-
-export enum ProjectPermissionScope {
-  ALL = 'all',
-  TASKS = 'tasks',
-  DOCUMENTS = 'documents',
-  TEAM = 'team',
-  SETTINGS = 'settings'
-}
-
-export enum ConditionType {
-  TIME_RANGE = 'time_range',
-  LOCATION = 'location',
-  DEPARTMENT = 'department',
-  ROLE = 'role',
-  CLEARANCE = 'clearance'
-}
-
-export enum ConditionOperator {
-  EQUALS = 'equals',
-  NOT_EQUALS = 'not_equals',
-  GREATER_THAN = 'greater_than',
-  LESS_THAN = 'less_than',
-  CONTAINS = 'contains',
-  IN = 'in'
-}
-
-export enum DocumentType {
-  TEXT = 'text',
-  SPREADSHEET = 'spreadsheet',
-  PRESENTATION = 'presentation',
-  PDF = 'pdf',
-  IMAGE = 'image',
-  VIDEO = 'video',
-  FORM = 'form'
-}
-
-export enum DocumentStatus {
-  DRAFT = 'draft',
-  REVIEW = 'review',
-  APPROVED = 'approved',
-  PUBLISHED = 'published',
-  ARCHIVED = 'archived'
-}
-
-export enum DocumentPermissionLevel {
-  NONE = 'none',
-  VIEW = 'view',
-  COMMENT = 'comment',
-  EDIT = 'edit',
-  ADMIN = 'admin'
-}
-
-export enum AuditEventType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  VIEW = 'view',
-  SHARE = 'share',
-  PERMISSION_CHANGE = 'permission_change',
-  LOGIN = 'login',
-  LOGOUT = 'logout'
 }
 
 export enum AIAssistantType {
@@ -636,24 +473,6 @@ export enum CapabilityType {
   DOCUMENT_REVIEW = 'document_review',
   MEETING_SUMMARY = 'meeting_summary',
   TASK_SUGGESTION = 'task_suggestion'
-}
-
-export enum NotificationType {
-  TASK_ASSIGNED = 'task_assigned',
-  TASK_COMPLETED = 'task_completed',
-  TASK_OVERDUE = 'task_overdue',
-  PROJECT_UPDATE = 'project_update',
-  MENTION = 'mention',
-  MEETING_REMINDER = 'meeting_reminder',
-  DOCUMENT_SHARED = 'document_shared',
-  TEAM_INVITATION = 'team_invitation'
-}
-
-export enum NotificationPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  URGENT = 'urgent'
 }
 
 // Utility Types

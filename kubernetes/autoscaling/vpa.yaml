@@ -1,0 +1,152 @@
+# TerraFusion OS - Vertical Pod Autoscalers (VPA)
+# Automatically adjusts resource requests/limits for stateful services
+# Note: VPA requires the VPA controller to be installed in the cluster
+################################################################################
+
+---
+# PostgreSQL VPA - Optimize database resource allocation
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: postgres-vpa
+  namespace: terrafusion-prod
+  labels:
+    app: postgres
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: postgres
+  updatePolicy:
+    updateMode: "Off"               # Recommendation only (manual approval required for stateful)
+  resourcePolicy:
+    containerPolicies:
+      - containerName: postgres
+        minAllowed:
+          cpu: 500m                 # Minimum 0.5 CPU cores
+          memory: 1Gi               # Minimum 1 GB
+        maxAllowed:
+          cpu: 8000m                # Maximum 8 CPU cores
+          memory: 16Gi              # Maximum 16 GB
+        controlledResources:
+          - cpu
+          - memory
+
+---
+# Redis VPA - Optimize cache resource allocation
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: redis-vpa
+  namespace: terrafusion-prod
+  labels:
+    app: redis
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: redis
+  updatePolicy:
+    updateMode: "Off"               # Recommendation only (manual approval required for stateful)
+  resourcePolicy:
+    containerPolicies:
+      - containerName: redis
+        minAllowed:
+          cpu: 250m                 # Minimum 0.25 CPU cores
+          memory: 512Mi             # Minimum 512 MB
+        maxAllowed:
+          cpu: 4000m                # Maximum 4 CPU cores
+          memory: 8Gi               # Maximum 8 GB
+        controlledResources:
+          - cpu
+          - memory
+
+---
+# Backend API VPA - Fine-tune resource allocation (supplement HPA)
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: backend-api-vpa
+  namespace: terrafusion-prod
+  labels:
+    app: backend-api
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-api
+  updatePolicy:
+    updateMode: "Auto"              # Automatically update resource requests (HPA handles replicas)
+  resourcePolicy:
+    containerPolicies:
+      - containerName: backend-api
+        minAllowed:
+          cpu: 250m                 # Minimum 0.25 CPU cores
+          memory: 256Mi             # Minimum 256 MB
+        maxAllowed:
+          cpu: 4000m                # Maximum 4 CPU cores
+          memory: 4Gi               # Maximum 4 GB
+        controlledResources:
+          - cpu
+          - memory
+        mode: "Auto"                # Auto-adjust based on usage
+
+---
+# AI Agent VPA - Fine-tune AI workload resources
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: ai-agent-vpa
+  namespace: terrafusion-prod
+  labels:
+    app: ai-agent
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ai-agent
+  updatePolicy:
+    updateMode: "Auto"              # Automatically update resource requests
+  resourcePolicy:
+    containerPolicies:
+      - containerName: ai-agent
+        minAllowed:
+          cpu: 500m                 # Minimum 0.5 CPU cores
+          memory: 512Mi             # Minimum 512 MB
+        maxAllowed:
+          cpu: 8000m                # Maximum 8 CPU cores (AI is CPU-hungry)
+          memory: 8Gi               # Maximum 8 GB
+        controlledResources:
+          - cpu
+          - memory
+        mode: "Auto"
+
+---
+# MCP Servers VPA - Fine-tune MCP resource allocation
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: mcp-servers-vpa
+  namespace: terrafusion-prod
+  labels:
+    app: mcp-servers
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mcp-servers
+  updatePolicy:
+    updateMode: "Auto"              # Automatically update resource requests
+  resourcePolicy:
+    containerPolicies:
+      - containerName: mcp-servers
+        minAllowed:
+          cpu: 250m                 # Minimum 0.25 CPU cores
+          memory: 256Mi             # Minimum 256 MB
+        maxAllowed:
+          cpu: 4000m                # Maximum 4 CPU cores
+          memory: 4Gi               # Maximum 4 GB
+        controlledResources:
+          - cpu
+          - memory
+        mode: "Auto"

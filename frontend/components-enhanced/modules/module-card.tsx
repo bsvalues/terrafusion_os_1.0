@@ -1,8 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardBody, CardFooter, Badge, Button } from "@terrafusion/shared"
 import { Switch } from "@/components/ui/switch"
 import type { TerraFusionModule } from "@/lib/modules"
 import { Calculator,
@@ -96,18 +94,21 @@ export function ModuleCard({ module, onToggle, onConfigure, onLaunch, showContro
           <div className="flex items-center gap-3">
             <div
               className={`p-2 rounded-lg bg-${getCategoryColor(module.category)}/10 border border-${getCategoryColor(module.category)}/20`}
-            ><>
+            >
+<>
 
               <Icon className={`w-5 h-5 text-${getCategoryColor(module.category)}`} />
             </div>
             <div
 </>
-</>><>
+</>>
+<>
 
               <CardTitle className="text-lg font-heading">{module.name}</CardTitle>
               <div
 </>
-className="flex items-center gap-2 mt-1"><>
+className="flex items-center gap-2 mt-1">
+<>
 
                 <Badge
                   variant="secondary"
@@ -132,11 +133,12 @@ className="text-xs text-muted-foreground">v{module.version}</span>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardBody className="space-y-4">
         <p className="text-sm text-muted-foreground leading-relaxed">{module.description}</p>
 
         {module.dependencies.length > 0 && (
-          <div className="space-y-2"><>
+          <div className="space-y-2">
+<>
 
             <p className="text-xs font-medium text-muted-foreground">Dependencies:</p>
             <div
@@ -152,7 +154,8 @@ className="flex flex-wrap gap-1">
         )}
 
         {showControls && module.config.enabled && module.status === "active" && (
-          <div className="flex gap-2 pt-2"><>
+          <div className="flex gap-2 pt-2">
+<>
 
             <Button
               size="sm"
@@ -173,7 +176,7 @@ className="flex flex-wrap gap-1">
             </Button>
           </div>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   )
 }
