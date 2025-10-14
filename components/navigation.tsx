@@ -372,8 +372,8 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
             ${variant === 'horizontal' ? 'inline-flex' : 'w-full'}
           `}
           aria-current={isActive ? 'page' : undefined}
-          aria-expanded={hasChildren ? isExpanded : undefined}
-          aria-disabled={item.disabled}
+          aria-expanded={hasChildren ? (isExpanded ? "true" : "false") : undefined}
+          aria-disabled={item.disabled ? "true" : "false"}
           target={item.external ? '_blank' : undefined}
           rel={item.external ? 'noopener noreferrer' : undefined}
         >
