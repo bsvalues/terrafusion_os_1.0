@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2025-10-14T03:49:42.337Z",
+  "generatedAt": "2025-10-14T10:20:07.462Z",
   "stats": {
     "total": 34,
     "worldClass": 0,
-    "good": 1,
-    "needsWork": 33,
-    "avgQualityScore": 69,
-    "avgStoryCoverage": 57,
+    "good": 2,
+    "needsWork": 32,
+    "avgQualityScore": 73,
+    "avgStoryCoverage": 67,
     "avgTestCoverage": 94,
-    "avgAccessibility": 83
+    "avgAccessibility": 88
   },
   "components": [
     {
@@ -78,7 +78,75 @@
         "emoji": "⚠️",
         "label": "Good"
       },
-      "timestamp": "2025-10-14T03:49:42.331Z"
+      "timestamp": "2025-10-14T10:20:07.421Z"
+    },
+    {
+      "name": "badge",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "AllVariants",
+          "StatusIndicators",
+          "WithIcons",
+          "NotificationCounts",
+          "TagsAndLabels",
+          "InteractiveBadges",
+          "RealWorldExamples",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "Performance"
+        ],
+        "missingStories": [
+          "Default",
+          "Sizes",
+          "States",
+          "Interactive",
+          "CompositionPatterns",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 32,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 33,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": true,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": true
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines"
+        ]
+      },
+      "bundle": {
+        "source": 1.1,
+        "estimated": 1.7,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 90,
+      "status": {
+        "emoji": "⚠️",
+        "label": "Good"
+      },
+      "timestamp": "2025-10-14T10:20:07.450Z"
     },
     {
       "name": "button",
@@ -143,7 +211,360 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.335Z"
+      "timestamp": "2025-10-14T10:20:07.446Z"
+    },
+    {
+      "name": "sheet",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "BasicSheet",
+          "WithForm",
+          "WithNavigation",
+          "ScrollableContent",
+          "WithFooter",
+          "NestedSheets",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "Default",
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 29,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 17,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": true,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 4.2,
+        "estimated": 6.3,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 88,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.362Z"
+    },
+    {
+      "name": "tooltip",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "PositioningVariants",
+          "DelayVariants",
+          "RichContentTooltips",
+          "IconTooltips",
+          "RealWorldExamples",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 37,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 1.2,
+        "estimated": 1.8,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.331Z"
+    },
+    {
+      "name": "tabs",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "MultipleTabs",
+          "TabsWithBadges",
+          "SettingsPanel",
+          "ProductDetails",
+          "DisabledTab",
+          "RealWorldExamples",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Performance",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": false
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 29,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 1.8,
+        "estimated": 2.8,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.345Z"
+    },
+    {
+      "name": "table",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "BasicTable",
+          "SortableColumns",
+          "Filtering",
+          "Pagination",
+          "RowSelection",
+          "ExpandableRows",
+          "FixedHeaders",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "Performance"
+        ],
+        "missingStories": [
+          "Default",
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "CompositionPatterns",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 59,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 2.8,
+        "estimated": 4.2,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.348Z"
+    },
+    {
+      "name": "switch",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "AllStates",
+          "WithDescriptions",
+          "SettingsPanel",
+          "InteractiveExamples",
+          "RealWorldExamples",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 34,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 1.1,
+        "estimated": 1.7,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.350Z"
     },
     {
       "name": "select",
@@ -213,7 +634,147 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.328Z"
+      "timestamp": "2025-10-14T10:20:07.370Z"
+    },
+    {
+      "name": "dialog",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "ConfirmationDialog",
+          "FormDialog",
+          "AlertDialogVariants",
+          "InteractiveDialog",
+          "RealWorldExamples",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 38,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 3.8,
+        "estimated": 5.7,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.426Z"
+    },
+    {
+      "name": "checkbox",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "AllStates",
+          "CheckboxGroups",
+          "InteractiveExamples",
+          "SelectAllPattern",
+          "RealWorldExamples",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 31,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 1,
+        "estimated": 1.5,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.435Z"
     },
     {
       "name": "card",
@@ -284,7 +845,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.334Z"
+      "timestamp": "2025-10-14T10:20:07.439Z"
     },
     {
       "name": "calendar",
@@ -357,7 +918,152 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.335Z"
+      "timestamp": "2025-10-14T10:20:07.443Z"
+    },
+    {
+      "name": "toggle",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "Variants",
+          "Sizes",
+          "WithIcon",
+          "WithIconAndText",
+          "Disabled",
+          "ControlledState",
+          "RealWorldTextFormatting",
+          "RealWorldViewToggle",
+          "UsageGuidelines",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": false,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 41,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 1.5,
+        "estimated": 2.2,
+        "status": "good"
+      },
+      "accessibility": 85,
+      "qualityScore": 81,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.335Z"
+    },
+    {
+      "name": "sonner",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "Types",
+          "WithDescription",
+          "WithActions",
+          "PromiseToasts",
+          "CustomContent",
+          "RealWorldFormSubmit",
+          "RealWorldFileUpload",
+          "RealWorldNotifications",
+          "UsageGuidelines",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": false,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 25,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 0.9,
+        "estimated": 1.3,
+        "status": "good"
+      },
+      "accessibility": 85,
+      "qualityScore": 81,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T10:20:07.354Z"
     },
     {
       "name": "skeleton",
@@ -429,7 +1135,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.326Z"
+      "timestamp": "2025-10-14T10:20:07.359Z"
     },
     {
       "name": "label",
@@ -501,433 +1207,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.331Z"
-    },
-    {
-      "name": "toggle",
-      "stories": {
-        "exists": true,
-        "count": 10,
-        "stories": [
-          "Default",
-          "Variants",
-          "Sizes",
-          "WithIcon",
-          "WithIconAndText",
-          "Disabled",
-          "ControlledState",
-          "RealWorldTextFormatting",
-          "RealWorldViewToggle",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 83,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 41,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 1.5,
-        "estimated": 2.2,
-        "status": "good"
-      },
-      "accessibility": 85,
-      "qualityScore": 77,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.320Z"
-    },
-    {
-      "name": "sonner",
-      "stories": {
-        "exists": true,
-        "count": 10,
-        "stories": [
-          "Default",
-          "Types",
-          "WithDescription",
-          "WithActions",
-          "PromiseToasts",
-          "CustomContent",
-          "RealWorldFormSubmit",
-          "RealWorldFileUpload",
-          "RealWorldNotifications",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 83,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 25,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 0.9,
-        "estimated": 1.3,
-        "status": "good"
-      },
-      "accessibility": 85,
-      "qualityScore": 77,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.324Z"
-    },
-    {
-      "name": "badge",
-      "stories": {
-        "exists": true,
-        "count": 8,
-        "stories": [
-          "AllVariants",
-          "StatusIndicators",
-          "WithIcons",
-          "NotificationCounts",
-          "TagsAndLabels",
-          "InteractiveBadges",
-          "RealWorldExamples",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "Default",
-          "Sizes",
-          "States",
-          "Interactive",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 67,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 32,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 33,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": true,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": true
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines"
-        ]
-      },
-      "bundle": {
-        "source": 1.1,
-        "estimated": 1.7,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 77,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.336Z"
-    },
-    {
-      "name": "tabs",
-      "stories": {
-        "exists": true,
-        "count": 8,
-        "stories": [
-          "Default",
-          "MultipleTabs",
-          "TabsWithBadges",
-          "SettingsPanel",
-          "ProductDetails",
-          "DisabledTab",
-          "RealWorldExamples",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 67,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 29,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 1.8,
-        "estimated": 2.8,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 72,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.322Z"
-    },
-    {
-      "name": "table",
-      "stories": {
-        "exists": true,
-        "count": 8,
-        "stories": [
-          "BasicTable",
-          "SortableColumns",
-          "Filtering",
-          "Pagination",
-          "RowSelection",
-          "ExpandableRows",
-          "FixedHeaders",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "Default",
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 67,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 59,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 2.8,
-        "estimated": 4.2,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 72,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.323Z"
-    },
-    {
-      "name": "sheet",
-      "stories": {
-        "exists": true,
-        "count": 7,
-        "stories": [
-          "BasicSheet",
-          "WithForm",
-          "WithNavigation",
-          "ScrollableContent",
-          "WithFooter",
-          "NestedSheets",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "Default",
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 58,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 29,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 17,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": true,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 4.2,
-        "estimated": 6.3,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 72,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.326Z"
+      "timestamp": "2025-10-14T10:20:07.418Z"
     },
     {
       "name": "menubar",
@@ -998,7 +1278,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.330Z"
+      "timestamp": "2025-10-14T10:20:07.389Z"
     },
     {
       "name": "alert",
@@ -1067,77 +1347,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.337Z"
-    },
-    {
-      "name": "tooltip",
-      "stories": {
-        "exists": true,
-        "count": 7,
-        "stories": [
-          "Default",
-          "PositioningVariants",
-          "DelayVariants",
-          "RichContentTooltips",
-          "IconTooltips",
-          "RealWorldExamples",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 58,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 37,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 1.2,
-        "estimated": 1.8,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 70,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.319Z"
+      "timestamp": "2025-10-14T10:20:07.459Z"
     },
     {
       "name": "textarea",
@@ -1207,77 +1417,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.322Z"
-    },
-    {
-      "name": "switch",
-      "stories": {
-        "exists": true,
-        "count": 7,
-        "stories": [
-          "Default",
-          "AllStates",
-          "WithDescriptions",
-          "SettingsPanel",
-          "InteractiveExamples",
-          "RealWorldExamples",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 58,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 34,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 1.1,
-        "estimated": 1.7,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 70,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.324Z"
+      "timestamp": "2025-10-14T10:20:07.342Z"
     },
     {
       "name": "slider",
@@ -1347,7 +1487,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.325Z"
+      "timestamp": "2025-10-14T10:20:07.357Z"
     },
     {
       "name": "separator",
@@ -1417,7 +1557,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.327Z"
+      "timestamp": "2025-10-14T10:20:07.366Z"
     },
     {
       "name": "progress",
@@ -1487,147 +1627,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.329Z"
-    },
-    {
-      "name": "dialog",
-      "stories": {
-        "exists": true,
-        "count": 7,
-        "stories": [
-          "Default",
-          "ConfirmationDialog",
-          "FormDialog",
-          "AlertDialogVariants",
-          "InteractiveDialog",
-          "RealWorldExamples",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 58,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 38,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 3.8,
-        "estimated": 5.7,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 70,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.332Z"
-    },
-    {
-      "name": "checkbox",
-      "stories": {
-        "exists": true,
-        "count": 7,
-        "stories": [
-          "Default",
-          "AllStates",
-          "CheckboxGroups",
-          "InteractiveExamples",
-          "SelectAllPattern",
-          "RealWorldExamples",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 58,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 31,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 1,
-        "estimated": 1.5,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 70,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T03:49:42.334Z"
+      "timestamp": "2025-10-14T10:20:07.379Z"
     },
     {
       "name": "accordion",
@@ -1696,7 +1696,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.337Z"
+      "timestamp": "2025-10-14T10:20:07.462Z"
     },
     {
       "name": "popover",
@@ -1765,7 +1765,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.329Z"
+      "timestamp": "2025-10-14T10:20:07.383Z"
     },
     {
       "name": "avatar",
@@ -1834,7 +1834,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.336Z"
+      "timestamp": "2025-10-14T10:20:07.453Z"
     },
     {
       "name": "scroll-area",
@@ -1881,7 +1881,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.328Z"
+      "timestamp": "2025-10-14T10:20:07.372Z"
     },
     {
       "name": "radio-group",
@@ -1928,7 +1928,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.328Z"
+      "timestamp": "2025-10-14T10:20:07.375Z"
     },
     {
       "name": "navigation-menu",
@@ -1975,7 +1975,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.330Z"
+      "timestamp": "2025-10-14T10:20:07.385Z"
     },
     {
       "name": "dropdown-menu",
@@ -2022,7 +2022,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.332Z"
+      "timestamp": "2025-10-14T10:20:07.423Z"
     },
     {
       "name": "command",
@@ -2069,7 +2069,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.333Z"
+      "timestamp": "2025-10-14T10:20:07.431Z"
     },
     {
       "name": "aspect-ratio",
@@ -2116,7 +2116,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.336Z"
+      "timestamp": "2025-10-14T10:20:07.455Z"
     },
     {
       "name": "Toggle.stories.GOLD_STANDARD",
@@ -2159,7 +2159,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.321Z"
+      "timestamp": "2025-10-14T10:20:07.339Z"
     },
     {
       "name": "ComponentStory.template",
@@ -2203,7 +2203,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T03:49:42.332Z"
+      "timestamp": "2025-10-14T10:20:07.428Z"
     }
   ]
 }
