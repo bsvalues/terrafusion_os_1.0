@@ -1,16 +1,150 @@
 {
-  "generatedAt": "2025-10-14T01:10:49.755Z",
+  "generatedAt": "2025-10-14T02:58:18.752Z",
   "stats": {
     "total": 34,
     "worldClass": 0,
-    "good": 0,
-    "needsWork": 34,
-    "avgQualityScore": 66,
-    "avgStoryCoverage": 49,
+    "good": 1,
+    "needsWork": 33,
+    "avgQualityScore": 68,
+    "avgStoryCoverage": 53,
     "avgTestCoverage": 94,
-    "avgAccessibility": 80
+    "avgAccessibility": 81
   },
   "components": [
+    {
+      "name": "input",
+      "stories": {
+        "exists": true,
+        "count": 15,
+        "stories": [
+          "Default",
+          "AllTypes",
+          "States",
+          "WithLabelsAndHelperText",
+          "InteractiveExamples",
+          "RealWorldExamples",
+          "UsageGuidelines",
+          "Sizes",
+          "WithIcons",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance",
+          "Playground"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Interactive"
+        ],
+        "coverage": 125,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 37,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 0.8,
+        "estimated": 1.1,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 91,
+      "status": {
+        "emoji": "⚠️",
+        "label": "Good"
+      },
+      "timestamp": "2025-10-14T02:58:18.737Z"
+    },
+    {
+      "name": "button",
+      "stories": {
+        "exists": true,
+        "count": 14,
+        "stories": [
+          "Default",
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "RealWorldExample",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance",
+          "Playground"
+        ],
+        "missingStories": [],
+        "coverage": 117,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 23,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 2.1,
+        "estimated": 3.1,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 89,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T02:58:18.746Z"
+    },
     {
       "name": "toggle",
       "stories": {
@@ -81,7 +215,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.693Z"
+      "timestamp": "2025-10-14T02:58:18.715Z"
     },
     {
       "name": "sonner",
@@ -154,7 +288,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.706Z"
+      "timestamp": "2025-10-14T02:58:18.722Z"
     },
     {
       "name": "skeleton",
@@ -226,7 +360,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.710Z"
+      "timestamp": "2025-10-14T02:58:18.724Z"
     },
     {
       "name": "badge",
@@ -294,7 +428,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.748Z"
+      "timestamp": "2025-10-14T02:58:18.748Z"
     },
     {
       "name": "label",
@@ -366,7 +500,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.730Z"
+      "timestamp": "2025-10-14T02:58:18.736Z"
     },
     {
       "name": "calendar",
@@ -439,7 +573,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.744Z"
+      "timestamp": "2025-10-14T02:58:18.745Z"
     },
     {
       "name": "tabs",
@@ -510,7 +644,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.699Z"
+      "timestamp": "2025-10-14T02:58:18.718Z"
     },
     {
       "name": "table",
@@ -582,7 +716,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.701Z"
+      "timestamp": "2025-10-14T02:58:18.720Z"
     },
     {
       "name": "sheet",
@@ -652,7 +786,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.712Z"
+      "timestamp": "2025-10-14T02:58:18.726Z"
     },
     {
       "name": "select",
@@ -722,7 +856,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.717Z"
+      "timestamp": "2025-10-14T02:58:18.729Z"
     },
     {
       "name": "menubar",
@@ -793,7 +927,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.728Z"
+      "timestamp": "2025-10-14T02:58:18.734Z"
     },
     {
       "name": "card",
@@ -864,74 +998,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.742Z"
-    },
-    {
-      "name": "button",
-      "stories": {
-        "exists": true,
-        "count": 8,
-        "stories": [
-          "Default",
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcon",
-          "RealWorldExample",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 67,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 23,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 2.1,
-        "estimated": 3.1,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 72,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T01:10:49.746Z"
+      "timestamp": "2025-10-14T02:58:18.744Z"
     },
     {
       "name": "alert",
@@ -1000,7 +1067,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.753Z"
+      "timestamp": "2025-10-14T02:58:18.751Z"
     },
     {
       "name": "tooltip",
@@ -1070,7 +1137,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.690Z"
+      "timestamp": "2025-10-14T02:58:18.713Z"
     },
     {
       "name": "textarea",
@@ -1140,7 +1207,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.697Z"
+      "timestamp": "2025-10-14T02:58:18.717Z"
     },
     {
       "name": "switch",
@@ -1210,7 +1277,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.704Z"
+      "timestamp": "2025-10-14T02:58:18.721Z"
     },
     {
       "name": "slider",
@@ -1280,7 +1347,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.708Z"
+      "timestamp": "2025-10-14T02:58:18.723Z"
     },
     {
       "name": "separator",
@@ -1350,7 +1417,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.714Z"
+      "timestamp": "2025-10-14T02:58:18.727Z"
     },
     {
       "name": "progress",
@@ -1420,76 +1487,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.722Z"
-    },
-    {
-      "name": "input",
-      "stories": {
-        "exists": true,
-        "count": 7,
-        "stories": [
-          "Default",
-          "AllTypes",
-          "States",
-          "WithLabelsAndHelperText",
-          "InteractiveExamples",
-          "RealWorldExamples",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 58,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 37,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 0.8,
-        "estimated": 1.1,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 70,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T01:10:49.732Z"
+      "timestamp": "2025-10-14T02:58:18.731Z"
     },
     {
       "name": "dialog",
@@ -1559,7 +1557,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.736Z"
+      "timestamp": "2025-10-14T02:58:18.739Z"
     },
     {
       "name": "checkbox",
@@ -1629,7 +1627,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.740Z"
+      "timestamp": "2025-10-14T02:58:18.742Z"
     },
     {
       "name": "accordion",
@@ -1698,7 +1696,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.755Z"
+      "timestamp": "2025-10-14T02:58:18.752Z"
     },
     {
       "name": "popover",
@@ -1767,7 +1765,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.724Z"
+      "timestamp": "2025-10-14T02:58:18.732Z"
     },
     {
       "name": "avatar",
@@ -1836,7 +1834,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.749Z"
+      "timestamp": "2025-10-14T02:58:18.749Z"
     },
     {
       "name": "scroll-area",
@@ -1883,7 +1881,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.718Z"
+      "timestamp": "2025-10-14T02:58:18.730Z"
     },
     {
       "name": "radio-group",
@@ -1930,7 +1928,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.720Z"
+      "timestamp": "2025-10-14T02:58:18.730Z"
     },
     {
       "name": "navigation-menu",
@@ -1977,7 +1975,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.726Z"
+      "timestamp": "2025-10-14T02:58:18.733Z"
     },
     {
       "name": "dropdown-menu",
@@ -2024,7 +2022,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.733Z"
+      "timestamp": "2025-10-14T02:58:18.738Z"
     },
     {
       "name": "command",
@@ -2071,7 +2069,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.738Z"
+      "timestamp": "2025-10-14T02:58:18.740Z"
     },
     {
       "name": "aspect-ratio",
@@ -2118,7 +2116,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.751Z"
+      "timestamp": "2025-10-14T02:58:18.750Z"
     },
     {
       "name": "Toggle.stories.GOLD_STANDARD",
@@ -2161,7 +2159,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.694Z"
+      "timestamp": "2025-10-14T02:58:18.716Z"
     },
     {
       "name": "ComponentStory.template",
@@ -2205,7 +2203,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T01:10:49.736Z"
+      "timestamp": "2025-10-14T02:58:18.740Z"
     }
   ]
 }
