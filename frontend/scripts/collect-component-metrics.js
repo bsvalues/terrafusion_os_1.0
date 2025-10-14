@@ -63,7 +63,7 @@ const REQUIRED_STORIES = [
  * Get all component files
  */
 function getAllComponents() {
-  const componentPattern = path.join(CONFIG.componentsDir, '*.tsx');
+  const componentPattern = path.join(CONFIG.componentsDir, '*.tsx').replace(/\\/g, '/');
   const files = glob.sync(componentPattern);
   
   return files
