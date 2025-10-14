@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2025-10-14T10:50:52.830Z",
+  "generatedAt": "2025-10-14T11:00:48.825Z",
   "stats": {
     "total": 34,
     "worldClass": 0,
     "good": 2,
     "needsWork": 32,
-    "avgQualityScore": 74,
-    "avgStoryCoverage": 72,
+    "avgQualityScore": 76,
+    "avgStoryCoverage": 78,
     "avgTestCoverage": 94,
-    "avgAccessibility": 90
+    "avgAccessibility": 92
   },
   "components": [
     {
@@ -78,7 +78,7 @@
         "emoji": "⚠️",
         "label": "Good"
       },
-      "timestamp": "2025-10-14T10:50:52.784Z"
+      "timestamp": "2025-10-14T11:00:48.811Z"
     },
     {
       "name": "badge",
@@ -146,7 +146,7 @@
         "emoji": "⚠️",
         "label": "Good"
       },
-      "timestamp": "2025-10-14T10:50:52.818Z"
+      "timestamp": "2025-10-14T11:00:48.821Z"
     },
     {
       "name": "button",
@@ -211,7 +211,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.815Z"
+      "timestamp": "2025-10-14T11:00:48.819Z"
     },
     {
       "name": "sheet",
@@ -281,7 +281,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.752Z"
+      "timestamp": "2025-10-14T11:00:48.792Z"
     },
     {
       "name": "tooltip",
@@ -351,7 +351,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.710Z"
+      "timestamp": "2025-10-14T11:00:48.753Z"
     },
     {
       "name": "textarea",
@@ -421,7 +421,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.733Z"
+      "timestamp": "2025-10-14T11:00:48.765Z"
     },
     {
       "name": "tabs",
@@ -492,7 +492,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.738Z"
+      "timestamp": "2025-10-14T11:00:48.768Z"
     },
     {
       "name": "table",
@@ -564,7 +564,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.741Z"
+      "timestamp": "2025-10-14T11:00:48.774Z"
     },
     {
       "name": "switch",
@@ -634,7 +634,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.743Z"
+      "timestamp": "2025-10-14T11:00:48.778Z"
     },
     {
       "name": "slider",
@@ -704,7 +704,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.747Z"
+      "timestamp": "2025-10-14T11:00:48.785Z"
     },
     {
       "name": "separator",
@@ -774,7 +774,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.754Z"
+      "timestamp": "2025-10-14T11:00:48.795Z"
     },
     {
       "name": "select",
@@ -844,7 +844,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.757Z"
+      "timestamp": "2025-10-14T11:00:48.797Z"
     },
     {
       "name": "progress",
@@ -914,7 +914,77 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.766Z"
+      "timestamp": "2025-10-14T11:00:48.802Z"
+    },
+    {
+      "name": "popover",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "BasicPopover",
+          "WithForm",
+          "WithCommands",
+          "Placements",
+          "Triggers",
+          "Sizes",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance",
+          "UsageGuidelines"
+        ],
+        "missingStories": [
+          "Default",
+          "AllVariants",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 42,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 1.3,
+        "estimated": 2,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T11:00:48.805Z"
     },
     {
       "name": "dialog",
@@ -984,7 +1054,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.794Z"
+      "timestamp": "2025-10-14T11:00:48.813Z"
     },
     {
       "name": "checkbox",
@@ -1054,7 +1124,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.806Z"
+      "timestamp": "2025-10-14T11:00:48.816Z"
     },
     {
       "name": "card",
@@ -1125,7 +1195,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.808Z"
+      "timestamp": "2025-10-14T11:00:48.817Z"
     },
     {
       "name": "calendar",
@@ -1198,7 +1268,146 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.813Z"
+      "timestamp": "2025-10-14T11:00:48.819Z"
+    },
+    {
+      "name": "avatar",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "BasicAvatar",
+          "Sizes",
+          "AvatarGroups",
+          "WithStatusIndicators",
+          "InContext",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance",
+          "RealWorldExamples"
+        ],
+        "missingStories": [
+          "Default",
+          "AllVariants",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 24,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 1.4,
+        "estimated": 2.1,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T11:00:48.822Z"
+    },
+    {
+      "name": "accordion",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "MultipleOpen",
+          "WithIcons",
+          "Nested",
+          "ControlledState",
+          "FAQExample",
+          "UsageGuidelines",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 32,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 2,
+        "estimated": 3,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T11:00:48.825Z"
     },
     {
       "name": "toggle",
@@ -1270,7 +1479,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.714Z"
+      "timestamp": "2025-10-14T11:00:48.757Z"
     },
     {
       "name": "sonner",
@@ -1343,7 +1552,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.745Z"
+      "timestamp": "2025-10-14T11:00:48.781Z"
     },
     {
       "name": "skeleton",
@@ -1415,7 +1624,78 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.750Z"
+      "timestamp": "2025-10-14T11:00:48.788Z"
+    },
+    {
+      "name": "menubar",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "WithSubmenus",
+          "WithShortcuts",
+          "WithRadio",
+          "WithCheckboxes",
+          "RealWorldApplication",
+          "RealWorldTextEditor",
+          "UsageGuidelines",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "AccessibilityTest",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": false,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 31,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 8.4,
+        "estimated": 12.7,
+        "status": "good"
+      },
+      "accessibility": 85,
+      "qualityScore": 81,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T11:00:48.808Z"
     },
     {
       "name": "label",
@@ -1487,84 +1767,13 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.782Z"
-    },
-    {
-      "name": "menubar",
-      "stories": {
-        "exists": true,
-        "count": 8,
-        "stories": [
-          "Default",
-          "WithSubmenus",
-          "WithShortcuts",
-          "WithRadio",
-          "WithCheckboxes",
-          "RealWorldApplication",
-          "RealWorldTextEditor",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 67,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 31,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 8.4,
-        "estimated": 12.7,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 72,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T10:50:52.779Z"
+      "timestamp": "2025-10-14T11:00:48.809Z"
     },
     {
       "name": "alert",
       "stories": {
         "exists": true,
-        "count": 8,
+        "count": 12,
         "stories": [
           "Default",
           "Destructive",
@@ -1573,22 +1782,22 @@
           "WithoutTitle",
           "WithActions",
           "RealWorldExample",
-          "UsageGuidelines"
+          "UsageGuidelines",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Performance"
         ],
         "missingStories": [
           "Sizes",
           "States",
           "Interactive",
           "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
           "Playground"
         ],
-        "coverage": 67,
+        "coverage": 100,
         "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
+        "hasPerformanceTest": true
       },
       "tests": {
         "exists": true,
@@ -1621,220 +1830,13 @@
         "estimated": 2.4,
         "status": "good"
       },
-      "accessibility": 80,
-      "qualityScore": 72,
+      "accessibility": 85,
+      "qualityScore": 81,
       "status": {
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.828Z"
-    },
-    {
-      "name": "accordion",
-      "stories": {
-        "exists": true,
-        "count": 7,
-        "stories": [
-          "Default",
-          "MultipleOpen",
-          "WithIcons",
-          "Nested",
-          "ControlledState",
-          "FAQExample",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 58,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 32,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 2,
-        "estimated": 3,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 70,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T10:50:52.829Z"
-    },
-    {
-      "name": "popover",
-      "stories": {
-        "exists": true,
-        "count": 6,
-        "stories": [
-          "BasicPopover",
-          "WithForm",
-          "WithCommands",
-          "Placements",
-          "Triggers",
-          "Sizes"
-        ],
-        "missingStories": [
-          "Default",
-          "AllVariants",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 50,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 42,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 1.3,
-        "estimated": 2,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 68,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T10:50:52.774Z"
-    },
-    {
-      "name": "avatar",
-      "stories": {
-        "exists": true,
-        "count": 6,
-        "stories": [
-          "BasicAvatar",
-          "Sizes",
-          "AvatarGroups",
-          "WithStatusIndicators",
-          "InContext",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "Default",
-          "AllVariants",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 50,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 24,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 1.4,
-        "estimated": 2.1,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 68,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T10:50:52.824Z"
+      "timestamp": "2025-10-14T11:00:48.824Z"
     },
     {
       "name": "scroll-area",
@@ -1881,7 +1883,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.759Z"
+      "timestamp": "2025-10-14T11:00:48.799Z"
     },
     {
       "name": "radio-group",
@@ -1928,7 +1930,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.761Z"
+      "timestamp": "2025-10-14T11:00:48.800Z"
     },
     {
       "name": "navigation-menu",
@@ -1975,7 +1977,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.776Z"
+      "timestamp": "2025-10-14T11:00:48.806Z"
     },
     {
       "name": "dropdown-menu",
@@ -2022,7 +2024,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.791Z"
+      "timestamp": "2025-10-14T11:00:48.812Z"
     },
     {
       "name": "command",
@@ -2069,7 +2071,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.799Z"
+      "timestamp": "2025-10-14T11:00:48.815Z"
     },
     {
       "name": "aspect-ratio",
@@ -2116,7 +2118,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.826Z"
+      "timestamp": "2025-10-14T11:00:48.823Z"
     },
     {
       "name": "Toggle.stories.GOLD_STANDARD",
@@ -2159,7 +2161,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.719Z"
+      "timestamp": "2025-10-14T11:00:48.759Z"
     },
     {
       "name": "ComponentStory.template",
@@ -2203,7 +2205,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T10:50:52.797Z"
+      "timestamp": "2025-10-14T11:00:48.814Z"
     }
   ]
 }
