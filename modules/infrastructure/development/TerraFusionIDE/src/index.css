@@ -20,18 +20,18 @@
   --tf-gray-300: #cbd5e1;
   --tf-gray-200: #e2e8f0;
   --tf-gray-100: #f1f5f9;
-  
+
   /* Status Colors */
   --tf-success: #10b981;
   --tf-warning: #f59e0b;
   --tf-error: #ef4444;
   --tf-info: #3b82f6;
-  
+
   /* AI Swarm Colors */
   --tf-ai-primary: #8b5cf6;
   --tf-ai-secondary: #a855f7;
   --tf-ai-accent: #c084fc;
-  
+
   /* Quantum Performance Colors */
   --tf-quantum-primary: #06b6d4;
   --tf-quantum-secondary: #0891b2;
@@ -45,8 +45,18 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -125,7 +135,9 @@ code {
     box-shadow: 0 0 5px var(--tf-quantum-teal);
   }
   50% {
-    box-shadow: 0 0 20px var(--tf-quantum-teal), 0 0 30px var(--tf-quantum-teal);
+    box-shadow:
+      0 0 20px var(--tf-quantum-teal),
+      0 0 30px var(--tf-quantum-teal);
   }
   100% {
     box-shadow: 0 0 5px var(--tf-quantum-teal);
@@ -285,7 +297,7 @@ code {
   .sidebar {
     width: 180px;
   }
-  
+
   .main-panel {
     margin-left: 180px;
   }

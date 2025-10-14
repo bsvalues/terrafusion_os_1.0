@@ -2,15 +2,18 @@
 
 ## ⚠️ ATTENTION ALL AI ASSISTANTS
 
-**This document establishes STRICT rules about what files can be placed in the root directory of TerraFusion OS.**
+**This document establishes STRICT rules about what files can be placed in the
+root directory of TerraFusion OS.**
 
-When creating ANY file, you MUST check this document first. Violating these rules creates organizational chaos.
+When creating ANY file, you MUST check this document first. Violating these
+rules creates organizational chaos.
 
 ---
 
 ## ✅ ONLY These Files Belong in Root
 
 ### Core Configuration (Required for Build/Run)
+
 ```
 ✓ package.json, package-lock.json
 ✓ tsconfig.json, tsconfig.eslint.json
@@ -24,6 +27,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Docker & Deployment (Main Only)
+
 ```
 ✓ docker-compose.yml (MAIN ONLY - no variants)
 ✓ Dockerfile.frontend
@@ -31,6 +35,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Core Documentation (3 files max)
+
 ```
 ✓ README.md
 ✓ LICENSE
@@ -38,6 +43,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Workspace Files
+
 ```
 ✓ TerraFusion_OS_1.0.code-workspace
 ✓ .workspace.env
@@ -50,6 +56,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ## ❌ NEVER Put These in Root
 
 ### Status/Completion Documents
+
 ```
 ❌ Any file with emojis (╔═══╗, ✅, 🎊, 🎯, 🚀)
 ❌ *_COMPLETE.md
@@ -63,6 +70,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Dashboard/Status Files
+
 ```
 ❌ *_DASHBOARD.md
 ❌ *_DASHBOARD.txt
@@ -74,6 +82,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Reports & Analysis
+
 ```
 ❌ *_REPORT.md
 ❌ *_ANALYSIS.md
@@ -87,6 +96,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Phase Documents
+
 ```
 ❌ PHASE_*.md
 ❌ *_ORGANIZATION_PLAN*.md
@@ -95,6 +105,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Guides & How-Tos
+
 ```
 ❌ *_GUIDE.md (except START_HERE.md)
 ❌ LAUNCH_*.md
@@ -108,6 +119,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Architecture Documents
+
 ```
 ❌ *ARCHITECTURE*.md
 ❌ *ECOSYSTEM*.md
@@ -117,6 +129,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Configuration Files
+
 ```
 ❌ ai-*.json
 ❌ *-config.json (except main docker-compose)
@@ -129,6 +142,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Docker Compose Variants
+
 ```
 ❌ docker-compose.*.yml (any variant)
 ❌ docker-compose.benton-county.yml
@@ -139,6 +153,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Scripts
+
 ```
 ❌ *.ps1 (PowerShell scripts)
 ❌ *.sh (Shell scripts - except if in /scripts/)
@@ -151,6 +166,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Design/Demo Files
+
 ```
 ❌ design-*.html
 ❌ design-*.css
@@ -162,6 +178,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Workflow Files
+
 ```
 ❌ *workflow*.yml
 ❌ .github/workflows content in root
@@ -170,6 +187,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Data/Output Files
+
 ```
 ❌ jobs*.json
 ❌ jobs*.txt
@@ -184,6 +202,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Random Text Files
+
 ```
 ❌ Any *.txt file (except LICENSE.txt if needed)
 ❌ Random notes
@@ -194,6 +213,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ```
 
 ### Test Files
+
 ```
 ❌ test-*.ts
 ❌ test-*.js
@@ -210,6 +230,7 @@ When creating ANY file, you MUST check this document first. Violating these rule
 ### Before Creating ANY File:
 
 1. **Check Location First**
+
    ```
    Is this a core config file? → Root
    Is this a status/completion doc? → docs/milestones/
@@ -221,50 +242,55 @@ When creating ANY file, you MUST check this document first. Violating these rule
    ```
 
 2. **Ask These Questions**
-   - Would a developer need this to build the project? (Yes → Root, No → elsewhere)
+   - Would a developer need this to build the project? (Yes → Root, No →
+     elsewhere)
    - Is this documentation about what was done? (Yes → docs/)
    - Is this a tool or script? (Yes → scripts/ or tools/)
    - Is this configuration data? (Yes → config/)
    - Is this temporary/experimental? (Yes → Don't put in root!)
 
 3. **Default Rule**
+
    ```
    IF IN DOUBT → DO NOT PUT IN ROOT
-   
+
    Better to ask user where it should go than clutter root!
    ```
 
 ### When Creating Status/Completion Documents
 
 **NEVER** create these in root:
+
 ```javascript
 // ❌ WRONG
-const filePath = "✅_TASK_COMPLETE.md";
+const filePath = '✅_TASK_COMPLETE.md';
 
 // ✅ CORRECT
-const filePath = "docs/milestones/task-complete.md";
+const filePath = 'docs/milestones/task-complete.md';
 ```
 
 ### When Creating Scripts
 
 **NEVER** create these in root:
+
 ```powershell
 # ❌ WRONG
 $scriptPath = "Deploy-Something.ps1"
 
-# ✅ CORRECT  
+# ✅ CORRECT
 $scriptPath = "scripts/deployment/deploy-something.ps1"
 ```
 
 ### When Creating Configuration
 
 **NEVER** create these in root:
+
 ```typescript
 // ❌ WRONG
-const configPath = "my-new-config.json";
+const configPath = 'my-new-config.json';
 
 // ✅ CORRECT
-const configPath = "config/my-new-config.json";
+const configPath = 'config/my-new-config.json';
 ```
 
 ---
@@ -272,17 +298,21 @@ const configPath = "config/my-new-config.json";
 ## 🛡️ Enforcement
 
 ### Automated Cleanup
+
 A script runs regularly to move misplaced files:
+
 ```powershell
 .\scripts\organize-root-files.ps1
 ```
 
 ### Git Ignore Rules
+
 The `.gitignore` prevents committing many root-level patterns:
+
 ```gitignore
 # Block loose files in root
 /*.ts
-/*.js  
+/*.js
 /*.cs
 /*.html
 /*.txt
@@ -302,6 +332,7 @@ The `.gitignore` prevents committing many root-level patterns:
 **Target:** 25-30 files in root (PROFESSIONAL)
 
 ### Acceptable Root Structure:
+
 ```
 /terrafusion_os_1.0/
 ├── package.json
@@ -334,18 +365,21 @@ The `.gitignore` prevents committing many root-level patterns:
 ## 🎯 Benefits of This Policy
 
 ### Professional Appearance
+
 - Clean, organized root
 - Easy to navigate
 - Clear project structure
 - Professional impression
 
 ### Developer Experience
+
 - Find files quickly
 - Understand project layout immediately
 - No hunting through clutter
 - Consistent across projects
 
 ### Maintainability
+
 - Easy to onboard new developers
 - Clear separation of concerns
 - Reduced cognitive load
@@ -356,12 +390,14 @@ The `.gitignore` prevents committing many root-level patterns:
 ## 📞 Questions?
 
 If you're unsure where a file belongs:
+
 1. Check this document first
 2. Look at similar existing files
 3. Ask the user before creating in root
 4. When in doubt, use a subdirectory
 
-**Remember: A clean root directory is a sign of a professional, well-maintained project.**
+**Remember: A clean root directory is a sign of a professional, well-maintained
+project.**
 
 ---
 

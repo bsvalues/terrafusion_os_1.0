@@ -15,21 +15,21 @@
 
 ## ❌ NEVER Put in Root:
 
-| If It's A... | Put It In... | Examples |
-|--------------|--------------|----------|
-| Status/completion doc | `docs/milestones/` | ✅_COMPLETE.md, 🎊_SUCCESS.md |
-| Dashboard/status | `docs/operations/` | *_DASHBOARD.md, *_STATUS.md |
-| Report/analysis | `docs/reports/` | *_REPORT.md, *_AUDIT.md |
-| Phase document | `docs/phases/` | PHASE_*.md |
-| Guide | `docs/guides/` | *_GUIDE.md, NEXT_STEPS.md |
-| Architecture doc | `docs/architecture/` | *ARCHITECTURE*.md |
-| AI config | `config/ai/` | ai-*.json, claude-*.js |
-| County config | `config/counties/` | *-county-config.json |
-| Docker variant | `config/docker/` | docker-compose.*.yml |
-| Script | `scripts/` | *.ps1, *.sh, *.py |
-| Design file | `design/` | design-*.html, *.css |
-| Workflow | `.github/workflows/` | *workflow*.yml |
-| Data/output | `data/temp/` | *.json, *.log, *run*.txt |
+| If It's A...          | Put It In...         | Examples                      |
+| --------------------- | -------------------- | ----------------------------- |
+| Status/completion doc | `docs/milestones/`   | ✅_COMPLETE.md, 🎊_SUCCESS.md |
+| Dashboard/status      | `docs/operations/`   | _\_DASHBOARD.md, _\_STATUS.md |
+| Report/analysis       | `docs/reports/`      | _\_REPORT.md, _\_AUDIT.md     |
+| Phase document        | `docs/phases/`       | PHASE\_\*.md                  |
+| Guide                 | `docs/guides/`       | \*\_GUIDE.md, NEXT_STEPS.md   |
+| Architecture doc      | `docs/architecture/` | _ARCHITECTURE_.md             |
+| AI config             | `config/ai/`         | ai-_.json, claude-_.js        |
+| County config         | `config/counties/`   | \*-county-config.json         |
+| Docker variant        | `config/docker/`     | docker-compose.\*.yml         |
+| Script                | `scripts/`           | _.ps1, _.sh, \*.py            |
+| Design file           | `design/`            | design-_.html, _.css          |
+| Workflow              | `.github/workflows/` | _workflow_.yml                |
+| Data/output           | `data/temp/`         | _.json, _.log, _run_.txt      |
 
 ---
 

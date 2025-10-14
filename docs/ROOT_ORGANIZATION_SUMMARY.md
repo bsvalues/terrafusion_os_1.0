@@ -1,13 +1,15 @@
 # 📊 Root Directory Organization Summary
 
 **Date**: October 12, 2025  
-**Purpose**: Establishing clear root directory standards to prevent AI agent clutter
+**Purpose**: Establishing clear root directory standards to prevent AI agent
+clutter
 
 ---
 
 ## 🎯 The Problem
 
-Despite efforts to maintain organization, AI agents consistently place files in the root directory instead of proper subdirectories, resulting in:
+Despite efforts to maintain organization, AI agents consistently place files in
+the root directory instead of proper subdirectories, resulting in:
 
 - 200+ files in root (should be ~25-30)
 - Difficulty finding essential files
@@ -21,6 +23,7 @@ Despite efforts to maintain organization, AI agents consistently place files in 
 ### 1. **Policy Documents Created**
 
 #### `docs/ROOT_DIRECTORY_POLICY.md` (Comprehensive)
+
 - Complete list of what belongs in root
 - Detailed categorization of where files should go
 - Specific AI agent instructions
@@ -28,6 +31,7 @@ Despite efforts to maintain organization, AI agents consistently place files in 
 - Examples of correct vs incorrect placement
 
 #### `.ai/ROOT_PLACEMENT_RULES.md` (Quick Reference)
+
 - One-page cheat sheet for AI agents
 - Quick decision table
 - Common mistakes to avoid
@@ -36,7 +40,9 @@ Despite efforts to maintain organization, AI agents consistently place files in 
 ### 2. **Automated Cleanup Script**
 
 #### `scripts/organize-root-files.ps1`
+
 Features:
+
 - Automatically moves misplaced files to correct locations
 - Protects essential root files
 - Dry-run mode for preview
@@ -44,6 +50,7 @@ Features:
 - Creates target directories as needed
 
 Usage:
+
 ```powershell
 # Preview what would be moved
 .\scripts\organize-root-files.ps1 -DryRun -Verbose
@@ -68,6 +75,7 @@ Usage:
 ### ✅ ONLY These Belong in Root (~25-30 files):
 
 **Core Configuration** (Build/Run)
+
 - `package.json`, `tsconfig.json`, `vitest.config.ts`
 - `.eslintrc.json`, `.prettierrc`, `.editorconfig`
 - `nodemon.json`, `playwright.config.ts`
@@ -75,16 +83,19 @@ Usage:
 - `Makefile`, `global.json`
 
 **Docker/Deployment** (Main only)
+
 - `docker-compose.yml` (main only)
 - `Dockerfile.frontend`
 - `.dockerignore`
 
 **Documentation** (Max 3)
+
 - `README.md`
 - `LICENSE`
 - `START_HERE.md`
 
 **Workspace**
+
 - `TerraFusion_OS_1.0.code-workspace`
 - `.workspace.env`
 
@@ -92,21 +103,21 @@ Usage:
 
 ## 🗂️ Where Files Should Go
 
-| File Type | Destination | Examples |
-|-----------|-------------|----------|
-| Status/Completion | `docs/milestones/` | ✅_COMPLETE.md, 🎊_SUCCESS.md |
-| Dashboards | `docs/operations/` | *_DASHBOARD.md, *_STATUS.md |
-| Reports/Audits | `docs/reports/` | *_REPORT.md, *_AUDIT.md |
-| Phase Docs | `docs/phases/` | PHASE_*.md |
-| Guides | `docs/guides/` | *_GUIDE.md, LAUNCH_*.md |
-| Architecture | `docs/architecture/` | *ARCHITECTURE*.md |
-| AI Configs | `config/ai/` | ai-*.json, claude-*.js |
-| County Configs | `config/counties/` | *-county-config.json |
-| Docker Variants | `config/docker/` | docker-compose.*.yml |
-| Scripts | `scripts/` | *.ps1, *.sh, *.py |
-| Design Files | `design/` | design-*.html |
-| Workflows | `.github/workflows/` | *workflow*.yml |
-| Temp Data | `data/temp/` | *.log, *run*.txt |
+| File Type         | Destination          | Examples                      |
+| ----------------- | -------------------- | ----------------------------- |
+| Status/Completion | `docs/milestones/`   | ✅_COMPLETE.md, 🎊_SUCCESS.md |
+| Dashboards        | `docs/operations/`   | _\_DASHBOARD.md, _\_STATUS.md |
+| Reports/Audits    | `docs/reports/`      | _\_REPORT.md, _\_AUDIT.md     |
+| Phase Docs        | `docs/phases/`       | PHASE\_\*.md                  |
+| Guides            | `docs/guides/`       | _*GUIDE.md, LAUNCH*_.md       |
+| Architecture      | `docs/architecture/` | _ARCHITECTURE_.md             |
+| AI Configs        | `config/ai/`         | ai-_.json, claude-_.js        |
+| County Configs    | `config/counties/`   | \*-county-config.json         |
+| Docker Variants   | `config/docker/`     | docker-compose.\*.yml         |
+| Scripts           | `scripts/`           | _.ps1, _.sh, \*.py            |
+| Design Files      | `design/`            | design-\*.html                |
+| Workflows         | `.github/workflows/` | _workflow_.yml                |
+| Temp Data         | `data/temp/`         | *.log, *run\*.txt             |
 
 ---
 
@@ -124,10 +135,10 @@ Usage:
 ### Common AI Agent Mistakes:
 
 ❌ Creating completion docs in root (🎊_SUCCESS.md)  
-❌ Creating PowerShell scripts in root (Deploy-*.ps1)  
-❌ Creating docker variants in root (docker-compose.*.yml)  
-❌ Creating status files in root (*_DASHBOARD.md)  
-❌ Creating guides in root (*_GUIDE.md)  
+❌ Creating PowerShell scripts in root (Deploy-_.ps1)  
+❌ Creating docker variants in root (docker-compose._.yml)  
+❌ Creating status files in root (_\_DASHBOARD.md)  
+❌ Creating guides in root (_\_GUIDE.md)
 
 ✅ Use appropriate subdirectories instead!
 
@@ -138,6 +149,7 @@ Usage:
 ### Files That Need Moving (Examples):
 
 **Completion Documents** → `docs/milestones/`
+
 - ╔═══╗_ALL_COMPLETE_READY_TO_LAUNCH.txt
 - ✅_IDE_FIXED_AND_WORKING.md
 - 🎊_ULTIMATE_SUCCESS_MASTER_GUIDE_COMPLETE.md
@@ -145,33 +157,39 @@ Usage:
 - All similar completion markers
 
 **Status/Dashboard** → `docs/operations/`
+
 - AI_INFRASTRUCTURE_STATUS_DASHBOARD.txt
 - PRODUCTION_DASHBOARD.md
 - SYSTEM_OPERATIONAL_STATUS.md
 
 **Reports** → `docs/reports/`
+
 - DATABASE_CLEANUP_REPORT.md
 - PRODUCTION_READINESS_GAP_ANALYSIS.md
 - WORKSPACE_AUDIT_REPORT_MIT_PHD.md
 
 **Phase Docs** → `docs/phases/`
+
 - PHASE_1_WORKSPACE_OPTIMIZATION_COMPLETE.md
 - PHASE_2_DEPLOYMENT_COMPLETE.md
 
 **Guides** → `docs/guides/`
+
 - LAUNCH_GUIDE.md
 - NEXT_STEPS_GUIDE.md
 - DEVELOPMENT_WORKFLOW_THE_TERRAFUSION_WAY.md
 
 **Scripts** → `scripts/`
+
 - LAUNCH_IDE.ps1
 - Analyze-Module-Dependencies.ps1
 - fix-benton-county-coordinates.py
 
 **Configs** → `config/`
+
 - ai-agent-training-config-v2.json
 - benton-county-config.json
-- docker-compose.*.yml (variants)
+- docker-compose.\*.yml (variants)
 
 ---
 
@@ -180,6 +198,7 @@ Usage:
 ### Immediate Actions:
 
 1. **Run Cleanup Script**
+
    ```powershell
    .\scripts\organize-root-files.ps1 -DryRun
    # Review what will be moved
@@ -223,6 +242,7 @@ Usage:
 ## 🎯 Success Metrics
 
 ### Target State:
+
 - ✅ 25-30 files in root (currently 200+)
 - ✅ All documentation in `docs/` subdirectories
 - ✅ All scripts in `scripts/`
@@ -230,6 +250,7 @@ Usage:
 - ✅ Clean, professional root structure
 
 ### Monitoring:
+
 ```powershell
 # Count root files (target: <30)
 (Get-ChildItem -Path . -File).Count
@@ -252,18 +273,21 @@ Get-ChildItem -Path . -File | Select-Object Name
 ## 🤝 Enforcement Strategy
 
 ### Technical Controls:
+
 - ✅ `.gitignore` patterns block loose files
 - ✅ Automated cleanup script available
 - ✅ Pre-commit hooks (future)
 - ✅ CI/CD checks (future)
 
 ### Process Controls:
+
 - ✅ Clear policy documentation
 - ✅ AI agent instructions
 - ✅ Quick reference guides
 - ✅ Team education
 
 ### Cultural Controls:
+
 - ✅ Lead by example
 - ✅ Regular reviews
 - ✅ Positive reinforcement
@@ -273,7 +297,8 @@ Get-ChildItem -Path . -File | Select-Object Name
 
 ## 💡 Key Takeaways
 
-1. **Root is for essentials only** - Build configs, main docker-compose, core docs
+1. **Root is for essentials only** - Build configs, main docker-compose, core
+   docs
 2. **Everything else has a home** - Use subdirectories consistently
 3. **AI agents need clear rules** - Provide quick reference and examples
 4. **Automation helps** - Script handles cleanup automatically
@@ -284,6 +309,7 @@ Get-ChildItem -Path . -File | Select-Object Name
 ## 📞 Questions?
 
 If unsure where a file belongs:
+
 1. Check `docs/ROOT_DIRECTORY_POLICY.md`
 2. Look at similar existing files
 3. Ask before creating in root

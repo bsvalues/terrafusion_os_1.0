@@ -23,13 +23,13 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
-        shard: [1/2, 2/2]  # Parallel execution for speed
-    
+        shard: [1/2, 2/2] # Parallel execution for speed
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for baseline comparison
+          fetch-depth: 0 # Full history for baseline comparison
 
       - name: 🏗️ Setup Node.js
         uses: actions/setup-node@v4
@@ -91,31 +91,31 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
+
             // Find all diff images
             const testResultsDir = 'test-results';
             let diffCount = 0;
-            
+
             if (fs.existsSync(testResultsDir)) {
               const files = fs.readdirSync(testResultsDir, { recursive: true });
               diffCount = files.filter(f => f.endsWith('-diff.png')).length;
             }
-            
+
             const comment = `## 📸 Visual Regression Test Failed (${context.payload.pull_request.head.sha.substring(0, 7)})
-            
+
             **Browser:** ${{ matrix.browser }}
             **Shard:** ${{ matrix.shard }}
             **Differences Found:** ${diffCount} screenshot(s)
-            
+
             ⚠️ Visual changes detected! Please review the screenshot diffs in the workflow artifacts.
-            
+
             ### Next Steps:
             1. Review the diff images in the [workflow run artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
             2. If changes are intentional, update baseline screenshots: \`npm run test:e2e:update-snapshots\`
             3. If changes are bugs, fix the visual issues and re-run tests
-            
+
             **THE TERRAFUSION WAY: Visual consistency matters! 🎨**`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [visual-regression]
     if: always() && github.event_name == 'pull_request'
-    
+
     steps:
       - name: 📊 Generate visual regression summary
         run: |
@@ -155,7 +155,7 @@ jobs:
     name: 🔄 Update Visual Baselines
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4

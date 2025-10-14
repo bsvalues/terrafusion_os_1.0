@@ -9,7 +9,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+    - cron: '0 6 * * *' # Daily at 6 AM UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +19,7 @@ jobs:
   lighthouse-audit:
     name: 🔍 Lighthouse Performance Audit
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -66,7 +66,7 @@ jobs:
         run: |
           echo "## 🔍 Lighthouse Performance Audit" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Parse Lighthouse results (if available)
           if [ -f ".lighthouseci/manifest.json" ]; then
             echo "### Performance Metrics:" >> $GITHUB_STEP_SUMMARY
@@ -79,14 +79,14 @@ jobs:
           else
             echo "⚠️ Lighthouse results not available" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**THE TERRAFUSION WAY: Performance matters! ⚡**" >> $GITHUB_STEP_SUMMARY
 
   bundle-size-analysis:
     name: 📦 Bundle Size Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -124,11 +124,11 @@ jobs:
           cat bundle-stats.txt >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Check if bundle size exceeds budget (500KB)
           TOTAL_SIZE=$(du -sk dist | cut -f1)
           BUDGET_KB=512
-          
+
           if [ "$TOTAL_SIZE" -gt "$BUDGET_KB" ]; then
             echo "⚠️ **Bundle size exceeds budget!**" >> $GITHUB_STEP_SUMMARY
             echo "- Budget: ${BUDGET_KB}KB" >> $GITHUB_STEP_SUMMARY
@@ -141,7 +141,7 @@ jobs:
             echo "- Actual: ${TOTAL_SIZE}KB" >> $GITHUB_STEP_SUMMARY
             echo "- Remaining: $((BUDGET_KB - TOTAL_SIZE))KB" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**THE TERRAFUSION WAY: Keep it lean! 📦**" >> $GITHUB_STEP_SUMMARY
 
@@ -160,25 +160,25 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            
+
             const distSize = fs.readFileSync('frontend/dist-size.txt', 'utf8').trim();
             const bundleStats = fs.readFileSync('frontend/bundle-stats.txt', 'utf8').trim();
-            
+
             const comment = `## 📦 Bundle Size Report
-            
+
             **Total Bundle Size:** ${distSize}
-            
+
             ### JavaScript Files:
             \`\`\`
             ${bundleStats}
             \`\`\`
-            
+
             ### Budget Status:
             - 📊 Budget: 512KB
             - 📈 See [detailed analysis](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            
+
             **THE TERRAFUSION WAY: Performance through optimization! ⚡**`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -189,7 +189,7 @@ jobs:
   performance-benchmarks:
     name: 🏎️ Performance Benchmarks
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -261,7 +261,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lighthouse-audit, bundle-size-analysis, performance-benchmarks]
     if: always()
-    
+
     steps:
       - name: 📊 Generate comprehensive performance report
         run: |
@@ -272,7 +272,7 @@ jobs:
           echo "- **Bundle Size Analysis:** ${{ needs.bundle-size-analysis.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Performance Benchmarks:** ${{ needs.performance-benchmarks.result }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ needs.lighthouse-audit.result }}" == "success" ] && \
              [ "${{ needs.bundle-size-analysis.result }}" == "success" ] && \
              [ "${{ needs.performance-benchmarks.result }}" == "success" ]; then

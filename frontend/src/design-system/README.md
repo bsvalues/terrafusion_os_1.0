@@ -157,14 +157,14 @@ function Button({ children, variant = 'primary' }) {
         // Colors
         backgroundColor: tokens.colors.component.button[variant].background,
         color: tokens.colors.component.button[variant].text,
-        
+
         // Spacing
         padding: `${tokens.inset.md} ${tokens.spacing[6]}`,
-        
+
         // Typography
         ...tokens.typography.textStyles.body.md,
         fontWeight: tokens.typography.fontWeight.semibold,
-        
+
         // Effects
         borderRadius: tokens.semantic.radius.button,
         boxShadow: tokens.shadows.box.md,
@@ -190,7 +190,7 @@ const Card = styled.div`
   padding: ${tokens.spacing[6]};
   box-shadow: ${tokens.shadows.box.lg};
   transition: ${tokens.motion.transition.normal.default};
-  
+
   &:hover {
     background: ${tokens.colors.component.card.hover};
     transform: translateY(-2px);
@@ -260,12 +260,7 @@ import { tokens } from '@/design-system';
 Full TypeScript support with auto-completion:
 
 ```typescript
-import type { 
-  BrandColor,
-  SpacingScale,
-  FontSize,
-  BoxShadow 
-} from '@/design-system';
+import type { BrandColor, SpacingScale, FontSize, BoxShadow } from '@/design-system';
 
 // Get type-safe suggestions as you type
 const color: BrandColor = 'primary';

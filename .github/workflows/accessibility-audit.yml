@@ -11,7 +11,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 0 * * 1'  # Weekly on Mondays
+    - cron: '0 0 * * 1' # Weekly on Mondays
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -80,10 +80,10 @@ jobs:
         run: |
           echo "## ♿ Accessibility Audit Results (${{ matrix.browser }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Count violations from test results
           VIOLATIONS=$(find test-results -name "*.json" -exec grep -l "violations" {} \; | wc -l || echo "0")
-          
+
           if [ "$VIOLATIONS" -eq "0" ]; then
             echo "✅ **No WCAG violations detected!**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -96,7 +96,7 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "Please review the detailed report in the workflow artifacts." >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Browser:** ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
           echo "**Test Date:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
@@ -109,32 +109,32 @@ jobs:
         with:
           script: |
             const comment = `## ♿ Accessibility Audit Failed
-            
+
             **Browser:** ${{ matrix.browser }}
             **Commit:** ${context.payload.pull_request.head.sha.substring(0, 7)}
-            
+
             ⚠️ WCAG 2.1 violations detected! This PR introduces accessibility issues.
-            
+
             ### Common Issues:
             - Missing \`alt\` attributes on images
             - Insufficient color contrast (WCAG AA requires 4.5:1 for normal text)
             - Missing ARIA labels on interactive elements
             - Improper heading hierarchy (h1 → h3 without h2)
             - Missing keyboard navigation support
-            
+
             ### Next Steps:
             1. Review the [accessibility report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
             2. Fix violations using the axe-core recommendations
             3. Test with screen readers (NVDA, JAWS, VoiceOver)
             4. Validate keyboard-only navigation
-            
+
             ### Resources:
             - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
             - [axe-core Rules](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
             - [MDN Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
-            
+
             **THE TERRAFUSION WAY: Accessibility is not optional! ♿**`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -145,7 +145,7 @@ jobs:
   keyboard-navigation-audit:
     name: ⌨️ Keyboard Navigation Audit
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -200,7 +200,7 @@ jobs:
   screen-reader-validation:
     name: 📢 Screen Reader Validation (ARIA)
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -258,7 +258,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [accessibility-audit, keyboard-navigation-audit, screen-reader-validation]
     if: always()
-    
+
     steps:
       - name: 📊 Generate comprehensive accessibility report
         run: |
@@ -269,7 +269,7 @@ jobs:
           echo "- **Keyboard Navigation:** ${{ needs.keyboard-navigation-audit.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Screen Reader (ARIA):** ${{ needs.screen-reader-validation.result }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ needs.accessibility-audit.result }}" == "success" ] && \
              [ "${{ needs.keyboard-navigation-audit.result }}" == "success" ] && \
              [ "${{ needs.screen-reader-validation.result }}" == "success" ]; then

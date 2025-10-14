@@ -91,10 +91,7 @@
         "Agents must open and summarize AI_AGENT_START_HERE.md and TERRAFUSION_OS_CORE/ docs.",
         "Agents must enumerate modules and identify hot‑swap semantics."
       ],
-      "evidence": [
-        "presence_of_files",
-        "summaries_generated"
-      ]
+      "evidence": ["presence_of_files", "summaries_generated"]
     },
     {
       "layer": 2,
@@ -126,10 +123,7 @@
     {
       "layer": 4,
       "name": "SDK & Template System",
-      "assets": [
-        "sdk/terrafusion-os-sdk.ts",
-        ".terrafusion-templates/"
-      ],
+      "assets": ["sdk/terrafusion-os-sdk.ts", ".terrafusion-templates/"],
       "capabilities": [
         "Generate OS‑native code via templates only after validation.",
         "Use SDK for discovery, validation, and module operations."
@@ -161,10 +155,7 @@
     "typescript_example": "import { validateUnderstanding, preflight } from 'terrafusion-os-sdk';\n\nasync function main(agentId: string) {\n  const ready = await preflight({ agentId, gates: ['architecture','swarm','modules'] });\n  if (!ready.passed) {\n    await ready.autoRetrain?.();\n    throw new Error('Validation gates not passed; training re‑initiated.');\n  }\n  // safe to generate OS‑native code using templates\n}",
     "expected_contracts": {
       "preflight()": {
-        "inputs": [
-          "agentId",
-          "gates[]"
-        ],
+        "inputs": ["agentId", "gates[]"],
         "returns": [
           "passed:boolean",
           "reportUrl?:string",
@@ -172,9 +163,7 @@
         ]
       },
       "validateUnderstanding()": {
-        "inputs": [
-          "agentId"
-        ],
+        "inputs": ["agentId"],
         "returns": [
           "passed:boolean",
           "scores:{architecture:number, swarm:number, modules:number}"
