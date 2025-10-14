@@ -1,6 +1,7 @@
 # 🚀 TerraFusion OS - Development Workflow & Enhancement Strategy
 
-**THE TERRAFUSION WAY: Enterprise-Grade Government Operating System Development**
+**THE TERRAFUSION WAY: Enterprise-Grade Government Operating System
+Development**
 
 ---
 
@@ -69,6 +70,7 @@ npm run dev
 ### Required Tools
 
 #### Core Development
+
 - **Node.js**: v20.x LTS
 - **Python**: 3.11+
 - **.NET**: 8.0 SDK
@@ -77,6 +79,7 @@ npm run dev
 - **Git**: Latest version
 
 #### IDEs & Editors
+
 - **VS Code** (Recommended)
   - Extensions:
     - ESLint
@@ -88,15 +91,18 @@ npm run dev
     - C#
 
 #### Database Tools
+
 - **pgAdmin 4** or **DBeaver**
 - **Redis Commander** or **RedisInsight**
 - **SQLite Browser**
 
 #### API Testing
+
 - **Postman** or **Insomnia**
 - **Thunder Client** (VS Code extension)
 
 #### Docker
+
 - **Docker Desktop** for Windows
 - **Docker Compose** v2+
 
@@ -161,6 +167,7 @@ chore/code-cleanup
 ```
 
 #### Types
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -237,9 +244,11 @@ git push origin feature/property-search
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] New feature
 - [ ] Bug fix
 - [ ] Enhancement
@@ -248,12 +257,14 @@ Brief description of changes
 - [ ] Breaking change
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests passed
 - [ ] Manual testing completed
 - [ ] Validation script passed (100%)
 
 ## Security Checklist
+
 - [ ] No sensitive data exposed
 - [ ] Input validation implemented
 - [ ] SQL injection prevention
@@ -261,21 +272,25 @@ Brief description of changes
 - [ ] CSRF protection
 
 ## Documentation
+
 - [ ] Code comments added
 - [ ] API documentation updated
 - [ ] User documentation updated
 - [ ] README.md updated (if needed)
 
 ## Screenshots (if applicable)
+
 [Add screenshots here]
 
 ## Related Issues
+
 Closes #XXX
 ```
 
 #### 4. Code Review
 
 **Reviewers Check**:
+
 - ✅ Code follows TerraFusion standards
 - ✅ Tests pass (100%)
 - ✅ No security vulnerabilities
@@ -305,26 +320,31 @@ git push origin develop
 # Feature: Property Search Enhancement
 
 ## Business Value
+
 Enable citizens to quickly find property information using natural language
 
 ## User Stories
+
 - As a citizen, I want to search by address so I can view property details
 - As a citizen, I want to search by parcel ID so I can access tax information
 - As a citizen, I want to search by owner name so I can find my properties
 
 ## Technical Approach
+
 - Implement Elasticsearch for full-text search
 - Add autocomplete functionality
 - Integrate with Harris PACS local database
 - Cache frequent searches in Redis
 
 ## Acceptance Criteria
+
 - [ ] Search returns results in < 500ms
 - [ ] Handles 100 concurrent searches
 - [ ] 95%+ accuracy on address matching
 - [ ] Mobile-responsive interface
 
 ## Security Considerations
+
 - Rate limiting: 10 searches/minute per IP
 - Input sanitization to prevent injection
 - No PII exposed in search results preview
@@ -334,6 +354,7 @@ Enable citizens to quickly find property information using natural language
 ```
 
 #### 1.2 Design Review Meeting
+
 - Present to team/stakeholders
 - Security review
 - Architecture review
@@ -405,17 +426,18 @@ export class PropertySearchService {
   async searchByAddress(query, userId) {
     // Rate limiting
     await rateLimit.check(userId, 'property-search', { max: 10, window: 60 });
-    
+
     // Input sanitization
     const sanitized = sanitizeInput(query);
-    
+
     // Check cache
     const cacheKey = `search:address:${sanitized}`;
     const cached = await cache.get(cacheKey);
     if (cached) return JSON.parse(cached);
-    
+
     // Database query
-    const results = await db.query(`
+    const results = await db.query(
+      `
       SELECT 
         parcel_id,
         address,
@@ -426,23 +448,28 @@ export class PropertySearchService {
         LOWER(address) LIKE LOWER($1)
         OR parcel_id = $2
       LIMIT 50
-    `, [`%${sanitized}%`, sanitized]);
-    
+    `,
+      [`%${sanitized}%`, sanitized]
+    );
+
     // Cache results
     await cache.setex(cacheKey, 300, JSON.stringify(results));
-    
+
     // Audit log
     await this.logSearch(userId, query, results.length);
-    
+
     return results;
   }
-  
+
   async logSearch(userId, query, resultCount) {
-    await db.query(`
+    await db.query(
+      `
       INSERT INTO search_audit_log 
       (user_id, query, result_count, timestamp)
       VALUES ($1, $2, $3, NOW())
-    `, [userId, query, resultCount]);
+    `,
+      [userId, query, resultCount]
+    );
   }
 }
 ```
@@ -480,6 +507,7 @@ npm run test:coverage
 ## Self-Review Checklist
 
 ### Code Quality
+
 - [ ] Code follows TerraFusion style guide
 - [ ] No console.log() or debugging code
 - [ ] Error handling implemented
@@ -488,6 +516,7 @@ npm run test:coverage
 - [ ] Environment variables used for config
 
 ### Security
+
 - [ ] All inputs validated and sanitized
 - [ ] No SQL injection vulnerabilities
 - [ ] No XSS vulnerabilities
@@ -496,6 +525,7 @@ npm run test:coverage
 - [ ] Rate limiting implemented
 
 ### Performance
+
 - [ ] Database queries optimized
 - [ ] Proper indexing used
 - [ ] Caching implemented where appropriate
@@ -503,6 +533,7 @@ npm run test:coverage
 - [ ] Resource cleanup (connections, files)
 
 ### Testing
+
 - [ ] Unit tests: 80%+ coverage
 - [ ] Integration tests added
 - [ ] Edge cases covered
@@ -510,6 +541,7 @@ npm run test:coverage
 - [ ] Security tests included
 
 ### Documentation
+
 - [ ] JSDoc comments added
 - [ ] README updated
 - [ ] API docs updated
@@ -557,20 +589,24 @@ npm run test:performance
 ## Manual Test Cases
 
 ### Happy Path
+
 1. Search for valid address → Results displayed ✅
 2. Click on result → Property details page ✅
 3. Search by parcel ID → Exact match found ✅
 
 ### Edge Cases
+
 4. Search with special characters → Handled correctly ✅
 5. Search with empty string → Error message shown ✅
 6. Very long search query → Truncated properly ✅
 
 ### Error Scenarios
+
 7. Database unavailable → Error message shown ✅
 8. Timeout scenario → Graceful fallback ✅
 
 ### Security Tests
+
 9. SQL injection attempt → Blocked ✅
 10. XSS attempt → Sanitized ✅
 11. Rate limit exceeded → 429 error ✅
@@ -606,20 +642,21 @@ npm run test:smoke
 ```markdown
 ## UAT Sign-off
 
-Stakeholder: ___________________
-Date: ___________________
+Stakeholder: ********\_\_\_******** Date: ********\_\_\_********
 
 Tested Scenarios:
+
 - [ ] Property search by address
 - [ ] Property search by parcel ID
 - [ ] Search autocomplete
 - [ ] Mobile responsiveness
 - [ ] Performance (< 500ms response)
 
-Approval: [ ] APPROVED  [ ] NEEDS CHANGES
+Approval: [ ] APPROVED [ ] NEEDS CHANGES
 
 Comments:
-_________________________________
+
+---
 ```
 
 #### 5.4 Deploy to Production
@@ -656,12 +693,12 @@ npm run monitor:production
 export class PropertyService {
   private readonly db: Database;
   private readonly cache: Cache;
-  
+
   constructor(db: Database, cache: Cache) {
     this.db = db;
     this.cache = cache;
   }
-  
+
   /**
    * Retrieves property details by parcel ID
    * @param parcelId - Unique parcel identifier
@@ -674,18 +711,18 @@ export class PropertyService {
     if (!this.isValidParcelId(parcelId)) {
       throw new ValidationError('Invalid parcel ID format');
     }
-    
+
     try {
       // Check cache first
       const cached = await this.cache.get(`property:${parcelId}`);
       if (cached) return JSON.parse(cached);
-      
+
       // Query database
       const property = await this.db.query(
         'SELECT * FROM properties WHERE parcel_id = $1',
         [parcelId]
       );
-      
+
       // Cache result
       if (property) {
         await this.cache.setex(
@@ -694,14 +731,14 @@ export class PropertyService {
           JSON.stringify(property)
         );
       }
-      
+
       return property;
     } catch (error) {
       logger.error('Failed to retrieve property', { parcelId, error });
       throw new DatabaseError('Failed to retrieve property details');
     }
   }
-  
+
   private isValidParcelId(parcelId: string): boolean {
     return /^\d{10}$/.test(parcelId);
   }
@@ -720,18 +757,21 @@ function getStuff(id) {
 ## Code Review Checklist - THE TERRAFUSION WAY
 
 ### Architecture
+
 - [ ] Follows single responsibility principle
 - [ ] Uses dependency injection
 - [ ] Proper separation of concerns
 - [ ] No circular dependencies
 
 ### Error Handling
+
 - [ ] Try-catch blocks around async operations
 - [ ] Specific error types thrown
 - [ ] Errors logged with context
 - [ ] User-friendly error messages
 
 ### Security
+
 - [ ] No hardcoded credentials
 - [ ] Input validation present
 - [ ] Output encoding implemented
@@ -739,12 +779,14 @@ function getStuff(id) {
 - [ ] No sensitive data in logs
 
 ### Performance
+
 - [ ] Database queries optimized
 - [ ] Appropriate caching strategy
 - [ ] No memory leaks
 - [ ] Resource cleanup in finally blocks
 
 ### Testing
+
 - [ ] Unit tests present
 - [ ] Edge cases covered
 - [ ] Mocks used appropriately
@@ -794,32 +836,32 @@ import { LevyCalculator } from '../../src/services/levy-calculator';
 
 describe('LevyCalculator', () => {
   let calculator: LevyCalculator;
-  
+
   beforeEach(() => {
     calculator = new LevyCalculator();
   });
-  
+
   describe('calculateAnnualLevy', () => {
     it('should calculate levy for standard property', () => {
       const property = {
         assessedValue: 250000,
-        levyRate: 0.01234
+        levyRate: 0.01234,
       };
-      
+
       const levy = calculator.calculateAnnualLevy(property);
-      
+
       expect(levy).toBe(3085); // 250000 * 0.01234
     });
-    
+
     it('should apply senior citizen exemption', () => {
       const property = {
         assessedValue: 250000,
         levyRate: 0.01234,
-        exemptions: ['senior_citizen']
+        exemptions: ['senior_citizen'],
       };
-      
+
       const levy = calculator.calculateAnnualLevy(property);
-      
+
       expect(levy).toBeLessThan(3085);
     });
   });
@@ -838,26 +880,24 @@ describe('Property API', () => {
   beforeAll(async () => {
     await db.connect();
   });
-  
+
   afterAll(async () => {
     await db.disconnect();
   });
-  
+
   describe('GET /api/properties/:id', () => {
     it('should return property details', async () => {
       const response = await request(app)
         .get('/api/properties/1234567890')
         .expect(200);
-      
+
       expect(response.body).toHaveProperty('parcelId');
       expect(response.body).toHaveProperty('address');
       expect(response.body).toHaveProperty('assessedValue');
     });
-    
+
     it('should return 404 for non-existent property', async () => {
-      await request(app)
-        .get('/api/properties/9999999999')
-        .expect(404);
+      await request(app).get('/api/properties/9999999999').expect(404);
     });
   });
 });
@@ -873,21 +913,21 @@ test.describe('Property Search', () => {
   test('should search and view property details', async ({ page }) => {
     // Navigate to homepage
     await page.goto('http://localhost:3102');
-    
+
     // Search for property
     await page.fill('[data-testid="search-input"]', '123 Main St');
     await page.click('[data-testid="search-button"]');
-    
+
     // Wait for results
     await page.waitForSelector('[data-testid="search-results"]');
-    
+
     // Verify results displayed
     const results = await page.locator('[data-testid="result-item"]').count();
     expect(results).toBeGreaterThan(0);
-    
+
     // Click first result
     await page.click('[data-testid="result-item"]:first-child');
-    
+
     // Verify property details page
     await page.waitForSelector('[data-testid="property-details"]');
     expect(await page.locator('h1').textContent()).toContain('123 Main St');
@@ -914,81 +954,81 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          
+
       - name: Install dependencies
         run: npm ci
-        
+
       - name: Run linter
         run: npm run lint
-        
+
       - name: Run unit tests
         run: npm run test:unit
-        
+
       - name: Run integration tests
         run: npm run test:integration
-        
+
       - name: Check code coverage
         run: npm run test:coverage
-        
+
       - name: Security audit
         run: npm audit --audit-level=moderate
-        
+
       - name: Production validation
         run: |
           pwsh -File scripts/validate-production-readiness.ps1
-        
+
   build:
     needs: test
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Build Docker images
         run: docker-compose build
-        
+
       - name: Push to registry
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker-compose push
-          
+
   deploy-staging:
     needs: build
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Deploy to staging
         run: |
           # Deploy to staging environment
           ssh deploy@staging.terrafusion.gov "cd /app && docker-compose pull && docker-compose up -d"
-          
+
       - name: Run smoke tests
         run: npm run test:smoke -- --env=staging
-        
+
   deploy-production:
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
-    
+
     steps:
       - name: Deploy to production
         run: |
           # Deploy to production environment
           ssh deploy@terrafusion.bentoncountywa.gov "cd /app && docker-compose pull && docker-compose up -d"
-          
+
       - name: Run smoke tests
         run: npm run test:smoke -- --env=production
-        
+
       - name: Notify team
         uses: 8398a7/action-slack@v3
         with:
@@ -1004,16 +1044,15 @@ jobs:
 ### Q4 2025 - Foundation Enhancements
 
 #### Priority 1: Critical Infrastructure
+
 - [ ] **Azure Key Vault Integration** (2-4 hours)
   - Move all secrets to Azure Key Vault
   - Implement secret rotation
   - Update documentation
-  
 - [ ] **SSL/TLS Certificates** (2-3 hours)
   - Let's Encrypt automation
   - Both domains configured
   - Auto-renewal setup
-  
 - [ ] **Comprehensive Testing Suite** (1 week)
   - Unit tests: 80%+ coverage
   - Integration tests for all APIs
@@ -1021,12 +1060,12 @@ jobs:
   - Performance benchmarks
 
 #### Priority 2: User Experience
+
 - [ ] **Citizen Portal** (3 weeks)
   - Property search
   - Tax payment
   - Document requests
   - Mobile-responsive design
-  
 - [ ] **Admin Dashboard** (2 weeks)
   - Analytics dashboard
   - User management
@@ -1034,6 +1073,7 @@ jobs:
   - Audit log viewer
 
 #### Priority 3: Data Integration
+
 - [ ] **Real-time PACS Sync** (1 week)
   - Scheduled sync jobs
   - Change detection
@@ -1043,6 +1083,7 @@ jobs:
 ### Q1 2026 - Advanced Features
 
 #### AI/ML Capabilities
+
 - [ ] **Property Valuation AI** (4 weeks)
   - Train ML model on 89,247 parcels
   - Comparable sales analysis
@@ -1056,6 +1097,7 @@ jobs:
   - Automated reporting
 
 #### Integrations
+
 - [ ] **Payment Gateway** (2 weeks)
   - Credit card processing
   - ACH transfers
@@ -1071,6 +1113,7 @@ jobs:
 ### Q2 2026 - Ecosystem Expansion
 
 #### Multi-County Platform
+
 - [ ] **Multi-Tenancy Architecture** (4 weeks)
   - County isolation
   - Shared infrastructure
@@ -1084,6 +1127,7 @@ jobs:
   - Support portal
 
 #### Developer Platform
+
 - [ ] **Public API** (3 weeks)
   - REST API documentation
   - API keys & authentication
@@ -1099,6 +1143,7 @@ jobs:
 ### Q3 2026 - Enterprise Features
 
 #### Compliance & Security
+
 - [ ] **CJIS Compliance** (6 weeks)
   - Criminal Justice Information Services
   - Advanced encryption
@@ -1112,6 +1157,7 @@ jobs:
   - Certification process
 
 #### High Availability
+
 - [ ] **Multi-Region Deployment** (4 weeks)
   - Active-active setup
   - Global load balancing
@@ -1194,37 +1240,19 @@ TerraFusion Platform (Parent)
 #### 1. Secure Development Lifecycle
 
 ```markdown
-┌─────────────────────────────────────────────────┐
-│ Phase 1: Requirements                           │
-│  - Security requirements gathering              │
-│  - Threat modeling                              │
-│  - Risk assessment                              │
-├─────────────────────────────────────────────────┤
-│ Phase 2: Design                                 │
-│  - Security architecture review                 │
-│  - Data flow analysis                           │
-│  - Attack surface analysis                      │
-├─────────────────────────────────────────────────┤
-│ Phase 3: Implementation                         │
-│  - Secure coding practices                      │
-│  - Code reviews                                 │
-│  - Static analysis (SAST)                       │
-├─────────────────────────────────────────────────┤
-│ Phase 4: Testing                                │
-│  - Security testing                             │
-│  - Penetration testing                          │
-│  - Dynamic analysis (DAST)                      │
-├─────────────────────────────────────────────────┤
-│ Phase 5: Deployment                             │
-│  - Security configuration                       │
-│  - Vulnerability scanning                       │
-│  - Production hardening                         │
-├─────────────────────────────────────────────────┤
-│ Phase 6: Maintenance                            │
-│  - Security monitoring                          │
-│  - Patch management                             │
-│  - Incident response                            │
-└─────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────┐ │ Phase 1: Requirements │
+│ - Security requirements gathering │ │ - Threat modeling │ │ - Risk assessment
+│ ├─────────────────────────────────────────────────┤ │ Phase 2: Design │ │ -
+Security architecture review │ │ - Data flow analysis │ │ - Attack surface
+analysis │ ├─────────────────────────────────────────────────┤ │ Phase 3:
+Implementation │ │ - Secure coding practices │ │ - Code reviews │ │ - Static
+analysis (SAST) │ ├─────────────────────────────────────────────────┤ │ Phase 4:
+Testing │ │ - Security testing │ │ - Penetration testing │ │ - Dynamic analysis
+(DAST) │ ├─────────────────────────────────────────────────┤ │ Phase 5:
+Deployment │ │ - Security configuration │ │ - Vulnerability scanning │ │ -
+Production hardening │ ├─────────────────────────────────────────────────┤ │
+Phase 6: Maintenance │ │ - Security monitoring │ │ - Patch management │ │ -
+Incident response │ └─────────────────────────────────────────────────┘
 ```
 
 #### 2. Security Scanning
@@ -1258,15 +1286,16 @@ npm run security:check
 Every feature must include:
 
 #### 1. Code Documentation
-```typescript
+
+````typescript
 /**
  * Calculates property tax levy based on assessed value and levy rate
- * 
+ *
  * @param property - Property details including assessed value
  * @param levyRate - Current levy rate (decimal, e.g., 0.01234)
  * @param exemptions - Array of applicable exemptions
  * @returns Calculated annual levy amount in dollars
- * 
+ *
  * @example
  * ```typescript
  * const levy = calculateLevy(
@@ -1276,10 +1305,10 @@ Every feature must include:
  * );
  * console.log(levy); // 2468.00 (after exemption)
  * ```
- * 
+ *
  * @throws {ValidationError} If property or levyRate is invalid
  * @throws {CalculationError} If levy calculation fails
- * 
+ *
  * @see {@link https://docs.terrafusion.gov/levy-calculation}
  */
 export function calculateLevy(
@@ -1289,7 +1318,7 @@ export function calculateLevy(
 ): number {
   // Implementation...
 }
-```
+````
 
 #### 2. API Documentation
 
@@ -1329,12 +1358,14 @@ paths:
 # Property Search Guide
 
 ## Overview
+
 The property search feature allows citizens to quickly find property information
 using address, parcel ID, or owner name.
 
 ## How to Use
 
 ### Search by Address
+
 1. Navigate to the homepage
 2. Enter the property address in the search box
 3. Click "Search" or press Enter
@@ -1342,6 +1373,7 @@ using address, parcel ID, or owner name.
 5. Click on a result to view full property details
 
 ### Search by Parcel ID
+
 ...
 ```
 
@@ -1351,32 +1383,39 @@ using address, parcel ID, or owner name.
 # ADR-001: Use PostgreSQL for Primary Database
 
 ## Status
+
 Accepted
 
 ## Context
+
 We need to choose a primary database for TerraFusion OS that can handle:
+
 - 89,247+ property records
 - Complex queries and joins
 - ACID transactions
 - Government-grade reliability
 
 ## Decision
+
 We will use PostgreSQL 15+ as the primary database.
 
 ## Consequences
 
 ### Positive
+
 - Proven reliability and ACID compliance
 - Excellent GIS support via PostGIS
 - Strong security features
 - Active community and support
 
 ### Negative
+
 - Requires dedicated server/cluster
 - More complex than NoSQL alternatives
 - Higher operational overhead
 
 ## Alternatives Considered
+
 - MySQL/MariaDB
 - MongoDB
 - Microsoft SQL Server
@@ -1392,24 +1431,28 @@ We will use PostgreSQL 15+ as the primary database.
 ## Key Performance Indicators (KPIs)
 
 ### Code Quality
+
 - Code coverage: > 80%
 - Code review approval rate: 100%
 - Static analysis issues: 0 critical
 - Security vulnerabilities: 0 high/critical
 
 ### Velocity
+
 - Sprint velocity: Track story points
 - Lead time: < 2 weeks (idea to production)
 - Deployment frequency: Daily (develop), Weekly (production)
 - Mean time to recovery (MTTR): < 1 hour
 
 ### Quality
+
 - Bug escape rate: < 5%
 - Production incidents: < 2 per month
 - Uptime: > 99.9%
 - API response time: < 500ms (p95)
 
 ### User Satisfaction
+
 - Citizen portal NPS: > 50
 - Admin user satisfaction: > 4.5/5
 - Support ticket volume: Declining trend
@@ -1481,17 +1524,20 @@ npm run rollback:production
 ## 🎓 Resources
 
 ### Documentation
+
 - **Main Docs**: `docs/README.md`
 - **API Docs**: `docs/api/`
 - **Architecture**: `docs/architecture/`
 - **Security**: `docs/security/`
 
 ### Training Materials
+
 - Developer onboarding: `docs/onboarding/DEVELOPER_GUIDE.md`
 - Security training: `docs/security/SECURITY_TRAINING.md`
 - Best practices: `docs/best-practices/`
 
 ### External Resources
+
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
@@ -1523,7 +1569,8 @@ npm run rollback:production
 
 ---
 
-**Let's build the future of county government technology - THE TERRAFUSION WAY! 🚀**
+**Let's build the future of county government technology - THE TERRAFUSION WAY!
+🚀**
 
-*Last Updated: October 11, 2025*  
-*TerraFusion OS v1.0 - Production Ready*
+_Last Updated: October 11, 2025_  
+_TerraFusion OS v1.0 - Production Ready_

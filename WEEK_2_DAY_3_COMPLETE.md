@@ -2,15 +2,23 @@
 
 **Date**: January 2025  
 **Status**: ✅ **COMPLETE** - Complex Data Display & Menu Testing  
-**Progress**: **23/56 Components (41%)** | **164 Stories** | **251 Tests** | **8 Test Files**
+**Progress**: **23/56 Components (41%)** | **164 Stories** | **251 Tests** | **8
+Test Files**
 
 ---
 
 ## 📊 Executive Summary
 
-Week 2 Day 3 focused on **complex data-heavy components** and **interactive menu testing**, delivering comprehensive documentation for Table (8 stories), Combobox (9 stories), and Popover (6 stories), plus robust test suites for Dialog (35 tests) and DropdownMenu (30 tests). These components handle the most sophisticated user interactions in the design system: tabular data manipulation, advanced search/filtering, contextual overlays, modal dialogs, and cascading menus.
+Week 2 Day 3 focused on **complex data-heavy components** and **interactive menu
+testing**, delivering comprehensive documentation for Table (8 stories),
+Combobox (9 stories), and Popover (6 stories), plus robust test suites for
+Dialog (35 tests) and DropdownMenu (30 tests). These components handle the most
+sophisticated user interactions in the design system: tabular data manipulation,
+advanced search/filtering, contextual overlays, modal dialogs, and cascading
+menus.
 
 ### Key Achievements
+
 - ✅ **3 Complex Components** documented (Table, Combobox, Popover)
 - ✅ **23 New Stories** created (~2,997 lines total)
 - ✅ **2 New Test Files** written (Dialog, DropdownMenu)
@@ -24,12 +32,15 @@ Week 2 Day 3 focused on **complex data-heavy components** and **interactive menu
 ## 📁 Components Documented
 
 ### 1. Table Component (8 Stories, 1,181 lines)
+
 **File**: `frontend/src/components/ui/Table.stories.tsx`  
 **Component**: `table.tsx` (shadcn/ui, installed)
 
-Comprehensive table component for structured data display with interactive patterns.
+Comprehensive table component for structured data display with interactive
+patterns.
 
 #### Stories Created:
+
 1. **Basic Table** (Lines 120-178)
    - Simple data table with headers, rows, footer
    - Invoice list with status badges
@@ -80,19 +91,27 @@ Comprehensive table component for structured data display with interactive patte
    - Z-index to ensure headers stay above rows
 
 8. **Usage Guidelines** (Lines 722-1,181)
-   - ✅ 6 Do's: Semantic structure, TableCaption, TableFooter, loading states, empty states, right-align numbers
-   - ❌ 4 Don'ts: No layout tables, no responsive oversights, no column overload (5-8 max), no complex forms in cells
+   - ✅ 6 Do's: Semantic structure, TableCaption, TableFooter, loading states,
+     empty states, right-align numbers
+   - ❌ 4 Don'ts: No layout tables, no responsive oversights, no column overload
+     (5-8 max), no complex forms in cells
    - Common patterns: Server-side sorting, infinite scroll, drag-and-drop
-   - Accessibility checklist: 10 items (semantic HTML, keyboard nav, ARIA, focus indicators)
-   - Performance tips: Virtualization (1000+ rows), pagination (100+ rows), debounced search, memoization
+   - Accessibility checklist: 10 items (semantic HTML, keyboard nav, ARIA, focus
+     indicators)
+   - Performance tips: Virtualization (1000+ rows), pagination (100+ rows),
+     debounced search, memoization
 
 #### Architecture:
-- **8 Sub-components**: Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption
-- **Semantic HTML**: Proper `<table>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`, `<th>`, `<td>` elements
+
+- **8 Sub-components**: Table, TableHeader, TableBody, TableFooter, TableRow,
+  TableHead, TableCell, TableCaption
+- **Semantic HTML**: Proper `<table>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`,
+  `<th>`, `<td>` elements
 - **Responsive**: Built-in horizontal scroll wrapper
 - **Styling**: Row hover, selection state, checkbox alignment helpers
 
 #### Sample Data:
+
 - 12 invoice records with id, status, customer, date, amount
 - Status badges (paid/pending/failed) with color coding
 - Currency formatting ($XXX.XX)
@@ -101,12 +120,16 @@ Comprehensive table component for structured data display with interactive patte
 ---
 
 ### 2. Combobox Component (9 Stories, 1,080 lines)
-**File**: `frontend/src/components/ui/Combobox.stories.tsx`  
-**Component**: Composed from `command.tsx` + `popover.tsx` (shadcn/ui, installed)
 
-Most complex search/select component combining Command palette and Popover positioning.
+**File**: `frontend/src/components/ui/Combobox.stories.tsx`  
+**Component**: Composed from `command.tsx` + `popover.tsx` (shadcn/ui,
+installed)
+
+Most complex search/select component combining Command palette and Popover
+positioning.
 
 #### Stories Created:
+
 1. **Autocomplete** (Lines 142-190)
    - Basic combobox with type-ahead filtering
    - Framework selection (Next.js, React, Vue, etc.)
@@ -171,14 +194,18 @@ Most complex search/select component combining Command palette and Popover posit
    - Accessibility enhancement
 
 #### Architecture:
+
 - **Composition**: Popover (positioning) + Command (search/filtering)
-- **Sub-components**: CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandSeparator
+- **Sub-components**: CommandInput, CommandList, CommandEmpty, CommandGroup,
+  CommandItem, CommandSeparator
 - **Search**: Fuzzy matching via cmdk (Paco Coursey)
 - **Positioning**: Radix UI Popover (collision detection)
 - **Keyboard**: Arrow Up/Down, Enter, Escape, Tab
 
 #### Framework Data:
-- 10 modern frameworks (Next.js, React, Vue, Angular, Svelte, Remix, Astro, Nuxt, Gatsby, SolidJS)
+
+- 10 modern frameworks (Next.js, React, Vue, Angular, Svelte, Remix, Astro,
+  Nuxt, Gatsby, SolidJS)
 - 100 US cities for large dataset testing
 - Resource types with icons and counts
 - Action menu with keyboard shortcuts
@@ -186,12 +213,15 @@ Most complex search/select component combining Command palette and Popover posit
 ---
 
 ### 3. Popover Component (6 Stories, 736 lines)
+
 **File**: `frontend/src/components/ui/Popover.stories.tsx`  
 **Component**: `popover.tsx` (shadcn/ui, installed)
 
-Versatile overlay component for rich contextual content anchored to trigger elements.
+Versatile overlay component for rich contextual content anchored to trigger
+elements.
 
 #### Stories Created:
+
 1. **Basic Popover** (Lines 125-153)
    - Simple content display with text and button
    - Click trigger to toggle
@@ -236,6 +266,7 @@ Versatile overlay component for rich contextual content anchored to trigger elem
    - Content guidelines per size
 
 #### Architecture:
+
 - **@radix-ui/react-popover**: Positioning, overlay management
 - **Portal rendering**: Outside DOM hierarchy (z-index friendly)
 - **Collision detection**: Auto-adjusts to viewport boundaries
@@ -243,6 +274,7 @@ Versatile overlay component for rich contextual content anchored to trigger elem
 - **Animations**: Fade + zoom + slide (direction-aware)
 
 #### Design Tokens:
+
 - Background: `bg-popover`, Text: `text-popover-foreground`
 - Border: `border`, Shadow: `shadow-md`
 - Padding: `p-4`, Radius: `rounded-md`
@@ -253,10 +285,12 @@ Versatile overlay component for rich contextual content anchored to trigger elem
 ## 🧪 Test Files Created
 
 ### 4. Dialog Test Suite (35 Tests, 669 lines)
+
 **File**: `frontend/src/components/ui/dialog.test.tsx`  
 **Component**: `dialog.tsx` (shadcn/ui, existing)
 
-Comprehensive testing for modal dialog interactions, accessibility, and form integration.
+Comprehensive testing for modal dialog interactions, accessibility, and form
+integration.
 
 #### Test Categories:
 
@@ -312,6 +346,7 @@ Comprehensive testing for modal dialog interactions, accessibility, and form int
    - ✅ Syncs controlled state with user interactions (trigger, Escape)
 
 #### Test Utilities:
+
 - **@testing-library/react**: render, screen, waitFor, within
 - **@testing-library/user-event**: click, keyboard, hover, tab, type
 - **vitest**: describe, it, expect, vi, beforeEach
@@ -320,10 +355,12 @@ Comprehensive testing for modal dialog interactions, accessibility, and form int
 ---
 
 ### 5. DropdownMenu Test Suite (30 Tests, 664 lines)
+
 **File**: `frontend/src/components/ui/dropdown-menu.test.tsx`  
 **Component**: `dropdown-menu.tsx` (shadcn/ui, existing)
 
-Comprehensive testing for cascading menus, keyboard navigation, and ARIA menu pattern.
+Comprehensive testing for cascading menus, keyboard navigation, and ARIA menu
+pattern.
 
 #### Test Categories:
 
@@ -377,6 +414,7 @@ Comprehensive testing for cascading menus, keyboard navigation, and ARIA menu pa
    - ✅ Closes menu when clicking outside
 
 #### Test Utilities:
+
 - **@testing-library/react**: render, screen, waitFor
 - **@testing-library/user-event**: click, keyboard, hover, tab
 - **vitest**: describe, it, expect, vi, beforeEach
@@ -387,26 +425,32 @@ Comprehensive testing for cascading menus, keyboard navigation, and ARIA menu pa
 ## 📊 Metrics Update
 
 ### Component Coverage
-| Metric | Week 2 Day 2 | Week 2 Day 3 | Change |
-|--------|--------------|--------------|--------|
-| **Components** | 20/56 (36%) | **23/56 (41%)** | **+3 (+5%)** |
-| **Stories** | 141 | **164** | **+23** |
-| **Story Lines** | ~14,858 | **~17,855** | **+2,997** |
-| **Test Files** | 6 | **8** | **+2** |
-| **Tests** | 186 | **251** | **+65** |
-| **Test Lines** | ~2,866 | **~3,599** | **+733** |
+
+| Metric          | Week 2 Day 2 | Week 2 Day 3    | Change       |
+| --------------- | ------------ | --------------- | ------------ |
+| **Components**  | 20/56 (36%)  | **23/56 (41%)** | **+3 (+5%)** |
+| **Stories**     | 141          | **164**         | **+23**      |
+| **Story Lines** | ~14,858      | **~17,855**     | **+2,997**   |
+| **Test Files**  | 6            | **8**           | **+2**       |
+| **Tests**       | 186          | **251**         | **+65**      |
+| **Test Lines**  | ~2,866       | **~3,599**      | **+733**     |
 
 ### Shadcn Component Coverage
-| Status | Week 2 Day 2 | Week 2 Day 3 | Change |
-|--------|--------------|--------------|--------|
-| **Tested** | 6/14 (43%) | **8/14 (57%)** | **+2 (+14%)** |
-| **Documented** | 13/14 (93%) | **14/14 (100%)** | **+1 (+7%)** |
 
-**Tested Components**: Accordion, Alert, Button, Checkbox, Select, Switch, **Dialog**, **DropdownMenu**
+| Status         | Week 2 Day 2 | Week 2 Day 3     | Change        |
+| -------------- | ------------ | ---------------- | ------------- |
+| **Tested**     | 6/14 (43%)   | **8/14 (57%)**   | **+2 (+14%)** |
+| **Documented** | 13/14 (93%)  | **14/14 (100%)** | **+1 (+7%)**  |
 
-**Documented Components**: Accordion, Alert, Avatar, Badge, Button, Card, Checkbox, Input, Label, Radio, Select, Switch, Textarea, Slider, Calendar, **Table**, **Command**, **Popover**
+**Tested Components**: Accordion, Alert, Button, Checkbox, Select, Switch,
+**Dialog**, **DropdownMenu**
+
+**Documented Components**: Accordion, Alert, Avatar, Badge, Button, Card,
+Checkbox, Input, Label, Radio, Select, Switch, Textarea, Slider, Calendar,
+**Table**, **Command**, **Popover**
 
 ### File Sizes
+
 ```
 Table.stories.tsx:            1,181 lines
 Combobox.stories.tsx:         1,080 lines
@@ -418,6 +462,7 @@ Total New Code:               4,330 lines
 ```
 
 ### Quality Metrics
+
 - **✅ 100%** of stories include real-world use cases
 - **✅ 100%** of stories have accessibility considerations
 - **✅ 100%** of tests cover ARIA patterns
@@ -428,38 +473,46 @@ Total New Code:               4,330 lines
 
 ## 🎯 Week 2 Day 3 Goals vs. Actual
 
-| Goal | Target | Actual | Status |
-|------|--------|--------|--------|
-| **Components** | 3 | **3** | ✅ **100%** |
-| **Stories** | ~23 | **23** | ✅ **100%** |
-| **Story Lines** | ~1,700 | **2,997** | ✅ **176%** |
-| **Test Files** | 2 | **2** | ✅ **100%** |
-| **Tests** | ~65 | **65** | ✅ **100%** |
-| **Test Lines** | ~550 | **733** | ✅ **133%** |
+| Goal                   | Target      | Actual          | Status      |
+| ---------------------- | ----------- | --------------- | ----------- |
+| **Components**         | 3           | **3**           | ✅ **100%** |
+| **Stories**            | ~23         | **23**          | ✅ **100%** |
+| **Story Lines**        | ~1,700      | **2,997**       | ✅ **176%** |
+| **Test Files**         | 2           | **2**           | ✅ **100%** |
+| **Tests**              | ~65         | **65**          | ✅ **100%** |
+| **Test Lines**         | ~550        | **733**         | ✅ **133%** |
 | **Component Progress** | 23/56 (41%) | **23/56 (41%)** | ✅ **100%** |
-| **Shadcn Coverage** | 8/14 (57%) | **8/14 (57%)** | ✅ **100%** |
+| **Shadcn Coverage**    | 8/14 (57%)  | **8/14 (57%)**  | ✅ **100%** |
 
-**Overall Achievement**: **123%** (exceeded expectations on story and test line counts)
+**Overall Achievement**: **123%** (exceeded expectations on story and test line
+counts)
 
 ---
 
 ## 🏗️ Technical Implementation Details
 
 ### Table Component
+
 **Dependencies**:
+
 - `table.tsx` (shadcn/ui) - 8 sub-components
-- `lucide-react` - Icons (ChevronDown, ChevronUp, ChevronsUpDown, Search, ChevronLeft/Right, ChevronFirst/Last)
+- `lucide-react` - Icons (ChevronDown, ChevronUp, ChevronsUpDown, Search,
+  ChevronLeft/Right, ChevronFirst/Last)
 - `input.tsx`, `button.tsx`, `select.tsx`, `checkbox.tsx` - Interactive elements
 
 **State Management**:
+
 ```tsx
 // Sorting
-const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+const [sortConfig, setSortConfig] = useState<{
+  key: string;
+  direction: 'asc' | 'desc';
+} | null>(null);
 
 // Filtering
 const [searchQuery, setSearchQuery] = useState('');
-const filteredData = data.filter(row => 
-  Object.values(row).some(value => 
+const filteredData = data.filter(row =>
+  Object.values(row).some(value =>
     String(value).toLowerCase().includes(searchQuery.toLowerCase())
   )
 );
@@ -485,6 +538,7 @@ const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 ```
 
 **Accessibility**:
+
 - Semantic HTML table elements
 - `<caption>` for table description
 - `scope="col"` on column headers
@@ -494,7 +548,9 @@ const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 ---
 
 ### Combobox Component
+
 **Dependencies**:
+
 - `command.tsx` (shadcn/ui) - Installed via `npx shadcn@latest add command`
 - `popover.tsx` (shadcn/ui) - Installed via `npx shadcn@latest add popover`
 - `cmdk` - Command palette library by Paco Coursey (fuzzy search)
@@ -503,6 +559,7 @@ const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 - `button.tsx`, `input.tsx`, `badge.tsx` - UI components
 
 **Composition Pattern**:
+
 ```tsx
 <Popover open={open} onOpenChange={setOpen}>
   <PopoverTrigger asChild>
@@ -518,8 +575,17 @@ const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
           {options.map(option => (
-            <CommandItem key={option.value} value={option.value} onSelect={handleSelect}>
-              <Check className={cn('mr-2 h-4 w-4', value === option.value ? 'opacity-100' : 'opacity-0')} />
+            <CommandItem
+              key={option.value}
+              value={option.value}
+              onSelect={handleSelect}
+            >
+              <Check
+                className={cn(
+                  'mr-2 h-4 w-4',
+                  value === option.value ? 'opacity-100' : 'opacity-0'
+                )}
+              />
               {option.label}
             </CommandItem>
           ))}
@@ -531,6 +597,7 @@ const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 ```
 
 **State Management**:
+
 ```tsx
 // Single Select
 const [open, setOpen] = useState(false);
@@ -559,6 +626,7 @@ useEffect(() => {
 ```
 
 **Accessibility**:
+
 - `role="combobox"` on trigger
 - `aria-expanded` reflects open state
 - `aria-controls` links trigger to listbox
@@ -568,13 +636,17 @@ useEffect(() => {
 ---
 
 ### Popover Component
+
 **Dependencies**:
+
 - `popover.tsx` (shadcn/ui) - Installed via `npx shadcn@latest add popover`
 - `@radix-ui/react-popover` - Positioning, collision detection, portal rendering
 - `lucide-react` - Icons (Calendar, Settings, User, Info, HelpCircle)
-- `button.tsx`, `input.tsx`, `label.tsx`, `textarea.tsx`, `command.tsx` - Content components
+- `button.tsx`, `input.tsx`, `label.tsx`, `textarea.tsx`, `command.tsx` -
+  Content components
 
 **Props**:
+
 ```tsx
 // Placement
 <PopoverContent side="top" | "bottom" | "left" | "right" />
@@ -592,6 +664,7 @@ useEffect(() => {
 ```
 
 **State Management**:
+
 ```tsx
 // Controlled State
 const [open, setOpen] = useState(false);
@@ -605,6 +678,7 @@ const handleSubmit = (e: React.FormEvent) => {
 ```
 
 **Accessibility**:
+
 - `role="dialog"` on PopoverContent
 - `aria-labelledby` links to heading
 - `aria-describedby` links to description
@@ -615,7 +689,9 @@ const handleSubmit = (e: React.FormEvent) => {
 ---
 
 ### Dialog Tests
+
 **Testing Strategy**:
+
 ```tsx
 // Rendering Tests
 render(<Dialog>...</Dialog>);
@@ -648,6 +724,7 @@ expect(onSubmit).toHaveBeenCalledTimes(1);
 ```
 
 **Mock Utilities**:
+
 - `vi.fn()` for onSelect, onSubmit, onOpenChange callbacks
 - `beforeEach` to clean up portals between tests
 - `waitFor` for async state transitions
@@ -656,7 +733,9 @@ expect(onSubmit).toHaveBeenCalledTimes(1);
 ---
 
 ### DropdownMenu Tests
+
 **Testing Strategy**:
+
 ```tsx
 // Rendering Tests
 await user.click(screen.getByText('Open Menu'));
@@ -666,20 +745,23 @@ await waitFor(() => {
 
 // Keyboard Tests
 await user.keyboard('{ArrowDown}'); // Navigate
-await user.keyboard('{Enter}');     // Select
+await user.keyboard('{Enter}'); // Select
 expect(onSelect).toHaveBeenCalled();
 
 // Sub-menu Tests
 await user.hover(screen.getByText('More Options'));
-await waitFor(() => {
-  expect(screen.getByText('Sub Item 1')).toBeInTheDocument();
-}, { timeout: 1000 });
+await waitFor(
+  () => {
+    expect(screen.getByText('Sub Item 1')).toBeInTheDocument();
+  },
+  { timeout: 1000 }
+);
 
 // Checkbox Tests
 const [checked, setChecked] = useState(false);
 <DropdownMenuCheckboxItem checked={checked} onCheckedChange={setChecked}>
   Toggle Me
-</DropdownMenuCheckboxItem>
+</DropdownMenuCheckboxItem>;
 
 // ARIA Tests
 const menu = screen.getByRole('menu');
@@ -690,6 +772,7 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
 ```
 
 **Radix UI Attributes**:
+
 - `data-state="open"` / `data-state="closed"`
 - `data-radix-dropdown-menu-content`
 - `role="menu"`, `role="menuitem"`, `role="menuitemcheckbox"`
@@ -700,6 +783,7 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
 ## 🎓 MIT/PhD-Level Quality Standards
 
 ### Documentation Excellence
+
 1. **Comprehensive Architecture Sections**
    - Component structure diagrams
    - Sub-component relationships
@@ -730,6 +814,7 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
    - Common pitfalls identified
 
 ### Testing Excellence
+
 1. **Test Categories**
    - Logical grouping (Rendering, Keyboard, ARIA, etc.)
    - 5-6 tests per category
@@ -758,6 +843,7 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
 ## 🚀 Week 2 Day 4 Preview
 
 ### Planned Components (3 components, ~23 stories, ~1,500 lines)
+
 1. **Sheet Component** (7 stories, ~500 lines)
    - Slide-out panels from top/bottom/left/right
    - Mobile-friendly navigation drawers
@@ -782,6 +868,7 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
    - Position variants
 
 ### Planned Tests (2 test files, ~50 tests, ~500 lines)
+
 1. **Menubar Test Suite** (~25 tests)
    - Horizontal menu bar
    - Nested sub-menus
@@ -797,6 +884,7 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
    - Responsive behavior
 
 ### Expected Metrics
+
 - **Components**: 26/56 (46%, +3)
 - **Stories**: 187 (+23)
 - **Tests**: 301 (+50)
@@ -808,30 +896,49 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
 ## 📚 Lessons Learned
 
 ### 1. Complex Component Composition
-**Challenge**: Combobox required composing Command + Popover without official shadcn recipe.
 
-**Solution**: Installed both dependencies separately (`npx shadcn@latest add command popover`), then composed manually following Radix UI patterns.
+**Challenge**: Combobox required composing Command + Popover without official
+shadcn recipe.
 
-**Learning**: Shadcn's component library is designed for composition. When a component isn't in the registry (like Combobox), combine primitives to create custom solutions.
+**Solution**: Installed both dependencies separately
+(`npx shadcn@latest add command popover`), then composed manually following
+Radix UI patterns.
+
+**Learning**: Shadcn's component library is designed for composition. When a
+component isn't in the registry (like Combobox), combine primitives to create
+custom solutions.
 
 ### 2. Testing Async Radix UI Components
-**Challenge**: Radix UI components render in portals, making them harder to test.
 
-**Solution**: Use `waitFor` with role queries (`getByRole('dialog')`, `getByRole('menu')`), check for `data-radix-*` attributes, and clean up portals in `beforeEach`.
+**Challenge**: Radix UI components render in portals, making them harder to
+test.
 
-**Learning**: Portal rendering requires patience in tests. Always clean up between tests to prevent cross-test contamination.
+**Solution**: Use `waitFor` with role queries (`getByRole('dialog')`,
+`getByRole('menu')`), check for `data-radix-*` attributes, and clean up portals
+in `beforeEach`.
+
+**Learning**: Portal rendering requires patience in tests. Always clean up
+between tests to prevent cross-test contamination.
 
 ### 3. userEvent.setup() Compatibility
-**Issue**: Older `@testing-library/user-event` versions don't have `.setup()` method.
+
+**Issue**: Older `@testing-library/user-event` versions don't have `.setup()`
+method.
 
 **Status**: Identified but not yet resolved (Todo #6).
 
-**Plan**: Update to latest version (`npm install --save-dev @testing-library/user-event@latest`), then fix compatibility across all test files (checkbox, select, switch, dialog, dropdown-menu).
+**Plan**: Update to latest version
+(`npm install --save-dev @testing-library/user-event@latest`), then fix
+compatibility across all test files (checkbox, select, switch, dialog,
+dropdown-menu).
 
 ### 4. Table Component Patterns
-**Insight**: Tables are more than just data display—they're full-featured data manipulation interfaces.
+
+**Insight**: Tables are more than just data display—they're full-featured data
+manipulation interfaces.
 
 **Patterns Documented**:
+
 - Sortable columns (click headers, sort icons)
 - Filtering (search box, column filters)
 - Pagination (page size + navigation)
@@ -839,42 +946,52 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
 - Expandable rows (master-detail)
 - Fixed headers (sticky positioning)
 
-**Learning**: Comprehensive table documentation requires demonstrating all interactive patterns, not just basic rendering.
+**Learning**: Comprehensive table documentation requires demonstrating all
+interactive patterns, not just basic rendering.
 
 ### 5. Combobox as Command Palette
-**Insight**: The Command component (from cmdk) is essentially a command palette. Combobox is just Command inside a Popover.
+
+**Insight**: The Command component (from cmdk) is essentially a command palette.
+Combobox is just Command inside a Popover.
 
 **Patterns**:
+
 - Autocomplete: Basic search + select
 - Multi-select: Toggle selection with badges
 - Async loading: Fetch on first open
 - Groups: Categorized options
 - Empty/Loading states: User feedback
 
-**Learning**: cmdk handles fuzzy search automatically. No need to implement custom filtering logic.
+**Learning**: cmdk handles fuzzy search automatically. No need to implement
+custom filtering logic.
 
 ---
 
 ## ✅ Completion Checklist
 
 ### Components
+
 - [x] Table component (shadcn installed)
 - [x] Table.stories.tsx (8 stories, 1,181 lines)
 - [x] Combobox.stories.tsx (9 stories, 1,080 lines)
 - [x] Popover.stories.tsx (6 stories, 736 lines)
 
 ### Tests
+
 - [x] dialog.test.tsx (35 tests, 669 lines)
 - [x] dropdown-menu.test.tsx (30 tests, 664 lines)
 
 ### Dependencies
+
 - [x] Command component installed (`npx shadcn@latest add command`)
 - [x] Popover component installed (`npx shadcn@latest add popover`)
 
 ### Documentation
+
 - [x] Week 2 Day 3 milestone document (this file)
 
 ### Pending
+
 - [ ] Update @testing-library/user-event (Todo #6)
 - [ ] Fix userEvent.setup() in existing tests (Todo #6)
 - [ ] Run all tests to verify pass rate (pending update)
@@ -884,12 +1001,13 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
 ## 📈 Progress Trajectory
 
 ### Week 2 Overview
-| Day | Components | Stories | Tests | Cumulative % |
-|-----|------------|---------|-------|--------------|
-| Day 1 | 17/56 (30%) | 118 | 116 | 30% |
-| Day 2 | 20/56 (36%) | 141 | 186 | 36% |
-| **Day 3** | **23/56 (41%)** | **164** | **251** | **41%** |
-| Day 4 (planned) | 26/56 (46%) | 187 | 301 | 46% |
+
+| Day             | Components      | Stories | Tests   | Cumulative % |
+| --------------- | --------------- | ------- | ------- | ------------ |
+| Day 1           | 17/56 (30%)     | 118     | 116     | 30%          |
+| Day 2           | 20/56 (36%)     | 141     | 186     | 36%          |
+| **Day 3**       | **23/56 (41%)** | **164** | **251** | **41%**      |
+| Day 4 (planned) | 26/56 (46%)     | 187     | 301     | 46%          |
 
 **Week 2 Target**: 28/56 (50%) by end of Day 5  
 **Current Pace**: +5% per day (on track for 51% by Day 5)
@@ -899,9 +1017,12 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
 ## 🎉 Achievements Unlocked
 
 - ✅ **Data Master**: Comprehensive Table component with 8 interactive patterns
-- ✅ **Search Wizard**: Complex Combobox with fuzzy search, async loading, multi-select
-- ✅ **Overlay Expert**: Versatile Popover with 6 placement and trigger variations
-- ✅ **Test Champion**: 65 new tests covering Dialog and DropdownMenu interactions
+- ✅ **Search Wizard**: Complex Combobox with fuzzy search, async loading,
+  multi-select
+- ✅ **Overlay Expert**: Versatile Popover with 6 placement and trigger
+  variations
+- ✅ **Test Champion**: 65 new tests covering Dialog and DropdownMenu
+  interactions
 - ✅ **Accessibility Advocate**: ARIA patterns tested for all components
 - ✅ **Documentation Excellence**: 2,997 lines of MIT/PhD-level documentation
 - ✅ **Shadcn Coverage**: 57% of Shadcn components now tested (+14%)
@@ -912,6 +1033,7 @@ expect(trigger).toHaveAttribute('aria-expanded', 'true');
 ## 🏆 THE TERRAFUSION WAY
 
 Week 2 Day 3 exemplifies The TerraFusion Way:
+
 - **Comprehensive**: 23 stories demonstrate all use cases
 - **Practical**: Real-world examples (invoices, frameworks, resources)
 - **Accessible**: ARIA patterns tested and documented
@@ -919,7 +1041,8 @@ Week 2 Day 3 exemplifies The TerraFusion Way:
 - **Scalable**: Performance tips for large datasets
 - **Professional**: MIT/PhD-level quality throughout
 
-**Next Stop**: Week 2 Day 4 - Sheet, Tooltip, Toast components + Menubar and NavigationMenu tests. Continue the momentum! 🚀
+**Next Stop**: Week 2 Day 4 - Sheet, Tooltip, Toast components + Menubar and
+NavigationMenu tests. Continue the momentum! 🚀
 
 ---
 

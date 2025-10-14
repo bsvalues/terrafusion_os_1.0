@@ -9,6 +9,7 @@
 ## 📋 **OVERVIEW**
 
 Integration tests validate how multiple components work together in real-world scenarios. These tests focus on:
+
 - **User workflows** (form submission, navigation, data display)
 - **Component interactions** (state management, event propagation)
 - **Accessibility** (keyboard navigation across components, focus management)
@@ -19,7 +20,9 @@ Integration tests validate how multiple components work together in real-world s
 ## 🎯 **TEST CATEGORIES**
 
 ### **1. Form Workflows** (`form-workflows.integration.test.tsx`)
+
 Tests complete form interactions with multiple input components:
+
 - Input + Label + Button validation flows
 - Textarea + Checkbox submission workflows
 - Select + RadioGroup state management
@@ -27,7 +30,9 @@ Tests complete form interactions with multiple input components:
 - Error message propagation
 
 ### **2. Dialog/Modal Workflows** (`dialog-workflows.integration.test.tsx`)
+
 Tests modal and dialog patterns with form integration:
+
 - Dialog + Form submission flows
 - AlertDialog confirmation workflows
 - Sheet side panel interactions
@@ -35,7 +40,9 @@ Tests modal and dialog patterns with form integration:
 - Keyboard escape and close behaviors
 
 ### **3. Navigation Workflows** (`navigation-workflows.integration.test.tsx`)
+
 Tests navigation patterns and routing:
+
 - NavigationMenu + routing integration
 - Tabs + content switching with state
 - Accordion + nested navigation patterns
@@ -43,7 +50,9 @@ Tests navigation patterns and routing:
 - Active state management
 
 ### **4. Data Display Workflows** (`data-display-workflows.integration.test.tsx`)
+
 Tests complex data presentation patterns:
+
 - Table + sorting/filtering controls
 - Card + Badge + Avatar composition
 - Toast + notification queue management
@@ -51,7 +60,9 @@ Tests complex data presentation patterns:
 - Skeleton + data loading patterns
 
 ### **5. Command Palette Workflows** (`command-palette-workflows.integration.test.tsx`)
+
 Tests command palette search and action patterns:
+
 - Command + search + result navigation
 - Keyboard shortcuts + action execution
 - Grouped commands + category filtering
@@ -59,7 +70,9 @@ Tests command palette search and action patterns:
 - Command palette + form integration
 
 ### **6. Floating UI Workflows** (`floating-ui-workflows.integration.test.tsx`)
+
 Tests tooltip, popover, and dropdown patterns:
+
 - Tooltip + hover interactions
 - Popover + form controls
 - DropdownMenu + nested menu navigation
@@ -67,7 +80,9 @@ Tests tooltip, popover, and dropdown patterns:
 - Focus trap and return management
 
 ### **7. Composite Component Workflows** (`composite-workflows.integration.test.tsx`)
+
 Tests complex multi-component compositions:
+
 - Card + Dialog + Form user profile editing
 - Table + Sheet + Form row editing
 - NavigationMenu + Command search integration
@@ -79,6 +94,7 @@ Tests complex multi-component compositions:
 ## 🧪 **TESTING STANDARDS**
 
 ### **Test Structure:**
+
 ```typescript
 describe('Workflow: [User Scenario]', () => {
   describe('Component Interaction', () => {
@@ -92,6 +108,7 @@ describe('Workflow: [User Scenario]', () => {
 ```
 
 ### **Quality Standards:**
+
 - ✅ **Real-world scenarios**: Every test represents actual user workflow
 - ✅ **Accessibility**: Keyboard navigation and ARIA tested across components
 - ✅ **State management**: Component state synchronization validated
@@ -99,6 +116,7 @@ describe('Workflow: [User Scenario]', () => {
 - ✅ **Focus management**: Focus transitions between components
 
 ### **Testing Tools:**
+
 - **@testing-library/react**: Component rendering and queries
 - **@testing-library/user-event**: Realistic user interactions
 - **jest-axe**: Accessibility validation for integrated workflows
@@ -140,6 +158,7 @@ npm run test:integration -- form-workflows
 **E2E tests validate complete user journeys in production-like environment.**
 
 Integration tests bridge the gap between unit and E2E:
+
 - **Faster than E2E**: No browser startup, network calls, or database
 - **More realistic than unit**: Multiple components, real interactions
 - **Better debugging**: Isolated workflows, clear failure points

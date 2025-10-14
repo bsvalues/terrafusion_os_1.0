@@ -15,25 +15,25 @@ services:
       # Core Configuration
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      
+
       # Database Configuration
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=${POSTGRES_DB:-terrafusion_prod};Username=${POSTGRES_USER:-terrafusion};Password=${POSTGRES_PASSWORD}
       - ConnectionStrings__Redis=redis:6379,password=${REDIS_PASSWORD}
-      
+
       # County Configuration
       - County__Name=${COUNTY_NAME:-Benton County}
       - County__State=${COUNTY_STATE:-WA}
       - County__Code=${COUNTY_CODE:-053}
-      
+
       # Security Configuration
       - Security__JwtSecret=${JWT_SECRET}
       - Security__EncryptionKey=${ENCRYPTION_KEY}
-      
+
       # AI Swarm Configuration (1,008 Agents)
       - AI__SwarmSize=${AI_SWARM_SIZE:-1008}
       - AI__ProcessingMode=${AI_PROCESSING_MODE:-production}
       - AI__QuantumCoherence=${AI_QUANTUM_COHERENCE:-0.94}
-      
+
       # MARKETPLACE PLATFORM CORE CONFIGURATION
       - Marketplace__PlatformMode=GovernmentEconomy
       - Marketplace__RevenueSharing__Platform=0.30
@@ -43,10 +43,10 @@ services:
       - Marketplace__Compliance__FedRAMP=true
       - Marketplace__CrossCounty__Enabled=true
       - Marketplace__PluginValidation__Government=strict
-      
+
     ports:
-      - "5000:8080"   # Core API HTTP
-      - "5001:8080"   # Core API HTTP (Alt)
+      - '5000:8080' # Core API HTTP
+      - '5001:8080' # Core API HTTP (Alt)
     volumes:
       - ./infrastructure/marketplace-enhanced:/app/marketplace-platform:ro
       - ./modules:/app/government-modules
@@ -62,7 +62,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -86,7 +86,7 @@ services:
       - GOVERNMENT_SECURITY_SANDBOX=true
       - PLUGIN_CERTIFICATION_REQUIRED=true
     ports:
-      - "3000:3000"   # Government Marketplace Portal
+      - '3000:3000' # Government Marketplace Portal
     volumes:
       - ./infrastructure/marketplace-enhanced:/app:ro
     networks:
@@ -135,14 +135,14 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --locale=C
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data_gov:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d:ro
     networks:
       - government-plugin-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-terrafusion}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-terrafusion}']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -155,24 +155,28 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data_gov:/data
       - ./cache/redis.conf:/usr/local/etc/redis/redis.conf:ro
     networks:
       - government-plugin-network
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       interval: 30s
       timeout: 10s
       retries: 5
-    command: [
-      "redis-server",
-      "/usr/local/etc/redis/redis.conf",
-      "--requirepass", "${REDIS_PASSWORD}",
-      "--appendonly", "yes",
-      "--appendfsync", "everysec"
-    ]
+    command:
+      [
+        'redis-server',
+        '/usr/local/etc/redis/redis.conf',
+        '--requirepass',
+        '${REDIS_PASSWORD}',
+        '--appendonly',
+        'yes',
+        '--appendfsync',
+        'everysec',
+      ]
 
   # Monitoring Stack - Government Compliance
   prometheus:
@@ -180,7 +184,7 @@ services:
     container_name: terrafusion-prometheus-gov
     restart: unless-stopped
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data_gov:/prometheus
@@ -201,7 +205,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     ports:
-      - "3001:3000"
+      - '3001:3000'
     volumes:
       - grafana_data_gov:/var/lib/grafana
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
@@ -260,5 +264,5 @@ networks:
           gateway: 172.30.0.1
     driver_opts:
       com.docker.network.bridge.name: gov-plugin-net
-      com.docker.network.bridge.enable_icc: "true"
-      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.enable_icc: 'true'
+      com.docker.network.bridge.enable_ip_masquerade: 'true'

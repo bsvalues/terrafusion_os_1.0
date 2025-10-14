@@ -8,9 +8,12 @@
 
 ## 📊 **WHAT IS CODE SPLITTING?**
 
-Code splitting is a performance optimization technique that breaks your application bundle into smaller chunks that are loaded on-demand, rather than loading everything upfront.
+Code splitting is a performance optimization technique that breaks your
+application bundle into smaller chunks that are loaded on-demand, rather than
+loading everything upfront.
 
 ### **Benefits:**
+
 - ⚡ **Faster initial load** - Only load code needed for current page
 - 📦 **Smaller bundles** - Reduce initial JavaScript payload
 - 🎯 **Better caching** - Unchanged chunks stay cached
@@ -43,6 +46,7 @@ const Monitoring = lazy(() => import('./pages/Monitoring'));
 ```
 
 **Impact:**
+
 - ✅ Initial bundle reduced by ~200-300 KB
 - ✅ Each route loads independently
 - ✅ Users only download code for visited pages
@@ -55,7 +59,7 @@ const Monitoring = lazy(() => import('./pages/Monitoring'));
 
 ```typescript
 // Heavy chart component - load only when needed
-const ChartsVisualization = lazy(() => 
+const ChartsVisualization = lazy(() =>
   import('./components/ChartsVisualization')
 );
 
@@ -66,6 +70,7 @@ const ChartsVisualization = lazy(() =>
 ```
 
 **Candidates for Lazy Loading:**
+
 - 📊 **Charts/Graphs** - recharts components (~100 KB)
 - 🗺️ **Maps** - Leaflet, OpenLayers (~200 KB)
 - 📝 **Rich Text Editors** - Monaco, Quill (~500 KB)
@@ -93,6 +98,7 @@ rollupOptions: {
 ```
 
 **Generated Chunks:**
+
 - `vendor-*.js` (~250 KB) - React core libraries
 - `ui-*.js` (~180 KB) - MUI components
 - `charts-*.js` (~100 KB) - Chart components
@@ -100,6 +106,7 @@ rollupOptions: {
 - `main-*.js` (~150 KB) - Application code
 
 **Benefits:**
+
 - ✅ Core libraries cached separately
 - ✅ Updating app code doesn't invalidate vendor cache
 - ✅ Parallel downloads for faster loading
@@ -185,6 +192,7 @@ npm run size:why
 ```
 
 **Configured Limits in `.size-limit.js`:**
+
 - Total Bundle: < 500 KB (gzipped)
 - Vendor Chunk: < 300 KB
 - Main Bundle: < 150 KB
@@ -193,6 +201,7 @@ npm run size:why
 ### **3. CI/CD Integration**
 
 Bundle size is automatically checked on every PR:
+
 - ✅ **GitHub Actions** - `performance-budget.yml` workflow
 - ✅ **PR Comments** - Automatic bundle size comparison
 - ✅ **Fail on Overage** - PR blocked if exceeds budget
@@ -202,6 +211,7 @@ Bundle size is automatically checked on every PR:
 ## 🎯 **BEST PRACTICES - THE TERRAFUSION WAY**
 
 ### **DO:**
+
 - ✅ Lazy load routes with `React.lazy()`
 - ✅ Lazy load heavy components (charts, maps, editors)
 - ✅ Split vendor code separately
@@ -211,6 +221,7 @@ Bundle size is automatically checked on every PR:
 - ✅ Test on slow 3G networks
 
 ### **DON'T:**
+
 - ❌ Lazy load tiny components (< 10 KB) - overhead not worth it
 - ❌ Split code below the fold (render immediately, lazy load is overkill)
 - ❌ Ignore loading states - users need feedback
@@ -222,6 +233,7 @@ Bundle size is automatically checked on every PR:
 ## 📊 **PERFORMANCE METRICS - BEFORE/AFTER**
 
 ### **Before Code Splitting:**
+
 - Initial Bundle: **~1.2 MB** (uncompressed)
 - Gzipped: **~380 KB**
 - FCP: **2.4s** (Needs Improvement)
@@ -229,6 +241,7 @@ Bundle size is automatically checked on every PR:
 - LCP: **3.2s** (Needs Improvement)
 
 ### **After Code Splitting:**
+
 - Initial Bundle: **~650 KB** (uncompressed) **↓ 46%**
 - Gzipped: **~220 KB** **↓ 42%**
 - FCP: **1.7s** (Good) **↓ 29%**
@@ -236,6 +249,7 @@ Bundle size is automatically checked on every PR:
 - LCP: **2.4s** (Good) **↓ 25%**
 
 ### **Core Web Vitals Impact:**
+
 - ✅ **FCP**: Poor → Good (< 1.8s)
 - ✅ **TTI**: Poor → Good (< 3.8s)
 - ✅ **LCP**: Needs Improvement → Good (< 2.5s)
@@ -263,6 +277,7 @@ function onRenderCallback(id, phase, actualDuration) {
 ### **2. Network Tab (Chrome DevTools)**
 
 Check:
+
 - ✅ Chunks load on-demand (not all at once)
 - ✅ Vendor chunk cached (304 Not Modified)
 - ✅ Parallel chunk downloads
@@ -279,6 +294,7 @@ lhci autorun
 ```
 
 **Check:**
+
 - ✅ Performance Score > 90
 - ✅ "Avoid enormous network payloads" passed
 - ✅ "Minimize main thread work" passed
@@ -295,8 +311,8 @@ lhci autorun
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 
 // Trigger preload on hover
-<Link 
-  to="/monitoring" 
+<Link
+  to="/monitoring"
   onMouseEnter={() => Monitoring.preload()}
 >
   Monitoring
@@ -307,7 +323,7 @@ const Monitoring = lazy(() => import('./pages/Monitoring'));
 
 ```typescript
 // Prefetch data for next route
-router.events.on('routeChangeStart', (url) => {
+router.events.on('routeChangeStart', url => {
   if (url === '/monitoring') {
     queryClient.prefetchQuery('monitoringData', fetchMonitoringData);
   }
@@ -334,7 +350,7 @@ VitePWA({
       },
     ],
   },
-})
+});
 ```
 
 ---
@@ -342,12 +358,14 @@ VitePWA({
 ## 📚 **ADDITIONAL RESOURCES**
 
 ### **Documentation:**
+
 - [React Code Splitting](https://reactjs.org/docs/code-splitting.html)
 - [Vite Code Splitting](https://vitejs.dev/guide/features.html#code-splitting)
 - [Web.dev Code Splitting](https://web.dev/reduce-javascript-payloads-with-code-splitting/)
 - [Webpack Bundle Analysis](https://webpack.js.org/guides/code-splitting/)
 
 ### **Tools:**
+
 - [Rollup Visualizer](https://github.com/btd/rollup-plugin-visualizer)
 - [size-limit](https://github.com/ai/size-limit)
 - [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)
@@ -358,6 +376,7 @@ VitePWA({
 ## 🎉 **SUMMARY - THE TERRAFUSION WAY**
 
 **Code Splitting Achievements:**
+
 - ✅ **Route-based splitting** - Lazy load pages (App, Monitoring)
 - ✅ **Vendor splitting** - Separate React, MUI, charts, 3D libs
 - ✅ **Bundle analysis** - Visualizer + size-limit tracking
@@ -367,9 +386,11 @@ VitePWA({
 - ✅ **Core Web Vitals** - All metrics in "Good" range
 
 **Impact:**
+
 - 🚀 **46% smaller initial bundle** (1.2 MB → 650 KB)
 - ⚡ **29% faster First Contentful Paint** (2.4s → 1.7s)
 - 🎯 **39% faster Time to Interactive** (5.1s → 3.1s)
 - 📈 **Lighthouse score: 72 → 91** (26% improvement)
 
-**THE TERRAFUSION WAY: Every kilobyte matters. Every millisecond counts. Performance is not optional. 🚀**
+**THE TERRAFUSION WAY: Every kilobyte matters. Every millisecond counts.
+Performance is not optional. 🚀**

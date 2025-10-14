@@ -2,7 +2,8 @@
 
 ## CRITICAL: File Placement Rules
 
-When creating ANY file in the TerraFusion OS workspace, you MUST follow these rules:
+When creating ANY file in the TerraFusion OS workspace, you MUST follow these
+rules:
 
 ### Quick Decision Tree:
 
@@ -21,35 +22,35 @@ When creating ANY file in the TerraFusion OS workspace, you MUST follow these ru
 
 ### File Placement Table:
 
-| If creating... | Place in... |
-|---------------|-------------|
-| Status/completion doc | `docs/milestones/` |
-| Dashboard/status report | `docs/operations/` |
-| Analysis/audit report | `docs/reports/` |
-| Phase document | `docs/phases/` |
-| Guide/how-to | `docs/guides/` |
-| Architecture doc | `docs/architecture/` |
-| AI configuration | `config/ai/` |
-| County configuration | `config/counties/` |
-| Docker compose variant | `config/docker/` |
-| PowerShell script | `scripts/admin/` |
-| Python script | `scripts/` |
-| Design/demo file | `design/` |
-| Workflow file | `.github/workflows/` |
-| Temporary data | `data/temp/` |
+| If creating...          | Place in...          |
+| ----------------------- | -------------------- |
+| Status/completion doc   | `docs/milestones/`   |
+| Dashboard/status report | `docs/operations/`   |
+| Analysis/audit report   | `docs/reports/`      |
+| Phase document          | `docs/phases/`       |
+| Guide/how-to            | `docs/guides/`       |
+| Architecture doc        | `docs/architecture/` |
+| AI configuration        | `config/ai/`         |
+| County configuration    | `config/counties/`   |
+| Docker compose variant  | `config/docker/`     |
+| PowerShell script       | `scripts/admin/`     |
+| Python script           | `scripts/`           |
+| Design/demo file        | `design/`            |
+| Workflow file           | `.github/workflows/` |
+| Temporary data          | `data/temp/`         |
 
 ### NEVER Create These in Root:
 
 - ❌ Files with emojis (✅, 🎊, 🚀, 🎯, etc.)
-- ❌ *_COMPLETE.md, *_SUCCESS.md, *_READY.md
-- ❌ *_DASHBOARD.md, *_STATUS.md
-- ❌ *_REPORT.md, *_AUDIT.md, *_ANALYSIS.md
-- ❌ PHASE_*.md
-- ❌ *_GUIDE.md (except START_HERE.md)
-- ❌ docker-compose.*.yml (variants)
-- ❌ *.ps1, *.sh, *.py (scripts)
-- ❌ ai-*.json, *-config.json
-- ❌ design-*.html, *.css
+- ❌ _\_COMPLETE.md, _\_SUCCESS.md, \*\_READY.md
+- ❌ _\_DASHBOARD.md, _\_STATUS.md
+- ❌ _\_REPORT.md, _\_AUDIT.md, \*\_ANALYSIS.md
+- ❌ PHASE\_\*.md
+- ❌ \*\_GUIDE.md (except START_HERE.md)
+- ❌ docker-compose.\*.yml (variants)
+- ❌ _.ps1, _.sh, \*.py (scripts)
+- ❌ ai-_.json, _-config.json
+- ❌ design-_.html, _.css
 
 ### When Creating Files:
 
@@ -69,8 +70,8 @@ When creating ANY file in the TerraFusion OS workspace, you MUST follow these ru
 ```typescript
 // ❌ WRONG - Creates file in root
 await createFile({
-  filePath: "✅_TASK_COMPLETE.md",
-  content: "..."
+  filePath: '✅_TASK_COMPLETE.md',
+  content: '...',
 });
 ```
 
@@ -79,13 +80,14 @@ await createFile({
 ```typescript
 // ✅ CORRECT - Uses proper subdirectory
 await createFile({
-  filePath: "docs/milestones/task-complete.md",
-  content: "..."
+  filePath: 'docs/milestones/task-complete.md',
+  content: '...',
 });
 ```
 
 ## Summary for AI Agents:
 
-**Root should have ~25-30 files ONLY - essential configs, main docker-compose, and core docs.**
+**Root should have ~25-30 files ONLY - essential configs, main docker-compose,
+and core docs.**
 
 **Everything else belongs in organized subdirectories. When in doubt, ASK!**

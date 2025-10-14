@@ -1,4 +1,5 @@
 # 🚀 TerraFusion Frontend Excellence Implementation Plan
+
 ## The TerraFusion Way: World-Class Frontend Architecture
 
 **Date:** October 12, 2025  
@@ -10,7 +11,10 @@
 
 ## 🎯 Mission Statement
 
-Transform TerraFusion's already-strong frontend from **intermediate** to **world-class** through systematic, rigorous engineering excellence. Every component, every interaction, every detail will exemplify government-grade quality and MIT/PhD-level systems design.
+Transform TerraFusion's already-strong frontend from **intermediate** to
+**world-class** through systematic, rigorous engineering excellence. Every
+component, every interaction, every detail will exemplify government-grade
+quality and MIT/PhD-level systems design.
 
 ---
 
@@ -36,6 +40,7 @@ CURRENT:                          TARGET:
 #### Week 1: Design System Consolidation
 
 **Day 1-2: Audit & Planning**
+
 - [ ] Complete inventory of all design tokens across codebase
 - [ ] Map all component locations and usage patterns
 - [ ] Identify duplication and conflicts
@@ -43,8 +48,10 @@ CURRENT:                          TARGET:
 - [ ] Create detailed consolidation roadmap
 
 **Day 3-4: Token System**
+
 - [ ] Create `frontend/src/design-system/tokens/` directory structure
 - [ ] Implement comprehensive token system:
+
   ```typescript
   // tokens/colors.ts
   export const colors = {
@@ -62,10 +69,10 @@ CURRENT:                          TARGET:
     gray: {
       50: '#fafafa',
       // ... full scale
-      900: '#171717'
-    }
+      900: '#171717',
+    },
   };
-  
+
   // tokens/spacing.ts
   export const spacing = {
     xs: '4px',
@@ -76,7 +83,7 @@ CURRENT:                          TARGET:
     '2xl': '48px',
     '3xl': '64px',
   };
-  
+
   // tokens/motion.ts
   export const motion = {
     duration: {
@@ -88,9 +95,9 @@ CURRENT:                          TARGET:
       standard: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
       decelerate: 'cubic-bezier(0.0, 0.0, 0.2, 1)',
       accelerate: 'cubic-bezier(0.4, 0.0, 1, 1)',
-    }
+    },
   };
-  
+
   // tokens/shadows.ts
   export const shadows = {
     sm: '0 1px 2px rgba(0,0,0,0.1)',
@@ -99,7 +106,7 @@ CURRENT:                          TARGET:
     xl: '0 20px 25px rgba(0,0,0,0.15)',
     glow: '0 0 20px rgba(0, 255, 238, 0.3)',
   };
-  
+
   // tokens/radius.ts
   export const radius = {
     sm: '4px',
@@ -108,7 +115,7 @@ CURRENT:                          TARGET:
     xl: '16px',
     full: '9999px',
   };
-  
+
   // tokens/zIndex.ts
   export const zIndex = {
     base: 0,
@@ -120,20 +127,21 @@ CURRENT:                          TARGET:
     popover: 1500,
     tooltip: 1600,
   };
-  
+
   // tokens/typography.ts
   export const typography = {
     fontFamily: {
-      primary: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
+      primary:
+        'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
       mono: 'Cascadia Code, Fira Code, SF Mono, Consolas, monospace',
     },
     fontSize: {
-      xs: '0.75rem',    // 12px
-      sm: '0.875rem',   // 14px
-      base: '1rem',     // 16px
-      lg: '1.125rem',   // 18px
-      xl: '1.25rem',    // 20px
-      '2xl': '1.5rem',  // 24px
+      xs: '0.75rem', // 12px
+      sm: '0.875rem', // 14px
+      base: '1rem', // 16px
+      lg: '1.125rem', // 18px
+      xl: '1.25rem', // 20px
+      '2xl': '1.5rem', // 24px
       '3xl': '1.875rem', // 30px
       '4xl': '2.25rem', // 36px
     },
@@ -153,6 +161,7 @@ CURRENT:                          TARGET:
   ```
 
 **Day 5: Integration & Testing**
+
 - [ ] Create token export index: `frontend/src/design-system/tokens/index.ts`
 - [ ] Update Tailwind config to use design tokens
 - [ ] Create CSS variable generation script
@@ -162,6 +171,7 @@ CURRENT:                          TARGET:
 #### Week 2: Storybook Setup & Component Documentation
 
 **Day 1-2: Storybook Infrastructure**
+
 ```bash
 # Install Storybook 7
 cd frontend
@@ -185,6 +195,7 @@ npm install --save-dev \
 - [ ] Configure viewport addon for responsive testing
 
 **Day 3-5: Component Documentation**
+
 - [ ] Document all Shadcn/UI components (70+ components)
   - [ ] Accordion, Alert, AlertDialog, Avatar
   - [ ] Badge, Button, Calendar, Card, Carousel
@@ -204,6 +215,7 @@ npm install --save-dev \
   - [ ] PortalLayout, PortalNav, PortalHeader
 
 **Story Template:**
+
 ```typescript
 // TerraButton.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
@@ -271,11 +283,11 @@ export const AccessibilityTest: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button');
-    
+
     // Test keyboard navigation
     await userEvent.tab();
     expect(button).toHaveFocus();
-    
+
     // Test click
     await userEvent.click(button);
   },
@@ -287,6 +299,7 @@ export const AccessibilityTest: Story = {
 #### Week 3: Testing Infrastructure
 
 **Day 1: Setup Testing Tools**
+
 ```bash
 # Remove Jest, install Vitest
 npm uninstall jest @types/jest
@@ -310,6 +323,7 @@ npm install --save-dev \
 - [ ] Integrate with CI/CD pipeline
 
 **Day 2-3: Unit Testing Sprint**
+
 ```typescript
 // Example: TerraButton.test.tsx
 import { describe, it, expect } from 'vitest';
@@ -326,9 +340,9 @@ describe('TerraButton', () => {
   it('handles click events', async () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
-    
+
     render(<TerraButton onClick={handleClick}>Click</TerraButton>);
-    
+
     await user.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalledOnce();
   });
@@ -336,7 +350,7 @@ describe('TerraButton', () => {
   it('supports all variants', () => {
     const { rerender } = render(<TerraButton variant="primary">Test</TerraButton>);
     expect(screen.getByRole('button')).toHaveClass('variant-primary');
-    
+
     rerender(<TerraButton variant="success">Test</TerraButton>);
     expect(screen.getByRole('button')).toHaveClass('variant-success');
   });
@@ -349,13 +363,13 @@ describe('TerraButton', () => {
   it('is keyboard accessible', async () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
-    
+
     render(<TerraButton onClick={handleClick}>Keyboard Test</TerraButton>);
-    
+
     const button = screen.getByRole('button');
     await user.tab();
     expect(button).toHaveFocus();
-    
+
     await user.keyboard('{Enter}');
     expect(handleClick).toHaveBeenCalled();
   });
@@ -368,6 +382,7 @@ describe('TerraButton', () => {
 - [ ] Target: 80% unit test coverage
 
 **Day 4-5: Integration Testing**
+
 ```typescript
 // Example: PropertyAssessmentFlow.test.tsx
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
@@ -385,10 +400,10 @@ const server = setupServer(
       assessedValue: 250000,
     }));
   }),
-  
+
   rest.post('/api/assessments', async (req, res, ctx) => {
     const body = await req.json();
-    return res(ctx.json({ 
+    return res(ctx.json({
       id: '123',
       ...body,
       status: 'submitted',
@@ -403,21 +418,21 @@ afterAll(() => server.close());
 describe('Property Assessment Flow', () => {
   it('loads property data and submits assessment', async () => {
     const user = userEvent.setup();
-    
+
     render(<PropertyAssessmentForm propertyId="456" />);
-    
+
     // Wait for property data to load
     await waitFor(() => {
       expect(screen.getByText('123 Test St')).toBeInTheDocument();
     });
-    
+
     // Fill assessment form
     await user.type(screen.getByLabelText('New Value'), '275000');
     await user.selectOptions(screen.getByLabelText('Reason'), 'Market adjustment');
-    
+
     // Submit
     await user.click(screen.getByRole('button', { name: 'Submit Assessment' }));
-    
+
     // Verify success message
     await waitFor(() => {
       expect(screen.getByText('Assessment submitted successfully')).toBeInTheDocument();
@@ -435,6 +450,7 @@ describe('Property Assessment Flow', () => {
 #### Week 4: Accessibility & Performance
 
 **Day 1-2: Accessibility Audit**
+
 ```typescript
 // Automated accessibility testing
 import { axe, toHaveNoViolations } from 'jest-axe';
@@ -462,6 +478,7 @@ describe('TerraButton Accessibility', () => {
 **Day 3-4: Performance Optimization**
 
 **Bundle Analysis:**
+
 ```bash
 # Install bundle analyzer
 npm install --save-dev rollup-plugin-visualizer
@@ -472,6 +489,7 @@ npm run build
 ```
 
 **Implement Code Splitting:**
+
 ```typescript
 // Router.tsx - Route-based splitting
 import { lazy, Suspense } from 'react';
@@ -493,6 +511,7 @@ export const Router = () => (
 ```
 
 **Optimize Images:**
+
 ```typescript
 // vite.config.ts
 import { defineConfig } from 'vite';
@@ -529,6 +548,7 @@ export default defineConfig({
 - [ ] Document performance budgets
 
 **Day 5: E2E Testing with Playwright**
+
 ```typescript
 // e2e/property-assessment.spec.ts
 import { test, expect } from '@playwright/test';
@@ -539,32 +559,36 @@ test('user can complete property assessment', async ({ page }) => {
   await page.fill('[name="email"]', 'assessor@bentoncounty.gov');
   await page.fill('[name="password"]', 'test-password');
   await page.click('button[type="submit"]');
-  
+
   // Navigate to property
   await page.goto('/properties/123');
   await expect(page.locator('h1')).toContainText('123 Test St');
-  
+
   // Open assessment form
   await page.click('text=New Assessment');
-  
+
   // Fill form
   await page.fill('[name="assessedValue"]', '275000');
   await page.selectOption('[name="reason"]', 'market-adjustment');
   await page.fill('[name="notes"]', 'Market comparable analysis');
-  
+
   // Submit
   await page.click('button:has-text("Submit Assessment")');
-  
+
   // Verify success
-  await expect(page.locator('.success-message')).toContainText('Assessment submitted');
+  await expect(page.locator('.success-message')).toContainText(
+    'Assessment submitted'
+  );
 });
 
 test('assessment form validates required fields', async ({ page }) => {
   await page.goto('/properties/123/assess');
-  
+
   await page.click('button[type="submit"]');
-  
-  await expect(page.locator('.error-message')).toContainText('Assessed value is required');
+
+  await expect(page.locator('.error-message')).toContainText(
+    'Assessed value is required'
+  );
 });
 ```
 
@@ -582,6 +606,7 @@ test('assessment form validates required fields', async ({ page }) => {
 **Day 1-2: State Management Migration**
 
 **Before (Multiple patterns):**
+
 ```typescript
 // ❌ Redux
 const store = configureStore({...});
@@ -594,6 +619,7 @@ const count = signal(0);
 ```
 
 **After (Unified):**
+
 ```typescript
 // ✅ Server state: TanStack Query
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -608,7 +634,7 @@ export function useProperties(countyId: string) {
 
 export function useSubmitAssessment() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: submitAssessment,
     onSuccess: () => {
@@ -658,13 +684,13 @@ export function AssessmentForm() {
   const { register, handleSubmit, formState: { errors } } = useForm<AssessmentForm>({
     resolver: zodResolver(assessmentSchema),
   });
-  
+
   const mutation = useSubmitAssessment();
-  
+
   const onSubmit = (data: AssessmentForm) => {
     mutation.mutate(data);
   };
-  
+
   return <form onSubmit={handleSubmit(onSubmit)}>...</form>;
 }
 ```
@@ -679,6 +705,7 @@ export function AssessmentForm() {
 **Day 3-4: Advanced UX Patterns**
 
 **Skeleton Screens:**
+
 ```typescript
 // PropertyCardSkeleton.tsx
 export function PropertyCardSkeleton() {
@@ -697,7 +724,7 @@ export function PropertyCardSkeleton() {
 // Usage
 function PropertyList() {
   const { data, isLoading } = useProperties('benton');
-  
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-3 gap-4">
@@ -707,39 +734,38 @@ function PropertyList() {
       </div>
     );
   }
-  
+
   return <div>...actual data...</div>;
 }
 ```
 
 **Optimistic Updates:**
+
 ```typescript
 export function useToggleFavorite() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: toggleFavorite,
-    
+
     // Optimistic update
-    onMutate: async (propertyId) => {
+    onMutate: async propertyId => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['properties'] });
-      
+
       // Snapshot previous value
       const previous = queryClient.getQueryData(['properties']);
-      
+
       // Optimistically update
       queryClient.setQueryData(['properties'], (old: Property[]) =>
-        old.map(p => 
-          p.id === propertyId 
-            ? { ...p, isFavorite: !p.isFavorite }
-            : p
+        old.map(p =>
+          p.id === propertyId ? { ...p, isFavorite: !p.isFavorite } : p
         )
       );
-      
+
       return { previous };
     },
-    
+
     // Rollback on error
     onError: (err, propertyId, context) => {
       queryClient.setQueryData(['properties'], context?.previous);
@@ -749,6 +775,7 @@ export function useToggleFavorite() {
 ```
 
 **Error Boundaries:**
+
 ```typescript
 // ErrorBoundary.tsx
 import { Component, ReactNode } from 'react';
@@ -766,22 +793,22 @@ interface State {
 
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };
-  
+
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
-  
+
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
     // Send to error tracking service
     captureException(error, { extra: errorInfo });
   }
-  
+
   render() {
     if (this.state.hasError) {
       return this.props.fallback || <ErrorFallback error={this.state.error} />;
     }
-    
+
     return this.props.children;
   }
 }
@@ -802,6 +829,7 @@ export class ErrorBoundary extends Component<Props, State> {
 **Day 5: Developer Experience**
 
 **TypeScript Strictness:**
+
 ```json
 // tsconfig.json - Enable all strict checks
 {
@@ -827,6 +855,7 @@ export class ErrorBoundary extends Component<Props, State> {
 ```
 
 **Component Templates:**
+
 ```bash
 # Create component generator script
 # scripts/generate-component.sh
@@ -910,6 +939,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 #### Week 6: Polish & Launch
 
 **Day 1-2: Documentation Sprint**
+
 - [ ] Complete Storybook documentation for all components
 - [ ] Write frontend architecture guide
 - [ ] Create component usage guidelines
@@ -919,6 +949,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 - [ ] Create contribution guide
 
 **Day 3: Performance Optimization Final**
+
 - [ ] Run final Lighthouse audits
 - [ ] Optimize remaining bottlenecks
 - [ ] Verify Core Web Vitals
@@ -928,6 +959,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 - [ ] Set up performance monitoring
 
 **Day 4: Accessibility Final Audit**
+
 - [ ] Run complete WCAG audit
 - [ ] Fix remaining violations
 - [ ] Test with all major screen readers
@@ -937,6 +969,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 - [ ] Document compliance
 
 **Day 5: Integration & Launch**
+
 - [ ] Integrate with CI/CD pipeline
 - [ ] Set up automated testing
 - [ ] Configure monitoring & alerts
@@ -950,6 +983,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 ## 📦 Deliverables
 
 ### Documentation
+
 - [ ] Complete design system documentation
 - [ ] Storybook component catalog (all components)
 - [ ] Frontend architecture guide
@@ -959,6 +993,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 - [ ] Performance optimization guide
 
 ### Code
+
 - [ ] Consolidated design system (`frontend/src/design-system/`)
 - [ ] Comprehensive test suite (80%+ coverage)
 - [ ] Optimized production build (<500KB initial)
@@ -967,6 +1002,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 - [ ] Component migration complete
 
 ### Infrastructure
+
 - [ ] Storybook deployment
 - [ ] CI/CD pipeline with automated testing
 - [ ] Performance monitoring dashboard
@@ -978,6 +1014,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 ## 🎯 Success Criteria
 
 ### Technical Excellence
+
 ```
 ✅ Lighthouse Score: 90+ (all categories)
 ✅ LCP < 2.5s (75th percentile)
@@ -991,6 +1028,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 ```
 
 ### User Experience
+
 ```
 ✅ All interactive elements keyboard accessible
 ✅ Full screen reader support
@@ -1002,6 +1040,7 @@ echo "✅ Component $COMPONENT_NAME created!"
 ```
 
 ### Developer Experience
+
 ```
 ✅ Complete Storybook catalog
 ✅ Component generator script
@@ -1057,7 +1096,8 @@ npm run test:coverage
 
 ---
 
-**The TerraFusion Way:** We don't rush. We do things right the first time. Every line of code, every component, every interaction exemplifies MIT/PhD-level systems design engineering.
+**The TerraFusion Way:** We don't rush. We do things right the first time. Every
+line of code, every component, every interaction exemplifies MIT/PhD-level
+systems design engineering.
 
 **Let's build something world-class.** 🚀
-
