@@ -60,6 +60,17 @@ const REQUIRED_STORIES = [
 // ============================================================================
 
 /**
+ * Convert kebab-case to PascalCase
+ * Examples: radio-group -> RadioGroup, alert-dialog -> AlertDialog
+ */
+function toPascalCase(str) {
+  return str
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+}
+
+/**
  * Get all component files
  */
 function getAllComponents() {
@@ -76,11 +87,23 @@ function getAllComponents() {
 
 /**
  * Analyze component stories
+ * ENHANCED: Handles both kebab-case and PascalCase naming conventions
  */
 function analyzeStories(componentName) {
-  const storyFile = path.join(CONFIG.storiesDir, `${componentName}.stories.tsx`);
+  // Try multiple naming conventions to find the stories file
+  const possibleStoryFiles = [
+    // Exact match (kebab-case)
+    path.join(CONFIG.storiesDir, `${componentName}.stories.tsx`),
+    // PascalCase conversion (radio-group -> RadioGroup)
+    path.join(CONFIG.storiesDir, `${toPascalCase(componentName)}.stories.tsx`),
+    // Capitalize first letter only (button -> Button)
+    path.join(CONFIG.storiesDir, `${componentName.charAt(0).toUpperCase() + componentName.slice(1)}.stories.tsx`),
+  ];
   
-  if (!fs.existsSync(storyFile)) {
+  // Find the first existing story file
+  const storyFile = possibleStoryFiles.find(file => fs.existsSync(file));
+  
+  if (!storyFile) {
     return {
       exists: false,
       count: 0,
