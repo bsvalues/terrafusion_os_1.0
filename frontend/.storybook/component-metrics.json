@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2025-10-14T02:58:18.752Z",
+  "generatedAt": "2025-10-14T03:49:42.337Z",
   "stats": {
     "total": 34,
     "worldClass": 0,
     "good": 1,
     "needsWork": 33,
-    "avgQualityScore": 68,
-    "avgStoryCoverage": 53,
+    "avgQualityScore": 69,
+    "avgStoryCoverage": 57,
     "avgTestCoverage": 94,
-    "avgAccessibility": 81
+    "avgAccessibility": 83
   },
   "components": [
     {
@@ -78,7 +78,7 @@
         "emoji": "⚠️",
         "label": "Good"
       },
-      "timestamp": "2025-10-14T02:58:18.737Z"
+      "timestamp": "2025-10-14T03:49:42.331Z"
     },
     {
       "name": "button",
@@ -143,7 +143,365 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.746Z"
+      "timestamp": "2025-10-14T03:49:42.335Z"
+    },
+    {
+      "name": "select",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "WithLabel",
+          "GroupedOptions",
+          "States",
+          "LongLists",
+          "InteractiveExamples",
+          "RealWorldExamples",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "Performance",
+          "UsageGuidelines"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "Interactive",
+          "WithIcons",
+          "CompositionPatterns",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 28,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 5.6,
+        "estimated": 8.4,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T03:49:42.328Z"
+    },
+    {
+      "name": "card",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "SimpleCard",
+          "WithHeaderOnly",
+          "CardGrid",
+          "CardWithForm",
+          "InteractiveCard",
+          "RealWorldExample",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "UsageGuidelines"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Performance",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": false
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 50,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 1.9,
+        "estimated": 2.8,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T03:49:42.334Z"
+    },
+    {
+      "name": "calendar",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "SingleDate",
+          "DateRange",
+          "DatePresets",
+          "DisabledDates",
+          "MinMaxDates",
+          "MultipleMonths",
+          "CustomFormatting",
+          "BookingExample",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Performance",
+          "UsageGuidelines"
+        ],
+        "missingStories": [
+          "Default",
+          "AllVariants",
+          "Sizes",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "Responsive",
+          "CompositionPatterns",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": true,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 68,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 7.4,
+        "estimated": 11.1,
+        "status": "good"
+      },
+      "accessibility": 100,
+      "qualityScore": 85,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T03:49:42.335Z"
+    },
+    {
+      "name": "skeleton",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "Shapes",
+          "Sizes",
+          "TextLines",
+          "Composed",
+          "RealWorldCardLoading",
+          "RealWorldListLoading",
+          "RealWorldProfileLoading",
+          "RealWorldTableLoading",
+          "CompositionPatterns",
+          "Performance",
+          "UsageGuidelines"
+        ],
+        "missingStories": [
+          "AllVariants",
+          "States",
+          "Interactive",
+          "WithIcons",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": false,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 32,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 0.3,
+        "estimated": 0.4,
+        "status": "good"
+      },
+      "accessibility": 85,
+      "qualityScore": 81,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T03:49:42.326Z"
+    },
+    {
+      "name": "label",
+      "stories": {
+        "exists": true,
+        "count": 12,
+        "stories": [
+          "Default",
+          "WithInput",
+          "RequiredField",
+          "WithDescription",
+          "DisabledState",
+          "ErrorState",
+          "FormControlTypes",
+          "RealWorldForm",
+          "AllVariants",
+          "Interactive",
+          "Performance",
+          "UsageGuidelines"
+        ],
+        "missingStories": [
+          "Sizes",
+          "States",
+          "WithIcons",
+          "AccessibilityTest",
+          "EdgeCases",
+          "Responsive",
+          "CompositionPatterns",
+          "Playground"
+        ],
+        "coverage": 100,
+        "hasAccessibilityTest": false,
+        "hasPerformanceTest": true
+      },
+      "tests": {
+        "exists": true,
+        "coverage": 100,
+        "tests": 30,
+        "hasUnitTests": true,
+        "hasIntegrationTests": true
+      },
+      "documentation": {
+        "score": 0,
+        "checks": {
+          "hasTSDoc": false,
+          "hasPropsInterface": false,
+          "hasExamples": false,
+          "hasAccessibilityNotes": false,
+          "hasUsageGuidelines": false,
+          "hasTypeDefinitions": false
+        },
+        "missingDocs": [
+          "hasTSDoc",
+          "hasPropsInterface",
+          "hasExamples",
+          "hasAccessibilityNotes",
+          "hasUsageGuidelines",
+          "hasTypeDefinitions"
+        ]
+      },
+      "bundle": {
+        "source": 0.7,
+        "estimated": 1,
+        "status": "good"
+      },
+      "accessibility": 85,
+      "qualityScore": 81,
+      "status": {
+        "emoji": "🔴",
+        "label": "Needs Work"
+      },
+      "timestamp": "2025-10-14T03:49:42.331Z"
     },
     {
       "name": "toggle",
@@ -215,7 +573,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.715Z"
+      "timestamp": "2025-10-14T03:49:42.320Z"
     },
     {
       "name": "sonner",
@@ -288,79 +646,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.722Z"
-    },
-    {
-      "name": "skeleton",
-      "stories": {
-        "exists": true,
-        "count": 10,
-        "stories": [
-          "Default",
-          "Shapes",
-          "Sizes",
-          "TextLines",
-          "Composed",
-          "RealWorldCardLoading",
-          "RealWorldListLoading",
-          "RealWorldProfileLoading",
-          "RealWorldTableLoading",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 83,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 32,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 0.3,
-        "estimated": 0.4,
-        "status": "good"
-      },
-      "accessibility": 85,
-      "qualityScore": 77,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T02:58:18.724Z"
+      "timestamp": "2025-10-14T03:49:42.324Z"
     },
     {
       "name": "badge",
@@ -428,152 +714,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.748Z"
-    },
-    {
-      "name": "label",
-      "stories": {
-        "exists": true,
-        "count": 9,
-        "stories": [
-          "Default",
-          "WithInput",
-          "RequiredField",
-          "WithDescription",
-          "DisabledState",
-          "ErrorState",
-          "FormControlTypes",
-          "RealWorldForm",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 75,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 30,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 0.7,
-        "estimated": 1,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 74,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T02:58:18.736Z"
-    },
-    {
-      "name": "calendar",
-      "stories": {
-        "exists": true,
-        "count": 9,
-        "stories": [
-          "SingleDate",
-          "DateRange",
-          "DatePresets",
-          "DisabledDates",
-          "MinMaxDates",
-          "MultipleMonths",
-          "CustomFormatting",
-          "BookingExample",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "Default",
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 75,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 68,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 7.4,
-        "estimated": 11.1,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 74,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T02:58:18.745Z"
+      "timestamp": "2025-10-14T03:49:42.336Z"
     },
     {
       "name": "tabs",
@@ -644,7 +785,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.718Z"
+      "timestamp": "2025-10-14T03:49:42.322Z"
     },
     {
       "name": "table",
@@ -716,7 +857,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.720Z"
+      "timestamp": "2025-10-14T03:49:42.323Z"
     },
     {
       "name": "sheet",
@@ -786,77 +927,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.726Z"
-    },
-    {
-      "name": "select",
-      "stories": {
-        "exists": true,
-        "count": 8,
-        "stories": [
-          "Default",
-          "WithLabel",
-          "GroupedOptions",
-          "States",
-          "LongLists",
-          "InteractiveExamples",
-          "RealWorldExamples",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 67,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 28,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 5.6,
-        "estimated": 8.4,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 72,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T02:58:18.729Z"
+      "timestamp": "2025-10-14T03:49:42.326Z"
     },
     {
       "name": "menubar",
@@ -927,78 +998,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.734Z"
-    },
-    {
-      "name": "card",
-      "stories": {
-        "exists": true,
-        "count": 8,
-        "stories": [
-          "Default",
-          "SimpleCard",
-          "WithHeaderOnly",
-          "CardGrid",
-          "CardWithForm",
-          "InteractiveCard",
-          "RealWorldExample",
-          "UsageGuidelines"
-        ],
-        "missingStories": [
-          "AllVariants",
-          "Sizes",
-          "States",
-          "Interactive",
-          "WithIcons",
-          "AccessibilityTest",
-          "EdgeCases",
-          "Responsive",
-          "CompositionPatterns",
-          "Performance",
-          "Playground"
-        ],
-        "coverage": 67,
-        "hasAccessibilityTest": false,
-        "hasPerformanceTest": false
-      },
-      "tests": {
-        "exists": true,
-        "coverage": 100,
-        "tests": 50,
-        "hasUnitTests": true,
-        "hasIntegrationTests": true
-      },
-      "documentation": {
-        "score": 0,
-        "checks": {
-          "hasTSDoc": false,
-          "hasPropsInterface": false,
-          "hasExamples": false,
-          "hasAccessibilityNotes": false,
-          "hasUsageGuidelines": false,
-          "hasTypeDefinitions": false
-        },
-        "missingDocs": [
-          "hasTSDoc",
-          "hasPropsInterface",
-          "hasExamples",
-          "hasAccessibilityNotes",
-          "hasUsageGuidelines",
-          "hasTypeDefinitions"
-        ]
-      },
-      "bundle": {
-        "source": 1.9,
-        "estimated": 2.8,
-        "status": "good"
-      },
-      "accessibility": 80,
-      "qualityScore": 72,
-      "status": {
-        "emoji": "🔴",
-        "label": "Needs Work"
-      },
-      "timestamp": "2025-10-14T02:58:18.744Z"
+      "timestamp": "2025-10-14T03:49:42.330Z"
     },
     {
       "name": "alert",
@@ -1067,7 +1067,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.751Z"
+      "timestamp": "2025-10-14T03:49:42.337Z"
     },
     {
       "name": "tooltip",
@@ -1137,7 +1137,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.713Z"
+      "timestamp": "2025-10-14T03:49:42.319Z"
     },
     {
       "name": "textarea",
@@ -1207,7 +1207,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.717Z"
+      "timestamp": "2025-10-14T03:49:42.322Z"
     },
     {
       "name": "switch",
@@ -1277,7 +1277,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.721Z"
+      "timestamp": "2025-10-14T03:49:42.324Z"
     },
     {
       "name": "slider",
@@ -1347,7 +1347,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.723Z"
+      "timestamp": "2025-10-14T03:49:42.325Z"
     },
     {
       "name": "separator",
@@ -1417,7 +1417,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.727Z"
+      "timestamp": "2025-10-14T03:49:42.327Z"
     },
     {
       "name": "progress",
@@ -1487,7 +1487,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.731Z"
+      "timestamp": "2025-10-14T03:49:42.329Z"
     },
     {
       "name": "dialog",
@@ -1557,7 +1557,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.739Z"
+      "timestamp": "2025-10-14T03:49:42.332Z"
     },
     {
       "name": "checkbox",
@@ -1627,7 +1627,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.742Z"
+      "timestamp": "2025-10-14T03:49:42.334Z"
     },
     {
       "name": "accordion",
@@ -1696,7 +1696,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.752Z"
+      "timestamp": "2025-10-14T03:49:42.337Z"
     },
     {
       "name": "popover",
@@ -1765,7 +1765,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.732Z"
+      "timestamp": "2025-10-14T03:49:42.329Z"
     },
     {
       "name": "avatar",
@@ -1834,7 +1834,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.749Z"
+      "timestamp": "2025-10-14T03:49:42.336Z"
     },
     {
       "name": "scroll-area",
@@ -1881,7 +1881,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.730Z"
+      "timestamp": "2025-10-14T03:49:42.328Z"
     },
     {
       "name": "radio-group",
@@ -1928,7 +1928,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.730Z"
+      "timestamp": "2025-10-14T03:49:42.328Z"
     },
     {
       "name": "navigation-menu",
@@ -1975,7 +1975,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.733Z"
+      "timestamp": "2025-10-14T03:49:42.330Z"
     },
     {
       "name": "dropdown-menu",
@@ -2022,7 +2022,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.738Z"
+      "timestamp": "2025-10-14T03:49:42.332Z"
     },
     {
       "name": "command",
@@ -2069,7 +2069,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.740Z"
+      "timestamp": "2025-10-14T03:49:42.333Z"
     },
     {
       "name": "aspect-ratio",
@@ -2116,7 +2116,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.750Z"
+      "timestamp": "2025-10-14T03:49:42.336Z"
     },
     {
       "name": "Toggle.stories.GOLD_STANDARD",
@@ -2159,7 +2159,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.716Z"
+      "timestamp": "2025-10-14T03:49:42.321Z"
     },
     {
       "name": "ComponentStory.template",
@@ -2203,7 +2203,7 @@
         "emoji": "🔴",
         "label": "Needs Work"
       },
-      "timestamp": "2025-10-14T02:58:18.740Z"
+      "timestamp": "2025-10-14T03:49:42.332Z"
     }
   ]
 }
