@@ -16,6 +16,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
+import * as React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 import { Button } from './button';
 import { Input } from './input';
@@ -823,5 +824,800 @@ export const UsageGuidelines: Story = {
         story: 'Comprehensive guidelines with best practices, code examples, accessibility, and usage patterns.',
       },
     },
+  },
+};
+
+/**
+ * ## Story 9: Accessibility Test
+ * 
+ * Interactive demonstration of keyboard navigation and accessibility features.
+ * Tests WCAG 2.1 AAA compliance for tab navigation.
+ */
+export const AccessibilityTest: Story = {
+  render: () => {
+    const [keyLog, setKeyLog] = React.useState<string[]>([]);
+    const [focusLog, setFocusLog] = React.useState<string[]>([]);
+
+    const logKey = (key: string, tab: string) => {
+      const entry = `${new Date().toLocaleTimeString()}: ${key} on ${tab}`;
+      setKeyLog(prev => [entry, ...prev].slice(0, 5));
+    };
+
+    const logFocus = (tab: string) => {
+      const entry = `${new Date().toLocaleTimeString()}: Focused ${tab}`;
+      setFocusLog(prev => [entry, ...prev].slice(0, 5));
+    };
+
+    return (
+      <div className="space-y-8 w-[700px]">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Keyboard Navigation Test</h3>
+          <p className="text-sm text-muted-foreground">
+            Try these keyboard shortcuts:
+          </p>
+          <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
+            <li><kbd className="px-2 py-1 bg-muted rounded text-xs">Tab</kbd> - Move focus to/from tab list</li>
+            <li><kbd className="px-2 py-1 bg-muted rounded text-xs">←</kbd> <kbd className="px-2 py-1 bg-muted rounded text-xs">→</kbd> - Navigate between tabs</li>
+            <li><kbd className="px-2 py-1 bg-muted rounded text-xs">Home</kbd> / <kbd className="px-2 py-1 bg-muted rounded text-xs">End</kbd> - First/Last tab</li>
+            <li><kbd className="px-2 py-1 bg-muted rounded text-xs">Enter</kbd> / <kbd className="px-2 py-1 bg-muted rounded text-xs">Space</kbd> - Activate focused tab</li>
+          </ul>
+        </div>
+
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList>
+            <TabsTrigger 
+              value="overview"
+              onKeyDown={(e) => logKey(e.key, 'Overview')}
+              onFocus={() => logFocus('Overview')}
+            >
+              Overview
+            </TabsTrigger>
+            <TabsTrigger 
+              value="features"
+              onKeyDown={(e) => logKey(e.key, 'Features')}
+              onFocus={() => logFocus('Features')}
+            >
+              Features
+            </TabsTrigger>
+            <TabsTrigger 
+              value="specs"
+              onKeyDown={(e) => logKey(e.key, 'Specs')}
+              onFocus={() => logFocus('Specs')}
+            >
+              Specifications
+            </TabsTrigger>
+            <TabsTrigger 
+              value="reviews"
+              onKeyDown={(e) => logKey(e.key, 'Reviews')}
+              onFocus={() => logFocus('Reviews')}
+            >
+              Reviews
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="space-y-4">
+            <h4 className="font-semibold">Overview Content</h4>
+            <p className="text-sm text-muted-foreground">
+              This is the overview tab. Use arrow keys to navigate to other tabs.
+            </p>
+          </TabsContent>
+          <TabsContent value="features">
+            <h4 className="font-semibold">Features Content</h4>
+          </TabsContent>
+          <TabsContent value="specs">
+            <h4 className="font-semibold">Specifications Content</h4>
+          </TabsContent>
+          <TabsContent value="reviews">
+            <h4 className="font-semibold">Reviews Content</h4>
+          </TabsContent>
+        </Tabs>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h4 className="text-sm font-semibold mb-2">Keyboard Events</h4>
+            <div className="bg-muted p-3 rounded-lg h-32 overflow-y-auto">
+              {keyLog.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No keyboard events yet...</p>
+              ) : (
+                <div className="space-y-1">
+                  {keyLog.map((log, i) => (
+                    <p key={i} className="text-xs font-mono">{log}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold mb-2">Focus Events</h4>
+            <div className="bg-muted p-3 rounded-lg h-32 overflow-y-auto">
+              {focusLog.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No focus events yet...</p>
+              ) : (
+                <div className="space-y-1">
+                  {focusLog.map((log, i) => (
+                    <p key={i} className="text-xs font-mono">{log}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">WCAG 2.1 AAA Compliance Checklist</h3>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="flex items-start gap-2 p-3 bg-green-50 dark:bg-green-950 rounded">
+              <span className="text-green-600 font-bold">✓</span>
+              <div>
+                <p className="font-medium">Keyboard Navigation</p>
+                <p className="text-xs text-muted-foreground">Arrow keys, Tab, Home/End support</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2 p-3 bg-green-50 dark:bg-green-950 rounded">
+              <span className="text-green-600 font-bold">✓</span>
+              <div>
+                <p className="font-medium">Focus Management</p>
+                <p className="text-xs text-muted-foreground">Clear focus ring, logical flow</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2 p-3 bg-green-50 dark:bg-green-950 rounded">
+              <span className="text-green-600 font-bold">✓</span>
+              <div>
+                <p className="font-medium">ARIA Attributes</p>
+                <p className="text-xs text-muted-foreground">role=tablist, aria-selected</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2 p-3 bg-green-50 dark:bg-green-950 rounded">
+              <span className="text-green-600 font-bold">✓</span>
+              <div>
+                <p className="font-medium">Screen Reader Support</p>
+                <p className="text-xs text-muted-foreground">Proper announcements</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+          <h4 className="font-semibold text-sm mb-2">Testing Tools:</h4>
+          <ul className="text-sm space-y-1 text-muted-foreground">
+            <li>• <strong>NVDA/JAWS:</strong> Windows screen readers</li>
+            <li>• <strong>VoiceOver:</strong> macOS/iOS screen reader</li>
+            <li>• <strong>axe DevTools:</strong> Browser extension for accessibility audits</li>
+            <li>• <strong>WAVE:</strong> Web accessibility evaluation tool</li>
+          </ul>
+        </div>
+      </div>
+    );
+  },
+};
+
+/**
+ * ## Story 10: Edge Cases
+ * 
+ * Demonstrates how tabs handle unusual or extreme situations.
+ */
+export const EdgeCases: Story = {
+  render: () => (
+    <div className="space-y-8 w-[700px]">
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Single Tab</h3>
+        <p className="text-sm text-muted-foreground">
+          Edge case: Only one tab (still functional, but consider alternatives)
+        </p>
+        <Tabs defaultValue="only" className="w-full">
+          <TabsList>
+            <TabsTrigger value="only">Only Tab</TabsTrigger>
+          </TabsList>
+          <TabsContent value="only">
+            <p className="text-sm">Content for the only tab available.</p>
+          </TabsContent>
+        </Tabs>
+        <p className="text-xs text-muted-foreground">
+          ⚠️ Consider: If you only have one section, do you really need tabs?
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Very Long Tab Labels</h3>
+        <p className="text-sm text-muted-foreground">
+          Edge case: Labels that are excessively long
+        </p>
+        <Tabs defaultValue="long1" className="w-full">
+          <TabsList>
+            <TabsTrigger value="long1" className="max-w-[200px] truncate">
+              This Is An Extremely Long Tab Label That Should Be Avoided
+            </TabsTrigger>
+            <TabsTrigger value="long2">Short</TabsTrigger>
+          </TabsList>
+          <TabsContent value="long1">
+            <p className="text-sm">Content with long label (truncated with ellipsis)</p>
+          </TabsContent>
+          <TabsContent value="long2">
+            <p className="text-sm">Content with short label</p>
+          </TabsContent>
+        </Tabs>
+        <p className="text-xs text-muted-foreground">
+          💡 Solution: Apply `max-w-[...]` and `truncate` classes to prevent overflow
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Many Tabs (Overflow)</h3>
+        <p className="text-sm text-muted-foreground">
+          Edge case: More tabs than fit in available space
+        </p>
+        <div className="overflow-x-auto">
+          <Tabs defaultValue="tab1" className="w-full">
+            <TabsList className="w-max">
+              <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+              <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+              <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+              <TabsTrigger value="tab4">Tab 4</TabsTrigger>
+              <TabsTrigger value="tab5">Tab 5</TabsTrigger>
+              <TabsTrigger value="tab6">Tab 6</TabsTrigger>
+              <TabsTrigger value="tab7">Tab 7</TabsTrigger>
+              <TabsTrigger value="tab8">Tab 8</TabsTrigger>
+              <TabsTrigger value="tab9">Tab 9</TabsTrigger>
+              <TabsTrigger value="tab10">Tab 10</TabsTrigger>
+            </TabsList>
+            <TabsContent value="tab1">Content 1</TabsContent>
+            <TabsContent value="tab2">Content 2</TabsContent>
+            <TabsContent value="tab3">Content 3</TabsContent>
+            <TabsContent value="tab4">Content 4</TabsContent>
+            <TabsContent value="tab5">Content 5</TabsContent>
+            <TabsContent value="tab6">Content 6</TabsContent>
+            <TabsContent value="tab7">Content 7</TabsContent>
+            <TabsContent value="tab8">Content 8</TabsContent>
+            <TabsContent value="tab9">Content 9</TabsContent>
+            <TabsContent value="tab10">Content 10</TabsContent>
+          </Tabs>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          💡 Solution: Wrap TabsList in `overflow-x-auto` container, or use alternative navigation (sidebar, dropdown)
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Mixed Disabled Tabs</h3>
+        <p className="text-sm text-muted-foreground">
+          Edge case: Some tabs disabled, some enabled
+        </p>
+        <Tabs defaultValue="tab1" className="w-full">
+          <TabsList>
+            <TabsTrigger value="tab1">Available</TabsTrigger>
+            <TabsTrigger value="tab2" disabled>Locked 🔒</TabsTrigger>
+            <TabsTrigger value="tab3">Available</TabsTrigger>
+            <TabsTrigger value="tab4" disabled>Premium Only 💎</TabsTrigger>
+            <TabsTrigger value="tab5">Available</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab1">
+            <p className="text-sm">Accessible content</p>
+          </TabsContent>
+          <TabsContent value="tab3">
+            <p className="text-sm">More accessible content</p>
+          </TabsContent>
+          <TabsContent value="tab5">
+            <p className="text-sm">Even more accessible content</p>
+          </TabsContent>
+        </Tabs>
+        <p className="text-xs text-muted-foreground">
+          💡 Consider: Show tooltips explaining why tabs are disabled
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Empty Tab Content</h3>
+        <p className="text-sm text-muted-foreground">
+          Edge case: Tab with no content
+        </p>
+        <Tabs defaultValue="filled" className="w-full">
+          <TabsList>
+            <TabsTrigger value="filled">Has Content</TabsTrigger>
+            <TabsTrigger value="empty">Empty</TabsTrigger>
+          </TabsList>
+          <TabsContent value="filled">
+            <p className="text-sm">This tab has content.</p>
+          </TabsContent>
+          <TabsContent value="empty" className="min-h-[100px] flex items-center justify-center">
+            <p className="text-sm text-muted-foreground">No content available</p>
+          </TabsContent>
+        </Tabs>
+        <p className="text-xs text-muted-foreground">
+          💡 Solution: Show helpful empty state with explanation or call-to-action
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Tabs with Icons and Badges</h3>
+        <p className="text-sm text-muted-foreground">
+          Edge case: Complex tab labels with multiple elements
+        </p>
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList>
+            <TabsTrigger value="all">
+              All Items
+            </TabsTrigger>
+            <TabsTrigger value="active">
+              Active
+              <Badge variant="default" className="ml-2 text-xs">12</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="pending">
+              Pending
+              <Badge variant="secondary" className="ml-2 text-xs">5</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="urgent">
+              Urgent
+              <Badge variant="destructive" className="ml-2 text-xs">2</Badge>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="all">All items content</TabsContent>
+          <TabsContent value="active">Active items content</TabsContent>
+          <TabsContent value="pending">Pending items content</TabsContent>
+          <TabsContent value="urgent">Urgent items content</TabsContent>
+        </Tabs>
+        <p className="text-xs text-muted-foreground">
+          ✅ Works well: Badges for counts, icons for visual hierarchy
+        </p>
+      </div>
+
+      <div className="p-4 bg-muted rounded-lg">
+        <h4 className="font-semibold text-sm mb-2">Best Practices for Edge Cases:</h4>
+        <ul className="text-sm space-y-1 text-muted-foreground">
+          <li>1. Limit tabs to 3-7 for optimal UX</li>
+          <li>2. Use `truncate` class for long labels</li>
+          <li>3. Wrap in `overflow-x-auto` for many tabs</li>
+          <li>4. Provide tooltips for disabled tabs</li>
+          <li>5. Show empty states for tabs without content</li>
+          <li>6. Consider dropdown menu for 8+ tabs</li>
+        </ul>
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * ## Story 11: Responsive
+ * 
+ * Demonstrates responsive behavior of tabs across different screen sizes.
+ */
+export const Responsive: Story = {
+  render: () => (
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Mobile Layout (&lt; 640px)</h3>
+        <p className="text-sm text-muted-foreground">
+          Full-width grid layout with stacked tabs
+        </p>
+        <div className="max-w-sm border border-dashed border-primary p-4 rounded-lg">
+          <Tabs defaultValue="account" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="account">Account</TabsTrigger>
+              <TabsTrigger value="password">Password</TabsTrigger>
+            </TabsList>
+            <TabsContent value="account" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name-mobile">Name</Label>
+                <Input id="name-mobile" placeholder="Your name" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email-mobile">Email</Label>
+                <Input id="email-mobile" type="email" placeholder="your@email.com" />
+              </div>
+            </TabsContent>
+            <TabsContent value="password" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="current-mobile">Current Password</Label>
+                <Input id="current-mobile" type="password" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-mobile">New Password</Label>
+                <Input id="new-mobile" type="password" />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          💡 Use `grid w-full grid-cols-N` for equal-width tabs on mobile
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Tablet Layout (640px - 1024px)</h3>
+        <p className="text-sm text-muted-foreground">
+          Horizontal tabs with adequate spacing
+        </p>
+        <div className="max-w-2xl border border-dashed border-primary p-4 rounded-lg">
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview">
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="text-sm font-medium">Metric 1</p>
+                  <p className="text-2xl font-bold">1,234</p>
+                </div>
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="text-sm font-medium">Metric 2</p>
+                  <p className="text-2xl font-bold">5,678</p>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="analytics">Analytics content...</TabsContent>
+            <TabsContent value="reports">Reports content...</TabsContent>
+            <TabsContent value="settings">Settings content...</TabsContent>
+          </Tabs>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          ✅ Horizontal layout works well with 4-6 tabs on tablet
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Desktop Layout (&gt; 1024px)</h3>
+        <p className="text-sm text-muted-foreground">
+          Full horizontal layout with optional badges
+        </p>
+        <div className="border border-dashed border-primary p-4 rounded-lg">
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList>
+              <TabsTrigger value="all">All Tasks</TabsTrigger>
+              <TabsTrigger value="active">
+                Active
+                <Badge className="ml-2 text-xs">8</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="completed">
+                Completed
+                <Badge variant="secondary" className="ml-2 text-xs">24</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="archived">Archived</TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <div className="grid grid-cols-3 gap-4 mt-4">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="p-4 bg-muted rounded-lg">
+                    <p className="text-sm font-medium">Task {i}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Description for task {i}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="active">Active tasks...</TabsContent>
+            <TabsContent value="completed">Completed tasks...</TabsContent>
+            <TabsContent value="archived">Archived tasks...</TabsContent>
+          </Tabs>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          ✅ Desktop can display more complex content in tab panels
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Responsive Grid: 2 Tabs</h3>
+        <p className="text-sm text-muted-foreground">
+          Two tabs scale from mobile to desktop
+        </p>
+        <Tabs defaultValue="light" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="light">Light Mode</TabsTrigger>
+            <TabsTrigger value="dark">Dark Mode</TabsTrigger>
+          </TabsList>
+          <TabsContent value="light" className="p-4 bg-background border rounded-lg">
+            <p className="text-sm">Light mode preview content</p>
+          </TabsContent>
+          <TabsContent value="dark" className="p-4 bg-background border rounded-lg">
+            <p className="text-sm">Dark mode preview content</p>
+          </TabsContent>
+        </Tabs>
+        <p className="text-xs text-muted-foreground">
+          💡 `grid-cols-2` ensures equal width on all screen sizes
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Responsive Grid: 3 Tabs</h3>
+        <p className="text-sm text-muted-foreground">
+          Three tabs with equal distribution
+        </p>
+        <Tabs defaultValue="day" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="day">Day</TabsTrigger>
+            <TabsTrigger value="week">Week</TabsTrigger>
+            <TabsTrigger value="month">Month</TabsTrigger>
+          </TabsList>
+          <TabsContent value="day">Day view content</TabsContent>
+          <TabsContent value="week">Week view content</TabsContent>
+          <TabsContent value="month">Month view content</TabsContent>
+        </Tabs>
+      </div>
+
+      <div className="p-4 bg-muted rounded-lg">
+        <h4 className="font-semibold text-sm mb-2">Responsive Best Practices:</h4>
+        <ul className="text-sm space-y-1 text-muted-foreground">
+          <li>• Mobile: Use `grid-cols-2` or `grid-cols-3` for equal-width tabs</li>
+          <li>• Tablet: Horizontal layout works well with 4-6 tabs</li>
+          <li>• Desktop: Can accommodate 6-8 tabs with badges/icons</li>
+          <li>• Consider stacking tab content vertically on mobile</li>
+          <li>• Use `overflow-x-auto` wrapper for many tabs on small screens</li>
+          <li>• Test touch targets (minimum 44×44px for mobile)</li>
+        </ul>
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * ## Story 12: Composition Patterns
+ * 
+ * Reusable composition patterns for tabs in real-world applications.
+ */
+export const CompositionPatterns: Story = {
+  render: () => {
+    const [settingsTab, setSettingsTab] = React.useState('general');
+    const [dashboardTab, setDashboardTab] = React.useState('overview');
+
+    return (
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Pattern 1: Settings Panel</h3>
+          <p className="text-sm text-muted-foreground">
+            Organize settings into logical categories
+          </p>
+          <Tabs value={settingsTab} onValueChange={setSettingsTab} className="w-full">
+            <TabsList>
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="billing">Billing</TabsTrigger>
+            </TabsList>
+            <TabsContent value="general" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input id="username" placeholder="johndoe" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="john@example.com" />
+              </div>
+              <Button>Save Changes</Button>
+            </TabsContent>
+            <TabsContent value="security" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="current-pwd">Current Password</Label>
+                <Input id="current-pwd" type="password" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-pwd">New Password</Label>
+                <Input id="new-pwd" type="password" />
+              </div>
+              <Button>Update Password</Button>
+            </TabsContent>
+            <TabsContent value="notifications" className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Configure your notification preferences
+              </p>
+              <div className="space-y-2">
+                <Label>Email notifications</Label>
+                <Input type="checkbox" className="w-4 h-4" />
+              </div>
+            </TabsContent>
+            <TabsContent value="billing" className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Manage your subscription and billing
+              </p>
+              <Button>Upgrade Plan</Button>
+            </TabsContent>
+          </Tabs>
+          <p className="text-xs text-muted-foreground">
+            💡 Controlled state with `value` and `onValueChange` props
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Pattern 2: Dashboard Views</h3>
+          <p className="text-sm text-muted-foreground">
+            Switch between different data visualizations
+          </p>
+          <Tabs value={dashboardTab} onValueChange={setDashboardTab} className="w-full">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="p-4 bg-primary/10 rounded-lg">
+                  <p className="text-sm text-muted-foreground">Total Users</p>
+                  <p className="text-3xl font-bold">12,453</p>
+                  <p className="text-xs text-green-600">+12% from last month</p>
+                </div>
+                <div className="p-4 bg-primary/10 rounded-lg">
+                  <p className="text-sm text-muted-foreground">Revenue</p>
+                  <p className="text-3xl font-bold">$45,231</p>
+                  <p className="text-xs text-green-600">+8% from last month</p>
+                </div>
+                <div className="p-4 bg-primary/10 rounded-lg">
+                  <p className="text-sm text-muted-foreground">Orders</p>
+                  <p className="text-3xl font-bold">1,234</p>
+                  <p className="text-xs text-red-600">-3% from last month</p>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="analytics">
+              <div className="p-8 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">
+                  Analytics charts and graphs would go here
+                </p>
+              </div>
+            </TabsContent>
+            <TabsContent value="reports">
+              <div className="p-8 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">
+                  Detailed reports and exports would go here
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Pattern 3: Product Details</h3>
+          <p className="text-sm text-muted-foreground">
+            Organize product information into sections
+          </p>
+          <Tabs defaultValue="description" className="w-full">
+            <TabsList>
+              <TabsTrigger value="description">Description</TabsTrigger>
+              <TabsTrigger value="specs">Specifications</TabsTrigger>
+              <TabsTrigger value="reviews">
+                Reviews
+                <Badge className="ml-2 text-xs">24</Badge>
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="description" className="space-y-2">
+              <p className="text-sm">
+                This is a high-quality product designed for maximum efficiency
+                and user satisfaction. Perfect for both beginners and professionals.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Features include advanced functionality, durable materials,
+                and excellent customer support.
+              </p>
+            </TabsContent>
+            <TabsContent value="specs">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between p-2 bg-muted rounded">
+                  <span className="font-medium">Dimensions:</span>
+                  <span>10 × 5 × 2 inches</span>
+                </div>
+                <div className="flex justify-between p-2 bg-muted rounded">
+                  <span className="font-medium">Weight:</span>
+                  <span>1.2 lbs</span>
+                </div>
+                <div className="flex justify-between p-2 bg-muted rounded">
+                  <span className="font-medium">Material:</span>
+                  <span>Premium aluminum</span>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="reviews">
+              <div className="space-y-3">
+                <div className="p-3 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-medium text-sm">Jane D.</span>
+                    <span className="text-yellow-500">★★★★★</span>
+                  </div>
+                  <p className="text-sm">Excellent product! Highly recommend.</p>
+                </div>
+                <div className="p-3 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-medium text-sm">John S.</span>
+                    <span className="text-yellow-500">★★★★☆</span>
+                  </div>
+                  <p className="text-sm">Good quality, fast shipping.</p>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Pattern 4: Filterable List</h3>
+          <p className="text-sm text-muted-foreground">
+            Filter content by status or category
+          </p>
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList>
+              <TabsTrigger value="all">
+                All
+                <Badge variant="secondary" className="ml-2 text-xs">15</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="active">
+                Active
+                <Badge className="ml-2 text-xs">8</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="pending">
+                Pending
+                <Badge variant="outline" className="ml-2 text-xs">5</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="completed">
+                Completed
+                <Badge variant="secondary" className="ml-2 text-xs">2</Badge>
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <div className="space-y-2">
+                {['Task 1', 'Task 2', 'Task 3'].map(task => (
+                  <div key={task} className="p-3 bg-muted rounded-lg flex items-center justify-between">
+                    <span className="text-sm">{task}</span>
+                    <Badge variant="outline" className="text-xs">Active</Badge>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="active">Filtered to active tasks...</TabsContent>
+            <TabsContent value="pending">Filtered to pending tasks...</TabsContent>
+            <TabsContent value="completed">Filtered to completed tasks...</TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Pattern 5: Time Period Selector</h3>
+          <p className="text-sm text-muted-foreground">
+            View data across different time ranges
+          </p>
+          <Tabs defaultValue="7d" className="w-full">
+            <TabsList>
+              <TabsTrigger value="24h">24 Hours</TabsTrigger>
+              <TabsTrigger value="7d">7 Days</TabsTrigger>
+              <TabsTrigger value="30d">30 Days</TabsTrigger>
+              <TabsTrigger value="90d">90 Days</TabsTrigger>
+              <TabsTrigger value="1y">1 Year</TabsTrigger>
+            </TabsList>
+            <TabsContent value="24h">
+              <div className="p-6 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">Last 24 hours data</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="7d">
+              <div className="p-6 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">Last 7 days data</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="30d">
+              <div className="p-6 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">Last 30 days data</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="90d">
+              <div className="p-6 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">Last 90 days data</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="1y">
+              <div className="p-6 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">Last year data</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="p-4 bg-muted rounded-lg">
+          <h4 className="font-semibold text-sm mb-2">Composition Pattern Best Practices:</h4>
+          <ul className="text-sm space-y-1 text-muted-foreground">
+            <li>• Use controlled state for complex interactions</li>
+            <li>• Add badges to show counts or status</li>
+            <li>• Group related settings or content logically</li>
+            <li>• Consider using tabs for filtering large datasets</li>
+            <li>• Time period selectors work well with horizontal tabs</li>
+            <li>• Keep tab labels concise (1-2 words maximum)</li>
+          </ul>
+        </div>
+      </div>
+    );
   },
 };
