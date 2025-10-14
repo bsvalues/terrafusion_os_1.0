@@ -187,82 +187,72 @@ export function Skeleton({
   animationSpeed = 1500,
   className = '',
   style = {},
-  darkMode = false,
+  darkMode = false
 }: SkeletonProps) {
   const getVariantStyles = (): CSSProperties => {
     switch (variant) {
       case 'text':
         return {
           height: '1rem',
-          borderRadius: '4px',
+          borderRadius: '4px'
         };
       case 'circle':
         return {
           borderRadius: '50%',
-          aspectRatio: '1',
+          aspectRatio: '1'
         };
       case 'rounded':
         return {
-          borderRadius: '8px',
+          borderRadius: '8px'
         };
       case 'rect':
       default:
         return {
-          borderRadius: '4px',
+          borderRadius: '4px'
         };
     }
   };
-
   const getAnimationStyles = (): CSSProperties => {
     const baseColor = darkMode ? '#2a2a2a' : '#e5e7eb';
     const highlightColor = darkMode ? '#3a3a3a' : '#f3f4f6';
-
     switch (animation) {
       case 'pulse':
         return {
           animation: `skeletonPulse ${animationSpeed}ms ease-in-out infinite`,
-          background: baseColor,
+          background: baseColor
         };
       case 'shimmer':
         return {
           animation: `skeletonShimmer ${animationSpeed}ms ease-in-out infinite`,
           background: `linear-gradient(90deg, ${baseColor} 0%, ${highlightColor} 50%, ${baseColor} 100%)`,
-          backgroundSize: '200% 100%',
+          backgroundSize: '200% 100%'
         };
       case 'wave':
         return {
           animation: `skeletonWave ${animationSpeed}ms ease-in-out infinite`,
           background: `linear-gradient(90deg, ${baseColor} 25%, ${highlightColor} 50%, ${baseColor} 75%)`,
-          backgroundSize: '200% 100%',
+          backgroundSize: '200% 100%'
         };
       case 'none':
         return {
-          background: baseColor,
+          background: baseColor
         };
       default:
         return {
           animation: `skeletonPulse ${animationSpeed}ms ease-in-out infinite`,
-          background: baseColor,
+          background: baseColor
         };
     }
   };
-
   const skeletonStyles: CSSProperties = {
     width: typeof width === 'number' ? `${width}px` : width,
     height: typeof height === 'number' ? `${height}px` : height,
     ...getVariantStyles(),
     ...getAnimationStyles(),
-    ...style,
+    ...style
   };
-
-  return (
-    <>
-      <div
-        className={`skeleton ${className}`}
-        style={skeletonStyles}
-        aria-busy="true"
-        aria-live="polite"
-      />
+  return <>
+      <div className={`skeleton ${className}`} style={skeletonStyles} aria-busy="true" aria-live="polite" />
       <style>{`
         @keyframes skeletonPulse {
           0%, 100% { opacity: 1; }
@@ -279,8 +269,7 @@ export function Skeleton({
           100% { background-position: 200% 0; }
         }
       `}</style>
-    </>
-  );
+    </>;
 }
 
 // ============================================================================
@@ -301,67 +290,34 @@ export function SkeletonTable({
   showHeader = true,
   animation = 'shimmer',
   className = '',
-  darkMode = false,
+  darkMode = false
 }: SkeletonTableProps) {
   const renderHeaderRow = () => {
     if (!showHeader) return null;
-
-    return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-          gap: '1rem',
-          marginBottom: '1rem',
-          paddingBottom: '1rem',
-          borderBottom: `1px solid ${darkMode ? '#3a3a3a' : '#e5e7eb'}`,
-        }}
-      >
-        {Array.from({ length: columns }).map((_, colIndex) => (
-          <Skeleton
-            key={`header-${colIndex}`}
-            height="24px"
-            animation={animation}
-            darkMode={darkMode}
-          />
-        ))}
-      </div>
-    );
+    return <div style={{
+      gridTemplateColumns: `repeat(${columns}, 1fr)`,
+      borderBottom: `1px solid ${darkMode ? '#3a3a3a' : '#e5e7eb'}`
+    }} className="gap-4">
+        {Array.from({
+        length: columns
+      }).map((_, colIndex) => <Skeleton key={`header-${colIndex}`} height="24px" animation={animation} darkMode={darkMode} />)}
+      </div>;
   };
-
   const renderBodyRows = () => {
-    return Array.from({ length: rows }).map((_, rowIndex) => (
-      <div
-        key={`row-${rowIndex}`}
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-          gap: '1rem',
-          marginBottom: '0.75rem',
-        }}
-      >
-        {Array.from({ length: columns }).map((_, colIndex) => (
-          <Skeleton
-            key={`cell-${rowIndex}-${colIndex}`}
-            height="20px"
-            animation={animation}
-            darkMode={darkMode}
-          />
-        ))}
-      </div>
-    ));
+    return Array.from({
+      length: rows
+    }).map((_, rowIndex) => <div key={`row-${rowIndex}`} style={{
+      gridTemplateColumns: `repeat(${columns}, 1fr)`
+    }} className="gap-4">
+        {Array.from({
+        length: columns
+      }).map((_, colIndex) => <Skeleton key={`cell-${rowIndex}-${colIndex}`} height="20px" animation={animation} darkMode={darkMode} />)}
+      </div>);
   };
-
-  return (
-    <div
-      className={`skeleton-table ${className}`}
-      role="status"
-      aria-label="Loading table data"
-    >
+  return <div className={`skeleton-table ${className}`} role="status" aria-label="Loading table data">
       {renderHeaderRow()}
       {renderBodyRows()}
-    </div>
-  );
+    </div>;
 }
 
 // ============================================================================
@@ -382,61 +338,35 @@ export function SkeletonCard({
   lines = 3,
   animation = 'shimmer',
   className = '',
-  darkMode = false,
+  darkMode = false
 }: SkeletonCardProps) {
-  const renderCard = (index: number) => (
-    <div
-      key={`card-${index}`}
-      style={{
-        padding: '1.5rem',
-        border: `1px solid ${darkMode ? '#3a3a3a' : '#e5e7eb'}`,
-        borderRadius: '8px',
-        marginBottom: '1rem',
-      }}
-    >
-      {showImage && (
-        <Skeleton
-          width="100%"
-          height="180px"
-          variant="rounded"
-          animation={animation}
-          darkMode={darkMode}
-          style={{ marginBottom: '1rem' }}
-        />
-      )}
+  const renderCard = (index: number) => <div key={`card-${index}`} style={{
+    padding: '1.5rem',
+    border: `1px solid ${darkMode ? '#3a3a3a' : '#e5e7eb'}`,
+    borderRadius: '8px',
+    marginBottom: '1rem'
+  }}>
+      {showImage && <Skeleton width="100%" height="180px" variant="rounded" animation={animation} darkMode={darkMode} style={{
+      marginBottom: '1rem'
+    }} />}
 
       {/* Title */}
-      <Skeleton
-        width="70%"
-        height="24px"
-        animation={animation}
-        darkMode={darkMode}
-        style={{ marginBottom: '0.75rem' }}
-      />
+      <Skeleton width="70%" height="24px" animation={animation} darkMode={darkMode} style={{
+      marginBottom: '0.75rem'
+    }} />
 
       {/* Text lines */}
-      {Array.from({ length: lines }).map((_, lineIndex) => (
-        <Skeleton
-          key={`line-${lineIndex}`}
-          width={lineIndex === lines - 1 ? '50%' : '100%'}
-          height="16px"
-          animation={animation}
-          darkMode={darkMode}
-          style={{ marginBottom: '0.5rem' }}
-        />
-      ))}
-    </div>
-  );
-
-  return (
-    <div
-      className={`skeleton-card-container ${className}`}
-      role="status"
-      aria-label="Loading cards"
-    >
-      {Array.from({ length: count }).map((_, index) => renderCard(index))}
-    </div>
-  );
+      {Array.from({
+      length: lines
+    }).map((_, lineIndex) => <Skeleton key={`line-${lineIndex}`} width={lineIndex === lines - 1 ? '50%' : '100%'} height="16px" animation={animation} darkMode={darkMode} style={{
+      marginBottom: '0.5rem'
+    }} />)}
+    </div>;
+  return <div className={`skeleton-card-container ${className}`} role="status" aria-label="Loading cards">
+      {Array.from({
+      length: count
+    }).map((_, index) => renderCard(index))}
+    </div>;
 }
 
 // ============================================================================
@@ -457,52 +387,26 @@ export function SkeletonList({
   lines = 2,
   animation = 'shimmer',
   className = '',
-  darkMode = false,
+  darkMode = false
 }: SkeletonListProps) {
-  const renderItem = (index: number) => (
-    <div
-      key={`item-${index}`}
-      style={{
-        display: 'flex',
-        gap: '1rem',
-        padding: '1rem',
-        borderBottom: `1px solid ${darkMode ? '#3a3a3a' : '#e5e7eb'}`,
-      }}
-    >
-      {showAvatar && (
-        <Skeleton
-          width="48px"
-          height="48px"
-          variant="circle"
-          animation={animation}
-          darkMode={darkMode}
-        />
-      )}
+  const renderItem = (index: number) => <div key={`item-${index}`} style={{
+    borderBottom: `1px solid ${darkMode ? '#3a3a3a' : '#e5e7eb'}`
+  }} className="flex gap-4 p-4">
+      {showAvatar && <Skeleton width="48px" height="48px" variant="circle" animation={animation} darkMode={darkMode} />}
 
-      <div style={{ flex: 1 }}>
-        {Array.from({ length: lines }).map((_, lineIndex) => (
-          <Skeleton
-            key={`line-${lineIndex}`}
-            width={lineIndex === 0 ? '60%' : '90%'}
-            height={lineIndex === 0 ? '18px' : '14px'}
-            animation={animation}
-            darkMode={darkMode}
-            style={{ marginBottom: '0.5rem' }}
-          />
-        ))}
+      <div className="flex-1">
+        {Array.from({
+        length: lines
+      }).map((_, lineIndex) => <Skeleton key={`line-${lineIndex}`} width={lineIndex === 0 ? '60%' : '90%'} height={lineIndex === 0 ? '18px' : '14px'} animation={animation} darkMode={darkMode} style={{
+        marginBottom: '0.5rem'
+      }} />)}
       </div>
-    </div>
-  );
-
-  return (
-    <div
-      className={`skeleton-list ${className}`}
-      role="status"
-      aria-label="Loading list items"
-    >
-      {Array.from({ length: items }).map((_, index) => renderItem(index))}
-    </div>
-  );
+    </div>;
+  return <div className={`skeleton-list ${className}`} role="status" aria-label="Loading list items">
+      {Array.from({
+      length: items
+    }).map((_, index) => renderItem(index))}
+    </div>;
 }
 
 // ============================================================================
@@ -521,7 +425,7 @@ export function Spinner({
   size = 'md',
   color = '#3b82f6',
   className = '',
-  label = 'Loading...',
+  label = 'Loading...'
 }: SpinnerProps) {
   const getSizeValue = (): string => {
     switch (size) {
@@ -537,35 +441,25 @@ export function Spinner({
         return '40px';
     }
   };
-
   const sizeValue = getSizeValue();
   const borderWidth = size === 'sm' ? '2px' : size === 'xl' ? '6px' : '4px';
-
   const spinnerStyles: CSSProperties = {
     width: sizeValue,
     height: sizeValue,
     border: `${borderWidth} solid rgba(0, 0, 0, 0.1)`,
     borderTopColor: color,
     borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
+    animation: 'spin 1s linear infinite'
   };
-
-  return (
-    <>
-      <div
-        className={`spinner ${className}`}
-        style={spinnerStyles}
-        role="status"
-        aria-label={label}
-      />
+  return <>
+      <div className={`spinner ${className}`} style={spinnerStyles} role="status" aria-label={label} />
       <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
       `}</style>
-    </>
-  );
+    </>;
 }
 
 // ============================================================================
@@ -588,7 +482,7 @@ export function ProgressBar({
   height = '8px',
   showPercentage = false,
   className = '',
-  darkMode = false,
+  darkMode = false
 }: ProgressBarProps) {
   const containerStyles: CSSProperties = {
     width: '100%',
@@ -596,49 +490,38 @@ export function ProgressBar({
     backgroundColor: darkMode ? '#2a2a2a' : '#e5e7eb',
     borderRadius: '4px',
     overflow: 'hidden',
-    position: 'relative',
+    position: 'relative'
   };
-
   const progressStyles: CSSProperties = {
     height: '100%',
     backgroundColor: color,
     borderRadius: '4px',
     transition: variant === 'determinate' ? 'width 0.3s ease' : 'none',
-    ...(variant === 'determinate'
-      ? { width: `${Math.min(Math.max(value, 0), 100)}%` }
-      : {
-          width: '30%',
-          animation: 'progressIndeterminate 1.5s ease-in-out infinite',
-        }),
+    ...(variant === 'determinate' ? {
+      width: `${Math.min(Math.max(value, 0), 100)}%`
+    } : {
+      width: '30%',
+      animation: 'progressIndeterminate 1.5s ease-in-out infinite'
+    })
   };
-
   const percentageStyles: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.5rem',
+    gap: '0.5rem'
   };
-
-  return (
-    <>
+  return <>
       <div className={`progress-bar-wrapper ${className}`}>
-        <div
-          className="progress-bar-container"
-          style={containerStyles}
-          role="progressbar"
-          aria-valuenow={variant === 'determinate' ? value : undefined}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        >
+        <div className="progress-bar-container" style={containerStyles} role="progressbar" aria-valuenow={variant === 'determinate' ? value : undefined} aria-valuemin={0} aria-valuemax={100}>
           <div className="progress-bar-fill" style={progressStyles} />
         </div>
 
-        {showPercentage && variant === 'determinate' && (
-          <div style={percentageStyles}>
-            <span style={{ fontSize: '0.875rem', color: darkMode ? '#fff' : '#6b7280' }}>
+        {showPercentage && variant === 'determinate' && <div style={percentageStyles}>
+            <span style={{
+          color: darkMode ? '#fff' : '#6b7280'
+        }} className="text-sm">
               {Math.round(value)}%
             </span>
-          </div>
-        )}
+          </div>}
       </div>
 
       <style>{`
@@ -658,8 +541,7 @@ export function ProgressBar({
           width: 100%;
         }
       `}</style>
-    </>
-  );
+    </>;
 }
 
 // ============================================================================
@@ -679,10 +561,9 @@ export function LoadingOverlay({
   message = 'Loading...',
   spinnerSize = 'lg',
   blur = true,
-  className = '',
+  className = ''
 }: LoadingOverlayProps) {
   if (!visible) return null;
-
   const overlayStyles: CSSProperties = {
     position: 'fixed',
     top: 0,
@@ -696,9 +577,8 @@ export function LoadingOverlay({
     alignItems: 'center',
     justifyContent: 'center',
     gap: '1rem',
-    zIndex: 9999,
+    zIndex: 9999
   };
-
   const contentStyles: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -707,29 +587,19 @@ export function LoadingOverlay({
     padding: '2rem',
     backgroundColor: 'white',
     borderRadius: '8px',
-    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
   };
-
   const messageStyles: CSSProperties = {
     fontSize: '1rem',
     fontWeight: 500,
-    color: '#374151',
+    color: '#374151'
   };
-
-  return (
-    <div
-      className={`loading-overlay ${className}`}
-      style={overlayStyles}
-      role="dialog"
-      aria-label={message}
-      aria-live="polite"
-    >
+  return <div className={`loading-overlay ${className}`} style={overlayStyles} role="dialog" aria-label={message} aria-live="polite">
       <div style={contentStyles}>
         <Spinner size={spinnerSize} />
         {message && <p style={messageStyles}>{message}</p>}
       </div>
-    </div>
-  );
+    </div>;
 }
 
 // ============================================================================
@@ -749,22 +619,12 @@ export function LoadingOverlay({
  * {isLoading ? createTextSkeletons(3) : <p>{content}</p>}
  * ```
  */
-export function createTextSkeletons(
-  count: number = 3,
-  animation: SkeletonAnimation = 'shimmer',
-  darkMode: boolean = false
-): JSX.Element[] {
-  return Array.from({ length: count }).map((_, index) => (
-    <Skeleton
-      key={`text-skeleton-${index}`}
-      width={index === count - 1 ? '70%' : '100%'}
-      height="16px"
-      variant="text"
-      animation={animation}
-      darkMode={darkMode}
-      style={{ marginBottom: '0.5rem' }}
-    />
-  ));
+export function createTextSkeletons(count: number = 3, animation: SkeletonAnimation = 'shimmer', darkMode: boolean = false): JSX.Element[] {
+  return Array.from({
+    length: count
+  }).map((_, index) => <Skeleton key={`text-skeleton-${index}`} width={index === count - 1 ? '70%' : '100%'} height="16px" variant="text" animation={animation} darkMode={darkMode} style={{
+    marginBottom: '0.5rem'
+  }} />);
 }
 
 /**
@@ -780,25 +640,13 @@ export function createTextSkeletons(
  * {isLoading ? createPropertySkeletons(5) : propertyDetails}
  * ```
  */
-export function createPropertySkeletons(
-  count: number = 5,
-  animation: SkeletonAnimation = 'shimmer',
-  darkMode: boolean = false
-): JSX.Element[] {
-  return Array.from({ length: count }).map((_, index) => (
-    <div
-      key={`property-skeleton-${index}`}
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '0.75rem',
-      }}
-    >
+export function createPropertySkeletons(count: number = 5, animation: SkeletonAnimation = 'shimmer', darkMode: boolean = false): JSX.Element[] {
+  return Array.from({
+    length: count
+  }).map((_, index) => <div key={`property-skeleton-${index}`} className="flex justify-between items-center">
       <Skeleton width="40%" height="18px" animation={animation} darkMode={darkMode} />
       <Skeleton width="50%" height="18px" animation={animation} darkMode={darkMode} />
-    </div>
-  ));
+    </div>);
 }
 
 /**
@@ -815,30 +663,12 @@ export function createPropertySkeletons(
  * {isLoading ? createGridSkeleton(3, 2) : <PropertyGrid />}
  * ```
  */
-export function createGridSkeleton(
-  columns: number = 3,
-  rows: number = 2,
-  animation: SkeletonAnimation = 'shimmer',
-  darkMode: boolean = false
-): JSX.Element {
-  return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        gap: '1rem',
-      }}
-    >
-      {Array.from({ length: columns * rows }).map((_, index) => (
-        <Skeleton
-          key={`grid-skeleton-${index}`}
-          width="100%"
-          height="200px"
-          variant="rounded"
-          animation={animation}
-          darkMode={darkMode}
-        />
-      ))}
-    </div>
-  );
+export function createGridSkeleton(columns: number = 3, rows: number = 2, animation: SkeletonAnimation = 'shimmer', darkMode: boolean = false): JSX.Element {
+  return <div style={{
+    gridTemplateColumns: `repeat(${columns}, 1fr)`
+  }} className="gap-4">
+      {Array.from({
+      length: columns * rows
+    }).map((_, index) => <Skeleton key={`grid-skeleton-${index}`} width="100%" height="200px" variant="rounded" animation={animation} darkMode={darkMode} />)}
+    </div>;
 }

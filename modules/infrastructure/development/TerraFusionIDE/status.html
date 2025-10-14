@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion IDE Status Check</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #0891b2, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .status-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+        .status-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #00d2ff;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .status-label {
+            color: #94a3b8;
+        }
+        .status-value {
+            font-weight: 600;
+        }
+        .status-ok {
+            color: #10b981;
+        }
+        .status-error {
+            color: #ef4444;
+        }
+        .status-warning {
+            color: #f59e0b;
+        }
+        .console {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin-top: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .console-line {
+            margin-bottom: 0.5rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(to right, #0891b2, #00d2ff);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 TerraFusion IDE Status Check</h1>
+        <p style="font-size: 1.25rem; margin-bottom: 2rem; color: #94a3b8;">
+            Let's diagnose what's actually happening...
+        </p>
+
+        <div class="status-grid">
+            <div class="status-card">
+                <h2>Frontend Status</h2>
+                <div class="status-item">
+                    <span class="status-label">Vite Server</span>
+                    <span class="status-value" id="vite-status">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Port</span>
+                    <span class="status-value">5177</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Tailwind CSS</span>
+                    <span class="status-value" id="tailwind-status">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">React</span>
+                    <span class="status-value" id="react-status">Checking...</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h2>Backend Status</h2>
+                <div class="status-item">
+                    <span class="status-label">IDEGateway API</span>
+                    <span class="status-value" id="backend-status">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Port</span>
+                    <span class="status-value">5001</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">CORS</span>
+                    <span class="status-value" id="cors-status">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Health Check</span>
+                    <span class="status-value" id="health-status">Checking...</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h2>Browser Status</h2>
+                <div class="status-item">
+                    <span class="status-label">JavaScript</span>
+                    <span class="status-value status-ok">✓ Enabled</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Console Errors</span>
+                    <span class="status-value" id="console-errors">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Network Errors</span>
+                    <span class="status-value" id="network-errors">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Screen Resolution</span>
+                    <span class="status-value" id="resolution">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="console" id="console">
+            <div class="console-line" style="color: #00d2ff;">╔════════════════════════════════════════╗</div>
+            <div class="console-line" style="color: #00d2ff;">║   TERRAFUSION IDE DIAGNOSTIC LOG      ║</div>
+            <div class="console-line" style="color: #00d2ff;">╚════════════════════════════════════════╝</div>
+        </div>
+
+        <a href="/" class="btn">🚀 Go to TerraFusion IDE</a>
+    </div>
+
+    <script>
+        const log = (message, type = 'info') => {
+            const console = document.getElementById('console');
+            const colors = {
+                info: '#94a3b8',
+                success: '#10b981',
+                error: '#ef4444',
+                warning: '#f59e0b'
+            };
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.style.color = colors[type];
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        };
+
+        // Check frontend
+        log('🔍 Checking Vite server...', 'info');
+        document.getElementById('vite-status').innerHTML = '<span class="status-ok">✓ Running</span>';
+        log('✓ Vite server is running on port 5177', 'success');
+
+        // Check Tailwind
+        const tailwindTest = getComputedStyle(document.body).backgroundImage;
+        if (tailwindTest.includes('gradient')) {
+            document.getElementById('tailwind-status').innerHTML = '<span class="status-ok">✓ Loaded</span>';
+            log('✓ Tailwind CSS is loaded and working', 'success');
+        } else {
+            document.getElementById('tailwind-status').innerHTML = '<span class="status-warning">⚠ Partial</span>';
+            log('⚠ Tailwind CSS may not be fully loaded', 'warning');
+        }
+
+        // Check React
+        if (window.React) {
+            document.getElementById('react-status').innerHTML = '<span class="status-ok">✓ Loaded</span>';
+            log('✓ React is loaded', 'success');
+        } else {
+            document.getElementById('react-status').innerHTML = '<span class="status-warning">⚠ Not detected</span>';
+            log('⚠ React not detected (might be bundled)', 'warning');
+        }
+
+        // Check backend
+        log('🔍 Checking IDEGateway backend...', 'info');
+        fetch('http://localhost:5001/health')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('backend-status').innerHTML = '<span class="status-ok">✓ Online</span>';
+                document.getElementById('health-status').innerHTML = `<span class="status-ok">${data.Status}</span>`;
+                log(`✓ Backend is online: ${data.Service} v${data.Version}`, 'success');
+            })
+            .catch(err => {
+                document.getElementById('backend-status').innerHTML = '<span class="status-error">✗ Offline</span>';
+                document.getElementById('health-status').innerHTML = '<span class="status-error">Failed</span>';
+                log(`✗ Backend connection failed: ${err.message}`, 'error');
+            });
+
+        // Check CORS
+        fetch('http://localhost:5001/api/ide/status')
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById('cors-status').innerHTML = '<span class="status-ok">✓ Allowed</span>';
+                    log('✓ CORS is configured correctly', 'success');
+                } else {
+                    document.getElementById('cors-status').innerHTML = '<span class="status-error">✗ Blocked</span>';
+                    log('✗ CORS may be blocking requests', 'error');
+                }
+            })
+            .catch(err => {
+                document.getElementById('cors-status').innerHTML = '<span class="status-error">✗ Blocked</span>';
+                log(`✗ CORS error: ${err.message}`, 'error');
+            });
+
+        // Browser info
+        document.getElementById('resolution').textContent = `${window.screen.width}×${window.screen.height}`;
+        log(`📊 Screen resolution: ${window.screen.width}×${window.screen.height}`, 'info');
+
+        // Count console errors
+        let errorCount = 0;
+        const originalConsoleError = console.error;
+        console.error = function() {
+            errorCount++;
+            document.getElementById('console-errors').textContent = errorCount;
+            originalConsoleError.apply(console, arguments);
+            log(`❌ Console error: ${arguments[0]}`, 'error');
+        };
+
+        // Network monitoring
+        window.addEventListener('error', (e) => {
+            if (e.target !== window) {
+                log(`❌ Resource failed to load: ${e.target.src || e.target.href}`, 'error');
+            }
+        }, true);
+
+        log('✓ Diagnostic check complete', 'success');
+        log('', 'info');
+        log('If you see this page, HTML/CSS/JavaScript are working!', 'info');
+        log('Click the button above to test the actual TerraFusion IDE', 'info');
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+/**
+ * TerraFusion Navigation - Dynamic Styles Module
+ * 
+ * This CSS module handles dynamic computed values that cannot be
+ * expressed as static Tailwind classes. MIT/PhD standard approach:
+ * - Use CSS custom properties for JavaScript-computed values
+ * - Maintain type safety and performance
+ * - Zero inline style violations
+ */
+
+.sidebar {
+  width: var(--sidebar-width);
+}
+
+.header {
+  height: var(--header-height);
+}
+
+.navigationTree {
+  width: var(--tree-width);
+}
+
+.navigationTreeItem {
+  padding-left: var(--tree-item-indent);
+}
+
+.mobileItem {
+  padding-left: var(--mobile-item-indent);
+}
+
+.sidebarContent {
+  width: var(--sidebar-content-width);
+}
+
+.mainContent {
+  width: var(--main-content-width);
+  margin-left: var(--main-content-margin-left);
+}
+
+.footer {
+  height: var(--footer-height);
+}

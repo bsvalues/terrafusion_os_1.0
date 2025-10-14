@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import TerraFusionIDE_ULTIMATE from './components/TerraFusionIDE_ULTIMATE';
+import TerraFusionIDE_ULTIMATE_POWER from './components/TerraFusionIDE_ULTIMATE_POWER';
 import './index.css';
 
 // Terrafusion IDE ULTIMATE - Your Complete Development Universe
@@ -40,6 +40,6 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <TerraFusionIDE_ULTIMATE />
+    <TerraFusionIDE_ULTIMATE_POWER />
   </React.StrictMode>
 );

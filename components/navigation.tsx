@@ -16,6 +16,7 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext } from 'react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
 import { Button, ButtonProps } from './button';
 import { Badge } from './badge';
@@ -26,6 +27,7 @@ import { Input } from './input';
 import { LoadingSpinner } from './loading-states';
 import { useNotification } from './notifications';
 import { Modal, ModalContent, ModalDescription, ModalFooter, ModalHeader, ModalTitle, ModalTrigger } from './modal';
+import styles from './navigation.module.css';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -567,14 +569,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
       
+      {/* Dynamic width based on collapsed state - using CSS custom properties */}
       <aside
-        className={`
+        className={`${styles.sidebar}
           ${overlay ? 'fixed' : 'relative'} 
           ${position === 'left' ? 'left-0' : 'right-0'}
           top-0 h-full bg-white border-r shadow-sm z-50 transition-all duration-300
           ${className}
         `}
-        style={{ width: sidebarWidth }}
+        style={{ ['--sidebar-width' as string]: `${sidebarWidth}px` }}
         aria-label="Sidebar navigation"
       >
         {/* Header */}

@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     VitePWA({
@@ -28,8 +29,16 @@ export default defineConfig({
           }
         ]
       }
-    })
-  ],
+    }),
+    // Bundle analyzer for visualizing bundle size
+    mode === 'analyze' && visualizer({
+      open: true,
+      filename: 'dist/stats.html',
+      gzipSize: true,
+      brotliSize: true,
+      template: 'treemap', // 'sunburst', 'treemap', 'network'
+    }),
+  ].filter(Boolean),
   
   resolve: {
     alias: {
@@ -98,4 +107,4 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
     __API_URL__: JSON.stringify(process.env.VITE_API_URL || 'http://localhost:5000'),
   }
-});
+}));

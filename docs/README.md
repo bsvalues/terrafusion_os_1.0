@@ -45,6 +45,24 @@ This directory contains the complete documentation suite for Terrafusion OS 1.0,
 
 ## 📋 **DOCUMENTATION STRUCTURE**
 
+> **📌 Important**: This `docs/` directory is where ALL documentation should go.  
+> See `ROOT_DIRECTORY_POLICY.md` for rules about file placement.
+
+### **Directory Organization**
+```
+docs/
+├── milestones/       # Completion documents, status markers
+├── phases/           # Phase planning and execution documents
+├── reports/          # Analysis, audits, investigations
+├── operations/       # Dashboards, status, operational docs
+├── guides/           # How-to guides, workflows, procedures
+├── architecture/     # System architecture documentation
+├── api/              # API reference documentation
+├── deployment/       # Deployment guides
+├── technical/        # Technical specifications
+└── ... (other specialized subdirectories)
+```
+
 ### **Delivery Package**
 - **Final Delivery**: Complete overview and welcome
 - **Delivery Package**: Step-by-step deployment
