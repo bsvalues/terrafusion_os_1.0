@@ -175,8 +175,8 @@ namespace Terrafusion.Shell
         {
             // Load from backend server to avoid CORS issues with file:// protocol
             // Temporarily using working.html to verify infrastructure
-            webView.Source = new Uri("http://localhost:5005/working.html");
-            LogToEventLog("Loading UI from http://localhost:5005/working.html", EventLogEntryType.Information);
+            webView.Source = new Uri("http://localhost:5005/index.html");
+            LogToEventLog("Loading UI from http://localhost:5005/index.html", EventLogEntryType.Information);
             
             await Task.CompletedTask;
         }

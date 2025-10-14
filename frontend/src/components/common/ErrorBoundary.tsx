@@ -1,10 +1,8 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Warning, Refresh, Home, BugReport } from '@mui/icons-material';
-
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -13,7 +11,6 @@ interface Props {
   resetKeys?: Array<string | number>;
   resetOnPropsChange?: boolean;
 }
-
 interface State {
   hasError: boolean;
   error: Error | null;
@@ -28,34 +25,30 @@ interface State {
  */
 export class ErrorBoundary extends Component<Props, State> {
   private resetTimeoutId: number | null = null;
-
   constructor(props: Props) {
     super(props);
     this.state = {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: '',
+      errorId: ''
     };
   }
-
   static getDerivedStateFromError(error: Error): Partial<State> {
     // Update state so the next render will show the fallback UI
     return {
       hasError: true,
       error,
-      errorId: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      errorId: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     };
   }
-
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error details
     console.error('🚨 ErrorBoundary caught an error:', error);
     console.error('📍 Error Info:', errorInfo);
-
     this.setState({
       error,
-      errorInfo,
+      errorInfo
     });
 
     // Call custom error handler if provided
@@ -66,15 +59,18 @@ export class ErrorBoundary extends Component<Props, State> {
     // Send error to monitoring service
     this.reportError(error, errorInfo);
   }
-
   componentDidUpdate(prevProps: Props) {
-    const { resetKeys, resetOnPropsChange } = this.props;
-    const { hasError } = this.state;
+    const {
+      resetKeys,
+      resetOnPropsChange
+    } = this.props;
+    const {
+      hasError
+    } = this.state;
 
     // Reset error boundary when resetKeys change
     if (hasError && resetKeys && prevProps.resetKeys) {
       const resetKeysChanged = resetKeys.some((key, index) => key !== prevProps.resetKeys![index]);
-
       if (resetKeysChanged) {
         this.resetErrorBoundary();
       }
@@ -85,13 +81,11 @@ export class ErrorBoundary extends Component<Props, State> {
       this.resetErrorBoundary();
     }
   }
-
   componentWillUnmount() {
     if (this.resetTimeoutId) {
       clearTimeout(this.resetTimeoutId);
     }
   }
-
   private reportError = (error: Error, errorInfo: ErrorInfo) => {
     try {
       // Report to monitoring service (e.g., Sentry, LogRocket, etc.)
@@ -104,16 +98,16 @@ export class ErrorBoundary extends Component<Props, State> {
         url: window.location.href,
         userId: this.getUserId(),
         sessionId: this.getSessionId(),
-        errorId: this.state.errorId,
+        errorId: this.state.errorId
       };
 
       // Send to API endpoint for logging
       fetch('/api/errors', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(errorReport),
+        body: JSON.stringify(errorReport)
       }).catch(() => {
         // Silently fail if error reporting fails
         console.warn('Failed to report error to server');
@@ -122,7 +116,6 @@ export class ErrorBoundary extends Component<Props, State> {
       console.error('Error while reporting error:', reportingError);
     }
   };
-
   private getUserId = (): string | null => {
     // Get user ID from localStorage, context, or other state management
     try {
@@ -132,7 +125,6 @@ export class ErrorBoundary extends Component<Props, State> {
       return null;
     }
   };
-
   private getSessionId = (): string => {
     // Get or create session ID
     let sessionId = sessionStorage.getItem('sessionId');
@@ -142,34 +134,32 @@ export class ErrorBoundary extends Component<Props, State> {
     }
     return sessionId;
   };
-
   private resetErrorBoundary = () => {
     if (this.resetTimeoutId) {
       clearTimeout(this.resetTimeoutId);
     }
-
     this.setState({
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: '',
+      errorId: ''
     });
   };
-
   private handleRetry = () => {
     this.resetErrorBoundary();
   };
-
   private handleReload = () => {
     window.location.reload();
   };
-
   private handleGoHome = () => {
     window.location.href = '/';
   };
-
   private copyErrorToClipboard = async () => {
-    const { error, errorInfo, errorId } = this.state;
+    const {
+      error,
+      errorInfo,
+      errorId
+    } = this.state;
     const errorText = `
 Error ID: ${errorId}
 Timestamp: ${new Date().toISOString()}
@@ -177,7 +167,6 @@ Message: ${error?.message}
 Stack: ${error?.stack}
 Component Stack: ${errorInfo?.componentStack}
 `;
-
     try {
       await navigator.clipboard.writeText(errorText);
       alert('Error details copied to clipboard');
@@ -192,19 +181,19 @@ Component Stack: ${errorInfo?.componentStack}
       alert('Error details copied to clipboard');
     }
   };
-
   render() {
     if (this.state.hasError) {
       // Custom fallback UI
       if (this.props.fallback) {
         return this.props.fallback;
       }
-
-      const { error, errorInfo, errorId } = this.state;
+      const {
+        error,
+        errorInfo,
+        errorId
+      } = this.state;
       const isDevelopment = import.meta.env.DEV;
-
-      return (
-        <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
+      return <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
           <Card className='w-full max-w-2xl'>
             <CardHeader className='text-center'>
               <div className='mx-auto mb-4 w-16 h-16 bg-red-100 rounded-full flex items-center justify-center'>
@@ -212,9 +201,7 @@ Component Stack: ${errorInfo?.componentStack}
 
                 <Warning className='w-8 h-8 text-red-600' />
               </div>
-              <CardTitle
-
-className='text-2xl font-bold text-gray-900'>
+              <CardTitle className='text-2xl font-bold text-gray-900'>
                 Something went wrong
               </CardTitle>
               <CardDescription className='text-gray-600'>
@@ -228,9 +215,7 @@ className='text-2xl font-bold text-gray-900'>
 
 
                 <AlertTitle>Error Information</AlertTitle>
-                <AlertDescription
-
->
+                <AlertDescription>
                   <div className='mt-2 space-y-2'>
                     <p>
                       <strong>Error ID:</strong> {errorId}
@@ -238,11 +223,9 @@ className='text-2xl font-bold text-gray-900'>
                     <p>
                       <strong>Time:</strong> {new Date().toLocaleString()}
                     </p>
-                    {error?.message && (
-                      <p>
+                    {error?.message && <p>
                         <strong>Message:</strong> {error.message}
-                      </p>
-                    )}
+                      </p>}
                   </div>
                 </AlertDescription>
               </Alert>
@@ -255,69 +238,45 @@ className='text-2xl font-bold text-gray-900'>
                   Try Again
                 </Button>
 
-                <Button
-
-variant='outline'
-                  onClick={this.handleReload}
-                  className='flex items-center gap-2'
-                >
+                <Button variant='outline' onClick={this.handleReload} className='flex items-center gap-2'>
 
 
                   <Refresh className='w-4 h-4' />
                   Reload Page
                 </Button>
 
-                <Button
-
-variant='outline'
-                  onClick={this.handleGoHome}
-                  className='flex items-center gap-2'
-                >
+                <Button variant='outline' onClick={this.handleGoHome} className='flex items-center gap-2'>
                   <Home className='w-4 h-4' />
                   Go Home
                 </Button>
 
-                {isDevelopment && (
-                  <Button
-                    variant='outline'
-                    onClick={this.copyErrorToClipboard}
-                    className='flex items-center gap-2'
-                  >
+                {isDevelopment && <Button variant='outline' onClick={this.copyErrorToClipboard} className='flex items-center gap-2'>
                     <BugReport className='w-4 h-4' />
                     Copy Error Details
-                  </Button>
-                )}
+                  </Button>}
               </div>
 
-              {isDevelopment && this.props.showErrorDetails && (
-                <details className='mt-6'>
+              {isDevelopment && this.props.showErrorDetails && <details className='mt-6'>
 
 
                   <summary className='cursor-pointer font-medium text-gray-700 hover:text-gray-900'>
                     🔍 Technical Details (Development Only)
                   </summary>
-                  <div
-
-className='mt-4 p-4 bg-gray-100 rounded-lg overflow-auto'>
+                  <div className='mt-4 p-4 bg-gray-100 rounded-lg overflow-auto'>
 
 
                     <h4 className='font-semibold mb-2'>Error Stack:</h4>
-                    <pre
-
-className='text-sm text-red-600 whitespace-pre-wrap mb-4'>
+                    <pre className='text-sm text-red-600 whitespace-pre-wrap mb-4'>
                       {error?.stack}
                     </pre>
 
 
                     <h4 className='font-semibold mb-2'>Component Stack:</h4>
-                    <pre
-
-className='text-sm text-blue-600 whitespace-pre-wrap'>
+                    <pre className='text-sm text-blue-600 whitespace-pre-wrap'>
                       {errorInfo?.componentStack}
                     </pre>
                   </div>
-                </details>
-              )}
+                </details>}
 
               <div className='text-center text-sm text-gray-500'>
                 <p>
@@ -327,10 +286,8 @@ className='text-sm text-blue-600 whitespace-pre-wrap'>
               </div>
             </CardContent>
           </Card>
-        </div>
-      );
+        </div>;
     }
-
     return this.props.children;
   }
 }
@@ -346,23 +303,17 @@ export const useErrorHandler = () => {
     // You can add custom error handling logic here
     // such as sending to analytics, showing toast notifications, etc.
   }, []);
-
-  return { handleError };
+  return {
+    handleError
+  };
 };
 
 // Higher-order component for wrapping any component with error boundary
-export const withErrorBoundary = <P extends object>(
-  Component: React.ComponentType<P>,
-  errorBoundaryProps?: Omit<Props, 'children'>
-) => {
-  const WrappedComponent = (props: P) => (
-    <ErrorBoundary {...errorBoundaryProps}>
+export const withErrorBoundary = <P extends object,>(Component: React.ComponentType<P>, errorBoundaryProps?: Omit<Props, 'children'>) => {
+  const WrappedComponent = (props: P) => <ErrorBoundary {...errorBoundaryProps}>
       <Component {...props} />
-    </ErrorBoundary>
-  );
-
+    </ErrorBoundary>;
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
-
   return WrappedComponent;
 };
 
@@ -374,89 +325,64 @@ export class AsyncErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: '',
+      errorId: ''
     };
   }
-
   componentDidMount() {
     window.addEventListener('unhandledrejection', this.handleUnhandledRejection);
   }
-
   componentWillUnmount() {
     window.removeEventListener('unhandledrejection', this.handleUnhandledRejection);
   }
-
   private resetErrorBoundary = () => {
     this.setState({
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: '',
+      errorId: ''
     });
   };
-
   handleUnhandledRejection = (event: PromiseRejectionEvent) => {
     console.error('🚨 Unhandled Promise Rejection:', event.reason);
 
     // Create a synthetic error for promise rejections
     const error = new Error(`Unhandled Promise Rejection: ${event.reason}`);
     const errorInfo: ErrorInfo = {
-      componentStack: 'Promise rejection (no component stack available)',
+      componentStack: 'Promise rejection (no component stack available)'
     };
-
     this.setState({
       hasError: true,
       error,
       errorInfo,
-      errorId: `async-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      errorId: `async-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     });
 
     // Prevent the default browser behavior
     event.preventDefault();
   };
-
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
       }
-
-      return (
-        <div
-          className='error-boundary-fallback'
-          style={{
-            padding: '2rem',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            backgroundColor: '#f8f9fa',
-            textAlign: 'center',
-          }}
-        >
+      return <div className="error-boundary-fallback p-8 text-center">
 
 
           <h2>Something went wrong</h2>
-          <p
-
->An error occurred while rendering this component.</p>
-          <button
-            onClick={this.resetErrorBoundary}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-          >
+          <p>An error occurred while rendering this component.</p>
+          <button onClick={this.resetErrorBoundary} style={{
+          padding: '0.5rem 1rem',
+          backgroundColor: '#007bff',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer'
+        }}>
             Try Again
           </button>
-        </div>
-      );
+        </div>;
     }
-
     return this.props.children;
   }
 }
-
 export default ErrorBoundary;

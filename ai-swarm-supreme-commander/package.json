@@ -5,6 +5,7 @@
   "main": "dist/supreme-commander.js",
   "scripts": {
     "start": "node dist/supreme-commander.js",
+    "dev": "node dist/supreme-commander.js",
     "build": "tsc"
   },
   "dependencies": {

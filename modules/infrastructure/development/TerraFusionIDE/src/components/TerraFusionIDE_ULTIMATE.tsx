@@ -16,7 +16,7 @@ import { Terminal,
   Shield,
   Code,
   Package
- } from '@mui/icons-material';
+ } from 'lucide-react';
 
 interface Panel {
   id: string;
@@ -96,7 +96,8 @@ const TerraFusionIDE_ULTIMATE: React.FC = () => {
       title: 'AI Assistant',
       icon: <Bot className="w-4 h-4" />,
       component: (
-        <div className="h-full flex flex-col p-4 space-y-4"><>
+        <div className="h-full flex flex-col p-4 space-y-4">
+<>
 
           <div className="text-lg font-semibold text-white mb-4">🤖 Terrafusion AI Assistant</div>
           <div
@@ -128,7 +129,8 @@ className="flex space-x-2">
       title: 'Terminal',
       icon: <Terminal className="w-4 h-4" />,
       component: (
-        <div className="h-full flex flex-col p-4"><>
+        <div className="h-full flex flex-col p-4">
+<>
 
           <div className="text-lg font-semibold text-white mb-4">💻 Development Terminal</div>
           <div
@@ -148,7 +150,8 @@ className="bg-black p-4 rounded flex-1 overflow-y-auto font-mono text-sm">
                   (e.target as HTMLInputElement).value = '';
                 }
               }}
-            /><>
+            />
+<>
 
             <button 
               onClick={() => executeTerminalCommand('npm run dev')}
@@ -174,7 +177,8 @@ className="bg-black p-4 rounded flex-1 overflow-y-auto font-mono text-sm">
       title: 'Database',
       icon: <Database className="w-4 h-4" />,
       component: (
-        <div className="h-full flex flex-col p-4 space-y-4"><>
+        <div className="h-full flex flex-col p-4 space-y-4">
+<>
 
           <div className="text-lg font-semibold text-white mb-4">🗄️ Database Management</div>
           <div
@@ -211,12 +215,14 @@ className="flex space-x-2">
       title: 'Geospatial',
       icon: <Map className="w-4 h-4" />,
       component: (
-        <div className="h-full flex flex-col p-4 space-y-4"><>
+        <div className="h-full flex flex-col p-4 space-y-4">
+<>
 
           <div className="text-lg font-semibold text-white mb-4">🗺️ Geospatial Tools (LeafScope)</div>
           <div
 </>
-className="grid grid-cols-2 gap-4"><>
+className="grid grid-cols-2 gap-4">
+<>
 
             <button 
               onClick={() => loadGeospatialData()}
@@ -236,7 +242,8 @@ className="grid grid-cols-2 gap-4"><>
           <div className="bg-gray-800 p-4 rounded flex-1 overflow-y-auto">
             <div className="text-gray-300 text-sm">
               {geospatialData.length > 0 ? (
-                <div><>
+                <div>
+<>
 
                   <div className="font-semibold mb-2">Geospatial Data Loaded:</div>
                   <div
@@ -263,12 +270,14 @@ className="text-xs">
       title: 'Plugin Dev',
       icon: <Package className="w-4 h-4" />,
       component: (
-        <div className="h-full flex flex-col p-4 space-y-4"><>
+        <div className="h-full flex flex-col p-4 space-y-4">
+<>
 
           <div className="text-lg font-semibold text-white mb-4">🔌 Plugin Development</div>
           <div
 </>
-className="grid grid-cols-2 gap-4"><>
+className="grid grid-cols-2 gap-4">
+<>
 
             <button 
               onClick={() => createPluginTemplate()}
@@ -286,22 +295,26 @@ className="grid grid-cols-2 gap-4"><>
             </button>
           </div>
           <div className="bg-gray-800 p-4 rounded flex-1 overflow-y-auto">
-            <div className="text-gray-300 text-sm"><>
+            <div className="text-gray-300 text-sm">
+<>
 
               <div className="font-semibold mb-2">Available Plugin Templates:</div>
               <div
 </>
-className="space-y-2 text-xs"><>
+className="space-y-2 text-xs">
+<>
 
                 <div>🏗️ CostForge AI Pro - AI Property Valuation</div>
                 <div
 </>
-</>>🤖 TerraFlow Pro - Workflow Automation</div><>
+</>>🤖 TerraFlow Pro - Workflow Automation</div>
+<>
 
                 <div>💰 TerraLevy Advanced - Financial Management</div>
                 <div
 </>
-</>>🏠 Property Comparison Engine - Market Analysis</div><>
+</>>🏠 Property Comparison Engine - Market Analysis</div>
+<>
 
                 <div>📝 Document Processing AI - Automation</div>
                 <div
@@ -319,34 +332,39 @@ className="space-y-2 text-xs"><>
       title: 'Analytics',
       icon: <BarChart3 className="w-4 h-4" />,
       component: (
-        <div className="h-full flex flex-col p-4 space-y-4"><>
+        <div className="h-full flex flex-col p-4 space-y-4">
+<>
 
           <div className="text-lg font-semibold text-white mb-4">📊 Analytics Dashboard</div>
           <div
 </>
 className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-800 p-4 rounded text-center"><>
+            <div className="bg-gray-800 p-4 rounded text-center">
+<>
 
               <div className="text-2xl font-bold text-green-400">18</div>
               <div
 </>
 className="text-gray-400 text-sm">Active Modules</div>
             </div>
-            <div className="bg-gray-800 p-4 rounded text-center"><>
+            <div className="bg-gray-800 p-4 rounded text-center">
+<>
 
               <div className="text-2xl font-bold text-blue-400">1,008</div>
               <div
 </>
 className="text-gray-400 text-sm">AI Agents</div>
             </div>
-            <div className="bg-gray-800 p-4 rounded text-center"><>
+            <div className="bg-gray-800 p-4 rounded text-center">
+<>
 
               <div className="text-2xl font-bold text-purple-400">94.7%</div>
               <div
 </>
 className="text-gray-400 text-sm">Test Coverage</div>
             </div>
-            <div className="bg-gray-800 p-4 rounded text-center"><>
+            <div className="bg-gray-800 p-4 rounded text-center">
+<>
 
               <div className="text-2xl font-bold text-yellow-400">379M×</div>
               <div
@@ -355,34 +373,39 @@ className="text-gray-400 text-sm">Performance</div>
             </div>
           </div>
           <div className="bg-gray-800 p-4 rounded flex-1">
-            <div className="text-gray-300 text-sm"><>
+            <div className="text-gray-300 text-sm">
+<>
 
               <div className="font-semibold mb-2">System Status:</div>
               <div
 </>
 className="space-y-1 text-xs">
-                <div className="flex items-center space-x-2"><>
+                <div className="flex items-center space-x-2">
+<>
 
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <span
 </>
 </>>TerraFusionIDE - Operational</span>
                 </div>
-                <div className="flex items-center space-x-2"><>
+                <div className="flex items-center space-x-2">
+<>
 
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <span
 </>
 </>>AI Swarm - 1,008 agents active</span>
                 </div>
-                <div className="flex items-center space-x-2"><>
+                <div className="flex items-center space-x-2">
+<>
 
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <span
 </>
 </>>Database - Connected</span>
                 </div>
-                <div className="flex items-center space-x-2"><>
+                <div className="flex items-center space-x-2">
+<>
 
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <span
@@ -479,7 +502,8 @@ className="space-y-1 text-xs">
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4"><>
+          <div className="flex items-center space-x-4">
+<>
 
             <div className="text-2xl font-bold text-blue-400">🚀 Terrafusion IDE ULTIMATE</div>
             <div
@@ -487,14 +511,16 @@ className="space-y-1 text-xs">
 className="text-gray-400">Your Complete Government Technology Development Universe</div>
           </div>
           <div className="flex items-center space-x-2">
-            <button className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm"><>
+            <button className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">
+<>
 
               <Play className="w-4 h-4 inline mr-1" />
               Run All
             </button>
             <button
 </>
-className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"><>
+className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm">
+<>
 
               <Save className="w-4 h-4 inline mr-1" />
               Save All
@@ -530,20 +556,23 @@ className="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
             ))}
           </div>
           
-          <div className="mt-8 pt-4 border-t border-gray-700"><>
+          <div className="mt-8 pt-4 border-t border-gray-700">
+<>
 
             <div className="text-sm text-gray-400 mb-2">Quick Actions</div>
             <div
 </>
 className="space-y-2">
-              <button className="w-full bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm"><>
+              <button className="w-full bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm">
+<>
 
                 <GitBranch className="w-4 h-4 inline mr-2" />
                 Git Operations
               </button>
               <button
 </>
-className="w-full bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm"><>
+className="w-full bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm">
+<>
 
                 <Shield className="w-4 h-4 inline mr-2" />
                 Compliance Check
@@ -567,19 +596,22 @@ className="w-full bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded text-sm">
       {/* Status Bar */}
       <div className="bg-gray-800 border-t border-gray-700 p-2">
         <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center space-x-4"><>
+          <div className="flex items-center space-x-4">
+<>
 
             <span className="text-green-400">● Terrafusion IDE Ready</span>
             <span
 </>
-className="text-blue-400">● AI Swarm: 1,008 agents</span><>
+className="text-blue-400">● AI Swarm: 1,008 agents</span>
+<>
 
             <span className="text-purple-400">● Database: Connected</span>
             <span
 </>
 className="text-yellow-400">● Compliance: FISMA Ready</span>
           </div>
-          <div className="flex items-center space-x-4"><>
+          <div className="flex items-center space-x-4">
+<>
 
             <span>TypeScript</span>
             <span

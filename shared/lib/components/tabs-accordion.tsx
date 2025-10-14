@@ -83,7 +83,6 @@ export interface TabsContextValue {
   variant: TabsVariant;
   disabled?: boolean;
 }
-
 export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Current active tab (controlled) */
   value?: string;
@@ -100,11 +99,9 @@ export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Tab content */
   children: React.ReactNode;
 }
-
 export interface TabListProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
-
 export interface TabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Tab value (unique identifier) */
   value: string;
@@ -115,7 +112,6 @@ export interface TabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   /** Tab content */
   children: React.ReactNode;
 }
-
 export interface TabPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Panel value (matches tab value) */
   value: string;
@@ -130,7 +126,6 @@ export interface AccordionContextValue {
   onValueChange?: (value: string | string[]) => void;
   disabled?: boolean;
 }
-
 export interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Accordion type (single or multiple) */
   type?: AccordionType;
@@ -145,7 +140,6 @@ export interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Accordion content */
   children: React.ReactNode;
 }
-
 export interface AccordionItemProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Item value (unique identifier) */
   value: string;
@@ -154,12 +148,10 @@ export interface AccordionItemProps extends React.HTMLAttributes<HTMLDivElement>
   /** Item content */
   children: React.ReactNode;
 }
-
 export interface AccordionTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Trigger content */
   children: React.ReactNode;
 }
-
 export interface AccordionContentProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Content */
   children: React.ReactNode;
@@ -260,8 +252,10 @@ if (typeof document !== 'undefined') {
 
 const TabsContext = React.createContext<TabsContextValue | null>(null);
 const AccordionContext = React.createContext<AccordionContextValue | null>(null);
-const AccordionItemContext = React.createContext<{ value: string; disabled?: boolean } | null>(null);
-
+const AccordionItemContext = React.createContext<{
+  value: string;
+  disabled?: boolean;
+} | null>(null);
 const useTabsContext = () => {
   const context = React.useContext(TabsContext);
   if (!context) {
@@ -269,7 +263,6 @@ const useTabsContext = () => {
   }
   return context;
 };
-
 const useAccordionContext = () => {
   const context = React.useContext(AccordionContext);
   if (!context) {
@@ -277,7 +270,6 @@ const useAccordionContext = () => {
   }
   return context;
 };
-
 const useAccordionItemContext = () => {
   const context = React.useContext(AccordionItemContext);
   if (!context) {
@@ -306,39 +298,29 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   const [internalValue, setInternalValue] = React.useState<string>(defaultValue || '');
   const value = controlledValue !== undefined ? controlledValue : internalValue;
-
   const handleValueChange = React.useCallback((newValue: string) => {
     if (disabled) return;
     setInternalValue(newValue);
     onValueChange?.(newValue);
   }, [disabled, onValueChange]);
-
   const contextValue: TabsContextValue = {
     value,
     onValueChange: handleValueChange,
     orientation,
     variant,
-    disabled,
+    disabled
   };
-
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: orientation === 'horizontal' ? 'column' : 'row',
     gap: '1rem',
-    width: '100%',
+    width: '100%'
   };
-
-  return (
-    <TabsContext.Provider value={contextValue}>
-      <div
-        className={`terrafusion-tabs terrafusion-tabs-${orientation} terrafusion-tabs-${variant} ${className}`}
-        style={containerStyle}
-        {...props}
-      >
+  return <TabsContext.Provider value={contextValue}>
+      <div className={`terrafusion-tabs terrafusion-tabs-${orientation} terrafusion-tabs-${variant} ${className}`} style={containerStyle} {...props}>
         {children}
       </div>
-    </TabsContext.Provider>
-  );
+    </TabsContext.Provider>;
 };
 
 /**
@@ -349,17 +331,16 @@ export const TabList: React.FC<TabListProps> = ({
   className = '',
   ...props
 }) => {
-  const { orientation, variant } = useTabsContext();
+  const {
+    orientation,
+    variant
+  } = useTabsContext();
   const tabListRef = React.useRef<HTMLDivElement>(null);
-
   const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!tabListRef.current) return;
-
     const tabs = Array.from(tabListRef.current.querySelectorAll('[role="tab"]:not([disabled])')) as HTMLButtonElement[];
     const currentIndex = tabs.findIndex(tab => tab === document.activeElement);
-
     let nextIndex = currentIndex;
-
     switch (e.key) {
       case 'ArrowLeft':
         if (orientation === 'horizontal') {
@@ -394,13 +375,11 @@ export const TabList: React.FC<TabListProps> = ({
         nextIndex = tabs.length - 1;
         break;
     }
-
     if (nextIndex !== currentIndex && tabs[nextIndex]) {
       tabs[nextIndex].focus();
       tabs[nextIndex].click();
     }
   }, [orientation]);
-
   const getTabListStyles = (): React.CSSProperties => {
     const base: React.CSSProperties = {
       display: 'flex',
@@ -411,31 +390,18 @@ export const TabList: React.FC<TabListProps> = ({
       padding: variant === 'default' ? '0.25rem' : '0',
       backgroundColor: variant === 'default' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
       borderBottom: variant === 'underline' && orientation === 'horizontal' ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
-      borderRight: variant === 'underline' && orientation === 'vertical' ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+      borderRight: variant === 'underline' && orientation === 'vertical' ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
     };
-
     if (variant === 'cards') {
       base.gap = '0.5rem';
       base.backgroundColor = 'transparent';
       base.padding = '0';
     }
-
     return base;
   };
-
-  return (
-    <div
-      ref={tabListRef}
-      role="tablist"
-      aria-orientation={orientation}
-      className={`terrafusion-tab-list ${className}`}
-      style={getTabListStyles()}
-      onKeyDown={handleKeyDown}
-      {...props}
-    >
+  return <div ref={tabListRef} role="tablist" aria-orientation={orientation} className={`terrafusion-tab-list ${className}`} style={getTabListStyles()} onKeyDown={handleKeyDown} {...props}>
       {children}
-    </div>
-  );
+    </div>;
 };
 
 /**
@@ -450,16 +416,19 @@ export const Tab: React.FC<TabProps> = ({
   className = '',
   ...props
 }) => {
-  const { value: activeValue, onValueChange, variant, disabled: contextDisabled } = useTabsContext();
+  const {
+    value: activeValue,
+    onValueChange,
+    variant,
+    disabled: contextDisabled
+  } = useTabsContext();
   const isActive = value === activeValue;
   const isDisabled = disabled || contextDisabled;
-
   const handleClick = () => {
     if (!isDisabled) {
       onValueChange?.(value);
     }
   };
-
   const getTabStyles = (): React.CSSProperties => {
     const base: React.CSSProperties = {
       padding: '0.75rem 1.25rem',
@@ -475,9 +444,8 @@ export const Tab: React.FC<TabProps> = ({
       transition: 'all 0.2s ease',
       whiteSpace: 'nowrap',
       outline: 'none',
-      fontSize: '0.875rem',
+      fontSize: '0.875rem'
     };
-
     if (variant === 'default') {
       base.backgroundColor = isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent';
       base.borderRadius = '0.375rem';
@@ -497,44 +465,17 @@ export const Tab: React.FC<TabProps> = ({
       base.borderRadius = '0.5rem';
       base.padding = '1rem';
     }
-
     return base;
   };
-
-  return (
-    <button
-      role="tab"
-      id={`tab-${value}`}
-      aria-controls={`panel-${value}`}
-      aria-selected={isActive}
-      tabIndex={isActive ? 0 : -1}
-      disabled={isDisabled}
-      className={`terrafusion-tab ${isActive ? 'terrafusion-tab-active' : ''} ${className}`}
-      style={getTabStyles()}
-      onClick={handleClick}
-      {...props}
-    >
+  return <button role="tab" id={`tab-${value}`} aria-controls={`panel-${value}`} aria-selected={isActive} tabIndex={isActive ? 0 : -1} disabled={isDisabled} className={`terrafusion-tab ${isActive ? 'terrafusion-tab-active' : ''} ${className}`} style={getTabStyles()} onClick={handleClick} {...props}>
       {icon && <span className="terrafusion-tab-icon">{icon}</span>}
       <span className="terrafusion-tab-label">{children}</span>
-      {badge !== undefined && (
-        <span
-          className="terrafusion-tab-badge"
-          style={{
-            backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
-            color: '#ffffff',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            padding: '0.25rem 0.5rem',
-            borderRadius: '9999px',
-            minWidth: '1.25rem',
-            textAlign: 'center',
-          }}
-        >
+      {badge !== undefined && <span className="terrafusion-tab-badge font-semibold text-center" style={{
+      backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'
+    }}>
           {badge}
-        </span>
-      )}
-    </button>
-  );
+        </span>}
+    </button>;
 };
 
 /**
@@ -546,29 +487,18 @@ export const TabPanel: React.FC<TabPanelProps> = ({
   className = '',
   ...props
 }) => {
-  const { value: activeValue } = useTabsContext();
+  const {
+    value: activeValue
+  } = useTabsContext();
   const isActive = value === activeValue;
-
   if (!isActive) return null;
-
   const panelStyle: React.CSSProperties = {
     outline: 'none',
-    animation: 'tabSlideIn 0.2s ease-out',
+    animation: 'tabSlideIn 0.2s ease-out'
   };
-
-  return (
-    <div
-      role="tabpanel"
-      id={`panel-${value}`}
-      aria-labelledby={`tab-${value}`}
-      tabIndex={0}
-      className={`terrafusion-tab-panel ${className}`}
-      style={panelStyle}
-      {...props}
-    >
+  return <div role="tabpanel" id={`panel-${value}`} aria-labelledby={`tab-${value}`} tabIndex={0} className={`terrafusion-tab-panel ${className}`} style={panelStyle} {...props}>
       {children}
-    </div>
-  );
+    </div>;
 };
 
 // ============================================================================
@@ -588,55 +518,37 @@ export const Accordion: React.FC<AccordionProps> = ({
   className = '',
   ...props
 }) => {
-  const [internalValue, setInternalValue] = React.useState<string | string[]>(
-    defaultValue || (type === 'multiple' ? [] : '')
-  );
-
+  const [internalValue, setInternalValue] = React.useState<string | string[]>(defaultValue || (type === 'multiple' ? [] : ''));
   const value = controlledValue !== undefined ? controlledValue : internalValue;
-
   const handleValueChange = React.useCallback((itemValue: string) => {
     if (disabled) return;
-
     let newValue: string | string[];
-
     if (type === 'single') {
       newValue = value === itemValue ? '' : itemValue;
     } else {
       const currentArray = Array.isArray(value) ? value : [];
-      newValue = currentArray.includes(itemValue)
-        ? currentArray.filter(v => v !== itemValue)
-        : [...currentArray, itemValue];
+      newValue = currentArray.includes(itemValue) ? currentArray.filter(v => v !== itemValue) : [...currentArray, itemValue];
     }
-
     setInternalValue(newValue);
     onValueChange?.(newValue);
   }, [type, value, disabled, onValueChange]);
-
   const contextValue: AccordionContextValue = {
     type,
     value,
     onValueChange: handleValueChange,
-    disabled,
+    disabled
   };
-
   const containerStyle: React.CSSProperties = {
     width: '100%',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     borderRadius: '0.5rem',
-    overflow: 'hidden',
+    overflow: 'hidden'
   };
-
-  return (
-    <AccordionContext.Provider value={contextValue}>
-      <div
-        className={`terrafusion-accordion ${className}`}
-        style={containerStyle}
-        {...props}
-      >
+  return <AccordionContext.Provider value={contextValue}>
+      <div className={`terrafusion-accordion ${className}`} style={containerStyle} {...props}>
         {children}
       </div>
-    </AccordionContext.Provider>
-  );
+    </AccordionContext.Provider>;
 };
 
 /**
@@ -649,24 +561,21 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   className = '',
   ...props
 }) => {
-  const { disabled: contextDisabled } = useAccordionContext();
+  const {
+    disabled: contextDisabled
+  } = useAccordionContext();
   const isDisabled = disabled || contextDisabled;
-
   const itemStyle: React.CSSProperties = {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
   };
-
-  return (
-    <AccordionItemContext.Provider value={{ value, disabled: isDisabled }}>
-      <div
-        className={`terrafusion-accordion-item ${className}`}
-        style={itemStyle}
-        {...props}
-      >
+  return <AccordionItemContext.Provider value={{
+    value,
+    disabled: isDisabled
+  }}>
+      <div className={`terrafusion-accordion-item ${className}`} style={itemStyle} {...props}>
         {children}
       </div>
-    </AccordionItemContext.Provider>
-  );
+    </AccordionItemContext.Provider>;
 };
 
 /**
@@ -677,26 +586,27 @@ export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({
   className = '',
   ...props
 }) => {
-  const { type, value, onValueChange } = useAccordionContext();
-  const { value: itemValue, disabled } = useAccordionItemContext();
-
-  const isExpanded = type === 'single' 
-    ? value === itemValue 
-    : Array.isArray(value) && value.includes(itemValue);
-
+  const {
+    type,
+    value,
+    onValueChange
+  } = useAccordionContext();
+  const {
+    value: itemValue,
+    disabled
+  } = useAccordionItemContext();
+  const isExpanded = type === 'single' ? value === itemValue : Array.isArray(value) && value.includes(itemValue);
   const handleClick = () => {
     if (!disabled) {
       onValueChange?.(itemValue);
     }
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       handleClick();
     }
   };
-
   const triggerStyle: React.CSSProperties = {
     width: '100%',
     padding: '1rem 1.5rem',
@@ -712,31 +622,18 @@ export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({
     fontWeight: 500,
     textAlign: 'left',
     outline: 'none',
-    transition: 'all 0.2s ease',
+    transition: 'all 0.2s ease'
   };
-
   const chevronStyle: React.CSSProperties = {
     fontSize: '1rem',
     transition: 'transform 0.2s ease',
     transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: 'rgba(255, 255, 255, 0.6)'
   };
-
-  return (
-    <button
-      className={`terrafusion-accordion-trigger ${className}`}
-      style={triggerStyle}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      aria-expanded={isExpanded}
-      aria-controls={`accordion-content-${itemValue}`}
-      disabled={disabled}
-      {...props}
-    >
+  return <button className={`terrafusion-accordion-trigger ${className}`} style={triggerStyle} onClick={handleClick} onKeyDown={handleKeyDown} aria-expanded={isExpanded} aria-controls={`accordion-content-${itemValue}`} disabled={disabled} {...props}>
       <span>{children}</span>
       <span style={chevronStyle}>▼</span>
-    </button>
-  );
+    </button>;
 };
 
 /**
@@ -747,14 +644,15 @@ export const AccordionContent: React.FC<AccordionContentProps> = ({
   className = '',
   ...props
 }) => {
-  const { type, value } = useAccordionContext();
-  const { value: itemValue } = useAccordionItemContext();
+  const {
+    type,
+    value
+  } = useAccordionContext();
+  const {
+    value: itemValue
+  } = useAccordionItemContext();
   const contentRef = React.useRef<HTMLDivElement>(null);
-
-  const isExpanded = type === 'single' 
-    ? value === itemValue 
-    : Array.isArray(value) && value.includes(itemValue);
-
+  const isExpanded = type === 'single' ? value === itemValue : Array.isArray(value) && value.includes(itemValue);
   React.useEffect(() => {
     if (contentRef.current) {
       const content = contentRef.current;
@@ -767,37 +665,24 @@ export const AccordionContent: React.FC<AccordionContentProps> = ({
       }
     }
   }, [isExpanded]);
-
   const contentStyle: React.CSSProperties = {
     height: isExpanded ? 'auto' : '0px',
     opacity: isExpanded ? 1 : 0,
     overflow: 'hidden',
     transition: 'all 0.3s ease',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)'
   };
-
   const innerStyle: React.CSSProperties = {
     padding: isExpanded ? '1rem 1.5rem' : '0 1.5rem',
     color: 'rgba(255, 255, 255, 0.9)',
     fontSize: '0.875rem',
-    lineHeight: 1.6,
+    lineHeight: 1.6
   };
-
-  return (
-    <div
-      ref={contentRef}
-      id={`accordion-content-${itemValue}`}
-      role="region"
-      aria-labelledby={`accordion-trigger-${itemValue}`}
-      className={`terrafusion-accordion-content ${className}`}
-      style={contentStyle}
-      {...props}
-    >
+  return <div ref={contentRef} id={`accordion-content-${itemValue}`} role="region" aria-labelledby={`accordion-trigger-${itemValue}`} className={`terrafusion-accordion-content ${className}`} style={contentStyle} {...props}>
       <div style={innerStyle}>
         {children}
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // ============================================================================
@@ -808,13 +693,12 @@ export const AccordionContent: React.FC<AccordionContentProps> = ({
 const TabsCompound = Object.assign(Tabs, {
   List: TabList,
   Tab: Tab,
-  Panel: TabPanel,
+  Panel: TabPanel
 });
-
 const AccordionCompound = Object.assign(Accordion, {
   Item: AccordionItem,
   Trigger: AccordionTrigger,
-  Content: AccordionContent,
+  Content: AccordionContent
 });
 
 // ============================================================================
@@ -822,19 +706,10 @@ const AccordionCompound = Object.assign(Accordion, {
 // ============================================================================
 
 export {
-  // Individual components
-  TabList,
-  Tab,
-  TabPanel,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-  
-  // Compound components
-  TabsCompound as TabsComponent,
-  AccordionCompound as AccordionComponent,
-};
-
+// Individual components
+TabList, Tab, TabPanel, AccordionItem, AccordionTrigger, AccordionContent,
+// Compound components
+TabsCompound as TabsComponent, AccordionCompound as AccordionComponent };
 export default {
   Tabs,
   TabList,
@@ -843,5 +718,5 @@ export default {
   Accordion,
   AccordionItem,
   AccordionTrigger,
-  AccordionContent,
+  AccordionContent
 };

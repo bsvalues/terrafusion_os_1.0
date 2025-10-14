@@ -51,16 +51,7 @@
  * @since Day 17
  */
 
-import React, { 
-  useEffect, 
-  useRef, 
-  useState, 
-  useCallback, 
-  createContext, 
-  useContext,
-  CSSProperties,
-  ReactNode
-} from 'react';
+import React, { useEffect, useRef, useState, useCallback, createContext, useContext, CSSProperties, ReactNode } from 'react';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -69,7 +60,6 @@ import React, {
 export type ModalSize = 'small' | 'medium' | 'large' | 'fullscreen';
 export type DrawerSide = 'left' | 'right' | 'top' | 'bottom';
 export type ModalAnimation = 'fade' | 'slide' | 'scale';
-
 export interface ModalProps {
   /** Whether modal is visible */
   isOpen: boolean;
@@ -100,24 +90,20 @@ export interface ModalProps {
   /** Disable focus trap */
   disableFocusTrap?: boolean;
 }
-
 export interface DialogProps extends Omit<ModalProps, 'size'> {
   /** Dialog type (affects styling) */
   type?: 'info' | 'warning' | 'error' | 'success';
 }
-
 export interface DrawerProps extends Omit<ModalProps, 'size' | 'animation'> {
   /** Which side drawer opens from */
   side?: DrawerSide;
   /** Drawer width (for left/right) or height (for top/bottom) */
   size?: string;
 }
-
 export interface SheetProps extends Omit<ModalProps, 'size' | 'animation'> {
   /** Sheet height */
   height?: string;
 }
-
 export interface ConfirmDialogOptions {
   title?: string;
   message: string;
@@ -141,10 +127,7 @@ const generateId = (): string => {
  * Get focusable elements within container
  */
 const getFocusableElements = (container: HTMLElement): HTMLElement[] => {
-  const selector = 
-    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), ' +
-    'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-  
+  const selector = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), ' + 'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
   return Array.from(container.querySelectorAll(selector));
 };
 
@@ -173,7 +156,7 @@ const getModalSize = (size: ModalSize): string => {
     small: '400px',
     medium: '600px',
     large: '900px',
-    fullscreen: '95vw',
+    fullscreen: '95vw'
   };
   return sizeMap[size];
 };
@@ -181,12 +164,36 @@ const getModalSize = (size: ModalSize): string => {
 /**
  * Get dialog type colors
  */
-const getDialogColors = (type: string): { border: string; icon: string; bg: string } => {
-  const colorMap: Record<string, { border: string; icon: string; bg: string }> = {
-    info: { border: '#0ea5e9', icon: 'ℹ️', bg: 'rgba(14, 165, 233, 0.1)' },
-    warning: { border: '#f59e0b', icon: '⚠️', bg: 'rgba(245, 158, 11, 0.1)' },
-    error: { border: '#ef4444', icon: '❌', bg: 'rgba(239, 68, 68, 0.1)' },
-    success: { border: '#10b981', icon: '✅', bg: 'rgba(16, 185, 129, 0.1)' },
+const getDialogColors = (type: string): {
+  border: string;
+  icon: string;
+  bg: string;
+} => {
+  const colorMap: Record<string, {
+    border: string;
+    icon: string;
+    bg: string;
+  }> = {
+    info: {
+      border: '#0ea5e9',
+      icon: 'ℹ️',
+      bg: 'rgba(14, 165, 233, 0.1)'
+    },
+    warning: {
+      border: '#f59e0b',
+      icon: '⚠️',
+      bg: 'rgba(245, 158, 11, 0.1)'
+    },
+    error: {
+      border: '#ef4444',
+      icon: '❌',
+      bg: 'rgba(239, 68, 68, 0.1)'
+    },
+    success: {
+      border: '#10b981',
+      icon: '✅',
+      bg: 'rgba(16, 185, 129, 0.1)'
+    }
   };
   return colorMap[type] || colorMap.info;
 };
@@ -301,21 +308,19 @@ interface PortalProps {
   children: ReactNode;
   containerId?: string;
 }
-
-const Portal: React.FC<PortalProps> = ({ children, containerId = 'modal-root' }) => {
+const Portal: React.FC<PortalProps> = ({
+  children,
+  containerId = 'modal-root'
+}) => {
   const [container, setContainer] = useState<HTMLElement | null>(null);
-
   useEffect(() => {
     let modalRoot = document.getElementById(containerId);
-    
     if (!modalRoot) {
       modalRoot = document.createElement('div');
       modalRoot.id = containerId;
       document.body.appendChild(modalRoot);
     }
-    
     setContainer(modalRoot);
-    
     return () => {
       // Clean up empty portal containers
       if (modalRoot && modalRoot.children.length === 0 && modalRoot.parentNode) {
@@ -323,9 +328,7 @@ const Portal: React.FC<PortalProps> = ({ children, containerId = 'modal-root' })
       }
     };
   }, [containerId]);
-
   if (!container) return null;
-  
   return ReactDOM.createPortal(children, container);
 };
 
@@ -335,19 +338,16 @@ const ReactDOM = {
     // In real implementation, this uses React's portal API
     // For this utility library, we'll use a ref-based approach
     const portalRef = useRef<HTMLDivElement>(null);
-    
     useEffect(() => {
       if (portalRef.current && container) {
         container.appendChild(portalRef.current);
       }
-      
       return () => {
         if (portalRef.current && container) {
           container.removeChild(portalRef.current);
         }
       };
     }, [container]);
-    
     return <div ref={portalRef}>{children}</div>;
   }
 };
@@ -360,8 +360,10 @@ interface BackdropProps {
   onClick?: () => void;
   zIndex?: number;
 }
-
-const Backdrop: React.FC<BackdropProps> = ({ onClick, zIndex = 9998 }) => {
+const Backdrop: React.FC<BackdropProps> = ({
+  onClick,
+  zIndex = 9998
+}) => {
   const style: CSSProperties = {
     position: 'fixed',
     top: 0,
@@ -372,9 +374,8 @@ const Backdrop: React.FC<BackdropProps> = ({ onClick, zIndex = 9998 }) => {
     backdropFilter: 'blur(8px)',
     WebkitBackdropFilter: 'blur(8px)',
     zIndex,
-    animation: 'backdropFadeIn 0.3s ease-out',
+    animation: 'backdropFadeIn 0.3s ease-out'
   };
-
   return <div style={style} onClick={onClick} aria-hidden="true" />;
 };
 
@@ -382,13 +383,8 @@ const Backdrop: React.FC<BackdropProps> = ({ onClick, zIndex = 9998 }) => {
 // FOCUS TRAP HOOK
 // ============================================================================
 
-const useFocusTrap = (
-  containerRef: React.RefObject<HTMLElement>,
-  isActive: boolean,
-  disabled: boolean = false
-) => {
+const useFocusTrap = (containerRef: React.RefObject<HTMLElement>, isActive: boolean, disabled: boolean = false) => {
   const lastFocusedElement = useRef<HTMLElement | null>(null);
-
   useEffect(() => {
     if (disabled || !isActive || !containerRef.current) return;
 
@@ -406,7 +402,6 @@ const useFocusTrap = (
     // Handle Tab key
     const handleTab = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return;
-
       if (e.shiftKey) {
         // Shift + Tab (backwards)
         if (document.activeElement === firstFocusable) {
@@ -421,12 +416,10 @@ const useFocusTrap = (
         }
       }
     };
-
     document.addEventListener('keydown', handleTab);
-
     return () => {
       document.removeEventListener('keydown', handleTab);
-      
+
       // Restore focus to previously focused element
       setTimeout(() => {
         lastFocusedElement.current?.focus();
@@ -457,7 +450,7 @@ export const Modal: React.FC<ModalProps> = ({
   animation = 'scale',
   zIndex = 9999,
   disableScrollLock = false,
-  disableFocusTrap = false,
+  disableFocusTrap = false
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const modalId = useRef(generateId()).current;
@@ -465,13 +458,11 @@ export const Modal: React.FC<ModalProps> = ({
   // ESC key handler
   useEffect(() => {
     if (!closeOnEscape || !isOpen) return;
-
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
       }
     };
-
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose, closeOnEscape]);
@@ -479,16 +470,13 @@ export const Modal: React.FC<ModalProps> = ({
   // Body scroll lock
   useEffect(() => {
     if (disableScrollLock || !isOpen) return;
-
     lockBodyScroll();
     return () => unlockBodyScroll();
   }, [isOpen, disableScrollLock]);
 
   // Focus trap
   useFocusTrap(modalRef, isOpen, disableFocusTrap);
-
   if (!isOpen) return null;
-
   const overlayStyle: CSSProperties = {
     position: 'fixed',
     top: 0,
@@ -499,15 +487,13 @@ export const Modal: React.FC<ModalProps> = ({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex,
-    padding: '1rem',
+    padding: '1rem'
   };
-
   const getAnimationName = (): string => {
     if (animation === 'fade') return 'modalFadeIn';
     if (animation === 'slide') return 'modalSlideUp';
     return 'modalScaleIn';
   };
-
   const modalStyle: CSSProperties = {
     backgroundColor: '#1a1a2e',
     border: '1px solid rgba(0, 210, 255, 0.3)',
@@ -520,25 +506,22 @@ export const Modal: React.FC<ModalProps> = ({
     flexDirection: 'column',
     animation: `${getAnimationName()} 0.3s ease-out`,
     position: 'relative',
-    overflow: 'hidden',
+    overflow: 'hidden'
   };
-
   const headerStyle: CSSProperties = {
     padding: '1.5rem',
     borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    flexShrink: 0,
+    flexShrink: 0
   };
-
   const titleStyle: CSSProperties = {
     fontSize: '1.5rem',
     fontWeight: 700,
     color: '#ffffff',
-    margin: 0,
+    margin: 0
   };
-
   const closeButtonStyle: CSSProperties = {
     background: 'transparent',
     border: 'none',
@@ -547,69 +530,44 @@ export const Modal: React.FC<ModalProps> = ({
     cursor: 'pointer',
     padding: '0.25rem',
     lineHeight: 1,
-    transition: 'color 0.2s',
+    transition: 'color 0.2s'
   };
-
   const contentStyle: CSSProperties = {
     padding: '1.5rem',
     flex: 1,
     overflowY: 'auto',
-    color: '#ffffff',
+    color: '#ffffff'
   };
-
   const footerStyle: CSSProperties = {
     padding: '1.5rem',
     borderTop: '1px solid rgba(255, 255, 255, 0.1)',
     display: 'flex',
     gap: '1rem',
     justifyContent: 'flex-end',
-    flexShrink: 0,
+    flexShrink: 0
   };
-
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (closeOnBackdrop && e.target === e.currentTarget) {
       onClose();
     }
   };
-
-  return (
-    <div style={overlayStyle} onClick={handleBackdropClick}>
+  return <div style={overlayStyle} onClick={handleBackdropClick}>
       <Backdrop onClick={closeOnBackdrop ? onClose : undefined} zIndex={zIndex - 1} />
-      <div
-        ref={modalRef}
-        style={modalStyle}
-        className={`terrafusion-modal ${className}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? `${modalId}-title` : undefined}
-      >
-        {(title || showCloseButton) && (
-          <div style={headerStyle}>
-            {title && (
-              <h2 id={`${modalId}-title`} style={titleStyle}>
+      <div ref={modalRef} style={modalStyle} className={`terrafusion-modal ${className}`} role="dialog" aria-modal="true" aria-labelledby={title ? `${modalId}-title` : undefined}>
+        {(title || showCloseButton) && <div style={headerStyle}>
+            {title && <h2 id={`${modalId}-title`} style={titleStyle}>
                 {title}
-              </h2>
-            )}
-            {showCloseButton && (
-              <button
-                style={closeButtonStyle}
-                onClick={onClose}
-                aria-label="Close modal"
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)')}
-              >
+              </h2>}
+            {showCloseButton && <button style={closeButtonStyle} onClick={onClose} aria-label="Close modal" onMouseEnter={e => e.currentTarget.style.color = '#ef4444'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}>
                 ×
-              </button>
-            )}
-          </div>
-        )}
+              </button>}
+          </div>}
 
         <div style={contentStyle}>{children}</div>
 
         {footer && <div style={footerStyle}>{footer}</div>}
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // ============================================================================
@@ -627,30 +585,24 @@ export const Dialog: React.FC<DialogProps> = ({
   ...modalProps
 }) => {
   const colors = getDialogColors(type);
-
   const dialogStyle: CSSProperties = {
-    textAlign: 'center',
+    textAlign: 'center'
   };
-
   const iconStyle: CSSProperties = {
     fontSize: '3rem',
-    marginBottom: '1rem',
+    marginBottom: '1rem'
   };
-
   const messageStyle: CSSProperties = {
     fontSize: '1rem',
     lineHeight: 1.6,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: 'rgba(255, 255, 255, 0.9)'
   };
-
-  return (
-    <Modal {...modalProps} title={title} size="small">
+  return <Modal {...modalProps} title={title} size="small">
       <div style={dialogStyle}>
         <div style={iconStyle}>{colors.icon}</div>
         <div style={messageStyle}>{children}</div>
       </div>
-    </Modal>
-  );
+    </Modal>;
 };
 
 // ============================================================================
@@ -675,7 +627,7 @@ export const Drawer: React.FC<DrawerProps> = ({
   className = '',
   zIndex = 9999,
   disableScrollLock = false,
-  disableFocusTrap = false,
+  disableFocusTrap = false
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
   const drawerId = useRef(generateId()).current;
@@ -683,13 +635,11 @@ export const Drawer: React.FC<DrawerProps> = ({
   // ESC key handler
   useEffect(() => {
     if (!closeOnEscape || !isOpen) return;
-
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
       }
     };
-
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose, closeOnEscape]);
@@ -697,18 +647,14 @@ export const Drawer: React.FC<DrawerProps> = ({
   // Body scroll lock
   useEffect(() => {
     if (disableScrollLock || !isOpen) return;
-
     lockBodyScroll();
     return () => unlockBodyScroll();
   }, [isOpen, disableScrollLock]);
 
   // Focus trap
   useFocusTrap(drawerRef, isOpen, disableFocusTrap);
-
   if (!isOpen) return null;
-
   const isHorizontal = side === 'left' || side === 'right';
-
   const getDrawerPosition = (): CSSProperties => {
     const base: CSSProperties = {
       position: 'fixed',
@@ -717,45 +663,68 @@ export const Drawer: React.FC<DrawerProps> = ({
       boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
       zIndex,
       display: 'flex',
-      flexDirection: 'column',
+      flexDirection: 'column'
     };
-
     const animations: Record<DrawerSide, string> = {
       left: 'drawerSlideInLeft',
       right: 'drawerSlideInRight',
       top: 'drawerSlideInTop',
-      bottom: 'drawerSlideInBottom',
+      bottom: 'drawerSlideInBottom'
     };
-
     if (side === 'left') {
-      return { ...base, top: 0, left: 0, bottom: 0, width: size, animation: `${animations[side]} 0.3s ease-out` };
+      return {
+        ...base,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        width: size,
+        animation: `${animations[side]} 0.3s ease-out`
+      };
     }
     if (side === 'right') {
-      return { ...base, top: 0, right: 0, bottom: 0, width: size, animation: `${animations[side]} 0.3s ease-out` };
+      return {
+        ...base,
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: size,
+        animation: `${animations[side]} 0.3s ease-out`
+      };
     }
     if (side === 'top') {
-      return { ...base, top: 0, left: 0, right: 0, height: size, animation: `${animations[side]} 0.3s ease-out` };
+      return {
+        ...base,
+        top: 0,
+        left: 0,
+        right: 0,
+        height: size,
+        animation: `${animations[side]} 0.3s ease-out`
+      };
     }
     // bottom
-    return { ...base, bottom: 0, left: 0, right: 0, height: size, animation: `${animations[side]} 0.3s ease-out` };
+    return {
+      ...base,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: size,
+      animation: `${animations[side]} 0.3s ease-out`
+    };
   };
-
   const headerStyle: CSSProperties = {
     padding: '1.5rem',
     borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    flexShrink: 0,
+    flexShrink: 0
   };
-
   const titleStyle: CSSProperties = {
     fontSize: '1.25rem',
     fontWeight: 600,
     color: '#ffffff',
-    margin: 0,
+    margin: 0
   };
-
   const closeButtonStyle: CSSProperties = {
     background: 'transparent',
     border: 'none',
@@ -764,63 +733,39 @@ export const Drawer: React.FC<DrawerProps> = ({
     cursor: 'pointer',
     padding: '0.25rem',
     lineHeight: 1,
-    transition: 'color 0.2s',
+    transition: 'color 0.2s'
   };
-
   const contentStyle: CSSProperties = {
     padding: '1.5rem',
     flex: 1,
     overflowY: 'auto',
-    color: '#ffffff',
+    color: '#ffffff'
   };
-
   const footerStyle: CSSProperties = {
     padding: '1.5rem',
     borderTop: '1px solid rgba(255, 255, 255, 0.1)',
     display: 'flex',
     gap: '1rem',
     justifyContent: 'flex-end',
-    flexShrink: 0,
+    flexShrink: 0
   };
-
-  return (
-    <>
+  return <>
       <Backdrop onClick={closeOnBackdrop ? onClose : undefined} zIndex={zIndex - 1} />
-      <div
-        ref={drawerRef}
-        style={getDrawerPosition()}
-        className={`terrafusion-drawer terrafusion-drawer-${side} ${className}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? `${drawerId}-title` : undefined}
-      >
-        {(title || showCloseButton) && (
-          <div style={headerStyle}>
-            {title && (
-              <h2 id={`${drawerId}-title`} style={titleStyle}>
+      <div ref={drawerRef} style={getDrawerPosition()} className={`terrafusion-drawer terrafusion-drawer-${side} ${className}`} role="dialog" aria-modal="true" aria-labelledby={title ? `${drawerId}-title` : undefined}>
+        {(title || showCloseButton) && <div style={headerStyle}>
+            {title && <h2 id={`${drawerId}-title`} style={titleStyle}>
                 {title}
-              </h2>
-            )}
-            {showCloseButton && (
-              <button
-                style={closeButtonStyle}
-                onClick={onClose}
-                aria-label="Close drawer"
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)')}
-              >
+              </h2>}
+            {showCloseButton && <button style={closeButtonStyle} onClick={onClose} aria-label="Close drawer" onMouseEnter={e => e.currentTarget.style.color = '#ef4444'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}>
                 ×
-              </button>
-            )}
-          </div>
-        )}
+              </button>}
+          </div>}
 
         <div style={contentStyle}>{children}</div>
 
         {footer && <div style={footerStyle}>{footer}</div>}
       </div>
-    </>
-  );
+    </>;
 };
 
 // ============================================================================
@@ -844,7 +789,7 @@ export const Sheet: React.FC<SheetProps> = ({
   className = '',
   zIndex = 9999,
   disableScrollLock = false,
-  disableFocusTrap = false,
+  disableFocusTrap = false
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
   const sheetId = useRef(generateId()).current;
@@ -852,13 +797,11 @@ export const Sheet: React.FC<SheetProps> = ({
   // ESC key handler
   useEffect(() => {
     if (!closeOnEscape || !isOpen) return;
-
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
       }
     };
-
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose, closeOnEscape]);
@@ -866,16 +809,13 @@ export const Sheet: React.FC<SheetProps> = ({
   // Body scroll lock
   useEffect(() => {
     if (disableScrollLock || !isOpen) return;
-
     lockBodyScroll();
     return () => unlockBodyScroll();
   }, [isOpen, disableScrollLock]);
 
   // Focus trap
   useFocusTrap(sheetRef, isOpen, disableFocusTrap);
-
   if (!isOpen) return null;
-
   const sheetStyle: CSSProperties = {
     position: 'fixed',
     bottom: 0,
@@ -889,34 +829,30 @@ export const Sheet: React.FC<SheetProps> = ({
     zIndex,
     display: 'flex',
     flexDirection: 'column',
-    animation: 'sheetSlideUp 0.3s ease-out',
+    animation: 'sheetSlideUp 0.3s ease-out'
   };
-
   const handleStyle: CSSProperties = {
     width: '40px',
     height: '4px',
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     borderRadius: '2px',
     margin: '12px auto 8px',
-    flexShrink: 0,
+    flexShrink: 0
   };
-
   const headerStyle: CSSProperties = {
     padding: '1rem 1.5rem',
     borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    flexShrink: 0,
+    flexShrink: 0
   };
-
   const titleStyle: CSSProperties = {
     fontSize: '1.25rem',
     fontWeight: 600,
     color: '#ffffff',
-    margin: 0,
+    margin: 0
   };
-
   const closeButtonStyle: CSSProperties = {
     background: 'transparent',
     border: 'none',
@@ -925,65 +861,41 @@ export const Sheet: React.FC<SheetProps> = ({
     cursor: 'pointer',
     padding: '0.25rem',
     lineHeight: 1,
-    transition: 'color 0.2s',
+    transition: 'color 0.2s'
   };
-
   const contentStyle: CSSProperties = {
     padding: '1.5rem',
     flex: 1,
     overflowY: 'auto',
-    color: '#ffffff',
+    color: '#ffffff'
   };
-
   const footerStyle: CSSProperties = {
     padding: '1.5rem',
     borderTop: '1px solid rgba(255, 255, 255, 0.1)',
     display: 'flex',
     gap: '1rem',
     justifyContent: 'flex-end',
-    flexShrink: 0,
+    flexShrink: 0
   };
-
-  return (
-    <>
+  return <>
       <Backdrop onClick={closeOnBackdrop ? onClose : undefined} zIndex={zIndex - 1} />
-      <div
-        ref={sheetRef}
-        style={sheetStyle}
-        className={`terrafusion-sheet ${className}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? `${sheetId}-title` : undefined}
-      >
+      <div ref={sheetRef} style={sheetStyle} className={`terrafusion-sheet ${className}`} role="dialog" aria-modal="true" aria-labelledby={title ? `${sheetId}-title` : undefined}>
         <div style={handleStyle} />
 
-        {(title || showCloseButton) && (
-          <div style={headerStyle}>
-            {title && (
-              <h2 id={`${sheetId}-title`} style={titleStyle}>
+        {(title || showCloseButton) && <div style={headerStyle}>
+            {title && <h2 id={`${sheetId}-title`} style={titleStyle}>
                 {title}
-              </h2>
-            )}
-            {showCloseButton && (
-              <button
-                style={closeButtonStyle}
-                onClick={onClose}
-                aria-label="Close sheet"
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)')}
-              >
+              </h2>}
+            {showCloseButton && <button style={closeButtonStyle} onClick={onClose} aria-label="Close sheet" onMouseEnter={e => e.currentTarget.style.color = '#ef4444'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}>
                 ×
-              </button>
-            )}
-          </div>
-        )}
+              </button>}
+          </div>}
 
         <div style={contentStyle}>{children}</div>
 
         {footer && <div style={footerStyle}>{footer}</div>}
       </div>
-    </>
-  );
+    </>;
 };
 
 // ============================================================================
@@ -1008,11 +920,10 @@ export const useConfirmDialog = () => {
   }>({
     isOpen: false,
     options: null,
-    resolve: null,
+    resolve: null
   });
-
   const confirm = useCallback((message: string, options: Partial<ConfirmDialogOptions> = {}): Promise<boolean> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setDialogState({
         isOpen: true,
         options: {
@@ -1020,75 +931,42 @@ export const useConfirmDialog = () => {
           message,
           confirmText: options.confirmText || 'Confirm',
           cancelText: options.cancelText || 'Cancel',
-          type: options.type || 'warning',
+          type: options.type || 'warning'
         },
-        resolve,
+        resolve
       });
     });
   }, []);
-
   const handleConfirm = useCallback(() => {
     dialogState.resolve?.(true);
-    setDialogState({ isOpen: false, options: null, resolve: null });
+    setDialogState({
+      isOpen: false,
+      options: null,
+      resolve: null
+    });
   }, [dialogState]);
-
   const handleCancel = useCallback(() => {
     dialogState.resolve?.(false);
-    setDialogState({ isOpen: false, options: null, resolve: null });
+    setDialogState({
+      isOpen: false,
+      options: null,
+      resolve: null
+    });
   }, [dialogState]);
-
-  const ConfirmDialogComponent = dialogState.isOpen && dialogState.options && (
-    <Dialog
-      isOpen={dialogState.isOpen}
-      onClose={handleCancel}
-      title={dialogState.options.title}
-      type={dialogState.options.type}
-      footer={
-        <>
-          <button
-            onClick={handleCancel}
-            style={{
-              padding: '0.5rem 1.5rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '6px',
-              color: '#ffffff',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)')}
-          >
+  const ConfirmDialogComponent = dialogState.isOpen && dialogState.options && <Dialog isOpen={dialogState.isOpen} onClose={handleCancel} title={dialogState.options.title} type={dialogState.options.type} footer={<>
+          <button onClick={handleCancel} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'} className="text-sm">
             {dialogState.options.cancelText}
           </button>
-          <button
-            onClick={handleConfirm}
-            style={{
-              padding: '0.5rem 1.5rem',
-              backgroundColor: '#ef4444',
-              border: 'none',
-              borderRadius: '6px',
-              color: '#ffffff',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#dc2626')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ef4444')}
-          >
+          <button onClick={handleConfirm} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#dc2626'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#ef4444'} className="text-sm">
             {dialogState.options.confirmText}
           </button>
-        </>
-      }
-    >
+        </>}>
       {dialogState.options.message}
-    </Dialog>
-  );
-
-  return { confirm, ConfirmDialogComponent };
+    </Dialog>;
+  return {
+    confirm,
+    ConfirmDialogComponent
+  };
 };
 
 // ============================================================================
@@ -1100,5 +978,5 @@ export default {
   Dialog,
   Drawer,
   Sheet,
-  useConfirmDialog,
+  useConfirmDialog
 };

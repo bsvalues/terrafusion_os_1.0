@@ -14,7 +14,7 @@ import { Brain,
   Network,
   Shield,
   Activity
- } from '@mui/icons-material';
+ } from 'lucide-react';
 
 interface AgentStatus {
   id: string;
@@ -162,13 +162,13 @@ const HybridAgentSystem: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3"><>
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
 
           <Brain className="w-8 h-8 text-blue-600" />
           Hybrid Agent System
         </h2>
         <div
-</>
+
 className="flex items-center gap-2 text-sm text-gray-600">
           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
           All Systems Operational
@@ -217,13 +217,13 @@ className="flex items-center gap-2 text-sm text-gray-600">
       <div className="grid grid-cols-3 gap-6">
         {/* Agent Status Panel */}
         <div className="col-span-2">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
 
             <Terminal className="w-5 h-5 text-gray-600" />
             Agent Status
           </h3>
           <div
-</>
+
 className="space-y-3">
             {activeAgents.map((agent) => (
               <div
@@ -238,16 +238,16 @@ className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {getAgentIcon(agent.id)}
-                    <div><>
+                    <div>
 
                       <h4 className="font-medium text-gray-800">{agent.name}</h4>
                       <p
-</>
+
 className="text-sm text-gray-600">{agent.currentTask}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className={`flex items-center gap-1 ${getStatusColor(agent.status)}`}><>
+                    <div className={`flex items-center gap-1 ${getStatusColor(agent.status)}`}>
 
                       <div className={`w-2 h-2 rounded-full ${
                         agent.status === 'online' ? 'bg-green-500' :
@@ -255,14 +255,14 @@ className="text-sm text-gray-600">{agent.currentTask}</p>
                         agent.status === 'error' ? 'bg-red-500' : 'bg-gray-500'
                       }`}></div>
                       <span
-</>
+
 className="text-sm capitalize">{agent.status}</span>
                     </div>
-                    <div className="text-right"><>
+                    <div className="text-right">
 
                       <div className="text-sm text-gray-600">Performance</div>
                       <div
-</>
+
 className="text-lg font-bold text-blue-600">{agent.performance}%</div>
                     </div>
                   </div>
@@ -286,32 +286,32 @@ className="text-lg font-bold text-blue-600">{agent.performance}%</div>
         <div className="space-y-6">
           {/* Memory System */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
 
                               <BrainCircuit className="w-5 h-5 text-gray-600" />
               Persistent Memory
             </h3>
             <div
-</>
+
 className="space-y-3">
               {memories.map((memory) => (
                 <div
                   key={memory.id}
                   className={`p-3 rounded-lg border ${getPriorityColor(memory.priority)}`}
                 >
-                  <div className="flex items-start justify-between mb-2"><>
+                  <div className="flex items-start justify-between mb-2">
 
                     <h4 className="font-medium text-sm">{memory.title}</h4>
                     <span
-</>
+
 className="text-xs opacity-75">
                       {memory.timestamp.toLocaleTimeString()}
                     </span>
-                  </div><>
+                  </div>
 
                   <p className="text-xs mb-2">{memory.content}</p>
                   <div
-</>
+
 className="flex flex-wrap gap-1">
                     {memory.tags.map((tag /* , index */) => (
                       <span
@@ -329,35 +329,35 @@ className="flex flex-wrap gap-1">
 
           {/* Quick Actions */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
 
               <Zap className="w-5 h-5 text-gray-600" />
               Quick Actions
             </h3>
             <div
-</>
+
 className="space-y-2">
-              <button className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"><>
+              <button className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
 
                 <Search className="w-4 h-4" />
                 Advanced Code Search
               </button>
               <button
-</>
-className="w-full p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"><>
+
+className="w-full p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
 
                 <Rocket className="w-4 h-4" />
                 Deploy Application
               </button>
               <button
-</>
-className="w-full p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"><>
+
+className="w-full p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2">
 
                 <Database className="w-4 h-4" />
                 Setup Database
               </button>
               <button
-</>
+
 className="w-full p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2">
                 <Globe className="w-4 h-4" />
                 Browser Preview
@@ -369,13 +369,13 @@ className="w-full p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 tr
 
       {/* Agent Details Panel */}
       {selectedAgent && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg"><>
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
 
           <h4 className="font-medium text-gray-800 mb-3">
             {activeAgents.find(a => a.id === selectedAgent)?.name} - Detailed Status
           </h4>
           <div
-</>
+
 className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <strong>Status:</strong> {activeAgents.find(a => a.id === selectedAgent)?.status}

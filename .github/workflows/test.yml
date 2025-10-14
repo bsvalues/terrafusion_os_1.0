@@ -1,0 +1,362 @@
+name: 🧪 Test Suite - THE TERRAFUSION WAY
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'tests/**'
+      - 'package.json'
+      - '.github/workflows/test.yml'
+  push:
+    branches: [main, develop]
+
+# Cancel in-progress runs for the same workflow and ref
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ====================================
+  # UNIT TESTS - Fast feedback on every component
+  # ====================================
+  unit-tests:
+    name: 🎯 Unit Tests (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20]
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better coverage diff
+
+      - name: 🏗️ Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+
+      - name: 📦 Install dependencies (frontend)
+        working-directory: ./frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: 📦 Install dependencies (root)
+        run: npm ci --legacy-peer-deps
+
+      - name: 🔍 Run TypeScript type checking
+        working-directory: ./frontend
+        run: npm run type-check || npx tsc --noEmit
+
+      - name: 🧪 Run unit tests with coverage
+        working-directory: ./frontend
+        run: npm run test:unit -- --coverage --maxWorkers=2
+        env:
+          CI: true
+
+      - name: 📊 Upload unit test coverage
+        if: matrix.node == 20
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./frontend/coverage/lcov.info
+          flags: unit-tests
+          name: unit-tests-node-${{ matrix.node }}
+          fail_ci_if_error: false
+
+      - name: 💾 Upload coverage artifact
+        if: matrix.node == 20
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-coverage
+          path: ./frontend/coverage
+          retention-days: 7
+
+  # ====================================
+  # INTEGRATION TESTS - Multi-component workflows
+  # ====================================
+  integration-tests:
+    name: 🔗 Integration Tests (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20]
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies (frontend)
+        working-directory: ./frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: 📦 Install dependencies (root)
+        run: npm ci --legacy-peer-deps
+
+      - name: 🧪 Run integration tests with coverage
+        working-directory: ./frontend
+        run: npm run test:integration -- --coverage --maxWorkers=2
+        env:
+          CI: true
+
+      - name: 📊 Upload integration test coverage
+        if: matrix.node == 20
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./frontend/coverage/lcov.info
+          flags: integration-tests
+          name: integration-tests-node-${{ matrix.node }}
+          fail_ci_if_error: false
+
+      - name: 💾 Upload coverage artifact
+        if: matrix.node == 20
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-coverage
+          path: ./frontend/coverage
+          retention-days: 7
+
+  # ====================================
+  # E2E TESTS - Real browser validation
+  # ====================================
+  e2e-tests:
+    name: 🎭 E2E Tests (${{ matrix.browser }}, Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20]
+        browser: [chromium, firefox, webkit]
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies (frontend)
+        working-directory: ./frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: 📦 Install dependencies (root)
+        run: npm ci --legacy-peer-deps
+
+      - name: 📦 Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: 🏗️ Build frontend application
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: 🚀 Start preview server
+        working-directory: ./frontend
+        run: |
+          npm run preview &
+          npx wait-on http://localhost:4173 -t 60000
+        env:
+          CI: true
+
+      - name: 🎭 Run E2E tests on ${{ matrix.browser }}
+        run: npx playwright test --project=${{ matrix.browser }}
+        env:
+          CI: true
+          PLAYWRIGHT_BASE_URL: http://localhost:4173
+
+      - name: 📊 Upload E2E test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results-${{ matrix.browser }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+      - name: 📸 Upload E2E screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots-${{ matrix.browser }}-failure
+          path: test-results/**/*.png
+          retention-days: 7
+
+  # ====================================
+  # LINT & FORMAT - Code quality checks
+  # ====================================
+  lint:
+    name: 🔍 Lint & Format Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install dependencies (frontend)
+        working-directory: ./frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: 🔍 Run ESLint
+        working-directory: ./frontend
+        run: npm run lint || npx eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=10
+
+      - name: 💅 Check code formatting (Prettier)
+        working-directory: ./frontend
+        run: |
+          npm run format:check || npx prettier --check "src/**/*.{ts,tsx,js,jsx,css,scss,json,md}"
+
+  # ====================================
+  # BUILD TEST - Ensure production builds work
+  # ====================================
+  build:
+    name: 🏗️ Production Build Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install dependencies (frontend)
+        working-directory: ./frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: 🏗️ Build frontend
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: 📊 Check bundle size
+        working-directory: ./frontend
+        run: |
+          du -sh dist
+          du -h dist/*.js | sort -h
+
+      - name: 💾 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: ./frontend/dist
+          retention-days: 3
+
+  # ====================================
+  # COVERAGE REPORT - Aggregate all coverage
+  # ====================================
+  coverage-report:
+    name: 📊 Coverage Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📥 Download unit coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-coverage
+          path: ./coverage/unit
+
+      - name: 📥 Download integration coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: integration-coverage
+          path: ./coverage/integration
+
+      - name: 📊 Generate coverage summary
+        run: |
+          echo "## 📊 Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Unit Tests Coverage" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/unit/coverage-summary.json ]; then
+            cat coverage/unit/coverage-summary.json | jq -r '"- Lines: " + (.total.lines.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+            cat coverage/unit/coverage-summary.json | jq -r '"- Statements: " + (.total.statements.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+            cat coverage/unit/coverage-summary.json | jq -r '"- Functions: " + (.total.functions.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+            cat coverage/unit/coverage-summary.json | jq -r '"- Branches: " + (.total.branches.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Integration Tests Coverage" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/integration/coverage-summary.json ]; then
+            cat coverage/integration/coverage-summary.json | jq -r '"- Lines: " + (.total.lines.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+            cat coverage/integration/coverage-summary.json | jq -r '"- Statements: " + (.total.statements.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+            cat coverage/integration/coverage-summary.json | jq -r '"- Functions: " + (.total.functions.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+            cat coverage/integration/coverage-summary.json | jq -r '"- Branches: " + (.total.branches.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ====================================
+  # STATUS CHECK - Overall test suite status
+  # ====================================
+  test-suite-status:
+    name: ✅ Test Suite Status
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, e2e-tests, lint, build]
+    if: always()
+    
+    steps:
+      - name: 📊 Check test results
+        run: |
+          if [ "${{ needs.unit-tests.result }}" != "success" ]; then
+            echo "❌ Unit tests failed"
+            exit 1
+          fi
+          if [ "${{ needs.integration-tests.result }}" != "success" ]; then
+            echo "❌ Integration tests failed"
+            exit 1
+          fi
+          if [ "${{ needs.e2e-tests.result }}" != "success" ]; then
+            echo "❌ E2E tests failed"
+            exit 1
+          fi
+          if [ "${{ needs.lint.result }}" != "success" ]; then
+            echo "❌ Lint checks failed"
+            exit 1
+          fi
+          if [ "${{ needs.build.result }}" != "success" ]; then
+            echo "❌ Build failed"
+            exit 1
+          fi
+          echo "✅ All tests passed! THE TERRAFUSION WAY delivers quality! 🚀"
+
+      - name: 🎉 Success summary
+        if: success()
+        run: |
+          echo "## 🎉 All Tests Passed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Unit Tests: ${{ needs.unit-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Integration Tests: ${{ needs.integration-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ E2E Tests: ${{ needs.e2e-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Lint Checks: ${{ needs.lint.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Build: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**THE TERRAFUSION WAY: Zero compromises on quality! 🚀**" >> $GITHUB_STEP_SUMMARY

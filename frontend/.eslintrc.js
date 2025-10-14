@@ -5,9 +5,7 @@ module.exports = {
     es2020: true,
     node: true,
   },
-  extends: [
-    'eslint:recommended',
-  ],
+  extends: ['eslint:recommended', 'plugin:storybook/recommended'],
   ignorePatterns: ['dist', '.eslintrc.js', 'node_modules', 'components-enhanced', '**/*.test.*'],
   parser: '@typescript-eslint/parser',
   parserOptions: {

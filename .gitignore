@@ -431,3 +431,6 @@ security-backup-*/
 
 # Azure Key Vault config (if storing connection details)
 keyvault-config.json
+
+*storybook.log
+storybook-static

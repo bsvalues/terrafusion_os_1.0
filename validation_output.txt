@@ -1,1 +1,0 @@
-C:\Users\bsval\AppData\Local\Microsoft\WindowsApps\python.exe: can't open file 'C:\\Users\\bsval\\terrafusion_os_1.0\\scripts\\validate-mcp-servers.py': [Errno 2] No such file or directory

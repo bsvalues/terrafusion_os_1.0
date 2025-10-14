@@ -13,7 +13,7 @@ import { Brain,
   CheckCircle,
   AlertCircle,
   Loader
- } from '@mui/icons-material';
+ } from 'lucide-react';
 import MLOptimizationEngine, { MLModel, TrainingJob, OptimizationConfig } from '../core/MLOptimizationEngine';
 
 interface MLOptimizationDashboardProps {
@@ -87,13 +87,13 @@ const MLOptimizationDashboard: React.FC<MLOptimizationDashboardProps> = ({ class
   return (
     <div className={`bg-white rounded-lg shadow-lg p-6 ${className}`}>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3"><>
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
 
           <Brain className="w-8 h-8 text-purple-600" />
           ML Optimization Dashboard
         </h2>
         <div
-</>
+
 className="flex items-center gap-2">
           <button
             onClick={handleAutoOptimizeAll}
@@ -109,11 +109,11 @@ className="flex items-center gap-2">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {models.map(model => (
           <div key={model.id} className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-lg border border-blue-200">
-            <div className="flex items-center justify-between mb-4"><>
+            <div className="flex items-center justify-between mb-4">
 
               <h3 className="text-lg font-semibold text-gray-800">{model.name}</h3>
               <span
-</>
+
 className={`px-2 py-1 text-xs rounded-full ${
                 model.type === 'classification' ? 'bg-green-100 text-green-800' :
                 model.type === 'regression' ? 'bg-blue-100 text-blue-800' :
@@ -124,43 +124,40 @@ className={`px-2 py-1 text-xs rounded-full ${
             </div>
             
             <div className="space-y-3">
-              <div className="flex justify-between items-center"><>
+              <div className="flex justify-between items-center">
 
                 <span className="text-sm text-gray-600">Accuracy:</span>
                 <span
-</>
+
 className="font-semibold text-gray-800">{formatAccuracy(model.accuracy)}</span>
               </div>
-              <div className="flex justify-between items-center"><>
+              <div className="flex justify-between items-center">
 
                 <span className="text-sm text-gray-600">Precision:</span>
                 <span
-</>
+
 className="font-semibold text-gray-800">{formatAccuracy(model.performance.precision)}</span>
               </div>
-              <div className="flex justify-between items-center"><>
+              <div className="flex justify-between items-center">
 
                 <span className="text-sm text-gray-600">Recall:</span>
                 <span
-</>
+
 className="font-semibold text-gray-800">{formatAccuracy(model.performance.recall)}</span>
               </div>
-              <div className="flex justify-between items-center"><>
+              <div className="flex justify-between items-center">
 
                 <span className="text-sm text-gray-600">Latency:</span>
                 <span
-</>
+
 className="font-semibold text-gray-800">{formatLatency(model.performance.latency)}</span>
               </div>
             </div>
 
             <div className="mt-4 pt-4 border-t border-blue-200">
-              <div className="flex justify-between items-center text-xs text-gray-500"><>
-
+              <div className="flex justify-between items-center text-xs text-gray-500">
                 <span>Training Data: {model.trainingDataSize.toLocaleString()}</span>
-                <span
-</>
-</>>Last: {model.lastTrained.toLocaleDateString()}</span>
+                <span>Last: {model.lastTrained.toLocaleDateString()}</span>
               </div>
             </div>
           </div>
@@ -169,20 +166,19 @@ className="font-semibold text-gray-800">{formatLatency(model.performance.latency
 
       {/* Optimization Controls */}
       <div className="bg-gray-50 rounded-lg p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
 
           <Settings className="w-5 h-5" />
           Optimization Controls
         </h3>
         
         <div
-</>
+
 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <div><>
+          <div>
 
             <label className="block text-sm font-medium text-gray-700 mb-2">Target Metric</label>
             <select
-</>
 
               value={optimizationConfig.targetMetric}
               onChange={(e) => setOptimizationConfig(prev => ({
@@ -191,26 +187,25 @@ className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Select target metric for optimization"
-            ><>
+            >
 
               <option value="accuracy">Accuracy</option>
               <option
-</>
-value="precision">Precision</option><>
+
+value="precision">Precision</option>
 
               <option value="recall">Recall</option>
               <option
-</>
+
 value="f1">F1 Score</option>
               <option value="latency">Latency</option>
             </select>
           </div>
 
-          <div><>
+          <div>
 
             <label className="block text-sm font-medium text-gray-700 mb-2">Optimization Type</label>
             <select
-</>
 
               value={optimizationConfig.optimizationType}
               onChange={(e) => setOptimizationConfig(prev => ({
@@ -219,21 +214,20 @@ value="f1">F1 Score</option>
               }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Select optimization type"
-            ><>
+            >
 
               <option value="hyperparameter">Hyperparameter</option>
               <option
-</>
+
 value="architecture">Architecture</option>
               <option value="feature-selection">Feature Selection</option>
             </select>
           </div>
 
-          <div><>
+          <div>
 
             <label className="block text-sm font-medium text-gray-700 mb-2">Max Training Time (ms)</label>
             <input
-</>
 
               type="number"
               value={optimizationConfig.constraints.maxTrainingTime}
@@ -250,11 +244,10 @@ value="architecture">Architecture</option>
             />
           </div>
 
-          <div><>
+          <div>
 
             <label className="block text-sm font-medium text-gray-700 mb-2">Min Accuracy</label>
             <input
-</>
 
               type="number"
               step="0.01"
@@ -302,14 +295,14 @@ value="architecture">Architecture</option>
       {/* Active Training Jobs */}
       {activeJobs.length > 0 && (
         <div className="bg-gray-50 rounded-lg p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
 
             <Activity className="w-5 h-5" />
             Active Training Jobs ({activeJobs.length})
           </h3>
           
           <div
-</>
+
 className="space-y-4">
             {activeJobs.map(job => {
               const model = models.find(m => m.id === job.modelId);
@@ -318,11 +311,11 @@ className="space-y-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(job.status)}
-                      <div><>
+                      <div>
 
                         <h4 className="font-medium text-gray-800">{model?.name || 'Unknown Model'}</h4>
                         <p
-</>
+
 className="text-sm text-gray-500">Job ID: {job.id}</p>
                       </div>
                     </div>
@@ -332,12 +325,9 @@ className="text-sm text-gray-500">Job ID: {job.id}</p>
                   </div>
                   
                   <div className="mb-3">
-                    <div className="flex justify-between text-sm text-gray-600 mb-1"><>
-
+                    <div className="flex justify-between text-sm text-gray-600 mb-1">
                       <span>Progress</span>
-                      <span
-</>
-</>>{job.progress.toFixed(1)}%</span>
+                      <span>{job.progress.toFixed(1)}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -349,18 +339,18 @@ className="text-sm text-gray-500">Job ID: {job.id}</p>
 
                   {job.metrics.accuracy.length > 0 && (
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div><>
+                      <div>
 
                         <span className="text-gray-600">Current Accuracy: </span>
                         <span
-</>
+
 className="font-medium">{formatAccuracy(job.metrics.accuracy[job.metrics.accuracy.length - 1])}</span>
                       </div>
-                      <div><>
+                      <div>
 
                         <span className="text-gray-600">Current Loss: </span>
                         <span
-</>
+
 className="font-medium">{job.metrics.loss[job.metrics.loss.length - 1]?.toFixed(4)}</span>
                       </div>
                     </div>
@@ -374,32 +364,32 @@ className="font-medium">{job.metrics.loss[job.metrics.loss.length - 1]?.toFixed(
 
       {/* Performance Metrics Chart */}
       <div className="bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
 
           <BarChart3 className="w-5 h-5" />
           Performance Metrics
         </h3>
         
         <div
-</>
+
 className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg p-4 border border-gray-200"><>
+          <div className="bg-white rounded-lg p-4 border border-gray-200">
 
             <h4 className="font-medium text-gray-800 mb-3">Model Comparison</h4>
             <div
-</>
+
 className="space-y-3">
               {models.map(model => (
-                <div key={model.id} className="flex items-center justify-between"><>
+                <div key={model.id} className="flex items-center justify-between">
 
                   <span className="text-sm text-gray-600">{model.name}</span>
                   <div
-</>
-className="flex items-center gap-4"><>
+
+className="flex items-center gap-4">
 
                     <span className="text-sm font-medium">{formatAccuracy(model.accuracy)}</span>
                     <div
-</>
+
 className="w-20 bg-gray-200 rounded-full h-2">
                       <div
                         className="bg-blue-600 h-2 rounded-full"
@@ -412,23 +402,23 @@ className="w-20 bg-gray-200 rounded-full h-2">
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-4 border border-gray-200"><>
+          <div className="bg-white rounded-lg p-4 border border-gray-200">
 
             <h4 className="font-medium text-gray-800 mb-3">Latency Analysis</h4>
             <div
-</>
+
 className="space-y-3">
               {models.map(model => (
-                <div key={model.id} className="flex items-center justify-between"><>
+                <div key={model.id} className="flex items-center justify-between">
 
                   <span className="text-sm text-gray-600">{model.name}</span>
                   <div
-</>
-className="flex items-center gap-2"><>
+
+className="flex items-center gap-2">
 
                     <span className="text-sm font-medium">{formatLatency(model.performance.latency)}</span>
                     <div
-</>
+
 className={`w-3 h-3 rounded-full ${
                       model.performance.latency < 30 ? 'bg-green-500' :
                       model.performance.latency < 60 ? 'bg-yellow-500' : 'bg-red-500'

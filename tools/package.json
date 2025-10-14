@@ -1,0 +1,26 @@
+{
+  "name": "@terrafusion/code-quality-tools",
+  "version": "1.0.0",
+  "description": "TerraFusion OS - Automated Code Quality and Refactoring Tools",
+  "private": true,
+  "scripts": {
+    "refactor:styles": "node refactor-inline-styles.js",
+    "refactor:styles:dry": "node refactor-inline-styles.js --dry-run",
+    "fix:aria": "node fix-aria-attributes.js",
+    "analyze:errors": "node analyze-errors.js",
+    "generate:report": "node generate-quality-report.js"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.23.0",
+    "@babel/parser": "^7.23.0",
+    "@babel/traverse": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "glob": "^10.3.10",
+    "ora": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0"
+  }
+}

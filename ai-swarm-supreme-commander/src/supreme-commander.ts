@@ -122,8 +122,11 @@ class SupremeCommanderClaude {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
-      retryDelayOnFailover: 100,
-      maxRetriesPerRequest: 3
+      maxRetriesPerRequest: 3,
+      retryStrategy: (times: number) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      }
     });
 
     if (process.env.OPENAI_API_KEY) {
@@ -877,6 +880,7 @@ class SupremeCommanderClaude {
 
 // Initialize and start Supreme Commander
 const supremeCommander = new SupremeCommanderClaude();
-supremeCommander.start(3000).catch(console.error);
+const swarmPort = parseInt(process.env.SWARM_PORT || '9000');
+supremeCommander.start(swarmPort).catch(console.error);
 
 export default SupremeCommanderClaude;

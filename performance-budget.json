@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json.schemastore.org/performance-budget.json",
+  "description": "TerraFusion OS Performance Budget - THE TERRAFUSION WAY",
+  "version": "1.0.0",
+  "budgets": [
+    {
+      "resourceType": "script",
+      "budget": 500,
+      "unit": "kB",
+      "description": "JavaScript bundle size budget (500 KB for modern applications)"
+    },
+    {
+      "resourceType": "stylesheet",
+      "budget": 100,
+      "unit": "kB",
+      "description": "CSS bundle size budget (100 KB including Tailwind)"
+    },
+    {
+      "resourceType": "document",
+      "budget": 50,
+      "unit": "kB",
+      "description": "HTML document size budget"
+    },
+    {
+      "resourceType": "image",
+      "budget": 1024,
+      "unit": "kB",
+      "description": "Total image size budget (1 MB including avatars, icons)"
+    },
+    {
+      "resourceType": "font",
+      "budget": 200,
+      "unit": "kB",
+      "description": "Web font size budget (200 KB for custom fonts)"
+    },
+    {
+      "resourceType": "total",
+      "budget": 2048,
+      "unit": "kB",
+      "description": "Total page weight budget (2 MB)"
+    }
+  ],
+  "timings": {
+    "first-contentful-paint": {
+      "budget": 1800,
+      "unit": "ms",
+      "description": "FCP - When the first content appears (Core Web Vital)",
+      "target": "good",
+      "thresholds": {
+        "good": 1800,
+        "needs-improvement": 3000,
+        "poor": 3000
+      }
+    },
+    "largest-contentful-paint": {
+      "budget": 2500,
+      "unit": "ms",
+      "description": "LCP - When the largest content element appears (Core Web Vital)",
+      "target": "good",
+      "thresholds": {
+        "good": 2500,
+        "needs-improvement": 4000,
+        "poor": 4000
+      }
+    },
+    "cumulative-layout-shift": {
+      "budget": 0.1,
+      "unit": "score",
+      "description": "CLS - Visual stability metric (Core Web Vital)",
+      "target": "good",
+      "thresholds": {
+        "good": 0.1,
+        "needs-improvement": 0.25,
+        "poor": 0.25
+      }
+    },
+    "first-input-delay": {
+      "budget": 100,
+      "unit": "ms",
+      "description": "FID - Time from first interaction to browser response (Core Web Vital)",
+      "target": "good",
+      "thresholds": {
+        "good": 100,
+        "needs-improvement": 300,
+        "poor": 300
+      }
+    },
+    "time-to-interactive": {
+      "budget": 3800,
+      "unit": "ms",
+      "description": "TTI - When the page is fully interactive",
+      "target": "good",
+      "thresholds": {
+        "good": 3800,
+        "needs-improvement": 7300,
+        "poor": 7300
+      }
+    },
+    "speed-index": {
+      "budget": 3000,
+      "unit": "ms",
+      "description": "Speed Index - How quickly content is visually displayed",
+      "target": "good",
+      "thresholds": {
+        "good": 3400,
+        "needs-improvement": 5800,
+        "poor": 5800
+      }
+    },
+    "total-blocking-time": {
+      "budget": 300,
+      "unit": "ms",
+      "description": "TBT - Total time main thread is blocked",
+      "target": "good",
+      "thresholds": {
+        "good": 300,
+        "needs-improvement": 600,
+        "poor": 600
+      }
+    }
+  },
+  "lighthouse": {
+    "performance": {
+      "budget": 90,
+      "unit": "score",
+      "description": "Lighthouse Performance Score (0-100)"
+    },
+    "accessibility": {
+      "budget": 95,
+      "unit": "score",
+      "description": "Lighthouse Accessibility Score (0-100)"
+    },
+    "best-practices": {
+      "budget": 90,
+      "unit": "score",
+      "description": "Lighthouse Best Practices Score (0-100)"
+    },
+    "seo": {
+      "budget": 90,
+      "unit": "score",
+      "description": "Lighthouse SEO Score (0-100)"
+    }
+  },
+  "chunks": {
+    "vendor": {
+      "budget": 300,
+      "unit": "kB",
+      "description": "Vendor chunk size (React, React-DOM, third-party libs)"
+    },
+    "main": {
+      "budget": 150,
+      "unit": "kB",
+      "description": "Main application chunk size"
+    },
+    "route": {
+      "budget": 50,
+      "unit": "kB",
+      "description": "Individual route chunk size (per lazy-loaded route)"
+    },
+    "component": {
+      "budget": 30,
+      "unit": "kB",
+      "description": "Individual component chunk size (per lazy-loaded component)"
+    }
+  },
+  "network": {
+    "requests": {
+      "budget": 50,
+      "unit": "count",
+      "description": "Total number of HTTP requests"
+    },
+    "round-trips": {
+      "budget": 3,
+      "unit": "count",
+      "description": "Critical rendering path round trips"
+    }
+  },
+  "performance-notes": {
+    "core-web-vitals": "Google Core Web Vitals: LCP < 2.5s, FID < 100ms, CLS < 0.1",
+    "lighthouse-scores": "Target Lighthouse Performance Score: 90+",
+    "bundle-optimization": "Use code splitting, tree shaking, and lazy loading",
+    "image-optimization": "Use WebP, responsive images, and lazy loading",
+    "caching-strategy": "Leverage browser caching and CDN",
+    "the-terrafusion-way": "Zero compromises on performance - every millisecond matters!"
+  }
+}
