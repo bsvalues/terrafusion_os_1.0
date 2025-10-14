@@ -620,3 +620,660 @@ const isValid = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value);
     },
   },
 };
+
+/**
+ * Story 8: Input Sizes
+ * Different size variations for various contexts
+ */
+export const Sizes: Story = {
+  render: () => (
+    <div className="space-y-6 w-[400px]">
+      <div className="space-y-2">
+        <Label htmlFor="sm">Small Input</Label>
+        <Input id="sm" placeholder="Small input..." className="h-8 text-sm" />
+        <p className="text-sm text-muted-foreground">Compact for dense layouts</p>
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="default-size">Default Input</Label>
+        <Input id="default-size" placeholder="Default input..." />
+        <p className="text-sm text-muted-foreground">Standard size for most forms</p>
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="lg">Large Input</Label>
+        <Input id="lg" placeholder="Large input..." className="h-12 text-lg" />
+        <p className="text-sm text-muted-foreground">Prominent for important fields</p>
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Input sizes for different contexts and visual hierarchy.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 9: With Icons
+ * Inputs with icons for visual enhancement and clarity
+ */
+export const WithIcons: Story = {
+  render: () => (
+    <div className="space-y-6 w-[400px]">
+      <div className="space-y-2">
+        <Label htmlFor="search-icon">Search with Icon</Label>
+        <div className="relative">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <Input id="search-icon" placeholder="Search..." className="pl-10" />
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="email-icon">Email with Icon</Label>
+        <div className="relative">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+          <Input id="email-icon" type="email" placeholder="user@example.com" className="pl-10" />
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="password-icon">Password with Toggle</Label>
+        <div className="relative">
+          <Input id="password-icon" type="password" placeholder="••••••••" className="pr-10" />
+          <button
+            type="button"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            aria-label="Toggle password visibility"
+          >
+            <svg
+              className="h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="currency">Currency Input</Label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+          <Input id="currency" type="number" placeholder="0.00" className="pl-8" />
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Inputs enhanced with icons for better visual communication and functionality.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 10: Accessibility Testing
+ * Comprehensive WCAG 2.1 AAA accessibility compliance
+ */
+export const AccessibilityTest: Story = {
+  render: () => (
+    <div className="space-y-8" role="region" aria-label="Input accessibility testing">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Keyboard Navigation</h3>
+        <div className="space-y-4 w-[400px]">
+          <div className="space-y-2">
+            <Label htmlFor="a11y-1">First Input (Tab to focus)</Label>
+            <Input id="a11y-1" placeholder="Tab to focus this input" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="a11y-2">Second Input (Tab to navigate)</Label>
+            <Input id="a11y-2" placeholder="Continue tabbing..." />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="a11y-3">Third Input (Shift+Tab to go back)</Label>
+            <Input id="a11y-3" placeholder="Shift+Tab to go back" />
+          </div>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Use Tab/Shift+Tab to navigate between inputs
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">ARIA Labels & Descriptions</h3>
+        <div className="space-y-4 w-[400px]">
+          <div className="space-y-2">
+            <Label htmlFor="a11y-aria-1">Username</Label>
+            <Input
+              id="a11y-aria-1"
+              aria-label="Username for login"
+              aria-describedby="username-desc"
+              placeholder="johndoe"
+            />
+            <p id="username-desc" className="text-sm text-muted-foreground">
+              3-20 characters, letters and numbers only
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="a11y-aria-2">Email (Required)</Label>
+            <Input
+              id="a11y-aria-2"
+              type="email"
+              required
+              aria-required="true"
+              aria-label="Email address"
+              aria-describedby="email-desc"
+              placeholder="user@example.com"
+            />
+            <p id="email-desc" className="text-sm text-muted-foreground">
+              We'll never share your email
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="a11y-aria-3">Password (with error)</Label>
+            <Input
+              id="a11y-aria-3"
+              type="password"
+              aria-invalid="true"
+              aria-describedby="password-error"
+              className="border-red-500"
+              defaultValue="123"
+            />
+            <p id="password-error" className="text-sm text-red-500" role="alert">
+              Password must be at least 8 characters
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Focus Management</h3>
+        <div className="space-y-2 w-[400px]">
+          <Label htmlFor="a11y-focus">Enhanced Focus Ring</Label>
+          <Input
+            id="a11y-focus"
+            placeholder="Click or tab to see focus ring"
+            className="focus-visible:ring-4"
+          />
+          <p className="text-sm text-muted-foreground">
+            Focus ring meets WCAG 2.1 AAA contrast requirements
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Screen Reader Support</h3>
+        <div className="space-y-4 w-[400px]">
+          <div className="space-y-2">
+            <Label htmlFor="sr-1">Visible Label</Label>
+            <Input id="sr-1" placeholder="Screen readers announce the label" />
+          </div>
+          
+          <div className="space-y-2">
+            <Input
+              id="sr-2"
+              aria-label="Search for content"
+              placeholder="Search..."
+              type="search"
+            />
+            <p className="text-sm text-muted-foreground">
+              Icon-only input with aria-label for screen readers
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Comprehensive accessibility testing for WCAG 2.1 AAA compliance.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 11: Edge Cases
+ * Unusual inputs and boundary conditions
+ */
+export const EdgeCases: Story = {
+  render: () => {
+    const [xssTest, setXssTest] = useState('');
+    
+    return (
+      <div className="space-y-8 w-[600px]">
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Long Text Handling</h3>
+          <div className="space-y-2">
+            <Label htmlFor="long">Very Long Input Value</Label>
+            <Input
+              id="long"
+              defaultValue="This is an extremely long input value that should be handled gracefully without breaking the layout or causing overflow issues in the user interface"
+            />
+            <p className="text-sm text-muted-foreground">
+              Long text is contained within input boundaries
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">XSS Safety</h3>
+          <div className="space-y-2">
+            <Label htmlFor="xss">Potentially Malicious Input</Label>
+            <Input
+              id="xss"
+              value={xssTest}
+              onChange={(e) => setXssTest(e.target.value)}
+              placeholder="Try: <script>alert('XSS')</script>"
+            />
+            <p className="text-sm text-muted-foreground">
+              React automatically escapes dangerous characters
+            </p>
+            <div className="text-sm mt-2">
+              <strong>Current value:</strong> {xssTest}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Special Characters</h3>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="emoji">Emoji Input</Label>
+              <Input id="emoji" defaultValue="Hello 🌍 World 🚀 💯" />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="symbols">Special Symbols</Label>
+              <Input id="symbols" defaultValue={'Test & <tags> \'quotes\' "double" ©®™'} />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="unicode">Unicode Characters</Label>
+              <Input id="unicode" defaultValue="Hello मस्ते 你好 مرحبا שלום" />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">RTL (Right-to-Left) Support</h3>
+          <div className="space-y-4">
+            <div className="space-y-2" dir="rtl">
+              <Label htmlFor="rtl-arabic">Arabic Text</Label>
+              <Input id="rtl-arabic" placeholder="أدخل النص هنا" />
+            </div>
+            
+            <div className="space-y-2" dir="rtl">
+              <Label htmlFor="rtl-hebrew">Hebrew Text</Label>
+              <Input id="rtl-hebrew" placeholder="הזן טקסט כאן" />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Empty/Null States</h3>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="empty">Empty String Value</Label>
+              <Input id="empty" value="" readOnly />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="whitespace">Whitespace Only</Label>
+              <Input id="whitespace" defaultValue="        " />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Numeric Edge Cases</h3>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="zero">Zero Value</Label>
+              <Input id="zero" type="number" defaultValue="0" />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="negative">Negative Number</Label>
+              <Input id="negative" type="number" defaultValue="-999" />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="decimal">Large Decimal</Label>
+              <Input id="decimal" type="number" step="0.01" defaultValue="123456.789" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story: 'Edge cases including long text, XSS safety, special characters, RTL, and boundary values.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 12: Responsive Behavior
+ * Input behavior across different screen sizes
+ */
+export const Responsive: Story = {
+  render: () => (
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Mobile (320px - 640px)</h3>
+        <div className="max-w-[320px] border-2 border-dashed border-border p-4 rounded-lg">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="mobile-1">Full Width Input</Label>
+              <Input id="mobile-1" placeholder="Auto-fill width" className="w-full" />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="mobile-2">Email (Mobile Keyboard)</Label>
+              <Input id="mobile-2" type="email" placeholder="user@example.com" className="w-full" />
+              <p className="text-xs text-muted-foreground">
+                Mobile shows @ and . on keyboard
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="mobile-3">Phone Number</Label>
+              <Input id="mobile-3" type="tel" placeholder="+1 (555) 000-0000" className="w-full" />
+              <p className="text-xs text-muted-foreground">
+                Mobile shows numeric keypad
+              </p>
+            </div>
+          </div>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Touch targets meet minimum 44x44px (WCAG 2.5.5)
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Tablet (768px - 1024px)</h3>
+        <div className="max-w-[768px] border-2 border-dashed border-border p-4 rounded-lg">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="tablet-1">First Name</Label>
+              <Input id="tablet-1" placeholder="John" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="tablet-2">Last Name</Label>
+              <Input id="tablet-2" placeholder="Doe" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Desktop (1024px+)</h3>
+        <div className="max-w-[1024px] border-2 border-dashed border-border p-4 rounded-lg">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="desktop-1">City</Label>
+              <Input id="desktop-1" placeholder="New York" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="desktop-2">State</Label>
+              <Input id="desktop-2" placeholder="NY" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="desktop-3">ZIP Code</Label>
+              <Input id="desktop-3" placeholder="10001" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story: 'Responsive input behavior optimized for mobile, tablet, and desktop.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 13: Composition Patterns
+ * Real-world patterns showing Input in common UI compositions
+ */
+export const CompositionPatterns: Story = {
+  render: () => (
+    <div className="space-y-8 max-w-4xl">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Search Bar with Button</h3>
+        <div className="flex gap-2 max-w-md">
+          <Input placeholder="Search for anything..." className="flex-1" />
+          <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+            Search
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Inline Edit Pattern</h3>
+        <div className="max-w-md space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="font-medium w-24">Name:</span>
+            <Input defaultValue="John Doe" className="flex-1" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium w-24">Email:</span>
+            <Input type="email" defaultValue="john@example.com" className="flex-1" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium w-24">Phone:</span>
+            <Input type="tel" defaultValue="+1 555-0000" className="flex-1" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Form Grid Layout</h3>
+        <div className="max-w-2xl">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="grid-1">First Name *</Label>
+              <Input id="grid-1" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="grid-2">Last Name *</Label>
+              <Input id="grid-2" required />
+            </div>
+            <div className="space-y-2 col-span-2">
+              <Label htmlFor="grid-3">Email Address *</Label>
+              <Input id="grid-3" type="email" required />
+            </div>
+            <div className="space-y-2 col-span-2">
+              <Label htmlFor="grid-4">Street Address</Label>
+              <Input id="grid-4" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="grid-5">City</Label>
+              <Input id="grid-5" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="grid-6">ZIP Code</Label>
+              <Input id="grid-6" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Input Group with Addon</h3>
+        <div className="max-w-md space-y-4">
+          <div className="flex">
+            <span className="inline-flex items-center px-3 border border-r-0 rounded-l-md bg-muted text-muted-foreground">
+              https://
+            </span>
+            <Input placeholder="example.com" className="rounded-l-none" />
+          </div>
+          
+          <div className="flex">
+            <Input placeholder="Enter amount" className="rounded-r-none" />
+            <span className="inline-flex items-center px-3 border border-l-0 rounded-r-md bg-muted text-muted-foreground">
+              .00
+            </span>
+          </div>
+          
+          <div className="flex">
+            <span className="inline-flex items-center px-3 border border-r-0 rounded-l-md bg-muted text-muted-foreground">
+              @
+            </span>
+            <Input placeholder="username" className="rounded-none" />
+            <span className="inline-flex items-center px-3 border border-l-0 rounded-r-md bg-muted text-muted-foreground">
+              @example.com
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Filter Bar</h3>
+        <div className="flex flex-wrap gap-2">
+          <Input placeholder="Search..." className="w-64" />
+          <Input type="date" className="w-40" />
+          <Input type="date" className="w-40" />
+          <select className="px-3 py-2 border rounded-md">
+            <option>All Categories</option>
+            <option>Category 1</option>
+            <option>Category 2</option>
+          </select>
+          <button className="px-4 py-2 border rounded-md hover:bg-accent">
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story: 'Common composition patterns: search bars, inline edit, form grids, input groups, and filter bars.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 14: Performance Testing
+ * Rendering performance with many input instances
+ */
+export const Performance: Story = {
+  render: () => {
+    const startTime = performance.now();
+    const inputs = Array.from({ length: 50 }, (_, i) => (
+      <div key={i} className="space-y-2">
+        <Label htmlFor={`perf-${i}`}>Input {i + 1}</Label>
+        <Input id={`perf-${i}`} placeholder={`Input field ${i + 1}`} />
+      </div>
+    ));
+    const renderTime = performance.now() - startTime;
+
+    return (
+      <div className="space-y-4 max-w-2xl">
+        <div className="p-4 bg-muted rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">Performance Metrics</h3>
+          <p className="text-sm">
+            <strong>Render Time:</strong> {renderTime.toFixed(2)}ms for 50 inputs
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Target: &lt;100ms (Current: {renderTime < 100 ? '✅ PASS' : '❌ FAIL'})
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto p-4 border rounded-lg">
+          {inputs}
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Performance test with 50 input instances to ensure component scales well.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 15: Playground
+ * Interactive playground for testing all input configurations
+ */
+export const Playground: Story = {
+  args: {
+    type: 'text',
+    placeholder: 'Enter text...',
+    disabled: false,
+    required: false,
+  },
+  argTypes: {
+    type: {
+      control: 'select',
+      options: ['text', 'email', 'password', 'number', 'tel', 'url', 'search', 'date', 'time', 'file'],
+    },
+    placeholder: {
+      control: 'text',
+    },
+    disabled: {
+      control: 'boolean',
+    },
+    required: {
+      control: 'boolean',
+    },
+    readOnly: {
+      control: 'boolean',
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Interactive playground to test any combination of input properties.',
+      },
+    },
+  },
+};
