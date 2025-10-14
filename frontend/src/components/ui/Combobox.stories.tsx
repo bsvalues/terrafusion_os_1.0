@@ -184,7 +184,7 @@ export const Autocomplete: Story = {
           <Button
             variant="outline"
             role="combobox"
-            aria-expanded={open}
+            aria-expanded={open ? "true" : "false"}
             className="w-[300px] justify-between"
           >
             {value
@@ -280,7 +280,7 @@ export const SearchFiltering: Story = {
           <Button
             variant="outline"
             role="combobox"
-            aria-expanded={open}
+            aria-expanded={open ? "true" : "false"}
             className="w-[300px] justify-between"
           >
             {value || 'Select city...'}
@@ -376,7 +376,7 @@ export const MultiSelect: Story = {
             <Button
               variant="outline"
               role="combobox"
-              aria-expanded={open}
+              aria-expanded={open ? "true" : "false"}
               className="w-full justify-between"
             >
               <span className="truncate">
@@ -505,7 +505,7 @@ export const AsyncLoading: Story = {
           <Button
             variant="outline"
             role="combobox"
-            aria-expanded={open}
+            aria-expanded={open ? "true" : "false"}
             className="w-[300px] justify-between"
           >
             {value
@@ -621,7 +621,7 @@ export const CustomRendering: Story = {
           <Button
             variant="outline"
             role="combobox"
-            aria-expanded={open}
+            aria-expanded={open ? "true" : "false"}
             className="w-[350px] justify-between"
           >
             {value
@@ -718,7 +718,7 @@ export const Groups: Story = {
           <Button
             variant="outline"
             role="combobox"
-            aria-expanded={open}
+            aria-expanded={open ? "true" : "false"}
             className="w-[300px] justify-between"
           >
             {value || 'Select language...'}
@@ -827,7 +827,7 @@ export const EmptyState: Story = {
             <Button
               variant="outline"
               role="combobox"
-              aria-expanded={open}
+              aria-expanded={open ? "true" : "false"}
               className="w-full justify-between"
             >
               {value
@@ -931,7 +931,7 @@ export const LoadingState: Story = {
             <Button
               variant="outline"
               role="combobox"
-              aria-expanded={open}
+              aria-expanded={open ? "true" : "false"}
               className="w-full justify-between"
             >
               {value
@@ -1048,7 +1048,7 @@ export const KeyboardShortcuts: Story = {
             <Button
               variant="outline"
               role="combobox"
-              aria-expanded={open}
+              aria-expanded={open ? "true" : "false"}
               className="w-full justify-between"
             >
               Select action...
