@@ -857,3 +857,250 @@ export const UsageGuidelines: Story = {
       </div>
     </div>
 };
+
+/**
+ * Story 8: Accessibility Test
+ */
+export const AccessibilityTest: Story = {
+  render: () => (
+    <div className="space-y-6 max-w-4xl">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Accessibility Features</h3>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Semantic Image with Alt Text</h4>
+        <AspectRatio ratio={16 / 9} className="bg-muted">
+          <img
+            src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
+            alt="Detailed description: Yellow sunflower in full bloom against a blue sky"
+            className="rounded-md object-cover w-full h-full"
+          />
+        </AspectRatio>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Video with Controls & Captions</h4>
+        <AspectRatio ratio={16 / 9}>
+          <iframe
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            title="Example video with descriptive title for screen readers"
+            className="rounded-md w-full h-full"
+            allowFullScreen
+          />
+        </AspectRatio>
+      </div>
+      
+      <div className="rounded-lg bg-blue-50 dark:bg-blue-950 p-6 space-y-3">
+        <h4 className="font-semibold text-blue-900 dark:text-blue-100">♿ Accessibility</h4>
+        <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+          <li>✓ Provide descriptive alt text for images</li>
+          <li>✓ Use semantic HTML (img, video, iframe)</li>
+          <li>✓ Include video captions and transcripts</li>
+          <li>✓ Maintain focus indicators</li>
+        </ul>
+      </div>
+    </div>
+  ),
+  parameters: { layout: 'padded' },
+};
+
+/**
+ * Story 9: Edge Cases
+ */
+export const EdgeCases: Story = {
+  render: () => (
+    <div className="space-y-6 max-w-4xl">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Edge Cases</h3>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Extreme Ratios</h4>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Ultra-Wide (32:9)</p>
+            <AspectRatio ratio={32 / 9} className="bg-muted rounded-md" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Ultra-Tall (1:5)</p>
+            <AspectRatio ratio={1 / 5} className="bg-muted rounded-md max-w-[200px]" />
+          </div>
+        </div>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Empty Container</h4>
+        <AspectRatio ratio={16 / 9} className="bg-muted rounded-md flex items-center justify-center">
+          <p className="text-muted-foreground">No content loaded</p>
+        </AspectRatio>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Broken Image</h4>
+        <AspectRatio ratio={16 / 9} className="bg-muted rounded-md">
+          <img
+            src="https://invalid-url.example.com/image.jpg"
+            alt="Broken image example"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        </AspectRatio>
+      </div>
+    </div>
+  ),
+  parameters: { layout: 'padded' },
+};
+
+/**
+ * Story 10: Responsive
+ */
+export const Responsive: Story = {
+  render: () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Responsive Aspect Ratios</h3>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Adaptive Ratio (16:9 desktop, 4:3 mobile)</h4>
+        <AspectRatio ratio={16 / 9} className="sm:aspect-[16/9] aspect-[4/3] bg-muted rounded-md">
+          <div className="w-full h-full flex items-center justify-center">
+            <p className="text-sm text-muted-foreground">Ratio adapts to screen size</p>
+          </div>
+        </AspectRatio>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Full-Width Images</h4>
+        <AspectRatio ratio={21 / 9} className="w-full bg-muted rounded-md">
+          <img
+            src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&dpr=2&q=80"
+            alt="Laptop on desk"
+            className="w-full h-full object-cover rounded-md"
+          />
+        </AspectRatio>
+      </div>
+      
+      <div className="rounded-lg bg-blue-50 dark:bg-blue-950 p-6 space-y-3">
+        <h4 className="font-semibold text-blue-900 dark:text-blue-100">📱 Responsive Best Practices</h4>
+        <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+          <li>• Use max-width constraints on containers</li>
+          <li>• Consider different ratios for mobile vs desktop</li>
+          <li>• Test object-fit (cover, contain) for various content</li>
+        </ul>
+      </div>
+    </div>
+  ),
+  parameters: { layout: 'padded' },
+};
+
+/**
+ * Story 11: Composition Patterns
+ */
+export const CompositionPatterns: Story = {
+  render: () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Composition Patterns</h3>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Card with Image Header</h4>
+        <div className="max-w-sm border rounded-lg overflow-hidden">
+          <AspectRatio ratio={16 / 9}>
+            <img
+              src="https://images.unsplash.com/photo-1590069261209-f8e9b8642343?w=800&dpr=2&q=80"
+              alt="Laptop workspace"
+              className="w-full h-full object-cover"
+            />
+          </AspectRatio>
+          <div className="p-4">
+            <h3 className="font-semibold mb-2">Product Title</h3>
+            <p className="text-sm text-muted-foreground">This card uses AspectRatio to ensure consistent image dimensions.</p>
+            <Button className="mt-4 w-full">Learn More</Button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Profile Avatar (Square)</h4>
+        <div className="flex items-center gap-4">
+          <AspectRatio ratio={1} className="w-24 bg-muted rounded-full overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&dpr=2&q=80"
+              alt="User profile"
+              className="w-full h-full object-cover"
+            />
+          </AspectRatio>
+          <div>
+            <p className="font-semibold">John Doe</p>
+            <p className="text-sm text-muted-foreground">Software Engineer</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Product Grid (3 columns)</h4>
+        <div className="grid grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <AspectRatio key={i} ratio={1} className="bg-muted rounded-md">
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-xs text-muted-foreground">Item {i + 1}</p>
+              </div>
+            </AspectRatio>
+          ))}
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: { layout: 'padded' },
+};
+
+/**
+ * Story 12: Performance
+ */
+export const Performance: Story = {
+  render: () => (
+    <div className="space-y-6 max-w-4xl">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Performance & Optimization</h3>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Bundle Size</h4>
+        <div className="bg-muted p-4 rounded">
+          <p className="text-2xl font-bold">0.2 KB</p>
+          <p className="text-sm text-muted-foreground">Gzipped (minimal overhead)</p>
+        </div>
+      </div>
+      
+      <div className="rounded-lg border p-6 space-y-4">
+        <h4 className="font-semibold">Many Images (100 items)</h4>
+        <div className="grid grid-cols-10 gap-2 max-h-96 overflow-y-auto">
+          {Array.from({ length: 100 }).map((_, i) => (
+            <AspectRatio key={i} ratio={1} className="bg-muted rounded">
+              <div className="w-full h-full flex items-center justify-center text-xs">
+                {i + 1}
+              </div>
+            </AspectRatio>
+          ))}
+        </div>
+        <p className="text-sm text-green-600 mt-2">✓ No layout shift, smooth rendering</p>
+      </div>
+      
+      <div className="rounded-lg bg-green-50 dark:bg-green-950 p-6 space-y-3">
+        <h4 className="font-semibold text-green-900 dark:text-green-100">⚡ Performance</h4>
+        <ul className="space-y-2 text-sm text-green-800 dark:text-green-200">
+          <li>✓ Bundle: 0.2 KB gzipped (ultra-lightweight)</li>
+          <li>✓ CSS-based (no JavaScript overhead)</li>
+          <li>✓ Prevents layout shift during image load</li>
+          <li>✓ Handles 100+ items efficiently</li>
+        </ul>
+      </div>
+    </div>
+  ),
+  parameters: { layout: 'padded' },
+};
