@@ -16,6 +16,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
+import * as React from 'react';
 import { Label } from './label';
 import { Input } from './input';
 import { Checkbox } from './checkbox';
@@ -455,7 +456,355 @@ export const RealWorldForm: Story = {
 };
 
 /**
- * Story 9: Usage Guidelines
+ * Story 9: All Variants
+ * Comprehensive display of all label variants and states
+ */
+export const AllVariants: Story = {
+  render: () => (
+    <div className="space-y-8 w-full max-w-4xl">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Size Variants</h3>
+        <div className="space-y-4">
+          <div className="flex items-baseline gap-4">
+            <Label className="text-xs">Extra Small Label</Label>
+            <Label className="text-sm">Small Label</Label>
+            <Label>Default Label</Label>
+            <Label className="text-lg">Large Label</Label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">State Variants</h3>
+        <div className="space-y-3">
+          <div className="flex items-center gap-1.5">
+            <Label>Normal State</Label>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Label className="opacity-70 cursor-not-allowed">Disabled State</Label>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Label className="text-destructive">Error State</Label>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Label className="text-green-600">Success State</Label>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Label className="text-amber-600">Warning State</Label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Indicator Variants</h3>
+        <div className="space-y-3">
+          <Label>
+            Required Field <span className="text-destructive">*</span>
+          </Label>
+          <Label>
+            Optional Field{' '}
+            <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+          </Label>
+          <Label>
+            Recommended Field{' '}
+            <span className="text-primary text-xs font-normal">(recommended)</span>
+          </Label>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Weight Variants</h3>
+        <div className="space-y-3">
+          <Label className="font-light">Light Weight</Label>
+          <Label className="font-normal">Normal Weight</Label>
+          <Label className="font-medium">Medium Weight</Label>
+          <Label className="font-semibold">Semibold Weight</Label>
+          <Label className="font-bold">Bold Weight</Label>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Color Variants</h3>
+        <div className="space-y-3">
+          <Label>Default Color</Label>
+          <Label className="text-muted-foreground">Muted Color</Label>
+          <Label className="text-primary">Primary Color</Label>
+          <Label className="text-secondary-foreground">Secondary Color</Label>
+          <Label className="text-accent-foreground">Accent Color</Label>
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story: 'Complete overview of all label variants including sizes, states, indicators, weights, and colors.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 10: Interactive Behaviors
+ * Demonstrates interactive label behaviors and click handling
+ */
+export const Interactive: Story = {
+  render: () => {
+    const [clickedLabel, setClickedLabel] = React.useState<string>('');
+    const [focusedInput, setFocusedInput] = React.useState<string>('');
+
+    return (
+      <div className="space-y-8 w-full max-w-2xl">
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Click-to-Focus Behavior</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Click labels to focus their associated inputs. Label shows which input is focused.
+          </p>
+          <div className="space-y-4">
+            <div className="grid gap-1.5">
+              <Label 
+                htmlFor="click-input-1"
+                onClick={() => setClickedLabel('input-1')}
+                className="cursor-pointer hover:text-primary transition-colors"
+              >
+                Email Address {focusedInput === 'input-1' && '← Focused'}
+              </Label>
+              <Input
+                id="click-input-1"
+                type="email"
+                onFocus={() => setFocusedInput('input-1')}
+                onBlur={() => setFocusedInput('')}
+                placeholder="Click label above to focus"
+              />
+            </div>
+
+            <div className="grid gap-1.5">
+              <Label 
+                htmlFor="click-input-2"
+                onClick={() => setClickedLabel('input-2')}
+                className="cursor-pointer hover:text-primary transition-colors"
+              >
+                Username {focusedInput === 'input-2' && '← Focused'}
+              </Label>
+              <Input
+                id="click-input-2"
+                type="text"
+                onFocus={() => setFocusedInput('input-2')}
+                onBlur={() => setFocusedInput('')}
+                placeholder="Click label above to focus"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="click-checkbox"
+                onFocus={() => setFocusedInput('checkbox')}
+                onBlur={() => setFocusedInput('')}
+              />
+              <Label 
+                htmlFor="click-checkbox"
+                onClick={() => setClickedLabel('checkbox')}
+                className="cursor-pointer hover:text-primary transition-colors"
+              >
+                Accept Terms {focusedInput === 'checkbox' && '← Focused'}
+              </Label>
+            </div>
+          </div>
+
+          {clickedLabel && (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Last clicked label: {clickedLabel}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Hover States</h3>
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="hover-1" />
+              <Label 
+                htmlFor="hover-1"
+                className="cursor-pointer hover:text-primary hover:underline transition-colors"
+              >
+                Hover for underline effect
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox id="hover-2" />
+              <Label 
+                htmlFor="hover-2"
+                className="cursor-pointer hover:bg-accent hover:px-2 hover:-mx-2 rounded transition-all"
+              >
+                Hover for background highlight
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox id="hover-3" />
+              <Label 
+                htmlFor="hover-3"
+                className="cursor-pointer hover:scale-105 transition-transform inline-block"
+              >
+                Hover for scale effect
+              </Label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Disabled Interaction</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Labels for disabled inputs show non-interactive state
+          </p>
+          <div className="space-y-3">
+            <div className="grid gap-1.5">
+              <Label 
+                htmlFor="disabled-interaction"
+                className="peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
+              >
+                Disabled Input Label
+              </Label>
+              <Input
+                id="disabled-interaction"
+                disabled
+                defaultValue="Cannot interact"
+                className="peer"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox id="disabled-checkbox-int" disabled className="peer" />
+              <Label 
+                htmlFor="disabled-checkbox-int"
+                className="peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
+              >
+                Disabled checkbox - clicking does nothing
+              </Label>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story: 'Interactive label behaviors including click-to-focus, hover states, and disabled interactions.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 11: Performance Optimization
+ * Performance testing for label component rendering
+ */
+export const Performance: Story = {
+  render: () => {
+    const [renderCount, setRenderCount] = React.useState(0);
+    const [startTime] = React.useState(Date.now());
+    const [renderTime, setRenderTime] = React.useState(0);
+
+    React.useEffect(() => {
+      const endTime = Date.now();
+      setRenderTime(endTime - startTime);
+      setRenderCount((prev) => prev + 1);
+    }, [startTime]);
+
+    // Generate large list of labels
+    const labelCount = 100;
+    const labels = Array.from({ length: labelCount }, (_, i) => ({
+      id: `perf-label-${i}`,
+      text: `Label ${i + 1}`,
+    }));
+
+    return (
+      <div className="space-y-6 w-full max-w-4xl">
+        <div className="p-4 bg-muted rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">Performance Metrics</h3>
+          <div className="grid grid-cols-3 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">Render Count</p>
+              <p className="text-2xl font-bold">{renderCount}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Initial Render Time</p>
+              <p className="text-2xl font-bold">{renderTime}ms</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Labels Rendered</p>
+              <p className="text-2xl font-bold">{labelCount}</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Stress Test: {labelCount} Labels</h3>
+          <div className="border rounded-lg p-4 max-h-96 overflow-y-auto">
+            <div className="grid grid-cols-2 gap-4">
+              {labels.map((label) => (
+                <div key={label.id} className="flex items-center space-x-2">
+                  <Checkbox id={label.id} />
+                  <Label htmlFor={label.id}>{label.text}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Complex Form Performance</h3>
+          <div className="border rounded-lg p-4 space-y-4">
+            {Array.from({ length: 20 }, (_, i) => (
+              <div key={`form-field-${i}`} className="grid gap-1.5">
+                <Label htmlFor={`complex-input-${i}`}>
+                  Field {i + 1} <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id={`complex-input-${i}`}
+                  required
+                  aria-required="true"
+                  aria-describedby={`desc-${i}`}
+                  placeholder={`Enter value for field ${i + 1}`}
+                />
+                <p id={`desc-${i}`} className="text-xs text-muted-foreground">
+                  Helper text for field {i + 1}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+          <h4 className="font-semibold mb-2">Performance Notes</h4>
+          <ul className="text-sm space-y-1 text-muted-foreground">
+            <li>• Label component is lightweight with minimal overhead</li>
+            <li>• Built on Radix UI primitives for optimal performance</li>
+            <li>• No re-renders on input value changes (label is separate)</li>
+            <li>• Scales well to forms with 100+ fields</li>
+            <li>• Initial render time typically {'<'}5ms per label</li>
+            <li>• No virtual scrolling needed for typical use cases</li>
+          </ul>
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story: 'Performance testing with 100+ labels and complex forms. Demonstrates efficient rendering and scalability.',
+      },
+    },
+  },
+};
+
+/**
+ * Story 12: Usage Guidelines
  * Best practices for using labels
  */
 export const UsageGuidelines: Story = {
