@@ -1,0 +1,634 @@
+/* TerraFusion Brand Typography System */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Accessibility Enhancements */
+
+/* Skip to content link */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  z-index: 1000;
+  padding: 8px 16px;
+  background: #00d2ff;
+  color: white;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+  transition: top 0.3s ease;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only:focus,
+.sr-only:active {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* High contrast mode */
+.high-contrast {
+  --color-primary: #00d2ff;
+  --color-primary-contrast: #ffffff;
+  --color-secondary: #ffffff;
+  --color-background: #000000;
+  --color-surface: #111111;
+  --color-text: #ffffff;
+  --color-text-secondary: #cccccc;
+  --color-border: #00d2ff;
+  --color-error: #ff4444;
+  --color-success: #44ff44;
+  --color-warning: #ffff44;
+}
+
+.high-contrast * {
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+  background-color: var(--color-background) !important;
+}
+
+.high-contrast button,
+.high-contrast [role="button"] {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-contrast) !important;
+  border: 2px solid var(--color-border) !important;
+}
+
+.high-contrast a {
+  color: var(--color-primary) !important;
+  text-decoration: underline !important;
+}
+
+.high-contrast .bg-terrafusion-cyan {
+  background-color: var(--color-primary) !important;
+}
+
+/* Reduced motion */
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Quantum particle animations for Assessor Promised Land */
+@keyframes quantumFloat {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+    opacity: 0.7; 
+  }
+  25% { 
+    transform: translateY(-20px) rotate(90deg); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: translateY(0px) rotate(180deg); 
+    opacity: 0.5; 
+  }
+  75% { 
+    transform: translateY(-10px) rotate(270deg); 
+    opacity: 1; 
+  }
+}
+
+/* Font size adjustments */
+[data-font-size="small"] {
+  font-size: 0.875rem;
+}
+
+[data-font-size="medium"] {
+  font-size: 1rem;
+}
+
+[data-font-size="large"] {
+  font-size: 1.125rem;
+}
+
+[data-font-size="extra-large"] {
+  font-size: 1.25rem;
+}
+
+/* Enhanced focus indicators */
+.focus-visible :focus {
+  outline: 2px solid #00d2ff !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+.focus-visible button:focus,
+.focus-visible [role="button"]:focus {
+  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.3) !important;
+}
+
+/* Keyboard navigation improvements */
+[tabindex="-1"]:focus {
+  outline: none !important;
+}
+
+/* Interactive elements minimum touch target */
+button,
+[role="button"],
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Error and status announcements */
+.error-announcement {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.success-announcement {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.warning-announcement {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* Loading states with accessibility */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+.reduced-motion .loading-spinner {
+  animation: none;
+}
+
+.loading-spinner::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Focus trap styling */
+.focus-trap {
+  position: relative;
+}
+
+/* Aria live regions styling */
+[aria-live] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Color contrast improvements for TerraFusion theme */
+.high-contrast .text-terrafusion-cyan {
+  color: #00d2ff !important;
+  background-color: #000000 !important;
+}
+
+.high-contrast .bg-terrafusion-cyan {
+  background-color: #00d2ff !important;
+  color: #000000 !important;
+}
+
+.high-contrast .border-terrafusion-cyan {
+  border-color: #00d2ff !important;
+}
+
+/* Enhanced button states */
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.high-contrast button:disabled,
+.high-contrast [role="button"][aria-disabled="true"] {
+  background-color: #666666 !important;
+  color: #cccccc !important;
+  border-color: #999999 !important;
+}
+
+/* Form accessibility improvements */
+input:invalid {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #ef4444;
+}
+
+.high-contrast input:invalid {
+  border-color: #ff4444 !important;
+  box-shadow: 0 0 0 2px #ff4444 !important;
+}
+
+label {
+  font-weight: 600;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.status-indicator::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Responsive accessibility */
+@media (max-width: 768px) {
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Brand Typography Classes */
+@layer components {
+  .font-orbitron {
+    font-family: 'Orbitron', 'Inter', sans-serif;
+  }
+  
+  .font-jetbrains {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+  }
+  
+  .text-brand-hero {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-brand-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  
+  .intelligence-mark {
+    background: linear-gradient(135deg, #0891b2 0%, #00d2ff 100%);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 210, 255, 0.2);
+  }
+  
+  .brand-card {
+    background: rgba(17, 24, 39, 0.8);
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(10px);
+  }
+  
+  .brand-card-header {
+    background: linear-gradient(135deg, rgba(0, 210, 255, 0.1) 0%, rgba(58, 123, 213, 0.1) 100%);
+    border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+  }
+}
+
+/* Brand Color Variables */
+:root {
+  --terrafusion-cyan: #00d2ff;
+  --intelligence-blue: #0891b2;
+  --authority-teal: #3a7bd5;
+  --innovation-purple: #667eea;
+  --success-green: #10b981;
+  --warning-amber: #f59e0b;
+  --critical-red: #ef4444;
+  --neutral-gray: #6b7280;
+}
+
+/* Animation Classes */
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 5px 15px rgba(0, 210, 255, 0.2);
+  }
+  to {
+    box-shadow: 0 5px 30px rgba(0, 210, 255, 0.4);
+  }
+}
+
+/* Interactive Tooltip Styles */
+.tooltip-highlight {
+  position: relative;
+  z-index: 1000;
+  box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.3), 0 0 0 2px rgba(0, 210, 255, 0.6);
+  border-radius: 8px;
+  animation: tooltip-pulse 2s infinite;
+}
+
+@keyframes tooltip-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.3), 0 0 0 2px rgba(0, 210, 255, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 210, 255, 0.1), 0 0 0 2px rgba(0, 210, 255, 0.8);
+  }
+}
+
+@layer base {
+  :root {
+    /* TerraFusion Dark Theme Colors */
+    --background: #001529;
+    --foreground: #ffffff;
+    --card: rgba(0, 21, 41, 0.9);
+    --card-foreground: #ffffff;
+    --popover: #002a4a;
+    --popover-foreground: #ffffff;
+    --primary: #00e5ff;
+    --primary-foreground: #001529;
+    --secondary: #004d7a;
+    --secondary-foreground: #ffffff;
+    --muted: rgba(0, 229, 255, 0.1);
+    --muted-foreground: rgba(0, 229, 255, 0.5);
+    --accent: #00b8d4;
+    --accent-foreground: #001529;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: rgba(0, 229, 255, 0.2);
+    --input: #002a4a;
+    --ring: #00e5ff;
+    --radius: 12px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #001529 0%, #002a4a 100%);
+    min-height: 100vh;
+  }
+
+  /* Typography Hierarchy */
+  h1 {
+    @apply text-4xl font-bold leading-tight text-white;
+  }
+  
+  h2 {
+    @apply text-3xl font-bold leading-tight text-white;
+  }
+  
+  h3 {
+    @apply text-2xl font-bold leading-tight text-white;
+  }
+  
+  h4 {
+    @apply text-xl font-medium leading-tight text-white;
+  }
+  
+  h5 {
+    @apply text-lg font-medium leading-tight text-white;
+  }
+  
+  p {
+    @apply text-base leading-normal;
+  }
+  
+  /* Glassmorphic effects */
+  .glass-panel {
+    @apply backdrop-blur-xl border border-[#00e5ff]/20;
+    background: rgba(0, 21, 41, 0.7);
+  }
+  
+  /* Card effects with TerraFusion styling */
+  .terra-card {
+    @apply bg-[#001529]/90 border border-[#00e5ff]/20 rounded-xl backdrop-blur-xl;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .terra-card:hover {
+    @apply shadow-lg;
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  /* Metric cards */
+  .stat-card {
+    @apply terra-card p-6;
+  }
+  
+  .stat-title {
+    @apply text-sm font-medium text-[#00e5ff]/70 mb-2;
+  }
+  
+  .stat-value {
+    @apply text-3xl font-bold text-white mb-1;
+  }
+  
+  .stat-description {
+    @apply text-xs text-[#00e5ff]/50;
+  }
+  
+  /* Navigation styling */
+  .nav-link {
+    @apply text-[#00e5ff]/70 hover:text-[#00e5ff] transition-colors duration-200;
+  }
+  
+  .nav-link.active {
+    @apply text-[#00e5ff] bg-[#00e5ff]/10 rounded-lg;
+  }
+  
+  /* Button enhancements */
+  .btn-primary {
+    @apply bg-[#00e5ff] hover:bg-[#00b8d4] text-[#001529] font-medium;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+  }
+  
+  .btn-secondary {
+    @apply bg-[#004d7a] hover:bg-[#00e5ff]/20 text-white border border-[#00e5ff]/30;
+  }
+  
+  /* Input styling */
+  .terra-input {
+    @apply bg-[#002a4a] border border-[#00e5ff]/30 text-white placeholder:text-[#00e5ff]/50;
+    transition: all 0.2s ease;
+  }
+  
+  .terra-input:focus {
+    @apply border-[#00e5ff] ring-2 ring-[#00e5ff]/20;
+  }
+  
+  /* Dashboard specific */
+  .dashboard-card {
+    @apply terra-card;
+  }
+  
+  .property-card {
+    @apply terra-card transition-all duration-300;
+  }
+  
+  .property-card:hover {
+    @apply ring-2 ring-[#00e5ff]/50;
+  }
+  
+  /* Map overlay styling */
+  .map-overlay {
+    @apply glass-panel rounded-lg p-3 text-white;
+  }
+  
+  .map-overlay.top-left {
+    @apply absolute top-4 left-4;
+  }
+  
+  .map-overlay.top-right {
+    @apply absolute top-4 right-4;
+  }
+  
+  .map-overlay.bottom-left {
+    @apply absolute bottom-4 left-4;
+  }
+  
+  .map-overlay.bottom-right {
+    @apply absolute bottom-4 right-4;
+  }
+  
+  /* Layer toggle styling */
+  .layer-toggle {
+    @apply flex items-center gap-2 text-sm text-[#00e5ff]/70;
+  }
+  
+  /* Authentication modal */
+  .auth-modal {
+    @apply glass-panel rounded-2xl p-8 max-w-md mx-auto;
+  }
+  
+  /* Sidebar styling */
+  .sidebar {
+    @apply bg-[#001529]/95 backdrop-blur-xl border-r border-[#00e5ff]/20;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 text-[#00e5ff]/70 hover:text-[#00e5ff] hover:bg-[#00e5ff]/10 rounded-lg transition-all duration-200;
+  }
+  
+  .sidebar-item.active {
+    @apply text-[#00e5ff] bg-[#00e5ff]/20;
+  }
+  
+  /* Header styling */
+  .app-header {
+    @apply bg-[#001529]/70 backdrop-blur-xl border-b border-[#00e5ff]/20 sticky top-0 z-50;
+  }
+  
+  /* Animation utilities */
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); }
+    50% { box-shadow: 0 0 30px rgba(0, 229, 255, 0.3); }
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  /* Loading states */
+  .loading-shimmer {
+    @apply bg-gradient-to-r from-[#002a4a] via-[#004d7a] to-[#002a4a] bg-[length:200%_100%] animate-pulse;
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-[#001529];
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-[#00e5ff]/30 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-[#00e5ff]/50;
+  }
+}
+
+/* Component-specific overrides */
+.lucide {
+  @apply text-current;
+}
+
+/* Ensure proper contrast for accessibility */
+[data-state="checked"] {
+  @apply bg-[#00e5ff] text-[#001529];
+}
+
+/* Toast styling */
+.toast {
+  @apply glass-panel text-white;
+}
+
+/* Badge styling */
+.badge {
+  @apply bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30;
+}
+
+.badge.destructive {
+  @apply bg-red-500/20 text-red-400 border border-red-500/30;
+}
+
+.badge.secondary {
+  @apply bg-[#004d7a]/50 text-[#00e5ff]/70 border border-[#004d7a];
+}
