@@ -53,6 +53,11 @@ function TerraFusionDashboard() {
   const [backendConnected, setBackendConnected] = useState(false);
   const [moduleCount, setModuleCount] = useState(0);
 
+  // Hide loading screen when React mounts - THE TERRAFUSION WAY
+  useEffect(() => {
+    document.body.classList.add('app-loaded');
+  }, []);
+
   // Fetch real system data from backend
   useEffect(() => {
     const fetchSystemData = async () => {
@@ -207,7 +212,8 @@ function TerraFusionDashboard() {
 }
 
 const App: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'hero' | 'os'>('hero');
+  // THE TERRAFUSION WAY: Start directly in OS mode for native shell
+  const [viewMode, setViewMode] = useState<'hero' | 'os'>('os');
 
   const switchToOS = () => {
     setViewMode('os');

@@ -1,0 +1,17 @@
+#!/bin/sh
+# Validate commit message format for TerraFusion OS
+# Expected format: "feat: description" or "fix: description" etc.
+
+commit_regex='^\b(feat|fix|docs|style|refactor|perf|test|build|ci|chore)(\(.+\))?: .{1,50}'
+
+error_msg="Invalid commit message format. Use: <type>(<scope>): <description>
+Examples: 
+  feat: add property valuation module
+  fix: resolve TypeScript compilation errors
+  docs: update API documentation
+  style: format code with prettier"
+
+if ! grep -qE "$commit_regex" "$1"; then
+    echo "$error_msg" >&2
+    exit 1
+fi

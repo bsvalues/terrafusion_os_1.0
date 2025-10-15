@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion OS</title>
+    <!-- Official TerraFusion Brand Styles -->
+    <link rel="stylesheet" href="../Brand_Assets/Complete_Assets/brand/tf-brand-css.css">
+    <!-- Authoritative PWA Shell Styles -->
+    <link rel="stylesheet" href="../Brand_Assets/Complete_Assets/brand/tf-pwa-css.css">
+    <style>
+        /* TerraFusion Championship Brand System */
+        :root {
+            /* Brand variable aliases to match official assets */
+            --tf-primary: #0099ff;
+            --tf-transcend: #00ffee;
+            --tf-accent: #00ffaa;
+            --tf-dark: #0b1020;
+            --tf-dark-lighter: #1a1f3a;
+            --tf-gray-light: rgba(255, 255, 255, 0.7);
+            --tf-trust-blue: #0099ff;
+            --tf-transcend-cyan: #00ffee;
+            --tf-success-green: #00ffaa;
+            --tf-deep-space: #0b1020;
+            --tf-midnight: #1a1f3a;
+            --tf-alert-red: #ff4444;
+            --tf-caution-amber: #ffaa00;
+            
+            --tf-gradient-clarity: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            --tf-gradient-transcend: linear-gradient(135deg, #00ffee 0%, #00ffaa 100%);
+            --tf-gradient-dark: linear-gradient(180deg, #0b1020 0%, #0a0f1c 100%);
+            --tf-gradient-success: linear-gradient(135deg, #00ffaa 0%, #00ff88 100%);
+            
+            --tf-glass: rgba(255, 255, 255, 0.04);
+            --tf-glass-heavy: rgba(255, 255, 255, 0.12);
+            --tf-glass-border: rgba(0, 255, 238, 0.2);
+            --tf-blur: blur(24px);
+            --tf-blur-heavy: blur(40px);
+            
+            --tf-shadow-glow: 0 0 60px rgba(0, 255, 238, 0.4);
+            --tf-shadow-neural: 0 0 60px rgba(0, 153, 255, 0.4);
+            --tf-shadow-success: 0 0 60px rgba(0, 255, 170, 0.4);
+            
+            --tf-font-primary: 'Segoe UI Variable', 'Inter', -apple-system, system-ui, sans-serif;
+            --tf-font-mono: 'Cascadia Code', 'SF Mono', 'Consolas', monospace;
+            
+            --tf-transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            --tf-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            
+            --tf-space-unit: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--tf-font-primary);
+            background: var(--tf-gradient-dark);
+            color: white;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Fixed WebGL background (official brand asset) */
+        .tf-bg-webgl {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .tf-bg-webgl iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Foreground: Official Hero UI (exact asset) */
+        .tf-hero-embed {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background: transparent;
+        }
+        .tf-hero-embed iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* TerraFusion Grid Layout */
+        .tf-os-grid {
+            display: grid;
+            grid-template: 
+                "tf-header tf-header tf-header" 80px
+                "tf-nav tf-main tf-insights" 1fr
+                / 280px 1fr 320px;
+            height: 100vh;
+            gap: 1px;
+            background: rgba(0, 255, 238, 0.1);
+        }
+
+        /* Hide legacy grid to enforce official brand UI only */
+        .tf-os-grid { display: none !important; }
+
+        /* TerraFusion Header - Transparency Dashboard */
+        .tf-header {
+            grid-area: tf-header;
+            background: var(--tf-glass);
+            -webkit-backdrop-filter: var(--tf-blur);
+            backdrop-filter: var(--tf-blur);
+            border-bottom: 1px solid var(--tf-glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 calc(var(--tf-space-unit) * 3);
+        }
+
+        .tf-identity {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--tf-space-unit) * 2);
+        }
+
+        .tf-seal {
+            width: 48px;
+            height: 48px;
+            background: var(--tf-gradient-clarity);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: tf-neural-pulse 4s ease-in-out infinite;
+        }
+
+        .tf-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: var(--tf-gradient-clarity);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tf-transparency-metrics {
+            display: flex;
+            gap: calc(var(--tf-space-unit) * 4);
+            font-family: var(--tf-font-mono);
+        }
+
+        .tf-metric {
+            text-align: center;
+        }
+
+        .tf-metric-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--tf-transcend-cyan);
+        }
+
+        .tf-metric-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .tf-system-status {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--tf-space-unit) * 2);
+        }
+
+        .tf-status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--tf-success-green);
+            animation: tf-pulse 2s infinite;
+        }
+
+        /* TerraFusion Navigation */
+        .tf-nav {
+            grid-area: tf-nav;
+            background: var(--tf-glass);
+            -webkit-backdrop-filter: var(--tf-blur);
+            backdrop-filter: var(--tf-blur);
+            border-right: 1px solid var(--tf-glass-border);
+            padding: calc(var(--tf-space-unit) * 3);
+            overflow-y: auto;
+        }
+
+        .tf-nav-section {
+            margin-bottom: calc(var(--tf-space-unit) * 4);
+        }
+
+        .tf-nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--tf-transcend-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: calc(var(--tf-space-unit) * 2);
+            opacity: 0.8;
+        }
+
+        .tf-nav-item {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--tf-space-unit) * 2);
+            padding: calc(var(--tf-space-unit) * 2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--tf-transition);
+            margin-bottom: calc(var(--tf-space-unit) * 1);
+            position: relative;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .tf-nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 16px;
+            background: var(--tf-gradient-clarity);
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tf-nav-item:hover {
+            background: var(--tf-glass-heavy);
+            transform: translateX(8px);
+        }
+
+        .tf-nav-item:hover::before,
+        .tf-nav-item.active::before {
+            opacity: 1;
+        }
+
+        .tf-nav-item.active {
+            background: var(--tf-glass-heavy);
+            color: var(--tf-transcend-cyan);
+        }
+
+        .tf-nav-icon {
+            font-size: 16px;
+            width: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tf-nav-badge {
+            margin-left: auto;
+            padding: 2px 8px;
+            background: var(--tf-gradient-success);
+            color: var(--tf-deep-space);
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* TerraFusion Main Command Center */
+        .tf-main {
+            grid-area: tf-main;
+            background: var(--tf-glass);
+            -webkit-backdrop-filter: var(--tf-blur);
+            backdrop-filter: var(--tf-blur);
+            padding: calc(var(--tf-space-unit) * 4);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .tf-command-header {
+            margin-bottom: calc(var(--tf-space-unit) * 4);
+        }
+
+        .tf-command-title {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: calc(var(--tf-space-unit) * 2);
+            background: var(--tf-gradient-clarity);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tf-command-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: calc(var(--tf-space-unit) * 3);
+        }
+
+        .tf-transcended-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: calc(var(--tf-space-unit) * 1);
+            padding: calc(var(--tf-space-unit) * 1) calc(var(--tf-space-unit) * 2);
+            background: var(--tf-gradient-transcend);
+            color: var(--tf-deep-space);
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            box-shadow: var(--tf-shadow-glow);
+            animation: tf-transcended-glow 6s ease-in-out infinite;
+        }
+
+        /* TerraFusion Intelligence Grid */
+        .tf-intelligence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: calc(var(--tf-space-unit) * 3);
+            margin-bottom: calc(var(--tf-space-unit) * 4);
+        }
+
+        .tf-intel-card {
+            background: var(--tf-glass);
+            -webkit-backdrop-filter: var(--tf-blur-heavy);
+            backdrop-filter: var(--tf-blur-heavy);
+            border: 1px solid var(--tf-glass-border);
+            border-radius: 20px;
+            padding: calc(var(--tf-space-unit) * 4);
+            transition: var(--tf-transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tf-intel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: var(--tf-gradient-clarity);
+            transition: left 0.8s ease;
+        }
+
+        .tf-intel-card:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--tf-shadow-neural);
+            border-color: rgba(0, 153, 255, 0.6);
+        }
+
+        .tf-intel-card:hover::before {
+            left: 0;
+        }
+
+        .tf-intel-card.tf-enhanced {
+            border-color: rgba(0, 255, 238, 0.4);
+        }
+
+        .tf-intel-card.tf-enhanced:hover {
+            box-shadow: var(--tf-shadow-glow);
+            border-color: rgba(0, 255, 238, 0.8);
+        }
+
+        .tf-intel-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--tf-gradient-clarity);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: calc(var(--tf-space-unit) * 3);
+        }
+
+        .tf-intel-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: calc(var(--tf-space-unit) * 1);
+            line-height: 1.3;
+        }
+
+        .tf-intel-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: calc(var(--tf-space-unit) * 3);
+            line-height: 1.5;
+        }
+
+        .tf-intel-metrics {
+            display: flex;
+            gap: calc(var(--tf-space-unit) * 3);
+            margin-bottom: calc(var(--tf-space-unit) * 3);
+            font-family: var(--tf-font-mono);
+        }
+
+        .tf-intel-metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--tf-transcend-cyan);
+        }
+
+        .tf-intel-metric-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        .tf-intel-action {
+            background: var(--tf-gradient-transcend);
+            color: var(--tf-deep-space);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--tf-transition);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .tf-intel-action:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 255, 238, 0.4);
+        }
+
+        /* TerraFusion Insights Panel */
+        .tf-insights {
+            grid-area: tf-insights;
+            background: var(--tf-glass);
+            -webkit-backdrop-filter: var(--tf-blur);
+            backdrop-filter: var(--tf-blur);
+            border-left: 1px solid var(--tf-glass-border);
+            padding: calc(var(--tf-space-unit) * 3);
+            overflow-y: auto;
+        }
+
+        .tf-insights-header {
+            margin-bottom: calc(var(--tf-space-unit) * 3);
+        }
+
+        .tf-insights-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--tf-transcend-cyan);
+            margin-bottom: calc(var(--tf-space-unit) * 2);
+        }
+
+        .tf-realtime-feed {
+            margin-bottom: calc(var(--tf-space-unit) * 2);
+        }
+
+        .tf-feed-item {
+            background: rgba(0, 153, 255, 0.1);
+            border: 1px solid rgba(0, 153, 255, 0.2);
+            border-radius: 12px;
+            padding: calc(var(--tf-space-unit) * 2);
+            margin-bottom: calc(var(--tf-space-unit) * 2);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .tf-feed-timestamp {
+            color: var(--tf-transcend-cyan);
+            font-family: var(--tf-font-mono);
+            font-size: 10px;
+            margin-bottom: calc(var(--tf-space-unit) * 1);
+        }
+
+        .tf-feed-source {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .tf-quantum-status {
+            background: rgba(0, 255, 238, 0.1);
+            border: 1px solid rgba(0, 255, 238, 0.3);
+            border-radius: 16px;
+            padding: calc(var(--tf-space-unit) * 3);
+            margin-bottom: calc(var(--tf-space-unit) * 3);
+        }
+
+        .tf-quantum-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--tf-transcend-cyan);
+            margin-bottom: calc(var(--tf-space-unit) * 2);
+        }
+
+        .tf-quantum-metrics {
+            font-family: var(--tf-font-mono);
+            font-size: 11px;
+        }
+
+        .tf-quantum-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: calc(var(--tf-space-unit) * 1);
+        }
+
+        .tf-quantum-value {
+            color: var(--tf-transcend-cyan);
+            font-weight: 700;
+        }
+
+        /* Window Controls */
+        .tf-window-controls {
+            position: fixed;
+            top: 16px;
+            right: 24px;
+            display: flex;
+            gap: 8px;
+            z-index: 10000;
+        }
+
+        .tf-window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .tf-window-control:hover { opacity: 0.7; }
+        .tf-minimize { background: #00ffee; }
+        .tf-maximize { background: #28ca42; }
+        .tf-close { background: #ff5f56; }
+
+        /* TerraFusion Animations */
+        @keyframes tf-neural-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(0, 153, 255, 0.4);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(0, 153, 255, 0.8);
+            }
+        }
+
+        @keyframes tf-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes tf-transcended-glow {
+            0%, 100% { 
+                box-shadow: var(--tf-shadow-glow);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 80px rgba(0, 255, 238, 0.6);
+                transform: scale(1.02);
+            }
+        }
+
+        .tf-animate-in {
+            animation: tf-fade-in 1s var(--tf-spring) forwards;
+        }
+
+        @keyframes tf-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* TerraFusion Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 153, 255, 0.4);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 153, 255, 0.6);
+        }
+    </style>
+    <!-- End local overrides -->
+</head>
+<body>
+    <!-- OS Bootstrap: auto-detect API base if not provided by host -->
+    <script>
+      window.terrafusion = window.terrafusion || {};
+      window.terrafusion.api = window.terrafusion.api || {};
+      // Respect host-provided config; otherwise prefer environment, then location.origin
+      (function() {
+        if (window.terrafusion.api.baseUrl) return;
+        // Prefer injected env-style globals if present (no assumptions about bundler)
+        const envBase = (window.ENV && window.ENV.TERRAFUSION_API_BASE)
+          || (window.process && window.process.env && window.process.env.TERRAFUSION_API_BASE)
+          || (window.import_meta && window.import_meta.env && window.import_meta.env.TERRAFUSION_API_BASE);
+        const originFallback = location.origin;
+        window.terrafusion.api.baseUrl = envBase || originFallback;
+      })();
+    </script>
+    <!-- Inline Authoritative PWA Shell (from Brand_Assets/Complete_Assets/brand/tf-pwa-index.html) -->
+    <!-- Splash Screen -->
+    <div id="splash" class="splash-screen">
+        <div class="splash-content">
+            <div class="logo-container">
+                <svg width="120" height="120" viewBox="0 0 120 120" class="logo">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#00ffaa;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="url(#gradient)" stroke-width="3"/>
+                    <text x="60" y="70" font-size="36" font-weight="bold" text-anchor="middle" fill="url(#gradient)">TF</text>
+                </svg>
+            </div>
+            <h1 class="splash-title">TerraFusion OS</h1>
+            <p class="splash-subtitle">Government. Transcended.</p>
+            <p class="splash-tagline">Turn Complexity into Clarity.</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-message" id="loadingMessage">Preparing transcendence…</p>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Header Bar -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-small">TF</div>
+                <h1 class="app-title">TerraFusion OS</h1>
+            </div>
+            <div class="header-center">
+                <div id="searchBar" class="search-bar">
+                    <input type="text" placeholder="Search properties, modules, or commands..." />
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <div class="user-avatar">👤</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Module Grid -->
+        <main class="app-main">
+            <div class="module-grid" id="moduleGrid">
+                <!-- Modules will be dynamically loaded here -->
+            </div>
+        </main>
+
+        <!-- Module Container (hidden by default) -->
+        <div id="moduleContainer" class="module-container" style="display: none;">
+            <div class="module-header">
+                <button class="back-button" onclick="closeModule()">← Back</button>
+                <h2 id="moduleTitle">Module Name</h2>
+            </div>
+            <iframe id="moduleFrame" class="module-frame"></iframe>
+        </div>
+    </div>
+
+    <!-- PWA Scripts (paths adjusted to existing repo assets) -->
+    <script>
+        // TerraFusion Transcendence Brand Protocol
+        const BRAND = {
+            essence: "Government. Transcended.",
+            tagline: "Government. Transcended.",
+            slogan: "Turn Complexity into Clarity.",
+            motto: "We do it right the first time.",
+            loadingMessages: [
+                "Preparing transcendence…",
+                "Advancing county intelligence…",
+                "Orchestrating clarity…"
+            ],
+            confirmationMessages: [
+                "Transcendence complete.",
+                "Your path is clear.",
+                "All systems: Ready."
+            ],
+            errorMessages: [
+                "Let's clear the path—together.",
+                "We anticipate, we adapt, we solve.",
+                "Support is standing by your side."
+            ],
+            emptyStateMessages: [
+                "A blank page for transformation.",
+                "Begin your next chapter.",
+                "The future starts here."
+            ]
+        };
+
+        // --- Self-healing helpers (non-intrusive, no UI changes) ---
+        const TF_CACHE_USER = 'tf.cache.user.v1';
+        const TF_CACHE_MODULES = 'tf.cache.modules.v1';
+
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+        async function fetchJSON(url, opts = {}, timeoutMs = 3000) {
+            const controller = new AbortController();
+            const t = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const res = await fetch(url, { ...opts, signal: controller.signal });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } finally {
+                clearTimeout(t);
+            }
+        }
+
+        async function silentRetry(taskFn, { attempts = 6, baseDelay = 750 } = {}) {
+            let err;
+            for (let i = 0; i < attempts; i++) {
+                try { return await taskFn(); } catch (e) {
+                    err = e;
+                    await sleep(baseDelay * Math.pow(1.6, i));
+                }
+            }
+            throw err;
+        }
+
+        async function startHealthMonitor() {
+            // Background reconnection loop; updates UI silently when API returns
+            for (;;) {
+                try {
+                    const [user, modules] = await Promise.all([
+                        fetchJSON(`${API_BASE}/api/user`, {}, 4000),
+                        fetchJSON(`${API_BASE}/api/modules`, {}, 4000),
+                    ]);
+                    // Update UI and caches when healthy
+                    try { localStorage.setItem(TF_CACHE_USER, JSON.stringify(user)); } catch {}
+                    try { localStorage.setItem(TF_CACHE_MODULES, JSON.stringify(modules)); } catch {}
+                    document.getElementById('userName').textContent = user.name || 'Guest';
+                    renderModules(modules);
+                    showSuccess('Connected to TerraFusion API');
+                    return; // stop monitor on success; normal flows take over
+                } catch (_) {
+                    await sleep(2000);
+                }
+            }
+        }
+
+        // Rotate loading messages
+        let messageIndex = 0;
+        setInterval(() => {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage && document.getElementById('splash').style.display !== 'none') {
+                messageIndex = (messageIndex + 1) % BRAND.loadingMessages.length;
+                loadingMessage.textContent = BRAND.loadingMessages[messageIndex];
+            }
+        }, 2000);
+
+        // Service Worker Registration (use existing asset path)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../Brand_Assets/Complete_Assets/brand/tf-pwa-sw.js').catch(() => {});
+        }
+
+        // Get API configuration from bridge or fallback to origin (no hardcoded ports)
+        const API_BASE = window.terrafusion?.api?.baseUrl || location.origin;
+
+        // Initialize app (self-healing, fail-open)
+        async function initApp() {
+            try {
+                const user = await fetchJSON(`${API_BASE}/api/user`, {}, 3000);
+                document.getElementById('userName').textContent = user.name || 'Guest';
+
+                const modules = await fetchJSON(`${API_BASE}/api/modules`, {}, 3000);
+                renderModules(modules);
+                // Cache fresh data
+                try { localStorage.setItem(TF_CACHE_USER, JSON.stringify(user)); } catch {}
+                try { localStorage.setItem(TF_CACHE_MODULES, JSON.stringify(modules)); } catch {}
+
+                setTimeout(() => {
+                    document.getElementById('splash').style.display = 'none';
+                    document.getElementById('app').style.display = 'block';
+                }, 1500);
+            } catch (error) {
+                console.warn('API unavailable on init, starting in cached/offline mode:', error);
+                // Fail-open: show shell immediately with cached data (if any), no user-facing error popup
+                try {
+                    const cachedUser = JSON.parse(localStorage.getItem(TF_CACHE_USER) || 'null');
+                    const cachedModules = JSON.parse(localStorage.getItem(TF_CACHE_MODULES) || 'null');
+                    if (cachedUser) document.getElementById('userName').textContent = cachedUser.name || 'Guest';
+                    if (cachedModules) renderModules(cachedModules); else renderModules([]);
+                } catch { renderModules([]); }
+                document.getElementById('splash').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                // Start background health monitor to self-heal without surfacing errors to user
+                startHealthMonitor();
+            }
+        }
+
+        // Render module grid
+        function renderModules(modules) {
+            const grid = document.getElementById('moduleGrid');
+            grid.innerHTML = '';
+
+            modules.forEach(module => {
+                const tile = document.createElement('div');
+                tile.className = `module-tile ${!module.enabled ? 'disabled' : ''}`;
+                tile.innerHTML = `
+                    <div class="module-icon">${module.icon}</div>
+                    <h3 class="module-name">${module.name}</h3>
+                    <p class="module-description">${module.description}</p>
+                `;
+                if (module.enabled) tile.onclick = () => loadModule(module);
+                grid.appendChild(tile);
+            });
+        }
+
+        // Load a module
+        async function loadModule(module) {
+            const capResponse = await fetch(`${API_BASE}/api/capabilities/check`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ module: module.id, capability: 'access' })
+            });
+            const capability = await capResponse.json();
+            if (!capability.allowed) { showError('Access denied to ' + module.name); return; }
+
+            switch(module.id) {
+                case 'costforge-ai':
+                    loadCostForgeModule();
+                    break;
+                case 'marketplace':
+                    loadMarketplaceModule();
+                    break;
+                case 'devops':
+                    loadDevOpsModule();
+                    break;
+                case 'ide':
+                    loadIDEModule();
+                    break;
+                default:
+                    loadGenericModule(module);
+            }
+        }
+
+        function loadCostForgeModule() {
+            const container = document.getElementById('moduleContainer');
+            const frame = document.getElementById('moduleFrame');
+            document.getElementById('moduleTitle').textContent = 'CostForge AI';
+            frame.src = '/modules/costforge/index.html';
+            document.querySelector('.app-main').style.display = 'none';
+            container.style.display = 'block';
+        }
+
+        function loadMarketplaceModule() {
+            const container = document.getElementById('moduleContainer');
+            const frame = document.getElementById('moduleFrame');
+            document.getElementById('moduleTitle').textContent = 'TerraFusion Marketplace';
+            frame.src = '/modules/marketplace/index.html';
+            document.querySelector('.app-main').style.display = 'none';
+            container.style.display = 'block';
+        }
+
+        function loadDevOpsModule() {
+            const container = document.getElementById('moduleContainer');
+            const frame = document.getElementById('moduleFrame');
+            document.getElementById('moduleTitle').textContent = 'DevOps Workspace';
+            frame.src = '/modules/devops/index.html';
+            document.querySelector('.app-main').style.display = 'none';
+            container.style.display = 'block';
+        }
+
+        function loadIDEModule() {
+            const container = document.getElementById('moduleContainer');
+            const frame = document.getElementById('moduleFrame');
+            document.getElementById('moduleTitle').textContent = 'TerraFusion IDE';
+            frame.src = '/modules/ide/index.html';
+            document.querySelector('.app-main').style.display = 'none';
+            container.style.display = 'block';
+        }
+
+        function loadGenericModule(module) {
+            const container = document.getElementById('moduleContainer');
+            const frame = document.getElementById('moduleFrame');
+            document.getElementById('moduleTitle').textContent = module.name;
+            frame.src = `/modules/${module.id}/index.html`;
+            document.querySelector('.app-main').style.display = 'none';
+            container.style.display = 'block';
+        }
+
+        function closeModule() {
+            document.getElementById('moduleContainer').style.display = 'none';
+            document.querySelector('.app-main').style.display = 'block';
+            document.getElementById('moduleFrame').src = '';
+        }
+
+        function showError(message) {
+            const toast = document.createElement('div');
+            toast.className = 'error-toast';
+            const brandMessage = BRAND.errorMessages[Math.floor(Math.random() * BRAND.errorMessages.length)];
+            toast.innerHTML = `
+                <div class="error-brand">${brandMessage}</div>
+                <div class="error-detail">${message}</div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 5000);
+        }
+
+        function showSuccess(message) {
+            const toast = document.createElement('div');
+            toast.className = 'success-toast';
+            const brandMessage = BRAND.confirmationMessages[Math.floor(Math.random() * BRAND.confirmationMessages.length)];
+            toast.innerHTML = `
+                <div class="success-brand">${brandMessage}</div>
+                <div class="success-detail">${message}</div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+    <!-- Official TerraFusion WebGL background (exact asset) -->
+    <div class="tf-bg-webgl" aria-hidden="true">
+        <iframe src="../Brand_Assets/Complete_Assets/brand/tf-webgl-transcendence.html" title="TerraFusion WebGL Background" loading="eager"></iframe>
+    </div>
+    <div class="tf-window-controls">
+        <button class="tf-window-control tf-minimize" aria-label="Minimize window" onclick="minimizeWindow()"></button>
+        <button class="tf-window-control tf-maximize" aria-label="Maximize window" onclick="maximizeWindow()"></button>
+        <button class="tf-window-control tf-close" aria-label="Close window" onclick="closeWindow()"></button>
+    </div>
+
+    <!-- Official TerraFusion Hero UI as primary interface -->
+    <div class="tf-hero-embed" role="presentation">
+        <iframe src="../Brand_Assets/Complete_Assets/brand/tf-hero-sections.html" title="TerraFusion Official UI" loading="eager"></iframe>
+    </div>
+
+    <!-- Legacy grid retained in markup but hidden via CSS to avoid off-brand UI -->
+    <div class="tf-os-grid">
+        <!-- TerraFusion Header - Transparency Dashboard -->
+        <div class="tf-header">
+            <div class="tf-identity">
+                <div class="tf-seal">🚀</div>
+                <div>
+                    <div class="tf-title">TerraFusion OS</div>
+                    <div class="motto-display" aria-label="Brand motto">Government. Transcended.</div>
+                </div>
+            </div>
+
+            <div class="tf-transparency-metrics">
+                <div class="tf-metric">
+                    <div class="tf-metric-value">89,247</div>
+                    <div class="tf-metric-label">Active Records</div>
+                </div>
+                <div class="tf-metric">
+                    <div class="tf-metric-value">1,008</div>
+                    <div class="tf-metric-label">AI Agents</div>
+                </div>
+                <div class="tf-metric">
+                    <div class="tf-metric-value">32</div>
+                    <div class="tf-metric-label">Systems</div>
+                </div>
+                <div class="tf-metric">
+                    <div class="tf-metric-value">379M×</div>
+                    <div class="tf-metric-label">Performance</div>
+                </div>
+            </div>
+
+            <div class="tf-system-status">
+                <div class="tf-status-indicator"></div>
+                <span style="font-size: 12px; font-weight: 600;">All Systems Transcended</span>
+            </div>
+        </div>
+
+        <!-- TerraFusion Navigation -->
+        <div class="tf-nav">
+            <div class="tf-nav-section">
+                <div class="tf-nav-section-title">TerraFusion Core</div>
+                <div class="tf-nav-item active" onclick="showView('dashboard')">
+                    <div class="tf-nav-icon">🎯</div>
+                    <div>Command Center</div>
+                </div>
+                <div class="tf-nav-item" onclick="launchSystem('property-intelligence')">
+                    <div class="tf-nav-icon">🏛️</div>
+                    <div>Property Intelligence</div>
+                </div>
+                <div class="tf-nav-item" onclick="launchSystem('revenue-optimization')">
+                    <div class="tf-nav-icon">💰</div>
+                    <div>Revenue Optimization</div>
+                </div>
+                <div class="tf-nav-item" onclick="launchSystem('compliance-engine')">
+                    <div class="tf-nav-icon">⚖️</div>
+                    <div>Compliance Engine</div>
+                </div>
+            </div>
+
+            <div class="tf-nav-section">
+                <div class="tf-nav-section-title">AI Intelligence</div>
+                <div class="tf-nav-item" onclick="launchSystem('ai-orchestrator')">
+                    <div class="tf-nav-icon">🧠</div>
+                    <div>AI Orchestrator</div>
+                    <div class="tf-nav-badge">1,008</div>
+                </div>
+                <div class="tf-nav-item" onclick="launchSystem('quantum-engine')">
+                    <div class="tf-nav-icon">⚡</div>
+                    <div>Quantum Engine</div>
+                    <div class="tf-nav-badge">379M×</div>
+                </div>
+                <div class="tf-nav-item" onclick="launchSystem('predictive-ai')">
+                    <div class="tf-nav-icon">🔮</div>
+                    <div>Predictive AI</div>
+                </div>
+            </div>
+
+            <div class="tf-nav-section">
+                <div class="tf-nav-section-title">Data Operations</div>
+                <div class="tf-nav-item" onclick="launchSystem('data-lake')">
+                    <div class="tf-nav-icon">🗄️</div>
+                    <div>TerraFusion Data Lake</div>
+                </div>
+                <div class="tf-nav-item" onclick="launchSystem('integration-hub')">
+                    <div class="tf-nav-icon">🔄</div>
+                    <div>Integration Hub</div>
+                </div>
+                <div class="tf-nav-item" onclick="launchSystem('audit-intelligence')">
+                    <div class="tf-nav-icon">📋</div>
+                    <div>Audit Intelligence</div>
+                </div>
+            </div>
+
+            <div class="tf-nav-section">
+                <div class="tf-nav-section-title">Public Interface</div>
+                <div class="tf-nav-item" onclick="launchSystem('citizen-portal')">
+                    <div class="tf-nav-icon">🌐</div>
+                    <div>Citizen Portal</div>
+                </div>
+                <div class="tf-nav-item" onclick="launchSystem('transparency-dashboard')">
+                    <div class="tf-nav-icon">👁️</div>
+                    <div>Transparency Dashboard</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TerraFusion Main Command Center -->
+        <div class="tf-main">
+            <div class="tf-command-header tf-animate-in">
+                <h1 class="tf-command-title">TerraFusion Command Center</h1>
+                <p class="tf-command-subtitle">Advanced Government Intelligence • Quantum-Enhanced Operations</p>
+                <div class="tf-transcended-badge">
+                    <span>✨</span>
+                    <span>Government. Transcended.</span>
+                </div>
+            </div>
+
+            <div class="tf-intelligence-grid tf-animate-in" style="animation-delay: 0.2s;">
+                <div class="tf-intel-card tf-enhanced">
+                    <div class="tf-intel-icon">💎</div>
+                    <h3 class="tf-intel-title">TerraFusion Property Engine</h3>
+                    <p class="tf-intel-desc">379,000,000× faster processing with neural pattern recognition across 89,247 active property records</p>
+                    <div class="tf-intel-metrics">
+                        <div>
+                            <div class="tf-intel-metric-value">3.2s</div>
+                            <div class="tf-intel-metric-label">Avg Processing</div>
+                        </div>
+                        <div>
+                            <div class="tf-intel-metric-value">99.7%</div>
+                            <div class="tf-intel-metric-label">Accuracy</div>
+                        </div>
+                        <div>
+                            <div class="tf-intel-metric-value">$2.1B</div>
+                            <div class="tf-intel-metric-label">Total AV</div>
+                        </div>
+                    </div>
+                    <button class="tf-intel-action" onclick="launchSystem('property-engine')">
+                        Access Engine
+                    </button>
+                </div>
+
+                <div class="tf-intel-card">
+                    <div class="tf-intel-icon">🧠</div>
+                    <h3 class="tf-intel-title">TerraFusion AI Orchestra</h3>
+                    <p class="tf-intel-desc">1,008 intelligent agents coordinating across all government operations with distributed consciousness architecture</p>
+                    <div class="tf-intel-metrics">
+                        <div>
+                            <div class="tf-intel-metric-value">1,008</div>
+                            <div class="tf-intel-metric-label">Active Agents</div>
+                        </div>
+                        <div>
+                            <div class="tf-intel-metric-value">47.2k</div>
+                            <div class="tf-intel-metric-label">Tasks/Hour</div>
+                        </div>
+                        <div>
+                            <div class="tf-intel-metric-value">0.03s</div>
+                            <div class="tf-intel-metric-label">Response</div>
+                        </div>
+                    </div>
+                    <button class="tf-intel-action" onclick="launchSystem('ai-orchestra')">
+                        Command AI
+                    </button>
+                </div>
+
+                <div class="tf-intel-card">
+                    <div class="tf-intel-icon">🏛️</div>
+                    <h3 class="tf-intel-title">TerraFusion Government Suite</h3>
+                    <p class="tf-intel-desc">Complete operational transparency with real-time citizen services and integrated compliance monitoring</p>
+                    <div class="tf-intel-metrics">
+                        <div>
+                            <div class="tf-intel-metric-value">32</div>
+                            <div class="tf-intel-metric-label">Integrated Systems</div>
+                        </div>
+                        <div>
+                            <div class="tf-intel-metric-value">99.99%</div>
+                            <div class="tf-intel-metric-label">Uptime</div>
+                        </div>
+                        <div>
+                            <div class="tf-intel-metric-value">24/7</div>
+                            <div class="tf-intel-metric-label">Monitoring</div>
+                        </div>
+                    </div>
+                    <button class="tf-intel-action" onclick="launchSystem('government-suite')">
+                        Access Operations
+                    </button>
+                </div>
+
+                <div class="tf-intel-card tf-enhanced">
+                    <div class="tf-intel-icon">🔄</div>
+                    <h3 class="tf-intel-title">TerraFusion Data Sync</h3>
+                    <p class="tf-intel-desc">Real-time bidirectional synchronization with Harris PACS and legacy systems using quantum-enhanced data transformation</p>
+                    <div class="tf-intel-metrics">
+                        <div>
+                            <div class="tf-intel-metric-value">Live</div>
+                            <div class="tf-intel-metric-label">Sync Status</div>
+                        </div>
+                        <div>
+                            <div class="tf-intel-metric-value">89,247</div>
+                            <div class="tf-intel-metric-label">Records</div>
+                        </div>
+                        <div>
+                            <div class="tf-intel-metric-value">0.001s</div>
+                            <div class="tf-intel-metric-label">Latency</div>
+                        </div>
+                    </div>
+                    <button class="tf-intel-action" onclick="launchSystem('data-sync')">
+                        Monitor Sync
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TerraFusion Insights Panel -->
+        <div class="tf-insights">
+            <div class="tf-insights-header">
+                <h3 class="tf-insights-title">TerraFusion Insights Stream</h3>
+            </div>
+
+            <div class="tf-quantum-status">
+                <div class="tf-quantum-title">🔥 TerraFusion Quantum Status</div>
+                <div class="tf-quantum-metrics">
+                    <div class="tf-quantum-metric">
+                        <span>Processing Power:</span>
+                        <span class="tf-quantum-value">379M× Enhanced</span>
+                    </div>
+                    <div class="tf-quantum-metric">
+                        <span>AI Load:</span>
+                        <span class="tf-quantum-value">23.7%</span>
+                    </div>
+                    <div class="tf-quantum-metric">
+                        <span>Quantum Coherence:</span>
+                        <span class="tf-quantum-value">94.3%</span>
+                    </div>
+                    <div class="tf-quantum-metric">
+                        <span>Consciousness Level:</span>
+                        <span class="tf-quantum-value">Multi-Species</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tf-realtime-feed">
+                <div class="tf-feed-item">
+                    <div class="tf-feed-timestamp">14:23:07 PST</div>
+                    <div>TerraFusion agent #847 completed property assessment batch (247 records) with 99.8% confidence</div>
+                    <div class="tf-feed-source">Property Engine</div>
+                </div>
+
+                <div class="tf-feed-item">
+                    <div class="tf-feed-timestamp">14:22:43 PST</div>
+                    <div>Predictive model detected 3.2% market trend shift - adjusting valuation algorithms</div>
+                    <div class="tf-feed-source">AI Orchestrator</div>
+                </div>
+
+                <div class="tf-feed-item">
+                    <div class="tf-feed-timestamp">14:22:12 PST</div>
+                    <div>Harris PACS sync completed: 89,247 records verified, 0 discrepancies</div>
+                    <div class="tf-feed-source">Integration Hub</div>
+                </div>
+
+                <div class="tf-feed-item">
+                    <div class="tf-feed-timestamp">14:21:55 PST</div>
+                    <div>Consciousness layer activated multi-species interface protocols</div>
+                    <div class="tf-feed-source">TerraFusion AI</div>
+                </div>
+
+                <div class="tf-feed-item">
+                    <div class="tf-feed-timestamp">14:21:33 PST</div>
+                    <div>Audit trail logged 2,847 transparency events - all compliant</div>
+                    <div class="tf-feed-source">Compliance Engine</div>
+                </div>
+
+                <div class="tf-feed-item">
+                    <div class="tf-feed-timestamp">14:21:09 PST</div>
+                    <div>Public portal served 1,247 citizen requests with 0.03s avg response</div>
+                    <div class="tf-feed-source">Citizen Services</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TerraFusionOS {
+            constructor() {
+                this.currentView = 'dashboard';
+                this.aiAgents = 1008;
+                this.quantumBoost = 379000000;
+                this.init();
+            }
+
+            init() {
+                console.log('🚀 TerraFusion OS: All systems transcended');
+                console.log(`⚡ Quantum boost: ${this.quantumBoost}× enabled`);
+                console.log(`🤖 AI agents: ${this.aiAgents} coordinated`);
+                this.startTerraFusionFeed();
+                this.animateElements();
+            }
+
+            animateElements() {
+                const elements = document.querySelectorAll('.tf-animate-in');
+                elements.forEach((el, index) => {
+                    el.style.animationDelay = `${index * 0.3}s`;
+                });
+            }
+
+            startTerraFusionFeed() {
+                setInterval(() => {
+                    this.updateQuantumMetrics();
+                }, 5000);
+            }
+
+            updateQuantumMetrics() {
+                const aiLoad = (Math.random() * 30 + 15).toFixed(1);
+                const coherence = (Math.random() * 5 + 94).toFixed(1);
+                
+                const loadElement = document.querySelector('.tf-quantum-metric:nth-child(2) .tf-quantum-value');
+                const coherenceElement = document.querySelector('.tf-quantum-metric:nth-child(3) .tf-quantum-value');
+                
+                if (loadElement) loadElement.textContent = `${aiLoad}%`;
+                if (coherenceElement) coherenceElement.textContent = `${coherence}%`;
+            }
+
+            showView(viewId) {
+                this.currentView = viewId;
+                console.log(`📍 TerraFusion view: ${viewId}`);
+                this.updateNavigation();
+            }
+
+            updateNavigation() {
+                document.querySelectorAll('.tf-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+
+            launchSystem(systemId) {
+                console.log(`🚀 TerraFusion system launch: ${systemId}`);
+                
+                const systems = {
+                    'property-engine': () => this.showTerraFusion('TerraFusion Property Engine initializing...'),
+                    'ai-orchestra': () => this.showTerraFusion('1,008 TerraFusion AI agents coordinating...'),
+                    'government-suite': () => this.showTerraFusion('TerraFusion Government Suite active...'),
+                    'data-sync': () => this.showTerraFusion('TerraFusion Data Sync monitoring...'),
+                    'property-intelligence': () => this.showTerraFusion('TerraFusion Property Intelligence systems online...'),
+                    'revenue-optimization': () => this.showTerraFusion('TerraFusion Revenue Optimization processing...'),
+                    'compliance-engine': () => this.showTerraFusion('TerraFusion Compliance Engine analyzing...'),
+                    'ai-orchestrator': () => this.showTerraFusion('TerraFusion AI Orchestrator managing 1,008 agents...'),
+                    'quantum-engine': () => this.showTerraFusion('TerraFusion Quantum Engine at 379M× capacity...'),
+                    'predictive-ai': () => this.showTerraFusion('TerraFusion Predictive AI calculating...'),
+                    'data-lake': () => this.showTerraFusion('TerraFusion Data Lake neural access...'),
+                    'integration-hub': () => this.showTerraFusion('TerraFusion Integration Hub protocols active...'),
+                    'audit-intelligence': () => this.showTerraFusion('TerraFusion Audit Intelligence engaged...'),
+                    'citizen-portal': () => this.showTerraFusion('TerraFusion Citizen Portal ready...'),
+                    'transparency-dashboard': () => this.showTerraFusion('TerraFusion Transparency Dashboard feed...')
+                };
+
+                if (systems[systemId]) {
+                    systems[systemId]();
+                }
+            }
+
+            showTerraFusion(message) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 32px;
+                    background: var(--tf-glass-heavy);
+                    backdrop-filter: var(--tf-blur-heavy);
+                    border: 1px solid var(--tf-glass-border);
+                    border-radius: 20px;
+                    padding: 24px;
+                    color: white;
+                    font-size: 14px;
+                    font-weight: 500;
+                    z-index: 10000;
+                    transform: translateX(100%);
+                    transition: transform 0.6s var(--tf-spring);
+                    min-width: 380px;
+                    box-shadow: var(--tf-shadow-neural);
+                `;
+                
+                notification.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="width: 12px; height: 12px; background: var(--tf-trust-blue); border-radius: 50%; animation: tf-neural-pulse 2s infinite;"></div>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => notification.style.transform = 'translateX(0)', 150);
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => notification.remove(), 600);
+                }, 4000);
+            }
+
+            minimizeWindow() {
+                if (window.terrafusion?.shell) {
+                    window.terrafusion.shell.minimize();
+                }
+            }
+
+            maximizeWindow() {
+                if (window.terrafusion?.shell) {
+                    window.terrafusion.shell.maximize();
+                } else {
+                    document.documentElement.requestFullscreen?.();
+                }
+            }
+
+            closeWindow() {
+                if (window.terrafusion?.shell) {
+                    if (confirm('Shut down TerraFusion OS?')) {
+                        window.terrafusion.shell.close();
+                    }
+                } else {
+                    if (confirm('Shut down TerraFusion OS?')) {
+                        window.close();
+                    }
+                }
+            }
+        }
+
+        // Global functions
+        let terraFusionOS;
+
+        function showView(viewId) { terraFusionOS?.showView(viewId); }
+        function launchSystem(systemId) { terraFusionOS?.launchSystem(systemId); }
+        function minimizeWindow() { terraFusionOS?.minimizeWindow(); }
+        function maximizeWindow() { terraFusionOS?.maximizeWindow(); }
+        function closeWindow() { terraFusionOS?.closeWindow(); }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            terraFusionOS = new TerraFusionOS();
+        });
+    </script>
+</body>
+</html>

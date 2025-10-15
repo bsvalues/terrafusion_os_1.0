@@ -20,67 +20,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
     <style>
-      /* TerraFusion Loading Screen */
-      #loading-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #0b1020 0%, #1a2332 100%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        color: #ffffff;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      }
-
-      .loading-logo {
-        font-size: 3rem;
-        font-weight: 900;
-        margin-bottom: 1rem;
-        background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: glow 2s ease-in-out infinite alternate;
-      }
-
-      .loading-tagline {
-        font-size: 1.2rem;
-        font-weight: 300;
-        color: #8b9dc3;
-        margin-bottom: 2rem;
-      }
-
-      .loading-spinner {
-        width: 50px;
-        height: 50px;
-        border: 3px solid rgba(0, 153, 255, 0.3);
-        border-top: 3px solid #0099ff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes glow {
-        from { filter: drop-shadow(0 0 20px rgba(0, 153, 255, 0.5)); }
-        to { filter: drop-shadow(0 0 30px rgba(0, 255, 238, 0.8)); }
-      }
-
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-
-      /* Hide loading screen when app loads */
-      .app-loaded #loading-screen {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.5s ease-out;
-      }
-
       body {
         margin: 0;
         padding: 0;
@@ -94,33 +33,15 @@
         min-height: 100vh;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DoTecfJQ.js"></script>
+    <script type="module" crossorigin src="/assets/index-BVOShHjL.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/vendor-Bzh4Wy6B.js">
     <link rel="modulepreload" crossorigin href="/assets/ui-J9z3qYGk.js">
-    <link rel="modulepreload" crossorigin href="/assets/3d-B4WoNzcQ.js">
-    <link rel="modulepreload" crossorigin href="/assets/charts-BszvOgia.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-8PgHMscY.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-KCjVIlB6.css">
   <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
   <body>
-    <!-- TerraFusion Loading Screen -->
-    <div id="loading-screen">
-      <div class="loading-logo">🚀 TerraFusion</div>
-      <div class="loading-tagline">Government. Transcended.</div>
-      <div class="loading-spinner"></div>
-    </div>
-
-    <!-- React Root -->
+    <!-- React Root - React handles loading -->
     <div id="root"></div>
 
-
-    <script>
-      // Hide loading screen when React app loads
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          document.body.classList.add('app-loaded');
-        }, 500);
-      });
-    </script>
   </body>
 </html>
 

@@ -1,0 +1,951 @@
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import {
+  Box,
+  Paper,
+  Toolbar,
+  Typography,
+  IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  Tabs,
+  Tab,
+  Alert,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Switch,
+  FormControlLabel,
+  Tooltip,
+  Menu,
+  Divider,
+  Badge
+} from '@mui/material';
+import {
+  Add,
+  Save,
+  Refresh,
+  Storage,
+  TableChart,
+  AccountTree,
+  Security,
+  Code,
+  PlayArrow,
+  Settings,
+  Delete,
+  Edit,
+  Visibility,
+  Link,
+  ExpandMore,
+  DataObject,
+  Api,
+  Download,
+  Upload,
+  Assessment,
+  AutoFixHigh,
+  Psychology,
+  Shield,
+  Backup,
+  CloudSync
+} from '@mui/icons-material';
+
+// Import React Flow for visual database design
+import ReactFlow, {
+  Node,
+  Edge,
+  Controls,
+  Background,
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection,
+  NodeTypes
+} from 'reactflow';
+import 'reactflow/dist/style.css';
+
+// Database design interfaces
+interface DatabaseTable {
+  id: string;
+  name: string;
+  schema: string;
+  columns: DatabaseColumn[];
+  indexes: DatabaseIndex[];
+  constraints: DatabaseConstraint[];
+  auditEnabled: boolean;
+  complianceLevel: 'RED' | 'YELLOW' | 'GREEN';
+  governmentStandards: string[];
+  position: { x: number; y: number };
+}
+
+interface DatabaseColumn {
+  id: string;
+  name: string;
+  type: string;
+  nullable: boolean;
+  primaryKey: boolean;
+  foreignKey?: ForeignKeyRef;
+  unique: boolean;
+  defaultValue?: string;
+  description?: string;
+  encrypted: boolean;
+  piiData: boolean;
+}
+
+interface ForeignKeyRef {
+  tableId: string;
+  columnId: string;
+  onDelete: 'CASCADE' | 'SET NULL' | 'RESTRICT' | 'NO ACTION';
+  onUpdate: 'CASCADE' | 'SET NULL' | 'RESTRICT' | 'NO ACTION';
+}
+
+interface DatabaseIndex {
+  id: string;
+  name: string;
+  columns: string[];
+  type: 'BTREE' | 'HASH' | 'GIN' | 'GIST';
+  unique: boolean;
+}
+
+interface DatabaseConstraint {
+  id: string;
+  name: string;
+  type: 'CHECK' | 'UNIQUE' | 'PRIMARY KEY' | 'FOREIGN KEY';
+  definition: string;
+}
+
+interface DatabaseSchema {
+  id: string;
+  name: string;
+  description: string;
+  tables: DatabaseTable[];
+  relationships: DatabaseRelationship[];
+  version: string;
+  createdAt: Date;
+  updatedAt: Date;
+  complianceValidated: boolean;
+  governmentApproved: boolean;
+}
+
+interface DatabaseRelationship {
+  id: string;
+  fromTable: string;
+  fromColumn: string;
+  toTable: string;
+  toColumn: string;
+  type: 'ONE_TO_ONE' | 'ONE_TO_MANY' | 'MANY_TO_MANY';
+  name?: string;
+}
+
+interface DatabaseDesignerProps {
+  onSchemaChange?: (schema: DatabaseSchema) => void;
+  onSchemaGenerate?: (schema: DatabaseSchema) => void;
+  initialSchema?: DatabaseSchema;
+}
+
+// Custom node component for database tables
+const TableNode: React.FC<any> = ({ data }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Paper
+      elevation={4}
+      sx={{
+        minWidth: 280,
+        maxWidth: 400,
+        border: `2px solid ${data.complianceLevel === 'RED' ? '#F44336' : 
+                               data.complianceLevel === 'YELLOW' ? '#FF9800' : '#4CAF50'}`,
+        borderRadius: 2,
+        overflow: 'visible'
+      }}
+    >
+      {/* Table Header */}
+      <Box
+        sx={{
+          background: `linear-gradient(45deg, ${data.complianceLevel === 'RED' ? '#F44336' : 
+                                                 data.complianceLevel === 'YELLOW' ? '#FF9800' : '#4CAF50'}, #1976d2)`,
+          color: 'white',
+          p: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Storage sx={{ mr: 1 }} />
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+            {data.schema}.{data.name}
+          </Typography>
+        </Box>
+        
+        <Box>
+          <Chip
+            label={data.complianceLevel}
+            size="small"
+            sx={{ backgroundColor: 'rgba(255,255,255,0.2)', color: 'white', fontSize: '10px' }}
+          />
+          <IconButton size="small" sx={{ color: 'white', ml: 1 }} onClick={() => setExpanded(!expanded)}>
+            {expanded ? <ExpandMore sx={{ transform: 'rotate(180deg)' }} /> : <ExpandMore />}
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* Table Columns */}
+      <Box sx={{ p: 1 }}>
+        {(expanded ? data.columns : data.columns.slice(0, 5)).map((column: DatabaseColumn) => (
+          <Box
+            key={column.id}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              py: 0.5,
+              borderBottom: '1px solid #eee'
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: column.primaryKey ? 'bold' : 'normal' }}>
+                {column.name}
+              </Typography>
+              {column.primaryKey && <Chip label="PK" size="small" color="primary" sx={{ ml: 1, fontSize: '9px', height: '16px' }} />}
+              {column.foreignKey && <Chip label="FK" size="small" color="secondary" sx={{ ml: 1, fontSize: '9px', height: '16px' }} />}
+              {column.encrypted && <Shield sx={{ fontSize: 14, color: '#F44336', ml: 1 }} />}
+              {column.piiData && <Security sx={{ fontSize: 14, color: '#FF9800', ml: 1 }} />}
+            </Box>
+            <Typography variant="caption" color="text.secondary">
+              {column.type}
+            </Typography>
+          </Box>
+        ))}
+        
+        {!expanded && data.columns.length > 5 && (
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
+            +{data.columns.length - 5} more columns
+          </Typography>
+        )}
+      </Box>
+
+      {/* Table Stats */}
+      <Box sx={{ p: 1, backgroundColor: '#f5f5f5', display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="caption">
+          {data.columns.length} columns
+        </Typography>
+        <Typography variant="caption">
+          {data.indexes?.length || 0} indexes
+        </Typography>
+        <Typography variant="caption">
+          {data.auditEnabled ? 'Audited' : 'No Audit'}
+        </Typography>
+      </Box>
+    </Paper>
+  );
+};
+
+const nodeTypes: NodeTypes = {
+  table: TableNode
+};
+
+export const DatabaseDesigner: React.FC<DatabaseDesignerProps> = ({
+  onSchemaChange,
+  onSchemaGenerate,
+  initialSchema
+}) => {
+  const [schema, setSchema] = useState<DatabaseSchema>(initialSchema || {
+    id: 'new-schema',
+    name: 'Government Database Schema',
+    description: 'FISMA-compliant government database design',
+    tables: [],
+    relationships: [],
+    version: '1.0.0',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    complianceValidated: false,
+    governmentApproved: false
+  });
+
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [tableDialog, setTableDialog] = useState(false);
+  const [selectedTable, setSelectedTable] = useState<DatabaseTable | null>(null);
+  const [newTable, setNewTable] = useState<Partial<DatabaseTable>>({});
+  const [newColumn, setNewColumn] = useState<Partial<DatabaseColumn>>({});
+  const [generatingSchema, setGeneratingSchema] = useState(false);
+
+  // Load schema into visual designer
+  useEffect(() => {
+    if (schema.tables.length > 0) {
+      const tableNodes = schema.tables.map((table, index) => ({
+        id: table.id,
+        type: 'table',
+        position: table.position || { x: (index % 3) * 350, y: Math.floor(index / 3) * 300 },
+        data: table
+      }));
+
+      const relationshipEdges = schema.relationships.map((rel) => ({
+        id: rel.id,
+        source: rel.fromTable,
+        target: rel.toTable,
+        type: 'smoothstep',
+        animated: true,
+        label: rel.type.replace('_', ' '),
+        style: { stroke: '#1976d2', strokeWidth: 2 }
+      }));
+
+      setNodes(tableNodes);
+      setEdges(relationshipEdges);
+    }
+  }, [schema.tables, schema.relationships, setNodes, setEdges]);
+
+  const onConnect = useCallback(
+    (params: Connection) => {
+      const newEdge = {
+        ...params,
+        id: `rel-${Date.now()}`,
+        type: 'smoothstep',
+        animated: true,
+        style: { stroke: '#1976d2', strokeWidth: 2 }
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+
+      // Add relationship to schema
+      if (params.source && params.target) {
+        const newRelationship: DatabaseRelationship = {
+          id: `rel-${Date.now()}`,
+          fromTable: params.source,
+          fromColumn: 'id', // Default to id column
+          toTable: params.target,
+          toColumn: 'id',
+          type: 'ONE_TO_MANY'
+        };
+
+        setSchema(prev => ({
+          ...prev,
+          relationships: [...prev.relationships, newRelationship],
+          updatedAt: new Date()
+        }));
+      }
+    },
+    [setEdges]
+  );
+
+  const handleAddTable = () => {
+    setSelectedTable(null);
+    setNewTable({
+      name: '',
+      schema: 'public',
+      columns: [],
+      indexes: [],
+      constraints: [],
+      auditEnabled: true,
+      complianceLevel: 'GREEN',
+      governmentStandards: ['FISMA', 'NIST'],
+      position: { x: Math.random() * 300, y: Math.random() * 300 }
+    });
+    setTableDialog(true);
+  };
+
+  const handleSaveTable = () => {
+    if (!newTable.name) return;
+
+    const table: DatabaseTable = {
+      id: selectedTable?.id || `table-${Date.now()}`,
+      name: newTable.name!,
+      schema: newTable.schema || 'public',
+      columns: newTable.columns || [],
+      indexes: newTable.indexes || [],
+      constraints: newTable.constraints || [],
+      auditEnabled: newTable.auditEnabled ?? true,
+      complianceLevel: newTable.complianceLevel || 'GREEN',
+      governmentStandards: newTable.governmentStandards || ['FISMA'],
+      position: newTable.position || { x: 0, y: 0 }
+    };
+
+    setSchema(prev => {
+      const updatedTables = selectedTable 
+        ? prev.tables.map(t => t.id === selectedTable.id ? table : t)
+        : [...prev.tables, table];
+      
+      return {
+        ...prev,
+        tables: updatedTables,
+        updatedAt: new Date()
+      };
+    });
+
+    setTableDialog(false);
+    setNewTable({});
+  };
+
+  const handleAddColumn = () => {
+    if (!newColumn.name || !newColumn.type) return;
+
+    const column: DatabaseColumn = {
+      id: `col-${Date.now()}`,
+      name: newColumn.name!,
+      type: newColumn.type!,
+      nullable: newColumn.nullable ?? false,
+      primaryKey: newColumn.primaryKey ?? false,
+      unique: newColumn.unique ?? false,
+      encrypted: newColumn.encrypted ?? false,
+      piiData: newColumn.piiData ?? false,
+      defaultValue: newColumn.defaultValue,
+      description: newColumn.description
+    };
+
+    setNewTable(prev => ({
+      ...prev,
+      columns: [...(prev.columns || []), column]
+    }));
+
+    setNewColumn({});
+  };
+
+  const handleGenerateSQL = async () => {
+    setGeneratingSchema(true);
+    
+    try {
+      const response = await fetch('/api/database/generate-sql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('terrafusion-token')}`
+        },
+        body: JSON.stringify({
+          schema: schema,
+          dialect: 'postgresql',
+          governmentCompliance: true,
+          includeAuditTables: true,
+          encryptionEnabled: true
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Download or display generated SQL
+        const blob = new Blob([result.sql], { type: 'text/sql' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${schema.name.replace(/\s+/g, '_')}_schema.sql`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Failed to generate SQL schema:', error);
+    } finally {
+      setGeneratingSchema(false);
+    }
+  };
+
+  const handleComplianceValidation = async () => {
+    try {
+      const response = await fetch('/api/database/validate-compliance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('terrafusion-token')}`
+        },
+        body: JSON.stringify({
+          schema: schema,
+          standards: ['FISMA', 'NIST', 'Section508']
+        })
+      });
+
+      const result = await response.json();
+      
+      setSchema(prev => ({
+        ...prev,
+        complianceValidated: result.compliant,
+        updatedAt: new Date()
+      }));
+
+      // Show validation results
+      alert(`Compliance Validation: ${result.compliant ? 'PASSED' : 'FAILED'}\n${result.message}`);
+    } catch (error) {
+      console.error('Failed to validate compliance:', error);
+    }
+  };
+
+  const databaseTypes = [
+    'VARCHAR(255)', 'TEXT', 'INTEGER', 'BIGINT', 'DECIMAL(10,2)', 'BOOLEAN',
+    'TIMESTAMP', 'DATE', 'TIME', 'JSON', 'JSONB', 'UUID', 'BYTEA'
+  ];
+
+  return (
+    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
+      <Toolbar variant="dense" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Government Database Designer - {schema.name}
+        </Typography>
+        
+        <Badge 
+          badgeContent={schema.complianceValidated ? '✓' : '!'}
+          color={schema.complianceValidated ? 'success' : 'warning'}
+          sx={{ mr: 2 }}
+        >
+          <Chip
+            label={`${schema.tables.length} Tables`}
+            color="primary"
+            variant="outlined"
+          />
+        </Badge>
+
+        <Button
+          startIcon={<Add />}
+          variant="contained"
+          onClick={handleAddTable}
+          sx={{ mr: 1 }}
+        >
+          Add Table
+        </Button>
+
+        <Button
+          startIcon={<Assessment />}
+          onClick={handleComplianceValidation}
+          sx={{ mr: 1 }}
+        >
+          Validate
+        </Button>
+
+        <Button
+          startIcon={<Code />}
+          onClick={handleGenerateSQL}
+          disabled={generatingSchema}
+          sx={{ mr: 1 }}
+        >
+          {generatingSchema ? 'Generating...' : 'Generate SQL'}
+        </Button>
+
+        <IconButton onClick={() => onSchemaChange?.(schema)}>
+          <Save />
+        </IconButton>
+      </Toolbar>
+
+      {/* Main Content */}
+      <Box sx={{ display: 'flex', flexGrow: 1 }}>
+        {/* Visual Designer */}
+        <Box sx={{ flexGrow: 1, position: 'relative' }}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+            fitView
+            attributionPosition="bottom-left"
+          >
+            <Controls />
+            <MiniMap 
+              nodeStrokeColor="#1976d2"
+              nodeColor="#e3f2fd"
+              nodeBorderRadius={2}
+            />
+            <Background variant="dots" gap={20} size={1} />
+          </ReactFlow>
+
+          {/* Schema Stats Overlay */}
+          <Paper
+            sx={{
+              position: 'absolute',
+              top: 16,
+              left: 16,
+              p: 2,
+              minWidth: 200,
+              opacity: 0.95
+            }}
+          >
+            <Typography variant="subtitle2" gutterBottom>
+              Schema Statistics
+            </Typography>
+            <Typography variant="body2">Tables: {schema.tables.length}</Typography>
+            <Typography variant="body2">Relationships: {schema.relationships.length}</Typography>
+            <Typography variant="body2">
+              Compliance: {schema.complianceValidated ? '✅ Validated' : '⚠️ Pending'}
+            </Typography>
+            <Typography variant="body2">
+              Audit Tables: {schema.tables.filter(t => t.auditEnabled).length}
+            </Typography>
+          </Paper>
+        </Box>
+
+        {/* Properties Panel */}
+        <Paper sx={{ width: 400, borderLeft: 1, borderColor: 'divider' }}>
+          <Tabs
+            value={selectedTab}
+            onChange={(e, newValue) => setSelectedTab(newValue)}
+            variant="fullWidth"
+          >
+            <Tab label="Schema" />
+            <Tab label="Tables" />
+            <Tab label="Security" />
+          </Tabs>
+
+          <Box sx={{ p: 2, height: 'calc(100vh - 112px)', overflow: 'auto' }}>
+            {selectedTab === 0 && (
+              <Box>
+                <Typography variant="h6" gutterBottom>Schema Properties</Typography>
+                
+                <TextField
+                  fullWidth
+                  label="Schema Name"
+                  value={schema.name}
+                  onChange={(e) => setSchema(prev => ({ ...prev, name: e.target.value, updatedAt: new Date() }))}
+                  sx={{ mb: 2 }}
+                />
+                
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  label="Description"
+                  value={schema.description}
+                  onChange={(e) => setSchema(prev => ({ ...prev, description: e.target.value, updatedAt: new Date() }))}
+                  sx={{ mb: 2 }}
+                />
+
+                <TextField
+                  fullWidth
+                  label="Version"
+                  value={schema.version}
+                  onChange={(e) => setSchema(prev => ({ ...prev, version: e.target.value, updatedAt: new Date() }))}
+                  sx={{ mb: 2 }}
+                />
+
+                <Alert severity={schema.complianceValidated ? 'success' : 'warning'} sx={{ mb: 2 }}>
+                  {schema.complianceValidated 
+                    ? 'Schema is compliant with government standards' 
+                    : 'Schema compliance validation pending'}
+                </Alert>
+
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>Government Standards</Typography>
+                <Box sx={{ mb: 2 }}>
+                  {['FISMA', 'NIST', 'Section508', 'FedRAMP'].map((standard) => (
+                    <Chip
+                      key={standard}
+                      label={standard}
+                      size="small"
+                      color="secondary"
+                      variant="outlined"
+                      sx={{ mr: 0.5, mb: 0.5 }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+            {selectedTab === 1 && (
+              <Box>
+                <Typography variant="h6" gutterBottom>Database Tables</Typography>
+                
+                <List>
+                  {schema.tables.map((table) => (
+                    <ListItem key={table.id} divider>
+                      <Storage sx={{ mr: 1, color: 
+                        table.complianceLevel === 'RED' ? '#F44336' :
+                        table.complianceLevel === 'YELLOW' ? '#FF9800' : '#4CAF50'
+                      }} />
+                      <ListItemText
+                        primary={`${table.schema}.${table.name}`}
+                        secondary={`${table.columns.length} columns${table.auditEnabled ? ' • Audited' : ''}`}
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton size="small" onClick={() => {
+                          setSelectedTable(table);
+                          setNewTable(table);
+                          setTableDialog(true);
+                        }}>
+                          <Edit />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+                </List>
+
+                {schema.tables.length === 0 && (
+                  <Alert severity="info">
+                    No tables defined. Click "Add Table" to create your first table.
+                  </Alert>
+                )}
+              </Box>
+            )}
+
+            {selectedTab === 2 && (
+              <Box>
+                <Typography variant="h6" gutterBottom>Security & Compliance</Typography>
+                
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography>Encryption Settings</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <FormControlLabel
+                      control={<Switch defaultChecked />}
+                      label="Column-level Encryption"
+                    />
+                    <FormControlLabel
+                      control={<Switch defaultChecked />}
+                      label="Transparent Data Encryption"
+                    />
+                    <FormControlLabel
+                      control={<Switch defaultChecked />}
+                      label="Backup Encryption"
+                    />
+                  </AccordionDetails>
+                </Accordion>
+
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography>Audit Configuration</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <FormControlLabel
+                      control={<Switch defaultChecked />}
+                      label="Data Access Logging"
+                    />
+                    <FormControlLabel
+                      control={<Switch defaultChecked />}
+                      label="Schema Change Tracking"
+                    />
+                    <FormControlLabel
+                      control={<Switch defaultChecked />}
+                      label="Query Performance Logging"
+                    />
+                  </AccordionDetails>
+                </Accordion>
+
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography>Compliance Validation</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                      Validation Status: {schema.complianceValidated ? '✅ Compliant' : '⚠️ Pending'}
+                    </Typography>
+                    
+                    <Button
+                      variant="outlined"
+                      startIcon={<Assessment />}
+                      onClick={handleComplianceValidation}
+                      fullWidth
+                    >
+                      Run Compliance Check
+                    </Button>
+                  </AccordionDetails>
+                </Accordion>
+              </Box>
+            )}
+          </Box>
+        </Paper>
+      </Box>
+
+      {/* Add/Edit Table Dialog */}
+      <Dialog
+        open={tableDialog}
+        onClose={() => setTableDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedTable ? 'Edit Table' : 'Add New Table'}
+        </DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Table Name"
+                value={newTable.name || ''}
+                onChange={(e) => setNewTable(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Schema"
+                value={newTable.schema || 'public'}
+                onChange={(e) => setNewTable(prev => ({ ...prev, schema: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Compliance Level</InputLabel>
+                <Select
+                  value={newTable.complianceLevel || 'GREEN'}
+                  label="Compliance Level"
+                  onChange={(e) => setNewTable(prev => ({ ...prev, complianceLevel: e.target.value as any }))}
+                >
+                  <MenuItem value="GREEN">GREEN (Confidential)</MenuItem>
+                  <MenuItem value="YELLOW">YELLOW (Secret)</MenuItem>
+                  <MenuItem value="RED">RED (Top Secret)</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={newTable.auditEnabled ?? true}
+                    onChange={(e) => setNewTable(prev => ({ ...prev, auditEnabled: e.target.checked }))}
+                  />
+                }
+                label="Enable Audit Trail"
+              />
+            </Grid>
+
+            {/* Column Management */}
+            <Grid item xs={12}>
+              <Typography variant="h6" sx={{ mb: 2 }}>Columns</Typography>
+              
+              {/* Add Column Form */}
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Column Name"
+                    value={newColumn.name || ''}
+                    onChange={(e) => setNewColumn(prev => ({ ...prev, name: e.target.value }))}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel>Data Type</InputLabel>
+                    <Select
+                      value={newColumn.type || ''}
+                      label="Data Type"
+                      onChange={(e) => setNewColumn(prev => ({ ...prev, type: e.target.value }))}
+                    >
+                      {databaseTypes.map((type) => (
+                        <MenuItem key={type} value={type}>{type}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    startIcon={<Add />}
+                    onClick={handleAddColumn}
+                    disabled={!newColumn.name || !newColumn.type}
+                  >
+                    Add Column
+                  </Button>
+                </Grid>
+              </Grid>
+
+              {/* Column Options */}
+              <Grid container spacing={1} sx={{ mb: 2 }}>
+                <Grid item>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        size="small"
+                        checked={newColumn.primaryKey ?? false}
+                        onChange={(e) => setNewColumn(prev => ({ ...prev, primaryKey: e.target.checked }))}
+                      />
+                    }
+                    label="Primary Key"
+                  />
+                </Grid>
+                <Grid item>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        size="small"
+                        checked={newColumn.nullable ?? false}
+                        onChange={(e) => setNewColumn(prev => ({ ...prev, nullable: e.target.checked }))}
+                      />
+                    }
+                    label="Nullable"
+                  />
+                </Grid>
+                <Grid item>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        size="small"
+                        checked={newColumn.encrypted ?? false}
+                        onChange={(e) => setNewColumn(prev => ({ ...prev, encrypted: e.target.checked }))}
+                      />
+                    }
+                    label="Encrypted"
+                  />
+                </Grid>
+                <Grid item>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        size="small"
+                        checked={newColumn.piiData ?? false}
+                        onChange={(e) => setNewColumn(prev => ({ ...prev, piiData: e.target.checked }))}
+                      />
+                    }
+                    label="PII Data"
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Existing Columns List */}
+              <List sx={{ maxHeight: 200, overflow: 'auto' }}>
+                {(newTable.columns || []).map((column) => (
+                  <ListItem key={column.id} dense>
+                    <ListItemText
+                      primary={column.name}
+                      secondary={`${column.type}${column.primaryKey ? ' (PK)' : ''}${column.encrypted ? ' 🔒' : ''}`}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton
+                        size="small"
+                        onClick={() => setNewTable(prev => ({
+                          ...prev,
+                          columns: prev.columns?.filter(c => c.id !== column.id) || []
+                        }))}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setTableDialog(false)}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSaveTable}
+            variant="contained"
+            disabled={!newTable.name}
+          >
+            {selectedTable ? 'Update Table' : 'Create Table'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default DatabaseDesigner;

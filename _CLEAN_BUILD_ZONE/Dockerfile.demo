@@ -1,0 +1,56 @@
+# TerraFusion Government OS - Demo Frontend Dockerfile
+# Optimized for terrafusionmarket.io live demo
+
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production --silent
+
+# Copy source code
+COPY . .
+
+# Set demo environment variables
+ENV NODE_ENV=production
+ENV REACT_APP_DEMO_MODE=true
+ENV REACT_APP_API_URL=/api
+ENV REACT_APP_COUNTY_NAME="Benton County"
+ENV REACT_APP_BRAND_TITLE="TerraFusion Government OS"
+ENV REACT_APP_BRAND_SUBTITLE="Government. Transcended."
+ENV REACT_APP_PERFORMANCE_CLAIM="949x faster than traditional systems"
+ENV REACT_APP_PROPERTY_COUNT="89,247"
+ENV REACT_APP_AI_AGENTS="1,008"
+
+# Build the application
+RUN npm run build
+
+# Production stage with nginx
+FROM nginx:alpine
+
+# Copy built application
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx config for SPA
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Add government OS demo metadata
+LABEL org.terrafusion.service="government-os-frontend" \
+      org.terrafusion.version="1.0.0" \
+      org.terrafusion.county="Benton County" \
+      org.terrafusion.demo="true" \
+      org.terrafusion.properties="89247" \
+      org.terrafusion.ai-agents="1008"
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
+
+# Expose port
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
