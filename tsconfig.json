@@ -47,6 +47,7 @@
     "**/*.config.*",
     "**/*broken*",
     "**/*experimental*",
+    "**/*.template.*",
     "tests",
     "scripts",
     "modules",
