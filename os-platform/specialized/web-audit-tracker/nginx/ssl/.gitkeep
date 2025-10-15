@@ -1,0 +1,6 @@
+# SSL certificates directory
+# Place your SSL certificates here:
+# - cert.pem (SSL certificate)
+# - key.pem (Private key)
+
+# This directory is excluded from version control for security
