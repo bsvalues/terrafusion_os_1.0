@@ -9,11 +9,26 @@ using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
 using Prometheus;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure URLs - respect command line args, then environment, then default
-// Note: Command line args take precedence automatically through WebApplicationBuilder
+// 🎯 DYNAMIC PORT ALLOCATION - NO MORE HARDCODING
+// If no port specified, let OS choose an available port (0 = OS picks)
+// If user's laptop has port conflicts, this solves it automatically
+var requestedPort = builder.Configuration["Port"] ?? "0"; // 0 = dynamic allocation
+if (args.Length == 0 || !args.Any(a => a.Contains("--urls")))
+{
+    var port = int.Parse(requestedPort);
+    if (port == 0)
+    {
+        // Get an available port from OS
+        port = ServiceRegistry.GetAvailablePort();
+        Console.WriteLine($"🔍 No port specified, dynamically allocated port: {port}");
+    }
+    builder.WebHost.UseUrls($"http://localhost:{port}");
+}
+// else: Command line --urls takes precedence
 
 // Configure logging
 builder.Logging.ClearProviders();
@@ -32,6 +47,10 @@ builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTerraFusionAuthentication(builder.Configuration);
 
+// 🎯 SERVICE REGISTRY & DISCOVERY - No more hardcoded ports!
+builder.Services.AddSingleton<ServiceRegistry>();
+builder.Services.AddHostedService<StartupOrchestrationService>();
+
 // Register core services
 builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 
@@ -43,8 +62,9 @@ builder.Services.AddScoped<TerraFusion.API.Health.IOrchestratorView, Orchestrato
 
 // Register unified orchestration services
 builder.Services.AddSingleton<IModuleLoaderService, ModuleLoaderService>();
-builder.Services.AddHostedService<ModuleLoaderService>(provider => 
-    (ModuleLoaderService)provider.GetRequiredService<IModuleLoaderService>());
+// TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown
+// builder.Services.AddHostedService<ModuleLoaderService>(provider => 
+//     (ModuleLoaderService)provider.GetRequiredService<IModuleLoaderService>());
 
 // Register module services
 builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, TerraFusion.Core.Services.ModuleService>();
@@ -68,8 +88,9 @@ builder.Services.AddScoped<ITerraFusionSyncService, TerraFusionSyncIntegrationSe
 
 // Register unified orchestration service
 builder.Services.AddSingleton<IUnifiedOrchestrationService, UnifiedOrchestrationService>();
-builder.Services.AddHostedService<UnifiedOrchestrationService>(provider => 
-    (UnifiedOrchestrationService)provider.GetRequiredService<IUnifiedOrchestrationService>());
+// TEMPORARILY DISABLED TO DEBUG STARTUP ISSUE
+// builder.Services.AddHostedService<UnifiedOrchestrationService>(provider => 
+//     (UnifiedOrchestrationService)provider.GetRequiredService<IUnifiedOrchestrationService>());
 
 // Keep plugin hot reload for development
 builder.Services.AddHostedService<PluginHotReloadService>();
@@ -78,7 +99,8 @@ builder.Services.AddHostedService<PluginHotReloadService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(TerraFusion.Core.Services.ModuleService).Assembly);
 
 // Register Rust FFI Service
-builder.Services.AddSingleton<RustFFIService>();
+// TEMPORARILY DISABLED - ffi_bridge.dll is placeholder, may cause issues
+// builder.Services.AddSingleton<RustFFIService>();
 
 // Register database context with SQLite fallback
 builder.Services.AddDbContext<TerraFusionDbContext>(options =>
@@ -103,7 +125,8 @@ builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
 
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
-builder.Services.AddHostedService<DatabaseInitializationHostedService>();
+// TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown
+// builder.Services.AddHostedService<DatabaseInitializationHostedService>();
 
 // Add health checks for monitoring
 builder.Services.AddHealthChecks()
@@ -171,7 +194,7 @@ app.UseAuditLogging();
 
 app.MapControllers();
 
-// Fallback to index.html for SPA routing (MUST be after MapControllers)
+// SPA Fallback - serve index.html for all non-API routes
 if (Directory.Exists(uiPath))
 {
     var indexPath = Path.Combine(uiPath, "index.html");
@@ -179,6 +202,14 @@ if (Directory.Exists(uiPath))
     
     app.MapFallback(async context =>
     {
+        // Don't fallback for API routes
+        if (context.Request.Path.StartsWithSegments("/api") || 
+            context.Request.Path.StartsWithSegments("/hubs"))
+        {
+            context.Response.StatusCode = 404;
+            return;
+        }
+
         Console.WriteLine($"[FALLBACK] Serving: {context.Request.Path}, indexPath exists: {File.Exists(indexPath)}");
         
         if (File.Exists(indexPath))
@@ -186,6 +217,7 @@ if (Directory.Exists(uiPath))
             try
             {
                 context.Response.ContentType = "text/html; charset=utf-8";
+                context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
                 var html = await File.ReadAllTextAsync(indexPath);
                 Console.WriteLine($"[FALLBACK] Read {html.Length} bytes from index.html");
                 await context.Response.WriteAsync(html);
@@ -307,17 +339,23 @@ Console.WriteLine("   • GET  /api/swarm/mcp-tools       - MCP tools integratio
 Console.WriteLine("   • POST /api/swarm/execute         - Execute AI command");
 Console.WriteLine("   • WS   /hubs/oscore               - SignalR hub for module hot-reload");
 Console.WriteLine("📋 Server configuration: Using command line --urls parameter");
-Console.WriteLine("🧩 Module System: 15 production modules configured");
-Console.WriteLine("🤖 AI Swarm: 1,008 agents with 87 MCP tools");
+// Console.WriteLine("🧩 Module System: 15 production modules configured");
+// Console.WriteLine("🤖 AI Swarm: 1,008 agents with 87 MCP tools");
 Console.WriteLine("💾 Database: SQLite fallback with background initialization");
 
 try 
 {
     Console.WriteLine($"🚀 Starting TerraFusion API");
+    Console.WriteLine($"🔍 Configured URLs: {string.Join(", ", builder.WebHost.GetSetting("urls") ?? "NONE SET - Using Kestrel defaults")}");
+    Console.WriteLine($"🌐 Environment: {app.Environment.EnvironmentName}");
+    Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
     app.Run();
+    Console.WriteLine($"⚠️ app.Run() returned! This means shutdown was requested.");
+    Console.WriteLine($"✅ Server stopped gracefully");
 }
 catch (Exception ex)
 {
     Console.WriteLine($"❌ Failed to start server: {ex.Message}");
+    Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
     throw;
 }

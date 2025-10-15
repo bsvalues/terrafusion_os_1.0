@@ -49,9 +49,32 @@ async function loadWorkspaceData() {
     const data = JSON.parse(rawData);
 
     // Validate structure
-    if (!data.workspace || !data.packages) {
+    if (!data.workspace || !data.structure) {
       throw new Error('Invalid .workspace-map.json structure');
     }
+
+    // Convert structure to packages array for backwards compatibility
+    const packages = [];
+    if (data.structure) {
+      for (const [categoryKey, category] of Object.entries(data.structure)) {
+        if (category.primary) {
+          for (const [pkgKey, pkg] of Object.entries(category.primary)) {
+            packages.push({
+              id: pkgKey,
+              name: pkg.description || pkgKey,
+              path: pkg.path || pkgKey,
+              category: categoryKey,
+              files: pkg.files || 0,
+              size_mb: pkg.size_mb || 0,
+              description: pkg.description || '',
+              contains: pkg.contains || [],
+              key_files: pkg.key_files || []
+            });
+          }
+        }
+      }
+    }
+    data.packages = packages;
 
     // Add metadata
     data._loaded = new Date().toISOString();

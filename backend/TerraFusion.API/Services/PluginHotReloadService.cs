@@ -46,8 +46,10 @@ namespace TerraFusion.API.Services
             _watcher.EnableRaisingEvents = true;
             
             _logger.LogInformation("Module hot-reload service started, watching: {Path}", absoluteModulesPath);
+            _logger.LogInformation("Entering infinite delay to keep service alive...");
             
-            return Task.CompletedTask;
+            // Keep the service running until cancellation is requested
+            return Task.Delay(Timeout.Infinite, stoppingToken);
         }
 
         private async Task HandlePluginChange(string filePath, string changeType)

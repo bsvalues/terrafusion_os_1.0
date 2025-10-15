@@ -167,18 +167,70 @@ namespace Terrafusion.Shell
             settings.AreDevToolsEnabled = true; // Enable for development
             settings.AreHostObjectsAllowed = false;
             
+            // Add navigation logging
+            webView.CoreWebView2.NavigationCompleted += (sender, args) =>
+            {
+                if (args.IsSuccess)
+                {
+                    LogToEventLog($"✅ Navigation succeeded to: {args.Uri}", EventLogEntryType.Information);
+                }
+                else
+                {
+                    LogToEventLog($"❌ Navigation FAILED to: {args.Uri} - Error: {args.WebErrorStatus}", EventLogEntryType.Error);
+                }
+            };
+            
             // Setup message bridge between React and Native Shell
             SetupWebViewMessaging();
         }
         
         private async Task LoadUI()
         {
-            // Load from backend server to avoid CORS issues with file:// protocol
-            // Temporarily using working.html to verify infrastructure
-            webView.Source = new Uri("http://localhost:5005/index.html");
-            LogToEventLog("Loading UI from http://localhost:5005/index.html", EventLogEntryType.Information);
-            
-            await Task.CompletedTask;
+            try
+            {
+                // 🎯 DYNAMIC SERVICE DISCOVERY - Read backend URL from service registry
+                var registryPath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory, 
+                    "..", "..", "..", "..", // Navigate up to workspace root
+                    "service-registry.json"
+                );
+                
+                string backendUrl = "http://localhost:5000"; // Fallback default
+                
+                if (File.Exists(registryPath))
+                {
+                    var registryJson = await File.ReadAllTextAsync(registryPath);
+                    using var doc = System.Text.Json.JsonDocument.Parse(registryJson);
+                    
+                    if (doc.RootElement.TryGetProperty("services", out var services) &&
+                        services.TryGetProperty("backend", out var backend) &&
+                        backend.TryGetProperty("url", out var url) &&
+                        url.GetString() is string urlStr && !string.IsNullOrEmpty(urlStr))
+                    {
+                        backendUrl = urlStr;
+                        LogToEventLog($"✅ Discovered backend at: {backendUrl}", EventLogEntryType.Information);
+                    }
+                    else
+                    {
+                        LogToEventLog($"⚠️ Backend not registered in service registry yet, using fallback: {backendUrl}", EventLogEntryType.Warning);
+                    }
+                }
+                else
+                {
+                    LogToEventLog($"⚠️ Service registry not found at {registryPath}, using fallback: {backendUrl}", EventLogEntryType.Warning);
+                }
+                
+                // Load UI from discovered backend URL with cache-busting
+                var timestamp = DateTime.UtcNow.Ticks;
+                webView.Source = new Uri($"{backendUrl}/index.html?v={timestamp}");
+                LogToEventLog($"Loading UI from {backendUrl}/index.html?v={timestamp}", EventLogEntryType.Information);
+            }
+            catch (Exception ex)
+            {
+                LogToEventLog($"❌ Error loading UI: {ex.Message}", EventLogEntryType.Error);
+                // Fallback to default
+                webView.Source = new Uri("http://localhost:5000/index.html");
+            }
         }
         
         /// <summary>

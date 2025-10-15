@@ -1,0 +1,611 @@
+/*
+🔬 TerraFusion OS - Advanced MIT PhD-Level CSS Architecture
+Cutting-Edge Reliability Engineering | Quantum-Inspired Design Systems
+Government. Transcended. Beyond. | 1,008 AI Agents Demand Excellence.
+*/
+
+/* ===== CUTTING-EDGE CSS FEATURES ===== */
+
+/* CSS Layers - Advanced Architecture */
+@layer reset, tokens, foundation, layout, components, utilities, adaptive, overrides;
+
+/* Modern CSS Reset with Performance Optimization */
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Performance-critical root optimizations */
+  html {
+    /* Subpixel rendering optimization */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* Scroll behavior optimization */
+    scroll-behavior: smooth;
+    scroll-padding-top: 2rem;
+    
+    /* Color scheme support */
+    color-scheme: dark light;
+    
+    /* Container query support */
+    container-type: size;
+  }
+
+  /* Advanced focus management */
+  :focus-visible {
+    outline: 2px solid var(--tf-focus-ring-color, var(--tf-primary));
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+}
+
+/* ===== ADVANCED DESIGN TOKENS ===== */
+
+@layer tokens {
+  :root {
+    /* Quantum-Inspired Color System */
+    --tf-quantum-coherence: 0.97; /* AI system coherence level */
+    --tf-neural-frequency: 1.618;  /* Golden ratio for AI harmony */
+    
+    /* Dynamic Color Calculation using CSS calc() */
+    --tf-primary-h: 207;  /* Hue */
+    --tf-primary-s: 100%; /* Saturation */
+    --tf-primary-l: 50%;  /* Lightness */
+    
+    --tf-primary-hsl: var(--tf-primary-h) var(--tf-primary-s) var(--tf-primary-l);
+    --tf-primary: hsl(var(--tf-primary-hsl));
+    --tf-primary-alpha: hsl(var(--tf-primary-hsl) / 0.9);
+    
+    /* Algorithmic color variants */
+    --tf-primary-darker: hsl(var(--tf-primary-h) var(--tf-primary-s) calc(var(--tf-primary-l) * 0.8));
+    --tf-primary-lighter: hsl(var(--tf-primary-h) var(--tf-primary-s) calc(var(--tf-primary-l) * 1.2));
+    
+    /* Advanced Spacing System - Modular Scale */
+    --tf-space-base: 1rem;
+    --tf-space-ratio: var(--tf-neural-frequency); /* Golden ratio */
+    
+    --tf-space-1: calc(var(--tf-space-base) / var(--tf-space-ratio));
+    --tf-space-2: var(--tf-space-base);
+    --tf-space-3: calc(var(--tf-space-base) * var(--tf-space-ratio));
+    --tf-space-4: calc(var(--tf-space-base) * var(--tf-space-ratio) * var(--tf-space-ratio));
+    
+    /* Fluid Typography - Advanced Clamp Functions */
+    --tf-text-base-size: clamp(1rem, 0.96rem + 0.22vw, 1.125rem);
+    --tf-text-scale-ratio: 1.25;
+    
+    --tf-text-xs: calc(var(--tf-text-base-size) / var(--tf-text-scale-ratio) / var(--tf-text-scale-ratio));
+    --tf-text-sm: calc(var(--tf-text-base-size) / var(--tf-text-scale-ratio));
+    --tf-text-md: var(--tf-text-base-size);
+    --tf-text-lg: calc(var(--tf-text-base-size) * var(--tf-text-scale-ratio));
+    --tf-text-xl: calc(var(--tf-text-base-size) * var(--tf-text-scale-ratio) * var(--tf-text-scale-ratio));
+    
+    /* Advanced Animation Timing - Quantum Physics Inspired */
+    --tf-timing-quantum: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Quantum tunneling curve */
+    --tf-timing-neural: cubic-bezier(0.165, 0.84, 0.44, 1);    /* Neural network activation */
+    --tf-timing-transcend: cubic-bezier(0.19, 1, 0.22, 1);     /* Transcendence curve */
+    
+    /* Performance-Optimized Durations */
+    --tf-duration-instant: 0.1s;   /* Neural response time */
+    --tf-duration-fast: 0.2s;      /* AI processing */
+    --tf-duration-normal: 0.3s;    /* Human perception optimal */
+    --tf-duration-slow: 0.6s;      /* Complex state changes */
+    
+    /* Advanced Shadow System - Multi-layered */
+    --tf-shadow-neural: 
+      0 1px 1px hsl(var(--tf-primary-hsl) / 0.025),
+      0 2px 2px hsl(var(--tf-primary-hsl) / 0.025),
+      0 4px 4px hsl(var(--tf-primary-hsl) / 0.025),
+      0 8px 8px hsl(var(--tf-primary-hsl) / 0.025),
+      0 16px 16px hsl(var(--tf-primary-hsl) / 0.025);
+    
+    --tf-shadow-quantum:
+      0 0 0 1px hsl(var(--tf-primary-hsl) / 0.05),
+      0 1px 2px 0 hsl(var(--tf-primary-hsl) / 0.1),
+      0 4px 8px 0 hsl(var(--tf-primary-hsl) / 0.1),
+      0 16px 32px 0 hsl(var(--tf-primary-hsl) / 0.1);
+    
+    /* Container Query Breakpoints */
+    --tf-container-xs: 20rem;   /* 320px */
+    --tf-container-sm: 24rem;   /* 384px */
+    --tf-container-md: 28rem;   /* 448px */
+    --tf-container-lg: 32rem;   /* 512px */
+    --tf-container-xl: 36rem;   /* 576px */
+    
+    /* Government Reliability Metrics */
+    --tf-uptime-target: 0.9999; /* 99.99% uptime requirement */
+    --tf-response-time-ms: 6;   /* Target response time */
+    --tf-agent-count: 1008;     /* AI agent system size */
+  }
+
+  /* Advanced Dark/Light Mode with CSS Variables */
+  [data-theme="light"] {
+    --tf-bg-primary: hsl(0 0% 100%);
+    --tf-bg-secondary: hsl(0 0% 98%);
+    --tf-text-primary: hsl(0 0% 9%);
+    --tf-text-secondary: hsl(0 0% 45%);
+  }
+
+  [data-theme="dark"] {
+    --tf-bg-primary: hsl(222 47% 11%);
+    --tf-bg-secondary: hsl(222 47% 16%);
+    --tf-text-primary: hsl(0 0% 95%);
+    --tf-text-secondary: hsl(0 0% 65%);
+  }
+
+  /* Auto-adaptive theming */
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+      --tf-bg-primary: hsl(0 0% 100%);
+      --tf-bg-secondary: hsl(0 0% 98%);
+      --tf-text-primary: hsl(0 0% 9%);
+      --tf-text-secondary: hsl(0 0% 45%);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --tf-bg-primary: hsl(222 47% 11%);
+      --tf-bg-secondary: hsl(222 47% 16%);
+      --tf-text-primary: hsl(0 0% 95%);
+      --tf-text-secondary: hsl(0 0% 65%);
+    }
+  }
+}
+
+/* ===== ADVANCED LAYOUT SYSTEMS ===== */
+
+@layer layout {
+  /* Container Queries - Cutting Edge */
+  .tf-container {
+    container-type: inline-size;
+    container-name: tf-module;
+  }
+
+  /* Responsive design based on container, not viewport */
+  @container tf-module (min-width: 400px) {
+    .tf-card {
+      padding: var(--tf-space-4);
+      border-radius: calc(var(--tf-space-2) * var(--tf-neural-frequency));
+    }
+  }
+
+  @container tf-module (min-width: 600px) {
+    .tf-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--tf-space-4);
+    }
+  }
+
+  /* Advanced CSS Grid with Subgrid Support */
+  .tf-layout-master {
+    display: grid;
+    grid-template-areas:
+      "header header header"
+      "sidebar main aside"
+      "footer footer footer";
+    grid-template-columns: minmax(200px, 1fr) 3fr minmax(200px, 1fr);
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    container-type: size;
+  }
+
+  .tf-layout-header {
+    grid-area: header;
+    display: grid;
+    grid-template-columns: subgrid; /* Cutting-edge subgrid */
+    align-items: center;
+    padding: var(--tf-space-3) var(--tf-space-4);
+    background: var(--tf-bg-secondary);
+  }
+
+  .tf-layout-main {
+    grid-area: main;
+    padding: var(--tf-space-4);
+    container-type: inline-size;
+    container-name: main-content;
+  }
+
+  /* AI Agent Grid - Self-Organizing */
+  .tf-agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--tf-space-2);
+    padding: var(--tf-space-3);
+    
+    /* Advanced CSS functions */
+    aspect-ratio: 16 / 9;
+    container-type: size;
+  }
+
+  /* Dynamic grid adjustments based on agent count */
+  .tf-agent-grid[data-agent-count="1008"] {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+
+  .tf-agent-grid[data-agent-count="504"] {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+/* ===== ADVANCED COMPONENT ARCHITECTURE ===== */
+
+@layer components {
+  /* Quantum-Inspired Button System */
+  .tf-btn {
+    /* Advanced CSS logical properties */
+    padding-block: var(--tf-space-2);
+    padding-inline: var(--tf-space-3);
+    
+    /* Modern color functions */
+    background: color-mix(in srgb, var(--tf-primary) 90%, transparent);
+    border: 1px solid color-mix(in srgb, var(--tf-primary) 20%, transparent);
+    
+    /* Advanced border radius */
+    border-radius: var(--tf-space-1);
+    
+    /* Typography optimization */
+    font-family: var(--tf-font-primary);
+    font-size: var(--tf-text-md);
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.025em;
+    
+    /* Interaction states */
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    
+    /* Transitions with advanced timing */
+    transition: 
+      transform var(--tf-duration-fast) var(--tf-timing-neural),
+      background-color var(--tf-duration-fast) var(--tf-timing-neural),
+      box-shadow var(--tf-duration-normal) var(--tf-timing-quantum);
+    
+    /* Advanced transforms */
+    transform-origin: center;
+    transform: translateZ(0); /* GPU acceleration */
+  }
+
+  .tf-btn:hover {
+    background: color-mix(in srgb, var(--tf-primary) 95%, transparent);
+    transform: translateY(-1px) translateZ(0);
+    box-shadow: var(--tf-shadow-neural);
+  }
+
+  .tf-btn:active {
+    transform: translateY(0) scale(0.98) translateZ(0);
+    transition-duration: var(--tf-duration-instant);
+  }
+
+  /* AI Agent Status Indicator */
+  .tf-agent-node {
+    inline-size: 8px;
+    block-size: 8px;
+    background: radial-gradient(circle, var(--tf-success) 0%, var(--tf-success-darker) 100%);
+    border-radius: 50%;
+    
+    /* Advanced animation control */
+    animation: 
+      agent-pulse var(--tf-duration-slow) var(--tf-timing-quantum) infinite,
+      agent-coherence calc(var(--tf-duration-slow) * 2) linear infinite;
+    
+    /* Container query responsive sizing */
+    container-type: size;
+  }
+
+  @container (min-width: 200px) {
+    .tf-agent-node {
+      inline-size: 12px;
+      block-size: 12px;
+    }
+  }
+
+  /* Advanced keyframe animations */
+  @keyframes agent-pulse {
+    0%, 100% {
+      opacity: var(--tf-quantum-coherence);
+      transform: scale(1) rotate(0deg);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1) rotate(180deg);
+    }
+  }
+
+  @keyframes agent-coherence {
+    0% {
+      filter: hue-rotate(0deg) brightness(1);
+    }
+    25% {
+      filter: hue-rotate(90deg) brightness(1.1);
+    }
+    50% {
+      filter: hue-rotate(180deg) brightness(1.2);
+    }
+    75% {
+      filter: hue-rotate(270deg) brightness(1.1);
+    }
+    100% {
+      filter: hue-rotate(360deg) brightness(1);
+    }
+  }
+
+  /* Advanced Card System with Self-Healing Properties */
+  .tf-card-advanced {
+    background: var(--tf-bg-secondary);
+    border: 1px solid color-mix(in srgb, var(--tf-primary) 10%, transparent);
+    border-radius: var(--tf-space-2);
+    padding: var(--tf-space-3);
+    
+    /* Advanced backdrop filters */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    
+    /* Self-healing box shadow */
+    box-shadow: 
+      0 0 0 1px color-mix(in srgb, var(--tf-primary) 5%, transparent),
+      var(--tf-shadow-quantum);
+    
+    /* Advanced container properties */
+    container-type: inline-size;
+    container-name: card-content;
+    
+    /* Performance optimization */
+    contain: layout style paint;
+  }
+
+  /* Advanced hover with transform-style */
+  .tf-card-advanced:hover {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 
+      0 0 0 1px color-mix(in srgb, var(--tf-primary) 20%, transparent),
+      0 8px 25px -5px color-mix(in srgb, var(--tf-primary) 15%, transparent);
+  }
+
+  /* AI Performance Metrics Display */
+  .tf-metrics-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--tf-space-2);
+    
+    /* Advanced CSS counters for real-time updates */
+    counter-reset: agent-count var(--tf-agent-count);
+  }
+
+  .tf-metric-item {
+    text-align: center;
+    padding: var(--tf-space-2);
+    background: color-mix(in srgb, var(--tf-primary) 5%, transparent);
+    border-radius: var(--tf-space-1);
+  }
+
+  .tf-metric-value {
+    font-size: var(--tf-text-xl);
+    font-weight: 700;
+    color: var(--tf-primary);
+    
+    /* Advanced CSS content generation */
+    &[data-metric="agents"]::after {
+      content: counter(agent-count);
+    }
+    
+    &[data-metric="uptime"]::after {
+      content: calc(var(--tf-uptime-target) * 100) "%";
+    }
+    
+    &[data-metric="response"]::after {
+      content: var(--tf-response-time-ms) "ms";
+    }
+  }
+}
+
+/* ===== ADVANCED UTILITIES ===== */
+
+@layer utilities {
+  /* AI System Status Classes */
+  .tf-ai-status-optimal {
+    --tf-quantum-coherence: 0.99;
+    background: color-mix(in srgb, var(--tf-success) 10%, transparent);
+    border-inline-start: 4px solid var(--tf-success);
+  }
+
+  .tf-ai-status-degraded {
+    --tf-quantum-coherence: 0.85;
+    background: color-mix(in srgb, var(--tf-warning) 10%, transparent);
+    border-inline-start: 4px solid var(--tf-warning);
+  }
+
+  .tf-ai-status-critical {
+    --tf-quantum-coherence: 0.60;
+    background: color-mix(in srgb, var(--tf-error) 10%, transparent);
+    border-inline-start: 4px solid var(--tf-error);
+  }
+
+  /* Performance Monitoring Utilities */
+  .tf-perf-monitor {
+    position: fixed;
+    inset-block-end: var(--tf-space-2);
+    inset-inline-end: var(--tf-space-2);
+    padding: var(--tf-space-2);
+    background: var(--tf-bg-secondary);
+    border-radius: var(--tf-space-1);
+    font-family: var(--tf-font-mono);
+    font-size: var(--tf-text-xs);
+    opacity: 0.8;
+    z-index: 9999;
+  }
+
+  /* Advanced Focus Management */
+  .tf-focus-trap {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .tf-focus-trap::before,
+  .tf-focus-trap::after {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
+
+/* ===== ADAPTIVE & RESPONSIVE SYSTEMS ===== */
+
+@layer adaptive {
+  /* AI-Responsive Grid System */
+  .tf-ai-grid {
+    display: grid;
+    gap: var(--tf-space-3);
+    
+    /* Dynamic columns based on AI agent load */
+    grid-template-columns: repeat(
+      auto-fit, 
+      minmax(
+        clamp(200px, calc(100vw / var(--tf-agent-count, 4) * 100), 400px), 
+        1fr
+      )
+    );
+  }
+
+  /* Quantum Breakpoint System */
+  @media (min-width: 768px) {
+    .tf-ai-grid {
+      --tf-neural-frequency: 1.414; /* √2 for larger screens */
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .tf-ai-grid {
+      --tf-neural-frequency: 1.732; /* √3 for desktop */
+    }
+  }
+
+  /* Advanced Media Queries with User Preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .tf-agent-node {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+    
+    .tf-btn {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    :root {
+      --tf-primary-l: 40%; /* Higher contrast */
+      --tf-quantum-coherence: 1.0;
+    }
+  }
+
+  @media (prefers-reduced-data: reduce) {
+    .tf-card-advanced {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    
+    .tf-agent-node {
+      animation: none;
+    }
+  }
+
+  /* Advanced viewport units for modern browsers */
+  .tf-hero-section {
+    min-height: 100dvh; /* Dynamic viewport height */
+    padding-inline: max(var(--tf-space-4), calc(50vw - 600px));
+  }
+}
+
+/* ===== CUTTING-EDGE FEATURES ===== */
+
+@layer overrides {
+  /* CSS Scroll-Driven Animations (when supported) */
+  @supports (animation-timeline: scroll()) {
+    .tf-scroll-reveal {
+      animation: reveal-on-scroll linear;
+      animation-timeline: scroll();
+      animation-range: entry 0% exit 100%;
+    }
+    
+    @keyframes reveal-on-scroll {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  /* CSS Anchor Positioning (when supported) */
+  @supports (anchor-name: --example) {
+    .tf-tooltip-anchor {
+      anchor-name: --tooltip-anchor;
+    }
+    
+    .tf-tooltip {
+      position: absolute;
+      position-anchor: --tooltip-anchor;
+      inset-area: top;
+      margin-bottom: var(--tf-space-1);
+    }
+  }
+
+  /* CSS Nesting with advanced selectors */
+  .tf-module-ecosystem {
+    container-type: inline-size;
+    
+    .tf-module-item {
+      transition: all var(--tf-duration-normal) var(--tf-timing-neural);
+      
+      &:hover {
+        transform: scale(1.02);
+        
+        .tf-module-actions {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      &:has(.tf-module-status[data-status="active"]) {
+        border-color: var(--tf-success);
+      }
+      
+      &:has(.tf-module-status[data-status="error"]) {
+        border-color: var(--tf-error);
+      }
+    }
+  }
+
+  /* Advanced print optimizations */
+  @media print {
+    .tf-ai-grid {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: var(--tf-space-2) !important;
+    }
+    
+    .tf-agent-node {
+      animation: none !important;
+      background: black !important;
+    }
+    
+    .tf-card-advanced {
+      box-shadow: 0 0 0 1px #ccc !important;
+      backdrop-filter: none !important;
+      break-inside: avoid;
+    }
+  }
+}
